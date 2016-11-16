@@ -1,0 +1,7 @@
+{
+  "name":"demo",
+  "email":"demo@nmaas.gn4.net",
+  "login":"demo",
+  "password":"password",
+  "isGrafanaAdmin":true
+}
