@@ -10,6 +10,8 @@ COPY build.sh /opt/build.sh
 COPY run.sh /opt/run.sh
 COPY nfsen-generic.conf /opt/nfsen-generic.conf
 COPY generate_nfsen_config_script.php /opt/generate_nfsen_config_script.php
+COPY lighttpd.conf /opt/lighttpd.conf
+COPY lighttpdpassword /opt/lighttpdpassword 
 
 RUN chmod +x /opt/run.sh /opt/build.sh ; sync ; sleep 1; 
 RUN /opt/build.sh

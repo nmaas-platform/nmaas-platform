@@ -18,5 +18,8 @@ cd /opt/nfdump-1.6.15.tar.gz/nfdump-1.6.15
 make && make install
 ldconfig
 
+# configure authentication (override default lighttpd configuration)
+cp /opt/lighttpd.conf /etc/lighttpd/lighttpd.conf
+
 # creating directory to mount external storage
 mkdir /data
