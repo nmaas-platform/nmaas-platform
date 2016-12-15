@@ -1,0 +1,34 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.2.RELEASE'
+		dockerClientVersion = '6.1.1'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = 'docker'
+	version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-jersey')
+	compile group: 'com.spotify', name: 'docker-client', version: '6.1.1'
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
