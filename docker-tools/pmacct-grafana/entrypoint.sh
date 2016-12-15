@@ -2,12 +2,14 @@
 
 set -e
 
-mkdir /data/pmacct
+mkdir /var/spool/pmacct
 nfacctd -f /etc/pmacct/nfacctd.conf -D
 crontab /opt/crontab
 rsyslogd
 cron
 
+chmod 777 /data
+echo "path.data: /data" >> /etc/elasticsearch/elasticsearch.yml
 service elasticsearch start
 
 service grafana-server start
