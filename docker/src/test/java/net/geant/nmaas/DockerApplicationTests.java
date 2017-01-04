@@ -1,5 +1,8 @@
 package net.geant.nmaas;
 
+import net.geant.nmaas.exception.*;
+import net.geant.nmaas.orchestrators.dockerswarm.NmServiceDockerSwarmSpec;
+import net.geant.nmaas.repository.NmServiceTemplateRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,10 @@ public class DockerApplicationTests {
 
 	@Autowired
 	@Qualifier("DockerSwarm")
-	public ContainerOrchestrationProvider orchestrator;
+	private ContainerOrchestrationProvider orchestrator;
+
+	@Autowired
+	private NmServiceTemplateRepository templates;
 
 	@Test
 	public void shouldInjectDockerSwarm() {

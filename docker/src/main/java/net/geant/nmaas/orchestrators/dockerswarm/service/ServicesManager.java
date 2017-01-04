@@ -2,17 +2,21 @@ package net.geant.nmaas.orchestrators.dockerswarm.service;
 
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.exceptions.DockerTimeoutException;
 import com.spotify.docker.client.exceptions.NotFoundException;
 import com.spotify.docker.client.messages.ServiceCreateResponse;
-import com.spotify.docker.client.messages.swarm.ContainerSpec;
 import com.spotify.docker.client.messages.swarm.ServiceSpec;
-import com.spotify.docker.client.messages.swarm.TaskSpec;
+import net.geant.nmaas.exception.CouldNotConnectToOrchestratorException;
+import net.geant.nmaas.exception.CouldNotDeployNmServiceException;
+import net.geant.nmaas.exception.CouldNotDestroyNmServiceException;
+import net.geant.nmaas.exception.UnknownInternalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.spotify.docker.client.messages.swarm.Task.*;
+import static com.spotify.docker.client.messages.swarm.Task.Criteria;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -23,30 +27,29 @@ public class ServicesManager {
     @Autowired
     private DockerClient docker;
 
-    public String deployTestService() throws NotFoundException {
-
-        ServiceSpec service = new ServiceSpec.Builder()
-                .withName("test-tomcat-" + System.currentTimeMillis())
-                .withTaskTemplate(
-                        new TaskSpec.Builder()
-                                .withContainerSpec(
-                                        new ContainerSpec.Builder()
-                                                .withImage("tomcat:alpine")
-                                                .build()
-                                )
-                        .build())
-                .build();
-
+    public String deployService(ServiceSpec service) throws CouldNotConnectToOrchestratorException, CouldNotDeployNmServiceException, UnknownInternalException {
         try {
             ServiceCreateResponse response = docker.createService(service);
-            System.out.println("Service id: " + response.id());
             return response.id();
-
-        } catch (DockerException | InterruptedException e) {
-            e.printStackTrace();
-            throw new NotFoundException("Could not create given service");
+        } catch (DockerTimeoutException dockerTimeoutException) {
+            throw new CouldNotConnectToOrchestratorException("Could not connect to Docker Swarm -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
+        } catch (DockerException dockerException) {
+            throw new CouldNotDeployNmServiceException("Could not create given service -> " + dockerException.getMessage(), dockerException);
+        } catch (InterruptedException interruptedException) {
+            throw new UnknownInternalException("Internal error -> " + interruptedException.getMessage(), interruptedException);
         }
+    }
 
+    public void destroyService(String serviceId) throws CouldNotConnectToOrchestratorException, CouldNotDestroyNmServiceException, UnknownInternalException {
+        try {
+            docker.removeService(serviceId);
+        } catch (DockerTimeoutException dockerTimeoutException) {
+            throw new CouldNotConnectToOrchestratorException("Could not connect to Docker Swarm -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
+        } catch (DockerException dockerException) {
+            throw new CouldNotDestroyNmServiceException("Could not destroy service " + serviceId + " -> " + dockerException.getMessage(), dockerException);
+        } catch (InterruptedException interruptedException) {
+            throw new UnknownInternalException("Internal error -> " + interruptedException.getMessage(), interruptedException);
+        }
     }
 
     public void tasks() throws DockerException, InterruptedException {
@@ -57,16 +60,15 @@ public class ServicesManager {
 
     }
 
-    public List<com.spotify.docker.client.messages.swarm.Service> listServices() throws NotFoundException {
-        final List<com.spotify.docker.client.messages.swarm.Service> services;
+    public List<String> listServices() {
         try {
+            final List<com.spotify.docker.client.messages.swarm.Service> services;
             services = docker.listServices();
-            //return services.stream().map(s -> s.spec().name()).collect(Collectors.toList());
-            return services;
-
+            return services.stream().map(s -> s.spec().name()).collect(Collectors.toList());
         } catch (DockerException | InterruptedException e ) {
             e.printStackTrace();
-            throw new NotFoundException("Failed to retrieve services");
+            //throw new NotFoundException("Failed to retrieve services");
+            return null;
         }
     }
 

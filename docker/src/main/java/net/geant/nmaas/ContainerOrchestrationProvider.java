@@ -4,6 +4,8 @@ import net.geant.nmaas.exception.*;
 import net.geant.nmaas.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.NmServiceTemplate;
 
+import java.util.List;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -18,6 +20,8 @@ public interface ContainerOrchestrationProvider {
             throws NmServiceStateException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
     void destroyNmService(String serviceName)
-            throws NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+            throws CouldNotDestroyNmServiceException, NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
+    List<String> listServices()
+            throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 }

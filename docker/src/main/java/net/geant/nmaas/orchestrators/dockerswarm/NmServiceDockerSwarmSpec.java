@@ -15,14 +15,19 @@ public class NmServiceDockerSwarmSpec implements NmServiceSpec {
     private String name;
 
     /**
+     * The command to be run in the image
+     */
+    private String command;
+
+    /**
      * Arguments to the command.
      */
-    private List<String> args;
+    private List<String> commandArguments;
 
     /**
      * A list of environment variables in the form of ["VAR=value"]
      */
-    private List<String> env;
+    private List<String> environmentVariables;
 
     /**
      * List of exposed ports that this service is accessible on from the outside.
@@ -40,6 +45,40 @@ public class NmServiceDockerSwarmSpec implements NmServiceSpec {
 
     @Override
     public Boolean verify() {
-        return null;
+        if (name == null || name.isEmpty())
+            return false;
+        return true;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
+    public List<PortForwardingSpec> getPorts() {
+        return ports;
+    }
+
+    public void setPorts(List<PortForwardingSpec> ports) {
+        this.ports = ports;
+    }
+
+    public List<String> getCommandArguments() {
+        return commandArguments;
+    }
+
+    public void setCommandArguments(List<String> commandArguments) {
+        this.commandArguments = commandArguments;
+    }
+
+    public List<String> getEnvironmentVariables() {
+        return environmentVariables;
+    }
+
+    public void setEnvironmentVariables(List<String> environmentVariables) {
+        this.environmentVariables = environmentVariables;
     }
 }

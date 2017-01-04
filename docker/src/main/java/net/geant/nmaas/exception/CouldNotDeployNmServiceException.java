@@ -5,4 +5,12 @@ package net.geant.nmaas.exception;
  */
 public class CouldNotDeployNmServiceException extends Exception {
 
+    public CouldNotDeployNmServiceException(String message) {
+        super(message);
+    }
+
+    public CouldNotDeployNmServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
