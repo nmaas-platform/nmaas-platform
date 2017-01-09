@@ -16,7 +16,7 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 jar {
-	baseName = 'docker'
+	baseName = 'nmaas-platform'
 	version = '0.0.1-SNAPSHOT'
 }
 
@@ -54,4 +54,3 @@ task integrationTest(type: Test) {
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
 }
-
