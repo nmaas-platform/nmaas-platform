@@ -14,7 +14,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl/>
  */
 @RestController
-public class DockerRestApiController {
+public class ServiceDeploymentRestController {
 
     @Autowired
     @Qualifier("DockerSwarm")

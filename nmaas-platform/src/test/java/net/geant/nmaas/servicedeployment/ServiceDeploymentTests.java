@@ -15,7 +15,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerApplicationTests {
+public class ServiceDeploymentTests {
 
 	@Autowired
 	@Qualifier("DockerSwarm")

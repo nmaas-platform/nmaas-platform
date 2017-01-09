@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
+package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.servicedeployment.ServiceDeploymentConfig;
 import org.junit.Ignore;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ServiceDeploymentConfig.class)
 @AutoConfigureMockMvc
-public class DockerRestApiControllerTest {
+public class ServiceDeploymentRestControllerTest {
 
     @Autowired
     private MockMvc mvc;
