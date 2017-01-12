@@ -14,6 +14,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+apply plugin: "jacoco"
 
 jar {
 	baseName = 'nmaas-platform'
@@ -53,4 +54,12 @@ task integrationTest(type: Test) {
 	testClassesDir = sourceSets.integrationTest.output.classesDir
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
+	}
 }
