@@ -1,31 +1,21 @@
+apply from: '../reactor/build.gradle'
+apply plugin: 'org.springframework.boot'
+
 buildscript {
 	ext {
-		springBootVersion = '1.4.2.RELEASE'
+//		springBootVersion = '1.4.2.RELEASE'
 		dockerClientVersion = '6.1.1'
 	}
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE')
 	}
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: "jacoco"
-
 jar {
 	baseName = 'nmaas-platform'
-	version = '0.0.1-SNAPSHOT'
-}
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-repositories {
-	mavenCentral()
 }
 
 sourceSets {
@@ -46,7 +36,7 @@ configurations {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
-	compile group: 'com.spotify', name: 'docker-client', version: '6.1.1'
+	compile('com.spotify:docker-client:6.1.1')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
@@ -54,12 +44,4 @@ task integrationTest(type: Test) {
 	testClassesDir = sourceSets.integrationTest.output.classesDir
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
-}
-
-jacocoTestReport {
-	reports {
-		xml.enabled false
-		csv.enabled false
-		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
-	}
 }

@@ -1,0 +1,4 @@
+//jar {
+//	baseName = 'nmaas-portal'
+//	version = project.version
+//}
