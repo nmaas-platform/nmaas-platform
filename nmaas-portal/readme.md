@@ -7,7 +7,8 @@ Prerequisities:
  + install angular-cli 
    - [http://cli.angular.io](http://cli.angular.io)
    - npm install -g angular-cli
-   
+ + install git
+   - [https://git-scm.com/](https://git-scm.com/)
 
 Known issues:
 ---
