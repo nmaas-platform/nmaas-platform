@@ -1,0 +1,9 @@
+html, body {
+	height: 100%;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(#406081, #004041);
+}
+
+.login-vertical-offset {
+	margin-top: 25%;
+}
