@@ -2,7 +2,6 @@
 */.gradle
 */build/
 */bin/
-reactor/gradle/*
 
 ### STS ###
 .apt_generated

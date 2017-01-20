@@ -17,9 +17,9 @@ task build(type: Exec) {
 	println 'Building using angular-cli'
 
 	if ( OperatingSystem.current().isWindows() ) {
-		commandLine 'cmd', '/c', 'ng build'
+		commandLine 'cmd', '/c', 'ng', 'build'
 	} else {
-		commandLine 'ng build'
+		commandLine 'ng', 'build'
 	}	
 }
 build.dependsOn(npm_install)
