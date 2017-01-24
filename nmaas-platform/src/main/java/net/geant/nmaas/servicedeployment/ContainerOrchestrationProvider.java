@@ -1,8 +1,7 @@
 package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.servicedeployment.exceptions.*;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
 
 import java.util.List;
 
@@ -11,15 +10,39 @@ import java.util.List;
  */
 public interface ContainerOrchestrationProvider {
 
+    /**
+     * Provides basic information about currently used orchestration provider.
+     *
+     * @return information about the orchestration provider
+     */
     String info();
 
-    void deployNmService(NmServiceTemplate template, NmServiceSpec spec)
+    /**
+     * Checks if requested NM service deployment is possible taking into account available resources, currently
+     * running services and other constraints.
+     * Based on implemented optimisation strategy and current state of the system selects the target host (e.g. server)
+     * on which requested service should be deployed.
+     *
+     * @param serviceName service to be deployed
+     */
+    void verifyRequestAndSelectTarget(String serviceName)
             throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
-    void verifyService(String serviceName)
-            throws NmServiceStateException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+    /**
+     * Executes all initial configuration steps in order to enable further deployment of the service
+     *
+     * @param serviceName service to be deployed
+     */
+    void prepareDeploymentEnvironment(String serviceName)
+            throws CouldNotPrepareEnvironmentException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
-    void destroyNmService(String serviceName)
+    void deployNmService(String serviceName)
+            throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+
+    NmServiceState checkService(String serviceName)
+            throws NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+
+    void removeNmService(String serviceName)
             throws CouldNotDestroyNmServiceException, NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
     List<String> listServices()

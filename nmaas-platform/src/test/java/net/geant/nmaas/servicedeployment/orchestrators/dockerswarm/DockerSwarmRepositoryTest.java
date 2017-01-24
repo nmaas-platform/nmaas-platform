@@ -1,6 +1,7 @@
 package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
 
-import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.service.ServicesClient;
+import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmsRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,14 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerServicesTest {
+public class DockerSwarmRepositoryTest {
 
     @Autowired
-    private ServicesClient servicesClient;
+    private DockerSwarmsRepository swarms;
 
     @Test
-    public void shouldInjectManager() {
-        assertNotNull(servicesClient);
+    public void shouldLoadDefaultSwarmManager() throws DockerSwarmNotFoundException {
+        assertNotNull(swarms.loadPreferredDockerSwarmManager());
     }
 
 }

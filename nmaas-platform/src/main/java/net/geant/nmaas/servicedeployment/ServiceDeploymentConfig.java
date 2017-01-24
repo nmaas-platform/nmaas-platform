@@ -13,9 +13,4 @@ public class ServiceDeploymentConfig {
 	@Autowired
 	Environment env;
 
-	@Bean
-	public DockerClient dockerClient() {
-		return DefaultDockerClient.builder().uri(env.getProperty("docker.api")).build();
-	}
-
 }

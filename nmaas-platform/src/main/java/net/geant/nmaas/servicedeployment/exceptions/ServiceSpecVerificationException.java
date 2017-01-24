@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.service;
+package net.geant.nmaas.servicedeployment.exceptions;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

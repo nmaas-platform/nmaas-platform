@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
+package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.service;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -36,7 +36,7 @@ public class PortForwardingSpec {
         return publishedPort;
     }
 
-    private enum Protocol {
+    public enum Protocol {
         TCP("tcp"),
         UDP("udp");
 

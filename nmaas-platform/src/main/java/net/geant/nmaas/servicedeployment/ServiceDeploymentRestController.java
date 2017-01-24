@@ -17,7 +17,7 @@ import java.util.List;
 public class ServiceDeploymentRestController {
 
     @Autowired
-    @Qualifier("DockerSwarm")
+    @Qualifier("DockerEngine")
     private ContainerOrchestrationProvider orchestrator;
 
     @RequestMapping(value = "/api/services", method = RequestMethod.GET)

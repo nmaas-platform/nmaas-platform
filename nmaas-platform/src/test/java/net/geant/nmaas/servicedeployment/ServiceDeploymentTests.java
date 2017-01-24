@@ -1,6 +1,5 @@
 package net.geant.nmaas.servicedeployment;
 
-import net.geant.nmaas.servicedeployment.repository.NmServiceTemplateRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class ServiceDeploymentTests {
 
 	@Autowired
-	@Qualifier("DockerSwarm")
+	@Qualifier("DockerEngine")
 	private ContainerOrchestrationProvider orchestrator;
-
-	@Autowired
-	private NmServiceTemplateRepository templates;
 
 	@Test
 	public void shouldInjectDockerSwarm() {
 		assertThat(orchestrator, is(notNullValue()));
-		assertThat(orchestrator.info(), containsString("DockerSwarm"));
+		assertThat(orchestrator.info(), containsString("DockerEngine"));
 	}
 
 }
