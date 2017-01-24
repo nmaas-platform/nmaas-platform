@@ -1,18 +1,25 @@
 package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
 
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.service.PortForwardingSpec;
 
 import java.util.List;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class NmServiceDockerSwarmSpec implements NmServiceSpec {
+public class DockerSwarmServiceSpec implements NmServiceSpec {
 
     /**
      * System-defined name for the service.
      */
     private String name;
+
+    /**
+     * Service template
+     */
+    private DockerSwarmNmServiceTemplate template;
 
     /**
      * The command to be run in the image
@@ -34,12 +41,13 @@ public class NmServiceDockerSwarmSpec implements NmServiceSpec {
      */
     private List<PortForwardingSpec> ports;
 
-    public NmServiceDockerSwarmSpec(String name) {
+    public DockerSwarmServiceSpec(String name, DockerSwarmNmServiceTemplate template) {
         this.name = name;
+        this.template = template;
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return name;
     }
 
@@ -48,6 +56,21 @@ public class NmServiceDockerSwarmSpec implements NmServiceSpec {
         if (name == null || name.isEmpty())
             return false;
         return true;
+    }
+
+    @Override
+    public String uniqueDeploymentName() {
+        // TODO should be replaced with something more sophisticated
+        return name;
+    }
+
+    @Override
+    public NmServiceTemplate template() {
+        return null;
+    }
+
+    public DockerSwarmNmServiceTemplate getTemplate() {
+        return template;
     }
 
     public String getCommand() {

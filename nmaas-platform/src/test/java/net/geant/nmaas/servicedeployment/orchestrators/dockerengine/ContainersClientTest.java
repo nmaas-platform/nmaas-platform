@@ -1,6 +1,6 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
+package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
 
-import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.service.ServicesClient;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.DockerContainerClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +14,14 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerServicesTest {
+public class ContainersClientTest {
 
     @Autowired
-    private ServicesClient servicesClient;
+    private DockerContainerClient containerClient;
 
     @Test
     public void shouldInjectManager() {
-        assertNotNull(servicesClient);
+        assertNotNull(containerClient);
     }
 
 }

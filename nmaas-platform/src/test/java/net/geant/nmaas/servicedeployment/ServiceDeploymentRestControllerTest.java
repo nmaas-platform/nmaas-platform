@@ -1,6 +1,5 @@
 package net.geant.nmaas.servicedeployment;
 
-import net.geant.nmaas.servicedeployment.ServiceDeploymentConfig;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

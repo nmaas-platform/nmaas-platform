@@ -1,8 +1,9 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
+package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
+
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
 
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.service.PortForwardingSpec;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.PortForwardingSpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
+public class DockerEngineContainerTemplate implements NmServiceTemplate {
 
     /**
      * Name identifying this template (should be related with the name of the NM service/tool)
@@ -23,11 +24,6 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
      * A string specifying the image name to use for the container
      */
     private String image;
-
-    /**
-     * The number of isntances of given service run in the swarm
-     */
-    private Long replicas = 1L;
 
     /**
      * The command to be run in the image
@@ -59,7 +55,7 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
      */
     private Boolean envVariablesInSpecRequired = false;
 
-    public DockerSwarmNmServiceTemplate(String name, String image) {
+    public DockerEngineContainerTemplate(String name, String image) {
         this.name = name;
         this.image = image;
     }
@@ -73,12 +69,10 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
 
     @Override
     public Boolean verifyNmServiceSpec(NmServiceSpec spec) {
-        if (spec == null || DockerSwarmServiceSpec.class != spec.getClass())
+        if (spec == null || DockerContainerSpec.class != spec.getClass())
             return false;
-        DockerSwarmServiceSpec dockerSpec = (DockerSwarmServiceSpec) spec;
+        DockerContainerSpec dockerSpec = (DockerContainerSpec) spec;
         if (!dockerSpec.verify())
-            return false;
-        if (commandInSpecRequired && isEmpty(dockerSpec.getCommand()))
             return false;
         if (portsInSpecRequired && isEmpty(dockerSpec.getPorts().toArray()))
             return false;
@@ -96,10 +90,6 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
         return image;
     }
 
-    public Long getReplicas() {
-        return replicas;
-    }
-
     public String getCommand() {
         return command;
     }
@@ -110,10 +100,6 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
 
     public List<String> getEnv() {
         return env;
-    }
-
-    public void setReplicas(Long replicas) {
-        this.replicas = replicas;
     }
 
     public void setCommand(String command) {
