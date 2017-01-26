@@ -2,8 +2,6 @@ package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.servicedeployment.exceptions.*;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.DockerSwarmServiceSpec;
 import net.geant.nmaas.servicedeployment.repository.NmServiceRepository;
@@ -11,6 +9,7 @@ import net.geant.nmaas.servicedeployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +38,17 @@ public class DockerSwarmServiceIntTest {
 	@Before
 	public void setup(){
 		Long serviceIdentifier = System.nanoTime();
-		DockerSwarmServiceSpec spec = new DockerSwarmServiceSpec(serviceName, (DockerSwarmNmServiceTemplate) templates.loadTemplate("tomcat-on-swarm-alpine"));
+		final DockerSwarmNmServiceTemplate template = (DockerSwarmNmServiceTemplate) templates.loadTemplate("tomcat-on-swarm-alpine");
+		final DockerSwarmServiceSpec spec = new DockerSwarmServiceSpec(serviceName, template);
 		NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
 		nmServicesRepository.storeService(service);
 	}
 
+	/**
+	 * This test verifies correct communication with Docker Swarm manager and basic workflow execution.
+	 * It needs to be @Ignored since it assumes that a remote manager is running.
+	 */
+	@Ignore
 	@Test
 	public void shouldDeployNewService()
 			throws OrchestratorInternalErrorException, CouldNotDeployNmServiceException, CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, NmServiceNotFoundException, UnknownInternalException, InterruptedException, NmServiceRepository.ServiceNotFoundException {

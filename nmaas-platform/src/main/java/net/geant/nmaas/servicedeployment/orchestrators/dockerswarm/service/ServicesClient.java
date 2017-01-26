@@ -11,7 +11,6 @@ import net.geant.nmaas.servicedeployment.exceptions.CouldNotConnectToOrchestrato
 import net.geant.nmaas.servicedeployment.exceptions.CouldNotDeployNmServiceException;
 import net.geant.nmaas.servicedeployment.exceptions.CouldNotDestroyNmServiceException;
 import net.geant.nmaas.servicedeployment.exceptions.UnknownInternalException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

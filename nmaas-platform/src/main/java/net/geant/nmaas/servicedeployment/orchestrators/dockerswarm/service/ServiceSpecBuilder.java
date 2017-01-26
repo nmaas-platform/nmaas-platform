@@ -14,8 +14,7 @@ import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.DockerSwarmSe
  */
 public class ServiceSpecBuilder {
 
-    public static ServiceSpec build(NmServiceSpec spec)
-            throws ServiceSpecVerificationException {
+    public static ServiceSpec build(NmServiceSpec spec) throws ServiceSpecVerificationException {
         verifyInput(spec.template(), spec);
         DockerSwarmNmServiceTemplate dockerTemplate = (DockerSwarmNmServiceTemplate) spec.template();
         DockerSwarmServiceSpec dockerSpec = (DockerSwarmServiceSpec) spec;
@@ -30,8 +29,7 @@ public class ServiceSpecBuilder {
     }
 
     public static void verifyInput(NmServiceTemplate template, NmServiceSpec spec) throws ServiceSpecVerificationException {
-        if (DockerSwarmNmServiceTemplate.class != template.getClass()
-                || DockerSwarmServiceSpec.class != spec.getClass())
+        if (DockerSwarmNmServiceTemplate.class != template.getClass() || DockerSwarmServiceSpec.class != spec.getClass())
             throw new ServiceSpecVerificationException("Service template and/or spec not in DockerSwarm format");
         if(!template.verify())
             throw new ServiceSpecVerificationException("Service template incorrect");

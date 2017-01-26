@@ -17,6 +17,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
+ * The DockerSwarmManager class is the main entry point to Docker Swarm orchestrator implementation.
+ *
+ * Implementation of Docker Swarm support was dropped and therefore it is not yet fully functional.
+ * Some of the methods remained not implemented.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service("DockerSwarm")
