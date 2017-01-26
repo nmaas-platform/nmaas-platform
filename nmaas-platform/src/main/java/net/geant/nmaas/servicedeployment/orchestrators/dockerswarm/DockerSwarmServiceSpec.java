@@ -66,10 +66,6 @@ public class DockerSwarmServiceSpec implements NmServiceSpec {
 
     @Override
     public NmServiceTemplate template() {
-        return null;
-    }
-
-    public DockerSwarmNmServiceTemplate getTemplate() {
         return template;
     }
 

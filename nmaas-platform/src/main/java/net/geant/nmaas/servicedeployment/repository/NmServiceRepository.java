@@ -4,6 +4,7 @@ import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
+@Singleton
 public class NmServiceRepository {
 
     private Map<String, NmServiceInfo> services = new HashMap<>();
