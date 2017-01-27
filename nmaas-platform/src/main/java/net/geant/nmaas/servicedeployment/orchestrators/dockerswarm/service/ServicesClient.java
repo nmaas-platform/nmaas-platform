@@ -7,10 +7,7 @@ import com.spotify.docker.client.exceptions.DockerTimeoutException;
 import com.spotify.docker.client.messages.ServiceCreateResponse;
 import com.spotify.docker.client.messages.swarm.ServiceSpec;
 import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmManager;
-import net.geant.nmaas.servicedeployment.exceptions.CouldNotConnectToOrchestratorException;
-import net.geant.nmaas.servicedeployment.exceptions.CouldNotDeployNmServiceException;
-import net.geant.nmaas.servicedeployment.exceptions.CouldNotDestroyNmServiceException;
-import net.geant.nmaas.servicedeployment.exceptions.UnknownInternalException;
+import net.geant.nmaas.servicedeployment.exceptions.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -66,17 +63,16 @@ public class ServicesClient {
         apiClient.close();
     }
 
-    public List<String> listServices(DockerSwarmManager swarmManager) {
+    public List<String> listServices(DockerSwarmManager swarmManager) throws OrchestratorInternalErrorException, UnknownInternalException {
         DockerClient apiClient = null;
         try {
             apiClient = DefaultDockerClient.builder().uri(swarmManager.getApiUri()).build();
-            final List<com.spotify.docker.client.messages.swarm.Service> services;
-            services = apiClient.listServices();
+            final List<com.spotify.docker.client.messages.swarm.Service> services = apiClient.listServices();
             return services.stream().map(s -> s.spec().name()).collect(Collectors.toList());
-        } catch (DockerException | InterruptedException e ) {
-            e.printStackTrace();
-            //throw new NotFoundException("Failed to retrieve services");
-            return null;
+        } catch (DockerException dockerException) {
+            throw new OrchestratorInternalErrorException("Could not connect to Docker Swarm -> " + dockerException.getMessage(), dockerException);
+        } catch (InterruptedException interruptedException) {
+            throw new UnknownInternalException("Internal error -> " + interruptedException.getMessage(), interruptedException);
         } finally {
             if (apiClient != null) apiClient.close();
         }

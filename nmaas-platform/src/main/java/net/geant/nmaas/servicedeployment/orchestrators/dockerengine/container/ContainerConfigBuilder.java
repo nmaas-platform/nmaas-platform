@@ -3,7 +3,9 @@ package net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.servicedeployment.exceptions.ServiceSpecVerificationException;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerEngineContainerTemplate;
@@ -18,23 +20,57 @@ import java.util.Map;
  */
 public class ContainerConfigBuilder {
 
-    public static ContainerConfig build(NmServiceSpec spec) {
-        DockerEngineContainerTemplate dockerTemplate = (DockerEngineContainerTemplate) spec.template();
-        DockerContainerSpec dockerSpec = (DockerContainerSpec) spec;
-        ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
-        containerBuilder.image(dockerTemplate.getImage());
-        containerBuilder.cmd(dockerTemplate.getCommand());
-        containerBuilder.env(dockerTemplate.getEnv());
-
-        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        for (PortForwardingSpec port : dockerTemplate.getPorts()) {
-            List<PortBinding> hostPorts = new ArrayList<>();
-            hostPorts.add(PortBinding.of("0.0.0.0", port.getPublishedPort()));
-            portBindings.put(port.getTargetPort() + "/" + port.getProtocol().name(), hostPorts);
-        }
-
-        containerBuilder.hostConfig(HostConfig.builder().portBindings(portBindings).build());
+    public static ContainerConfig build(NmServiceSpec spec, NmServiceDeploymentHost host) {
+        final DockerContainerSpec containerSpec = (DockerContainerSpec) spec;
+        final DockerHost containerHost = (DockerHost) host;
+        final ContainerConfigInput combinedSpec = ContainerConfigInput.fromSpec(containerSpec);
+        final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
+        containerBuilder.image(combinedSpec.getImage());
+        if (combinedSpec.getCommand() != null)
+            containerBuilder.cmd(combinedSpec.getCommand());
+        containerBuilder.env(combinedSpec.getEnv());
+        final HostConfig.Builder hostBuilder = HostConfig.builder();
+        hostBuilder.portBindings(preparePortBindings(
+                combinedSpec.getExposedPorts(),
+                containerHost.getPublicIpAddress().toString(),
+                containerHost.getAvailablePorts(combinedSpec.getExposedPorts().size())));
+        final List<String> volumeBinds = prepareVolumeBindings(
+                combinedSpec.getContainerVolumes(),
+                containerHost.getVolumesPath(),
+                containerSpec.uniqueDeploymentName());
+        hostBuilder.appendBinds(volumeBinds);
+        containerBuilder.hostConfig(HostConfig.builder().build());
         return containerBuilder.build();
+    }
+
+    private static Map<String, List<PortBinding>> preparePortBindings(List<ContainerPortForwardingSpec> containerPorts, String hostPublicIpAddress, List<Integer> availableHostPorts)  {
+        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+        int counter = 0;
+        for (ContainerPortForwardingSpec port : containerPorts) {
+            List<PortBinding> hostPorts = new ArrayList<>();
+            hostPorts.add(PortBinding.of(hostPublicIpAddress, availableHostPorts.get(counter)));
+            portBindings.put(port.getTargetPort() + "/" + port.getProtocol().getValue(), hostPorts); // TODO check if protocol is null ...
+            counter++;
+        }
+        return portBindings;
+    }
+
+    private static List<String> prepareVolumeBindings(List<String> containerVolumes, String hostVolumesPath, String hostVolumeBaseName) {
+        final List<String> volumeBinds = new ArrayList<>();
+        int counter = 1;
+        for (String containerVolume : containerVolumes) {
+            volumeBinds.add(HostConfig.Bind
+                    .from(generateNewHostVolume(hostVolumesPath, hostVolumeBaseName, counter))
+                    .to(containerVolume).build().toString());
+            counter++;
+        }
+        return volumeBinds;
+    }
+
+    private static String generateNewHostVolume(String hostVolumesPath, String hostVolumeName, int counter) {
+        StringBuilder sb = new StringBuilder(hostVolumesPath);
+        sb.append("/").append(hostVolumeName).append("-").append(counter);
+        return sb.toString();
     }
 
     public static void verifyInput(NmServiceSpec spec) throws ServiceSpecVerificationException {

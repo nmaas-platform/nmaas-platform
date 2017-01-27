@@ -30,7 +30,7 @@ public class ServiceDeploymentCoordinator {
                 | CouldNotDeployNmServiceException
                 | CouldNotConnectToOrchestratorException
                 | OrchestratorInternalErrorException
-                | NmServiceNotFoundException exception) {
+                | CouldNotCheckNmServiceStateException exception) {
             try {
                 serviceRepository.updateServiceState(serviceSpec.name(), NmServiceInfo.ServiceState.ERROR);
             } catch (NmServiceRepository.ServiceNotFoundException e) {
@@ -42,6 +42,5 @@ public class ServiceDeploymentCoordinator {
     public void removeNmService(String serviceName) {
 
     }
-
 
 }

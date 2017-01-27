@@ -2,11 +2,12 @@ package net.geant.nmaas.servicedeployment.repository;
 
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.ContainerPortForwardingSpec;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.PortForwardingSpec;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Singleton;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,18 +24,26 @@ public class NmServiceTemplateRepository {
 
     {
         DockerEngineContainerTemplate tomcatTemplate = new DockerEngineContainerTemplate("tomcat-alpine", "tomcat:alpine");
-        templates.put("tomcat-alpine", tomcatTemplate);
+        templates.put(tomcatTemplate.getName(), tomcatTemplate);
 
         DockerEngineContainerTemplate oxidizedTemplate = new DockerEngineContainerTemplate("oxidized", "oxidized/oxidized:latest");
         oxidizedTemplate.setCommandInSpecRequired(false);
         oxidizedTemplate.setEnv(asList("CONFIG_RELOAD_INTERVAL: 600"));
         oxidizedTemplate.setEnvVariablesInSpecRequired(false);
-        oxidizedTemplate.setPorts(asList(new PortForwardingSpec("ui", PortForwardingSpec.Protocol.TCP, 8888, 8888)));
-        oxidizedTemplate.setPortsInSpecRequired(false);
-        templates.put("oxidized", oxidizedTemplate);
+        oxidizedTemplate.setExposedPorts(asList(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 8888)));
+        templates.put(oxidizedTemplate.getName(), oxidizedTemplate);
 
-        DockerSwarmNmServiceTemplate tomcatOnSwarmTemplate = new DockerSwarmNmServiceTemplate("tomcat-alpine", "tomcat:alpine");
-        templates.put("tomcat-on-swarm-alpine", tomcatOnSwarmTemplate);
+        DockerEngineContainerTemplate pmacctGrafanaTemplate = new DockerEngineContainerTemplate("pmacct-grafana", "llopat/pmacct");
+        pmacctGrafanaTemplate.setExposedPorts(asList(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 3000)));
+        pmacctGrafanaTemplate.setCommandInSpecRequired(false);
+        pmacctGrafanaTemplate.setEnvVariablesInSpecRequired(false);
+        pmacctGrafanaTemplate.setContainerVolumes(asList("/data"));
+        templates.put(pmacctGrafanaTemplate.getName(), pmacctGrafanaTemplate);
+
+       // docker create --name check-vlan--pmacct-1 -p 5001:3000 -v /home/mgmt/docker/data-pmacct-1:/data llopat/pmacct "$@"
+
+        DockerSwarmNmServiceTemplate tomcatOnSwarmTemplate = new DockerSwarmNmServiceTemplate("tomcat-on-swarm-alpine", "tomcat:alpine");
+        templates.put(tomcatOnSwarmTemplate.getName(), tomcatOnSwarmTemplate);
     }
 
     public synchronized NmServiceTemplate loadTemplate(String name) {

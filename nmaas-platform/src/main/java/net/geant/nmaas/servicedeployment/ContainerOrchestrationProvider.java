@@ -1,6 +1,7 @@
 package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.servicedeployment.exceptions.*;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
 
 import java.util.List;
@@ -39,12 +40,10 @@ public interface ContainerOrchestrationProvider {
     void deployNmService(String serviceName)
             throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
-    NmServiceState checkService(String serviceName)
-            throws NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+    NmServiceState checkService(String serviceName) throws CouldNotCheckNmServiceStateException, OrchestratorInternalErrorException;
 
-    void removeNmService(String serviceName)
-            throws CouldNotDestroyNmServiceException, NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+    void removeNmService(String serviceName) throws CouldNotDestroyNmServiceException, OrchestratorInternalErrorException;
 
-    List<String> listServices()
-            throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+    List<String> listServices(NmServiceDeploymentHost host)
+            throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException, UnknownInternalException;
 }
