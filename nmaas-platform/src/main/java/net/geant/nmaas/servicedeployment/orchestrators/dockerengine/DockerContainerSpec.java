@@ -1,7 +1,5 @@
 package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.ContainerPortForwardingSpec;
@@ -36,6 +34,11 @@ public class DockerContainerSpec implements NmServiceSpec {
      * Name of the organization of the client requesting the service (e.g. company abbreviated name)
      */
     private String clientOrganizationName;
+
+    /**
+     * The command to be run in the image
+     */
+    private String command;
 
     /**
      * A list of environment variables in the form of ["VAR=value"]
@@ -74,7 +77,7 @@ public class DockerContainerSpec implements NmServiceSpec {
     @Override
     public String uniqueDeploymentName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append("-").append(clientOrganizationName).append("-").append(clientName).append("-").append(id);
+        sb.append(clientOrganizationName).append("-").append(clientName).append("-").append(name).append("-").append(id);
         return sb.toString();
     }
 
@@ -98,6 +101,14 @@ public class DockerContainerSpec implements NmServiceSpec {
 
     public String getClientOrganizationName() {
         return clientOrganizationName;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     public List<String> getEnvironmentVariables() {

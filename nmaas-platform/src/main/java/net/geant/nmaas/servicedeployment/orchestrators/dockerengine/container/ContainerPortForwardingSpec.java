@@ -13,11 +13,10 @@ public class ContainerPortForwardingSpec {
 
     private Integer publishedPort;
 
-    public ContainerPortForwardingSpec(String name, Protocol protocol, Integer targetPort, Integer publishedPort) {
+    public ContainerPortForwardingSpec(String name, Protocol protocol, Integer targetPort) {
         this.name = name;
         this.protocol = protocol;
         this.targetPort = targetPort;
-        this.publishedPort = publishedPort;
     }
 
     public String getName() {
@@ -32,11 +31,15 @@ public class ContainerPortForwardingSpec {
         return targetPort;
     }
 
+    public void setPublishedPort(Integer publishedPort) {
+        this.publishedPort = publishedPort;
+    }
+
     public Integer getPublishedPort() {
         return publishedPort;
     }
 
-    private enum Protocol {
+    public enum Protocol {
         TCP("tcp"),
         UDP("udp");
 

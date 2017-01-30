@@ -1,9 +1,8 @@
 package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
 
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
-
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.PortForwardingSpec;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceTemplate;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.ContainerPortForwardingSpec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,24 +35,26 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
     private Boolean commandInSpecRequired = false;
 
     /**
-     * List of exposed ports that this service is accessible on from the outside
+     * List of exposed ports that this service is accessible on from the outside.
+     * During container configuration for each port on the list a published port needs to be assigned.
      */
-    private List<PortForwardingSpec> ports = new ArrayList<>();
-
-    /**
-     * Field indicating if additional ports must be provided in service specification
-     */
-    private Boolean portsInSpecRequired = false;
+    private List<ContainerPortForwardingSpec> exposedPorts = new ArrayList<>();
 
     /**
      * A list of environment variables in the form of ["VAR=value"]
      */
-    private List<String> env;
+    private List<String> env = new ArrayList<>();
 
     /**
      * Field indicating if additional environment variables must be provided in service specification
      */
     private Boolean envVariablesInSpecRequired = false;
+
+    /**
+     * This field represents all the directories on the container for which remote containerVolumes need to be mounted.
+     * During container configuration for each listed volume a directory on the Docker Host needs to be assigned.
+     */
+    private List<String> containerVolumes = new ArrayList<>();
 
     public DockerEngineContainerTemplate(String name, String image) {
         this.name = name;
@@ -74,8 +75,6 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         DockerContainerSpec dockerSpec = (DockerContainerSpec) spec;
         if (!dockerSpec.verify())
             return false;
-        if (portsInSpecRequired && isEmpty(dockerSpec.getPorts().toArray()))
-            return false;
         if (envVariablesInSpecRequired && isEmpty(dockerSpec.getEnvironmentVariables().toArray()))
             return false;
         return true;
@@ -94,12 +93,20 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         return command;
     }
 
-    public List<PortForwardingSpec> getPorts() {
-        return ports;
-    }
-
     public List<String> getEnv() {
         return env;
+    }
+
+    public Boolean getCommandInSpecRequired() {
+        return commandInSpecRequired;
+    }
+
+    public Boolean getEnvVariablesInSpecRequired() {
+        return envVariablesInSpecRequired;
+    }
+
+    public List<ContainerPortForwardingSpec> getExposedPorts() {
+        return exposedPorts;
     }
 
     public void setCommand(String command) {
@@ -110,19 +117,23 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         this.commandInSpecRequired = commandInSpecRequired;
     }
 
-    public void setPorts(List<PortForwardingSpec> ports) {
-        this.ports = ports;
-    }
-
-    public void setPortsInSpecRequired(Boolean portsInSpecRequired) {
-        this.portsInSpecRequired = portsInSpecRequired;
-    }
-
     public void setEnv(List<String> env) {
         this.env = env;
     }
 
     public void setEnvVariablesInSpecRequired(Boolean envVariablesInSpecRequired) {
         this.envVariablesInSpecRequired = envVariablesInSpecRequired;
+    }
+
+    public List<String> getContainerVolumes() {
+        return containerVolumes;
+    }
+
+    public void setContainerVolumes(List<String> containerVolumes) {
+        this.containerVolumes = containerVolumes;
+    }
+
+    public void setExposedPorts(List<ContainerPortForwardingSpec> exposedPorts) {
+        this.exposedPorts = exposedPorts;
     }
 }

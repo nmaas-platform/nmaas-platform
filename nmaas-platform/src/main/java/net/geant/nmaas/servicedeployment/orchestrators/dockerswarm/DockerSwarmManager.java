@@ -5,6 +5,7 @@ import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmNotFoun
 import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmsRepository;
 import net.geant.nmaas.servicedeployment.ContainerOrchestrationProvider;
 import net.geant.nmaas.servicedeployment.exceptions.*;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
@@ -71,7 +72,7 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     }
 
     @Override
-    public void removeNmService(String serviceName) throws CouldNotDestroyNmServiceException, OrchestratorInternalErrorException, CouldNotConnectToOrchestratorException {
+    public void removeNmService(String serviceName) throws CouldNotDestroyNmServiceException, OrchestratorInternalErrorException {
         try {
             String serviceId = nmServices.getServiceId(serviceName);
             servicesManager.destroyService(serviceId, dockerSwarms.loadPreferredDockerSwarmManager());
@@ -83,6 +84,8 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
             throw new OrchestratorInternalErrorException("Could not destroy service -> " + dockerSwarmNotFoundException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new OrchestratorInternalErrorException("Could not destroy service -> " + serviceNotFoundException.getMessage());
+        } catch (CouldNotConnectToOrchestratorException couldNotConnectToOrchestratorException) {
+            throw new CouldNotDestroyNmServiceException("Could not destroy service -> " + couldNotConnectToOrchestratorException.getMessage());
         }
     }
 
@@ -92,12 +95,8 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     }
 
     @Override
-    public List<String> listServices() throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException {
-        try {
-            return servicesManager.listServices(dockerSwarms.loadPreferredDockerSwarmManager());
-        } catch (DockerSwarmNotFoundException dockerSwarmNotFoundException) {
-            throw new OrchestratorInternalErrorException("Could not destroy service -> " + dockerSwarmNotFoundException.getMessage());
-        }
+    public List<String> listServices(NmServiceDeploymentHost host) throws UnknownInternalException, OrchestratorInternalErrorException {
+        return servicesManager.listServices((net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmManager) host);
     }
 
     @Override

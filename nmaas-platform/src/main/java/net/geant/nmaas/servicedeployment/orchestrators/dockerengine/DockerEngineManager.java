@@ -6,6 +6,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFound
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostsRepository;
 import net.geant.nmaas.servicedeployment.ContainerOrchestrationProvider;
 import net.geant.nmaas.servicedeployment.exceptions.*;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.ContainerConfigBuilder;
@@ -41,9 +42,9 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         } catch (DockerHostNotFoundException e) {
             throw new CouldNotDeployNmServiceException("Did not find any suitable Docker host for deployment.");
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotDeployNmServiceException("Service not found in repository -> " + serviceNotFoundException.getCause().getMessage());
+            throw new CouldNotDeployNmServiceException("Service not found in repository -> " + serviceNotFoundException.getMessage());
         } catch (ServiceSpecVerificationException serviceSpecVerificationException) {
-            throw new CouldNotDeployNmServiceException("Service spec verification failed -> " + serviceSpecVerificationException.getCause().getMessage());
+            throw new CouldNotDeployNmServiceException("Service spec verification failed -> " + serviceSpecVerificationException.getMessage());
         }
     }
 
@@ -56,7 +57,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             dockerContainerClient.pullImage(imageName, (DockerHost) service.getHost());
             nmServices.updateServiceState(serviceName, NmServiceInfo.ServiceState.READY);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotPrepareEnvironmentException("Service not found in repository -> " + serviceNotFoundException.getCause().getMessage());
+            throw new CouldNotPrepareEnvironmentException("Service not found in repository -> " + serviceNotFoundException.getMessage());
         } catch (UnknownInternalException e) {
             e.printStackTrace();
         } catch (CouldNotDestroyNmServiceException e) {
@@ -70,7 +71,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         try {
             final NmServiceInfo service = nmServices.loadService(serviceName);
             final DockerContainerSpec spec = (DockerContainerSpec) service.getSpec();
-            final ContainerConfig config = ContainerConfigBuilder.build(service.getSpec());
+            final ContainerConfig config = ContainerConfigBuilder.build(service.getSpec(), service.getHost());
             String containerId = dockerContainerClient.deploy(config, spec.uniqueDeploymentName(), (DockerHost) service.getHost());
             nmServices.updateServiceId(serviceName, containerId);
             nmServices.updateServiceState(serviceName, NmServiceInfo.ServiceState.RUNNING);
@@ -79,25 +80,46 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         } catch (UnknownInternalException unknownInternalException) {
             throw new OrchestratorInternalErrorException("Could not deploy service -> " + unknownInternalException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotDeployNmServiceException("Service not found in repository -> " + serviceNotFoundException.getCause().getMessage());
+            throw new CouldNotDeployNmServiceException("Service not found in repository -> " + serviceNotFoundException.getMessage());
         }
     }
 
     @Override
-    public NmServiceState checkService(String serviceName)
-            throws NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException {
-        throw new OrchestratorInternalErrorException("Method not implemented");
+    public NmServiceState checkService(String serviceName) throws CouldNotCheckNmServiceStateException, OrchestratorInternalErrorException {
+        try {
+            final NmServiceInfo service = nmServices.loadService(serviceName);
+            return dockerContainerClient.checkService(service.getDeploymentId(), (DockerHost) service.getHost());
+        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
+            throw new CouldNotCheckNmServiceStateException("Service not found in repository -> " + serviceNotFoundException.getMessage());
+        }  catch (ContainerNotFoundException containerNotFoundException) {
+            throw new CouldNotCheckNmServiceStateException("Container not found on the deployment host -> " + containerNotFoundException.getMessage());
+        } catch (OrchestratorInternalErrorException orchestratorInternalErrorException) {
+            throw new OrchestratorInternalErrorException("Could not check service state -> " + orchestratorInternalErrorException.getMessage());
+        } catch (UnknownInternalException unknownInternalException) {
+            throw new OrchestratorInternalErrorException("Could not check service state -> " + unknownInternalException.getMessage());
+        }
     }
 
     @Override
-    public void removeNmService(String serviceName)
-            throws CouldNotDestroyNmServiceException, NmServiceNotFoundException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException {
-
+    public void removeNmService(String serviceName) throws CouldNotDestroyNmServiceException, OrchestratorInternalErrorException {
+        try {
+            final NmServiceInfo service = nmServices.loadService(serviceName);
+            dockerContainerClient.remove(service.getDeploymentId(), (DockerHost) service.getHost());
+            nmServices.updateServiceState(serviceName, NmServiceInfo.ServiceState.STOPPED);
+        } catch (UnknownInternalException e) {
+            e.printStackTrace();
+        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
+            throw new CouldNotDestroyNmServiceException("Service not found in repository -> " + serviceNotFoundException.getMessage());
+        } catch (CouldNotDestroyNmServiceException couldNotDestroyNmServiceException) {
+            throw new CouldNotDestroyNmServiceException("Could not destroy service -> " + couldNotDestroyNmServiceException.getMessage());
+        } catch (CouldNotConnectToOrchestratorException unknownInternalException) {
+            throw new OrchestratorInternalErrorException("Could not destroy service -> " + unknownInternalException.getMessage());
+        }
     }
 
     @Override
-    public List<String> listServices() throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException {
-        return null;
+    public List<String> listServices(NmServiceDeploymentHost host) throws UnknownInternalException, OrchestratorInternalErrorException {
+        return dockerContainerClient.containers((DockerHost) host);
     }
 
     @Override

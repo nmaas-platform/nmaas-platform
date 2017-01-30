@@ -54,11 +54,11 @@ public class DockerSwarmServiceIntTest {
 			throws OrchestratorInternalErrorException, CouldNotDeployNmServiceException, CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, NmServiceNotFoundException, UnknownInternalException, InterruptedException, NmServiceRepository.ServiceNotFoundException {
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(5000);
-		assertThat(orchestrator.listServices(),
+		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
 				Matchers.hasItem(nmServicesRepository.loadService(serviceName).getSpec().uniqueDeploymentName()));
 		orchestrator.removeNmService(serviceName);
 		Thread.sleep(2000);
-		assertThat(orchestrator.listServices(),
+		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
 				Matchers.not(nmServicesRepository.loadService(serviceName).getSpec().uniqueDeploymentName()));
 	}
 
@@ -67,11 +67,8 @@ public class DockerSwarmServiceIntTest {
 		System.out.println("Cleaning up ... removing services.");
 		try {
 			orchestrator.removeNmService(serviceName);
-		} catch (CouldNotDestroyNmServiceException
-				| NmServiceNotFoundException
-				| CouldNotConnectToOrchestratorException
-				| OrchestratorInternalErrorException e) {
-			System.out.println(e.getMessage());
+		} catch (CouldNotDestroyNmServiceException | OrchestratorInternalErrorException e) {
+			// service was already removed
 		}
 	}
 
