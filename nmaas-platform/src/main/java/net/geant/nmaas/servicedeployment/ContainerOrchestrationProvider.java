@@ -23,14 +23,16 @@ public interface ContainerOrchestrationProvider {
      * running services and other constraints.
      * Based on implemented optimisation strategy and current state of the system selects the target host (e.g. server)
      * on which requested service should be deployed.
+     * It also obtains the target host network configuration details.
      *
      * @param serviceName service to be deployed
      */
-    void verifyRequestAndSelectTarget(String serviceName)
-            throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
+    void verifyRequestObtainTargetAndNetworkDetails(String serviceName)
+            throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
     /**
-     * Executes all initial configuration steps in order to enable further deployment of the service
+     * Executes all initial configuration steps in order to enable further deployment of the service. This step includes
+     * dedicated network configuration on the host.
      *
      * @param serviceName service to be deployed
      */
@@ -40,10 +42,12 @@ public interface ContainerOrchestrationProvider {
     void deployNmService(String serviceName)
             throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 
-    NmServiceState checkService(String serviceName) throws CouldNotCheckNmServiceStateException, OrchestratorInternalErrorException;
+    NmServiceState checkService(String serviceName)
+            throws CouldNotCheckNmServiceStateException, OrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;
 
-    void removeNmService(String serviceName) throws CouldNotDestroyNmServiceException, OrchestratorInternalErrorException;
+    void removeNmService(String serviceName)
+            throws CouldNotDestroyNmServiceException, OrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;
 
     List<String> listServices(NmServiceDeploymentHost host)
-            throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException, UnknownInternalException;
+            throws CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException;
 }

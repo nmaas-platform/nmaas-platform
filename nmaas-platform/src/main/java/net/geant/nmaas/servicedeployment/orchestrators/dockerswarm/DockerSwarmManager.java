@@ -38,14 +38,14 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     private DockerSwarmsRepository dockerSwarms;
 
     @Override
-    public void verifyRequestAndSelectTarget(String serviceName)
-            throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException {
+    public void verifyRequestObtainTargetAndNetworkDetails(String serviceName)
+            throws OrchestratorInternalErrorException {
         throw new OrchestratorInternalErrorException("DockerSwarm orchestrator is not currently supported");
     }
 
     @Override
     public void prepareDeploymentEnvironment(String serviceName)
-            throws CouldNotPrepareEnvironmentException, CouldNotConnectToOrchestratorException, OrchestratorInternalErrorException {
+            throws OrchestratorInternalErrorException {
         throw new OrchestratorInternalErrorException("Method not implemented");
     }
 
@@ -58,12 +58,10 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
             String serviceId = servicesManager.deployService(dockerSpec, dockerSwarms.loadPreferredDockerSwarmManager());
             nmServices.updateServiceId(serviceName, serviceId);
             nmServices.updateServiceState(serviceName, NmServiceInfo.ServiceState.DEPLOYED);
-        } catch (ServiceSpecVerificationException serviceSpecVerificationException) {
+        } catch (ServiceVerificationException serviceSpecVerificationException) {
             throw new CouldNotDeployNmServiceException("Could not deploy service -> " + serviceSpecVerificationException.getMessage());
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
             throw new CouldNotDeployNmServiceException("Could not deploy service -> " + couldNotDeployNmServiceException.getMessage());
-        } catch (UnknownInternalException unknownInternalException) {
-            throw new OrchestratorInternalErrorException("Could not deploy service -> " + unknownInternalException.getMessage());
         } catch (DockerSwarmNotFoundException dockerSwarmNotFoundException) {
             throw new OrchestratorInternalErrorException("Could not deploy service -> " + dockerSwarmNotFoundException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
@@ -78,8 +76,6 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
             servicesManager.destroyService(serviceId, dockerSwarms.loadPreferredDockerSwarmManager());
         } catch (CouldNotDestroyNmServiceException couldNotDestroyNmServiceException) {
             throw new CouldNotDestroyNmServiceException("Could not destroy service -> " + couldNotDestroyNmServiceException.getMessage());
-        } catch (UnknownInternalException unknownInternalException) {
-            throw new OrchestratorInternalErrorException("Could not destroy service -> " + unknownInternalException.getMessage());
         } catch (DockerSwarmNotFoundException dockerSwarmNotFoundException) {
             throw new OrchestratorInternalErrorException("Could not destroy service -> " + dockerSwarmNotFoundException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
@@ -95,7 +91,7 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     }
 
     @Override
-    public List<String> listServices(NmServiceDeploymentHost host) throws UnknownInternalException, OrchestratorInternalErrorException {
+    public List<String> listServices(NmServiceDeploymentHost host) throws OrchestratorInternalErrorException {
         return servicesManager.listServices((net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmManager) host);
     }
 

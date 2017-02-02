@@ -4,7 +4,6 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFound
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostsRepository;
 import net.geant.nmaas.servicedeployment.exceptions.CouldNotConnectToOrchestratorException;
 import net.geant.nmaas.servicedeployment.exceptions.OrchestratorInternalErrorException;
-import net.geant.nmaas.servicedeployment.exceptions.UnknownInternalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -27,19 +26,13 @@ public class ServiceDeploymentRestController {
     private DockerHostsRepository dockerHostsRepository;
 
     @RequestMapping(value = "/api/services", method = RequestMethod.GET)
-    public List<String> services(HttpServletResponse response) throws DockerHostNotFoundException, UnknownInternalException, OrchestratorInternalErrorException, CouldNotConnectToOrchestratorException {
+    public List<String> services(HttpServletResponse response) throws DockerHostNotFoundException, OrchestratorInternalErrorException, CouldNotConnectToOrchestratorException {
         return orchestrator.listServices(dockerHostsRepository.loadPreferredDockerHost());
     }
 
     @ExceptionHandler(DockerHostNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleDockerHostNotFoundException(DockerHostNotFoundException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(UnknownInternalException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleUnknownInternalException(UnknownInternalException ex) {
         return ex.getMessage();
     }
 

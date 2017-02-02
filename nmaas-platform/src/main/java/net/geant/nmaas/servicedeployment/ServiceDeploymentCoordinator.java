@@ -19,20 +19,20 @@ public class ServiceDeploymentCoordinator {
     private NmServiceRepository serviceRepository;
 
     public void deployNmService(NmServiceSpec serviceSpec) {
-        serviceRepository.storeService(new NmServiceInfo(serviceSpec.name(), NmServiceInfo.ServiceState.INIT, serviceSpec));
-        // TODO add subsequent steps
+        String serviceName = serviceSpec.name();
+        serviceRepository.storeService(new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, serviceSpec));
         try {
-            orchestrator.verifyRequestAndSelectTarget(serviceSpec.name());
-            orchestrator.prepareDeploymentEnvironment(serviceSpec.name());
-            orchestrator.deployNmService(serviceSpec.name());
-            orchestrator.checkService(serviceSpec.name());
+            orchestrator.verifyRequestObtainTargetAndNetworkDetails(serviceName);
+            orchestrator.prepareDeploymentEnvironment(serviceName);
+            orchestrator.deployNmService(serviceName);
+            orchestrator.checkService(serviceName);
         } catch (CouldNotPrepareEnvironmentException
                 | CouldNotDeployNmServiceException
                 | CouldNotConnectToOrchestratorException
                 | OrchestratorInternalErrorException
                 | CouldNotCheckNmServiceStateException exception) {
             try {
-                serviceRepository.updateServiceState(serviceSpec.name(), NmServiceInfo.ServiceState.ERROR);
+                serviceRepository.updateServiceState(serviceName, NmServiceInfo.ServiceState.ERROR);
             } catch (NmServiceRepository.ServiceNotFoundException e) {
                 e.printStackTrace();
             }
@@ -40,7 +40,17 @@ public class ServiceDeploymentCoordinator {
     }
 
     public void removeNmService(String serviceName) {
-
+        try {
+            orchestrator.removeNmService(serviceName);
+        } catch (CouldNotDestroyNmServiceException
+                | OrchestratorInternalErrorException
+                | CouldNotConnectToOrchestratorException exception) {
+            try {
+                serviceRepository.updateServiceState(serviceName, NmServiceInfo.ServiceState.ERROR);
+            } catch (NmServiceRepository.ServiceNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
