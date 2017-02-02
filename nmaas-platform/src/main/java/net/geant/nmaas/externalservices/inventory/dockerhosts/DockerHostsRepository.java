@@ -7,6 +7,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Stores a static list of Docker Hosts available in the system.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Service
 public class DockerHostsRepository {
 
@@ -19,6 +24,8 @@ public class DockerHostsRepository {
                     InetAddress.getByName("10.134.250.1"),
                     2375,
                     InetAddress.getByName("10.134.250.1"),
+                    "eth0",
+                    "eth1",
                     "/home/mgmt/nmaasplatform/volumes",
                     true));
             dockerHosts.add(new DockerHost(
@@ -26,6 +33,8 @@ public class DockerHostsRepository {
                     InetAddress.getByName("10.134.250.2"),
                     2375,
                     InetAddress.getByName("10.134.250.2"),
+                    "eth0",
+                    "eth1",
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
             dockerHosts.add(new DockerHost(
@@ -33,6 +42,8 @@ public class DockerHostsRepository {
                     InetAddress.getByName("10.134.250.3"),
                     2375,
                     InetAddress.getByName("10.134.250.3"),
+                    "eth0",
+                    "eth1",
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
         } catch (UnknownHostException e) {

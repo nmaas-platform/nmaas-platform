@@ -1,6 +1,7 @@
 package net.geant.nmaas.servicedeployment.repository;
 
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentNetworkDetails;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,14 @@ public class NmServiceRepository {
 
     public void updateServiceHost(String serviceName, NmServiceDeploymentHost host) throws ServiceNotFoundException {
         loadService(serviceName).setHost(host);
+    }
+
+    public void updateServiceNetworkDetails(String serviceName, NmServiceDeploymentNetworkDetails networkDetails) throws ServiceNotFoundException {
+        loadService(serviceName).setNetwork(networkDetails);
+    }
+
+    public void updateNetworkId(String serviceName, String networkId) throws ServiceNotFoundException {
+        loadService(serviceName).getNetwork().setId(networkId);
     }
 
     public void storeService(NmServiceInfo serviceInfo) {

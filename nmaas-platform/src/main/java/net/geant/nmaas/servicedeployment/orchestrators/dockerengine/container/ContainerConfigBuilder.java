@@ -4,8 +4,8 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.servicedeployment.exceptions.ServiceSpecVerificationException;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
+import net.geant.nmaas.servicedeployment.exceptions.ServiceVerificationException;
+import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerEngineContainerTemplate;
@@ -20,9 +20,8 @@ import java.util.Map;
  */
 public class ContainerConfigBuilder {
 
-    public static ContainerConfig build(NmServiceSpec spec, NmServiceDeploymentHost host) {
+    public static ContainerConfig build(NmServiceSpec spec, DockerHost containerHost) {
         final DockerContainerSpec containerSpec = (DockerContainerSpec) spec;
-        final DockerHost containerHost = (DockerHost) host;
         final ContainerConfigInput combinedSpec = ContainerConfigInput.fromSpec(containerSpec);
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
         containerBuilder.image(combinedSpec.getImage());
@@ -73,13 +72,14 @@ public class ContainerConfigBuilder {
         return sb.toString();
     }
 
-    public static void verifyInput(NmServiceSpec spec) throws ServiceSpecVerificationException {
+    public static void verifyInput(NmServiceInfo service) throws ServiceVerificationException {
+        NmServiceSpec spec = service.getSpec();
         if (DockerEngineContainerTemplate.class != spec.template().getClass() || DockerContainerSpec.class != spec.getClass())
-            throw new ServiceSpecVerificationException("Service template and/or spec not in DockerEngine format");
+            throw new ServiceVerificationException("Service template and/or spec not in DockerEngine format");
         if(!spec.template().verify())
-            throw new ServiceSpecVerificationException("Service template incorrect");
+            throw new ServiceVerificationException("Service template incorrect");
         if(!spec.template().verifyNmServiceSpec(spec))
-            throw new ServiceSpecVerificationException("Service spec incorrect or missing required data");
+            throw new ServiceVerificationException("Service spec incorrect or missing required data");
     }
 
 }
