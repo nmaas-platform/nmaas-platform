@@ -7,6 +7,8 @@ import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.servicedeployment.repository.NmServiceRepository;
 import net.geant.nmaas.servicedeployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
@@ -23,7 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerEngineContainerIntTest {
+public class DockerEngineWorkflowIntTest {
 
 	@Autowired
 	@Qualifier("DockerEngine")
@@ -47,16 +49,29 @@ public class DockerEngineContainerIntTest {
 				serviceName,
 				serviceIdentifier,
 				(DockerEngineContainerTemplate) templates.loadTemplate("tomcat-alpine"));
-		spec.setClientDetails("testclient1", "testorganisation1");
-		NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
+		spec.setClientDetails("client1", "company1");
+		final ContainerNetworkIpamSpec ipamSpec = new ContainerNetworkIpamSpec(
+				"10.10.1.0/24",
+				"10.10.1.0/24",
+				"10.10.1.254");
+		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
+		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
 		service.setHost(dockerHostsRepository.loadPreferredDockerHost());
+		service.setNetwork(testNetworkDetails1);
 		nmServicesRepository.storeService(service);
 	}
 
 	@Test
-	public void shouldDeployNewContainer()
-			throws OrchestratorInternalErrorException, CouldNotDeployNmServiceException, CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, NmServiceNotFoundException, UnknownInternalException, InterruptedException, NmServiceRepository.ServiceNotFoundException, CouldNotPrepareEnvironmentException, CouldNotCheckNmServiceStateException {
-		orchestrator.verifyRequestAndSelectTarget(serviceName);
+	public void shouldDeployNewContainerWithDedicatedNetwork() throws
+			OrchestratorInternalErrorException,
+			CouldNotConnectToOrchestratorException,
+			CouldNotPrepareEnvironmentException,
+			CouldNotDeployNmServiceException,
+			CouldNotCheckNmServiceStateException,
+			CouldNotDestroyNmServiceException,
+			InterruptedException,
+			NmServiceRepository.ServiceNotFoundException {
+		// orchestrator.verifyRequestObtainTargetAndNetworkDetails(serviceName);
 		orchestrator.prepareDeploymentEnvironment(serviceName);
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(2000);
@@ -70,7 +85,7 @@ public class DockerEngineContainerIntTest {
 	}
 
 	@After
-	public void cleanServices() {
+	public void cleanServices() throws CouldNotConnectToOrchestratorException {
 		System.out.println("Cleaning up ... removing containers.");
 		try {
 			orchestrator.removeNmService(serviceName);

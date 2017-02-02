@@ -30,6 +30,11 @@ public class NmServiceInfo {
      */
     private NmServiceDeploymentHost host;
 
+    /**
+     * Network details for deployed services obtained from remote OSS system.
+     */
+    private NmServiceDeploymentNetworkDetails network;
+
     public NmServiceInfo(String name, ServiceState state, NmServiceSpec spec) {
         this.name = name;
         this.state = state;
@@ -62,6 +67,14 @@ public class NmServiceInfo {
 
     public void setHost(NmServiceDeploymentHost host) {
         this.host = host;
+    }
+
+    public NmServiceDeploymentNetworkDetails getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(NmServiceDeploymentNetworkDetails network) {
+        this.network = network;
     }
 
     public ServiceState getState() {

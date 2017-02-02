@@ -21,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerSwarmServiceIntTest {
+public class DockerSwarmWorkflowIntTest {
 
 	@Autowired
 	@Qualifier("DockerSwarm")
@@ -50,8 +50,14 @@ public class DockerSwarmServiceIntTest {
 	 */
 	@Ignore
 	@Test
-	public void shouldDeployNewService()
-			throws OrchestratorInternalErrorException, CouldNotDeployNmServiceException, CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, NmServiceNotFoundException, UnknownInternalException, InterruptedException, NmServiceRepository.ServiceNotFoundException {
+	public void shouldDeployNewService() throws
+			OrchestratorInternalErrorException,
+			CouldNotDeployNmServiceException,
+			CouldNotDestroyNmServiceException,
+			CouldNotConnectToOrchestratorException,
+			NmServiceNotFoundException,
+			InterruptedException,
+			NmServiceRepository.ServiceNotFoundException {
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(5000);
 		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
@@ -63,7 +69,7 @@ public class DockerSwarmServiceIntTest {
 	}
 
 	@After
-	public void cleanServices() {
+	public void cleanServices() throws CouldNotConnectToOrchestratorException {
 		System.out.println("Cleaning up ... removing services.");
 		try {
 			orchestrator.removeNmService(serviceName);
