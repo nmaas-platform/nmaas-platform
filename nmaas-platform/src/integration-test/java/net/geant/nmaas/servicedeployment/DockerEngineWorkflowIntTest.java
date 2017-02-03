@@ -1,7 +1,7 @@
 package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostsRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.servicedeployment.exceptions.*;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
@@ -35,10 +35,10 @@ public class DockerEngineWorkflowIntTest {
 	private NmServiceTemplateRepository templates;
 
 	@Autowired
-	private NmServiceRepository nmServicesRepository;
+	private NmServiceRepository nmServiceRepository;
 
 	@Autowired
-	private DockerHostsRepository dockerHostsRepository;
+	private DockerHostRepository dockerHostRepository;
 
 	String serviceName = "tomcat-alpine";
 
@@ -56,9 +56,9 @@ public class DockerEngineWorkflowIntTest {
 				"10.10.1.254");
 		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
 		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
-		service.setHost(dockerHostsRepository.loadPreferredDockerHost());
+		service.setHost(dockerHostRepository.loadPreferredDockerHost());
 		service.setNetwork(testNetworkDetails1);
-		nmServicesRepository.storeService(service);
+		nmServiceRepository.storeService(service);
 	}
 
 	@Test
@@ -76,12 +76,12 @@ public class DockerEngineWorkflowIntTest {
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(2000);
 		assertThat(orchestrator.checkService(serviceName), Matchers.equalTo(NmServiceState.DEPLOYED));
-		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
-				Matchers.hasItem(nmServicesRepository.loadService(serviceName).getDeploymentId()));
+		assertThat(orchestrator.listServices(nmServiceRepository.loadService(serviceName).getHost()),
+				Matchers.hasItem(nmServiceRepository.loadService(serviceName).getDeploymentId()));
 		orchestrator.removeNmService(serviceName);
 		Thread.sleep(2000);
-		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
-				Matchers.not(Matchers.hasItem(nmServicesRepository.loadService(serviceName).getDeploymentId())));
+		assertThat(orchestrator.listServices(nmServiceRepository.loadService(serviceName).getHost()),
+				Matchers.not(Matchers.hasItem(nmServiceRepository.loadService(serviceName).getDeploymentId())));
 	}
 
 	@After

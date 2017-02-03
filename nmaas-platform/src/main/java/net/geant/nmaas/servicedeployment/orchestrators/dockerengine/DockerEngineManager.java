@@ -4,7 +4,7 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostsRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.externalservices.inventory.providernetwork.NetworkStateTracker;
 import net.geant.nmaas.servicedeployment.ContainerOrchestrationProvider;
 import net.geant.nmaas.servicedeployment.exceptions.*;
@@ -38,7 +38,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     private NmServiceRepository nmServices;
 
     @Autowired
-    private DockerHostsRepository dockerHosts;
+    private DockerHostRepository dockerHosts;
 
     @Autowired
     private NetworkStateTracker networkStateTracker;

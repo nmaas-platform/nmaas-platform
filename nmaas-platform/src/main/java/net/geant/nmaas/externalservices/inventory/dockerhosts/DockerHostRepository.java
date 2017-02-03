@@ -13,7 +13,9 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-public class DockerHostsRepository {
+public class DockerHostRepository {
+
+    public static final String ANSIBLE_DOCKER_HOST_NAME = "GN4-ANSIBLE-HOST";
 
     private List<DockerHost> dockerHosts = new ArrayList<>();
 
@@ -46,13 +48,32 @@ public class DockerHostsRepository {
                     "eth1",
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
+            dockerHosts.add(new DockerHost(
+                    ANSIBLE_DOCKER_HOST_NAME,
+                    InetAddress.getByName("10.134.250.6"),
+                    2375,
+                    InetAddress.getByName("10.134.250.6"),
+                    "eth0",
+                    "eth1",
+                    "/home/mgmt/ansible/volumes",
+                    false));
         } catch (UnknownHostException e) {
             System.out.println("Was not enable to complete assignment of static list of Docker Hosts");
         }
     }
 
+    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException {
+        return dockerHosts.stream()
+                .filter((host) -> host.getName().equals(hostName))
+                .findFirst()
+                .orElseThrow(() -> new DockerHostNotFoundException("Did not find host with name " + hostName + " in repository"));
+    }
+
     public DockerHost loadPreferredDockerHost() throws DockerHostNotFoundException {
-        return dockerHosts.stream().filter((host) -> host.isPreferred()).findFirst().orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker host in repository."));
+        return dockerHosts.stream()
+                .filter((host) -> host.isPreferred())
+                .findFirst()
+                .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker host in repository."));
     }
 
 }
