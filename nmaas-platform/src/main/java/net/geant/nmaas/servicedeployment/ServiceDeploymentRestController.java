@@ -1,7 +1,7 @@
 package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostsRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.servicedeployment.exceptions.CouldNotConnectToOrchestratorException;
 import net.geant.nmaas.servicedeployment.exceptions.OrchestratorInternalErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,11 @@ public class ServiceDeploymentRestController {
     private ContainerOrchestrationProvider orchestrator;
 
     @Autowired
-    private DockerHostsRepository dockerHostsRepository;
+    private DockerHostRepository dockerHostRepository;
 
     @RequestMapping(value = "/api/services", method = RequestMethod.GET)
     public List<String> services(HttpServletResponse response) throws DockerHostNotFoundException, OrchestratorInternalErrorException, CouldNotConnectToOrchestratorException {
-        return orchestrator.listServices(dockerHostsRepository.loadPreferredDockerHost());
+        return orchestrator.listServices(dockerHostRepository.loadPreferredDockerHost());
     }
 
     @ExceptionHandler(DockerHostNotFoundException.class)

@@ -3,7 +3,7 @@ package net.geant.nmaas.servicedeployment;
 import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostsRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.servicedeployment.exceptions.*;
 import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
@@ -32,7 +32,7 @@ public class DockerEngineContainerNetworkIntTest {
     private DockerNetworkClient networkClient;
 
     @Autowired
-    private DockerHostsRepository dockerHostsRepository;
+    private DockerHostRepository dockerHostRepository;
 
     private ContainerNetworkDetails testNetworkDetails1;
     private NmServiceInfo serviceInfo;
@@ -45,7 +45,7 @@ public class DockerEngineContainerNetworkIntTest {
         ipamSpec = new ContainerNetworkIpamSpec("10.10.0.0/16", "10.10.1.0/24", "10.10.1.254");
         testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
         serviceInfo = new NmServiceInfo("testService1", NmServiceInfo.ServiceState.INIT, spec);
-        serviceInfo.setHost(dockerHostsRepository.loadPreferredDockerHost());
+        serviceInfo.setHost(dockerHostRepository.loadPreferredDockerHost());
         serviceInfo.setNetwork(testNetworkDetails1);
     }
 
