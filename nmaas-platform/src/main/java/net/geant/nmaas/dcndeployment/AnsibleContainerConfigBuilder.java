@@ -25,10 +25,10 @@ public class AnsibleContainerConfigBuilder {
     private static final String ANSIBLE_VOLUME_5_FROM = "/home/docker/.ssh/id_rsa";
     private static final String ANSIBLE_VOLUME_5_TO = "/root/.ssh/id_rsa";
 
-    public static ContainerConfig build(VpnConfig vpn, String serviceId) {
+    public static ContainerConfig build(VpnConfig vpn, String dcnId) {
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
         containerBuilder.image(ANSIBLE_IMAGE_NAME);
-        containerBuilder.cmd(command(vpn, serviceId));
+        containerBuilder.cmd(command(vpn, dcnId));
         final HostConfig.Builder hostBuilder = HostConfig.builder();
         hostBuilder.appendBinds(volumeBindings(vpn));
         containerBuilder.hostConfig(hostBuilder.build());

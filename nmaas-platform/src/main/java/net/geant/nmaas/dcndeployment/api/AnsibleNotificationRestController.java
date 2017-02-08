@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/api/dcn")
+@RequestMapping(value = "/api/dcns")
 public class AnsibleNotificationRestController {
 
     private DcnDeploymentCoordinator coordinator;
@@ -24,7 +24,7 @@ public class AnsibleNotificationRestController {
         return "This is NMaaS Platform REST API for DCN configuration";
     }
 
-    @RequestMapping(value = "/{encodedServiceId}/status", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/notifications/{encodedServiceId}/status", method = RequestMethod.POST, consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void notifyDcnConfigurationStatus(@PathVariable String encodedServiceId, @RequestBody AnsiblePlaybookStatus input) {
         coordinator.notifyPlaybookExecutionState(encodedServiceId, input.convertedStatus());

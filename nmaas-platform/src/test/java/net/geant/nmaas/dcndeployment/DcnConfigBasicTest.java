@@ -15,13 +15,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class VpnConfigExecutorTest {
+public class DcnConfigBasicTest {
 
     @Autowired
     private DcnDeploymentCoordinator coordinator;
 
     @Test
-    public void shouldInjectDockerSwarm() {
+    public void shouldInjectCoordinator() {
         assertThat(coordinator, is(notNullValue()));
     }
 
