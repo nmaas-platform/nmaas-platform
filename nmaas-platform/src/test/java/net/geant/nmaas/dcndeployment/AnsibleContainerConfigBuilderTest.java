@@ -1,11 +1,20 @@
 package net.geant.nmaas.dcndeployment;
 
+import com.spotify.docker.client.messages.ContainerConfig;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class AnsibleContainerConfigBuilderTest {
 
-    private static final String SERVICE_ID = "3vnhgwcn95ngcj5eogx";
+    private static final String DCN_ID = "3vnhgwcn95ngcj5eogx";
 
     private static final String EXAMPLE_COMPLETE_DOCKER_RUN_COMMAND =
             "docker run " +
@@ -32,6 +41,19 @@ public class AnsibleContainerConfigBuilderTest {
                             "NMAAS_CUSTOMER_ID=8 " +
                             "NMAAS_CUSTOMER_BGP_LOCAL_IP=192.168.48.4 " +
                             "NMAAS_CUSTOMER_BGP_LOCAL_CIDR=24\"" +
-                            "NMAAS_CUSTOMER_SERVICE_ID=" + SERVICE_ID + "\"";
+                            "NMAAS_CUSTOMER_SERVICE_ID=" + DCN_ID + "\"";
+
+    @Autowired
+    private AnsibleContainerConfigBuilder containerConfigBuilder;
+
+    @Test
+    public void shouldBuildContainerConfig() {
+        ContainerConfig containerConfig = containerConfigBuilder.build(VpnConfig.defaultVpn(), DCN_ID);
+        assertThat(EXAMPLE_COMPLETE_DOCKER_RUN_COMMAND, Matchers.stringContainsInOrder(Arrays.asList(containerConfig.image())));
+        for (String volumeEntry : containerConfig.hostConfig().binds())
+            assertThat(EXAMPLE_COMPLETE_DOCKER_RUN_COMMAND, Matchers.stringContainsInOrder(Arrays.asList(volumeEntry)));
+        for (String commandEntry : containerConfig.cmd())
+            assertThat(EXAMPLE_COMPLETE_DOCKER_RUN_COMMAND, Matchers.stringContainsInOrder(Arrays.asList(commandEntry)));
+    }
 
 }

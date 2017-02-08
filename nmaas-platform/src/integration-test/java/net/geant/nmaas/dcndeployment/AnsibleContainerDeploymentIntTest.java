@@ -15,14 +15,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class AnsibleContainerDeploymentIntTest {
 
-    String uniqueServiceName = "company1-client1-nmaas-ansible-239487523809475";
+    String uniqueDcnName = "company1-client1-nmaas-ansible-239487523809475";
 
     @Autowired
     private DcnDeploymentCoordinator coordinator;
 
     @Test
     public void shouldDeployDefaultContainer() throws DockerHostNotFoundException, DcnRepository.DcnNotFoundException {
-        coordinator.deploy(uniqueServiceName, VpnConfig.defaultVpn());
+        coordinator.deploy(uniqueDcnName, VpnConfig.defaultVpn());
     }
 
 }

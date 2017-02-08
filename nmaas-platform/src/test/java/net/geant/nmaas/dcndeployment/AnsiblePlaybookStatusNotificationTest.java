@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AnsiblePlaybookDeploymentAndNotificationTest {
+public class AnsiblePlaybookStatusNotificationTest {
 
     @Mock
     private DockerHostRepository dockerHostRepository;
@@ -54,9 +54,9 @@ public class AnsiblePlaybookDeploymentAndNotificationTest {
 
     @Test
     public void testFakeAnsibleDeployAndStatusUpdate() throws Exception {
-        mvc.perform(get("/api/dcn"))
+        mvc.perform(get("/api/dcns"))
                 .andExpect(status().isOk());
-        mvc.perform(post("/api/dcn/{serviceId}/status", ServiceNameConverter.encode(dcnName))
+        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", ServiceNameConverter.encode(dcnName))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
