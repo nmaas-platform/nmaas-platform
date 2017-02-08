@@ -31,7 +31,7 @@ public class DcnDeploymentCoordinator {
 
     public void deploy(String dcnName, VpnConfig vpn) throws DockerHostNotFoundException {
         storeInRepository(dcnName, vpn);
-        final String serviceId = ServiceNameConverter.encode(dcnName);
+        final String serviceId = DcnIdentifierConverter.encode(dcnName);
         ContainerConfig ansibleContainerConfig = AnsibleContainerConfigBuilder.build(vpn, serviceId);
         executeDeploy(ansibleContainerConfig, ansibleContainerName(), loadDefaultAnsibleDockerHost());
     }
@@ -66,18 +66,18 @@ public class DcnDeploymentCoordinator {
     }
 
     public void notifyPlaybookExecutionState(String encodedServiceId, AnsiblePlaybookStatus.Status status) {
-        final String dcnName = ServiceNameConverter.decode(encodedServiceId);
-        final DcnInfo.DcnState dcnState;
+        final String dcnName = DcnIdentifierConverter.decode(encodedServiceId);
+        DcnDeploymentState dcnDeploymentState;
         switch (status) {
             case SUCCESS:
-                dcnState = DcnInfo.DcnState.CONFIGURED;
+                dcnDeploymentState = DcnDeploymentState.CONFIGURED;
                 break;
             case FAILURE:
             default:
-                dcnState = DcnInfo.DcnState.ERROR;
+                dcnDeploymentState = DcnDeploymentState.ERROR;
         }
         try {
-            dcnRepository.updateDcnState(dcnName, dcnState);
+            dcnRepository.updateDcnState(dcnName, dcnDeploymentState);
         } catch (DcnRepository.DcnNotFoundException e) {
             e.printStackTrace();
         }

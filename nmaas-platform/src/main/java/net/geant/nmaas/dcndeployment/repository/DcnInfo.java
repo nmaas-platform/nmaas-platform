@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcndeployment.repository;
 
+import net.geant.nmaas.dcndeployment.DcnDeploymentState;
 import net.geant.nmaas.dcndeployment.VpnConfig;
 
 /**
@@ -11,18 +12,18 @@ public class DcnInfo {
 
     private VpnConfig vpnConfig;
 
-    private DcnState state;
+    private DcnDeploymentState state;
 
     public DcnInfo(String name) {
         this.name = name;
-        this.state = DcnState.INIT;
+        this.state = DcnDeploymentState.INIT;
     }
 
-    public void updateState(DcnState state) {
+    public void updateState(DcnDeploymentState state) {
         this.state = state;
     }
 
-    public DcnState getState() {
+    public DcnDeploymentState getState() {
         return state;
     }
 
@@ -36,14 +37,6 @@ public class DcnInfo {
 
     public void setVpnConfig(VpnConfig vpnConfig) {
         this.vpnConfig = vpnConfig;
-    }
-
-    public enum DcnState {
-        INIT,
-        VERIFIED,
-        CONFIGURED,
-        REMOVED,
-        ERROR;
     }
 
 }

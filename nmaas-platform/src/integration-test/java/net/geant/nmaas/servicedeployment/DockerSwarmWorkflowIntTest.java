@@ -1,11 +1,12 @@
 package net.geant.nmaas.servicedeployment;
 
-import net.geant.nmaas.servicedeployment.exceptions.*;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerswarm.DockerSwarmServiceSpec;
-import net.geant.nmaas.servicedeployment.repository.NmServiceRepository;
-import net.geant.nmaas.servicedeployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.nmservicedeployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservicedeployment.exceptions.*;
+import net.geant.nmaas.nmservicedeployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
+import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerswarm.DockerSwarmServiceSpec;
+import net.geant.nmaas.nmservicedeployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservicedeployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +52,7 @@ public class DockerSwarmWorkflowIntTest {
 	@Ignore
 	@Test
 	public void shouldDeployNewService() throws
-			OrchestratorInternalErrorException,
+			ContainerOrchestratorInternalErrorException,
 			CouldNotDeployNmServiceException,
 			CouldNotDestroyNmServiceException,
 			CouldNotConnectToOrchestratorException,
@@ -73,7 +74,7 @@ public class DockerSwarmWorkflowIntTest {
 		System.out.println("Cleaning up ... removing services.");
 		try {
 			orchestrator.removeNmService(serviceName);
-		} catch (CouldNotDestroyNmServiceException | OrchestratorInternalErrorException e) {
+		} catch (CouldNotDestroyNmServiceException | ContainerOrchestratorInternalErrorException e) {
 			// service was already removed
 		}
 	}

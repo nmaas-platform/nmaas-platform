@@ -1,6 +1,6 @@
 package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
 
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.container.DockerContainerClient;
+import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.container.DockerContainerClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

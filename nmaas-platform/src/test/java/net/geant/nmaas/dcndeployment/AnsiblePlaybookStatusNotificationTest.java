@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcndeployment.api.AnsibleNotificationRestController;
 import net.geant.nmaas.dcndeployment.api.AnsiblePlaybookStatus;
-import net.geant.nmaas.dcndeployment.repository.DcnInfo;
 import net.geant.nmaas.dcndeployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import org.junit.Before;
@@ -56,17 +55,17 @@ public class AnsiblePlaybookStatusNotificationTest {
     public void testFakeAnsibleDeployAndStatusUpdate() throws Exception {
         mvc.perform(get("/api/dcns"))
                 .andExpect(status().isOk());
-        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", ServiceNameConverter.encode(dcnName))
+        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode(dcnName))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         ArgumentCaptor<String> dcnNameCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<DcnInfo.DcnState> dcnStateCaptor = ArgumentCaptor.forClass(DcnInfo.DcnState.class);
+        ArgumentCaptor<DcnDeploymentState> dcnStateCaptor = ArgumentCaptor.forClass(DcnDeploymentState.class);
 
         verify(dcnRepository, times(1)).updateDcnState(dcnNameCaptor.capture(), dcnStateCaptor.capture());
         assertThat(dcnNameCaptor.getValue(), equalTo(dcnName));
-        assertThat(dcnStateCaptor.getValue(), equalTo(DcnInfo.DcnState.CONFIGURED));
+        assertThat(dcnStateCaptor.getValue(), equalTo(DcnDeploymentState.CONFIGURED));
     }
 
 }

@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcndeployment.repository;
 
+import net.geant.nmaas.dcndeployment.DcnDeploymentState;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Singleton;
@@ -11,12 +12,11 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-@Singleton
 public class DcnRepository {
 
     private Map<String, DcnInfo> networks = new HashMap<>();
 
-    public void updateDcnState(String dcnName, DcnInfo.DcnState state) throws DcnNotFoundException {
+    public void updateDcnState(String dcnName, DcnDeploymentState state) throws DcnNotFoundException {
         loadNetwork(dcnName).updateState(state);
     }
 

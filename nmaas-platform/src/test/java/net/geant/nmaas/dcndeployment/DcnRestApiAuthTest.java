@@ -60,7 +60,7 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndCallNotificationPost() throws Exception {
-        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", ServiceNameConverter.encode("testDcn"))
+        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
                 .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_ANSIBLE_CLIENT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
@@ -70,7 +70,7 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndForbidNotificationPost() throws Exception {
-        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", ServiceNameConverter.encode("testDcn"))
+        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
                 .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_NMAAS_TEST_CLIENT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
