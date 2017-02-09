@@ -2,11 +2,12 @@ package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
 
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
-import net.geant.nmaas.nmservicedeployment.exceptions.NmServiceVerificationException;
-import net.geant.nmaas.nmservicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class ContainerConfigBuilderTest {
                 "eth0",
                 "eth1",
                 "/data/volumes", true);
-        serviceInfo = new NmServiceInfo("testService1", NmServiceInfo.ServiceState.INIT, spec);
+        serviceInfo = new NmServiceInfo("testService1", NmServiceDeploymentState.INIT, spec);
     }
 
     @Test(expected = NmServiceVerificationException.class)

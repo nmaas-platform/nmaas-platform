@@ -1,12 +1,13 @@
 package net.geant.nmaas.servicedeployment;
 
-import net.geant.nmaas.nmservicedeployment.ContainerOrchestrationProvider;
-import net.geant.nmaas.nmservicedeployment.exceptions.*;
-import net.geant.nmaas.nmservicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerswarm.DockerSwarmServiceSpec;
-import net.geant.nmaas.nmservicedeployment.repository.NmServiceRepository;
-import net.geant.nmaas.nmservicedeployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmServiceSpec;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class DockerSwarmWorkflowIntTest {
 		Long serviceIdentifier = System.nanoTime();
 		final DockerSwarmNmServiceTemplate template = (DockerSwarmNmServiceTemplate) templates.loadTemplate("tomcat-on-swarm-alpine");
 		final DockerSwarmServiceSpec spec = new DockerSwarmServiceSpec(serviceName, template);
-		NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
+		NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceDeploymentState.INIT, spec);
 		nmServicesRepository.storeService(service);
 	}
 
@@ -52,11 +53,11 @@ public class DockerSwarmWorkflowIntTest {
 	@Ignore
 	@Test
 	public void shouldDeployNewService() throws
-			ContainerOrchestratorInternalErrorException,
-			CouldNotDeployNmServiceException,
-			CouldNotDestroyNmServiceException,
-			CouldNotConnectToOrchestratorException,
-			NmServiceNotFoundException,
+            ContainerOrchestratorInternalErrorException,
+            CouldNotDeployNmServiceException,
+            CouldNotDestroyNmServiceException,
+            CouldNotConnectToOrchestratorException,
+            NmServiceNotFoundException,
 			InterruptedException,
 			NmServiceRepository.ServiceNotFoundException {
 		orchestrator.deployNmService(serviceName);

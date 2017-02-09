@@ -1,7 +1,13 @@
 package net.geant.nmaas.dcndeployment;
 
-import net.geant.nmaas.dcndeployment.repository.DcnRepository;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentCoordinator;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.DcnSpec;
+import net.geant.nmaas.dcn.deployment.VpnConfig;
+import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
+import net.geant.nmaas.deploymentorchestration.Identifier;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +21,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class AnsibleContainerDeploymentIntTest {
 
+    Identifier deploymentId = new Identifier("exampledeploymentid");
     String uniqueDcnName = "company1-client1-nmaas-ansible-239487523809475";
 
     @Autowired
-    private DcnDeploymentCoordinator coordinator;
+    private DcnDeploymentProvider dcnDeployment;
 
     @Test
-    public void shouldDeployDefaultContainer() throws DockerHostNotFoundException, DcnRepository.DcnNotFoundException {
-        coordinator.deploy(uniqueDcnName, VpnConfig.defaultVpn());
+    public void shouldVerifyAndDeployDefaultContainer() throws InvalidDeploymentIdException {
+        dcnDeployment.verifyRequest(deploymentId, new DcnSpec(uniqueDcnName));
+        dcnDeployment.deployDcn(deploymentId);
     }
 
 }

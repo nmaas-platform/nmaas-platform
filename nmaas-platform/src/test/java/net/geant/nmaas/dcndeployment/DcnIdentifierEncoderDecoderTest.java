@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcndeployment;
 
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

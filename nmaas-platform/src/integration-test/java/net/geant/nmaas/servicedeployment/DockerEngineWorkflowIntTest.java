@@ -2,16 +2,16 @@ package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.nmservicedeployment.ContainerOrchestrationProvider;
-import net.geant.nmaas.nmservicedeployment.exceptions.*;
-import net.geant.nmaas.nmservicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservicedeployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import net.geant.nmaas.nmservicedeployment.repository.NmServiceRepository;
-import net.geant.nmaas.nmservicedeployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +56,7 @@ public class DockerEngineWorkflowIntTest {
 				"10.10.1.0/24",
 				"10.10.1.254");
 		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
-		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
+		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceDeploymentState.INIT, spec);
 		service.setHost(dockerHostRepository.loadPreferredDockerHost());
 		service.setNetwork(testNetworkDetails1);
 		nmServiceRepository.storeService(service);
@@ -64,12 +64,12 @@ public class DockerEngineWorkflowIntTest {
 
 	@Test
 	public void shouldDeployNewContainerWithDedicatedNetwork() throws
-			ContainerOrchestratorInternalErrorException,
-			CouldNotConnectToOrchestratorException,
+            ContainerOrchestratorInternalErrorException,
+            CouldNotConnectToOrchestratorException,
 			CouldNotPrepareEnvironmentException,
-			CouldNotDeployNmServiceException,
-			CouldNotCheckNmServiceStateException,
-			CouldNotDestroyNmServiceException,
+            CouldNotDeployNmServiceException,
+            CouldNotCheckNmServiceStateException,
+            CouldNotDestroyNmServiceException,
 			InterruptedException,
 			NmServiceRepository.ServiceNotFoundException {
 		// orchestrator.verifyRequestObtainTargetAndNetworkDetails(serviceName);

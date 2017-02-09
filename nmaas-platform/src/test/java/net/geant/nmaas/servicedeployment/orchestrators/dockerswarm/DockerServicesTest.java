@@ -1,6 +1,6 @@
 package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
 
-import net.geant.nmaas.nmservicedeployment.containerorchestrators.dockerswarm.service.SwarmServicesClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServicesClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,8 @@
 package net.geant.nmaas.deploymentorchestration;
 
 /**
+ * Declares method to be implemented by every component managing one or more NMaaS application deployment steps.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface AppDeploymentStateChanger {

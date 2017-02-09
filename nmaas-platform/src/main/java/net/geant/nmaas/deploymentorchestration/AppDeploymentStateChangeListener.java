@@ -1,18 +1,33 @@
 package net.geant.nmaas.deploymentorchestration;
 
-import net.geant.nmaas.dcndeployment.DcnDeploymentState;
-import net.geant.nmaas.nmservicedeployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
+import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 
 /**
- * Declares methods to be called by both NM Service and DCN deployment components once certain deployment step is
- * completed.
+ * Declares methods to be called by {@link NmServiceDeploymentProvider}, {@link NmServiceConfigurationProvider}
+ * and {@link DcnDeploymentProvider} components once certain deployment step is completed.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface AppDeploymentStateChangeListener {
 
-    void notifyStateChange(DcnDeploymentState state);
+    /**
+     * Notifies current state of the DCN deployment.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @param state current state of the DCN deployment
+     */
+    void notifyStateChange(Identifier deploymentId, DcnDeploymentState state);
 
-    void notifyStateChange(NmServiceDeploymentState state);
+    /**
+     * Notifies current state of the NM Service deployment.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @param state current state of the NM Service deployment
+     */
+    void notifyStateChange(Identifier deploymentId, NmServiceDeploymentState state);
 
 }

@@ -2,9 +2,13 @@ package net.geant.nmaas.dcndeployment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.dcndeployment.api.AnsibleNotificationRestController;
-import net.geant.nmaas.dcndeployment.api.AnsiblePlaybookStatus;
-import net.geant.nmaas.dcndeployment.repository.DcnRepository;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentCoordinator;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
+import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
+import net.geant.nmaas.dcn.deployment.api.AnsibleNotificationRestController;
+import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +42,9 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Mock
     private DcnRepository dcnRepository;
 
+    @Mock
+    private DeploymentIdToDcnNameMapper deploymentIdMapper;
+
     private final String dcnName = "this-is-example-dcn-name";
 
     private String statusUpdateJsonContent;
@@ -46,7 +53,7 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Before
     public void setUp() throws JsonProcessingException {
-        DcnDeploymentCoordinator coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository);
+        DcnDeploymentCoordinator coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper);
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
     }
@@ -65,7 +72,7 @@ public class AnsiblePlaybookStatusNotificationTest {
 
         verify(dcnRepository, times(1)).updateDcnState(dcnNameCaptor.capture(), dcnStateCaptor.capture());
         assertThat(dcnNameCaptor.getValue(), equalTo(dcnName));
-        assertThat(dcnStateCaptor.getValue(), equalTo(DcnDeploymentState.CONFIGURED));
+        assertThat(dcnStateCaptor.getValue(), equalTo(DcnDeploymentState.DEPLOYED));
     }
 
 }
