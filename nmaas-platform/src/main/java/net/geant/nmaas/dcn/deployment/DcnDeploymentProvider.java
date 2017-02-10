@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.deploymentorchestration.AppDeploymentStateChanger;
-import net.geant.nmaas.deploymentorchestration.Identifier;
+import net.geant.nmaas.orchestration.AppDeploymentStateChanger;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 
 /**

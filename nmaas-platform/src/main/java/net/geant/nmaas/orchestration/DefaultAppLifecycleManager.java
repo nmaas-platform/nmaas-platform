@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;

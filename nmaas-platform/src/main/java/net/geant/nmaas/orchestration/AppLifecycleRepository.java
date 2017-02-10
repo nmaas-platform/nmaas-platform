@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 /**
  * Declares methods to be used by the NMaaS Portal to manage NMaaS applications lifecycle.

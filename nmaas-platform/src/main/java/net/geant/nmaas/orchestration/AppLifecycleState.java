@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 /**
  * Application lifecycle states as presented to the {@link AppLifecycleManager} client.

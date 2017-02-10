@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.deploymentorchestration.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
