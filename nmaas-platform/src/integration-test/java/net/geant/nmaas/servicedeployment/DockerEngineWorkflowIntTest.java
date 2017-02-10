@@ -2,15 +2,16 @@ package net.geant.nmaas.servicedeployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.servicedeployment.exceptions.*;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceState;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerEngineContainerTemplate;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import net.geant.nmaas.servicedeployment.repository.NmServiceRepository;
-import net.geant.nmaas.servicedeployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -55,7 +56,7 @@ public class DockerEngineWorkflowIntTest {
 				"10.10.1.0/24",
 				"10.10.1.254");
 		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
-		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceInfo.ServiceState.INIT, spec);
+		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceDeploymentState.INIT, spec);
 		service.setHost(dockerHostRepository.loadPreferredDockerHost());
 		service.setNetwork(testNetworkDetails1);
 		nmServiceRepository.storeService(service);
@@ -63,19 +64,19 @@ public class DockerEngineWorkflowIntTest {
 
 	@Test
 	public void shouldDeployNewContainerWithDedicatedNetwork() throws
-			OrchestratorInternalErrorException,
-			CouldNotConnectToOrchestratorException,
+            ContainerOrchestratorInternalErrorException,
+            CouldNotConnectToOrchestratorException,
 			CouldNotPrepareEnvironmentException,
-			CouldNotDeployNmServiceException,
-			CouldNotCheckNmServiceStateException,
-			CouldNotDestroyNmServiceException,
+            CouldNotDeployNmServiceException,
+            CouldNotCheckNmServiceStateException,
+            CouldNotDestroyNmServiceException,
 			InterruptedException,
 			NmServiceRepository.ServiceNotFoundException {
 		// orchestrator.verifyRequestObtainTargetAndNetworkDetails(serviceName);
 		orchestrator.prepareDeploymentEnvironment(serviceName);
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(2000);
-		assertThat(orchestrator.checkService(serviceName), Matchers.equalTo(NmServiceState.DEPLOYED));
+		assertThat(orchestrator.checkService(serviceName), Matchers.equalTo(NmServiceDeploymentState.DEPLOYED));
 		assertThat(orchestrator.listServices(nmServiceRepository.loadService(serviceName).getHost()),
 				Matchers.hasItem(nmServiceRepository.loadService(serviceName).getDeploymentId()));
 		orchestrator.removeNmService(serviceName);
@@ -89,7 +90,7 @@ public class DockerEngineWorkflowIntTest {
 		System.out.println("Cleaning up ... removing containers.");
 		try {
 			orchestrator.removeNmService(serviceName);
-		} catch (CouldNotDestroyNmServiceException | OrchestratorInternalErrorException e) {
+		} catch (CouldNotDestroyNmServiceException | ContainerOrchestratorInternalErrorException e) {
 			// service was already removed
 		}
 	}

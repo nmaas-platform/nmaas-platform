@@ -1,5 +1,6 @@
 package net.geant.nmaas.servicedeployment;
 
+import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ServiceDeploymentConfig.class)
+@SpringBootTest(classes = NmServiceDeploymentConfig.class)
 @AutoConfigureMockMvc
 public class ServiceDeploymentRestControllerTest {
 

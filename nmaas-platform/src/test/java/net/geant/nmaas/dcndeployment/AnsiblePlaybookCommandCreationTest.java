@@ -1,5 +1,7 @@
 package net.geant.nmaas.dcndeployment;
 
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookCommandBuilder;
+import net.geant.nmaas.dcn.deployment.VpnConfig;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -8,7 +10,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

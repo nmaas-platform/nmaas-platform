@@ -1,6 +1,8 @@
 package net.geant.nmaas.dcndeployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
+import net.geant.nmaas.dcn.deployment.AnsibleContainerConfigBuilder;
+import net.geant.nmaas.dcn.deployment.VpnConfig;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

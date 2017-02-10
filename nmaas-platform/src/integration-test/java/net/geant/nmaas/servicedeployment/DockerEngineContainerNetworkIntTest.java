@@ -4,13 +4,15 @@ import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.servicedeployment.exceptions.*;
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkConfigBuilder;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import net.geant.nmaas.servicedeployment.orchestrators.dockerengine.network.DockerNetworkClient;
+import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkConfigBuilder;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,16 +44,16 @@ public class DockerEngineContainerNetworkIntTest {
     public void setup() throws UnknownHostException, DockerHostNotFoundException {
         DockerContainerSpec spec = new DockerContainerSpec("testService1", System.nanoTime(), null);
         spec.setClientDetails("client1", "company1");
-        ipamSpec = new ContainerNetworkIpamSpec("10.10.0.0/16", "10.10.1.0/24", "10.10.1.254");
+        ipamSpec = new ContainerNetworkIpamSpec("10.10.1.0/24", "10.10.1.0/24", "10.10.1.254");
         testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
-        serviceInfo = new NmServiceInfo("testService1", NmServiceInfo.ServiceState.INIT, spec);
+        serviceInfo = new NmServiceInfo("testService1", NmServiceDeploymentState.INIT, spec);
         serviceInfo.setHost(dockerHostRepository.loadPreferredDockerHost());
         serviceInfo.setNetwork(testNetworkDetails1);
     }
 
     @Test
     public void shouldCreateInspectAndRemoteSimpleNetwork()
-            throws ServiceVerificationException, ContainerNetworkDetailsVerificationException, OrchestratorInternalErrorException, CouldNotCreateContainerNetworkException, ContainerNetworkCheckFailedException, CouldNotCheckNmServiceStateException, InterruptedException, CouldNotRemoveContainerNetworkException {
+            throws NmServiceVerificationException, ContainerNetworkDetailsVerificationException, ContainerOrchestratorInternalErrorException, CouldNotCreateContainerNetworkException, ContainerNetworkCheckFailedException, CouldNotCheckNmServiceStateException, InterruptedException, CouldNotRemoveContainerNetworkException {
         final NetworkConfig networkConfig = ContainerNetworkConfigBuilder.build(serviceInfo);
         final DockerHost host = (DockerHost) serviceInfo.getHost();
         final String networkId = networkClient.create(networkConfig, host);

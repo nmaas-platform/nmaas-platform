@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;

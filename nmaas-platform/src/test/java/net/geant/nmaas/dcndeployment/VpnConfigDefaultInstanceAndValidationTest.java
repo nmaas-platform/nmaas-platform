@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcndeployment;
 
-import net.geant.nmaas.dcndeployment.exceptions.ConfigNotValidException;
+import net.geant.nmaas.dcn.deployment.VpnConfig;
+import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 import org.junit.Before;
 import org.junit.Test;
 

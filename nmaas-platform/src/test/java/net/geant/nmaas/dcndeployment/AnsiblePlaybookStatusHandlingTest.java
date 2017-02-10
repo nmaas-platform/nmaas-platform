@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcndeployment;
 
-import net.geant.nmaas.dcndeployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
