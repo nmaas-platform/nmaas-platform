@@ -1,12 +1,8 @@
 package net.geant.nmaas.dcndeployment;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentCoordinator;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
-import net.geant.nmaas.dcn.deployment.VpnConfig;
-import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.deploymentorchestration.Identifier;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

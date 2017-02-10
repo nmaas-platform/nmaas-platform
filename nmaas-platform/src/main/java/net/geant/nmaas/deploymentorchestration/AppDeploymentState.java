@@ -178,10 +178,10 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
-                case DEPLOYMENT_INITIATED:
-                    return APPLICATION_BEING_DEPLOYED;
-                case DEPLOYMENT_FAILED:
-                    return APPLICATION_DEPLOYMENT_FAILED;
+                case CONFIGURED:
+                    return APPLICATION_CONFIGURED;
+                case CONFIGURATION_FAILED:
+                    return APPLICATION_CONFIGURATION_FAILED;
                 default:
                     throw new InvalidAppStateException(message(this, state));
             }
@@ -191,10 +191,29 @@ public enum AppDeploymentState {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_FAILED; }
     },
-    APPLICATION_BEING_DEPLOYED {
+    APPLICATION_CONFIGURED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_IN_PROGRESS;
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case DEPLOYMENT_INITIATED:
+                    return APPLICATION_DEPLOYMENT_IN_PROGRESS;
+                case DEPLOYMENT_FAILED:
+                    return APPLICATION_DEPLOYMENT_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
         }
+    },
+    APPLICATION_CONFIGURATION_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_FAILED; }
+    },
+    APPLICATION_DEPLOYMENT_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_IN_PROGRESS; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
@@ -215,26 +234,6 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
-                case CONFIGURED:
-                    return APPLICATION_CONFIGURED;
-                case CONFIGURATION_FAILED:
-                    return APPLICATION_CONFIGURATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    APPLICATION_DEPLOYMENT_FAILED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED; }
-    },
-    APPLICATION_CONFIGURED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURED; }
-
-        @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
                 case VERIFIED:
                     return APPLICATION_DEPLOYMENT_VERIFIED;
                 case VERIFICATION_FAILED:
@@ -244,9 +243,9 @@ public enum AppDeploymentState {
             }
         }
     },
-    APPLICATION_CONFIGURATION_FAILED {
+    APPLICATION_DEPLOYMENT_FAILED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_FAILED; }
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED; }
     },
     APPLICATION_DEPLOYMENT_VERIFIED {
         @Override
@@ -268,7 +267,7 @@ public enum AppDeploymentState {
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
                 case REMOVED:
-                    return APPLICATION_NMSERVICE_REMOVED;
+                    return APPLICATION_NM_SERVICE_REMOVED;
                 case REMOVAL_FAILED:
                     return APPLICATION_REMOVAL_FAILED;
                 default:
@@ -280,7 +279,7 @@ public enum AppDeploymentState {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED; }
     },
-    APPLICATION_NMSERVICE_REMOVED {
+    APPLICATION_NM_SERVICE_REMOVED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS;
         }
@@ -299,8 +298,7 @@ public enum AppDeploymentState {
     },
     APPLICATION_DCN_REMOVED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS;
-        }
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
@@ -325,6 +323,10 @@ public enum AppDeploymentState {
     UNKNOWN {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.UNKNOWN; }
+    },
+    INTERNAL_ERROR {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.INTERNAL_ERROR; }
     };
 
     public abstract AppLifecycleState lifecycleState();

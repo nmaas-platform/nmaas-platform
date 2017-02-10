@@ -5,6 +5,6 @@ package net.geant.nmaas.deploymentorchestration;
  */
 public interface AppDeploymentMonitor {
 
-    AppDeploymentState deploymentState(Identifier deploymentId);
+    AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException;
 
 }
