@@ -54,7 +54,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             serviceName = deploymentIdMapper.nmServiceName(deploymentId);
             orchestrator.prepareDeploymentEnvironment(serviceName);
-            notifyStateChangeListeners(deploymentId, READY_FOR_DEPLOYMENT);
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException e) {
             throw new InvalidDeploymentIdException();
         } catch (CouldNotPrepareEnvironmentException

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DefaultAppDeploymentOrchestrator implements AppDeploymentOrchestrator {
+public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Autowired
     private NmServiceDeploymentProvider serviceDeployment;

@@ -5,6 +5,6 @@ package net.geant.nmaas.deploymentorchestration;
  */
 public interface AppDeploymentMonitor {
 
-    AppDeploymentState deploymentState(String deploymentId);
+    AppDeploymentState deploymentState(Identifier deploymentId);
 
 }

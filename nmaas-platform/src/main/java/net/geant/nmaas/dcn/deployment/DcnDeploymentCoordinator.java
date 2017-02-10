@@ -54,10 +54,10 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
         try {
             vpnConfig = VpnConfig.defaultVpn();
             dcnRepository.updateVpnConfig(dcnName, vpnConfig);
-            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFIED);
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFIED);
         } catch (DcnRepository.DcnNotFoundException e) {
             System.out.println("Exception during DCN request verification -> " + e.getMessage());
-            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFICATION_FAILED);
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
         }
     }
 

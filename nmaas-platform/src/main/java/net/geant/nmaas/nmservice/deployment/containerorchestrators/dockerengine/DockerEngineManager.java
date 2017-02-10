@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState.*;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -49,7 +51,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             final DockerHost host = dockerHosts.loadPreferredDockerHost();
             nmServices.updateServiceHost(serviceName, host);
             nmServices.updateServiceNetworkDetails(serviceName, networkStateTracker.prepareNetworkConfigForContainer(serviceName, host));
-            nmServices.updateServiceState(serviceName, NmServiceDeploymentState.VERIFIED);
+            nmServices.updateServiceState(serviceName, VERIFIED);
         } catch (DockerHostNotFoundException dockerHostNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Did not find any suitable Docker host for deployment.");
@@ -70,7 +72,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             nmServices.updateNetworkId(serviceName, networkId);
             final String imageName = ((DockerEngineContainerTemplate) service.getSpec().template()).getImage();
             dockerContainerClient.pullImage(imageName, host);
-            nmServices.updateServiceState(serviceName, NmServiceDeploymentState.READY_FOR_DEPLOYMENT);
+            nmServices.updateServiceState(serviceName, ENVIRONMENT_PREPARED);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new CouldNotPrepareEnvironmentException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
@@ -98,7 +100,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             String containerId = dockerContainerClient.deploy(config, spec.uniqueDeploymentName(), host);
             dockerNetworkClient.connectContainerToNetwork(containerId, ((ContainerNetworkDetails)service.getNetwork()).getDeploymentId(), host);
             nmServices.updateServiceId(serviceName, containerId);
-            nmServices.updateServiceState(serviceName, NmServiceDeploymentState.DEPLOYED);
+            nmServices.updateServiceState(serviceName, DEPLOYED);
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
             throw new CouldNotDeployNmServiceException(
                     "Could not deploy service -> " + couldNotDeployNmServiceException.getMessage());
@@ -137,7 +139,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             final DockerHost host = (DockerHost) service.getHost();
             dockerContainerClient.remove(service.getDeploymentId(), host);
             dockerNetworkClient.remove(((ContainerNetworkDetails)service.getNetwork()).getDeploymentId(), host);
-            nmServices.updateServiceState(serviceName, NmServiceDeploymentState.REMOVED);
+            nmServices.updateServiceState(serviceName, REMOVED);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new CouldNotDestroyNmServiceException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
