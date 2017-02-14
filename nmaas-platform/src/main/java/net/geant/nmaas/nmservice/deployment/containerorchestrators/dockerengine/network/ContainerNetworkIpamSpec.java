@@ -28,4 +28,26 @@ public class ContainerNetworkIpamSpec {
     public String getGateway() {
         return gateway;
     }
+
+    public static ContainerNetworkIpamSpec fromParameters(String addressPoolBase, int network, int addressPoolDefaultGateway, int addressPoolDefaultMaskLength) {
+        String subnetWithMask = addressPoolBase.replace(".0.0", ".") + network + ".0/" + addressPoolDefaultMaskLength;
+        String ipRangeWithMask = subnetWithMask;
+        String gateway = addressPoolBase.replace(".0.0", ".") + network + "." + addressPoolDefaultGateway;
+        return new ContainerNetworkIpamSpec(subnetWithMask, ipRangeWithMask, gateway);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ContainerNetworkIpamSpec that = (ContainerNetworkIpamSpec) o;
+
+        return ipRangeWithMask != null ? ipRangeWithMask.equals(that.ipRangeWithMask) : that.ipRangeWithMask == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return ipRangeWithMask != null ? ipRangeWithMask.hashCode() : 0;
+    }
 }

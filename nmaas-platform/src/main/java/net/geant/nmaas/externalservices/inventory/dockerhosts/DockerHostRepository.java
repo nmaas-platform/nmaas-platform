@@ -28,6 +28,7 @@ public class DockerHostRepository {
                     InetAddress.getByName("10.134.250.1"),
                     "eth0",
                     "eth1",
+                    InetAddress.getByName("10.11.0.0"),
                     "/home/mgmt/nmaasplatform/volumes",
                     true));
             dockerHosts.add(new DockerHost(
@@ -37,6 +38,7 @@ public class DockerHostRepository {
                     InetAddress.getByName("10.134.250.2"),
                     "eth0",
                     "eth1",
+                    InetAddress.getByName("10.12.0.0"),
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
             dockerHosts.add(new DockerHost(
@@ -46,6 +48,7 @@ public class DockerHostRepository {
                     InetAddress.getByName("10.134.250.3"),
                     "eth0",
                     "eth1",
+                    InetAddress.getByName("10.13.0.0"),
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
             dockerHosts.add(new DockerHost(
@@ -55,6 +58,7 @@ public class DockerHostRepository {
                     InetAddress.getByName("10.134.250.6"),
                     "eth0",
                     "eth1",
+                    InetAddress.getByName("10.16.0.0"),
                     "/home/mgmt/ansible/volumes",
                     false));
         } catch (UnknownHostException e) {

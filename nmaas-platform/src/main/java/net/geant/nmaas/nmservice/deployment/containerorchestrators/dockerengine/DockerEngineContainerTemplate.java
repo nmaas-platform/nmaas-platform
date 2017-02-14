@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
+import net.geant.nmaas.orchestration.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,11 @@ import static org.springframework.util.ObjectUtils.isEmpty;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class DockerEngineContainerTemplate implements NmServiceTemplate {
+
+    /**
+     * Identifier of the application to which this template corresponds.
+     */
+    private Identifier applicationId;
 
     /**
      * Name identifying this template (should be related with the name of the NM service/tool)
@@ -56,7 +62,8 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
      */
     private List<String> containerVolumes = new ArrayList<>();
 
-    public DockerEngineContainerTemplate(String name, String image) {
+    public DockerEngineContainerTemplate(Identifier applicationId, String name, String image) {
+        this.applicationId = applicationId;
         this.name = name;
         this.image = image;
     }
@@ -83,6 +90,11 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Identifier getApplicationId() {
+        return applicationId;
     }
 
     public String getImage() {

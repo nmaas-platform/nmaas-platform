@@ -20,6 +20,7 @@ public class ContainerConfigInput {
         if (template.getEnvVariablesInSpecRequired())
             input.getEnv().addAll(spec.getEnvironmentVariables());
         input.setContainerVolumes(template.getContainerVolumes());
+        input.setUniqueDeploymentName(spec.uniqueDeploymentName());
         return input;
     }
 
@@ -32,6 +33,8 @@ public class ContainerConfigInput {
     private List<String> env;
 
     private List<String> containerVolumes;
+
+    private String uniqueDeploymentName;
 
     public String getImage() {
         return image;
@@ -71,5 +74,13 @@ public class ContainerConfigInput {
 
     public void setContainerVolumes(List<String> containerVolumes) {
         this.containerVolumes = containerVolumes;
+    }
+
+    public String getUniqueDeploymentName() {
+        return uniqueDeploymentName;
+    }
+
+    public void setUniqueDeploymentName(String uniqueDeploymentName) {
+        this.uniqueDeploymentName = uniqueDeploymentName;
     }
 }

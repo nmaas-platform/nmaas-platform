@@ -70,7 +70,8 @@ public class ContainerNetworkConfigBuilder {
             throw new NmServiceVerificationException("Deployment network details not available (null)");
     }
 
-    private static void verifyInputNetworkDetails(NmServiceDeploymentNetworkDetails networkDetails) throws ContainerNetworkDetailsVerificationException {
+    private static void verifyInputNetworkDetails(NmServiceDeploymentNetworkDetails networkDetails)
+            throws ContainerNetworkDetailsVerificationException {
         if (ContainerNetworkDetails.class != networkDetails.getClass())
             throw new ContainerNetworkDetailsVerificationException("Deployment network details not in DockerEngine format");
         ContainerNetworkDetails containerNetworkDetails = (ContainerNetworkDetails) networkDetails;

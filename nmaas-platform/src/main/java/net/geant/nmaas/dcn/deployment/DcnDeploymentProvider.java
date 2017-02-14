@@ -11,6 +11,8 @@ public interface DcnDeploymentProvider extends AppDeploymentStateChanger {
 
     void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec);
 
+    void prepareDeploymentEnvironment(Identifier deploymentId) throws InvalidDeploymentIdException;
+
     void deployDcn(Identifier deploymentId) throws InvalidDeploymentIdException;
 
     void verifyDcn(Identifier deploymentId) throws InvalidDeploymentIdException;

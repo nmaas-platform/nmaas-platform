@@ -40,7 +40,7 @@ public class DockerSwarmWorkflowIntTest {
 	@Before
 	public void setup(){
 		Long serviceIdentifier = System.nanoTime();
-		final DockerSwarmNmServiceTemplate template = (DockerSwarmNmServiceTemplate) templates.loadTemplate("tomcat-on-swarm-alpine");
+		final DockerSwarmNmServiceTemplate template = (DockerSwarmNmServiceTemplate) templates.loadTemplateByName("tomcat-on-swarm-alpine");
 		final DockerSwarmServiceSpec spec = new DockerSwarmServiceSpec(serviceName, template);
 		NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceDeploymentState.INIT, spec);
 		nmServicesRepository.storeService(service);

@@ -51,6 +51,8 @@ public class DefaultAppDeploymentMonitorTest {
         monitor.notifyStateChange(deploymentId, DcnDeploymentState.DEPLOYED);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
         // app configuration
+        monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURATION_IN_PROGRESS));
         monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.CONFIGURED);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
         // app deployment

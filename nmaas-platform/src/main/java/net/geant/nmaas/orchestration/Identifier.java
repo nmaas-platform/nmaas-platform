@@ -13,8 +13,8 @@ public class Identifier {
         this.value = value;
     }
 
-    public String value() {
-        return value;
+    public static Identifier newInstance(String value) {
+        return new Identifier(value);
     }
 
     @Override

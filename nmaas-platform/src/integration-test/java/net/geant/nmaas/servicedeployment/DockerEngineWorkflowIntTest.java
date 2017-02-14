@@ -45,11 +45,9 @@ public class DockerEngineWorkflowIntTest {
 
 	@Before
 	public void setup() throws DockerHostNotFoundException {
-		Long serviceIdentifier = System.nanoTime();
 		DockerContainerSpec spec = new DockerContainerSpec(
 				serviceName,
-				serviceIdentifier,
-				(DockerEngineContainerTemplate) templates.loadTemplate("tomcat-alpine"));
+				(DockerEngineContainerTemplate) templates.loadTemplateByName("tomcat-alpine"));
 		spec.setClientDetails("client1", "company1");
 		final ContainerNetworkIpamSpec ipamSpec = new ContainerNetworkIpamSpec(
 				"10.10.1.0/24",

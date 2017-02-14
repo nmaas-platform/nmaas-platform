@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
+import jnr.ffi.annotations.In;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
@@ -20,23 +21,21 @@ import java.util.Map;
  */
 public class ContainerConfigBuilder {
 
-    public static ContainerConfig build(NmServiceSpec spec, DockerHost containerHost) {
-        final DockerContainerSpec containerSpec = (DockerContainerSpec) spec;
-        final ContainerConfigInput combinedSpec = ContainerConfigInput.fromSpec(containerSpec);
+    public static ContainerConfig build(ContainerConfigInput configInput, DockerHost containerHost, List<Integer> assignedPublicPorts) {
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
-        containerBuilder.image(combinedSpec.getImage());
-        if (combinedSpec.getCommand() != null)
-            containerBuilder.cmd(combinedSpec.getCommand());
-        containerBuilder.env(combinedSpec.getEnv());
+        containerBuilder.image(configInput.getImage());
+        if (configInput.getCommand() != null)
+            containerBuilder.cmd(configInput.getCommand());
+        containerBuilder.env(configInput.getEnv());
         final HostConfig.Builder hostBuilder = HostConfig.builder();
         hostBuilder.portBindings(preparePortBindings(
-                combinedSpec.getExposedPorts(),
+                configInput.getExposedPorts(),
                 containerHost.getPublicIpAddress().toString(),
-                containerHost.getAvailablePorts(combinedSpec.getExposedPorts().size())));
+                assignedPublicPorts));
         final List<String> volumeBinds = prepareVolumeBindings(
-                combinedSpec.getContainerVolumes(),
+                configInput.getContainerVolumes(),
                 containerHost.getVolumesPath(),
-                containerSpec.uniqueDeploymentName());
+                configInput.getUniqueDeploymentName());
         hostBuilder.appendBinds(volumeBinds);
         containerBuilder.hostConfig(HostConfig.builder().build());
         return containerBuilder.build();

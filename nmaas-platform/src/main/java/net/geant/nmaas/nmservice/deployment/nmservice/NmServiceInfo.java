@@ -1,5 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.nmservice;
 
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -80,5 +82,4 @@ public class NmServiceInfo {
     public NmServiceDeploymentState getState() {
         return state;
     }
-
 }
