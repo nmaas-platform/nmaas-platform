@@ -7,14 +7,14 @@ import com.spotify.docker.client.messages.Network;
 import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import static net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory.client;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@Service
+@Component
 public class DockerNetworkClient {
 
     public String create(NetworkConfig networkConfig, DockerHost host)

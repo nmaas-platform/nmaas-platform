@@ -11,7 +11,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@Service
+@Component
 public class DockerContainerClient {
 
     public String create(ContainerConfig containerConfig, String name, DockerHost host)
@@ -169,8 +169,8 @@ public class DockerContainerClient {
                 return NmServiceDeploymentState.REMOVED;
             case "running":
                 return NmServiceDeploymentState.DEPLOYED;
-                default:
-                    return NmServiceDeploymentState.ERROR;
+            default:
+                return NmServiceDeploymentState.ERROR;
         }
     }
 

@@ -38,7 +38,7 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     private DockerSwarmsRepository dockerSwarms;
 
     @Override
-    public void verifyRequestObtainTargetAndNetworkDetails(String serviceName)
+    public void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
             throws ContainerOrchestratorInternalErrorException {
         throw new ContainerOrchestratorInternalErrorException("DockerSwarm orchestrator is not currently supported");
     }

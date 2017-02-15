@@ -51,9 +51,8 @@ public class DockerEngineWorkflowIntTest {
 		spec.setClientDetails("client1", "company1");
 		final ContainerNetworkIpamSpec ipamSpec = new ContainerNetworkIpamSpec(
 				"10.10.1.0/24",
-				"10.10.1.0/24",
 				"10.10.1.254");
-		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
+		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(8080, ipamSpec, 123);
 		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceDeploymentState.INIT, spec);
 		service.setHost(dockerHostRepository.loadPreferredDockerHost());
 		service.setNetwork(testNetworkDetails1);
@@ -70,7 +69,7 @@ public class DockerEngineWorkflowIntTest {
             CouldNotDestroyNmServiceException,
 			InterruptedException,
 			NmServiceRepository.ServiceNotFoundException {
-		// orchestrator.verifyRequestObtainTargetAndNetworkDetails(serviceName);
+		// orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(serviceName);
 		orchestrator.prepareDeploymentEnvironment(serviceName);
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(2000);

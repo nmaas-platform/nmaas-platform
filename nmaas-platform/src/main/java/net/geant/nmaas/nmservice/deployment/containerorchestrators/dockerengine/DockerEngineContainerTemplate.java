@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.orchestration.Identifier;
 
 import java.util.ArrayList;
@@ -41,10 +41,10 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
     private Boolean commandInSpecRequired = false;
 
     /**
-     * List of exposed ports that this service is accessible on from the outside.
-     * During container configuration for each port on the list a published port needs to be assigned.
+     * Port exposed by the service/container. During container configuration for this port a published port needs
+     * to be assigned.
      */
-    private List<ContainerPortForwardingSpec> exposedPorts = new ArrayList<>();
+    private ContainerPortForwardingSpec exposedPort;
 
     /**
      * A list of environment variables in the form of ["VAR=value"]
@@ -117,8 +117,8 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         return envVariablesInSpecRequired;
     }
 
-    public List<ContainerPortForwardingSpec> getExposedPorts() {
-        return exposedPorts;
+    public ContainerPortForwardingSpec getExposedPort() {
+        return exposedPort;
     }
 
     public void setCommand(String command) {
@@ -145,7 +145,7 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         this.containerVolumes = containerVolumes;
     }
 
-    public void setExposedPorts(List<ContainerPortForwardingSpec> exposedPorts) {
-        this.exposedPorts = exposedPorts;
+    public void setExposedPort(ContainerPortForwardingSpec exposedPort) {
+        this.exposedPort = exposedPort;
     }
 }

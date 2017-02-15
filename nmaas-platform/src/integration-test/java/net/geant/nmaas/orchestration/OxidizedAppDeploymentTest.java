@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -41,7 +43,7 @@ public class OxidizedAppDeploymentTest {
     }
 
     @Test
-    public void shouldTriggerAndFollowTheAppDeploymentWorkflow() throws InvalidDeploymentIdException, InterruptedException {
+    public void shouldTriggerAndFollowTheAppDeploymentWorkflow() throws InvalidDeploymentIdException, InterruptedException, InvalidAppStateException {
         final Identifier deploymentId = appLifecycleManager.deployApplication(clientId, applicationId);
         waitAndVerifyRequestValidated(deploymentId);
         waitAndVerifyDeploymentEnvironmentPrepared(deploymentId);
@@ -51,6 +53,7 @@ public class OxidizedAppDeploymentTest {
         waitAndVerifyApplicationConfigured(deploymentId);
         waitAndVerifyApplicationDeployed(deploymentId);
         waitAndVerifyApplicationDeploymentVerified(deploymentId);
+        assertThat(appDeploymentMonitor.userAccessDetails(deploymentId), is(notNullValue()));
     }
 
     private void waitAndVerifyRequestValidated(Identifier deploymentId) throws InvalidDeploymentIdException, InterruptedException {

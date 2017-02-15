@@ -42,10 +42,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         deploymentIdMapper.storeMapping(deploymentId, nmServiceName);
         serviceRepository.storeService(new NmServiceInfo(nmServiceName, INIT, nmServiceSpec));
         try {
-            orchestrator.verifyRequestObtainTargetAndNetworkDetails(nmServiceName);
+            orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(nmServiceName);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (CouldNotConnectToOrchestratorException
-                | ContainerOrchestratorInternalErrorException e) {
+                | ContainerOrchestratorInternalErrorException
+                | NmServiceVerificationException e) {
             System.out.println("NM Service request verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
         }

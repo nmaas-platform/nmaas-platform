@@ -9,6 +9,8 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentNetwork
  */
 public class ContainerNetworkDetails implements NmServiceDeploymentNetworkDetails {
 
+    private final int publicPort;
+
     private final ContainerNetworkIpamSpec ipAddresses;
 
     private final int vlanNumber;
@@ -18,7 +20,8 @@ public class ContainerNetworkDetails implements NmServiceDeploymentNetworkDetail
      */
     private String deploymentId;
 
-    public ContainerNetworkDetails(ContainerNetworkIpamSpec ipAddresses, int vlanNumber) {
+    public ContainerNetworkDetails(int publicPort, ContainerNetworkIpamSpec ipAddresses, int vlanNumber) {
+        this.publicPort = publicPort;
         this.ipAddresses = ipAddresses;
         this.vlanNumber = vlanNumber;
     }
@@ -29,6 +32,10 @@ public class ContainerNetworkDetails implements NmServiceDeploymentNetworkDetail
 
     public int getVlanNumber() {
         return vlanNumber;
+    }
+
+    public int getPublicPort() {
+        return publicPort;
     }
 
     @Override

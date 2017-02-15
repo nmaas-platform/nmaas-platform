@@ -48,13 +48,25 @@ public class DockerHostState {
     }
 
     /**
+     * Checks currently assigned ports on the host, assigns a new port and returns its number.
+     * Currently it is assumed that a given NM service/tool will expose only a single public interface - the one client
+     * should use to access the GUI.
+     *
+     * @param serviceName Name of the service
+     * @return Assigned port
+     */
+    public int assignPort(String serviceName) {
+        return assignPorts(1, serviceName).get(0);
+    }
+
+    /**
      * Checks currently assigned ports on the host, assigns requested number of new ports and returns a list of them.
      *
      * @param number Number of ports to be assigned for given service
      * @param serviceName Name of the service
      * @return List of assigned ports
      */
-    public List<Integer> assignPorts(int number, String serviceName) {
+    private List<Integer> assignPorts(int number, String serviceName) {
         List<Integer> newAssignedPorts = new ArrayList<>();
         int count = 0;
         int portNumber = MIN_ASSIGNABLE_PORT_NUMBER;

@@ -11,9 +11,9 @@ public class ContainerNetworkIpamSpec {
 
     private final String gateway;
 
-    public ContainerNetworkIpamSpec(String subnetWithMask, String ipRangeWithMask, String gateway) {
+    public ContainerNetworkIpamSpec(String subnetWithMask, String gateway) {
         this.subnetWithMask = subnetWithMask;
-        this.ipRangeWithMask = ipRangeWithMask;
+        this.ipRangeWithMask = subnetWithMask;
         this.gateway = gateway;
     }
 
@@ -31,9 +31,8 @@ public class ContainerNetworkIpamSpec {
 
     public static ContainerNetworkIpamSpec fromParameters(String addressPoolBase, int network, int addressPoolDefaultGateway, int addressPoolDefaultMaskLength) {
         String subnetWithMask = addressPoolBase.replace(".0.0", ".") + network + ".0/" + addressPoolDefaultMaskLength;
-        String ipRangeWithMask = subnetWithMask;
         String gateway = addressPoolBase.replace(".0.0", ".") + network + "." + addressPoolDefaultGateway;
-        return new ContainerNetworkIpamSpec(subnetWithMask, ipRangeWithMask, gateway);
+        return new ContainerNetworkIpamSpec(subnetWithMask, gateway);
     }
 
     @Override
@@ -49,5 +48,9 @@ public class ContainerNetworkIpamSpec {
     @Override
     public int hashCode() {
         return ipRangeWithMask != null ? ipRangeWithMask.hashCode() : 0;
+    }
+
+    public boolean verify() {
+        return subnetWithMask != null && ipRangeWithMask != null && gateway != null;
     }
 }

@@ -6,6 +6,9 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigInput;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
@@ -37,6 +40,7 @@ public class ContainerConfigBuilderTest {
     @Before
     public void setup() throws UnknownHostException {
         testTemplate1 = new DockerEngineContainerTemplate(TEST_APPLICATION_ID_1, TEST_SERVICE_TEMPLATE_NAME_1, TEST_IMAGE_NAME_1);
+        testTemplate1.setExposedPort(new ContainerPortForwardingSpec("public", ContainerPortForwardingSpec.Protocol.TCP, 8080));
         spec = new DockerContainerSpec(TEST_SERVICE_NAME_1, testTemplate1);
         testDockerHost1 = new DockerHost(
                 "testHost1",
@@ -46,8 +50,13 @@ public class ContainerConfigBuilderTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("10.10.0.0"),
-                "/data/volumes", true);
+                "/data/volumes",
+                true);
         serviceInfo = new NmServiceInfo(TEST_SERVICE_NAME_1, NmServiceDeploymentState.INIT, spec);
+        serviceInfo.setHost(testDockerHost1);
+        ContainerNetworkIpamSpec addresses = new ContainerNetworkIpamSpec("1.1.0.0/24", "1.1.1.254");
+        ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(1234, addresses, 123);
+        serviceInfo.setNetwork(networkDetails);
     }
 
     @Test(expected = NmServiceVerificationException.class)
@@ -63,7 +72,7 @@ public class ContainerConfigBuilderTest {
 
     @Test
     public void shouldBuildSimpleConfig() {
-        ContainerConfig result = ContainerConfigBuilder.build(ContainerConfigInput.fromSpec(spec), testDockerHost1, Arrays.asList(1000, 1001));
+        ContainerConfig result = ContainerConfigBuilder.build(serviceInfo);
         assertEquals(TEST_IMAGE_NAME_1, result.image());
     }
 

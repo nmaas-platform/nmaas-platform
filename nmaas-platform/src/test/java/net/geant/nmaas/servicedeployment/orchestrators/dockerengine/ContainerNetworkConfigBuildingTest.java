@@ -47,8 +47,8 @@ public class ContainerNetworkConfigBuildingTest {
                 "eth1",
                 InetAddress.getByName("10.10.0.0"),
                 "/data/volumes", true);
-        ipamSpec = new ContainerNetworkIpamSpec("10.10.1.0/24", "10.10.1.0/24", "10.10.1.254");
-        testNetworkDetails1 = new ContainerNetworkDetails(ipamSpec, 123);
+        ipamSpec = new ContainerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
+        testNetworkDetails1 = new ContainerNetworkDetails(1234, ipamSpec, 123);
         serviceInfo = new NmServiceInfo(TEST_SERVICE_NAME_1, NmServiceDeploymentState.INIT, spec);
     }
 
@@ -73,7 +73,7 @@ public class ContainerNetworkConfigBuildingTest {
     @Test(expected = ContainerNetworkDetailsVerificationException.class)
     public void shouldThrowExceptionOnMissingIpamSpec() throws NmServiceVerificationException, ContainerNetworkDetailsVerificationException {
         serviceInfo.setHost(testDockerHost1);
-        ContainerNetworkDetails testNetworkDetailsWithMissingIpamSpec = new ContainerNetworkDetails(null, 123);
+        ContainerNetworkDetails testNetworkDetailsWithMissingIpamSpec = new ContainerNetworkDetails(1234, null, 123);
         serviceInfo.setNetwork(testNetworkDetailsWithMissingIpamSpec);
         ContainerNetworkConfigBuilder.build(serviceInfo);
     }
@@ -81,17 +81,8 @@ public class ContainerNetworkConfigBuildingTest {
     @Test(expected = ContainerNetworkDetailsVerificationException.class)
     public void shouldThrowExceptionOnMissingIpamSpecParam() throws NmServiceVerificationException, ContainerNetworkDetailsVerificationException {
         serviceInfo.setHost(testDockerHost1);
-        ContainerNetworkIpamSpec incompleteIpamSpec = new ContainerNetworkIpamSpec("", "10.10.1.0/24", "10.10.1.254");
-        ContainerNetworkDetails testNetworkDetailsWithIncompleteIpamSpec = new ContainerNetworkDetails(incompleteIpamSpec, 123);
-        serviceInfo.setNetwork(testNetworkDetailsWithIncompleteIpamSpec);
-        ContainerNetworkConfigBuilder.build(serviceInfo);
-    }
-
-    @Test(expected = ContainerNetworkDetailsVerificationException.class)
-    public void shouldThrowExceptionOnInvalidIpamSpecParams() throws NmServiceVerificationException, ContainerNetworkDetailsVerificationException {
-        serviceInfo.setHost(testDockerHost1);
-        ContainerNetworkIpamSpec invalidIpamSpec = new ContainerNetworkIpamSpec("10.10.1.0/16", "10.10.1.0/24", "10.10.1.254");
-        ContainerNetworkDetails testNetworkDetailsWithIncompleteIpamSpec = new ContainerNetworkDetails(invalidIpamSpec, 123);
+        ContainerNetworkIpamSpec incompleteIpamSpec = new ContainerNetworkIpamSpec("10.10.1.0/24", "");
+        ContainerNetworkDetails testNetworkDetailsWithIncompleteIpamSpec = new ContainerNetworkDetails(1234, incompleteIpamSpec, 123);
         serviceInfo.setNetwork(testNetworkDetailsWithIncompleteIpamSpec);
         ContainerNetworkConfigBuilder.build(serviceInfo);
     }

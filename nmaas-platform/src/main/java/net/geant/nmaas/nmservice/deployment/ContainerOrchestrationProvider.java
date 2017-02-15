@@ -27,8 +27,8 @@ public interface ContainerOrchestrationProvider {
      *
      * @param serviceName service to be deployed
      */
-    void verifyRequestObtainTargetAndNetworkDetails(String serviceName)
-            throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
+    void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
+            throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException, NmServiceVerificationException;
 
     /**
      * Executes all initial configuration steps in order to enable further deployment of the service. This step includes

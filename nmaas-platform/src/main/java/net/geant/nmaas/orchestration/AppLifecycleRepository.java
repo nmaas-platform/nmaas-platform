@@ -68,7 +68,7 @@ public class AppLifecycleRepository {
             final DockerHost host = (DockerHost)serviceInfo.getHost();
             final String accessAddress = host.getAccessInterfaceName();
             final Integer accessPort;
-            accessPort = dockerHostStateKeeper.getAssignedPorts(host.getName(), serviceInfo.getName()).get(0);
+            accessPort = dockerHostStateKeeper.getAssignedPort(host.getName(), serviceInfo.getName());
             StringBuilder urlBuilder = new StringBuilder();
             urlBuilder.append("http://").append(accessAddress).append(":").append(accessPort);
             return new AppUiAccessDetails(urlBuilder.toString());

@@ -19,9 +19,9 @@ public class DockerHostStateKeeper {
 
     private Map<String, DockerHostState> states = new HashMap<>();
 
-    public List<Integer> assignPorts(String dockerHostName, int number, String serviceName) throws DockerHostNotFoundException {
+    public int assignPort(String dockerHostName, String serviceName) throws DockerHostNotFoundException {
         addStateForDocketHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignPorts(number, serviceName);
+        return states.get(dockerHostName).assignPort(serviceName);
     }
 
     public void removePortAssignment(String dockerHostName, List<Integer> ports) throws DockerHostNotFoundException {
@@ -30,10 +30,10 @@ public class DockerHostStateKeeper {
         states.get(dockerHostName).removePortAssignment(ports);
     }
 
-    public List<Integer> getAssignedPorts(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
+    public int getAssignedPort(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
         if (!states.containsKey(dockerHostName))
             throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedPorts(serviceName);
+        return states.get(dockerHostName).getAssignedPorts(serviceName).get(0);
     }
 
     public int assignVlan(String dockerHostName, String serviceName) throws DockerHostNotFoundException {

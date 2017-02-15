@@ -15,7 +15,7 @@ public class ContainerConfigInput {
             input.setCommand(spec.getCommand());
         else
             input.setCommand(template.getCommand());
-        input.setExposedPorts(template.getExposedPorts());
+        input.setExposedPort(template.getExposedPort());
         input.setEnv(template.getEnv());
         if (template.getEnvVariablesInSpecRequired())
             input.getEnv().addAll(spec.getEnvironmentVariables());
@@ -28,7 +28,7 @@ public class ContainerConfigInput {
 
     private String command;
 
-    private List<ContainerPortForwardingSpec> exposedPorts;
+    private ContainerPortForwardingSpec exposedPort;
 
     private List<String> env;
 
@@ -52,12 +52,12 @@ public class ContainerConfigInput {
         this.command = command;
     }
 
-    public List<ContainerPortForwardingSpec> getExposedPorts() {
-        return exposedPorts;
+    public ContainerPortForwardingSpec getExposedPort() {
+        return exposedPort;
     }
 
-    public void setExposedPorts(List<ContainerPortForwardingSpec> exposedPorts) {
-        this.exposedPorts = exposedPorts;
+    public void setExposedPort(ContainerPortForwardingSpec exposedPort) {
+        this.exposedPort = exposedPort;
     }
 
     public List<String> getEnv() {

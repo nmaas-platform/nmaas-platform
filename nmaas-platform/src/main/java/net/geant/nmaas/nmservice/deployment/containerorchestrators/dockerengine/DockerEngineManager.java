@@ -8,7 +8,6 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostReposito
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigInput;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
@@ -48,15 +47,19 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     private DockerHostStateKeeper dockerHostStateKeeper;
 
     @Override
-    public void verifyRequestObtainTargetAndNetworkDetails(String serviceName) throws ContainerOrchestratorInternalErrorException {
+    public void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
+            throws NmServiceVerificationException, ContainerOrchestratorInternalErrorException {
         try {
             final DockerHost host = dockerHosts.loadPreferredDockerHost();
             nmServices.updateServiceHost(serviceName, host);
-            final int vlanNumber = dockerHostStateKeeper.assignVlan(host.getName(), serviceName);
-            final ContainerNetworkIpamSpec addresses = dockerHostStateKeeper.assignAddressPool(host.getName(), serviceName);
-            final ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(addresses, vlanNumber);
+            final String dockerHostName = host.getName();
+            final int publicPort = dockerHostStateKeeper.assignPort(dockerHostName, serviceName);
+            final int vlanNumber = dockerHostStateKeeper.assignVlan(dockerHostName, serviceName);
+            final ContainerNetworkIpamSpec addresses = dockerHostStateKeeper.assignAddressPool(dockerHostName, serviceName);
+            final ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(publicPort, addresses, vlanNumber);
             nmServices.updateServiceNetworkDetails(serviceName, networkDetails);
             nmServices.updateServiceState(serviceName, VERIFIED);
+            ContainerConfigBuilder.verifyInput(nmServices.loadService(serviceName));
         } catch (DockerHostNotFoundException dockerHostNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Did not find any suitable Docker host for deployment.");
@@ -99,11 +102,8 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         try {
             final NmServiceInfo service = nmServices.loadService(serviceName);
             final DockerContainerSpec spec = (DockerContainerSpec) service.getSpec();
-            ContainerConfigBuilder.verifyInput(service);
             final DockerHost host = (DockerHost) service.getHost();
-            final ContainerConfigInput containerConfigInput = ContainerConfigInput.fromSpec((DockerContainerSpec) service.getSpec());
-            final List<Integer> assignedPublicPorts = dockerHostStateKeeper.assignPorts(host.getName(), containerConfigInput.getExposedPorts().size(), serviceName);
-            final ContainerConfig config = ContainerConfigBuilder.build(containerConfigInput, host, assignedPublicPorts);
+            final ContainerConfig config = ContainerConfigBuilder.build(service);
             final String containerId = dockerContainerClient.create(config, spec.uniqueDeploymentName(), host);
             dockerNetworkClient.connectContainerToNetwork(containerId, ((ContainerNetworkDetails)service.getNetwork()).getDeploymentId(), host);
             dockerContainerClient.start(containerId, host);
@@ -115,15 +115,9 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new CouldNotDeployNmServiceException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
-        } catch (NmServiceVerificationException serviceVerificationException) {
-            throw new CouldNotDeployNmServiceException(
-                    "Service spec verification failed -> " + serviceVerificationException.getMessage());
         } catch (CouldNotConnectContainerToNetworkException couldNotConnectContainerToNetworkException) {
             throw new CouldNotDeployNmServiceException(
                     "Failed to connect container to network -> " + couldNotConnectContainerToNetworkException.getMessage());
-        } catch (DockerHostNotFoundException dockerHostNotFoundException) {
-            throw new CouldNotDeployNmServiceException(
-                    "Failed to lookup Docker Host (this must be internal error) -> " + dockerHostNotFoundException.getMessage());
         }
     }
 

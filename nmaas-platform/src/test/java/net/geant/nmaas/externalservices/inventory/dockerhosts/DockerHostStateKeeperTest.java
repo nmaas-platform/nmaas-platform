@@ -7,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -31,25 +28,14 @@ public class DockerHostStateKeeperTest {
 
     @Test
     public void shouldAssignPorts() throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
-        List<Integer> assignedPorts = stateKeeper.assignPorts(DOCKER_HOST_NAME_1, 2, SERVICE_NAME_1);
-        System.out.println(assignedPorts);
-        assertThat(assignedPorts.size(), equalTo(2));
-        assertThat(assignedPorts, hasItem(1000));
-        assertThat(assignedPorts, hasItem(1001));
-        assignedPorts = stateKeeper.assignPorts(DOCKER_HOST_NAME_1, 1, SERVICE_NAME_2);
-        System.out.println(assignedPorts);
-        assertThat(assignedPorts, hasItem(1002));
-        assignedPorts = stateKeeper.getAssignedPorts(DOCKER_HOST_NAME_1, SERVICE_NAME_1);
-        assertThat(assignedPorts.size(), equalTo(2));
-        assertThat(assignedPorts, hasItem(1000));
-        assertThat(assignedPorts, hasItem(1001));
-
-        assignedPorts = stateKeeper.assignPorts(DOCKER_HOST_NAME_2, 3, SERVICE_NAME_3);
-        System.out.println(assignedPorts);
-        assertThat(assignedPorts.size(), equalTo(3));
-        assertThat(assignedPorts, hasItem(1000));
-        assertThat(assignedPorts, hasItem(1001));
-        assertThat(assignedPorts, hasItem(1002));
+        int assignedPort = stateKeeper.assignPort(DOCKER_HOST_NAME_1, SERVICE_NAME_1);
+        assertThat(assignedPort, equalTo(1000));
+        assignedPort = stateKeeper.assignPort(DOCKER_HOST_NAME_1, SERVICE_NAME_2);
+        assertThat(assignedPort, equalTo(1001));
+        assignedPort = stateKeeper.getAssignedPort(DOCKER_HOST_NAME_1, SERVICE_NAME_1);
+        assertThat(assignedPort, equalTo(1000));
+        assignedPort = stateKeeper.assignPort(DOCKER_HOST_NAME_2, SERVICE_NAME_3);
+        assertThat(assignedPort, equalTo(1000));
     }
 
     @Test

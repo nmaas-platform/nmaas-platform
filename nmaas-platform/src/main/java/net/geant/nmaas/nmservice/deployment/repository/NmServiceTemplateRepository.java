@@ -37,12 +37,12 @@ public class NmServiceTemplateRepository {
         oxidizedTemplate.setCommandInSpecRequired(false);
         oxidizedTemplate.setEnv(asList("CONFIG_RELOAD_INTERVAL: 600"));
         oxidizedTemplate.setEnvVariablesInSpecRequired(false);
-        oxidizedTemplate.setExposedPorts(asList(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 8888)));
+        oxidizedTemplate.setExposedPort(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 8888));
         templates.put(OXIDIZED_APPLICATION_ID, oxidizedTemplate);
 
         DockerEngineContainerTemplate pmacctGrafanaTemplate =
                 new DockerEngineContainerTemplate(PMACCT_GRAFANA_APPLICATION_ID, "pmacct-grafana", "llopat/pmacct");
-        pmacctGrafanaTemplate.setExposedPorts(asList(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 3000)));
+        pmacctGrafanaTemplate.setExposedPort(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 3000));
         pmacctGrafanaTemplate.setCommandInSpecRequired(false);
         pmacctGrafanaTemplate.setEnvVariablesInSpecRequired(false);
         pmacctGrafanaTemplate.setContainerVolumes(asList("/data"));

@@ -3,10 +3,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
-import jnr.ffi.annotations.In;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
@@ -21,7 +21,11 @@ import java.util.Map;
  */
 public class ContainerConfigBuilder {
 
-    public static ContainerConfig build(ContainerConfigInput configInput, DockerHost containerHost, List<Integer> assignedPublicPorts) {
+    public static ContainerConfig build(NmServiceInfo service) {
+        final DockerContainerSpec spec = (DockerContainerSpec) service.getSpec();
+        final DockerHost host = (DockerHost) service.getHost();
+        final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
+        final ContainerConfigInput configInput = ContainerConfigInput.fromSpec(spec);
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
         containerBuilder.image(configInput.getImage());
         if (configInput.getCommand() != null)
@@ -29,28 +33,31 @@ public class ContainerConfigBuilder {
         containerBuilder.env(configInput.getEnv());
         final HostConfig.Builder hostBuilder = HostConfig.builder();
         hostBuilder.portBindings(preparePortBindings(
-                configInput.getExposedPorts(),
-                containerHost.getPublicIpAddress().toString(),
-                assignedPublicPorts));
+                configInput.getExposedPort(),
+                host.getPublicIpAddress().toString(),
+                networkDetails.getPublicPort()));
         final List<String> volumeBinds = prepareVolumeBindings(
                 configInput.getContainerVolumes(),
-                containerHost.getVolumesPath(),
+                host.getVolumesPath(),
                 configInput.getUniqueDeploymentName());
         hostBuilder.appendBinds(volumeBinds);
         containerBuilder.hostConfig(HostConfig.builder().build());
         return containerBuilder.build();
     }
 
-    private static Map<String, List<PortBinding>> preparePortBindings(List<ContainerPortForwardingSpec> containerPorts, String hostPublicIpAddress, List<Integer> availableHostPorts)  {
+    private static Map<String, List<PortBinding>> preparePortBindings(ContainerPortForwardingSpec containerPort, String hostPublicIpAddress, int assignedHostPort)  {
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        int counter = 0;
-        for (ContainerPortForwardingSpec port : containerPorts) {
-            List<PortBinding> hostPorts = new ArrayList<>();
-            hostPorts.add(PortBinding.of(hostPublicIpAddress, availableHostPorts.get(counter)));
-            portBindings.put(port.getTargetPort() + "/" + port.getProtocol().getValue(), hostPorts); // TODO check if protocol is null ...
-            counter++;
-        }
+        List<PortBinding> hostPorts = new ArrayList<>();
+        hostPorts.add(PortBinding.of(hostPublicIpAddress, assignedHostPort));
+        portBindings.put(exposedPortString(containerPort), hostPorts);
         return portBindings;
+    }
+
+    private static String exposedPortString(ContainerPortForwardingSpec port) {
+        StringBuilder sb = new StringBuilder(port.getTargetPort());
+        if (port.getProtocol() != null)
+            sb.append("/").append(port.getProtocol().getValue());
+        return sb.toString();
     }
 
     private static List<String> prepareVolumeBindings(List<String> containerVolumes, String hostVolumesPath, String hostVolumeBaseName) {
@@ -75,10 +82,21 @@ public class ContainerConfigBuilder {
         NmServiceSpec spec = service.getSpec();
         if (DockerEngineContainerTemplate.class != spec.template().getClass() || DockerContainerSpec.class != spec.getClass())
             throw new NmServiceVerificationException("Service template and/or spec not in DockerEngine format");
-        if(!spec.template().verify())
+        if (!spec.template().verify())
             throw new NmServiceVerificationException("Service template incorrect");
-        if(!spec.template().verifyNmServiceSpec(spec))
+        if (!spec.template().verifyNmServiceSpec(spec))
             throw new NmServiceVerificationException("Service spec incorrect or missing required data");
+        if (service.getNetwork() == null)
+            throw new NmServiceVerificationException("Network details not set");
+        if (ContainerNetworkDetails.class != service.getNetwork().getClass())
+            throw new NmServiceVerificationException("Network details not in DockerEngine format");
+        ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
+        if (networkDetails.getPublicPort() == 0
+                || networkDetails.getVlanNumber() == 0
+                || networkDetails.getIpAddresses() == null
+                || !networkDetails.getIpAddresses().verify()) {
+            throw new NmServiceVerificationException("Network details not valid. Some parameters are be missing.");
+        }
     }
 
 }
