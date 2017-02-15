@@ -9,13 +9,9 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory;
-import net.geant.nmaas.nmservice.deployment.exceptions.ContainerNotFoundException;
-import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDestroyNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotConnectToOrchestratorException;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,14 +19,14 @@ import java.util.stream.Collectors;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@Service
+@Component
 public class DockerContainerClient {
 
-    public String deploy(ContainerConfig containerConfig, String name, DockerHost host)
+    public String create(ContainerConfig containerConfig, String name, DockerHost host)
             throws CouldNotConnectToOrchestratorException, CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
-            return executeDeploy(containerConfig, name, apiClient);
+            return executeCreate(containerConfig, name, apiClient);
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new CouldNotConnectToOrchestratorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
@@ -45,12 +41,31 @@ public class DockerContainerClient {
         }
     }
 
-    private String executeDeploy(ContainerConfig containerConfig, String name, DockerClient apiClient)
+    private String executeCreate(ContainerConfig containerConfig, String name, DockerClient apiClient)
             throws DockerException, InterruptedException {
         final ContainerCreation container = apiClient.createContainer(containerConfig, name);
-        final String containerId = container.id();
+        return container.id();
+    }
+
+    public void start(String containerId, DockerHost host)
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
+        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
+        try {
+            executeStart(containerId, apiClient);
+        } catch (DockerException dockerException) {
+            throw new CouldNotDeployNmServiceException(
+                    "Could not create given container -> " + dockerException.getMessage(), dockerException);
+        } catch (InterruptedException interruptedException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Internal error -> " + interruptedException.getMessage(), interruptedException);
+        } finally {
+            if (apiClient != null) apiClient.close();
+        }
+    }
+
+    private void executeStart(String containerId, DockerClient apiClient)
+            throws DockerException, InterruptedException {
         apiClient.startContainer(containerId);
-        return containerId;
     }
 
     public void remove(String containerId, DockerHost host)
@@ -123,11 +138,12 @@ public class DockerContainerClient {
         return containers.stream().map((container -> container.id())).collect(Collectors.toList());
     }
 
-    public NmServiceDeploymentState checkService(String containerId, DockerHost host)
-            throws ContainerNotFoundException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void checkService(String containerId, DockerHost host)
+            throws ContainerCheckFailedException, ContainerNotFoundException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
-            return executeInspectContainerAndReturnContainerState(containerId, apiClient);
+            if (!NmServiceDeploymentState.DEPLOYED.equals(executeInspectContainerAndReturnContainerState(containerId, apiClient)))
+                throw new ContainerCheckFailedException("Container with id " + containerId + " is stopped");
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new CouldNotConnectToOrchestratorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
@@ -154,8 +170,9 @@ public class DockerContainerClient {
                 return NmServiceDeploymentState.REMOVED;
             case "running":
                 return NmServiceDeploymentState.DEPLOYED;
-                default:
-                    return NmServiceDeploymentState.ERROR;
+            default:
+                return NmServiceDeploymentState.ERROR;
         }
     }
+
 }

@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.PortForwardingSpec;
+import net.geant.nmaas.orchestration.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,11 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
 
     /**
+     * Identifier of the application to which this template corresponds.
+     */
+    private Identifier applicationId;
+
+    /**
      * Name identifying this template (should be related with the name of the NM service/tool)
      */
     private String name;
@@ -25,7 +31,7 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
     private String image;
 
     /**
-     * The number of isntances of given service run in the swarm
+     * The number of instances of given service run in the swarm
      */
     private Long replicas = 1L;
 
@@ -59,7 +65,8 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
      */
     private Boolean envVariablesInSpecRequired = false;
 
-    public DockerSwarmNmServiceTemplate(String name, String image) {
+    public DockerSwarmNmServiceTemplate(Identifier applicationId, String name, String image) {
+        this.applicationId = applicationId;
         this.name = name;
         this.image = image;
     }
@@ -90,6 +97,11 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Identifier getApplicationId() {
+        return applicationId;
     }
 
     public String getImage() {

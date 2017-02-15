@@ -1,8 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
+import net.geant.nmaas.orchestration.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,11 @@ import static org.springframework.util.ObjectUtils.isEmpty;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class DockerEngineContainerTemplate implements NmServiceTemplate {
+
+    /**
+     * Identifier of the application to which this template corresponds.
+     */
+    private Identifier applicationId;
 
     /**
      * Name identifying this template (should be related with the name of the NM service/tool)
@@ -35,10 +41,10 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
     private Boolean commandInSpecRequired = false;
 
     /**
-     * List of exposed ports that this service is accessible on from the outside.
-     * During container configuration for each port on the list a published port needs to be assigned.
+     * Port exposed by the service/container. During container configuration for this port a published port needs
+     * to be assigned.
      */
-    private List<ContainerPortForwardingSpec> exposedPorts = new ArrayList<>();
+    private ContainerPortForwardingSpec exposedPort;
 
     /**
      * A list of environment variables in the form of ["VAR=value"]
@@ -56,7 +62,8 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
      */
     private List<String> containerVolumes = new ArrayList<>();
 
-    public DockerEngineContainerTemplate(String name, String image) {
+    public DockerEngineContainerTemplate(Identifier applicationId, String name, String image) {
+        this.applicationId = applicationId;
         this.name = name;
         this.image = image;
     }
@@ -85,6 +92,11 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         return name;
     }
 
+    @Override
+    public Identifier getApplicationId() {
+        return applicationId;
+    }
+
     public String getImage() {
         return image;
     }
@@ -105,8 +117,8 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         return envVariablesInSpecRequired;
     }
 
-    public List<ContainerPortForwardingSpec> getExposedPorts() {
-        return exposedPorts;
+    public ContainerPortForwardingSpec getExposedPort() {
+        return exposedPort;
     }
 
     public void setCommand(String command) {
@@ -133,7 +145,7 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
         this.containerVolumes = containerVolumes;
     }
 
-    public void setExposedPorts(List<ContainerPortForwardingSpec> exposedPorts) {
-        this.exposedPorts = exposedPorts;
+    public void setExposedPort(ContainerPortForwardingSpec exposedPort) {
+        this.exposedPort = exposedPort;
     }
 }

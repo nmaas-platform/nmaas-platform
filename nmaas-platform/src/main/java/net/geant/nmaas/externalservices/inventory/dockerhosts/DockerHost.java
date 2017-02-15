@@ -5,8 +5,6 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents Docker Host which runs Docker Engine daemon, exposes an Docker Remote API and is available for container deployment.
@@ -15,10 +13,6 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class DockerHost implements NmServiceDeploymentHost {
-
-    public static final int MIN_ASSIGNABLE_PORT_NUMBER = 1000;
-
-    public static final int MIN_ASSIGNABLE_VLAN_NUMBER = 500;
 
     /**
      * Unique name identifying this Docker host.
@@ -52,6 +46,11 @@ public class DockerHost implements NmServiceDeploymentHost {
     private final String dataInterfaceName;
 
     /**
+     * Address of the base /9 network from which address pools for particular container deployment will be assigned.
+     */
+    private final InetAddress baseDataNetworkAddress;
+
+    /**
      * Default root directory on the Docker host on which volumes will be created and mounted on deployed containers.
      */
     private final String volumesPath;
@@ -61,22 +60,13 @@ public class DockerHost implements NmServiceDeploymentHost {
      */
     private final boolean preferred;
 
-    /**
-     * List of ports on the public interface currently assigned for containers deployed on the host.
-     */
-    private final List<Integer> assignedPorts = new ArrayList<>();
-
-    /**
-     * List of numbers of VLANs currently configured on the data interface for containers deployed on the host.
-     */
-    private final List<Integer> assignedVlans = new ArrayList<>();
-
     public DockerHost(String name,
                       InetAddress apiIpAddress,
                       Integer apiPort,
                       InetAddress publicIpAddress,
                       String accessInterfaceName,
                       String dataInterfaceName,
+                      InetAddress baseDataNetworkAddress,
                       String volumesPath,
                       boolean preferred) {
         this.name = name;
@@ -85,6 +75,7 @@ public class DockerHost implements NmServiceDeploymentHost {
         this.publicIpAddress = publicIpAddress;
         this.accessInterfaceName = accessInterfaceName;
         this.dataInterfaceName = dataInterfaceName;
+        this.baseDataNetworkAddress = baseDataNetworkAddress;
         this.volumesPath = volumesPath;
         this.preferred = preferred;
     }
@@ -102,38 +93,6 @@ public class DockerHost implements NmServiceDeploymentHost {
         }
     }
 
-    /**
-     * Checks currently assigned ports on the host and returns a list of next available ports.
-     *
-     * @param number of available ports to be listed
-     */
-    public List<Integer> getAvailablePorts(int number) {
-        List<Integer> availablePorts = new ArrayList<>();
-        int count = 0;
-        int portNumber = MIN_ASSIGNABLE_PORT_NUMBER;
-        while(count < number) {
-            while(assignedPorts.contains(portNumber))
-                portNumber++;
-            count++;
-            assignedPorts.add(portNumber);
-            availablePorts.add(portNumber);
-        }
-        return availablePorts;
-    }
-
-    /**
-     * Checks currently assigned VLAN numbers on the host and returns the next available number
-     *
-     * @return VLAN number
-     */
-    public int getAvailableVlanNumber() {
-        int vlanNumber = MIN_ASSIGNABLE_VLAN_NUMBER;
-        while (assignedVlans.contains(vlanNumber))
-            vlanNumber++;
-        assignedVlans.add(vlanNumber);
-        return vlanNumber;
-    }
-
     public String getName() {
         return name;
     }
@@ -148,6 +107,10 @@ public class DockerHost implements NmServiceDeploymentHost {
 
     public String getDataInterfaceName() {
         return dataInterfaceName;
+    }
+
+    public InetAddress getBaseDataNetworkAddress() {
+        return baseDataNetworkAddress;
     }
 
     public String getVolumesPath() {

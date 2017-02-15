@@ -4,14 +4,13 @@ import com.spotify.docker.client.messages.swarm.ServiceSpec;
 import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmsRepository;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServiceSpecBuilder;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServicesClient;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServicesClient;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServiceSpecBuilder;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,7 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     private DockerSwarmsRepository dockerSwarms;
 
     @Override
-    public void verifyRequestObtainTargetAndNetworkDetails(String serviceName)
+    public void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
             throws ContainerOrchestratorInternalErrorException {
         throw new ContainerOrchestratorInternalErrorException("DockerSwarm orchestrator is not currently supported");
     }
@@ -58,7 +57,7 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
             String serviceId = servicesManager.deployService(dockerSpec, dockerSwarms.loadPreferredDockerSwarmManager());
             nmServices.updateServiceId(serviceName, serviceId);
             nmServices.updateServiceState(serviceName, NmServiceDeploymentState.DEPLOYED);
-        } catch (NmServiceVerificationException serviceSpecVerificationException) {
+        } catch (NmServiceRequestVerificationException serviceSpecVerificationException) {
             throw new CouldNotDeployNmServiceException("Could not deploy service -> " + serviceSpecVerificationException.getMessage());
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
             throw new CouldNotDeployNmServiceException("Could not deploy service -> " + couldNotDeployNmServiceException.getMessage());
@@ -87,7 +86,7 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
     }
 
     @Override
-    public NmServiceDeploymentState checkService(String serviceName) throws ContainerOrchestratorInternalErrorException {
+    public void checkService(String serviceName) throws ContainerOrchestratorInternalErrorException {
         throw new ContainerOrchestratorInternalErrorException("Method not implemented");
     }
 

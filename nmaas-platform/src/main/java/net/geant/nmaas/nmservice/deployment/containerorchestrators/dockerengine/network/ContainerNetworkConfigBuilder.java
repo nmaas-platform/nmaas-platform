@@ -6,7 +6,7 @@ import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerNetworkDetailsVerificationException;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
@@ -24,7 +24,7 @@ public class ContainerNetworkConfigBuilder {
     private static final String DOCKER_MACVLAN_DRIVER_OPTION_PARENT_KEY = "parent";
 
     public static NetworkConfig build(NmServiceInfo service)
-            throws NmServiceVerificationException, ContainerNetworkDetailsVerificationException {
+            throws NmServiceRequestVerificationException, ContainerNetworkDetailsVerificationException {
         verifyInputService(service);
         verifyInputNetworkDetails(service.getNetwork());
         final ContainerNetworkIpamSpec ipamSpec = ((ContainerNetworkDetails)service.getNetwork()).getIpAddresses();
@@ -49,28 +49,29 @@ public class ContainerNetworkConfigBuilder {
         return networkConfig;
     }
 
-    private static void verifyInputService(NmServiceInfo service) throws NmServiceVerificationException {
+    private static void verifyInputService(NmServiceInfo service) throws NmServiceRequestVerificationException {
         if (service == null)
-            throw new NmServiceVerificationException("Service object is null");
+            throw new NmServiceRequestVerificationException("Service object is null");
         NmServiceSpec spec = service.getSpec();
         if (spec == null)
-            throw new NmServiceVerificationException("Service spec not available (null)");
+            throw new NmServiceRequestVerificationException("Service spec not available (null)");
         if (DockerContainerSpec.class != spec.getClass())
-            throw new NmServiceVerificationException("Service spec not in DockerEngine format");
+            throw new NmServiceRequestVerificationException("Service spec not in DockerEngine format");
         if (spec.uniqueDeploymentName() == null || spec.uniqueDeploymentName().isEmpty())
-            throw new NmServiceVerificationException("Service spec returns empty unique name for service deployment");
+            throw new NmServiceRequestVerificationException("Service spec returns empty unique name for service deployment");
         if (service.getHost() == null)
-            throw new NmServiceVerificationException("Deployment host not available (null)");
+            throw new NmServiceRequestVerificationException("Deployment host not available (null)");
         if (DockerHost.class != service.getHost().getClass())
-            throw new NmServiceVerificationException("Deployment host not in DockerEngine format");
+            throw new NmServiceRequestVerificationException("Deployment host not in DockerEngine format");
         DockerHost host = (DockerHost) service.getHost();
         if (host.getDataInterfaceName() == null || host.getDataInterfaceName().isEmpty())
-            throw new NmServiceVerificationException("Data interface name missing on Docker Host");
+            throw new NmServiceRequestVerificationException("Data interface name missing on Docker Host");
         if (service.getNetwork() == null)
-            throw new NmServiceVerificationException("Deployment network details not available (null)");
+            throw new NmServiceRequestVerificationException("Deployment network details not available (null)");
     }
 
-    private static void verifyInputNetworkDetails(NmServiceDeploymentNetworkDetails networkDetails) throws ContainerNetworkDetailsVerificationException {
+    private static void verifyInputNetworkDetails(NmServiceDeploymentNetworkDetails networkDetails)
+            throws ContainerNetworkDetailsVerificationException {
         if (ContainerNetworkDetails.class != networkDetails.getClass())
             throw new ContainerNetworkDetailsVerificationException("Deployment network details not in DockerEngine format");
         ContainerNetworkDetails containerNetworkDetails = (ContainerNetworkDetails) networkDetails;

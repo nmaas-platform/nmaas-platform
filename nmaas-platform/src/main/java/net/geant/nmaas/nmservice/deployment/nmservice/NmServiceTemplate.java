@@ -1,14 +1,18 @@
 package net.geant.nmaas.nmservice.deployment.nmservice;
 
+import net.geant.nmaas.orchestration.Identifier;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface NmServiceTemplate {
 
-    public String getName();
+    Identifier getApplicationId();
 
-    public Boolean verify();
+    String getName();
 
-    public Boolean verifyNmServiceSpec(NmServiceSpec spec);
+    Boolean verify();
+
+    Boolean verifyNmServiceSpec(NmServiceSpec spec);
 
 }

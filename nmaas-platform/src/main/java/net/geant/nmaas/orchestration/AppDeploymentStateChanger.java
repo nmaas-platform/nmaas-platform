@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 /**
  * Declares method to be implemented by every component managing one or more NMaaS application deployment steps.

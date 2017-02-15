@@ -15,11 +15,12 @@ public class ContainerConfigInput {
             input.setCommand(spec.getCommand());
         else
             input.setCommand(template.getCommand());
-        input.setExposedPorts(template.getExposedPorts());
+        input.setExposedPort(template.getExposedPort());
         input.setEnv(template.getEnv());
         if (template.getEnvVariablesInSpecRequired())
             input.getEnv().addAll(spec.getEnvironmentVariables());
         input.setContainerVolumes(template.getContainerVolumes());
+        input.setUniqueDeploymentName(spec.uniqueDeploymentName());
         return input;
     }
 
@@ -27,11 +28,13 @@ public class ContainerConfigInput {
 
     private String command;
 
-    private List<ContainerPortForwardingSpec> exposedPorts;
+    private ContainerPortForwardingSpec exposedPort;
 
     private List<String> env;
 
     private List<String> containerVolumes;
+
+    private String uniqueDeploymentName;
 
     public String getImage() {
         return image;
@@ -49,12 +52,12 @@ public class ContainerConfigInput {
         this.command = command;
     }
 
-    public List<ContainerPortForwardingSpec> getExposedPorts() {
-        return exposedPorts;
+    public ContainerPortForwardingSpec getExposedPort() {
+        return exposedPort;
     }
 
-    public void setExposedPorts(List<ContainerPortForwardingSpec> exposedPorts) {
-        this.exposedPorts = exposedPorts;
+    public void setExposedPort(ContainerPortForwardingSpec exposedPort) {
+        this.exposedPort = exposedPort;
     }
 
     public List<String> getEnv() {
@@ -71,5 +74,13 @@ public class ContainerConfigInput {
 
     public void setContainerVolumes(List<String> containerVolumes) {
         this.containerVolumes = containerVolumes;
+    }
+
+    public String getUniqueDeploymentName() {
+        return uniqueDeploymentName;
+    }
+
+    public void setUniqueDeploymentName(String uniqueDeploymentName) {
+        this.uniqueDeploymentName = uniqueDeploymentName;
     }
 }

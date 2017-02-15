@@ -2,6 +2,7 @@ package net.geant.nmaas.deploymentorchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,8 @@ public class DefaultAppDeploymentMonitorTest {
         monitor.notifyStateChange(deploymentId, DcnDeploymentState.DEPLOYED);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
         // app configuration
+        monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURATION_IN_PROGRESS));
         monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.CONFIGURED);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
         // app deployment

@@ -2,8 +2,8 @@ package net.geant.nmaas.dcndeployment;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
-import net.geant.nmaas.deploymentorchestration.Identifier;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.Identifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

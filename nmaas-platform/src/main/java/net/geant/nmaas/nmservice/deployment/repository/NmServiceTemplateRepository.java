@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.repository;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
+import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Singleton;
@@ -19,43 +19,50 @@ import static java.util.Arrays.asList;
 @Singleton
 public class NmServiceTemplateRepository {
 
-    private Map<String, NmServiceTemplate> templates = new HashMap<>();
+    public static final Identifier OXIDIZED_APPLICATION_ID = Identifier.newInstance("oxidizedApplicationId");
+
+    public static final Identifier TOMCAT_ALPINE_APPLICATION_ID = Identifier.newInstance("tomcatAlpineApplicationId");
+
+    public static final Identifier PMACCT_GRAFANA_APPLICATION_ID = Identifier.newInstance("pmacctGrafanaApplicationId");
+
+    private Map<Identifier, NmServiceTemplate> templates = new HashMap<>();
 
     {
-        DockerEngineContainerTemplate tomcatTemplate = new DockerEngineContainerTemplate("tomcat-alpine", "tomcat:alpine");
-        templates.put(tomcatTemplate.getName(), tomcatTemplate);
+        DockerEngineContainerTemplate tomcatTemplate =
+                new DockerEngineContainerTemplate(TOMCAT_ALPINE_APPLICATION_ID, "tomcat-alpine", "tomcat:alpine");
+        templates.put(TOMCAT_ALPINE_APPLICATION_ID, tomcatTemplate);
 
-        DockerEngineContainerTemplate oxidizedTemplate = new DockerEngineContainerTemplate("oxidized", "oxidized/oxidized:latest");
+        DockerEngineContainerTemplate oxidizedTemplate =
+                new DockerEngineContainerTemplate(OXIDIZED_APPLICATION_ID, "oxidized", "oxidized/oxidized:latest");
         oxidizedTemplate.setCommandInSpecRequired(false);
         oxidizedTemplate.setEnv(asList("CONFIG_RELOAD_INTERVAL: 600"));
         oxidizedTemplate.setEnvVariablesInSpecRequired(false);
-        oxidizedTemplate.setExposedPorts(asList(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 8888)));
-        templates.put(oxidizedTemplate.getName(), oxidizedTemplate);
+        oxidizedTemplate.setExposedPort(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 8888));
+        templates.put(OXIDIZED_APPLICATION_ID, oxidizedTemplate);
 
-        DockerEngineContainerTemplate pmacctGrafanaTemplate = new DockerEngineContainerTemplate("pmacct-grafana", "llopat/pmacct");
-        pmacctGrafanaTemplate.setExposedPorts(asList(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 3000)));
+        DockerEngineContainerTemplate pmacctGrafanaTemplate =
+                new DockerEngineContainerTemplate(PMACCT_GRAFANA_APPLICATION_ID, "pmacct-grafana", "llopat/pmacct");
+        pmacctGrafanaTemplate.setExposedPort(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 3000));
         pmacctGrafanaTemplate.setCommandInSpecRequired(false);
         pmacctGrafanaTemplate.setEnvVariablesInSpecRequired(false);
         pmacctGrafanaTemplate.setContainerVolumes(asList("/data"));
-        templates.put(pmacctGrafanaTemplate.getName(), pmacctGrafanaTemplate);
-
-       // docker create --name check-vlan--pmacct-1 -p 5001:3000 -v /home/mgmt/docker/data-pmacct-1:/data llopat/pmacct "$@"
-
-        DockerSwarmNmServiceTemplate tomcatOnSwarmTemplate = new DockerSwarmNmServiceTemplate("tomcat-on-swarm-alpine", "tomcat:alpine");
-        templates.put(tomcatOnSwarmTemplate.getName(), tomcatOnSwarmTemplate);
+        templates.put(PMACCT_GRAFANA_APPLICATION_ID, pmacctGrafanaTemplate);
     }
 
-    public synchronized NmServiceTemplate loadTemplate(String name) {
-        return templates.get(name);
+    public NmServiceTemplate loadTemplateByName(String name) {
+        return templates.values().stream().filter(template -> template.getName().equals(name)).findFirst().get();
     }
 
-    public synchronized void storeTemplete(NmServiceTemplate template) {
-        if(template != null && template.getName() != null)
-            templates.put(template.getName(), template);
+    public NmServiceTemplate loadTemplateByApplicationId(Identifier applicationId) {
+        return templates.get(applicationId);
+    }
+
+    public synchronized void storeTemplate(Identifier applicationId, NmServiceTemplate template) {
+        if(template != null && applicationId != null)
+            templates.put(applicationId, template);
     }
 
     public synchronized void deleteTemplate(String name) {
         templates.remove(name);
     }
-
 }

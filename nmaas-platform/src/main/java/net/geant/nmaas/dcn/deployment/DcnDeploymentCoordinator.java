@@ -8,21 +8,21 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
-import net.geant.nmaas.deploymentorchestration.AppDeploymentStateChangeListener;
-import net.geant.nmaas.deploymentorchestration.Identifier;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
+import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.geant.nmaas.dcn.deployment.DcnDeploymentState.INIT;
 
-@Service
+@Component
 public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
 
     private static final String DEFAULT_ANSIBLE_CONTAINER_NAME = "nmaas-ansible-test";
@@ -33,15 +33,19 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
 
     private DeploymentIdToDcnNameMapper deploymentIdMapper;
 
+    AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener;
+
     private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
 
     @Autowired
     public DcnDeploymentCoordinator(DockerHostRepository dockerHostRepository,
                                     DcnRepository dcnRepository,
-                                    DeploymentIdToDcnNameMapper deploymentIdMapper) {
+                                    DeploymentIdToDcnNameMapper deploymentIdMapper,
+                                    AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener) {
         this.dockerHostRepository = dockerHostRepository;
         this.dcnRepository = dcnRepository;
         this.deploymentIdMapper = deploymentIdMapper;
+        this.defaultAppDeploymentStateChangeListener = defaultAppDeploymentStateChangeListener;
     }
 
     @Override
@@ -49,7 +53,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
         final String dcnName = dcnSpec.name();
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
         dcnRepository.storeNetwork(new DcnInfo(dcnName, INIT, dcnSpec));
-        notifyStateChangeListeners(deploymentId, INIT);
         VpnConfig vpnConfig = null;
         try {
             vpnConfig = VpnConfig.defaultVpn();
@@ -59,6 +62,12 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
             System.out.println("Exception during DCN request verification -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
         }
+    }
+
+    @Override
+    public void prepareDeploymentEnvironment(Identifier deploymentId) throws InvalidDeploymentIdException {
+        // TODO implement DCN environment preparation functionality (currently not required)
+        notifyStateChangeListeners(deploymentId, DcnDeploymentState.ENVIRONMENT_PREPARED);
     }
 
     @Override
@@ -95,6 +104,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, DcnDeploymentState state) {
+        defaultAppDeploymentStateChangeListener.notifyStateChange(deploymentId, state);
         stateChangeListeners.forEach((listener) -> listener.notifyStateChange(deploymentId, state));
     }
 

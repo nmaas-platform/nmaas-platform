@@ -21,11 +21,6 @@ public class DockerContainerSpec implements NmServiceSpec {
     final private DockerEngineContainerTemplate template;
 
     /**
-     * System-defined unique identifier of this container
-     */
-    final private Long id;
-
-    /**
      * Name of the client requesting the service (e.g. username)
      */
     private String clientName;
@@ -50,9 +45,8 @@ public class DockerContainerSpec implements NmServiceSpec {
      */
     private List<ContainerPortForwardingSpec> ports;
 
-    public DockerContainerSpec(String name, Long id, DockerEngineContainerTemplate template) {
+    public DockerContainerSpec(String name, DockerEngineContainerTemplate template) {
         this.name = name;
-        this.id = id;
         this.template = template;
     }
 
@@ -65,8 +59,6 @@ public class DockerContainerSpec implements NmServiceSpec {
     public Boolean verify() {
         if (name == null || name.isEmpty())
             return false;
-        if (id == null)
-            return false;
         if (clientName == null || clientName.isEmpty())
             return false;
         if (clientOrganizationName == null || clientOrganizationName.isEmpty())
@@ -77,17 +69,13 @@ public class DockerContainerSpec implements NmServiceSpec {
     @Override
     public String uniqueDeploymentName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(clientOrganizationName).append("-").append(clientName).append("-").append(name).append("-").append(id);
+        sb.append(clientOrganizationName).append("-").append(clientName).append("-").append(name);
         return sb.toString();
     }
 
     @Override
     public NmServiceTemplate template() {
         return template;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getClientName() {

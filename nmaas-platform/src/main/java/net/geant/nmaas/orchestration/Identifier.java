@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 /**
  * Common class for storing various types of identifiers.
@@ -13,8 +13,8 @@ public class Identifier {
         this.value = value;
     }
 
-    public String value() {
-        return value;
+    public static Identifier newInstance(String value) {
+        return new Identifier(value);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package net.geant.nmaas.deploymentorchestration;
+package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
@@ -178,8 +178,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
-                case CONFIGURED:
-                    return APPLICATION_CONFIGURED;
+                case CONFIGURATION_INITIATED:
+                    return APPLICATION_CONFIGURATION_IN_PROGRESS;
                 case CONFIGURATION_FAILED:
                     return APPLICATION_CONFIGURATION_FAILED;
                 default:
@@ -190,6 +190,22 @@ public enum AppDeploymentState {
     MANAGEMENT_VPN_CONFIGURATION_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_FAILED; }
+    },
+    APPLICATION_CONFIGURATION_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case CONFIGURED:
+                    return APPLICATION_CONFIGURED;
+                case DEPLOYMENT_FAILED:
+                    return APPLICATION_DEPLOYMENT_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
     },
     APPLICATION_CONFIGURED {
         @Override
