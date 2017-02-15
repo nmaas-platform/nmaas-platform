@@ -7,7 +7,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 
@@ -78,24 +78,24 @@ public class ContainerConfigBuilder {
         return sb.toString();
     }
 
-    public static void verifyInput(NmServiceInfo service) throws NmServiceVerificationException {
+    public static void verifyInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
         NmServiceSpec spec = service.getSpec();
         if (DockerEngineContainerTemplate.class != spec.template().getClass() || DockerContainerSpec.class != spec.getClass())
-            throw new NmServiceVerificationException("Service template and/or spec not in DockerEngine format");
+            throw new NmServiceRequestVerificationException("Service template and/or spec not in DockerEngine format");
         if (!spec.template().verify())
-            throw new NmServiceVerificationException("Service template incorrect");
+            throw new NmServiceRequestVerificationException("Service template incorrect");
         if (!spec.template().verifyNmServiceSpec(spec))
-            throw new NmServiceVerificationException("Service spec incorrect or missing required data");
+            throw new NmServiceRequestVerificationException("Service spec incorrect or missing required data");
         if (service.getNetwork() == null)
-            throw new NmServiceVerificationException("Network details not set");
+            throw new NmServiceRequestVerificationException("Network details not set");
         if (ContainerNetworkDetails.class != service.getNetwork().getClass())
-            throw new NmServiceVerificationException("Network details not in DockerEngine format");
+            throw new NmServiceRequestVerificationException("Network details not in DockerEngine format");
         ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
         if (networkDetails.getPublicPort() == 0
                 || networkDetails.getVlanNumber() == 0
                 || networkDetails.getIpAddresses() == null
                 || !networkDetails.getIpAddresses().verify()) {
-            throw new NmServiceVerificationException("Network details not valid. Some parameters are be missing.");
+            throw new NmServiceRequestVerificationException("Network details not valid. Some parameters are be missing.");
         }
     }
 

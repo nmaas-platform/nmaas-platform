@@ -48,7 +48,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
 
     @Override
     public void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
-            throws NmServiceVerificationException, ContainerOrchestratorInternalErrorException {
+            throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
             final DockerHost host = dockerHosts.loadPreferredDockerHost();
             nmServices.updateServiceHost(serviceName, host);
@@ -84,7 +84,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new CouldNotPrepareEnvironmentException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
-        } catch (NmServiceVerificationException serviceSpecVerificationException) {
+        } catch (NmServiceRequestVerificationException serviceSpecVerificationException) {
             throw new CouldNotPrepareEnvironmentException(
                     "Service spec verification failed -> " + serviceSpecVerificationException.getMessage());
         } catch (ContainerNetworkDetailsVerificationException containerNetworkDetailsVerificationException) {
@@ -122,16 +122,19 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     }
 
     @Override
-    public NmServiceDeploymentState checkService(String serviceName)
-            throws CouldNotCheckNmServiceStateException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void checkService(String serviceName)
+            throws ContainerCheckFailedException, ContainerNetworkCheckFailedException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
             final NmServiceInfo service = nmServices.loadService(serviceName);
-            return dockerContainerClient.checkService(service.getDeploymentId(), (DockerHost) service.getHost());
+            final DockerHost host = (DockerHost) service.getHost();
+            final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
+            dockerContainerClient.checkService(service.getDeploymentId(), host);
+            dockerNetworkClient.checkNetwork(networkDetails.getDeploymentId(), service.getDeploymentId(), host);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotCheckNmServiceStateException(
+            throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
         }  catch (ContainerNotFoundException containerNotFoundException) {
-            throw new CouldNotCheckNmServiceStateException(
+            throw new ContainerOrchestratorInternalErrorException(
                     "Container not found on the deployment host -> " + containerNotFoundException.getMessage());
         }
     }
@@ -142,8 +145,9 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         try {
             final NmServiceInfo service = nmServices.loadService(serviceName);
             final DockerHost host = (DockerHost) service.getHost();
+            final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
             dockerContainerClient.remove(service.getDeploymentId(), host);
-            dockerNetworkClient.remove(((ContainerNetworkDetails)service.getNetwork()).getDeploymentId(), host);
+            dockerNetworkClient.remove(networkDetails.getDeploymentId(), host);
             nmServices.updateServiceState(serviceName, REMOVED);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new CouldNotDestroyNmServiceException(

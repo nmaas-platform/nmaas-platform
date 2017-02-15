@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public interface ContainerOrchestrationProvider {
      * @param serviceName service to be deployed
      */
     void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
-            throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException, NmServiceVerificationException;
+            throws NmServiceRequestVerificationException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
 
     /**
      * Executes all initial configuration steps in order to enable further deployment of the service. This step includes
@@ -42,8 +41,8 @@ public interface ContainerOrchestrationProvider {
     void deployNmService(String serviceName)
             throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
 
-    NmServiceDeploymentState checkService(String serviceName)
-            throws CouldNotCheckNmServiceStateException, ContainerOrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;
+    void checkService(String serviceName)
+            throws ContainerCheckFailedException, ContainerNetworkCheckFailedException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
 
     void removeNmService(String serviceName)
             throws CouldNotDestroyNmServiceException, ContainerOrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;

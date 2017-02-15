@@ -5,11 +5,10 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigInput;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
@@ -18,7 +17,6 @@ import org.junit.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,13 +57,13 @@ public class ContainerConfigBuilderTest {
         serviceInfo.setNetwork(networkDetails);
     }
 
-    @Test(expected = NmServiceVerificationException.class)
-    public void shouldVerifySpecAndThrowException() throws NmServiceVerificationException {
+    @Test(expected = NmServiceRequestVerificationException.class)
+    public void shouldVerifySpecAndThrowException() throws NmServiceRequestVerificationException {
         ContainerConfigBuilder.verifyInput(serviceInfo);
     }
 
     @Test
-    public void shouldVerifySpecAndContinue() throws NmServiceVerificationException {
+    public void shouldVerifySpecAndContinue() throws NmServiceRequestVerificationException {
         spec.setClientDetails("testClient1", "testOrganisation1");
         ContainerConfigBuilder.verifyInput(serviceInfo);
     }

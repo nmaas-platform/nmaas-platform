@@ -46,7 +46,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (CouldNotConnectToOrchestratorException
                 | ContainerOrchestratorInternalErrorException
-                | NmServiceVerificationException e) {
+                | NmServiceRequestVerificationException e) {
             System.out.println("NM Service request verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
         }
@@ -96,7 +96,8 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, VERIFIED);
         } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException e) {
             throw new InvalidDeploymentIdException();
-        } catch (CouldNotCheckNmServiceStateException
+        } catch (ContainerCheckFailedException
+                | ContainerNetworkCheckFailedException
                 | CouldNotConnectToOrchestratorException
                 | ContainerOrchestratorInternalErrorException e) {
             System.out.println("NM Service deployment verification failed -> " + e.getMessage());

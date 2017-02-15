@@ -138,11 +138,12 @@ public class DockerContainerClient {
         return containers.stream().map((container -> container.id())).collect(Collectors.toList());
     }
 
-    public NmServiceDeploymentState checkService(String containerId, DockerHost host)
-            throws ContainerNotFoundException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void checkService(String containerId, DockerHost host)
+            throws ContainerCheckFailedException, ContainerNotFoundException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
-            return executeInspectContainerAndReturnContainerState(containerId, apiClient);
+            if (!NmServiceDeploymentState.DEPLOYED.equals(executeInspectContainerAndReturnContainerState(containerId, apiClient)))
+                throw new ContainerCheckFailedException("Container with id " + containerId + " is stopped");
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new CouldNotConnectToOrchestratorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);

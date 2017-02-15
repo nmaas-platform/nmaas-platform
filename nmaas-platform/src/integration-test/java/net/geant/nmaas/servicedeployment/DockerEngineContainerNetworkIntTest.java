@@ -4,15 +4,14 @@ import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkClient;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,12 +52,11 @@ public class DockerEngineContainerNetworkIntTest {
 
     @Test
     public void shouldCreateInspectAndRemoteSimpleNetwork()
-            throws NmServiceVerificationException, ContainerNetworkDetailsVerificationException, ContainerOrchestratorInternalErrorException, CouldNotCreateContainerNetworkException, ContainerNetworkCheckFailedException, CouldNotCheckNmServiceStateException, InterruptedException, CouldNotRemoveContainerNetworkException {
+            throws NmServiceRequestVerificationException, ContainerNetworkDetailsVerificationException, ContainerOrchestratorInternalErrorException, CouldNotCreateContainerNetworkException, ContainerNetworkCheckFailedException, InterruptedException, CouldNotRemoveContainerNetworkException {
         final NetworkConfig networkConfig = ContainerNetworkConfigBuilder.build(serviceInfo);
         final DockerHost host = (DockerHost) serviceInfo.getHost();
         final String networkId = networkClient.create(networkConfig, host);
         assertThat(networkId, is(notNullValue()));
-        networkClient.checkNetwork(networkId, networkConfig, host);
         Thread.sleep(5000);
         networkClient.remove(networkId, host);
     }

@@ -4,7 +4,7 @@ import com.spotify.docker.client.messages.swarm.ContainerSpec;
 import com.spotify.docker.client.messages.swarm.ServiceSpec;
 import com.spotify.docker.client.messages.swarm.TaskSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceVerificationException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
@@ -14,7 +14,7 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
  */
 public class SwarmServiceSpecBuilder {
 
-    public static ServiceSpec build(NmServiceSpec spec) throws NmServiceVerificationException {
+    public static ServiceSpec build(NmServiceSpec spec) throws NmServiceRequestVerificationException {
         verifyInput(spec.template(), spec);
         DockerSwarmNmServiceTemplate dockerTemplate = (DockerSwarmNmServiceTemplate) spec.template();
         DockerSwarmServiceSpec dockerSpec = (DockerSwarmServiceSpec) spec;
@@ -28,13 +28,13 @@ public class SwarmServiceSpecBuilder {
         return serviceBuilder.build();
     }
 
-    public static void verifyInput(NmServiceTemplate template, NmServiceSpec spec) throws NmServiceVerificationException {
+    public static void verifyInput(NmServiceTemplate template, NmServiceSpec spec) throws NmServiceRequestVerificationException {
         if (DockerSwarmNmServiceTemplate.class != template.getClass() || DockerSwarmServiceSpec.class != spec.getClass())
-            throw new NmServiceVerificationException("Service template and/or spec not in DockerSwarm format");
+            throw new NmServiceRequestVerificationException("Service template and/or spec not in DockerSwarm format");
         if(!template.verify())
-            throw new NmServiceVerificationException("Service template incorrect");
+            throw new NmServiceRequestVerificationException("Service template incorrect");
         if(!template.verifyNmServiceSpec(spec))
-            throw new NmServiceVerificationException("Service spec incorrect or missing required data");
+            throw new NmServiceRequestVerificationException("Service spec incorrect or missing required data");
     }
 
 }
