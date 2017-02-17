@@ -24,3 +24,14 @@ task build(type: Exec) {
 }
 build.dependsOn(npm_install)
 
+task run(type: Exec) {
+	println 'Running app using angular-cli'
+	
+	if ( OperatingSystem.current().isWindows() ) {
+		commandLine 'cmd', '/c', 'ng', 'serve'
+	} else {
+		commandLine 'ng', 'serve'
+	}		
+}
+build.dependsOn(npm_install)
+

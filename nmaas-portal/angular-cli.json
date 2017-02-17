@@ -7,7 +7,7 @@
     {
       "root": "src",
       "outDir": "build",
-      "assets": "assets",
+      "assets": ["assets", "config.json" ],
       "index": "index.html",
       "main": "main.ts",
       "test": "test.ts",
