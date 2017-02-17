@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerClient;
 import org.junit.Test;

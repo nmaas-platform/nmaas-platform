@@ -48,6 +48,7 @@ public class NmaasPlatformConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
                 .antMatchers("/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
                 .antMatchers("/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
+                .antMatchers("/api/configs/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
                 .and().httpBasic().authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

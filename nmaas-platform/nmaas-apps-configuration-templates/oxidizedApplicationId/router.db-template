@@ -1,0 +1,3 @@
+<#list routers as router>
+	${router}:junos
+</#list>

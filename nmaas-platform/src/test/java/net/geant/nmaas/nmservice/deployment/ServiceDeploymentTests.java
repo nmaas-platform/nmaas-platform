@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment;
+package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
 import org.junit.Test;

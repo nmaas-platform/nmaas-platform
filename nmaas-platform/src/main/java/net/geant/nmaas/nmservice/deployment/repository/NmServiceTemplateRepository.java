@@ -6,24 +6,17 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static net.geant.nmaas.orchestration.AppLifecycleManager.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-@Singleton
 public class NmServiceTemplateRepository {
-
-    public static final Identifier OXIDIZED_APPLICATION_ID = Identifier.newInstance("oxidizedApplicationId");
-
-    public static final Identifier TOMCAT_ALPINE_APPLICATION_ID = Identifier.newInstance("tomcatAlpineApplicationId");
-
-    public static final Identifier PMACCT_GRAFANA_APPLICATION_ID = Identifier.newInstance("pmacctGrafanaApplicationId");
 
     private Map<Identifier, NmServiceTemplate> templates = new HashMap<>();
 
