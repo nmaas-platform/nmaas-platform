@@ -29,7 +29,7 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/api/auth/basic")
+@RequestMapping("/portal/api/auth/basic")
 public class BasicAuthController {
 
 	@Autowired
@@ -95,7 +95,7 @@ public class BasicAuthController {
 	
 	@RequestMapping(value="/ping", method=RequestMethod.GET)
 	public String ping(Principal principal) {
-		return principal.getName() + "," + System.currentTimeMillis();
+		return (principal != null ? principal.getName() : null ) + "," + System.currentTimeMillis();
 	}
 	
 }

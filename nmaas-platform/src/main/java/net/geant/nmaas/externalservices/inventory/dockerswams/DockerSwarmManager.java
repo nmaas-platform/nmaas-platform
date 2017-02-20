@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.dockerswams;
 
-import net.geant.nmaas.servicedeployment.nmservice.NmServiceDeploymentHost;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
 
 public class DockerSwarmManager implements NmServiceDeploymentHost {
 

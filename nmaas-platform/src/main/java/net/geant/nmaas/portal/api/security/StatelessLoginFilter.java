@@ -1,18 +1,22 @@
 package net.geant.nmaas.portal.api.security;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.StringUtils;
 
@@ -20,31 +24,59 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.geant.nmaas.portal.api.auth.UserLogin;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
+import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
 
 public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-	public StatelessLoginFilter(String defaultFilterProcessesUrl) {
+	private final static String AUTH_HEADER="Authorization";
+	private final static String AUTH_METHOD="Basic";
+	
+	UserDetailsService userDetailsService;
+	
+
+	public StatelessLoginFilter(String defaultFilterProcessesUrl, UserDetailsService userDetailsService) {
 		super(defaultFilterProcessesUrl);
+		this.userDetailsService = userDetailsService;
 	}
+
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
 		
-		if(!HttpMethod.POST.name().equals(request.getMethod()))
-			throw new AuthenticationMethodNotSupportedException("Request authentication method is not supported. ");
+		HttpServletRequest httpRequest = (HttpServletRequest)request;
 		
-		ObjectMapper objectMapper = new ObjectMapper();
-		UserLogin userLogin = objectMapper.readValue(request.getInputStream(), UserLogin.class);
+		String authHeader = httpRequest.getHeader(AUTH_HEADER);
+		if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " "))
+			throw new AuthenticationMethodNotSupportedException(AUTH_HEADER + " contains unsupported method.");
 		
-		if(StringUtils.isEmpty(userLogin.getUsername()) || StringUtils.isEmpty(userLogin.getPassword()))
-			throw new AuthenticationServiceException("Missing credentials");
+		String credentials = authHeader.substring(AUTH_METHOD.length()+1);
+		if(StringUtils.isEmpty(credentials))
+			throw new BasicAuthenticationException("Missing credentials");
 		
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userLogin.getUsername(), userLogin.getPassword());
+		
+		Base64.getDecoder().decode(credentials);
+		credentials = new String(Base64.getDecoder().decode(credentials));
+		if(StringUtils.isEmpty(credentials))
+			throw new BasicAuthenticationException("Missing credentials");
+		
+		String[] userdata = credentials.split(":");
+		
+		if(userdata.length < 1 || userdata.length > 2)
+			throw new BasicAuthenticationException("Invalid user credentials format");
+		String username = userdata[0];
+		String password = userdata[1];
+		
+		UserDetails user = userDetailsService.loadUserByUsername(username);
+		if(password != user.getPassword())
+			throw new BasicAuthenticationException("Invalid credentials.");	
+						
+		UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
 				
-		return getAuthenticationManager().authenticate(token);
+		return userToken;
 	}
 
+	
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {

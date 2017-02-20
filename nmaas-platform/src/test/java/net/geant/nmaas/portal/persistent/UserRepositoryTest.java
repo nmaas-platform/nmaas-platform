@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Optional;
 
@@ -15,7 +16,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.geant.nmaas.portal.PersistentConfig;

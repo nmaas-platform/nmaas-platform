@@ -19,7 +19,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import net.geant.nmaas.portal.persistent.entity.User;
 
-@Service
+@Service("jwtTokenService")
 public class JWTTokenService {
 
 	@Autowired
