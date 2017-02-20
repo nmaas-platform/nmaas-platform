@@ -2,18 +2,15 @@
 //	baseName = 'nmaas-portal'
 //	version = project.version
 //}
-
 import org.gradle.internal.os.OperatingSystem;
+
 
 plugins {
 	id "com.moowork.node" version "1.0.1"
+	id 'java'
 }
 
-task clean(type: Delete) {
-	delete 'build'
-}
-
-task build(type: Exec) {
+task buildGUI(type: Exec) {
 	println 'Building using angular-cli'
 
 	if ( OperatingSystem.current().isWindows() ) {
@@ -21,6 +18,27 @@ task build(type: Exec) {
 	} else {
 		commandLine 'ng', 'build'
 	}	
+	
+}
+buildGUI.dependsOn(npm_install)
+
+task dist(type: Zip) {
+	from 'build/app' 
+	baseName project.name
+//	version project.version
+}
+buildGUI.doLast { tasks.dist.execute() }
+
+build.dependsOn(buildGUI)
+
+task run(type: Exec) {
+	println 'Running app using angular-cli'
+	
+	if ( OperatingSystem.current().isWindows() ) {
+		commandLine 'cmd', '/c', 'ng', 'serve'
+	} else {
+		commandLine 'ng', 'serve'
+	}		
 }
 build.dependsOn(npm_install)
 

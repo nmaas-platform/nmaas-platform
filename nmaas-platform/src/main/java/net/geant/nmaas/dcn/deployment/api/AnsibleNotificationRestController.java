@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/api/dcns")
+@RequestMapping(value = "/platform/api/dcns")
 public class AnsibleNotificationRestController {
 
     private DcnDeploymentCoordinator coordinator;

@@ -64,9 +64,9 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Test
     public void testFakeAnsibleDeployAndStatusUpdate() throws Exception {
-        mvc.perform(get("/api/dcns"))
+        mvc.perform(get("/platform/api/dcns"))
                 .andExpect(status().isOk());
-        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode(dcnName))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode(dcnName))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))

@@ -1,7 +1,9 @@
 package net.geant.nmaas.dcndeployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.NmaasPlatformConfiguration;
+
+import net.geant.nmaas.configuration.NmaasPlatformConfiguration;
+import net.geant.nmaas.configuration.SecurityConfig;
 import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import org.junit.Before;
@@ -20,6 +22,7 @@ import javax.servlet.Filter;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -47,32 +50,32 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndCallSimpleGet() throws Exception {
-        mvc.perform(get("/api/dcns")
-                .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_NMAAS_TEST_CLIENT)))
+        mvc.perform(get("/platform/api/dcns")
+                .with(user("test").roles(SecurityConfig.AUTH_ROLE_NMAAS_TEST_CLIENT)))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
-        mvc.perform(get("/api/dcns")
-                .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_ANSIBLE_CLIENT)))
+        mvc.perform(get("/platform/api/dcns")
+                .with(user("test").roles(SecurityConfig.AUTH_ROLE_ANSIBLE_CLIENT)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void shouldAuthAndCallNotificationPost() throws Exception {
-        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
-                .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_ANSIBLE_CLIENT))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
+                .with(user("test").roles(SecurityConfig.AUTH_ROLE_ANSIBLE_CLIENT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+        		.andExpect(status().isCreated());
     }
 
     @Test
     public void shouldAuthAndForbidNotificationPost() throws Exception {
-        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
-                .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_NMAAS_TEST_CLIENT))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
+                .with(user("test").roles(SecurityConfig.AUTH_ROLE_NMAAS_TEST_CLIENT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
                 .accept(MediaType.APPLICATION_JSON))
