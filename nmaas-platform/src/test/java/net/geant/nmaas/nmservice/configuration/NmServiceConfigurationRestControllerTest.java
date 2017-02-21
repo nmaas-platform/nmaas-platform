@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.NmaasPlatformConfiguration;
+import net.geant.nmaas.configuration.SecurityConfig;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import org.junit.Before;
@@ -48,10 +48,11 @@ public class NmServiceConfigurationRestControllerTest {
     @Test
     public void shouldReturnSimpleFile() throws Exception {
         byte[] configFileBytes = new byte[]{1,2,3,4,5};
-        NmServiceConfiguration configuration = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileBytes);
+        NmServiceConfiguration configuration
+                = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileBytes);
         configurationRepository.storeConfig(TEST_OXIDIZED_CONFIG_FIRST_ID, configuration);
-        mvc.perform(get("/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
-                .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)))
+        mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
+                .with(user("test").roles(SecurityConfig.AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + TEST_OXIDIZED_CONFIG_FIRST_FILENAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
@@ -60,8 +61,8 @@ public class NmServiceConfigurationRestControllerTest {
 
     @Test
     public void shouldReturnNotFoundOnMissingConfigurationWithProvidedId() throws Exception {
-        mvc.perform(get("/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID + "invalid-string")
-                .with(user("test").roles(NmaasPlatformConfiguration.AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)))
+        mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID + "invalid-string")
+                .with(user("test").roles(SecurityConfig.AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)))
                 .andExpect(status().isNotFound());
     }
 

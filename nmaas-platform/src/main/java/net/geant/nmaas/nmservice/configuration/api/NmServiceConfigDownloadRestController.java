@@ -15,7 +15,7 @@ import java.io.IOException;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/api/configs")
+@RequestMapping(value = "/platform/api/configs")
 public class NmServiceConfigDownloadRestController {
 
     @Autowired
