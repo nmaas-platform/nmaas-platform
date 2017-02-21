@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static net.geant.nmaas.orchestration.AppLifecycleManager.OXIDIZED_APPLICATION_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -39,7 +40,7 @@ public class OxidizedAppDeploymentTest {
     @Before
     public void setup() {
         clientId = Identifier.newInstance(TEST_CLIENT_ID);
-        applicationId = NmServiceTemplateRepository.OXIDIZED_APPLICATION_ID;
+        applicationId = OXIDIZED_APPLICATION_ID;
     }
 
     @Test
@@ -49,7 +50,7 @@ public class OxidizedAppDeploymentTest {
         waitAndVerifyDeploymentEnvironmentPrepared(deploymentId);
         waitAndVerifyManagementVpnConfigurationInProgress(deploymentId);
         manuallyNotifyDcnDeploymentStateToDeployedAndVerifyManagementVpnConfigured(deploymentId);
-        appLifecycleManager.applyConfiguration(deploymentId, new AppConfiguration());
+        appLifecycleManager.applyConfiguration(deploymentId, new AppConfiguration(applicationId));
         waitAndVerifyApplicationConfigured(deploymentId);
         waitAndVerifyApplicationDeployed(deploymentId);
         waitAndVerifyApplicationDeploymentVerified(deploymentId);

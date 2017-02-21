@@ -19,9 +19,12 @@ public class NmaasPlatformConfiguration extends WebSecurityConfigurerAdapter {
     private static final String ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.ansible.password";
     private static final String NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME = "api.client.nmaas.test.username";
     private static final String NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.nmaas.test.password";
+    private static final String CONFIG_DOWNLOAD_CLIENT_USERNAME_PROPERTY_NAME = "api.client.config.download.username";
+    private static final String CONFIG_DOWNLOAD_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.config.download.password";
 
     public static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
     public static final String AUTH_ROLE_NMAAS_TEST_CLIENT = "NMAAS_TEST_CLIENT";
+    public static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
 
     @Autowired
     private Environment env;
@@ -38,7 +41,11 @@ public class NmaasPlatformConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
                 .password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
-                .roles(AUTH_ROLE_NMAAS_TEST_CLIENT);
+                .roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
+                .and()
+                .withUser(env.getProperty(CONFIG_DOWNLOAD_CLIENT_USERNAME_PROPERTY_NAME))
+                .password(env.getProperty(CONFIG_DOWNLOAD_CLIENT_PASSWORD_PROPERTY_NAME))
+                .roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
     }
 
     @Override
@@ -48,7 +55,7 @@ public class NmaasPlatformConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
                 .antMatchers("/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
                 .antMatchers("/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
-                .antMatchers("/api/configs/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
+                .antMatchers("/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
                 .and().httpBasic().authenticationEntryPoint(restAuthenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }

@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment;
+package net.geant.nmaas.nmservice.deployment;
 
 import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;

@@ -1,6 +1,6 @@
 ---
-username: ${oxidized-username}
-password: ${oxidized-password}
+username: ${oxidizedUsername}
+password: ${oxidizedPassword}
 model: junos
 interval: 600
 use_syslog: false

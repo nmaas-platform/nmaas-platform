@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.configuration;
+package net.geant.nmaas.nmservice.configuration.repository;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
