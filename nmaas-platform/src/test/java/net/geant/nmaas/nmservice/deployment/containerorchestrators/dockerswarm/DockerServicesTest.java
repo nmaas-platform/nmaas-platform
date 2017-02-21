@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServicesClient;
 import org.junit.Test;

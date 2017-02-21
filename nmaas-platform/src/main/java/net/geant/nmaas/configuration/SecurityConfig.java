@@ -1,12 +1,10 @@
 package net.geant.nmaas.configuration;
 
-import javax.servlet.Filter;
-
+import net.geant.nmaas.portal.api.security.*;
+import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
@@ -29,13 +27,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import net.geant.nmaas.portal.api.security.JWTSettings;
-import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
-import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
-import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
-import net.geant.nmaas.portal.api.security.StatelessLoginFilter;
-import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
+import javax.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -48,18 +40,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
 	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/signup";
 	private final static String AUTH_BASIC_TOKEN = "/portal/api/auth/basic/token";
-	
-	
+
     private static final String ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME = "api.client.ansible.username";
     private static final String ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.ansible.password";
     private static final String NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME = "api.client.nmaas.test.username";
     private static final String NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.nmaas.test.password";
+	private static final String NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "api.client.config.download.username";
+	private static final String NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "api.client.config.download.password";
 
     public static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
     public static final String AUTH_ROLE_NMAAS_TEST_CLIENT = "NMAAS_TEST_CLIENT";
+	public static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
 
-	
-	
 	@Autowired
 	AuthenticationManager authenticationManager;
 
@@ -89,7 +81,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
 	            .antMatchers("/platform/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
-	            .and().httpBasic()//.authenticationEntryPoint(restAuthenticationEntryPoint)
+				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
+	            .and().httpBasic()
 			.and()
 				.authorizeRequests()
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
@@ -107,7 +100,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 								null,//failureHandler, 
 								tokenAuthenticationService), 
 						UsernamePasswordAuthenticationFilter.class);		
-			
 	}
 	
 	
@@ -123,6 +115,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					      .withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
 					      .password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
 					      .roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
+						  .and()
+						  .withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
+						  .password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+						  .roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 					      .and()
 					      .getUserDetailsService();
 	}
@@ -140,8 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		filter.setAuthenticationManager(authenticationManager);
 		return filter;
 	}
-	
-	
+
 	@Bean
 	public FilterRegistrationBean corsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -170,8 +165,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public JWTSettings jwtSettings() {
 		return new JWTSettings();
 	}
-	
-	
+
 	@Bean
 	@Autowired
 	public TokenAuthenticationService tokenAuthenticationService(JWTTokenService jwtTokenService) {

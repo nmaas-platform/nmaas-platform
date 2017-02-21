@@ -1,6 +1,5 @@
-package net.geant.nmaas.servicedeployment;
+package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

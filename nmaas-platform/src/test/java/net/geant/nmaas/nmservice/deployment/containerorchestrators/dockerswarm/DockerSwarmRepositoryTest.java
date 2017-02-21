@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerswarm;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm;
 
 import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerswams.DockerSwarmsRepository;

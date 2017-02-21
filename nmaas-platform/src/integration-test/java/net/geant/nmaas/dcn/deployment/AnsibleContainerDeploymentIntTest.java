@@ -1,7 +1,5 @@
-package net.geant.nmaas.dcndeployment;
+package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.dcn.deployment.DcnSpec;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.Test;

@@ -1,6 +1,10 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
+import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,6 +19,12 @@ public class AppConfigurationOrchestratorTask implements Runnable {
 
     @Autowired
     private NmServiceConfigurationProvider serviceConfiguration;
+
+    @Autowired
+    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
+
+    @Autowired
+    private NmServiceRepository nmServiceRepository;
 
     private Identifier deploymentId;
 
@@ -33,8 +43,12 @@ public class AppConfigurationOrchestratorTask implements Runnable {
     private void configure() {
         verifyIfAllPropertiesAreSet();
         try {
-            serviceConfiguration.configureNmService(deploymentId, configuration);
-        } catch (net.geant.nmaas.nmservice.InvalidDeploymentIdException e) {
+            String serviceName = deploymentIdToNmServiceNameMapper.nmServiceName(deploymentId);
+            NmServiceInfo serviceInfo = nmServiceRepository.loadService(serviceName);
+            serviceConfiguration.configureNmService(deploymentId, configuration, (DockerHost) serviceInfo.getHost());
+        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException e) {
+            e.printStackTrace();
+        } catch (NmServiceRepository.ServiceNotFoundException e) {
             e.printStackTrace();
         }
     }

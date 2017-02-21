@@ -1,8 +1,6 @@
-package net.geant.nmaas.servicedeployment.orchestrators.dockerengine;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;

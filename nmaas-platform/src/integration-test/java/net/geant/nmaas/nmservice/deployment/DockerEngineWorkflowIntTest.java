@@ -1,4 +1,4 @@
-package net.geant.nmaas.servicedeployment;
+package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
