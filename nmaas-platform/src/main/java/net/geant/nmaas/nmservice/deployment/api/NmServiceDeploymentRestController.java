@@ -17,7 +17,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl/>
  */
 @RestController
-@RequestMapping(value = "/api/services")
+@RequestMapping(value = "/platform/api/services")
 public class NmServiceDeploymentRestController {
 
     @Autowired

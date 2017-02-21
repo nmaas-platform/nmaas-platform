@@ -21,7 +21,7 @@ public class ServiceDeploymentRestControllerTest {
 
     @Test
     public void shouldListServices() throws Exception {
-        mvc.perform(get("/api/services/deployed"))
+        mvc.perform(get("/platform/api/services/deployed"))
                 .andExpect(status().isUnauthorized());
     }
 
