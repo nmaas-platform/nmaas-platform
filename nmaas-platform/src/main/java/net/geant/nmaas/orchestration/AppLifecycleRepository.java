@@ -47,6 +47,13 @@ public class AppLifecycleRepository {
                     "Deployment with id " + deploymentId + " not found in the repository. ");
     }
 
+    public Map<Identifier, AppLifecycleState> loadViewOfAllDeployments() {
+        Map<Identifier, AppLifecycleState> view = new HashMap<>();
+        deployments.entrySet().stream()
+                .forEach(entry -> view.put(entry.getKey(), entry.getValue().lifecycleState()));
+        return view;
+    }
+
     public boolean isDeploymentStored(Identifier deploymentId) {
         return (deployments.get(deploymentId) != null);
     }
@@ -63,7 +70,7 @@ public class AppLifecycleRepository {
         }
     }
 
-    public AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
+    private AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
         try {
             final DockerHost host = (DockerHost)serviceInfo.getHost();
             final String accessAddress = host.getAccessInterfaceName();

@@ -81,6 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
 	            .antMatchers("/platform/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
+				.antMatchers("/platform/api/orchestration/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 	            .and().httpBasic()
 			.and()
@@ -101,8 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 								tokenAuthenticationService), 
 						UsernamePasswordAuthenticationFilter.class);		
 	}
-	
-	
+
 	private InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryConfigurer() {
 		return new InMemoryUserDetailsManagerConfigurer<>();
 	}

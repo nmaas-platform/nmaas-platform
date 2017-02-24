@@ -12,10 +12,15 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -50,6 +55,7 @@ public class ContainerConfigBuilderTest {
                 true);
         serviceInfo = new NmServiceInfo(TEST_SERVICE_NAME_1, NmServiceDeploymentState.INIT, spec);
         serviceInfo.setHost(testDockerHost1);
+        serviceInfo.setManagedDevicesIpAddresses(Arrays.asList("1.1.1.1", "2.2.2.2", "3.3.3.3"));
         ContainerNetworkIpamSpec addresses = new ContainerNetworkIpamSpec("1.1.0.0/24", "1.1.1.254");
         ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(1234, addresses, 123);
         serviceInfo.setNetwork(networkDetails);
@@ -69,7 +75,7 @@ public class ContainerConfigBuilderTest {
     @Test
     public void shouldBuildSimpleConfig() {
         ContainerConfig result = ContainerConfigBuilder.build(serviceInfo);
-        assertEquals(TEST_IMAGE_NAME_1, result.image());
+        assertThat(result.image(), equalTo(TEST_IMAGE_NAME_1));
     }
 
 }

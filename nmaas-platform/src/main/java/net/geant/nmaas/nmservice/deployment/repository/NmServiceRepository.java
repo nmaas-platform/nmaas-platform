@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,10 @@ public class NmServiceRepository {
 
     public void updateNetworkId(String serviceName, String networkId) throws ServiceNotFoundException {
         loadService(serviceName).getNetwork().setId(networkId);
+    }
+
+    public void updateManagedDevices(String serviceName, List<String> ipAddresses) throws ServiceNotFoundException {
+        loadService(serviceName).setManagedDevicesIpAddresses(ipAddresses);
     }
 
     public void storeService(NmServiceInfo serviceInfo) {

@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.nmservice;
 
-import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import java.util.List;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -36,6 +36,13 @@ public class NmServiceInfo {
      * Network details for deployed services obtained from remote OSS system.
      */
     private NmServiceDeploymentNetworkDetails network;
+
+    /**
+     * The list of IP addresses of devices to be managed/monitored by the deployed service.
+     * These addresses are provided by the user during wizard completion.
+     * For these addresses specific routing entries needs to be by applied on the container once run.
+     */
+    private List<String> managedDevicesIpAddresses;
 
     public NmServiceInfo(String name, NmServiceDeploymentState state, NmServiceSpec spec) {
         this.name = name;
@@ -81,5 +88,13 @@ public class NmServiceInfo {
 
     public NmServiceDeploymentState getState() {
         return state;
+    }
+
+    public List<String> getManagedDevicesIpAddresses() {
+        return managedDevicesIpAddresses;
+    }
+
+    public void setManagedDevicesIpAddresses(List<String> managedDevicesIpAddresses) {
+        this.managedDevicesIpAddresses = managedDevicesIpAddresses;
     }
 }

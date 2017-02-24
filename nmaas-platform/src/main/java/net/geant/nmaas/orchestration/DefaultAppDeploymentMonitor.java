@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -18,6 +20,11 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDep
     @Override
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
         return retrieveCurrentState(deploymentId);
+    }
+
+    @Override
+    public Map<Identifier, AppLifecycleState> allDeployments() {
+        return repository.loadViewOfAllDeployments();
     }
 
     @Override

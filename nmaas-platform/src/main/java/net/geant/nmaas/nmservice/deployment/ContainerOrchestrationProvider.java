@@ -11,9 +11,9 @@ import java.util.List;
 public interface ContainerOrchestrationProvider {
 
     /**
-     * Provides basic information about currently used deploymentorchestration provider.
+     * Provides basic information about currently used orchestration provider.
      *
-     * @return information about the deploymentorchestration provider
+     * @return information about the orchestration provider
      */
     String info();
 

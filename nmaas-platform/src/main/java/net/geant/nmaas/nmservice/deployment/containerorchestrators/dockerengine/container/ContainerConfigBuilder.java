@@ -25,7 +25,7 @@ public class ContainerConfigBuilder {
         final DockerContainerSpec spec = (DockerContainerSpec) service.getSpec();
         final DockerHost host = (DockerHost) service.getHost();
         final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
-        final ContainerConfigInput configInput = ContainerConfigInput.fromSpec(spec);
+        final ContainerConfigInput configInput = ContainerConfigInput.fromSpec(service);
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
         containerBuilder.image(configInput.getImage());
         if (configInput.getCommand() != null)
@@ -34,14 +34,16 @@ public class ContainerConfigBuilder {
         final HostConfig.Builder hostBuilder = HostConfig.builder();
         hostBuilder.portBindings(preparePortBindings(
                 configInput.getExposedPort(),
-                host.getPublicIpAddress().toString(),
+                host.getPublicIpAddress().getHostAddress(),
                 networkDetails.getPublicPort()));
         final List<String> volumeBinds = prepareVolumeBindings(
                 configInput.getContainerVolumes(),
                 host.getVolumesPath(),
                 configInput.getUniqueDeploymentName());
         hostBuilder.appendBinds(volumeBinds);
-        containerBuilder.hostConfig(HostConfig.builder().build());
+        hostBuilder.privileged(true);
+        final HostConfig hostConfig = hostBuilder.build();
+        containerBuilder.hostConfig(hostConfig);
         return containerBuilder.build();
     }
 
@@ -54,7 +56,8 @@ public class ContainerConfigBuilder {
     }
 
     private static String exposedPortString(ContainerPortForwardingSpec port) {
-        StringBuilder sb = new StringBuilder(port.getTargetPort());
+        StringBuilder sb = new StringBuilder();
+        sb.append(port.getTargetPort());
         if (port.getProtocol() != null)
             sb.append("/").append(port.getProtocol().getValue());
         return sb.toString();
@@ -66,7 +69,8 @@ public class ContainerConfigBuilder {
         for (String containerVolume : containerVolumes) {
             volumeBinds.add(HostConfig.Bind
                     .from(generateNewHostVolume(hostVolumesPath, hostVolumeBaseName, counter))
-                    .to(containerVolume).build().toString());
+                    .to(containerVolume)
+                    .build().toString());
             counter++;
         }
         return volumeBinds;

@@ -2,19 +2,19 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 
 import java.util.List;
 
 public class ContainerConfigInput {
 
-    public static ContainerConfigInput fromSpec(DockerContainerSpec spec) {
+    public static ContainerConfigInput fromSpec(NmServiceInfo serviceInfo) {
+        DockerContainerSpec spec = (DockerContainerSpec) serviceInfo.getSpec();
         DockerEngineContainerTemplate template = (DockerEngineContainerTemplate) spec.template();
         ContainerConfigInput input = new ContainerConfigInput();
         input.setImage(template.getImage());
-        if (template.getCommandInSpecRequired())
-            input.setCommand(spec.getCommand());
-        else
-            input.setCommand(template.getCommand());
+        input.setCommand(compileCommands(template));
         input.setExposedPort(template.getExposedPort());
         input.setEnv(template.getEnv());
         if (template.getEnvVariablesInSpecRequired())
@@ -22,6 +22,18 @@ public class ContainerConfigInput {
         input.setContainerVolumes(template.getContainerVolumes());
         input.setUniqueDeploymentName(spec.uniqueDeploymentName());
         return input;
+    }
+
+    private static String compileCommands(DockerEngineContainerTemplate template) {
+        if (!commandInTemplateProvided(template))
+            return null;
+        StringBuilder commandBuilder = new StringBuilder();
+        commandBuilder.append(template.getCommand());
+        return commandBuilder.toString();
+    }
+
+    private static boolean commandInTemplateProvided(DockerEngineContainerTemplate template) {
+        return template.getCommand() != null && !template.getCommand().isEmpty();
     }
 
     private String image;

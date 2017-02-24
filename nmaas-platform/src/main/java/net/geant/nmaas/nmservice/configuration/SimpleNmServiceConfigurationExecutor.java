@@ -1,7 +1,9 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
+import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
@@ -9,6 +11,7 @@ import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.AppDeploymentStateChanger;
@@ -21,14 +24,18 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.*;
+import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName;
+import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.generateConfigId;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurationProvider, AppDeploymentStateChanger {
+
+    private static final String DEFAULT_MANAGED_DEVICE_KEY = "routers";
 
     @Autowired
     private NmServiceConfigurationRepository configurations;
@@ -42,6 +49,12 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
     @Autowired
     private SshCommandExecutor sshCommandExecutor;
 
+    @Autowired
+    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
+
+    @Autowired
+    private NmServiceRepository nmServices;
+
     private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
 
     @Override
@@ -49,8 +62,10 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             final Identifier applicationId = appConfiguration.getApplicationId();
+            final Map<String, Object> appConfigurationModel = getModelFromJson(appConfiguration);
+            updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
             for(Template template : loadConfigTemplatesForApplication(applicationId)) {
-                generateConfigAndTriggerDownloadOnRemoteHost(deploymentId, host, template);
+                generateConfigAndTriggerDownloadOnRemoteHost(deploymentId, template, appConfigurationModel, host);
             }
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (Exception e) {
@@ -59,9 +74,19 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
         }
     }
 
-    void generateConfigAndTriggerDownloadOnRemoteHost(Identifier deploymentId, DockerHost host, Template template) throws Exception {
+    Map<String, Object> getModelFromJson(AppConfiguration appConfiguration) throws java.io.IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(appConfiguration.getJsonInput(), Map.class);
+    }
+
+    void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel) throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, NmServiceRepository.ServiceNotFoundException {
+        final String nmServiceName = deploymentIdToNmServiceNameMapper.nmServiceName(deploymentId);
+        nmServices.updateManagedDevices(nmServiceName, (List<String>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY));
+    }
+
+    void generateConfigAndTriggerDownloadOnRemoteHost(Identifier deploymentId, Template template, Map<String, Object> appConfigurationModel, DockerHost host) throws Exception {
         String configId = generateConfigId(configurations);
-        NmServiceConfiguration configuration = buildConfigFromTemplateAndUserProvidedInput(configId, template, oxidizedDefaultConfigurationInputModel());
+        NmServiceConfiguration configuration = buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel);
         storeConfigurationInRepository(configId, configuration);
         try {
             triggerConfigurationDownloadOnRemoteHost(deploymentId, configId, host);

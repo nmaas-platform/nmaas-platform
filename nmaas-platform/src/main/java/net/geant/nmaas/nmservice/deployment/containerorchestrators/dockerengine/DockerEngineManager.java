@@ -15,9 +15,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkClient;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     private DockerHostStateKeeper dockerHostStateKeeper;
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
@@ -70,6 +72,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(String serviceName)
             throws CouldNotPrepareEnvironmentException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
@@ -97,6 +100,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void deployNmService(String serviceName)
             throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
@@ -105,8 +109,12 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             final DockerHost host = (DockerHost) service.getHost();
             final ContainerConfig config = ContainerConfigBuilder.build(service);
             final String containerId = dockerContainerClient.create(config, spec.uniqueDeploymentName(), host);
-            dockerNetworkClient.connectContainerToNetwork(containerId, ((ContainerNetworkDetails)service.getNetwork()).getDeploymentId(), host);
+            final ContainerNetworkDetails containerNetworkDetails = (ContainerNetworkDetails) service.getNetwork();
+            dockerNetworkClient.connectContainerToNetwork(containerId, containerNetworkDetails.getDeploymentId(), host);
             dockerContainerClient.start(containerId, host);
+            for (String managedDeviceIpAddress : service.getManagedDevicesIpAddresses()) {
+                dockerContainerClient.addStaticRoute(containerId, managedDeviceIpAddress, containerNetworkDetails.getIpAddresses().getGateway(), host);
+            }
             nmServices.updateServiceId(serviceName, containerId);
             nmServices.updateServiceState(serviceName, DEPLOYED);
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
@@ -122,6 +130,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void checkService(String serviceName)
             throws ContainerCheckFailedException, ContainerNetworkCheckFailedException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
@@ -140,6 +149,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void removeNmService(String serviceName)
             throws CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
@@ -162,12 +172,14 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public List<String> listServices(NmServiceDeploymentHost host)
             throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         return dockerContainerClient.containers((DockerHost) host);
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public String info() {
         return "DockerEngine Container Orchestrator";
     }

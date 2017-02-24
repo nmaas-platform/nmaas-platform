@@ -35,7 +35,7 @@ public class GenerateConfigAndTriggerDownloadOnRemoteHostTest {
         final Identifier deploymentId = Identifier.newInstance("testDeploymentId");
         final DockerHost host = dockerHostRepository.loadPreferredDockerHost();
         final Template configTemplate = templatesRepository.loadTemplates(OXIDIZED_APPLICATION_ID).get(0);
-        configurationExecutor.generateConfigAndTriggerDownloadOnRemoteHost(deploymentId, host, configTemplate);
+        configurationExecutor.generateConfigAndTriggerDownloadOnRemoteHost(deploymentId, configTemplate, null, host);
     }
 
 }
