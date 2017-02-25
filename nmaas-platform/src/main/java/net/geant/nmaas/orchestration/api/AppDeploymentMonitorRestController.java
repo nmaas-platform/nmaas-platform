@@ -47,7 +47,7 @@ public class AppDeploymentMonitorRestController {
 
     @ExceptionHandler(InvalidAppStateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleInvalidAppStateException(InvalidDeploymentIdException ex) {
+    public String handleInvalidAppStateException(InvalidAppStateException ex) {
         System.out.println("Requested deployment in invalid state -> " + ex.getMessage());
         return ex.getMessage();
     }

@@ -11,14 +11,15 @@ public class AppUiAccessDetails {
     /**
      * Simple HTTP URL to access the deployed application UI
      */
-    private final String url;
+    private String url;
+
+    public AppUiAccessDetails() {}
 
     public AppUiAccessDetails(String url) {
         this.url = url;
     }
 
-    public String value() {
+    public String getUrl() {
         return url;
     }
-
 }
