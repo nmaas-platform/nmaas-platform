@@ -3,7 +3,7 @@ apply plugin: 'org.springframework.boot'
 
 buildscript {
 	ext {
-//		springBootVersion = '1.4.2.RELEASE'
+		springBootVersion = '1.5.1.RELEASE'
 //		dockerClientVersion = '7.0.2'
 	}
 	repositories {
@@ -49,8 +49,13 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 //	compile('org.springframework.boot:spring-boot-starter-log4j2')
 
-	compile('com.h2database:h2')
-
+	compile('org.modelmapper:modelmapper:0.7.7')
+	compile('org.modelmapper.extensions:modelmapper-spring:0.7.7')
+	
+	runtime('com.h2database:h2')
+	runtime('mysql:mysql-connector-java')
+	runtime('org.postgresql:postgresql')
+	
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 	compile('org.apache.logging.log4j:log4j-api:2.6')
 	compile('org.apache.logging.log4j:log4j-core:2.6')

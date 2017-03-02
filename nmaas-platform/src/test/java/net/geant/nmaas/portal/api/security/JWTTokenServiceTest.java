@@ -65,7 +65,9 @@ public class JWTTokenServiceTest {
 		Object scopes = claims.get("scopes");
 		assertNotNull(scopes);
 		assertTrue(scopes instanceof List<?>);
-		assertEquals(2, ((List<SimpleGrantedAuthority>)scopes).size());
+		@SuppressWarnings("unchecked")
+		List<SimpleGrantedAuthority> list = (List<SimpleGrantedAuthority>)scopes;
+		assertEquals(2, list.size());
 	}
 
 	@Test
