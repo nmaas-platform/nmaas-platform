@@ -1,14 +1,15 @@
 package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.configuration.SecurityConfig;
 import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +46,9 @@ public class OrchestratorManagerRestControllerTest {
 
     private AppConfiguration appConfiguration;
 
+    @Autowired
+    private Environment env;
+
     @Before
     public void setup() {
         clientId = Identifier.newInstance("clientId1");
@@ -64,7 +68,7 @@ public class OrchestratorManagerRestControllerTest {
         params.set("applicationid", applicationId.toString());
         mvc.perform(post("/platform/api/orchestration/deployments")
                 .params(params)
-                .with(user("test").roles(SecurityConfig.AUTH_ROLE_NMAAS_TEST_CLIENT))
+                .with(httpBasic(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(mapper.writeValueAsString(deploymentId)));
@@ -74,7 +78,7 @@ public class OrchestratorManagerRestControllerTest {
     public void shouldApplyConfigurationForDeployment() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mvc.perform(post("/platform/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
-                .with(user("test").roles(SecurityConfig.AUTH_ROLE_NMAAS_TEST_CLIENT))
+                .with(httpBasic(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(appConfiguration))
                 .accept(MediaType.APPLICATION_JSON))

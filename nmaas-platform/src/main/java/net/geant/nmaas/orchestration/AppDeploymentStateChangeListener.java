@@ -30,4 +30,11 @@ public interface AppDeploymentStateChangeListener {
      */
     void notifyStateChange(Identifier deploymentId, NmServiceDeploymentState state);
 
+    /**
+     * Notifies about deployment failure due to some generic error
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     */
+    void notifyGenericError(Identifier deploymentId);
+
 }

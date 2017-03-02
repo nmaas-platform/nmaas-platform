@@ -1,7 +1,5 @@
 package net.geant.nmaas.nmservice.configuration.ssh;
 
-import net.geant.nmaas.nmservice.configuration.ssh.NmServiceConfigDownloadCommand;
-import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

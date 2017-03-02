@@ -343,6 +343,9 @@ public enum AppDeploymentState {
     INTERNAL_ERROR {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.INTERNAL_ERROR; }
+    }, GENERIC_ERROR {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.GENERIC_ERROR; }
     };
 
     public abstract AppLifecycleState lifecycleState();

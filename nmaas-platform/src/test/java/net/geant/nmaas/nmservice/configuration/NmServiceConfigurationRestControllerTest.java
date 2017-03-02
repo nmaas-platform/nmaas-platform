@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.configuration.SecurityConfig;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import org.junit.Before;
@@ -15,7 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.Filter;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -52,7 +51,7 @@ public class NmServiceConfigurationRestControllerTest {
                 = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileBytes);
         configurationRepository.storeConfig(TEST_OXIDIZED_CONFIG_FIRST_ID, configuration);
         mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
-                .with(user("test").roles(SecurityConfig.AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)))
+                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + TEST_OXIDIZED_CONFIG_FIRST_FILENAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
@@ -62,7 +61,7 @@ public class NmServiceConfigurationRestControllerTest {
     @Test
     public void shouldReturnNotFoundOnMissingConfigurationWithProvidedId() throws Exception {
         mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID + "invalid-string")
-                .with(user("test").roles(SecurityConfig.AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)))
+                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
                 .andExpect(status().isNotFound());
     }
 

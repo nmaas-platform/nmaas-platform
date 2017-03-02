@@ -61,6 +61,11 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDep
         }
     }
 
+    @Override
+    public void notifyGenericError(Identifier deploymentId) {
+        repository.updateDeploymentState(deploymentId, AppDeploymentState.GENERIC_ERROR);
+    }
+
     private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
         return repository.loadCurrentState(deploymentId).lifecycleState();
     }
