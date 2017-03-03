@@ -17,15 +17,15 @@ import java.text.MessageFormat;
 @Component
 public class LoggingAspect {
 
-	private static String BEFORE_STRING = "Entering < {0} >";
+	private static String BEFORE_STRING = "ENTERING METHOD {0}";
 	
-	private static String BEFORE_WITH_PARAMS_STRING = "Entering < {0} > with params {1}";
+	private static String BEFORE_WITH_PARAMS_STRING = "ENTERING METHOD {0} WITH PARAMS {1}";
 
-	private static String AFTER_THROWING = "Exception thrown < {0} > exception message {1} with params {2}";
+	private static String AFTER_THROWING = "EXCEPTION THROWN {0} WITH MESSAGE {1} WITH PARAMS {2}";
 
-	private static String AFTER_RETURNING = "Leaving < {0} > returning {1}";
+	private static String AFTER_RETURNING = "LEAVING METHOD {0} AND RETURNING {1}";
 
-	private static String AFTER_RETURNING_VOID = "Leaving < {0} >";
+	private static String AFTER_RETURNING_VOID = "LEAVING METHOD {0}";
 	
 	public Level loggableToLevel(Loggable loggable){
 		if (loggable != null)

@@ -26,7 +26,7 @@ public class DeploymentIdToDcnNameMapper {
 
     public Identifier deploymentId(String dcnName) throws EntryNotFoundException {
         return mapping.keySet().stream()
-                .filter((id) -> mapping.get(id) == dcnName)
+                .filter((id) -> mapping.get(id).equals(dcnName))
                 .findFirst()
                 .orElseThrow(() -> new EntryNotFoundException("No deployment identifier mapped for DCN name " + dcnName + ". Available mappings: " + mapping));
     }
