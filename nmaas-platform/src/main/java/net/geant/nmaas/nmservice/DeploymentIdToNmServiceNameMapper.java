@@ -20,7 +20,7 @@ public class DeploymentIdToNmServiceNameMapper {
 
     public String nmServiceName(Identifier deploymentId) throws EntryNotFoundException {
         if (!mapping.keySet().contains(deploymentId))
-            throw new EntryNotFoundException("No mapping for deployment id " + deploymentId + " exists.");
+            throw new EntryNotFoundException("No NM Service mapped for deployment identifier " + deploymentId + ".");
         return mapping.get(deploymentId);
     }
 

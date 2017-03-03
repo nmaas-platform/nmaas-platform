@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 
@@ -19,9 +20,9 @@ public class SimpleNmServiceConfigurationHelper {
         return generatedConfigId;
     }
 
-    public static String configFileNameFromTemplateName(String templateName) throws Exception {
+    public static String configFileNameFromTemplateName(String templateName) throws ConfigTemplateHandlingException {
         if (!templateName.endsWith(NmServiceConfigurationTemplatesRepository.DEFAULT_TEMPLATE_FILE_NAME_SUFFIX))
-            throw new Exception("Invalid configuration template file name -> " + templateName);
+            throw new ConfigTemplateHandlingException("Invalid configuration template file name -> " + templateName);
         templateName = templateName.substring(templateName.lastIndexOf(File.separator) + 1);
         return templateName.replace(NmServiceConfigurationTemplatesRepository.DEFAULT_TEMPLATE_FILE_NAME_SUFFIX, "");
     }

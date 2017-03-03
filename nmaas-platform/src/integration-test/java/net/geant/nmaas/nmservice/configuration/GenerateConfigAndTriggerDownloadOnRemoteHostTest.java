@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import freemarker.template.Template;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.orchestration.Identifier;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class GenerateConfigAndTriggerDownloadOnRemoteHostTest {
     @Autowired
     private NmServiceConfigurationTemplatesRepository templatesRepository;
 
-    @Test(expected = CommandExecutionException.class)
+    @Test(expected = ConfigTemplateHandlingException.class)
     public void shouldGenerateConfigAndTriggerDownloadOnRemoteHost() throws Exception {
         final Identifier deploymentId = Identifier.newInstance("testDeploymentId");
         final DockerHost host = dockerHostRepository.loadPreferredDockerHost();
