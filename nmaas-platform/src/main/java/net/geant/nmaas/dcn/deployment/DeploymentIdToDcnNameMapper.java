@@ -20,7 +20,7 @@ public class DeploymentIdToDcnNameMapper {
 
     public String dcnName(Identifier deploymentId) throws EntryNotFoundException {
         if (!mapping.keySet().contains(deploymentId))
-            throw new EntryNotFoundException("No mapping for deployment id " + deploymentId + " exists.");
+            throw new EntryNotFoundException("No DCN name mapped for deployment identifier " + deploymentId + ". Available mappings: " + mapping);
         return mapping.get(deploymentId);
     }
 
@@ -28,7 +28,7 @@ public class DeploymentIdToDcnNameMapper {
         return mapping.keySet().stream()
                 .filter((id) -> mapping.get(id) == dcnName)
                 .findFirst()
-                .orElseThrow(() -> new EntryNotFoundException("No mapping for DCN name " + dcnName + " exists."));
+                .orElseThrow(() -> new EntryNotFoundException("No deployment identifier mapped for DCN name " + dcnName + ". Available mappings: " + mapping));
     }
 
     public class EntryNotFoundException extends Exception {

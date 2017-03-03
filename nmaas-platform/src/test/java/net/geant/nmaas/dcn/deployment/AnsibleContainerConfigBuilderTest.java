@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcndeployment;
+package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.dcn.deployment.AnsibleContainerConfigBuilder;

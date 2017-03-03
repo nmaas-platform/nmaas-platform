@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcndeployment;
+package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookCommandBuilder;
 import net.geant.nmaas.dcn.deployment.VpnConfig;

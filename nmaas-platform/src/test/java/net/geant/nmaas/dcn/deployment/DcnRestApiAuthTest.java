@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcndeployment;
+package net.geant.nmaas.dcn.deployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;

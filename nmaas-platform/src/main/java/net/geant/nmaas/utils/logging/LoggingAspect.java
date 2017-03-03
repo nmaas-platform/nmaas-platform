@@ -17,15 +17,15 @@ import java.text.MessageFormat;
 @Component
 public class LoggingAspect {
 
-	private static String BEFORE_STRING = "[ entering < {0} > ]";
+	private static String BEFORE_STRING = "Entering < {0} >";
 	
-	private static String BEFORE_WITH_PARAMS_STRING = "[ entering < {0} > with params {1} ]";
+	private static String BEFORE_WITH_PARAMS_STRING = "Entering < {0} > with params {1}";
 
-	private static String AFTER_THROWING = "[ exception thrown < {0} > exception message {1} with params {2} ]";
+	private static String AFTER_THROWING = "Exception thrown < {0} > exception message {1} with params {2}";
 
-	private static String AFTER_RETURNING = "[ leaving < {0} > returning {1} ]";
+	private static String AFTER_RETURNING = "Leaving < {0} > returning {1}";
 
-	private static String AFTER_RETURNING_VOID = "[ leaving < {0} > ]";
+	private static String AFTER_RETURNING_VOID = "Leaving < {0} >";
 	
 	public Level loggableToLevel(Loggable loggable){
 		if (loggable != null)
@@ -56,7 +56,7 @@ public class LoggingAspect {
 		if (joinPoint.getArgs() != null && joinPoint.getArgs().length == 0) {
 			logger.log(level, MessageFormat.format(BEFORE_STRING, name));
 		} else {
-			logger.log(level, MessageFormat.format(BEFORE_WITH_PARAMS_STRING, name, constructArgumentsString(clazz, joinPoint.getArgs())));
+			logger.log(level, MessageFormat.format(BEFORE_WITH_PARAMS_STRING, name, constructArgumentsString(joinPoint.getArgs())));
 		}
 	}
 
@@ -65,14 +65,14 @@ public class LoggingAspect {
 			throwing = "throwable",
 			argNames = "joinPoint, throwable")
 	public void afterThrowing(JoinPoint joinPoint, Throwable throwable) {
-		
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 		Logger logger = LogManager.getLogger(clazz);
 		String name = joinPoint.getSignature().getName();
-		
-		logger.log(Level.ERROR, MessageFormat.format(AFTER_THROWING, name,
-				throwable.getMessage(), constructArgumentsString(clazz,
-						joinPoint.getArgs())));
+		logger.log(Level.ERROR, MessageFormat.format(
+													AFTER_THROWING,
+													name,
+													throwable.getMessage(),
+													constructArgumentsString(clazz, joinPoint.getArgs())));
 	}
 
 	@AfterReturning(
@@ -80,7 +80,6 @@ public class LoggingAspect {
 			returning = "returnValue",
 			argNames = "joinPoint, trace, returnValue")
 	public void afterReturning(JoinPoint joinPoint, Loggable loggable, Object returnValue) {
-
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 		Logger logger = LogManager.getLogger(clazz);
 		String name = joinPoint.getSignature().getName();
@@ -94,10 +93,10 @@ public class LoggingAspect {
 				return;
 			}
 		}
-		logger.log(level, MessageFormat.format(AFTER_RETURNING, name,constructArgumentsString(clazz, returnValue)));
+		logger.log(level, MessageFormat.format(AFTER_RETURNING, name, constructArgumentsString(returnValue)));
 	}
 
-	private String constructArgumentsString(Class<?> clazz, Object... arguments) {
+	private String constructArgumentsString(Object... arguments) {
 		StringBuffer buffer = new StringBuffer();
 		for (Object object : arguments) {
 			buffer.append(object);

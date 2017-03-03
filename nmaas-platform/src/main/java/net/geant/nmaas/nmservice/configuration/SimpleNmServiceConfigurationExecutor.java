@@ -16,7 +16,11 @@ import net.geant.nmaas.orchestration.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.AppDeploymentStateChanger;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
@@ -33,6 +37,7 @@ import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurati
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurationProvider, AppDeploymentStateChanger {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "routers";
@@ -58,6 +63,7 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
     private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void configureNmService(Identifier deploymentId, AppConfiguration appConfiguration, DockerHost host) {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);

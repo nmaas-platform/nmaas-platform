@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcndeployment;
+package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import org.junit.Test;
