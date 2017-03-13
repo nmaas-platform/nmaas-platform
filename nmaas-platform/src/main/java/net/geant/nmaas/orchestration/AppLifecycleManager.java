@@ -1,5 +1,7 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+
 /**
  * Declares methods to be used by the NMaaS Portal to manage NMaaS applications lifecycle.
  *
@@ -30,14 +32,14 @@ public interface AppLifecycleManager {
      * @param deploymentId unique identifier of the deployed user application
      * @param configuration application user configuration
      */
-    void applyConfiguration(Identifier deploymentId, AppConfiguration configuration);
+    void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException;
 
     /**
      * Removes deployed application from the system.
      *
      * @param deploymentId unique identifier of the deployed user application
      */
-    void removeApplication(Identifier deploymentId);
+    void removeApplication(Identifier deploymentId) throws InvalidDeploymentIdException;
 
     /**
      * Updates already deployed user application to the latest or provided by client version available in the NMaaS Portal.

@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.task;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
@@ -7,12 +7,15 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.orchestration.*;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import static net.geant.nmaas.orchestration.AppLifecycleState.*;
-
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

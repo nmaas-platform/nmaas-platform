@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class AppConfigurationJsonToMapTest {
 
     @Autowired
-    private SimpleNmServiceConfigurationExecutor configurationExecutor;
+    private NmServiceConfigurationsPreparer configurationsPreparer;
 
     private AppConfiguration appConfiguration;
 
@@ -38,7 +38,7 @@ public class AppConfigurationJsonToMapTest {
     @Test
     public void shouldMapJsonToMap() throws IOException {
         @SuppressWarnings("unchecked")
-        List<String> list = (List<String>) configurationExecutor.getModelFromJson(appConfiguration).get("routers");
+        List<String> list = (List<String>) configurationsPreparer.getModelFromJson(appConfiguration).get("routers");
         assertThat(list.size(), equalTo(2));
         System.out.println(list.toString());
         assertThat(list, Matchers.contains("1.1.1.1", "2.2.2.2"));

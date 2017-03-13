@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,7 +60,7 @@ public class OrchestratorManagerRestControllerTest {
     }
 
     @Test
-    public void shouldRequestNewDeployment() throws Exception {
+    public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
         when(lifecycleManager.deployApplication(any(),any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -68,19 +68,17 @@ public class OrchestratorManagerRestControllerTest {
         params.set("applicationid", applicationId.toString());
         mvc.perform(post("/platform/api/orchestration/deployments")
                 .params(params)
-                .with(httpBasic(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(mapper.writeValueAsString(deploymentId)));
     }
 
     @Test
-    public void shouldApplyConfigurationForDeployment() throws Exception {
+    public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         mvc.perform(post("/platform/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
-                .with(httpBasic(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password")))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(appConfiguration))
+                .content(appConfiguration.getJsonInput())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -89,7 +87,17 @@ public class OrchestratorManagerRestControllerTest {
 
         verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture());
         assertThat(deploymentIdCaptor.getValue(), equalTo(deploymentId));
-        assertThat(appConfigurationCaptor.getValue(), equalTo(appConfiguration));
+        assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
+    }
+
+    @Test
+    public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Exception {
+        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
+        mvc.perform(post("/platform/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(appConfiguration.getJsonInput())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
 }

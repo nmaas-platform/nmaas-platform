@@ -2,9 +2,10 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 

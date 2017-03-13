@@ -1,5 +1,8 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+
 import java.util.Map;
 
 /**

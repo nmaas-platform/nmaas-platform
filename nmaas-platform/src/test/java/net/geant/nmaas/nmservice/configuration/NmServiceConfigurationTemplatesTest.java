@@ -35,7 +35,7 @@ public class NmServiceConfigurationTemplatesTest {
     private NmServiceConfigurationTemplatesRepository templatesRepository;
 
     @Autowired
-    private SimpleNmServiceConfigurationExecutor configurationExecutor;
+    private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Test
     public void shouldPopulateAndPrintConfigurationFile() throws Exception {
@@ -50,12 +50,12 @@ public class NmServiceConfigurationTemplatesTest {
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
         List<Template> templates = templatesRepository.loadTemplates(AppLifecycleManager.OXIDIZED_APPLICATION_ID);
         NmServiceConfiguration nmServiceConfiguration =
-                configurationExecutor.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_1, templates.get(0), testOxidizedDefaultConfigurationInputModel());
+                configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_1, templates.get(0), testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
         assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
                 Matchers.allOf(containsString("user123"), containsString("pass123")));
         nmServiceConfiguration =
-                configurationExecutor.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_2, templates.get(1), testOxidizedDefaultConfigurationInputModel());
+                configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_2, templates.get(1), testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
         assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
                 Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));

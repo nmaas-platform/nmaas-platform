@@ -27,7 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class UpdateNmServiceInfoWithDevicesTest {
 
     @Autowired
-    private SimpleNmServiceConfigurationExecutor configurationExecutor;
+    private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Autowired
     private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
@@ -45,6 +45,7 @@ public class UpdateNmServiceInfoWithDevicesTest {
     public void setup() {
         NmServiceInfo serviceInfo = new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null);
         nmServiceRepository.storeService(serviceInfo);
+        deploymentId = Identifier.newInstance("deploymentId");
         deploymentIdToNmServiceNameMapper.storeMapping(deploymentId, nmServiceName);
         appConfiguration = new AppConfiguration();
         appConfiguration.setJsonInput("" +
@@ -55,8 +56,8 @@ public class UpdateNmServiceInfoWithDevicesTest {
 
     @Test
     public void shouldUpdateNmServiceInfoWithDevices() throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, NmServiceRepository.ServiceNotFoundException, IOException {
-        final Map<String, Object> modelFromJson = configurationExecutor.getModelFromJson(appConfiguration);
-        configurationExecutor.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, modelFromJson);
+        final Map<String, Object> modelFromJson = configurationsPreparer.getModelFromJson(appConfiguration);
+        configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, modelFromJson);
         assertThat(nmServiceRepository.loadService(nmServiceName).getManagedDevicesIpAddresses(), Matchers.contains("1.1.1.1", "2.2.2.2"));
     }
 

@@ -21,7 +21,7 @@ public class LoggingAspect {
 	
 	private static String BEFORE_WITH_PARAMS_STRING = "ENTERING METHOD {0} WITH PARAMS {1}";
 
-	private static String AFTER_THROWING = "EXCEPTION THROWN {0} WITH MESSAGE {1} WITH PARAMS {2}";
+	private static String AFTER_THROWING = "EXCEPTION THROWN IN {0} WITH MESSAGE {1} WITH PARAMS {2}";
 
 	private static String AFTER_RETURNING = "LEAVING METHOD {0} AND RETURNING {1}";
 
@@ -68,11 +68,8 @@ public class LoggingAspect {
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 		Logger logger = LogManager.getLogger(clazz);
 		String name = joinPoint.getSignature().getName();
-		logger.log(Level.ERROR, MessageFormat.format(
-													AFTER_THROWING,
-													name,
-													throwable.getMessage(),
-													constructArgumentsString(clazz, joinPoint.getArgs())));
+		logger.log(Level.ERROR,
+				MessageFormat.format(AFTER_THROWING, name, throwable.getMessage(), constructArgumentsString(joinPoint.getArgs())));
 	}
 
 	@AfterReturning(
@@ -97,9 +94,9 @@ public class LoggingAspect {
 	}
 
 	private String constructArgumentsString(Object... arguments) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		for (Object object : arguments) {
-			buffer.append(object);
+			buffer.append(object).append(" ");
 		}
 		return buffer.toString();
 	}

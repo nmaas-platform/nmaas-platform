@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.exceptions;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
