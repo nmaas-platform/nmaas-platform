@@ -3,16 +3,15 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
-import com.spotify.docker.client.messages.Container;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
-import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.exceptions.ExecCreateConflictException;
+import com.spotify.docker.client.messages.*;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,6 +65,39 @@ public class DockerContainerClient {
     private void executeStart(String containerId, DockerClient apiClient)
             throws DockerException, InterruptedException {
         apiClient.startContainer(containerId);
+    }
+
+    public void addStaticRoute(String containerId, String deviceAddress, String gatewayAddress, DockerHost host)
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
+        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
+        try {
+            executeExec(containerId, addIpRouteCommand(deviceAddress, gatewayAddress), apiClient);
+        } catch (DockerException dockerException) {
+            throw new CouldNotDeployNmServiceException(
+                    "Could not exec route add on container -> " + dockerException.getMessage(), dockerException);
+        } catch (InterruptedException interruptedException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Internal error -> " + interruptedException.getMessage(), interruptedException);
+        } finally {
+            if (apiClient != null) apiClient.close();
+        }
+    }
+
+    private List<String> addIpRouteCommand(String deviceAddress, String gatewayAddress) {
+        List<String> commands = new ArrayList<>();
+        commands.add("ip");
+        commands.add("route");
+        commands.add("add");
+        commands.add(deviceAddress + "/32");
+        commands.add("via");
+        commands.add(gatewayAddress);
+        return commands;
+    }
+
+    private void executeExec(String containerId, List<String> commands, DockerClient apiClient) throws DockerException, InterruptedException {
+        final ExecCreation execCreation = apiClient.execCreate(containerId, commands.stream().toArray(String[]::new), DockerClient.ExecCreateParam.privileged(true));
+        final String execId = execCreation.id();
+        apiClient.execStart(execId);
     }
 
     public void remove(String containerId, DockerHost host)

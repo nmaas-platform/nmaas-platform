@@ -23,8 +23,7 @@ public class NmServiceConfigurationRepository {
         if (requestedConfig != null)
             return requestedConfig;
         else
-            throw new ConfigurationNotFoundException(
-                    "Configuration " + configId + " not found in the repository.");
+            throw new ConfigurationNotFoundException("Configuration " + configId + " not found in the repository.");
     }
 
     public boolean isConfigStored(String generatedConfigId) {

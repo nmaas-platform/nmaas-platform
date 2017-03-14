@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -343,6 +344,9 @@ public enum AppDeploymentState {
     INTERNAL_ERROR {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.INTERNAL_ERROR; }
+    }, GENERIC_ERROR {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.GENERIC_ERROR; }
     };
 
     public abstract AppLifecycleState lifecycleState();

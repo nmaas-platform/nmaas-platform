@@ -7,6 +7,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKee
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,13 @@ public class AppLifecycleRepository {
                     "Deployment with id " + deploymentId + " not found in the repository. ");
     }
 
+    public Map<Identifier, AppLifecycleState> loadViewOfAllDeployments() {
+        Map<Identifier, AppLifecycleState> view = new HashMap<>();
+        deployments.entrySet().stream()
+                .forEach(entry -> view.put(entry.getKey(), entry.getValue().lifecycleState()));
+        return view;
+    }
+
     public boolean isDeploymentStored(Identifier deploymentId) {
         return (deployments.get(deploymentId) != null);
     }
@@ -63,7 +71,7 @@ public class AppLifecycleRepository {
         }
     }
 
-    public AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
+    private AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
         try {
             final DockerHost host = (DockerHost)serviceInfo.getHost();
             final String accessAddress = host.getAccessInterfaceName();

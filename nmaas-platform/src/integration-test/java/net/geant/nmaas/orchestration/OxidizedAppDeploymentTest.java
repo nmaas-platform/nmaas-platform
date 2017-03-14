@@ -1,7 +1,8 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,9 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static net.geant.nmaas.orchestration.AppLifecycleManager.OXIDIZED_APPLICATION_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -37,10 +36,18 @@ public class OxidizedAppDeploymentTest {
 
     private Identifier applicationId;
 
+    private String jsonInput;
+
     @Before
     public void setup() {
         clientId = Identifier.newInstance(TEST_CLIENT_ID);
         applicationId = OXIDIZED_APPLICATION_ID;
+        jsonInput = "" +
+                "{" +
+                    "\"routers\": [\"1.1.1.1\",\"2.2.2.2\"], " +
+                    "\"oxidizedUsername\":\"oxidized\", " +
+                    "\"oxidizedPassword\":\"9v5oEo3n\"" +
+                "}";
     }
 
     @Test
@@ -50,7 +57,8 @@ public class OxidizedAppDeploymentTest {
         waitAndVerifyDeploymentEnvironmentPrepared(deploymentId);
         waitAndVerifyManagementVpnConfigurationInProgress(deploymentId);
         manuallyNotifyDcnDeploymentStateToDeployedAndVerifyManagementVpnConfigured(deploymentId);
-        appLifecycleManager.applyConfiguration(deploymentId, new AppConfiguration(applicationId));
+        appLifecycleManager.applyConfiguration(deploymentId, new AppConfiguration(applicationId, jsonInput));
+        // this won't work since the configuration file needs to be download from a running NMaaS Portal instance
         waitAndVerifyApplicationConfigured(deploymentId);
         waitAndVerifyApplicationDeployed(deploymentId);
         waitAndVerifyApplicationDeploymentVerified(deploymentId);

@@ -2,9 +2,12 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -18,6 +21,11 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDep
     @Override
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
         return retrieveCurrentState(deploymentId);
+    }
+
+    @Override
+    public Map<Identifier, AppLifecycleState> allDeployments() {
+        return repository.loadViewOfAllDeployments();
     }
 
     @Override
@@ -52,6 +60,11 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDep
         } catch (InvalidDeploymentIdException e) {
             System.out.println("State notification failure -> " + e.getMessage());
         }
+    }
+
+    @Override
+    public void notifyGenericError(Identifier deploymentId) {
+        repository.updateDeploymentState(deploymentId, AppDeploymentState.GENERIC_ERROR);
     }
 
     private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {

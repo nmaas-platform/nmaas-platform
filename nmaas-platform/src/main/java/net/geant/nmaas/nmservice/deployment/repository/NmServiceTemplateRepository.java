@@ -6,6 +6,7 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +29,10 @@ public class NmServiceTemplateRepository {
         DockerEngineContainerTemplate oxidizedTemplate =
                 new DockerEngineContainerTemplate(OXIDIZED_APPLICATION_ID, "oxidized", "oxidized/oxidized:latest");
         oxidizedTemplate.setCommandInSpecRequired(false);
-        oxidizedTemplate.setEnv(asList("CONFIG_RELOAD_INTERVAL: 600"));
+        oxidizedTemplate.setEnv(asList("CONFIG_RELOAD_INTERVAL=600"));
         oxidizedTemplate.setEnvVariablesInSpecRequired(false);
         oxidizedTemplate.setExposedPort(new ContainerPortForwardingSpec("ui", ContainerPortForwardingSpec.Protocol.TCP, 8888));
+        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
         templates.put(OXIDIZED_APPLICATION_ID, oxidizedTemplate);
 
         DockerEngineContainerTemplate pmacctGrafanaTemplate =

@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.configuration.repository;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class NmServiceConfigurationTemplatesRepository {
 
     public static final String DEFAULT_TEMPLATE_FILE_NAME_SUFFIX = "-template";
 
-    public List<Template> loadTemplates(Identifier applicationId) throws NmServiceConfigurationFailedException {
+    public List<Template> loadTemplates(Identifier applicationId) throws ConfigTemplateHandlingException {
         try {
             List<String> configTemplatesFileNames =
                     Files.list(Paths.get(DEFAULT_BASE_CONFIGURATION_TEMPLATES_DIRECTORY + File.separator + applicationId))
@@ -38,7 +38,7 @@ public class NmServiceConfigurationTemplatesRepository {
                 templates.add(cfg.getTemplate(configTemplatesFileName));
             return templates;
         } catch (IOException e) {
-            throw new NmServiceConfigurationFailedException("Problem with reading configuration templates for app " + applicationId);
+            throw new ConfigTemplateHandlingException("Problem with reading configuration templates for app " + applicationId);
         }
     }
 }

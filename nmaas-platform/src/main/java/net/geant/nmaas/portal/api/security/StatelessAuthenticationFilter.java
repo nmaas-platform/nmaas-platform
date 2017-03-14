@@ -1,14 +1,9 @@
 package net.geant.nmaas.portal.api.security;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
+import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -16,8 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
-import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class StatelessAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 	final static Logger log = LogManager.getLogger(StatelessAuthenticationFilter.class);

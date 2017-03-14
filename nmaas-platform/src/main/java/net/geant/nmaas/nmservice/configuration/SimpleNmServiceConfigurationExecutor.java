@@ -1,98 +1,89 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import freemarker.template.Template;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
+import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
-import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.AppDeploymentStateChanger;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurationProvider, AppDeploymentStateChanger {
 
-    @Autowired
-    private NmServiceConfigurationRepository configurations;
+    private final static Logger log = LogManager.getLogger(SimpleNmServiceConfigurationExecutor.class);
 
-    @Autowired
-    private NmServiceConfigurationTemplatesRepository templates;
+    private AppDeploymentStateChangeListener stateChangeListener;
 
-    @Autowired
-    private AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener;
+    private NmServiceConfigurationsPreparer configurationsPreparer;
 
-    @Autowired
     private SshCommandExecutor sshCommandExecutor;
 
     private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
 
+    @Autowired
+    public SimpleNmServiceConfigurationExecutor(AppDeploymentStateChangeListener stateChangeListener, NmServiceConfigurationsPreparer configurationsPreparer, SshCommandExecutor sshCommandExecutor) {
+        this.stateChangeListener = stateChangeListener;
+        this.configurationsPreparer = configurationsPreparer;
+        this.sshCommandExecutor = sshCommandExecutor;
+    }
+
     @Override
+    @Loggable(LogLevel.INFO)
     public void configureNmService(Identifier deploymentId, AppConfiguration appConfiguration, DockerHost host) {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
-            final Identifier applicationId = appConfiguration.getApplicationId();
-            for(Template template : loadConfigTemplatesForApplication(applicationId)) {
-                generateConfigAndTriggerDownloadOnRemoteHost(deploymentId, host, template);
+            List<String> configurationIdentifiers = configurationsPreparer.generateAndStoreConfigurations(deploymentId, appConfiguration);
+            for (String configId : configurationIdentifiers) {
+                triggerConfigurationDownloadOnRemoteHost(deploymentId, configId, host);
             }
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
-        } catch (Exception e) {
-            System.out.println("Failed to configure NM Service -> " + e.getMessage());
+        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
+            log.error("Failed to update configuration for already stored NM Service -> " + serviceNotFoundException.getMessage());
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);
+        } catch (IOException e) {
+            log.error("Wasn't able to map json configuration to model map.");
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);
+        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException entryNotFoundException) {
+            log.error("Wrong deployment identifier -> " + entryNotFoundException.getMessage());
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);
+        } catch (ConfigTemplateHandlingException configTemplateHandlingException) {
+            log.error("Caught some exception during configuration template processing -> " + configTemplateHandlingException.getMessage());
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);
+        } catch (CommandExecutionException commandExecutionException) {
+            log.error("Couldn't execute configuration download command on remote host -> " + commandExecutionException.getMessage());
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);
         }
     }
 
-    void generateConfigAndTriggerDownloadOnRemoteHost(Identifier deploymentId, DockerHost host, Template template) throws Exception {
-        String configId = generateConfigId(configurations);
-        NmServiceConfiguration configuration = buildConfigFromTemplateAndUserProvidedInput(configId, template, oxidizedDefaultConfigurationInputModel());
-        storeConfigurationInRepository(configId, configuration);
-        try {
-            triggerConfigurationDownloadOnRemoteHost(deploymentId, configId, host);
-        } catch (CommandExecutionException e) {
-            System.out.println("Failed to execute command -> " + e.getMessage());
-            throw new CommandExecutionException("Failed to execute command -> " + e.getMessage(), e);
-        }
-    }
-
-    List<Template> loadConfigTemplatesForApplication(Identifier applicationId) throws NmServiceConfigurationFailedException {
-        return templates.loadTemplates(applicationId);
-    }
-
-    void triggerConfigurationDownloadOnRemoteHost(Identifier deploymentId, String configId, DockerHost host) throws CommandExecutionException {
+    @Loggable(LogLevel.DEBUG)
+    void triggerConfigurationDownloadOnRemoteHost(Identifier deploymentId, String configId, DockerHost host)
+            throws CommandExecutionException {
         sshCommandExecutor.executeConfigDownloadCommand(deploymentId, configId, host);
     }
 
-    void storeConfigurationInRepository(String configId, NmServiceConfiguration configuration) {
-        configurations.storeConfig(configId, configuration);
-    }
-
-    NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model) throws Exception {
-        ByteArrayOutputStream os  = new ByteArrayOutputStream();
-        Writer osWriter = new OutputStreamWriter(os);
-        template.process(model, osWriter);
-        osWriter.flush();
-        return new NmServiceConfiguration(configId, configFileNameFromTemplateName(template.getName()), os.toByteArray());
-    }
-
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
-        defaultAppDeploymentStateChangeListener.notifyStateChange(deploymentId, state);
+        stateChangeListener.notifyStateChange(deploymentId, state);
         stateChangeListeners.forEach((listener) -> listener.notifyStateChange(deploymentId, state));
     }
 

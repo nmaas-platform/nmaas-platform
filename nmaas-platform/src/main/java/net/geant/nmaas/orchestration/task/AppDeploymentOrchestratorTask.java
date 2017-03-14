@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.task;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
@@ -7,12 +7,15 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.orchestration.*;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import static net.geant.nmaas.orchestration.AppLifecycleState.*;
-
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -31,6 +34,9 @@ public class AppDeploymentOrchestratorTask implements Runnable {
 
     @Autowired
     private AppDeploymentMonitor appDeploymentMonitor;
+
+    @Autowired
+    private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
 
     @Autowired
     private NmServiceTemplateRepository applicationTemplates;
@@ -67,14 +73,15 @@ public class AppDeploymentOrchestratorTask implements Runnable {
             serviceDeployment.deployNmService(deploymentId);
             waitForAppDeployedState();
             serviceDeployment.verifyNmService(deploymentId);
-        } catch (InvalidDeploymentIdException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (net.geant.nmaas.nmservice.InvalidDeploymentIdException e) {
-            e.printStackTrace();
+            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
         } catch (InvalidAppStateException e) {
-            e.printStackTrace();
+            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
+        } catch (InvalidDeploymentIdException
+                | net.geant.nmaas.nmservice.InvalidDeploymentIdException e) {
+            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
+        } catch (InvalidApplicationIdException e) {
+            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
         }
     }
 
@@ -145,11 +152,13 @@ public class AppDeploymentOrchestratorTask implements Runnable {
             throw new NullPointerException();
     }
 
-    private NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) {
+    private NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) throws InvalidApplicationIdException {
         final DockerEngineContainerTemplate template = (DockerEngineContainerTemplate) applicationTemplates.loadTemplateByApplicationId(applicationId);
+        if (template == null)
+            throw new InvalidApplicationIdException("Nm Service template for application id " + applicationId + " does not exist");
         final String serviceName = buildServiceName(applicationId, template);
         DockerContainerSpec dockerContainerSpec = new DockerContainerSpec(serviceName, template);
-        // client details from database
+        // client details should be read from database
         dockerContainerSpec.setClientDetails("client-" + clientId, "organization-" + clientId);
         return dockerContainerSpec;
     }

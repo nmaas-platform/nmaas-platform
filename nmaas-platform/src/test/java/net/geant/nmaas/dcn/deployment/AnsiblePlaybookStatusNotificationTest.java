@@ -1,11 +1,7 @@
-package net.geant.nmaas.dcndeployment;
+package net.geant.nmaas.dcn.deployment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentCoordinator;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
-import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
 import net.geant.nmaas.dcn.deployment.api.AnsibleNotificationRestController;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
@@ -57,7 +53,7 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Before
     public void setUp() throws JsonProcessingException {
-        DcnDeploymentCoordinator coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, appDeploymentStateChangeListener);
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, appDeploymentStateChangeListener);
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
     }

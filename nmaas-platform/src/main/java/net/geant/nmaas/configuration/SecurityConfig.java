@@ -52,14 +52,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String AUTH_ROLE_NMAAS_TEST_CLIENT = "NMAAS_TEST_CLIENT";
 	public static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
 
-	@Autowired
-	AuthenticationManager authenticationManager;
+//	@Autowired
+//	AuthenticationManager authenticationManager;
 
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
 	
 	@Autowired
 	private Environment env;
+
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+//		auth.inMemoryAuthentication().withUser("user1").password("user1Pass").authorities("ROLE_USER");
+
+		auth.inMemoryAuthentication()
+				.withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
+					.password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
+					.roles(AUTH_ROLE_ANSIBLE_CLIENT)
+				.and()
+				.withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
+					.password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
+					.roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
+				.and()
+				.withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
+	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -81,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
 	            .antMatchers("/platform/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
+				.antMatchers("/platform/api/orchestration/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 	            .and().httpBasic()
 			.and()
@@ -90,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
 				.antMatchers("/portal/api/**").authenticated()
 			.and()
-				//.addFilterBefore(statelessLoginFilter("/platform/**", inMemoryUserDetailsService), UsernamePasswordAuthenticationFilter.class)
+//				.addFilterBefore(statelessLoginFilter("/platform/**",	inMemoryUserDetailsService()), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(
 								new String[] { 	AUTH_BASIC_LOGIN, 
@@ -101,41 +120,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 								tokenAuthenticationService), 
 						UsernamePasswordAuthenticationFilter.class);		
 	}
-	
-	
-	private InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryConfigurer() {
-		return new InMemoryUserDetailsManagerConfigurer<>();
-	}
-	
-	private UserDetailsService inMemoryUserDetailsService() {
-		return inMemoryConfigurer().withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
-					      .password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
-					      .roles(AUTH_ROLE_ANSIBLE_CLIENT)
-					      .and()
-					      .withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
-					      .password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
-					      .roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
-						  .and()
-						  .withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-						  .password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-						  .roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-					      .and()
-					      .getUserDetailsService();
-	}
+
+//	private InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryConfigurer() {
+//		return new InMemoryUserDetailsManagerConfigurer<>();
+//	}
+//
+//	private UserDetailsService inMemoryUserDetailsService() {
+//		return inMemoryConfigurer().withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
+//					      .password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
+//					      .roles(AUTH_ROLE_ANSIBLE_CLIENT)
+//					      .and()
+//					      .withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
+//					      .password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
+//					      .roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
+//						  .and()
+//						  .withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
+//						  .password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+//						  .roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
+//					      .and()
+//					      .getUserDetailsService();
+//	}
 	
 	private Filter statelessAuthFilter(RequestMatcher skipPaths, AuthenticationFailureHandler failureHandler, TokenAuthenticationService tokenService) {
 		StatelessAuthenticationFilter filter = new StatelessAuthenticationFilter(skipPaths, tokenService);
 		if(failureHandler != null)
 			filter.setAuthenticationFailureHandler(failureHandler);
-		filter.setAuthenticationManager(authenticationManager);
+//		filter.setAuthenticationManager(authenticationManager);
 		return filter;
 	}
 
-	private Filter statelessLoginFilter(String processUrl, UserDetailsService userDetailsService) {
-		StatelessLoginFilter filter = new StatelessLoginFilter(processUrl, userDetailsService);
-		filter.setAuthenticationManager(authenticationManager);
-		return filter;
-	}
+//	private Filter statelessLoginFilter(String processUrl, UserDetailsService userDetailsService) {
+//		StatelessLoginFilter filter = new StatelessLoginFilter(processUrl, userDetailsService);
+//		filter.setAuthenticationManager(authenticationManager);
+//		return filter;
+//	}
 
 	@Bean
 	public FilterRegistrationBean corsFilter() {
@@ -149,7 +167,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		corsConfig.addAllowedMethod("*");
 		
 		source.registerCorsConfiguration("/portal/api/**", corsConfig);
-		
+		source.registerCorsConfiguration("/platform/api/**", corsConfig);
+
 		FilterRegistrationBean bean = new FilterRegistrationBean();
 		bean.setFilter(new CorsFilter(source));
 		bean.setOrder(0);

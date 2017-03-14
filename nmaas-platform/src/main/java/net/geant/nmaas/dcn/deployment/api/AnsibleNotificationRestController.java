@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.api;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentCoordinator;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookExecutionStateListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/platform/api/dcns")
 public class AnsibleNotificationRestController {
 
-    private DcnDeploymentCoordinator coordinator;
+    private AnsiblePlaybookExecutionStateListener stateListener;
 
     @Autowired
-    public AnsibleNotificationRestController(DcnDeploymentCoordinator coordinator) {
-        this.coordinator = coordinator;
+    public AnsibleNotificationRestController(AnsiblePlaybookExecutionStateListener stateListener) {
+        this.stateListener = stateListener;
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -27,7 +27,7 @@ public class AnsibleNotificationRestController {
     @RequestMapping(value = "/notifications/{encodedServiceId}/status", method = RequestMethod.POST, consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void notifyDcnConfigurationStatus(@PathVariable String encodedServiceId, @RequestBody AnsiblePlaybookStatus input) {
-        coordinator.notifyPlaybookExecutionState(encodedServiceId, input.convertedStatus());
+        stateListener.notifyPlaybookExecutionState(encodedServiceId, input.convertedStatus());
     }
 
 }

@@ -7,7 +7,9 @@ package net.geant.nmaas.orchestration;
  */
 public class Identifier {
 
-    private final String value;
+    private String value;
+
+    public Identifier() {}
 
     public Identifier(String value) {
         this.value = value;
@@ -36,4 +38,13 @@ public class Identifier {
     public int hashCode() {
         return value != null ? value.hashCode() : 0;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
 }
