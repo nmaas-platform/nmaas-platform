@@ -1,5 +1,7 @@
-package net.geant.nmaas.dcn.deployment;
+package net.geant.nmaas.dcndeployment;
 
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigDefaults;
 import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +9,7 @@ import org.junit.Test;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class VpnConfigDefaultInstanceAndValidationTest {
+public class AnsiblePlaybookVpnConfigDefaultInstanceAndValidationTest {
 
     private AnsiblePlaybookVpnConfig validConfig;
 
@@ -31,7 +33,6 @@ public class VpnConfigDefaultInstanceAndValidationTest {
     @Test
     public void shouldReturnDefaultInstanceAndValidateIt() throws ConfigNotValidException {
         AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter().validate();
-        AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter().validate();
     }
 
     @Test

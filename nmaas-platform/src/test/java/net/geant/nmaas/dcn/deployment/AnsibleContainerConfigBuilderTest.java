@@ -2,7 +2,8 @@ package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.dcn.deployment.AnsibleContainerConfigBuilder;
-import net.geant.nmaas.dcn.deployment.VpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigDefaults;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class AnsibleContainerConfigBuilderTest {
 
     @Test
     public void shouldBuildContainerConfig() {
-        ContainerConfig containerConfig = containerConfigBuilder.build(VpnConfig.defaultVpn(), DCN_ID);
+        ContainerConfig containerConfig = containerConfigBuilder.build(AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter(), DCN_ID);
         assertThat(EXAMPLE_COMPLETE_DOCKER_RUN_COMMAND, Matchers.stringContainsInOrder(Arrays.asList(containerConfig.image())));
         for (String volumeEntry : containerConfig.hostConfig().binds())
             assertThat(EXAMPLE_COMPLETE_DOCKER_RUN_COMMAND, Matchers.stringContainsInOrder(Arrays.asList(volumeEntry)));

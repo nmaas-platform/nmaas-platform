@@ -1,7 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +59,7 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndCallNotificationPost() throws Exception {
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter("testDcn"))
                 .with(httpBasic(context.getEnvironment().getProperty("api.client.ansible.username"), context.getEnvironment().getProperty("api.client.ansible.password")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
@@ -70,7 +69,7 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndForbidNotificationPost() throws Exception {
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter("testDcn"))
                 .with(httpBasic(context.getEnvironment().getProperty("api.client.nmaas.test.username"), context.getEnvironment().getProperty("api.client.nmaas.test.password")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))

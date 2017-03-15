@@ -1,7 +1,8 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookCommandBuilder;
-import net.geant.nmaas.dcn.deployment.VpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigDefaults;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class AnsiblePlaybookCommandCreationTest {
 
     @Test
     public void shouldBuildCorrectCommand() {
-        final List<String> commands = AnsiblePlaybookCommandBuilder.command(VpnConfig.defaultVpn(), SERVICE_ID);
+        final List<String> commands = AnsiblePlaybookCommandBuilder.command(AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter(), SERVICE_ID);
         for (String command : commands)
             assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND, Matchers.stringContainsInOrder(Arrays.asList(command)));
     }

@@ -23,7 +23,7 @@ public class AnsibleContainerConfigBuilder {
     private static final String ANSIBLE_VOLUME_5_FROM = "/home/docker/.ssh/id_rsa";
     private static final String ANSIBLE_VOLUME_5_TO = "/root/.ssh/id_rsa";
 
-    public static ContainerConfig build(VpnConfig vpn, String dcnId) {
+    public static ContainerConfig build(AnsiblePlaybookVpnConfig vpn, String dcnId) {
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
         containerBuilder.image(ANSIBLE_IMAGE_NAME);
         containerBuilder.cmd(AnsiblePlaybookCommandBuilder.command(vpn, dcnId));
@@ -33,7 +33,7 @@ public class AnsibleContainerConfigBuilder {
         return containerBuilder.build();
     }
 
-    private static List<String> volumeBindings(VpnConfig vpn) {
+    private static List<String> volumeBindings(AnsiblePlaybookVpnConfig vpn) {
         final List<String> volumeBinds = new ArrayList<>();
         volumeBinds.add(HostConfig.Bind.from(ANSIBLE_VOLUME_1_FROM).to(ANSIBLE_VOLUME_1_TO).build().toString());
         volumeBinds.add(HostConfig.Bind.from(ANSIBLE_VOLUME_2_FROM).to(ANSIBLE_VOLUME_2_TO).build().toString());
