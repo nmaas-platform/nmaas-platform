@@ -2,9 +2,8 @@ package net.geant.nmaas.dcndeployment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.geant.nmaas.configuration.NmaasPlatformConfiguration;
 import net.geant.nmaas.configuration.SecurityConfig;
-import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +21,6 @@ import javax.servlet.Filter;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -64,7 +62,7 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndCallNotificationPost() throws Exception {
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter("testDcn"))
                 .with(user("test").roles(SecurityConfig.AUTH_ROLE_ANSIBLE_CLIENT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
@@ -74,7 +72,7 @@ public class DcnRestApiAuthTest {
 
     @Test
     public void shouldAuthAndForbidNotificationPost() throws Exception {
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode("testDcn"))
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter("testDcn"))
                 .with(user("test").roles(SecurityConfig.AUTH_ROLE_NMAAS_TEST_CLIENT))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))

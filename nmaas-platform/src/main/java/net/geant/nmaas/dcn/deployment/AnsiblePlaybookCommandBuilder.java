@@ -28,7 +28,7 @@ public class AnsiblePlaybookCommandBuilder {
     private static final String IS = "=";
     private static final String QUOTE = "\"";
 
-    public static List<String> command(VpnConfig vpn, String serviceId) {
+    public static List<String> command(AnsiblePlaybookVpnConfig vpn, String serviceId) {
         List<String> commands = new ArrayList<>();
         commands.add(ANSIBLE_RUN_SCRIPT_NAME);
         commands.add("-v");

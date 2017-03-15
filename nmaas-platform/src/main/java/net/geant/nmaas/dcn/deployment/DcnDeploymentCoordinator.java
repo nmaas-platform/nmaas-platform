@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
+import static net.geant.nmaas.dcn.deployment.DcnDeploymentState.DEPLOYED;
 import static net.geant.nmaas.dcn.deployment.DcnDeploymentState.INIT;
 
 @Component
@@ -53,10 +55,9 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
         final String dcnName = dcnSpec.name();
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
         dcnRepository.storeNetwork(new DcnInfo(dcnName, INIT, dcnSpec));
-        VpnConfig vpnConfig = null;
         try {
-            vpnConfig = VpnConfig.defaultVpn();
-            dcnRepository.updateVpnConfig(dcnName, vpnConfig);
+            dcnRepository.updateAnsiblePlaybookForClientSideRouter(dcnName, AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter());
+            dcnRepository.updateAnsiblePlaybookForCloudSideRouter(dcnName, AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFIED);
         } catch (DcnRepository.DcnNotFoundException e) {
             System.out.println("Exception during DCN request verification -> " + e.getMessage());
@@ -72,13 +73,17 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
 
     @Override
     public void deployDcn(Identifier deploymentId) throws InvalidDeploymentIdException {
-        String dcnName = null;
         try {
-            dcnName = deploymentIdMapper.dcnName(deploymentId);
-            final VpnConfig vpnConfig = dcnRepository.loadNetwork(dcnName).getVpnConfig();
-            final String encodedDcnName = DcnIdentifierConverter.encode(dcnName);
-            final ContainerConfig ansibleContainerConfig = AnsibleContainerConfigBuilder.build(vpnConfig, encodedDcnName);
-            executeDeploy(ansibleContainerConfig, ansibleContainerName(), loadDefaultAnsibleDockerHost());
+            String dcnName = deploymentIdMapper.dcnName(deploymentId);
+            final AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter = dcnRepository.loadNetwork(dcnName).getAnsiblePlaybookForClientSideRouter();
+            final AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter = dcnRepository.loadNetwork(dcnName).getAnsiblePlaybookForCloudSideRouter();
+            final DockerHost ansibleContainerDockerHost = loadDefaultAnsibleDockerHost();
+            final ContainerConfig ansiblePlaybookClientSideRouterContainerConfig =
+                    AnsibleContainerConfigBuilder.build(ansiblePlaybookForClientSideRouter, encodeForClientSideRouter(dcnName));
+            executeAnsiblePlaybookContainerDeploy(ansiblePlaybookClientSideRouterContainerConfig, ansibleContainerName(), ansibleContainerDockerHost);
+            final ContainerConfig ansiblePlaybookCloudSideRouterContainerConfig =
+                    AnsibleContainerConfigBuilder.build(ansiblePlaybookForCloudSideRouter, encodeForCloudSideRouter(dcnName));
+            executeAnsiblePlaybookContainerDeploy(ansiblePlaybookCloudSideRouterContainerConfig, ansibleContainerName(), ansibleContainerDockerHost);
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED);
         } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException e) {
             throw new InvalidDeploymentIdException();
@@ -113,13 +118,10 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
         stateChangeListeners.add(stateChangeListener);
     }
 
-    private void executeDeploy(ContainerConfig ansibleContainerConfig, String containerName, DockerHost dockerHost) throws DockerException, InterruptedException {
+    private void executeAnsiblePlaybookContainerDeploy(ContainerConfig ansibleContainerConfig, String containerName, DockerHost dockerHost) throws DockerException, InterruptedException {
         DockerClient apiClient = DefaultDockerClient.builder().uri(dockerHost.apiUrl()).build();
         ContainerCreation ansibleContainer = apiClient.createContainer(ansibleContainerConfig, containerName);
         apiClient.startContainer(ansibleContainer.id());
-    }
-
-    private void removePreviousContainer() {
     }
 
     private DockerHost loadDefaultAnsibleDockerHost() throws DockerHostNotFoundException {
@@ -130,24 +132,47 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider {
         return DEFAULT_ANSIBLE_CONTAINER_NAME + "-" + System.nanoTime();
     }
 
-    public void notifyPlaybookExecutionState(String encodedServiceId, AnsiblePlaybookStatus.Status status) {
-        final String dcnName = DcnIdentifierConverter.decode(encodedServiceId);
-        DcnDeploymentState dcnDeploymentState;
-        switch (status) {
-            case SUCCESS:
-                dcnDeploymentState = DcnDeploymentState.DEPLOYED;
-                break;
-            case FAILURE:
-            default:
-                dcnDeploymentState = DcnDeploymentState.DEPLOYMENT_FAILED;
-        }
+    public void notifyPlaybookExecutionState(String encodedPlaybookIdentifier, AnsiblePlaybookStatus.Status status) {
         Identifier deploymentId = null;
         try {
-            dcnRepository.updateDcnState(dcnName, dcnDeploymentState);
+            final String dcnName = decode(encodedPlaybookIdentifier);
             deploymentId = deploymentIdMapper.deploymentId(dcnName);
-            notifyStateChangeListeners(deploymentId, dcnDeploymentState);
+            DcnDeploymentState currentDcnDeploymentState = dcnRepository.loadCurrentState(dcnName);
+            DcnDeploymentState newDcnDeploymentState = null;
+            switch (status) {
+                case SUCCESS:
+                    switch(currentDcnDeploymentState) {
+                        case DEPLOYMENT_INITIATED:
+                            if (wasEncodedForClientSideRouter(encodedPlaybookIdentifier))
+                                newDcnDeploymentState = DcnDeploymentState.ANSIBLE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_COMPLETED;
+                            else if (wasEncodedForCloudSideRouter(encodedPlaybookIdentifier))
+                                newDcnDeploymentState = DcnDeploymentState.ANSIBLE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_COMPLETED;
+                            break;
+                        case ANSIBLE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_COMPLETED:
+                            if (wasEncodedForCloudSideRouter(encodedPlaybookIdentifier))
+                                newDcnDeploymentState = DcnDeploymentState.DEPLOYED;
+                            else
+                                newDcnDeploymentState = DcnDeploymentState.ERROR;
+                            break;
+                        case ANSIBLE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_COMPLETED:
+                            if(wasEncodedForClientSideRouter(encodedPlaybookIdentifier))
+                                newDcnDeploymentState = DcnDeploymentState.DEPLOYED;
+                            else
+                                newDcnDeploymentState = DcnDeploymentState.ERROR;
+                            break;
+                        default:
+                            newDcnDeploymentState = DcnDeploymentState.ERROR;
+                    }
+                    break;
+                case FAILURE:
+                default:
+                    newDcnDeploymentState = DcnDeploymentState.DEPLOYMENT_FAILED;
+            }
+            dcnRepository.updateDcnState(dcnName, newDcnDeploymentState);
+            notifyStateChangeListeners(deploymentId, newDcnDeploymentState);
         } catch (DcnRepository.DcnNotFoundException
-                | DeploymentIdToDcnNameMapper.EntryNotFoundException e) {
+                | DeploymentIdToDcnNameMapper.EntryNotFoundException
+                | AnsiblePlaybookIdentifierConverterException e) {
             System.out.println("Exception during playbook execution state reception -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.ERROR);
         }

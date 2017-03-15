@@ -2,20 +2,21 @@ package net.geant.nmaas.dcndeployment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentCoordinator;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.DcnIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
 import net.geant.nmaas.dcn.deployment.api.AnsibleNotificationRestController;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,10 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,7 +38,7 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Mock
     private DockerHostRepository dockerHostRepository;
 
-    @Mock
+    @Autowired
     private DcnRepository dcnRepository;
 
     @Mock
@@ -57,26 +55,27 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Before
     public void setUp() throws JsonProcessingException {
+        dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.DEPLOYMENT_INITIATED, null));
         DcnDeploymentCoordinator coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, appDeploymentStateChangeListener);
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
     }
 
     @Test
-    public void testFakeAnsibleDeployAndStatusUpdate() throws Exception {
-        mvc.perform(get("/platform/api/dcns"))
-                .andExpect(status().isOk());
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", DcnIdentifierConverter.encode(dcnName))
+    public void testAnsiblePlaybookStatusApiUpdate() throws Exception {
+        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(dcnName))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        ArgumentCaptor<String> dcnNameCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<DcnDeploymentState> dcnStateCaptor = ArgumentCaptor.forClass(DcnDeploymentState.class);
-
-        verify(dcnRepository, times(1)).updateDcnState(dcnNameCaptor.capture(), dcnStateCaptor.capture());
-        assertThat(dcnNameCaptor.getValue(), equalTo(dcnName));
-        assertThat(dcnStateCaptor.getValue(), equalTo(DcnDeploymentState.DEPLOYED));
+        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(dcnName))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(statusUpdateJsonContent)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.DEPLOYED));
     }
 
 }

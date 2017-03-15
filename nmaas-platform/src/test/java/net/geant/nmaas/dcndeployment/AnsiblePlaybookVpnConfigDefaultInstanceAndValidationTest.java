@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcndeployment;
 
-import net.geant.nmaas.dcn.deployment.VpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigDefaults;
 import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,13 +9,13 @@ import org.junit.Test;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class VpnConfigDefaultInstanceAndValidationTest {
+public class AnsiblePlaybookVpnConfigDefaultInstanceAndValidationTest {
 
-    private VpnConfig validConfig;
+    private AnsiblePlaybookVpnConfig validConfig;
 
     @Before
     public void prepareExampleVpnConfig() {
-        validConfig = new VpnConfig();
+        validConfig = new AnsiblePlaybookVpnConfig();
         validConfig.setTargetRouter("DEFAULT_NMAAS_CUSTOMER_TARGET_ROUTER");
         validConfig.setVrfId("DEFAULT_NMAAS_CUSTOMER_VRF_ID");
         validConfig.setLogicalInterface("DEFAULT_NMAAS_CUSTOMER_LOGICAL_INTERFACE");
@@ -31,7 +32,7 @@ public class VpnConfigDefaultInstanceAndValidationTest {
 
     @Test
     public void shouldReturnDefaultInstanceAndValidateIt() throws ConfigNotValidException {
-        VpnConfig.defaultVpn().validate();
+        AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter().validate();
     }
 
     @Test

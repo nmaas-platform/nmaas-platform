@@ -2,42 +2,7 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 
-public class VpnConfig {
-
-    private static final String DEFAULT_NMAAS_CUSTOMER_TARGET_ROUTER = "R4";
-    private static final String DEFAULT_NMAAS_CUSTOMER_VRF_ID = "NMAAS-C-AS65538";
-    private static final String DEFAULT_NMAAS_CUSTOMER_LOGICAL_INTERFACE = "ge-0/0/3.8";
-    private static final String DEFAULT_NMAAS_CUSTOMER_VRF_RD = "182.16.4.4:8";
-    private static final String DEFAULT_NMAAS_CUSTOMER_VRF_RT = "65525L:8";
-    private static final String DEFAULT_NMAAS_CUSTOMER_BGP_GROUP_ID = "INET-VPN-NMAAS-C-65538";
-    private static final String DEFAULT_NMAAS_CUSTOMER_BGP_NEIGHBOR_IP = "192.168.48.8";
-    private static final String DEFAULT_NMAAS_CUSTOMER_ASN = "65538";
-    private static final String DEFAULT_NMAAS_CUSTOMER_PHYSICAL_INTERFACE = "ge-0/0/3";
-    private static final String DEFAULT_NMAAS_CUSTOMER_ID = "8";
-    private static final String DEFAULT_NMAAS_CUSTOMER_BGP_LOCAL_IP = "192.168.48.4";
-    private static final String DEFAULT_NMAAS_CUSTOMER_BGP_LOCAL_CIDR = "24";
-
-    private static VpnConfig defaultInstance;
-
-    static {
-        defaultInstance = new VpnConfig();
-        defaultInstance.setTargetRouter(DEFAULT_NMAAS_CUSTOMER_TARGET_ROUTER);
-        defaultInstance.setVrfId(DEFAULT_NMAAS_CUSTOMER_VRF_ID);
-        defaultInstance.setLogicalInterface(DEFAULT_NMAAS_CUSTOMER_LOGICAL_INTERFACE);
-        defaultInstance.setVrfRd(DEFAULT_NMAAS_CUSTOMER_VRF_RD);
-        defaultInstance.setVrfRt(DEFAULT_NMAAS_CUSTOMER_VRF_RT);
-        defaultInstance.setBgpGroupId(DEFAULT_NMAAS_CUSTOMER_BGP_GROUP_ID);
-        defaultInstance.setBgpNeighborIp(DEFAULT_NMAAS_CUSTOMER_BGP_NEIGHBOR_IP);
-        defaultInstance.setAsn(DEFAULT_NMAAS_CUSTOMER_ASN);
-        defaultInstance.setPhysicalInterface(DEFAULT_NMAAS_CUSTOMER_PHYSICAL_INTERFACE);
-        defaultInstance.setId(DEFAULT_NMAAS_CUSTOMER_ID);
-        defaultInstance.setBgpLocalIp(DEFAULT_NMAAS_CUSTOMER_BGP_LOCAL_IP);
-        defaultInstance.setBgpLocalCidr(DEFAULT_NMAAS_CUSTOMER_BGP_LOCAL_CIDR);
-    }
-
-    public static VpnConfig defaultVpn() {
-        return defaultInstance;
-    }
+public class AnsiblePlaybookVpnConfig {
 
     private String targetRouter;
     private String vrfId;
