@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -39,6 +40,16 @@ public class NmServiceConfigurationMiscTest {
                 targetDirectory,
                 targetFile);
         assertThat(command.getCommand(), equalTo(CORRECT_CONFIG_DOWNLOAD_COMMAND));
+    }
+
+    @Test
+    public void shouldProperlyInterpretSshConnectionOutput() {
+        String output = "aslksjakld connected. klsjdlkasn ... 200";
+        assertThat(SshConnection.outputIndicatesThatSomethingWentWrong(output), is(false));
+        output = "aslksjakld connected. klsjdlkasn ... 401";
+        assertThat(SshConnection.outputIndicatesThatSomethingWentWrong(output), is(true));
+        output = "aslksjakld failure";
+        assertThat(SshConnection.outputIndicatesThatSomethingWentWrong(output), is(true));
     }
 
 }

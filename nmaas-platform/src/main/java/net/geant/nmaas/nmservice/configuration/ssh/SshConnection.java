@@ -27,7 +27,7 @@ public class SshConnection {
 			ssh.connect(hostname, port);
 		} catch (IOException ex) {
 			ssh = null;
-			throw new SshConnectionException("Unable to connect.", ex);
+			throw new SshConnectionException("Unable to connect -> " + ex.getMessage());
 		}
 	}
 	
@@ -37,7 +37,7 @@ public class SshConnection {
 		try {
 			ssh.authPassword(credentials.getUsername(), credentials.getPassword());
 		} catch(IOException ex) {
-			throw new SshConnectionException("Unable to authenticate due to some errors.", ex);
+			throw new SshConnectionException("Unable to authenticate due to some errors -> " + ex.getMessage());
 		}
 	}
 	
@@ -49,9 +49,7 @@ public class SshConnection {
 			session = ssh.startSession();
 			final Session.Command c = session.exec(command);
 			String output = IOUtils.readFully(c.getErrorStream()).toString();
-			if (output.contains(HttpStatus.UNAUTHORIZED.toString())
-					|| output.contains(HttpStatus.FORBIDDEN.toString())
-					|| output.contains(HttpStatus.NOT_FOUND.toString()))
+			if (outputIndicatesThatSomethingWentWrong(output))
 				throw new CommandExecutionException("Problem with downloading the configuration file -> details: " + output + ")");
 			c.join(5, TimeUnit.SECONDS);
 			if (c.getExitStatus() == 0)
@@ -68,7 +66,11 @@ public class SshConnection {
 			}
 		}
 	}
-	
+
+	public static boolean outputIndicatesThatSomethingWentWrong(String output) {
+		return !(output.contains("connected") && output.contains("... 200"));
+	}
+
 	public boolean isConnected() {
 		return ssh.isConnected();
 	}
