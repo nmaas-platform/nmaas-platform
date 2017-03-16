@@ -4,6 +4,8 @@ import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 
 public class AnsiblePlaybookVpnConfig {
 
+    private Type type;
+
     private String targetRouter;
     private String vrfId;
     private String logicalInterface;
@@ -13,9 +15,22 @@ public class AnsiblePlaybookVpnConfig {
     private String bgpNeighborIp;
     private String asn;
     private String physicalInterface;
-    private String id;
+    private String interfaceUnit;
+    private String interfaceVlan;
     private String bgpLocalIp;
     private String bgpLocalCidr;
+    private String policyCommunityOptions;
+    private String policyStatementConnected;
+    private String policyStatementImport;
+    private String policyStatementExport;
+
+    public AnsiblePlaybookVpnConfig(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
+    }
 
     public String getTargetRouter() {
         return targetRouter;
@@ -89,12 +104,20 @@ public class AnsiblePlaybookVpnConfig {
         this.physicalInterface = physicalInterface;
     }
 
-    public String getId() {
-        return id;
+    public String getInterfaceUnit() {
+        return interfaceUnit;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setInterfaceUnit(String interfaceUnit) {
+        this.interfaceUnit = interfaceUnit;
+    }
+
+    public String getInterfaceVlan() {
+        return interfaceVlan;
+    }
+
+    public void setInterfaceVlan(String interfaceVlan) {
+        this.interfaceVlan = interfaceVlan;
     }
 
     public String getBgpLocalIp() {
@@ -113,34 +136,88 @@ public class AnsiblePlaybookVpnConfig {
         this.bgpLocalCidr = bgpLocalCidr;
     }
 
+    public String getPolicyCommunityOptions() {
+        return policyCommunityOptions;
+    }
+
+    public void setPolicyCommunityOptions(String policyCommunityOptions) {
+        this.policyCommunityOptions = policyCommunityOptions;
+    }
+
+    public String getPolicyStatementConnected() {
+        return policyStatementConnected;
+    }
+
+    public void setPolicyStatementConnected(String policyStatementConnected) {
+        this.policyStatementConnected = policyStatementConnected;
+    }
+
+    public String getPolicyStatementImport() {
+        return policyStatementImport;
+    }
+
+    public void setPolicyStatementImport(String policyStatementImport) {
+        this.policyStatementImport = policyStatementImport;
+    }
+
+    public String getPolicyStatementExport() {
+        return policyStatementExport;
+    }
+
+    public void setPolicyStatementExport(String policyStatementExport) {
+        this.policyStatementExport = policyStatementExport;
+    }
+
     public void validate() throws ConfigNotValidException {
         if (targetRouter == null || targetRouter.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("Target Router"));
+            exception(exceptionMessage("Target Router"));
         if (vrfId == null || vrfId.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("VRF ID"));
+            exception(exceptionMessage("VRF ID"));
         if (logicalInterface == null || logicalInterface.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("Logical Interface"));
+            exception(exceptionMessage("Logical Interface"));
         if (vrfRd == null || vrfRd.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("VRF RD"));
+            exception(exceptionMessage("VRF RD"));
         if (vrfRt == null || vrfRt.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("VRF RT"));
+            exception(exceptionMessage("VRF RT"));
         if (bgpGroupId == null || bgpGroupId.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("BGP Group ID"));
+            exception(exceptionMessage("BGP Group ID"));
         if (bgpNeighborIp == null || bgpNeighborIp.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("BGP Neighbor ID"));
+            exception(exceptionMessage("BGP Neighbor ID"));
         if (asn == null || asn.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("ASN"));
+            exception(exceptionMessage("ASN"));
         if (physicalInterface == null || physicalInterface.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("Physical Interface"));
-        if (id == null || id.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("ID"));
+            exception(exceptionMessage("Physical Interface"));
+        if (interfaceUnit == null || interfaceUnit.isEmpty())
+            exception(exceptionMessage("Interface Unit"));
+        if (interfaceVlan == null || interfaceUnit.isEmpty())
+            exception(exceptionMessage("Interface VLAN"));
         if (bgpLocalIp == null || bgpLocalIp.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("BGP Local IP"));
+            exception(exceptionMessage("BGP Local IP"));
         if (bgpLocalCidr == null || bgpLocalCidr.isEmpty())
-            throw new ConfigNotValidException(exceptionMessage("BGP Local CIDR"));
+            exception(exceptionMessage("BGP Local CIDR"));
+        if (type.equals(Type.CLOUD_SIDE)) {
+            if (policyCommunityOptions == null || policyCommunityOptions.isEmpty())
+                exception(exceptionMessage("Policy Community Options"));
+            if (policyStatementConnected == null || policyStatementConnected.isEmpty())
+                exception(exceptionMessage("Policy Statement Connected"));
+            if (policyStatementImport == null || policyStatementImport.isEmpty())
+                exception(exceptionMessage("Policy Statement Import"));
+            if (policyStatementExport == null || policyStatementExport.isEmpty())
+                exception(exceptionMessage("Policy Statement Export"));
+        }
+    }
+
+    private void exception(String message) throws ConfigNotValidException {
+        throw new ConfigNotValidException(message);
     }
 
     private String exceptionMessage(String fieldName) {
         return new StringBuilder().append(fieldName).append(" is NULL or empty").toString();
     }
+
+    public enum Type {
+        CLIENT_SIDE,
+        CLOUD_SIDE;
+    }
+
 }

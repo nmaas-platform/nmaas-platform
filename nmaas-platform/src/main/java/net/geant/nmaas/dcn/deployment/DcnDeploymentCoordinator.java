@@ -77,10 +77,10 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             final AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter = dcnRepository.loadNetwork(dcnName).getAnsiblePlaybookForCloudSideRouter();
             final DockerHost ansibleContainerDockerHost = loadDefaultAnsibleDockerHost();
             final ContainerConfig ansiblePlaybookClientSideRouterContainerConfig =
-                    AnsibleContainerConfigBuilder.build(ansiblePlaybookForClientSideRouter, encodeForClientSideRouter(dcnName));
+                    AnsibleContainerConfigBuilder.buildConfigForClientSideRouterPlaybook(ansiblePlaybookForClientSideRouter, encodeForClientSideRouter(dcnName));
             executeAnsiblePlaybookContainerDeploy(ansiblePlaybookClientSideRouterContainerConfig, ansibleContainerName(), ansibleContainerDockerHost);
             final ContainerConfig ansiblePlaybookCloudSideRouterContainerConfig =
-                    AnsibleContainerConfigBuilder.build(ansiblePlaybookForCloudSideRouter, encodeForCloudSideRouter(dcnName));
+                    AnsibleContainerConfigBuilder.buildConfigForCloudSideRouterPlaybook(ansiblePlaybookForCloudSideRouter, encodeForCloudSideRouter(dcnName));
             executeAnsiblePlaybookContainerDeploy(ansiblePlaybookCloudSideRouterContainerConfig, ansibleContainerName(), ansibleContainerDockerHost);
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED);
         } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException e) {
