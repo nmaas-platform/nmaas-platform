@@ -47,4 +47,11 @@ public class AnsiblePlaybookIdentifierEncoderDecoderTest {
         decode(encodedPlaybookId);
     }
 
+    @Test
+    public void shouldDecodeStringsToKnownPlainDcnName() throws AnsiblePlaybookIdentifierConverterException {
+        String plainDcnName = "testClientId-oxidizedApplicationId";
+        assertThat(decode("Q0xJRU5ULVJPVVRFUnRlc3RDbGllbnRJZC1veGlkaXplZEFwcGxpY2F0aW9uSWQ="), equalTo(plainDcnName));
+        assertThat(decode("Q0xPVUQtUk9VVEVSdGVzdENsaWVudElkLW94aWRpemVkQXBwbGljYXRpb25JZA=="), equalTo(plainDcnName));
+    }
+
 }
