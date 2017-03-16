@@ -45,11 +45,20 @@ public class NmServiceConfigurationMiscTest {
     @Test
     public void shouldProperlyInterpretSshConnectionOutput() {
         String output = "aslksjakld connected. klsjdlkasn ... 200";
-        assertThat(SshConnection.outputIndicatesThatSomethingWentWrong(output), is(false));
+        SshConnection sshConnectionUnderTest = new SshConnection();
+        assertThat(sshConnectionUnderTest.outputIndicatesThatSomethingWentWrong(output), is(false));
         output = "aslksjakld connected. klsjdlkasn ... 401";
-        assertThat(SshConnection.outputIndicatesThatSomethingWentWrong(output), is(true));
+        assertThat(sshConnectionUnderTest.outputIndicatesThatSomethingWentWrong(output), is(true));
         output = "aslksjakld failure";
-        assertThat(SshConnection.outputIndicatesThatSomethingWentWrong(output), is(true));
+        assertThat(sshConnectionUnderTest.outputIndicatesThatSomethingWentWrong(output), is(true));
+    }
+
+    @Test
+    public void shouldProperlyInterpretSshConnectionExitStatus() {
+        SshConnection sshConnectionUnderTest = new SshConnection();
+        assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(1), is(true));
+        assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(13), is(true));
+        assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(0), is(false));
     }
 
 }
