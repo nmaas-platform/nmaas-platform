@@ -182,12 +182,18 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                     newDcnDeploymentState = DcnDeploymentState.DEPLOYMENT_FAILED;
             }
             dcnRepository.updateDcnState(dcnName, newDcnDeploymentState);
-            notifyStateChangeListeners(deploymentId, newDcnDeploymentState);
+            if (statusUpdateShouldBeSentToListeners(newDcnDeploymentState))
+                notifyStateChangeListeners(deploymentId, newDcnDeploymentState);
         } catch (DcnRepository.DcnNotFoundException
                 | DeploymentIdToDcnNameMapper.EntryNotFoundException
                 | AnsiblePlaybookIdentifierConverterException e) {
             log.error("Exception during playbook execution state reception -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.ERROR);
         }
+    }
+
+    private boolean statusUpdateShouldBeSentToListeners(DcnDeploymentState newDcnDeploymentState) {
+        return newDcnDeploymentState.equals(DcnDeploymentState.DEPLOYMENT_FAILED)
+                || newDcnDeploymentState.equals(DcnDeploymentState.DEPLOYED);
     }
 }
