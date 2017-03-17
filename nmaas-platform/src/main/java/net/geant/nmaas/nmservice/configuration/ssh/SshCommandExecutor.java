@@ -24,17 +24,17 @@ public class SshCommandExecutor {
     @Autowired
     private NmServiceConfigurationRepository configurations;
 
-    public void executeConfigDownloadCommand(Identifier deploymentId, String configId, DockerHost host) throws CommandExecutionException {
+    public void executeConfigDownloadCommand(String configId, DockerHost host, String targetDirectoryName) throws CommandExecutionException {
         try {
             final String authorizationHash = generateHash(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password"));
             final String sourceUrl = env.getProperty("app.config.download.url");
-            final String targetDirectory = host.getVolumesPath() + "/" + deploymentId.toString();
+            final String targetDirectoryFullPath = host.getVolumesPath() + "/" + targetDirectoryName;
             final String configurationFileName = configurations.loadConfig(configId).getConfigFileName();
             NmServiceConfigDownloadCommand command =  NmServiceConfigDownloadCommand.command(
                     authorizationHash,
                     sourceUrl,
                     configId,
-                    targetDirectory,
+                    targetDirectoryFullPath,
                     configurationFileName);
             BasicCredentials credentials = new BasicCredentials(env.getProperty("app.config.ssh.username"), env.getProperty("app.config.ssh.password"));
             System.out.println("Connecting to " + host.getPublicIpAddress().getHostAddress());

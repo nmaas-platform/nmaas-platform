@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerDeploymentDetails;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.AppConfiguration;
@@ -50,12 +51,12 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void configureNmService(Identifier deploymentId, AppConfiguration appConfiguration, DockerHost host) {
+    public void configureNmService(Identifier deploymentId, AppConfiguration appConfiguration, DockerHost host, ContainerDeploymentDetails containerDetails) {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             List<String> configurationIdentifiers = configurationsPreparer.generateAndStoreConfigurations(deploymentId, appConfiguration);
             for (String configId : configurationIdentifiers) {
-                triggerConfigurationDownloadOnRemoteHost(deploymentId, configId, host);
+                triggerConfigurationDownloadOnRemoteHost(configId, host, containerDetails.getAttachedVolumeName());
             }
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
@@ -77,9 +78,9 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
     }
 
     @Loggable(LogLevel.DEBUG)
-    void triggerConfigurationDownloadOnRemoteHost(Identifier deploymentId, String configId, DockerHost host)
+    void triggerConfigurationDownloadOnRemoteHost(String configId, DockerHost host, String targetDirectoryName)
             throws CommandExecutionException {
-        sshCommandExecutor.executeConfigDownloadCommand(deploymentId, configId, host);
+        sshCommandExecutor.executeConfigDownloadCommand(configId, host, targetDirectoryName);
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {

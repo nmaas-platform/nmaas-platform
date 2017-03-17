@@ -22,7 +22,6 @@ import java.util.Map;
 public class ContainerConfigBuilder {
 
     public static ContainerConfig build(NmServiceInfo service) {
-        final DockerContainerSpec spec = (DockerContainerSpec) service.getSpec();
         final DockerHost host = (DockerHost) service.getHost();
         final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
         final ContainerConfigInput configInput = ContainerConfigInput.fromSpec(service);
@@ -78,8 +77,12 @@ public class ContainerConfigBuilder {
 
     private static String generateNewHostVolume(String hostVolumesPath, String hostVolumeName, int counter) {
         StringBuilder sb = new StringBuilder(hostVolumesPath);
-        sb.append("/").append(hostVolumeName).append("-").append(counter);
+        sb.append("/").append(generateNewHostVolumeDirectoryName(hostVolumeName, counter));
         return sb.toString();
+    }
+
+    private static String generateNewHostVolumeDirectoryName(String hostVolumeName, int counter) {
+        return hostVolumeName + "-" + counter;
     }
 
     public static void verifyInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
@@ -103,4 +106,7 @@ public class ContainerConfigBuilder {
         }
     }
 
+    public static String getPrimaryVolumeName(String baseName) {
+        return generateNewHostVolumeDirectoryName(baseName, 1);
+    }
 }

@@ -23,7 +23,7 @@ public class NmServiceInfo {
     private NmServiceSpec spec;
 
     /**
-     * Identifier of the service assigned by orchestrator
+     * Identifier of the service assigned by orchestrator (e.g. Docker Engine or Docker Swarm)
      */
     private String deploymentId;
 
@@ -31,6 +31,12 @@ public class NmServiceInfo {
      * Target deployment host (e.g. Docker Host or Docker Swarm manager) on which this service will be or was deployed.
      */
     private NmServiceDeploymentHost host;
+
+    /**
+     * Other deployment specific details (apart from the target host), e.g. some directories on the host in which
+     * configuration files should placed.
+     */
+    private NmServiceDeploymentDetails details;
 
     /**
      * Network details for deployed services obtained from remote OSS system.
@@ -76,6 +82,14 @@ public class NmServiceInfo {
 
     public void setHost(NmServiceDeploymentHost host) {
         this.host = host;
+    }
+
+    public NmServiceDeploymentDetails getDetails() {
+        return details;
+    }
+
+    public void setDetails(NmServiceDeploymentDetails details) {
+        this.details = details;
     }
 
     public NmServiceDeploymentNetworkDetails getNetwork() {

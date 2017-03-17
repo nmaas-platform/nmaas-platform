@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.task;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerDeploymentDetails;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.AppConfiguration;
@@ -51,7 +52,9 @@ public class AppConfigurationOrchestratorTask implements Runnable {
         try {
             String serviceName = deploymentIdToNmServiceNameMapper.nmServiceName(deploymentId);
             NmServiceInfo serviceInfo = nmServiceRepository.loadService(serviceName);
-            serviceConfiguration.configureNmService(deploymentId, configuration, (DockerHost) serviceInfo.getHost());
+            DockerHost dockerHost = (DockerHost) serviceInfo.getHost();
+            ContainerDeploymentDetails containerDetails = (ContainerDeploymentDetails) serviceInfo.getDetails();
+            serviceConfiguration.configureNmService(deploymentId, configuration, dockerHost, containerDetails);
         } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException e) {
             appDeploymentStateChangeListener.notifyGenericError(deploymentId);
         } catch (NmServiceRepository.ServiceNotFoundException e) {
