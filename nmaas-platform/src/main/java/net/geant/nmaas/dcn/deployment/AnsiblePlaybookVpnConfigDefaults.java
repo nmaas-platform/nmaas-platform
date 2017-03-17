@@ -107,11 +107,11 @@ public class AnsiblePlaybookVpnConfigDefaults {
     }
 
     public static AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter() {
-        return ansiblePlaybookForClientSideRouter;
+        return ansiblePlaybookForClientSideRouter.copy();
     }
 
     public static AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter() {
-        return ansiblePlaybookForCloudSideRouter;
+        return ansiblePlaybookForCloudSideRouter.copy();
     }
 
 }

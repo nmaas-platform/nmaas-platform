@@ -4,6 +4,8 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.dcn.deployment.AnsibleContainerConfigBuilder;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigDefaults;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +109,21 @@ public class AnsibleContainerConfigBuilderTest {
             assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(volumeEntry)));
         for (String commandEntry : containerConfig.cmd())
             assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(commandEntry)));
+    }
+
+    @Test
+    public void shouldMergeConfigWithProvidedNetworkDetails() {
+        AnsiblePlaybookVpnConfig config = AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter();
+        ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(
+                1024,
+                new ContainerNetworkIpamSpec("10.11.1.0/24", "10.11.1.254"),
+                123);
+        config.merge(networkDetails);
+        assertThat(config.getInterfaceUnit(), equalTo("123"));
+        assertThat(config.getInterfaceVlan(), equalTo("123"));
+        assertThat(config.getLogicalInterface(), equalTo("ge-0/0/4.123"));
+        assertThat(config.getBgpLocalIp(), equalTo("10.11.1.254"));
+        assertThat(config.getBgpNeighborIp(), equalTo("10.11.1.1"));
     }
 
 }

@@ -12,6 +12,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -39,7 +40,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     private DeploymentIdToDcnNameMapper deploymentIdMapper;
 
-    AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener;
+    private AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener;
 
     private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
 
@@ -62,7 +63,9 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, dcnSpec));
         try {
             dcnRepository.updateAnsiblePlaybookForClientSideRouter(dcnName, AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter());
-            dcnRepository.updateAnsiblePlaybookForCloudSideRouter(dcnName, AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter());
+            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter();
+            cloudSideRouterVpnConfig.merge((ContainerNetworkDetails) dcnSpec.getNmServiceDeploymentNetworkDetails());
+            dcnRepository.updateAnsiblePlaybookForCloudSideRouter(dcnName, cloudSideRouterVpnConfig);
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFIED);
         } catch (DcnRepository.DcnNotFoundException e) {
             log.error("Exception during DCN request verification -> " + e.getMessage());

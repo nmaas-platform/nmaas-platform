@@ -40,18 +40,21 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, NmServiceSpec nmServiceSpec) {
+    public NmServiceInfo verifyRequest(Identifier deploymentId, NmServiceSpec nmServiceSpec) {
         final String nmServiceName = nmServiceSpec.name();
         deploymentIdMapper.storeMapping(deploymentId, nmServiceName);
         serviceRepository.storeService(new NmServiceInfo(nmServiceName, INIT, nmServiceSpec));
         try {
             orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(nmServiceName);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
+            return serviceRepository.loadService(nmServiceName);
         } catch (CouldNotConnectToOrchestratorException
                 | ContainerOrchestratorInternalErrorException
-                | NmServiceRequestVerificationException e) {
+                | NmServiceRequestVerificationException
+                | NmServiceRepository.ServiceNotFoundException e) {
             System.out.println("NM Service request verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
+            return null;
         }
     }
 

@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 
 public class AnsiblePlaybookVpnConfig {
 
@@ -207,12 +208,43 @@ public class AnsiblePlaybookVpnConfig {
         }
     }
 
+    public void merge(ContainerNetworkDetails networkDetails) {
+        this.interfaceUnit = String.valueOf(networkDetails.getVlanNumber());
+        this.interfaceVlan = String.valueOf(networkDetails.getVlanNumber());
+        this.bgpLocalIp = networkDetails.getIpAddresses().getGateway();
+        // FIXME this is dirty approach; should be able to set concrete IP address for container and set it here
+        this.bgpNeighborIp = "10.11.1.1";
+        this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
+    }
+
     private void exception(String message) throws ConfigNotValidException {
         throw new ConfigNotValidException(message);
     }
 
     private String exceptionMessage(String fieldName) {
         return new StringBuilder().append(fieldName).append(" is NULL or empty").toString();
+    }
+
+    public AnsiblePlaybookVpnConfig copy() {
+        AnsiblePlaybookVpnConfig copy = new AnsiblePlaybookVpnConfig(this.type);
+        copy.setTargetRouter(this.targetRouter);
+        copy.setVrfId(this.vrfId);
+        copy.setLogicalInterface(this.logicalInterface);
+        copy.setVrfRd(this.vrfRd);
+        copy.setVrfRt(this.vrfRt);
+        copy.setBgpGroupId(this.bgpGroupId);
+        copy.setBgpNeighborIp(this.bgpNeighborIp);
+        copy.setAsn(this.asn);
+        copy.setPhysicalInterface(this.physicalInterface);
+        copy.setInterfaceUnit(this.interfaceUnit);
+        copy.setInterfaceVlan(this.interfaceVlan);
+        copy.setBgpLocalIp(this.bgpLocalIp);
+        copy.setBgpLocalCidr(this.bgpLocalCidr);
+        copy.setPolicyCommunityOptions(this.policyCommunityOptions);
+        copy.setPolicyStatementConnected(this.policyStatementConnected);
+        copy.setPolicyStatementImport(this.policyStatementImport);
+        copy.setPolicyStatementExport(this.policyStatementExport);
+        return copy;
     }
 
     public enum Type {
