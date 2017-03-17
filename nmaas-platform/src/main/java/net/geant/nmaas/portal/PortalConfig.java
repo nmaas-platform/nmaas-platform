@@ -1,5 +1,8 @@
 package net.geant.nmaas.portal;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.servlet.Filter;
 
 import org.modelmapper.ModelMapper;
@@ -34,16 +37,21 @@ public class PortalConfig {
 			// For demo purposes
 			@Override
 			public void afterPropertiesSet() {
-				addUser("admin", "admin", Role.ADMIN);
+				addUser("admin", "admin", new Role[] { Role.ADMIN, Role.MANAGER });
 				addUser("manager", "manager", Role.MANAGER);
-				addUser("guest", "guest", Role.USER);
+				addUser("user", "user", Role.USER);
 			}
 
-			private void addUser(String username, String password, Role role) {
-								
+			private void addUser(String username, String password, Role role) {								
 				User user = new User(username, passwordEncoder.encode(password), role);
 				userRepository.save(user);
 			}
+			
+			private void addUser(String username, String password, Role[] roles) {								
+				User user = new User(username, passwordEncoder.encode(password), new ArrayList<Role>(Arrays.asList(roles)));
+				userRepository.save(user);
+			}
+			
 		};
 	}
 	

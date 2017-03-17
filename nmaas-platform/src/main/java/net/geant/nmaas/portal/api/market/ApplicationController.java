@@ -49,8 +49,8 @@ public class ApplicationController extends AppBaseController {
 		return appRepo.findAll().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
 	@RequestMapping(method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
 	public Id addApplication(@RequestBody(required=true) ApplicationBrief appRequest) {
 		net.geant.nmaas.portal.persistent.entity.Application app;
 		

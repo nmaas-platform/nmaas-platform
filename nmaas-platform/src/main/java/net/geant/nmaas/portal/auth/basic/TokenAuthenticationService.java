@@ -1,5 +1,12 @@
 package net.geant.nmaas.portal.auth.basic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer.UserDetailsBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import jnr.ffi.Struct.key_t;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
 import net.geant.nmaas.portal.service.UserService;
@@ -37,7 +46,17 @@ public class TokenAuthenticationService {
 		String username = tokenService.getClaims(token).getSubject();
 		Object scopes = tokenService.getClaims(token).get("scopes");
 		
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, null);
+		List<SimpleGrantedAuthority> authorities = null;
+		
+		if (scopes != null && scopes instanceof List<?>) {
+			authorities = new ArrayList<SimpleGrantedAuthority>();
+			for(Map<String,String> authority : (List<Map<String,String>>)scopes)
+				for(String role : authority.values())
+					authorities.add(new SimpleGrantedAuthority(role));
+		} 
+			
+		
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
 		return authentication;
 	}

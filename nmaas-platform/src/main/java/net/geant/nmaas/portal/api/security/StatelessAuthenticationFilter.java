@@ -35,7 +35,8 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 		log.debug("Request: " + request.getRequestURI());
 		try {
 			return tokenService.getAuthentication(request);
-		} catch(Exception e) {
+		} catch(Exception ex) {
+			log.error("Token is not valid", ex);
 			throw new TokenAuthenticationException("Token is not valid");
 		}
 	}

@@ -6,7 +6,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -66,8 +69,9 @@ public class JWTTokenServiceTest {
 		assertNotNull(scopes);
 		assertTrue(scopes instanceof List<?>);
 		@SuppressWarnings("unchecked")
-		List<SimpleGrantedAuthority> list = (List<SimpleGrantedAuthority>)scopes;
+		List<Map<String,String>> list = (List<Map<String,String>>)scopes;
 		assertEquals(2, list.size());
+		
 	}
 
 	@Test
