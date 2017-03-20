@@ -48,6 +48,7 @@ public class ContainerNetworkConfigBuildingTest {
         ipamSpec = new ContainerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
         testNetworkDetails1 = new ContainerNetworkDetails(1234, ipamSpec, 123);
         serviceInfo = new NmServiceInfo(TEST_SERVICE_NAME_1, NmServiceDeploymentState.INIT, spec);
+        serviceInfo.setAppDeploymentId(TEST_APPLICATION_ID_1.value());
     }
 
     @Test(expected = NmServiceRequestVerificationException.class)

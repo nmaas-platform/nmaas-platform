@@ -57,7 +57,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             final NmServiceInfo service = nmServices.loadService(serviceName);
             final DockerHost host = dockerHosts.loadPreferredDockerHost();
             nmServices.updateServiceHost(serviceName, host);
-            NmServiceDeploymentDetails containerDetails = new ContainerDeploymentDetails(ContainerConfigBuilder.getPrimaryVolumeName(service.getSpec().uniqueDeploymentName()));
+            NmServiceDeploymentDetails containerDetails = new ContainerDeploymentDetails(ContainerConfigBuilder.getPrimaryVolumeName(service.getAppDeploymentId()));
             nmServices.updateServiceDeploymentDetails(serviceName, containerDetails);
             final String dockerHostName = host.getName();
             final int publicPort = dockerHostStateKeeper.assignPort(dockerHostName, serviceName);
@@ -110,10 +110,9 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
             final NmServiceInfo service = nmServices.loadService(serviceName);
-            final DockerContainerSpec spec = (DockerContainerSpec) service.getSpec();
             final DockerHost host = (DockerHost) service.getHost();
             final ContainerConfig config = ContainerConfigBuilder.build(service);
-            final String containerId = dockerContainerClient.create(config, spec.uniqueDeploymentName(), host);
+            final String containerId = dockerContainerClient.create(config, service.getAppDeploymentId(), host);
             final ContainerNetworkDetails containerNetworkDetails = (ContainerNetworkDetails) service.getNetwork();
             dockerNetworkClient.connectContainerToNetwork(containerId, containerNetworkDetails.getDeploymentId(), host);
             dockerContainerClient.start(containerId, host);

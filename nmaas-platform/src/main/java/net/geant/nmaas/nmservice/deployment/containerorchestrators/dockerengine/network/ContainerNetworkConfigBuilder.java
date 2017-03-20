@@ -4,12 +4,10 @@ import com.spotify.docker.client.messages.Ipam;
 import com.spotify.docker.client.messages.IpamConfig;
 import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerNetworkDetailsVerificationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 
 import java.util.Arrays;
 
@@ -39,7 +37,7 @@ public class ContainerNetworkConfigBuilder {
         int vlanNumber = ((ContainerNetworkDetails)service.getNetwork()).getVlanNumber();
         String dataInterfaceName = ((DockerHost) service.getHost()).getDataInterfaceName();
         final NetworkConfig networkConfig = NetworkConfig.builder()
-                .name(networkName(service.getSpec().uniqueDeploymentName(), vlanNumber))
+                .name(networkName(service.getAppDeploymentId(), vlanNumber))
                 .driver(DOCKER_NETWORK_DRIVER)
                 .checkDuplicate(true)
                 .ipam(ipam)
@@ -52,13 +50,8 @@ public class ContainerNetworkConfigBuilder {
     private static void verifyInputService(NmServiceInfo service) throws NmServiceRequestVerificationException {
         if (service == null)
             throw new NmServiceRequestVerificationException("Service object is null");
-        NmServiceSpec spec = service.getSpec();
-        if (spec == null)
-            throw new NmServiceRequestVerificationException("Service spec not available (null)");
-        if (DockerContainerSpec.class != spec.getClass())
-            throw new NmServiceRequestVerificationException("Service spec not in DockerEngine format");
-        if (spec.uniqueDeploymentName() == null || spec.uniqueDeploymentName().isEmpty())
-            throw new NmServiceRequestVerificationException("Service spec returns empty unique name for service deployment");
+        if (service.getAppDeploymentId() == null || service.getAppDeploymentId().isEmpty())
+            throw new NmServiceRequestVerificationException("Service returns empty app deployment identifier");
         if (service.getHost() == null)
             throw new NmServiceRequestVerificationException("Deployment host not available (null)");
         if (DockerHost.class != service.getHost().getClass())

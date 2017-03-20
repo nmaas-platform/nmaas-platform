@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.orchestration.Identifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,13 +14,14 @@ import static org.hamcrest.Matchers.is;
  */
 public class AnsiblePlaybookIdentifierEncoderDecoderTest {
 
+    private Identifier appDeploymentId;
+
     private String originalDcnName;
 
     @Before
     public void setup() {
-        DockerContainerSpec serviceSpec = new DockerContainerSpec("serviceName1", null);
-        serviceSpec.setClientDetails("client1", "company1");
-        originalDcnName = serviceSpec.uniqueDeploymentName();
+        appDeploymentId = Identifier.newInstance("appDeploymentId");
+        originalDcnName = appDeploymentId.value();
     }
 
     @Test

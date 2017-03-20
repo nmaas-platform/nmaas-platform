@@ -45,6 +45,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         deploymentIdMapper.storeMapping(deploymentId, nmServiceName);
         serviceRepository.storeService(new NmServiceInfo(nmServiceName, INIT, nmServiceSpec));
         try {
+            serviceRepository.updateServiceAppDeploymentId(nmServiceName, deploymentId.value());
             orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(nmServiceName);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
             return serviceRepository.loadService(nmServiceName);

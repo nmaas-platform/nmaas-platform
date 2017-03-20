@@ -62,11 +62,11 @@ public class DockerSwarmWorkflowIntTest {
 		orchestrator.deployNmService(serviceName);
 		Thread.sleep(5000);
 		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
-				Matchers.hasItem(nmServicesRepository.loadService(serviceName).getSpec().uniqueDeploymentName()));
+				Matchers.hasItem(nmServicesRepository.loadService(serviceName).getAppDeploymentId()));
 		orchestrator.removeNmService(serviceName);
 		Thread.sleep(2000);
 		assertThat(orchestrator.listServices(nmServicesRepository.loadService(serviceName).getHost()),
-				Matchers.not(nmServicesRepository.loadService(serviceName).getSpec().uniqueDeploymentName()));
+				Matchers.not(nmServicesRepository.loadService(serviceName).getAppDeploymentId()));
 	}
 
 	@After

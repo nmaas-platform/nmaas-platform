@@ -23,6 +23,11 @@ public class NmServiceInfo {
     private NmServiceSpec spec;
 
     /**
+     * Identifier of the application deployment assigned by application lifecycle manager
+     */
+    private String appDeploymentId;
+
+    /**
      * Identifier of the service assigned by orchestrator (e.g. Docker Engine or Docker Swarm)
      */
     private String deploymentId;
@@ -58,6 +63,14 @@ public class NmServiceInfo {
 
     public void updateState(NmServiceDeploymentState state) {
         this.state = state;
+    }
+
+    public String getAppDeploymentId() {
+        return appDeploymentId;
+    }
+
+    public void setAppDeploymentId(String appDeploymentId) {
+        this.appDeploymentId = appDeploymentId;
     }
 
     public String getDeploymentId() {

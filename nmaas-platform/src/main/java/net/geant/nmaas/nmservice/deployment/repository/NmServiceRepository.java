@@ -22,6 +22,10 @@ public class NmServiceRepository {
         return loadService(serviceName).getDeploymentId();
     }
 
+    public void updateServiceAppDeploymentId(String serviceName, String appDeploymentId) throws ServiceNotFoundException {
+        loadService(serviceName).setAppDeploymentId(appDeploymentId);
+    }
+
     public void updateServiceId(String serviceName, String id) throws ServiceNotFoundException {
         loadService(serviceName).setDeploymentId(id);
     }
