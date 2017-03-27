@@ -3,6 +3,9 @@ package net.geant.nmaas.dcn.deployment;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig.Action;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig.Type;
+
 public class AnsiblePlaybookCommandBuilder {
 
     private static final String ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_ID_KEY = "NMAAS_CUSTOMER_VRF_ID";
@@ -25,13 +28,15 @@ public class AnsiblePlaybookCommandBuilder {
 
     private static final String ANSIBLE_RUN_SCRIPT_NAME = "ansible-playbook";
     private static final String ANSIBLE_PLAYBOOK_DIR = "/ansible-playbook-dir";
-    private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER = "pb-nmaas-vpn-asbr-config.yml";
-    private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER = "pb-nmaas-vpn-iaas-config.yml";
+    private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER_CONFIG = "pb-nmaas-vpn-asbr-config.yml";
+    private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER_CONFIG = "pb-nmaas-vpn-iaas-config.yml";
+    private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER_CONFIG_REMOVAL = "pb-nmaas-vpn-asbr-delete.yml";
+    private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER_CONFIG_REMOVAL = "pb-nmaas-vpn-iaas-delete.yml";
     private static final String ANSIBLE_RUN_SCRIPT_PARAM_LIMIT_KEY = "--limit";
     private static final String IS = "=";
 
-    public static List<String> command(AnsiblePlaybookVpnConfig.Type type, AnsiblePlaybookVpnConfig vpn, String encodedPlaybookId) {
-        if (type == null)
+    public static List<String> command(Action action, Type type, AnsiblePlaybookVpnConfig vpn, String encodedPlaybookId) {
+        if (action == null || type == null)
             return null;
         List<String> commands = new ArrayList<>();
         commands.add(ANSIBLE_RUN_SCRIPT_NAME);
@@ -39,33 +44,60 @@ public class AnsiblePlaybookCommandBuilder {
         commands.add("-i");
         commands.add(ANSIBLE_PLAYBOOK_DIR + "/hosts");
         commands.add("-v");
-        if (commandForCloudSideRouter(type))
-            commands.add(ANSIBLE_PLAYBOOK_DIR + "/" + ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER);
-        else
-            commands.add(ANSIBLE_PLAYBOOK_DIR + "/" + ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER);
+        if (commandForRouterConfiguration(action)) {
+            if (commandForCloudSideRouter(type))
+                commands.add(ANSIBLE_PLAYBOOK_DIR + "/" + ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER_CONFIG);
+            else
+                commands.add(ANSIBLE_PLAYBOOK_DIR + "/" + ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER_CONFIG);
+        } else {
+            if (commandForCloudSideRouter(type))
+                commands.add(ANSIBLE_PLAYBOOK_DIR + "/" + ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER_CONFIG_REMOVAL);
+            else
+                commands.add(ANSIBLE_PLAYBOOK_DIR + "/" + ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER_CONFIG_REMOVAL);
+        }
         commands.add(ANSIBLE_RUN_SCRIPT_PARAM_LIMIT_KEY + IS + vpn.getTargetRouter());
         commands.add("-e");
         commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_ID_KEY + IS + vpn.getVrfId());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_LOGICAL_INTERFACE_KEY + IS + vpn.getLogicalInterface());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_RD_KEY + IS + vpn.getVrfRd());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_RT_KEY + IS + vpn.getVrfRt());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_GROUP_ID_KEY + IS + vpn.getBgpGroupId());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_NEIGHBOR_IP_KEY + IS + vpn.getBgpNeighborIp());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_ASN_KEY + IS + vpn.getAsn());
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_LOGICAL_INTERFACE_KEY + IS + vpn.getLogicalInterface());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_RD_KEY + IS + vpn.getVrfRd());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_RT_KEY + IS + vpn.getVrfRt());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_GROUP_ID_KEY + IS + vpn.getBgpGroupId());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_NEIGHBOR_IP_KEY + IS + vpn.getBgpNeighborIp());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_ASN_KEY + IS + vpn.getAsn());
+        }
         commands.add("-e");
         commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_PHYSICAL_INTERFACE_KEY + IS + vpn.getPhysicalInterface());
         commands.add("-e");
         commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_INTERFACE_UNIT_KEY + IS + vpn.getInterfaceUnit());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_INTERFACE_VLAN_KEY + IS + vpn.getInterfaceVlan());
-        commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_LOCAL_IP_KEY + IS + vpn.getBgpLocalIp());
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_INTERFACE_VLAN_KEY + IS + vpn.getInterfaceVlan());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_LOCAL_IP_KEY + IS + vpn.getBgpLocalIp());
+        }
+        if (commandForRouterConfiguration(action)) {
+            commands.add("-e");
+            commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_LOCAL_CIDR_KEY + IS + vpn.getBgpLocalCidr());
+        }
         if (commandForCloudSideRouter(type)) {
             commands.add("-e");
             commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_POLICY_COMMUNITY_OPTIONS_KEY + IS + vpn.getPolicyCommunityOptions());
@@ -77,15 +109,16 @@ public class AnsiblePlaybookCommandBuilder {
             commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_POLICY_STATEMENT_EXPORT_KEY + IS + vpn.getPolicyStatementExport());
         }
         commands.add("-e");
-        commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_BGP_LOCAL_CIDR_KEY + IS + vpn.getBgpLocalCidr());
-
-        commands.add("-e");
         commands.add(ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_SERVICE_ID_KEY + IS + encodedPlaybookId);
         return commands;
     }
 
-    private static boolean commandForCloudSideRouter(AnsiblePlaybookVpnConfig.Type type) {
-        return type.equals(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
+    private static boolean commandForRouterConfiguration(Action action) {
+        return action.equals(Action.ADD);
+    }
+
+    private static boolean commandForCloudSideRouter(Type type) {
+        return type.equals(Type.CLOUD_SIDE);
     }
 
 }

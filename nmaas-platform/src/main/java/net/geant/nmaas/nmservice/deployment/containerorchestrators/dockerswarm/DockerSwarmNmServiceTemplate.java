@@ -36,7 +36,7 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
     private Long replicas = 1L;
 
     /**
-     * The command to be run in the image
+     * The configCommand to be run in the image
      */
     private String command;
 

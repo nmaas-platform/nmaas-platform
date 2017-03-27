@@ -252,4 +252,9 @@ public class AnsiblePlaybookVpnConfig {
         CLOUD_SIDE;
     }
 
+    public enum Action {
+        ADD,
+        REMOVE;
+    }
+
 }
