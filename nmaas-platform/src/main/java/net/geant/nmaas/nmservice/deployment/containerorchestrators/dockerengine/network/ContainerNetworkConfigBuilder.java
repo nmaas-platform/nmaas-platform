@@ -84,7 +84,7 @@ public class ContainerNetworkConfigBuilder {
     }
 
     private static String networkName(String uniqueName, int vlanNumber) {
-        return new StringBuilder().append(uniqueName).append("-network-vlan").append(vlanNumber).toString();
+        return new StringBuilder().append("nmaas-").append(uniqueName).append("-vlan").append(vlanNumber).toString();
     }
 
     private static String parentInterfaceName(String interfaceName, int vlanNumber) {
