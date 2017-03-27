@@ -20,7 +20,7 @@ public class ContainerConfigInput {
         if (template.getEnvVariablesInSpecRequired())
             input.getEnv().addAll(spec.getEnvironmentVariables());
         input.setContainerVolumes(template.getContainerVolumes());
-        input.setUniqueDeploymentName(spec.uniqueDeploymentName());
+        input.setUniqueDeploymentName(serviceInfo.getAppDeploymentId());
         return input;
     }
 

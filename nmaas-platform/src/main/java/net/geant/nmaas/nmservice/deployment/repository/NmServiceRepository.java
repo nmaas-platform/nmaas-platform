@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.repository;
 
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.nmservice.*;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Singleton;
@@ -25,6 +22,10 @@ public class NmServiceRepository {
         return loadService(serviceName).getDeploymentId();
     }
 
+    public void updateServiceAppDeploymentId(String serviceName, String appDeploymentId) throws ServiceNotFoundException {
+        loadService(serviceName).setAppDeploymentId(appDeploymentId);
+    }
+
     public void updateServiceId(String serviceName, String id) throws ServiceNotFoundException {
         loadService(serviceName).setDeploymentId(id);
     }
@@ -35,6 +36,10 @@ public class NmServiceRepository {
 
     public void updateServiceHost(String serviceName, NmServiceDeploymentHost host) throws ServiceNotFoundException {
         loadService(serviceName).setHost(host);
+    }
+
+    public void updateServiceDeploymentDetails(String serviceName, NmServiceDeploymentDetails details) throws ServiceNotFoundException {
+        loadService(serviceName).setDetails(details);
     }
 
     public void updateServiceNetworkDetails(String serviceName, NmServiceDeploymentNetworkDetails networkDetails) throws ServiceNotFoundException {

@@ -5,12 +5,18 @@ import net.geant.nmaas.dcn.deployment.DcnSpec;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
-import net.geant.nmaas.orchestration.*;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
+import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,6 +29,8 @@ import static net.geant.nmaas.orchestration.AppLifecycleState.*;
 @Component
 @Scope("prototype")
 public class AppDeploymentOrchestratorTask implements Runnable {
+
+    private final static Logger log = LogManager.getLogger(AppDeploymentOrchestratorTask.class);
 
     private static final int STATE_CHANGE_WAIT_INTERVAL_IN_MILIS = 500;
 
@@ -61,8 +69,8 @@ public class AppDeploymentOrchestratorTask implements Runnable {
     private void deploy() {
         try {
             verifyIfAllIdentifiersAreSet();
-            serviceDeployment.verifyRequest(deploymentId, constructNmServiceSpec(clientId, applicationId));
-            dcnDeployment.verifyRequest(deploymentId, constructDcnSpec(clientId, applicationId));
+            NmServiceInfo serviceInfo = serviceDeployment.verifyRequest(deploymentId, constructNmServiceSpec(clientId, applicationId));
+            dcnDeployment.verifyRequest(deploymentId, constructDcnSpec(clientId, applicationId, serviceInfo));
             waitForRequestValidatedState();
             serviceDeployment.prepareDeploymentEnvironment(deploymentId);
             dcnDeployment.prepareDeploymentEnvironment(deploymentId);
@@ -167,8 +175,13 @@ public class AppDeploymentOrchestratorTask implements Runnable {
         return template.getName() + "-" + applicationId;
     }
 
-    private DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId) {
-        return new DcnSpec(buildDcnName(applicationId, clientId));
+    private DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId, NmServiceInfo serviceInfo) {
+        DcnSpec dcn = new DcnSpec(buildDcnName(applicationId, clientId));
+        if (serviceInfo != null && serviceInfo.getNetwork() != null)
+            dcn.setNmServiceDeploymentNetworkDetails(serviceInfo.getNetwork());
+        else
+            log.warn("Failed to set NM service deployment network details in DCN spec");
+        return dcn;
     }
 
     private String buildDcnName(Identifier applicationId, Identifier clientId) {

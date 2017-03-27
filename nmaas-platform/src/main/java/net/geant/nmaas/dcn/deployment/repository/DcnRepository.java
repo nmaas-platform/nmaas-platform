@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment.repository;
 
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.VpnConfig;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,8 +20,12 @@ public class DcnRepository {
         loadNetwork(dcnName).updateState(state);
     }
 
-    public void updateVpnConfig(String dcnName, VpnConfig vpnConfig) throws DcnNotFoundException {
-        loadNetwork(dcnName).setVpnConfig(vpnConfig);
+    public void updateAnsiblePlaybookForClientSideRouter(String dcnName, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig) throws DcnNotFoundException {
+        loadNetwork(dcnName).setAnsiblePlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
+    }
+
+    public void updateAnsiblePlaybookForCloudSideRouter(String dcnName, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig) throws DcnNotFoundException {
+        loadNetwork(dcnName).setAnsiblePlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
     }
 
     public void storeNetwork(DcnInfo dcnInfo) {
@@ -37,6 +41,10 @@ public class DcnRepository {
             throw new DcnNotFoundException(
                     "DCN " + name + " not found in the repository. " +
                     "Existing networks are: " + networks.keySet().stream().collect(Collectors.joining(",")));
+    }
+
+    public DcnDeploymentState loadCurrentState(String dcnName) throws DcnNotFoundException {
+        return loadNetwork(dcnName).getState();
     }
 
     public class DcnNotFoundException extends Exception {

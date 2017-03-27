@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -39,6 +40,25 @@ public class NmServiceConfigurationMiscTest {
                 targetDirectory,
                 targetFile);
         assertThat(command.getCommand(), equalTo(CORRECT_CONFIG_DOWNLOAD_COMMAND));
+    }
+
+    @Test
+    public void shouldProperlyInterpretSshConnectionOutput() {
+        String output = "aslksjakld connected. klsjdlkasn ... 200";
+        SshConnection sshConnectionUnderTest = new SshConnection();
+        assertThat(sshConnectionUnderTest.outputIndicatesThatSomethingWentWrong(output), is(false));
+        output = "aslksjakld connected. klsjdlkasn ... 401";
+        assertThat(sshConnectionUnderTest.outputIndicatesThatSomethingWentWrong(output), is(true));
+        output = "aslksjakld failure";
+        assertThat(sshConnectionUnderTest.outputIndicatesThatSomethingWentWrong(output), is(true));
+    }
+
+    @Test
+    public void shouldProperlyInterpretSshConnectionExitStatus() {
+        SshConnection sshConnectionUnderTest = new SshConnection();
+        assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(1), is(true));
+        assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(13), is(true));
+        assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(0), is(false));
     }
 
 }

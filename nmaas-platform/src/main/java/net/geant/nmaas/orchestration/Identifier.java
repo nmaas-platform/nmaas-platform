@@ -39,6 +39,10 @@ public class Identifier {
         return value != null ? value.hashCode() : 0;
     }
 
+    public String value() {
+        return value;
+    }
+
     public String getValue() {
         return value;
     }
@@ -46,5 +50,4 @@ public class Identifier {
     public void setValue(String value) {
         this.value = value;
     }
-
 }

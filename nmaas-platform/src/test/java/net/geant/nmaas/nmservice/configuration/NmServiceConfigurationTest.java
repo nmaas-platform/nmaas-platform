@@ -60,7 +60,7 @@ public class NmServiceConfigurationTest {
 
     @Test
     public void shouldExecuteConfigurationWorkflow() throws InvalidDeploymentIdException, DeploymentIdToNmServiceNameMapper.EntryNotFoundException, ConfigTemplateHandlingException, NmServiceRepository.ServiceNotFoundException, IOException {
-        configurationExecutor.configureNmService(deploymentId, configuration, null);
+        configurationExecutor.configureNmService(deploymentId, configuration, null, null);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
     }
 

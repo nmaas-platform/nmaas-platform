@@ -2,7 +2,7 @@ package net.geant.nmaas.dcn.deployment.repository;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
-import net.geant.nmaas.dcn.deployment.VpnConfig;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -15,7 +15,9 @@ public class DcnInfo {
 
     private DcnSpec spec;
 
-    private VpnConfig vpnConfig;
+    private AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter;
+
+    private AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter;
 
     public DcnInfo(String name, DcnDeploymentState state, DcnSpec spec) {
         this.name = name;
@@ -39,12 +41,19 @@ public class DcnInfo {
         return spec;
     }
 
-    public VpnConfig getVpnConfig() {
-        return vpnConfig;
+    public AnsiblePlaybookVpnConfig getAnsiblePlaybookForClientSideRouter() {
+        return ansiblePlaybookForClientSideRouter;
     }
 
-    public void setVpnConfig(VpnConfig vpnConfig) {
-        this.vpnConfig = vpnConfig;
+    public void setAnsiblePlaybookForClientSideRouter(AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter) {
+        this.ansiblePlaybookForClientSideRouter = ansiblePlaybookForClientSideRouter;
     }
 
+    public AnsiblePlaybookVpnConfig getAnsiblePlaybookForCloudSideRouter() {
+        return ansiblePlaybookForCloudSideRouter;
+    }
+
+    public void setAnsiblePlaybookForCloudSideRouter(AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter) {
+        this.ansiblePlaybookForCloudSideRouter = ansiblePlaybookForCloudSideRouter;
+    }
 }

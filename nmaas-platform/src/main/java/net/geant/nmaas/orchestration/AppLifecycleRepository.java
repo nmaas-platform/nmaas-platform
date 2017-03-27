@@ -74,7 +74,7 @@ public class AppLifecycleRepository {
     private AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
         try {
             final DockerHost host = (DockerHost)serviceInfo.getHost();
-            final String accessAddress = host.getAccessInterfaceName();
+            final String accessAddress = host.getPublicIpAddress().getHostAddress();
             final Integer accessPort;
             accessPort = dockerHostStateKeeper.getAssignedPort(host.getName(), serviceInfo.getName());
             StringBuilder urlBuilder = new StringBuilder();
