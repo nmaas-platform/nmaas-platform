@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AppConfigService } from '../service/appconfig.service';
 import { JwtHelper } from 'angular2-jwt';
-import { Http, Headers, Response, RequestOptions} from '@angular/http';
-import { Observable } from 'rxjs';
+import { Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
 
 @Injectable()
 export class AuthService {
@@ -39,10 +42,12 @@ export class AuthService {
     return (token ? this.jwtHelper.decodeToken(token).scopes.indexOf(name) > -1 : null);                
   }
     
-  public login(username: string, password: string) {
+  public login(username: string, password: string): Observable<boolean> {
       let headers = new Headers({ 'Content-Type': 'application/json', 'Accept':'application/json' });
-      return this.http.post(this.appConfig.config.apiUrl + '/api/auth/basic/login', JSON.stringify({ "username": username, "password": password }), new RequestOptions({ headers: headers }))
+      return this.http.post(this.appConfig.config.apiUrl + '/auth/basic/login', JSON.stringify({ "username": username, "password": password }), new RequestOptions({ headers: headers }))
+            .timeout(10000)
             .map((response: Response) => {
+                console.debug('Login response: ' + response);
                 // login successful if there's a jwt token in the response
                 let token = response.json() && response.json().token;
                 if (token) {
@@ -54,6 +59,19 @@ export class AuthService {
                     // return false to indicate failed login
                     return false;
                 }
+            })
+            .catch((error: Response | any) => {
+                console.debug('Login error: ' + error);
+                let errMsg: string;
+                if (error instanceof Response) {
+                    console.debug(error.json());
+                    const body = error.json() || '';
+                    const err = body.message || JSON.stringify(body);
+                    errMsg = `${error.status} - ${err}`;
+                } else
+                    errMsg = 'Server error';
+                console.error(errMsg);
+                return Observable.throw(errMsg);
             });
   }
     

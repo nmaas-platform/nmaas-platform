@@ -5,11 +5,11 @@ import { AppConfigService } from '../service/appconfig.service';
 import { AuthService } from './auth.service'
 import { AuthGuard } from './auth.guard'
 
-function authHttpServiceFactory(http: Http, options: RequestOptions, appConfig: AppConfigService) {
+export function authHttpServiceFactory(http: Http, options: RequestOptions, appConfig: AppConfigService) {
   return new AuthHttp(new AuthConfig({
         tokenName: ( appConfig.config.tokenName ? appConfig.config.tokenName : 'token'),
         tokenGetter: (() => localStorage.getItem(this.tokenName)),
-        globalHeaders: [{'Content-Type':'application/json'}],
+        globalHeaders: [{'Content-Type':'application/json', 'Accept':'application/json'}],
     }), http, options);
 }
 
