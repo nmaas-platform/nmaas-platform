@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public class AnsibleContainerConfigBuilder {
 
-    private static final String ANSIBLE_IMAGE_NAME = "a4aea6924d2d";
+    private static final String ANSIBLE_IMAGE_NAME = "nmaas/ansible";
     private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER = "pb-nmaas-vpn-asbr-config.yml";
     private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER = "pb-nmaas-vpn-iaas-config.yml";
     private static final String ANSIBLE_DIR_ON_DOCKER_HOST = "/home/docker/ansible-docker/";
