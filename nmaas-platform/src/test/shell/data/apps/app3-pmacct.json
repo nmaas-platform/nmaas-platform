@@ -1,0 +1,11 @@
+{
+	"name":"PMACCT",
+	"version":"1.6.0",
+	"license":"GPL",
+	"briefDescription":"This is PMACCT tool for passive network monitoring.",
+	"tags": [ "network", "monitoring"],
+	"fullDescriprion": "",
+	"wwwUrl": "http:\/\/www.pmacct.net\/",
+	"sourceUrl": "https:\/\/github.com\/pmacct\/pmacct",
+	"issuesUrl": ""
+}
