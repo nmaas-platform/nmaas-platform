@@ -8,22 +8,21 @@ public class Comment {
 
 	Long id;
 	Long parentId;
-	User user;
+	User owner;
 	Date createdAt;
 	String comment;
 	
 	List<Comment> subComments = new ArrayList<Comment>();
 	
-	public Comment() {
-		
+	public Comment() {		
 	}
 
-	public User getUser() {
-		return user;
+	public User getOwner() {
+		return owner;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
 
 	public Date getCreatedAt() {

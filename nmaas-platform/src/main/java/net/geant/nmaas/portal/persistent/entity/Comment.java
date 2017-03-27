@@ -28,7 +28,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Comment implements Serializable{
+public class Comment implements Serializable {
 	
 	
 	@Id
@@ -52,14 +52,15 @@ public class Comment implements Serializable{
 	private String comment;
 	
 	@CreatedDate
-	private Date createdAt;
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private Long createdAt;
 	
 	protected Comment() {
 		
 	}
 	
 	public Comment(Application application, String comment) {
-		this.createdAt = new Date();
+		this.createdAt = new Date().getTime();
 		this.application = application;
 		this.comment = comment;
 	}
@@ -125,11 +126,11 @@ public class Comment implements Serializable{
 		this.comment = comment;
 	}
 
-	public Date getCreatedAt() {
+	public Long getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(Long createdAt) {
 		this.createdAt = createdAt;
 	}
 

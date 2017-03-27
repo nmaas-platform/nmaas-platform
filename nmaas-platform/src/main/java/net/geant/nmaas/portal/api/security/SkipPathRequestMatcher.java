@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -23,6 +24,7 @@ public class SkipPathRequestMatcher implements RequestMatcher {
 	public SkipPathRequestMatcher(List<String> skipPaths) {
 		Assert.notNull(skipPaths);
 		List<RequestMatcher> list = skipPaths.stream().map(path -> new AntPathRequestMatcher(path)).collect(Collectors.toList());
+		list.add(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name()));
 		matchers = new OrRequestMatcher(list);
 	}
 	

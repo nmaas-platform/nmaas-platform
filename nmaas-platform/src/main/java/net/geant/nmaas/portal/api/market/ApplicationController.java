@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,13 +46,15 @@ import net.geant.nmaas.portal.service.FileStorageService;
 public class ApplicationController extends AppBaseController {
 	
 	@RequestMapping(method=RequestMethod.GET)
+	@Transactional
 	public List<ApplicationBrief> getApplications() {
 		return appRepo.findAll().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
-	public Id addApplication(@RequestBody(required=true) ApplicationBrief appRequest) {
+	@Transactional
+	public Id addApplication(@RequestBody(required=true) Application appRequest) {
 		net.geant.nmaas.portal.persistent.entity.Application app;
 		
 		app = modelMapper.map(appRequest, net.geant.nmaas.portal.persistent.entity.Application.class);
@@ -61,9 +64,10 @@ public class ApplicationController extends AppBaseController {
 	}
 	
 	@RequestMapping(value="/{appId}", method=RequestMethod.GET)
+	@Transactional
 	public Application getApplication(@PathVariable(value = "appId", required=true) Long id) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Application app = getApp(id); 
-		return modelMapper.map(appRepo.getOne(id), Application.class);
+		return modelMapper.map(app, Application.class);
 	}
 	
 }

@@ -1,20 +1,27 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Application extends ApplicationBrief {
 
-	String description;
+	String fullDescription;
 	ConfigTemplate configTemplate;
+	
+	//List<Comment> comments = new ArrayList<Comment>();
 	
 	public Application() {
 		super();
 	}
 
-	public String getDescription() {
-		return description;
+
+	public String getFullDescription() {
+		return fullDescription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+
+	public void setFullDescription(String fullDescription) {
+		this.fullDescription = fullDescription;
 	}
 
 	public ConfigTemplate getConfigTemplate() {
@@ -24,4 +31,16 @@ public class Application extends ApplicationBrief {
 	public void setConfigTemplate(ConfigTemplate configTemplate) {
 		this.configTemplate = configTemplate;
 	}
+
+
+//	public List<Comment> getComments() {
+//		return comments;
+//	}
+//
+//
+//	public void setComments(List<Comment> comments) {
+//		this.comments = comments;
+//	}
+//	
+	
 }

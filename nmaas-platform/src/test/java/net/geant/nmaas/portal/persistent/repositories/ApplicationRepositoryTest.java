@@ -94,26 +94,31 @@ public class ApplicationRepositoryTest {
 		Application app1 = new Application("zabbix");
 		app1.setTags(new HashSet<Tag>());
 		app1.getTags().add(monitoringTag);
+		monitoringTag.getApplications().add(app1);
 		app1.getTags().add(networkTag);
+		networkTag.getApplications().add(app1);
 		appRepo.saveAndFlush(app1);
 
 		
 		Application app2 = new Application("librenms");
 		app2.setTags(new HashSet<Tag>());
 		app2.getTags().add(monitoringTag);
+		monitoringTag.getApplications().add(app2);
 		app2.getTags().add(managementTag);
+		managementTag.getApplications().add(app2);
 		app2.getTags().add(networkTag);
+		networkTag.getApplications().add(app2);
 		appRepo.saveAndFlush(app2);
 		
 		assertEquals(2, appRepo.count());
 		assertEquals(3, tagRepo.count());
 
-//		assertEquals(2, appRepo.findByTags(monitoringTag).size());
-//		assertEquals(1, appRepo.findByTags(managementTag).size());
+		assertEquals(2, appRepo.findByTags(monitoringTag).size());
+		assertEquals(1, appRepo.findByTags(managementTag).size());
 
 		assertNull(tagRepo.findByName("noexist"));
-//		assertEquals(2, tagRepo.findByName("monitoring").getApplications().size());
-//		assertEquals(1, tagRepo.findByName("management").getApplications().size());
+		assertEquals(2, tagRepo.findByName("monitoring").getApplications().size());
+		assertEquals(1, tagRepo.findByName("management").getApplications().size());
 		
 		
 	}

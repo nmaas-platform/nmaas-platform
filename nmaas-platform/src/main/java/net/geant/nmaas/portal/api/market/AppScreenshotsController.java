@@ -51,7 +51,7 @@ public class AppScreenshotsController extends AppBaseController {
 	@RequestMapping(value="/logo", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
-	public void uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws MissingElementException, FileNotFoundException, StorageException {
+	public net.geant.nmaas.portal.api.domain.FileInfo uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws MissingElementException, FileNotFoundException, StorageException {
 		Application app = getApp(appId);
 		
 		if(app.getLogo() != null) {
@@ -63,6 +63,8 @@ public class AppScreenshotsController extends AppBaseController {
 		FileInfo fileInfo = fileStorage.store(file);
 		app.setLogo(fileInfo);
 		appRepo.save(app);
+		
+		return modelMapper.map(fileInfo, net.geant.nmaas.portal.api.domain.FileInfo.class);
 	}
 	
 	@RequestMapping(value="/logo", method=RequestMethod.DELETE)
@@ -91,12 +93,14 @@ public class AppScreenshotsController extends AppBaseController {
 	@RequestMapping(value="/screenshots", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
-	public void uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws StorageException, MissingElementException {
+	public net.geant.nmaas.portal.api.domain.FileInfo uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws StorageException, MissingElementException {
 		Application app = getApp(appId);
 		
 		FileInfo fileInfo = fileStorage.store(file);
 		app.getScreenshots().add(fileInfo);
 		appRepo.save(app);
+		
+		return modelMapper.map(fileInfo, net.geant.nmaas.portal.api.domain.FileInfo.class);
 	}
 
 	@RequestMapping(value="/screenshots/{screenshotId}", method=RequestMethod.GET)

@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -43,12 +44,15 @@ public class Application implements Serializable {
 	private String briefDescription;
 	
 	@Basic(fetch=FetchType.LAZY)
-	private String description;
+	@Lob
+	private String fullDescription;
 	
 	@OneToOne(cascade=CascadeType.ALL, optional=true, orphanRemoval=true, fetch=FetchType.LAZY)
 	private ConfigTemplate configTemplate;
 	
-	@ManyToMany( fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="applications")
+	@ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "application_id"), inverseJoinColumns=@JoinColumn(name="tag_id"))
+//	@ManyToMany( fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="applications")
 	private Set<Tag> tags = new HashSet<Tag>();
 	
 	@OneToMany(orphanRemoval=true, fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="application")
@@ -94,12 +98,12 @@ public class Application implements Serializable {
 		this.briefDescription = briefDescription;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getFullDescription() {
+		return fullDescription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setFullDescription(String fullDescription) {
+		this.fullDescription = fullDescription;
 	}
 
 	public ConfigTemplate getConfigTemplate() {

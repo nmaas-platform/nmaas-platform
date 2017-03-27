@@ -10,7 +10,9 @@ public class AppInstance {
 	
 	private String name;
 	
-	private Date createdAt;
+	private Long createdAt;
+	
+	private User owner;
 	
 	private AppInstanceState state;
 	
@@ -41,13 +43,30 @@ public class AppInstance {
 		this.name = name;
 	}
 
-	public Date getCreatedAt() {
+	public Long getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(Long createdAt) {
 		this.createdAt = createdAt;
 	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+
+	public AppInstanceState getState() {
+		return state;
+	}
+
+	public void setState(AppInstanceState state) {
+		this.state = state;
+	}
+
 
 	
 	
