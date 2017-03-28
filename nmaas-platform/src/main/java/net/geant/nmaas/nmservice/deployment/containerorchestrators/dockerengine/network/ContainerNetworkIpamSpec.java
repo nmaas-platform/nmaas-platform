@@ -1,9 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
 
+import static net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostState.ADDRESS_POOL_DEFAULT_MASK_LENGTH;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class ContainerNetworkIpamSpec {
+
+    private static final String DEFAULT_CONTAINER_IP_ADDRESS_LAST_OCTET = "1";
 
     private final String subnetWithMask;
 
@@ -11,10 +15,13 @@ public class ContainerNetworkIpamSpec {
 
     private final String gateway;
 
+    private String ipAddressOfContainer;
+
     public ContainerNetworkIpamSpec(String subnetWithMask, String gateway) {
         this.subnetWithMask = subnetWithMask;
         this.ipRangeWithMask = subnetWithMask;
         this.gateway = gateway;
+        ipAddressOfContainer = obtainFirstIpAddressFromNetwork(ipRangeWithMask);
     }
 
     public String getSubnetWithMask() {
@@ -29,10 +36,25 @@ public class ContainerNetworkIpamSpec {
         return gateway;
     }
 
+    public String getIpAddressOfContainer() {
+        return ipAddressOfContainer;
+    }
+
     public static ContainerNetworkIpamSpec fromParameters(String addressPoolBase, int network, int addressPoolDefaultGateway, int addressPoolDefaultMaskLength) {
         String subnetWithMask = addressPoolBase.replace(".0.0", ".") + network + ".0/" + addressPoolDefaultMaskLength;
         String gateway = addressPoolBase.replace(".0.0", ".") + network + "." + addressPoolDefaultGateway;
         return new ContainerNetworkIpamSpec(subnetWithMask, gateway);
+    }
+
+    private String obtainFirstIpAddressFromNetwork(String ipRangeWithMask) {
+        if (notValidIpNetworkAddress(ipRangeWithMask))
+            return null;
+        String[] ipAddressParts = ipRangeWithMask.split("\\.");
+        return ipRangeWithMask.replace(ipAddressParts[ipAddressParts.length - 1], DEFAULT_CONTAINER_IP_ADDRESS_LAST_OCTET);
+    }
+
+    private boolean notValidIpNetworkAddress(String ipRangeWithMask) {
+        return !ipRangeWithMask.endsWith(".0/" + ADDRESS_POOL_DEFAULT_MASK_LENGTH);
     }
 
     @Override

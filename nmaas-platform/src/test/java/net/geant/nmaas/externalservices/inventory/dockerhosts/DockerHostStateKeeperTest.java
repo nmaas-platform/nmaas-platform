@@ -44,14 +44,17 @@ public class DockerHostStateKeeperTest {
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.11.1.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.11.1.254"));
+        assertThat(addressPool.getIpAddressOfContainer(), equalTo("10.11.1.1"));
         addressPool = stateKeeper.assignAddressPool(DOCKER_HOST_NAME_1, SERVICE_NAME_2);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.11.2.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.11.2.254"));
+        assertThat(addressPool.getIpAddressOfContainer(), equalTo("10.11.2.1"));
         addressPool = stateKeeper.assignAddressPool(DOCKER_HOST_NAME_2, SERVICE_NAME_3);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.12.1.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.12.1.254"));
+        assertThat(addressPool.getIpAddressOfContainer(), equalTo("10.12.1.1"));
     }
 
 }
