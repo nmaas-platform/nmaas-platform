@@ -171,40 +171,40 @@ public class AnsiblePlaybookVpnConfig {
 
     public void validate() throws ConfigNotValidException {
         if (targetRouter == null || targetRouter.isEmpty())
-            exception(exceptionMessage("Target Router"));
+            exception(message("Target Router"));
         if (vrfId == null || vrfId.isEmpty())
-            exception(exceptionMessage("VRF ID"));
+            exception(message("VRF ID"));
         if (logicalInterface == null || logicalInterface.isEmpty())
-            exception(exceptionMessage("Logical Interface"));
+            exception(message("Logical Interface"));
         if (vrfRd == null || vrfRd.isEmpty())
-            exception(exceptionMessage("VRF RD"));
+            exception(message("VRF RD"));
         if (vrfRt == null || vrfRt.isEmpty())
-            exception(exceptionMessage("VRF RT"));
+            exception(message("VRF RT"));
         if (bgpGroupId == null || bgpGroupId.isEmpty())
-            exception(exceptionMessage("BGP Group ID"));
+            exception(message("BGP Group ID"));
         if (bgpNeighborIp == null || bgpNeighborIp.isEmpty())
-            exception(exceptionMessage("BGP Neighbor ID"));
+            exception(message("BGP Neighbor ID"));
         if (asn == null || asn.isEmpty())
-            exception(exceptionMessage("ASN"));
+            exception(message("ASN"));
         if (physicalInterface == null || physicalInterface.isEmpty())
-            exception(exceptionMessage("Physical Interface"));
+            exception(message("Physical Interface"));
         if (interfaceUnit == null || interfaceUnit.isEmpty())
-            exception(exceptionMessage("Interface Unit"));
+            exception(message("Interface Unit"));
         if (interfaceVlan == null || interfaceUnit.isEmpty())
-            exception(exceptionMessage("Interface VLAN"));
+            exception(message("Interface VLAN"));
         if (bgpLocalIp == null || bgpLocalIp.isEmpty())
-            exception(exceptionMessage("BGP Local IP"));
+            exception(message("BGP Local IP"));
         if (bgpLocalCidr == null || bgpLocalCidr.isEmpty())
-            exception(exceptionMessage("BGP Local CIDR"));
+            exception(message("BGP Local CIDR"));
         if (type.equals(Type.CLOUD_SIDE)) {
             if (policyCommunityOptions == null || policyCommunityOptions.isEmpty())
-                exception(exceptionMessage("Policy Community Options"));
+                exception(message("Policy Community Options"));
             if (policyStatementConnected == null || policyStatementConnected.isEmpty())
-                exception(exceptionMessage("Policy Statement Connected"));
+                exception(message("Policy Statement Connected"));
             if (policyStatementImport == null || policyStatementImport.isEmpty())
-                exception(exceptionMessage("Policy Statement Import"));
+                exception(message("Policy Statement Import"));
             if (policyStatementExport == null || policyStatementExport.isEmpty())
-                exception(exceptionMessage("Policy Statement Export"));
+                exception(message("Policy Statement Export"));
         }
     }
 
@@ -221,7 +221,7 @@ public class AnsiblePlaybookVpnConfig {
         throw new ConfigNotValidException(message);
     }
 
-    private String exceptionMessage(String fieldName) {
+    private String message(String fieldName) {
         return new StringBuilder().append(fieldName).append(" is NULL or empty").toString();
     }
 
