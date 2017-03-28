@@ -43,8 +43,7 @@ public class AppLifecycleManagerRestController {
     }
 
     @RequestMapping(value = "/{deploymentId}",
-            method = RequestMethod.DELETE,
-            consumes = "application/json")
+            method = RequestMethod.DELETE)
     @ResponseStatus(code = HttpStatus.OK)
     public void removeApplication(
             @PathVariable("deploymentId") String deploymentId) throws InvalidDeploymentIdException {
