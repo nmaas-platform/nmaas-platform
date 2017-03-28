@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,7 +23,9 @@ import org.springframework.web.context.WebApplicationContext;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.Tag;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 
 
@@ -43,12 +46,19 @@ public class ApplicationRepositoryTest {
 	@Autowired
 	TagRepository tagRepo;
 	
+	@Autowired
+	CommentRepository commentRepo;
+	
+	@Autowired
+	UserRepository userRepo;
+	
 	@Before
 	public void setUp() throws Exception {
-	
+		userRepo.save(new User("admin", "admin", Role.ADMIN));
 	}
 
 	@Test
+	@WithMockUser(username="admin", roles={"ADMIN"})
 	public void testAddApplication() {
 
 		Application app1 = new Application("zabbix");
@@ -62,14 +72,14 @@ public class ApplicationRepositoryTest {
 		app1 = apps.get(0);
 		assertNotNull(app1.getId());
 		
-		app1.getComments().add(new Comment(app1, "comment1"));
-		appRepo.save(app1);
+		Comment comment1 = new Comment(app1, "comment1");
+		commentRepo.save(comment1);
 		
-		app1 = appRepo.getOne(app1.getId());
-		app1.getComments().add(new Comment(app1, app1.getComments().get(0), "comment2"));
+		app1 = appRepo.findOne(app1.getId());
+		Comment subComment1 = new Comment(app1, comment1, "comment2");
+		commentRepo.save(subComment1);
 		
-		apps = appRepo.findAll();
-		assertEquals(2, apps.get(0).getComments().size());
+		assertEquals(2, commentRepo.count());
 		
 	}
 

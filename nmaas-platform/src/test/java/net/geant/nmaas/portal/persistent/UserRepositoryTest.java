@@ -44,6 +44,7 @@ public class UserRepositoryTest {
 
 	@Before
 	public void setUp() throws Exception {
+		userRepository.deleteAll();
 	}
 
 	@After

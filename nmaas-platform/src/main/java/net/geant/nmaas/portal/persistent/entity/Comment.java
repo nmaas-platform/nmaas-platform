@@ -60,7 +60,7 @@ public class Comment implements Serializable {
 	}
 	
 	public Comment(Application application, String comment) {
-		this.createdAt = new Date().getTime();
+		//this.createdAt = new Date().getTime();
 		this.application = application;
 		this.comment = comment;
 	}
