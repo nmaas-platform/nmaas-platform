@@ -12,8 +12,8 @@ import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +61,7 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 		nmServiceRepository.storeService(service);
 	}
 
+	@Ignore
 	@Test
 	public void shouldDeployNewContainerWithDedicatedNetwork() throws
 			ContainerOrchestratorInternalErrorException,

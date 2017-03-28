@@ -30,7 +30,7 @@ public class AnsiblePlaybookContainerBuilderTest {
                     "--volume=/home/docker/ansible-docker/working-dir/config-set:/ansible-config-set " +
                     "--volume=/home/docker/ansible-docker/:/ansible-playbook-dir " +
                     "--volume=/home/docker/.ssh/id_rsa:/root/.ssh/id_rsa " +
-                    "nmaas/ansible " +
+                    "nmaas/ansible:2.3.0 " +
                     "ansible-playbook " +
                     "-v -i /ansible-playbook-dir/hosts " +
                     "-v /ansible-playbook-dir/pb-nmaas-vpn-asbr-config.yml " +
@@ -57,7 +57,7 @@ public class AnsiblePlaybookContainerBuilderTest {
                     "--volume=/home/docker/ansible-docker/working-dir/config-set:/ansible-config-set " +
                     "--volume=/home/docker/ansible-docker/:/ansible-playbook-dir " +
                     "--volume=/home/docker/.ssh/id_rsa:/root/.ssh/id_rsa " +
-                    "nmaas/ansible " +
+                    "nmaas/ansible:2.3.0 " +
                     "ansible-playbook " +
                     "-v -i /ansible-playbook-dir/hosts " +
                     "-v /ansible-playbook-dir/pb-nmaas-vpn-iaas-config.yml " +

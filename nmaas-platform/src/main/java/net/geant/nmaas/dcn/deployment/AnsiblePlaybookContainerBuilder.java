@@ -12,7 +12,7 @@ import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig.*;
 @Component
 public class AnsiblePlaybookContainerBuilder {
 
-    private static final String ANSIBLE_IMAGE_NAME = "nmaas/ansible";
+    private static final String ANSIBLE_IMAGE_NAME = "nmaas/ansible:2.3.0";
     private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER_CONFIG = "pb-nmaas-vpn-asbr-config.yml";
     private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLOUD_SIDE_ROUTER_CONFIG = "pb-nmaas-vpn-iaas-config.yml";
     private static final String ANSIBLE_PLAYBOOK_NAME_FOR_CLIENT_SIDE_ROUTER_CONFIG_REMOVAL = "pb-nmaas-vpn-asbr-delete.yml";
