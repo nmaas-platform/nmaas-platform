@@ -56,7 +56,7 @@ public class DockerHostManagerRestControllerTest {
     @Test
     public void shouldRemoveDockerHost() throws Exception {
         int sizeBefore = dockerHostRepository.loadAll().size();
-        mvc.perform(delete("/platform/api/management/dockerhosts/{name}", "GN4-DOCKER-2"))
+        mvc.perform(delete("/platform/api/management/dockerhosts/{name}", "GN4-DOCKER-3"))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(sizeBefore - 1, dockerHostRepository.loadAll().size());
@@ -93,11 +93,11 @@ public class DockerHostManagerRestControllerTest {
 
     @Test
     public void shoulFetchDockerHostByName() throws Exception {
-        MvcResult result = mvc.perform(get("/platform/api/management/dockerhosts/{name}", "GN4-DOCKER-2"))
+        MvcResult result = mvc.perform(get("/platform/api/management/dockerhosts/{name}", "GN4-DOCKER-1"))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
-                "GN4-DOCKER-2",
+                "GN4-DOCKER-1",
                 ((DockerHost) new ObjectMapper().readValue(
                 result.getResponse().getContentAsString(),
                 new TypeReference<DockerHost>() {})).getName());
