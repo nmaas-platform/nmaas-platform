@@ -4,10 +4,10 @@ import com.spotify.docker.client.messages.swarm.ContainerSpec;
 import com.spotify.docker.client.messages.swarm.ServiceSpec;
 import com.spotify.docker.client.messages.swarm.TaskSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmNmServiceTemplate;
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.DockerSwarmServiceSpec;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -19,10 +19,10 @@ public class SwarmServiceSpecBuilder {
         DockerSwarmNmServiceTemplate dockerTemplate = (DockerSwarmNmServiceTemplate) spec.template();
         DockerSwarmServiceSpec dockerSpec = (DockerSwarmServiceSpec) spec;
         ServiceSpec.Builder serviceBuilder = ServiceSpec.builder();
-        serviceBuilder.withName(dockerSpec.name());
-        serviceBuilder.withTaskTemplate(
-                TaskSpec.builder().withContainerSpec(
-                        ContainerSpec.builder().withImage(dockerTemplate.getImage()).build()
+        serviceBuilder.name(dockerSpec.name());
+        serviceBuilder.taskTemplate(
+                TaskSpec.builder().containerSpec(
+                        ContainerSpec.builder().image(dockerTemplate.getImage()).build()
                 ).build()
         );
         return serviceBuilder.build();
