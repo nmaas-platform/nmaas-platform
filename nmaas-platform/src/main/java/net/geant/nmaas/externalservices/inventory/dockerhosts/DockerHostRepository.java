@@ -66,6 +66,48 @@ public class DockerHostRepository {
         }
     }
 
+    /**
+     * Store {@link DockerHost} instance in the repository
+     * @param newDockerHost New {@link DockerHost} instance
+     */
+    public void addDockerHost(DockerHost newDockerHost) {
+        this.dockerHosts.add(newDockerHost);
+    }
+
+    /**
+     * Remove {@link DockerHost} instance from the repository
+     * @param name @link DockerHost} instance
+     * @throws {@link DockerHostNotFoundException}
+     */
+    public void removeDockerHost(String name) throws DockerHostNotFoundException {
+        loadByName(name);
+        dockerHosts.removeIf(p -> p.getName().equals(name));
+    }
+
+    /**
+     * Update {@link DockerHost} instance in the repository
+     * @param name Unique {@link DockerHost} name
+     * @param dockerHost New {@link DockerHost} instance
+     * @throws {@link DockerHostNotFoundException}
+     */
+    public void updateDockerHost(String name, DockerHost dockerHost) throws DockerHostNotFoundException {
+        this.dockerHosts.set(dockerHosts.indexOf(loadByName(name)), dockerHost);
+    }
+
+    /**
+     * Loads all {@link DockerHost} instances
+     * @return {@link List} of {@link DockerHost} instances
+     */
+    public List<DockerHost> loadAll() {
+        return dockerHosts;
+    }
+
+    /**
+     * Loads by name the {@link DockerHost} instance from the repository
+     * @param hostName Unique {@link DockerHost} name
+     * @return {@link DockerHost} instance loaded form the repository
+     * @throws {@link DockerHostNotFoundException}
+     */
     public DockerHost loadByName(String hostName) throws DockerHostNotFoundException {
         return dockerHosts.stream()
                 .filter((host) -> host.getName().equals(hostName))
@@ -73,11 +115,15 @@ public class DockerHostRepository {
                 .orElseThrow(() -> new DockerHostNotFoundException("Did not find host with name " + hostName + " in repository"));
     }
 
+    /**
+     * Loads first preferred {@link DockerHost} instance from the repository
+     * @return {@link DockerHost} instance loaded form the repository
+     * @throws {@link DockerHostNotFoundException}
+     */
     public DockerHost loadPreferredDockerHost() throws DockerHostNotFoundException {
         return dockerHosts.stream()
                 .filter((host) -> host.isPreferred())
                 .findFirst()
                 .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker host in repository."));
     }
-
 }

@@ -101,6 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/orchestration/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
+				.antMatchers("/platform/api/management/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 	            .and().httpBasic()
 			.and()
 				.authorizeRequests()
