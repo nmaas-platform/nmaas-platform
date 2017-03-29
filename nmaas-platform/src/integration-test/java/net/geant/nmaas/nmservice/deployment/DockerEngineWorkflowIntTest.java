@@ -15,6 +15,7 @@ import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateReposito
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,7 @@ public class DockerEngineWorkflowIntTest {
 		nmServiceRepository.storeService(service);
 	}
 
+	@Ignore
 	@Test
 	public void shouldDeployNewContainerWithDedicatedNetwork() throws
 			ContainerOrchestratorInternalErrorException,

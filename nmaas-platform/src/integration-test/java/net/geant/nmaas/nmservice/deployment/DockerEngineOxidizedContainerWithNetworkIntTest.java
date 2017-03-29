@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -58,6 +59,7 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 		service.setHost(dockerHostRepository.loadPreferredDockerHost());
 		service.setNetwork(testNetworkDetails1);
 		service.setManagedDevicesIpAddresses(Arrays.asList("11.11.11.11", "22.22.22.22", "33.33.33.33", "44.44.44.44", "55.55.55.55"));
+		service.setAppDeploymentId(UUID.randomUUID().toString());
 		nmServiceRepository.storeService(service);
 	}
 

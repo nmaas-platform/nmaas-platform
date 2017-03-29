@@ -2,6 +2,7 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.Identifier;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class AnsibleContainerDeploymentIntTest {
     @Autowired
     private DcnDeploymentProvider dcnDeployment;
 
+    @Ignore
     @Test
     public void shouldVerifyAndDeployDefaultContainer() throws InvalidDeploymentIdException {
         dcnDeployment.verifyRequest(deploymentId, new DcnSpec(uniqueDcnName));

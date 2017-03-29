@@ -4,8 +4,10 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
 import com.spotify.docker.client.exceptions.NetworkNotFoundException;
+import com.spotify.docker.client.messages.EndpointConfig;
 import com.spotify.docker.client.messages.Network;
 import com.spotify.docker.client.messages.NetworkConfig;
+import com.spotify.docker.client.messages.NetworkConnection;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import org.springframework.stereotype.Component;
@@ -71,17 +73,17 @@ public class DockerNetworkClient {
             throw new ContainerNetworkCheckFailedException("Container network check failed (id: " + networkId + ")");
     }
 
-    public void connectContainerToNetwork(String containerId, String networkId, DockerHost host)
+    public void connectContainerToNetwork(String containerId, ContainerNetworkDetails networkDetails, DockerHost host)
             throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = client(host.apiUrl());
         try {
-            executeConnectContainerToNetwork(containerId, networkId, apiClient);
+            executeConnectContainerToNetwork(containerId, networkDetails, apiClient);
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new CouldNotConnectContainerToNetworkException(
-                    "Could not connect container " + containerId + " to network " + networkId + " -> " + dockerException.getMessage(), dockerException);
+                    "Could not connect container " + containerId + " to network " + networkDetails.getDeploymentId() + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
@@ -90,9 +92,21 @@ public class DockerNetworkClient {
         }
     }
 
-    private void executeConnectContainerToNetwork(String containerId, String networkId, DockerClient apiClient)
-            throws DockerException, InterruptedException {
-        apiClient.connectToNetwork(containerId, networkId);
+    private void executeConnectContainerToNetwork(String containerId, ContainerNetworkDetails networkDetails, DockerClient apiClient)
+            throws ContainerOrchestratorInternalErrorException, DockerException, InterruptedException {
+        final EndpointConfig endpointConfig =
+                EndpointConfig.builder()
+                        .ipamConfig(
+                                EndpointConfig.EndpointIpamConfig.builder()
+                                        .ipv4Address(networkDetails.getIpAddresses().getIpAddressOfContainer())
+                                        .build())
+                        .build();
+        final NetworkConnection networkConnection =
+                NetworkConnection.builder()
+                        .containerId(containerId)
+                        .endpointConfig(endpointConfig)
+                        .build();
+        apiClient.connectToNetwork(networkDetails.getDeploymentId(), networkConnection);
     }
 
     public void remove(String networkId, DockerHost host)

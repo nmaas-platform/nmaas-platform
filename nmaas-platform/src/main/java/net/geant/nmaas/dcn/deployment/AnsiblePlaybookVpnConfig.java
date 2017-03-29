@@ -212,8 +212,7 @@ public class AnsiblePlaybookVpnConfig {
         this.interfaceUnit = String.valueOf(networkDetails.getVlanNumber());
         this.interfaceVlan = String.valueOf(networkDetails.getVlanNumber());
         this.bgpLocalIp = networkDetails.getIpAddresses().getGateway();
-        // FIXME this is dirty approach; should be able to set concrete IP address for container and set it here
-        this.bgpNeighborIp = "10.11.1.1";
+        this.bgpNeighborIp = networkDetails.getIpAddresses().getIpAddressOfContainer();
         this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
     }
 
