@@ -1,19 +1,13 @@
 import { Routes, RouterModule } from '@angular/router';
 
-import { LoginComponent } from './login/index';
-import { AppmarketComponent } from './appmarket/index';
-import { AppinstallComponent } from './appmarket/appinstall/index';
-import { AppdetailsComponent } from './appmarket/appdetails/index';
+import { LoginRoutes } from './login/index';
+import { AppMarketRoutes } from './appmarket/index';
 
 import { AuthGuard } from './auth/auth.guard';
 
 const appRoutes: Routes = [
-    { path: 'login', component: LoginComponent },
-    { path: '', component: AppmarketComponent, canActivate: [AuthGuard] },
-
-    { path: 'app/install', component: AppinstallComponent },
-    { path: 'app/details', component: AppdetailsComponent }, 
-    // otherwise redirect to home
+    ...LoginRoutes,
+    ...AppMarketRoutes,   
     { path: '**', redirectTo: '' }
 ];
 

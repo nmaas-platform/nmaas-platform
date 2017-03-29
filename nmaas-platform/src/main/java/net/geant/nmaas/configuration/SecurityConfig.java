@@ -5,14 +5,17 @@ import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -31,8 +34,10 @@ import javax.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:application.properties")
 @Order(Ordered.LOWEST_PRECEDENCE-100)
+@ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private final static String SSL_ENABLED="server.ssl.enabled";
@@ -107,6 +112,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
 				.antMatchers("/portal/api/**").authenticated()
 			.and()
 //				.addFilterBefore(statelessLoginFilter("/platform/**",	inMemoryUserDetailsService()), UsernamePasswordAuthenticationFilter.class)

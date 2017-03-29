@@ -1,45 +1,3 @@
-		<nav class="navbar navbar-default" role="navigation">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<img src="assets/images/geant-logo-small-purple.png">
-				</div>
-				
-				<div class="collapse navbar-collapse">
-					<ul class="nav navbar-nav">
-						<li><a href="/">Market</a></li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Applications <b class = "caret"></b></a>
-							
-							<ul class="dropdown-menu">
-								<li><a href="#">Subscribed</a></li>
-								<li class = "divider"></li>
-								<li><a href="#">Infrastructure</a></li>
-							</ul>
-						</li>
-					</ul>
-				
-				
-					
-					<ul class = "nav navbar-nav navbar-right">
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class = "glyphicon glyphicon-user"></span> user@localhost <b class = "caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Profile</a></li>
-								<li class = "divider"></li>
-								<li><a href="/login">Logout</a></li>
-							</ul>
-						</li>
-					</ul>							
-
-
-				</div>
-			</div>
-		</nav>
-		
-		
-		
-		
-		
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
@@ -50,7 +8,7 @@
 				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<h2>Application</h2>
+							<h2>{{app?.name}}</h2>
 						</div>
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">				
 							<div class="btn-group pull-right">
@@ -65,15 +23,15 @@
 					<hr>
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							Version: VERSION
+							Version: {{app?.version}}
 						</div>
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							License: LICENSE
+							License: {{app?.license}}
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							Tags: TAG1, TAG2, TAG3
+							{{app?.tags}}
 						</div>
 					</div>
 					<hr>
@@ -81,28 +39,18 @@
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 							<p>
 								<span>Rating:</span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star-empty"></span>
-								<span class="text">4.4</span>
+								<rate [pathUrl]="'/apps/' + id + '/rate'"></rate>
 							</p>
 						</div>
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">	
 							<p>
-								<span>Your rating:</span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star"></span>
-								<span class="glyphicon glyphicon-star-empty"></span>
-								<span class="glyphicon glyphicon-star-empty"></span>
-								<span class="text">3</span>
+								<span>My rating:</span>
+								<rate [pathUrl]="'/apps/' + id + '/rate/my'"></rate>
 							</p>
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<div class = "btn-group pull-right">
-								<a href="app/install" class = "btn btn-primary">Subscribe</a>
+								<a [routerLink]="['install']" class = "btn btn-primary">Subscribe</a>
 							</div>
 						</div>
 					</div>
@@ -113,66 +61,13 @@
 			<div class='row'>
 				<h3>Screenshots</h3>
 				<hr>
-				<div class='col-md-12'>
-				  <div class="carousel slide media-carousel" id="media">
-					<div class="carousel-inner">
-					  <div class="item  active">
-						<div class="row">
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>          
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>        
-						</div>
-					  </div>
-					  <div class="item">
-						<div class="row">
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>          
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>        
-						</div>
-					  </div>
-					  <div class="item">
-						<div class="row">
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>          
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>      
-						</div>
-					  </div>
-					</div>
-					<a data-slide="prev" href="#media" class="left carousel-control">‹</a>
-					<a data-slide="next" href="#media" class="right carousel-control">›</a>
-				  </div>                          
-				</div>
+				<screenshots [pathUrl]="'/apps/' + id + '/screenshots'"></screenshots>
 			</div>
 			
 			<div class="row">
 				<h3>Description</h3>
 				<hr>
-				<p>Fusce purus non nonummy lacinia turpis et turpis. Curabitur eget ipsum primis in felis adipiscing elit. Vestibulum consectetuer lectus. Praesent feugiat. Cum sociis natoque penatibus et lacus magna, scelerisque justo neque, euismod id, orci. Donec nonummy, tellus dui a posuere nisl quam, lobortis mauris rhoncus ac, felis. Cum sociis natoque penatibus et malesuada aliquet. Praesent odio non ipsum. Curabitur lacinia quis, lacinia arcu faucibus orci viverra est porta tincidunt. Nullam pharetra sem, sed turpis. Duis ipsum. Nam dui imperdiet wisi, sed enim. Donec viverra elit laoreet vel, dignissim non, placerat quam. Vestibulum ullamcorper pellentesque. Nullam iaculis pede rhoncus gravida. Donec odio id mi. Donec sodales quam. Proin consectetuer sagittis urna. Nunc justo at turpis ut lacus feugiat sit amet felis. Quisque est vitae ante. Maecenas eget wisi nunc, lobortis condimentum est lacus a leo. Pellentesque vel nonummy malesuada, arcu nec nunc commodo ipsum a libero dolor, rhoncus placerat at, nisl. Morbi urna eget augue pulvinar velit. Nunc gravida. In hac habitasse platea dictumst. Vestibulum dolor sit amet lorem. Curabitur ut augue. Aenean scelerisque, ante ipsum cursus consequat, orci id justo.</p>
-				<ul>
-					<li>Nullam suscipit vitae, nibh.</li>
-					<li>Lorem ipsum scelerisque.</li>
-					<li>Nulla malesuada.</li>
-					<li>Ut a dolor in.</li>
-					<li>Cum sociis natoque.</li>
-				</ul>
+				{{app?.fullDescription}}
 			</div>
 			<hr>
 			<div class="row">
@@ -188,62 +83,6 @@
 				</div>
 			</div>
 			<div class="row">
-				<h3>Comments:</h3>
-				<ul class="media-list">
-					<li class="media">
-						<div class="media-left">
-						  <a href="#">
-							<span class="glyphicon glyphicon-user"></span>
-							<!-- img class="media-object" src="" alt="USER" -->
-						  </a>
-						</div>
-						<div class="media-body">
-						  <h4 class="media-heading">Media heading</h4>
-						  <h6 class="media-heading">USER, 31.12.2016 10:15</h6>
-						  <hr>
-						  <p>Fusce purus non nonummy lacinia turpis et turpis. Curabitur eget ipsum primis in felis adipiscing elit. Vestibulum consectetuer lectus. Praesent feugiat. Cum sociis natoque penatibus et lacus magna, scelerisque justo neque, euismod id, orci.</p>
-							
-							<ul class="media-list">
-								<li class="media">
-									<div class="media-left">
-									  <a href="#">
-										<span class="glyphicon glyphicon-user"></span>
-										<!-- img class="media-object" src="" alt="USER" -->
-									  </a>
-									</div>
-									<div class="media-body">
-									  <h4 class="media-heading">Media heading</h4>
-									  <h6 class="media-heading">USER, 31.12.2016 10:15</h6>
-									  <hr>
-									  <p><p>Fusce purus non nonummy lacinia turpis et turpis. Curabitur eget ipsum primis in felis adipiscing elit. Vestibulum consectetuer lectus. Praesent feugiat. Cum sociis natoque penatibus et lacus magna, scelerisque justo neque, euismod id, orci.</p>
-									</div>							
-								</li>
-								<li class="media">
-									<div class="media-left">
-									  <a href="#">
-										<span class="glyphicon glyphicon-user"></span>
-										<!-- img class="media-object" src="" alt="USER" -->
-									  </a>
-									</div>
-									<div class="media-body">
-									  <h4 class="media-heading">Media heading</h4>
-									  <h6 class="media-heading">USER, 31.12.2016 10:15</h6>
-									  <hr>
-									  <p><p>Fusce purus non nonummy lacinia turpis et turpis. Curabitur eget ipsum primis in felis adipiscing elit. Vestibulum consectetuer lectus. Praesent feugiat. Cum sociis natoque penatibus et lacus magna, scelerisque justo neque, euismod id, orci.</p>
-									</div>							
-								</li>
-							</ul>
-						
-						
-						</div>
-					
-					
-					</li>
-				</ul>
+				<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
 			</div>
 		</div>
-		<footer class="footer">
-			<div class="container">
-				<p class="text-center">GEANT NMaaS AppMarket (c) 2016 GEANT</p>
-			</div>
-		</footer>		

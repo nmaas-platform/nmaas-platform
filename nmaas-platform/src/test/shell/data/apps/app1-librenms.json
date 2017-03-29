@@ -1,0 +1,10 @@
+{
+	"name":"LibreNMS",
+	"version":"1.0",
+	"license":"Apache",
+	"briefDescription":"This is LibreNMS tool for network management.",
+	"tags": [ "management", "monitoring"],
+	"fullDescription" : "LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring \nwhich includes support for a wide range of network hardware and \noperating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.\nLibreNMS is a community-based fork of Observium.\n\nWe intend LibreNMS to be a viable project and community that:\n\nencourages contribution,\nfocuses on the needs of its users, and\noffers a welcoming, friendly environment for everyone.\nThe Debian Social Contract will be the basis of our priority system, \nand mutual respect is the basis of our behaviour towards others.\nFor more about the culture we're trying to build, please read the Freenode philosophy,\nincluding guidelines for running an IRC channel and being a community catalyst.\n",
+	"wwwUrl" : "http:\/\/www.librenms.org\/",
+	"sourceUrl" : "https:\/\/github.com\/librenms\/librenms"
+}

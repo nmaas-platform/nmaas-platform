@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: "jacoco"
+apply plugin: 'eclipse'
 
 version = '0.0.1-SNAPSHOT'
 group = 'net.geant.nmaas'
@@ -23,4 +24,12 @@ jacocoTestReport {
 		csv.enabled false
 		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
 	}
+}
+
+test {
+    systemProperties 'property': 'value'    
+    afterTest { desc, result ->
+        println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+    }
+    ignoreFailures = true
 }
