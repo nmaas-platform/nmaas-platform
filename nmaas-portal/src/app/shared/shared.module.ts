@@ -4,7 +4,7 @@ import { CommonModule }   from '@angular/common';
 import { FooterComponent } from "./footer/footer.component";
 import { RateComponent } from "./rate/rate.component";
 import { CommentsComponent } from "./comments/comments.component";
-
+import { ScreenshotsComponent } from "./screenshots/screenshots.component";
 
 @NgModule({
     imports: [
@@ -13,7 +13,8 @@ import { CommentsComponent } from "./comments/comments.component";
     declarations: [
       RateComponent,
       FooterComponent,
-      CommentsComponent
+      CommentsComponent,
+      ScreenshotsComponent
 
     ],
     providers: [
@@ -21,7 +22,8 @@ import { CommentsComponent } from "./comments/comments.component";
     exports: [
       RateComponent,
       FooterComponent,
-      CommentsComponent
+      CommentsComponent,
+      ScreenshotsComponent
     ]
 })
 export class SharedModule {}

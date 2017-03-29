@@ -4,6 +4,7 @@ import { Location }                 from '@angular/common';
 //import 'rxjs/add/operator/switchMap';
 
 import { RateComponent } from '../../shared/rate/rate.component';
+import { ScreenshotsComponent } from '../../shared/screenshots/screenshots.component';
 import { AppsService } from '../../service/apps.service';
 import { Application } from '../../model/application';
 

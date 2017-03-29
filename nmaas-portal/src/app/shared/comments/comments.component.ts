@@ -20,7 +20,7 @@ export class CommentsComponent implements OnInit {
     constructor(private appsService: AppsService) { }
 
     ngOnInit() {
-        this.appsService.getCommentsByUrl(this.pathUrl).subscribe(comments => this.comments = comments);
+        this.appsService.getAppCommentsByUrl(this.pathUrl).subscribe(comments => this.comments = comments);
     }
 
 }
