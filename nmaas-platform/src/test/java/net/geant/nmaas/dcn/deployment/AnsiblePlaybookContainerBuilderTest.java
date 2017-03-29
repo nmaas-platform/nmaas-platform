@@ -1,12 +1,8 @@
 package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
-import net.geant.nmaas.dcn.deployment.AnsibleContainerConfigBuilder;
-import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigDefaults;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class AnsibleContainerConfigBuilderTest {
+public class AnsiblePlaybookContainerBuilderTest {
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";
 
@@ -34,7 +30,7 @@ public class AnsibleContainerConfigBuilderTest {
                     "--volume=/home/docker/ansible-docker/working-dir/config-set:/ansible-config-set " +
                     "--volume=/home/docker/ansible-docker/:/ansible-playbook-dir " +
                     "--volume=/home/docker/.ssh/id_rsa:/root/.ssh/id_rsa " +
-                    "nmaas/ansible " +
+                    "nmaas/ansible:2.3.0 " +
                     "ansible-playbook " +
                     "-v -i /ansible-playbook-dir/hosts " +
                     "-v /ansible-playbook-dir/pb-nmaas-vpn-asbr-config.yml " +
@@ -61,7 +57,7 @@ public class AnsibleContainerConfigBuilderTest {
                     "--volume=/home/docker/ansible-docker/working-dir/config-set:/ansible-config-set " +
                     "--volume=/home/docker/ansible-docker/:/ansible-playbook-dir " +
                     "--volume=/home/docker/.ssh/id_rsa:/root/.ssh/id_rsa " +
-                    "nmaas/ansible " +
+                    "nmaas/ansible:2.3.0 " +
                     "ansible-playbook " +
                     "-v -i /ansible-playbook-dir/hosts " +
                     "-v /ansible-playbook-dir/pb-nmaas-vpn-iaas-config.yml " +
@@ -85,11 +81,11 @@ public class AnsibleContainerConfigBuilderTest {
                     "-e NMAAS_CUSTOMER_SERVICE_ID=" + ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER;
 
     @Autowired
-    private AnsibleContainerConfigBuilder containerConfigBuilder;
+    private AnsiblePlaybookContainerBuilder containerConfigBuilder;
 
     @Test
     public void shouldBuildAnsiblePlaybookContainerConfigForClientSideRouter() {
-        ContainerConfig containerConfig = containerConfigBuilder.buildConfigForClientSideRouterPlaybook(
+        ContainerConfig containerConfig = containerConfigBuilder.buildContainerForClientSideRouterConfig(
                 AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter(),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(containerConfig.image())));
@@ -101,7 +97,7 @@ public class AnsibleContainerConfigBuilderTest {
 
     @Test
     public void shouldBuildAnsiblePlaybookContainerConfigForCloudSideRouter() {
-        ContainerConfig containerConfig = containerConfigBuilder.buildConfigForCloudSideRouterPlaybook(
+        ContainerConfig containerConfig = containerConfigBuilder.buildContainerForCloudSideRouterConfig(
                 AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter(),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(containerConfig.image())));

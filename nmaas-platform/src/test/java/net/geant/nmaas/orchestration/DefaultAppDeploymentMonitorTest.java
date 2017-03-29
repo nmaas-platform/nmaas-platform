@@ -64,6 +64,8 @@ public class DefaultAppDeploymentMonitorTest {
         monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.VERIFIED);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED));
         // app removal
+        monitor.notifyStateChange(deploymentId, DcnDeploymentState.REMOVAL_INITIATED);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
         monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.REMOVED);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
         monitor.notifyStateChange(deploymentId, DcnDeploymentState.REMOVED);

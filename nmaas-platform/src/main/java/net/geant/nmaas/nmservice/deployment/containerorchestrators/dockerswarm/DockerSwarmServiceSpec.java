@@ -22,12 +22,12 @@ public class DockerSwarmServiceSpec implements NmServiceSpec {
     private DockerSwarmNmServiceTemplate template;
 
     /**
-     * The command to be run in the image
+     * The configCommand to be run in the image
      */
     private String command;
 
     /**
-     * Arguments to the command.
+     * Arguments to the configCommand.
      */
     private List<String> commandArguments;
 

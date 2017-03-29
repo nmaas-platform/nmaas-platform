@@ -65,7 +65,7 @@ public class AnsiblePlaybookStatusNotificationTest {
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
+        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
         mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(dcnName))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)

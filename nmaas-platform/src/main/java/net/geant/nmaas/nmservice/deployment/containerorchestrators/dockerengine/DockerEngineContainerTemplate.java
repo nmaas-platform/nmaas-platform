@@ -31,7 +31,7 @@ public class DockerEngineContainerTemplate implements NmServiceTemplate {
     private String image;
 
     /**
-     * The command to be run in the image
+     * The configCommand to be run in the image
      */
     private String command;
 

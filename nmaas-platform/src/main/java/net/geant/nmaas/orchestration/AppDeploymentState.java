@@ -271,8 +271,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
             switch (state) {
-                case REMOVED:
-                    return APPLICATION_DCN_REMOVED;
+                case REMOVAL_INITIATED:
+                    return APPLICATION_DCN_REMOVAL_IN_PROGRESS;
                 case REMOVAL_FAILED:
                     return APPLICATION_REMOVAL_FAILED;
                 default:
@@ -298,8 +298,51 @@ public enum AppDeploymentState {
     },
     APPLICATION_NM_SERVICE_REMOVED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS;
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVAL_INITIATED:
+                    return APPLICATION_NM_SERVICE_REMOVED_AND_DCN_REMOVAL_IN_PROGRESS;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
         }
+    },
+    APPLICATION_DCN_REMOVAL_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVED:
+                    return APPLICATION_DCN_REMOVED;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVED:
+                    return APPLICATION_NM_SERVICE_REMOVED_AND_DCN_REMOVAL_IN_PROGRESS;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    APPLICATION_NM_SERVICE_REMOVED_AND_DCN_REMOVAL_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
 
         @Override
         public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
