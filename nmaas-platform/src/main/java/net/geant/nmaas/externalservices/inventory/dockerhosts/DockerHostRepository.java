@@ -69,17 +69,26 @@ public class DockerHostRepository {
     /**
      * Store {@link DockerHost} instance in the repository
      * @param newDockerHost New {@link DockerHost} instance
+     * @throws DockerHostExistsException when Docker host exists in the repository
+     * @throws DockerHostInvalidException when invalid input
      */
-    public void addDockerHost(DockerHost newDockerHost) {
-        this.dockerHosts.add(newDockerHost);
+    public void addDockerHost(DockerHost newDockerHost) throws DockerHostExistsException, DockerHostInvalidException {
+        validateDockerHost(newDockerHost);
+        try {
+            loadByName(newDockerHost.getName());
+            throw new DockerHostExistsException("Docker host with " +  newDockerHost.getName() +  " name exists in the repository.");
+        } catch (DockerHostNotFoundException ex) {
+            this.dockerHosts.add(newDockerHost);
+        }
     }
 
     /**
      * Remove {@link DockerHost} instance from the repository
-     * @param name @link DockerHost} instance
-     * @throws {@link DockerHostNotFoundException}
+     * @param name {@link DockerHost} instance
+     * @throws DockerHostNotFoundException  when Docker host does not exists in the repository
+     * @throws DockerHostInvalidException when invalid input
      */
-    public void removeDockerHost(String name) throws DockerHostNotFoundException {
+    public void removeDockerHost(String name) throws DockerHostNotFoundException, DockerHostInvalidException {
         loadByName(name);
         dockerHosts.removeIf(p -> p.getName().equals(name));
     }
@@ -88,9 +97,11 @@ public class DockerHostRepository {
      * Update {@link DockerHost} instance in the repository
      * @param name Unique {@link DockerHost} name
      * @param dockerHost New {@link DockerHost} instance
-     * @throws {@link DockerHostNotFoundException}
+     * @throws DockerHostNotFoundException  when Docker host does not exists in the repository
+     * @throws DockerHostInvalidException when invalid input
      */
-    public void updateDockerHost(String name, DockerHost dockerHost) throws DockerHostNotFoundException {
+    public void updateDockerHost(String name, DockerHost dockerHost) throws DockerHostNotFoundException, DockerHostInvalidException {
+        validateDockerHostAndName(name, dockerHost);
         this.dockerHosts.set(dockerHosts.indexOf(loadByName(name)), dockerHost);
     }
 
@@ -106,24 +117,47 @@ public class DockerHostRepository {
      * Loads by name the {@link DockerHost} instance from the repository
      * @param hostName Unique {@link DockerHost} name
      * @return {@link DockerHost} instance loaded form the repository
-     * @throws {@link DockerHostNotFoundException}
+     * @throws DockerHostNotFoundException  when Docker host does not exists in the repository
+     * @throws DockerHostInvalidException when invalid input
      */
-    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException {
+    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException, DockerHostInvalidException {
+        validateDockerHostName(hostName);
         return dockerHosts.stream()
                 .filter((host) -> host.getName().equals(hostName))
                 .findFirst()
-                .orElseThrow(() -> new DockerHostNotFoundException("Did not find host with name " + hostName + " in repository"));
+                .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker host with " + hostName + " name in the repository"));
     }
 
     /**
      * Loads first preferred {@link DockerHost} instance from the repository
      * @return {@link DockerHost} instance loaded form the repository
-     * @throws {@link DockerHostNotFoundException}
+     * @throws DockerHostNotFoundException when preferred Docker host does not exists in the repository
      */
     public DockerHost loadPreferredDockerHost() throws DockerHostNotFoundException {
         return dockerHosts.stream()
                 .filter((host) -> host.isPreferred())
                 .findFirst()
-                .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker host in repository."));
+                .orElseThrow(() -> new DockerHostNotFoundException("Did not find preferred Docker host in the repository."));
+    }
+
+    private void validateDockerHostName(String name) throws DockerHostInvalidException {
+        if(name == null) {
+            throw new DockerHostInvalidException("Docker host name cannot be null");
+        }
+    }
+
+    private void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
+        if(dockerHost == null) {
+            throw new DockerHostInvalidException("Docker host cannot be null");
+        }
+        validateDockerHostName(dockerHost.getName());
+    }
+
+    private void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
+        validateDockerHostName(name);
+        validateDockerHost(dockerHost);
+        if(!name.equals(dockerHost.getName())) {
+            throw new DockerHostInvalidException("Docker host name has to be the same (name:" + name + ",dockerHost.name:" + dockerHost.getName());
+        }
     }
 }
