@@ -122,6 +122,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             serviceName = deploymentIdMapper.nmServiceName(deploymentId);
             orchestrator.removeNmService(serviceName);
+            notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException e) {
             throw new InvalidDeploymentIdException();
         } catch (CouldNotDestroyNmServiceException
