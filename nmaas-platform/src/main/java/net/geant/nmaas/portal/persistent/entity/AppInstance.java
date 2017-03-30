@@ -16,6 +16,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import net.geant.nmaas.orchestration.Identifier;
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class AppInstance implements Serializable {
@@ -24,7 +26,9 @@ public class AppInstance implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	Long id;
 	
-	@ManyToOne(optional=false)
+	String name;
+	
+	@ManyToOne(fetch=FetchType.LAZY, optional=false)
 	Application application;
 	
 	@Basic(fetch=FetchType.LAZY)
@@ -38,13 +42,17 @@ public class AppInstance implements Serializable {
 	@ManyToOne(fetch=FetchType.LAZY)
 	User owner;
 	
+	@Basic
+	Identifier internalId;
+	
 	protected AppInstance() {
 		
 	}
 	
-	public AppInstance(Application application) {
+	public AppInstance(Application application, String name) {
 		super();
 		this.application = application;
+		this.name = name;
 	}
 
 	public Long getId() {
@@ -53,6 +61,24 @@ public class AppInstance implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
 
 	public Application getApplication() {
@@ -77,6 +103,14 @@ public class AppInstance implements Serializable {
 
 	public void setCreatedAt(Long createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public Identifier getInternalId() {
+		return internalId;
+	}
+
+	public void setInternalId(Identifier internalId) {
+		this.internalId = internalId;
 	}
 	
 	

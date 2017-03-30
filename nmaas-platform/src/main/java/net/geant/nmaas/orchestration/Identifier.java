@@ -1,11 +1,13 @@
 package net.geant.nmaas.orchestration;
 
+import java.io.Serializable;
+
 /**
  * Common class for storing various types of identifiers.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class Identifier {
+public class Identifier implements Serializable {
 
     private String value;
 
