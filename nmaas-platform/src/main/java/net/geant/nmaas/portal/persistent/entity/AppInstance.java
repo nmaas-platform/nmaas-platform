@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
 import org.springframework.data.annotation.CreatedBy;
@@ -32,6 +33,7 @@ public class AppInstance implements Serializable {
 	Application application;
 	
 	@Basic(fetch=FetchType.LAZY)
+	@Lob
 	String configuration;
 
 	@CreatedDate

@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.geant.nmaas.orchestration.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -108,11 +111,38 @@ public class AppInstanceController extends AppBaseController {
 	
 	@RequestMapping(value="/{appInstanceId}", method=RequestMethod.DELETE)
 	@PreAuthorize("hasRole('ROLE_ADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")	
+	@Transactional
 	public void deleteAppInstance(@PathVariable(value="appInstanceId") Long appInstanceId, @NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
 		
 		try {
 			appLifecycleManager.removeApplication(appInstance.getInternalId());
+		} catch (InvalidDeploymentIdException e) {
+			throw new ProcessingException("Missing app instance");
+		}
+	}
+	
+	@RequestMapping(value="/{appInstanceId}/state", method=RequestMethod.POST)
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'owner')")		
+	@Transactional
+	public void applyConfiguration(@PathVariable(value="appInstanceId") Long appInstanceId, @RequestBody String configuration, @NotNull Principal principal) throws MissingElementException, ProcessingException {
+		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+		
+		AppInstanceStatus status = getState(appInstanceId, principal);
+		if(status.getState() != AppInstanceState.CONFIGURATION_AWAITING)
+			throw new ProcessingException("App instance configuration cannot be applied in state " + status.getState());
+		
+		boolean valid = validJSON(configuration);
+		if(!valid)
+			throw new ProcessingException("Configuration is not in valid JSON format");
+		
+		appInstance.setConfiguration(configuration);
+		appInstanceRepo.save(appInstance);
+		
+		try {
+			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), new AppConfiguration(
+																						new Identifier(Long.toString(appInstance.getApplication().getId())), 
+																						configuration));
 		} catch (InvalidDeploymentIdException e) {
 			throw new ProcessingException("Missing app instance");
 		}
@@ -131,6 +161,15 @@ public class AppInstanceController extends AppBaseController {
 		}
 		
 		return prepareAppInstanceStatus(appInstanceId, state);
+	}
+	
+	private boolean validJSON(String json) {
+		try {
+			new JSONObject(json);
+			return true;
+		} catch(JSONException ex) {
+			return false;
+		}
 	}
 	
 	private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state) {
@@ -154,12 +193,12 @@ public class AppInstanceController extends AppBaseController {
 						break;
 						
 		case MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS:
-		case MANAGEMENT_VPN_CONFIGURED:
 						appInstanceState = AppInstanceState.CONNECTING;
 						break;
-		case APPLICATION_CONFIGURATION_IN_PROGRESS:
+		case MANAGEMENT_VPN_CONFIGURED:						
 						appInstanceState = AppInstanceState.CONFIGURATION_AWAITING;
 						break;
+		case APPLICATION_CONFIGURATION_IN_PROGRESS:
 		case APPLICATION_CONFIGURED:
 		case APPLICATION_DEPLOYMENT_IN_PROGRESS:		
 		case APPLICATION_DEPLOYMENT_FAILED:
