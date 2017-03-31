@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.PortForwardingSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.PortForwardingSpec;
 import net.geant.nmaas.orchestration.Identifier;
 
 import java.util.ArrayList;
@@ -92,16 +92,6 @@ public class DockerSwarmNmServiceTemplate implements NmServiceTemplate {
         if (envVariablesInSpecRequired && isEmpty(dockerSpec.getEnvironmentVariables().toArray()))
             return false;
         return true;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Identifier getApplicationId() {
-        return applicationId;
     }
 
     public String getImage() {

@@ -18,15 +18,16 @@ import java.net.UnknownHostException;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class ContainerNetworkConfigBuildingTest {
+public class DockerContainerNetworkConfigBuildingTest {
 
     private static final String TEST_IMAGE_NAME_1 = "test-service-1";
     private static final String TEST_SERVICE_NAME_1 = "testService1";
     private static final String TEST_SERVICE_TEMPLATE_NAME_1 = "testServiceTemplate1";
     private static final Identifier TEST_APPLICATION_ID_1 = Identifier.newInstance(TEST_SERVICE_TEMPLATE_NAME_1);
+    private static final Long TEST_CLIENT_ID = 100L;
 
     private DockerContainerSpec spec;
-    private DockerEngineContainerTemplate testTemplate1;
+    private DockerContainerTemplate testTemplate1;
     private DockerHost testDockerHost1;
     private ContainerNetworkDetails testNetworkDetails1;
     private NmServiceInfo serviceInfo;
@@ -34,8 +35,8 @@ public class ContainerNetworkConfigBuildingTest {
 
     @Before
     public void setup() throws UnknownHostException {
-        testTemplate1 = new DockerEngineContainerTemplate(TEST_APPLICATION_ID_1, TEST_SERVICE_TEMPLATE_NAME_1, TEST_IMAGE_NAME_1);
-        spec = new DockerContainerSpec(TEST_SERVICE_NAME_1, testTemplate1);
+        testTemplate1 = new DockerContainerTemplate(TEST_IMAGE_NAME_1);
+        spec = new DockerContainerSpec(TEST_SERVICE_NAME_1, testTemplate1, TEST_CLIENT_ID);
         testDockerHost1 = new DockerHost(
                 "testHost1",
                 InetAddress.getByName("1.1.1.1"),

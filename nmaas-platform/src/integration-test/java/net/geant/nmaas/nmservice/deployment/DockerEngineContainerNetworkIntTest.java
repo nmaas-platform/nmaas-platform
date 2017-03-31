@@ -42,8 +42,7 @@ public class DockerEngineContainerNetworkIntTest {
 
     @Before
     public void setup() throws UnknownHostException, DockerHostNotFoundException {
-        DockerContainerSpec spec = new DockerContainerSpec("testService1", null);
-        spec.setClientDetails("client1", "company1");
+        DockerContainerSpec spec = new DockerContainerSpec("testService1", null, 100L);
         ipamSpec = new ContainerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
         testNetworkDetails1 = new ContainerNetworkDetails(8080, ipamSpec, 123);
         serviceInfo = new NmServiceInfo("testService1", NmServiceDeploymentState.INIT, spec);

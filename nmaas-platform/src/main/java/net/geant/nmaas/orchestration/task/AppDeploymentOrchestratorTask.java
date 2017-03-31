@@ -4,10 +4,8 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.AppLifecycleState;
@@ -15,6 +13,8 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,27 +27,35 @@ import static net.geant.nmaas.orchestration.AppLifecycleState.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope("prototype")
+@Scope(value = "prototype")
 public class AppDeploymentOrchestratorTask implements Runnable {
 
     private final static Logger log = LogManager.getLogger(AppDeploymentOrchestratorTask.class);
 
     private static final int STATE_CHANGE_WAIT_INTERVAL_IN_MILIS = 500;
 
-    @Autowired
     private NmServiceDeploymentProvider serviceDeployment;
 
-    @Autowired
     private DcnDeploymentProvider dcnDeployment;
 
-    @Autowired
     private AppDeploymentMonitor appDeploymentMonitor;
 
-    @Autowired
     private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
 
+    private ApplicationRepository applications;
+
     @Autowired
-    private NmServiceTemplateRepository applicationTemplates;
+    public AppDeploymentOrchestratorTask(NmServiceDeploymentProvider serviceDeployment,
+                                         DcnDeploymentProvider dcnDeployment,
+                                         AppDeploymentMonitor appDeploymentMonitor,
+                                         AppDeploymentStateChangeListener appDeploymentStateChangeListener,
+                                         ApplicationRepository applications) {
+        this.serviceDeployment = serviceDeployment;
+        this.dcnDeployment = dcnDeployment;
+        this.appDeploymentMonitor = appDeploymentMonitor;
+        this.appDeploymentStateChangeListener = appDeploymentStateChangeListener;
+        this.applications = applications;
+    }
 
     private Identifier deploymentId;
 
@@ -81,14 +89,15 @@ public class AppDeploymentOrchestratorTask implements Runnable {
             serviceDeployment.deployNmService(deploymentId);
             waitForAppDeployedState();
             serviceDeployment.verifyNmService(deploymentId);
-        } catch (InterruptedException e) {
+        } catch (InvalidAppStateException
+                | InvalidDeploymentIdException
+                | net.geant.nmaas.nmservice.InvalidDeploymentIdException
+                | InvalidApplicationIdException
+                | InterruptedException e) {
+            log.error("Exception during application deployment -> " + e.getMessage());
             appDeploymentStateChangeListener.notifyGenericError(deploymentId);
-        } catch (InvalidAppStateException e) {
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
-        } catch (InvalidDeploymentIdException
-                | net.geant.nmaas.nmservice.InvalidDeploymentIdException e) {
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
-        } catch (InvalidApplicationIdException e) {
+        } catch (Exception e) {
+            log.error("Exception during application deployment -> " + e.getMessage());
             appDeploymentStateChangeListener.notifyGenericError(deploymentId);
         }
     }
@@ -155,24 +164,24 @@ public class AppDeploymentOrchestratorTask implements Runnable {
         Thread.sleep(STATE_CHANGE_WAIT_INTERVAL_IN_MILIS);
     }
 
-    private void verifyIfAllIdentifiersAreSet() {
+    private void verifyIfAllIdentifiersAreSet() throws Exception {
         if (deploymentId == null || clientId == null || applicationId == null)
-            throw new NullPointerException();
+            throw new Exception("Input parameters verification failed (" + deploymentId + " and " + clientId + " and " + applicationId + ")");
     }
 
-    private NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) throws InvalidApplicationIdException {
-        final DockerEngineContainerTemplate template = (DockerEngineContainerTemplate) applicationTemplates.loadTemplateByApplicationId(applicationId);
-        if (template == null)
-            throw new InvalidApplicationIdException("Nm Service template for application id " + applicationId + " does not exist");
-        final String serviceName = buildServiceName(applicationId, template);
-        DockerContainerSpec dockerContainerSpec = new DockerContainerSpec(serviceName, template);
-        // client details should be read from database
-        dockerContainerSpec.setClientDetails("client-" + clientId, "organization-" + clientId);
-        return dockerContainerSpec;
+    NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId)
+            throws InvalidApplicationIdException {
+        final Application application = applications.findOne(Long.valueOf(applicationId.getValue()));
+        if (application == null)
+            throw new InvalidApplicationIdException("Application with id " + applicationId + " does not exist in repository");
+        return new DockerContainerSpec(
+                buildServiceName(application),
+                application.getDockerContainerTemplate(),
+                Long.valueOf(clientId.getValue()));
     }
 
-    private String buildServiceName(Identifier applicationId, DockerEngineContainerTemplate template) {
-        return template.getName() + "-" + applicationId;
+    String buildServiceName(Application application) {
+        return application.getName() + "-" + application.getId();
     }
 
     private DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId, NmServiceInfo serviceInfo) {

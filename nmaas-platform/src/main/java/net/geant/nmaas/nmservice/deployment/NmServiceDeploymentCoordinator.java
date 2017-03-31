@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
@@ -11,6 +12,8 @@ import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,8 @@ import static net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeployment
 
 @Component
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
+
+    private final static Logger log = LogManager.getLogger(NmServiceDeploymentCoordinator.class);
 
     @Autowired
     @Qualifier("DockerEngine")
@@ -41,7 +46,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Override
     @Loggable(LogLevel.INFO)
     public NmServiceInfo verifyRequest(Identifier deploymentId, NmServiceSpec nmServiceSpec) {
-        final String nmServiceName = nmServiceSpec.name();
+        final String nmServiceName = ((DockerContainerSpec) nmServiceSpec).getName();
         deploymentIdMapper.storeMapping(deploymentId, nmServiceName);
         serviceRepository.storeService(new NmServiceInfo(nmServiceName, INIT, nmServiceSpec));
         try {
@@ -53,7 +58,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                 | ContainerOrchestratorInternalErrorException
                 | NmServiceRequestVerificationException
                 | NmServiceRepository.ServiceNotFoundException e) {
-            System.out.println("NM Service request verification failed -> " + e.getMessage());
+            log.error("NM Service request verification failed -> " + e.getMessage());
+            notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
+            return null;
+        } catch (Exception e) {
+            log.error("NM Service request verification failed -> Unknown exception", e);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
             return null;
         }
@@ -72,7 +81,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (CouldNotPrepareEnvironmentException
                 | CouldNotConnectToOrchestratorException
                 | ContainerOrchestratorInternalErrorException e) {
-            System.out.println("NM Service deployment environment preparation failed -> " + e.getMessage());
+            log.error("NM Service deployment environment preparation failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
         }
     }
@@ -91,7 +100,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (CouldNotDeployNmServiceException
                 | CouldNotConnectToOrchestratorException
                 | ContainerOrchestratorInternalErrorException e) {
-            System.out.println("NM Service deployment failed -> " + e.getMessage());
+            log.error("NM Service deployment failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED);
         }
     }

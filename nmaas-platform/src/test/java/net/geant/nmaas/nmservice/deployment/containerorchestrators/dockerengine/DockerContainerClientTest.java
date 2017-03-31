@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ContainersClientTest {
+public class DockerContainerClientTest {
 
     @Autowired
     private DockerContainerClient containerClient;

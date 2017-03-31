@@ -25,11 +25,11 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"net.geant.nmaas.portal.persistent.repositories"})
+@EnableJpaRepositories(basePackages = {"net.geant.nmaas"})
 @EnableJpaAuditing(auditorAwareRef="auditorProvider")
 @PropertySource("classpath:db.properties")
-@ComponentScan("net.geant.nmaas.portal.persistent.repositories")
-@EntityScan("net.geant.nmaas.portal.persistent.entity")
+@ComponentScan("net.geant.nmaas")
+@EntityScan("net.geant.nmaas")
 public class PersistentConfig {
 //	public final static String DRIVER="db.driver";
 //	public final static String URL="db.url";
