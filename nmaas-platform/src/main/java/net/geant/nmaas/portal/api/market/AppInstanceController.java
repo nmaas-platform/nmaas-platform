@@ -1,15 +1,13 @@
 package net.geant.nmaas.portal.api.market;
 
+import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.geant.nmaas.orchestration.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
@@ -165,9 +166,12 @@ public class AppInstanceController extends AppBaseController {
 	
 	private boolean validJSON(String json) {
 		try {
-			new JSONObject(json);
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.readTree(json);
 			return true;
-		} catch(JSONException ex) {
+		} catch (JsonProcessingException e) {
+			return false;
+		} catch (IOException e) {
 			return false;
 		}
 	}
