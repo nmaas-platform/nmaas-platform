@@ -3,6 +3,7 @@ package net.geant.nmaas.dcn.deployment;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
@@ -93,6 +94,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             dcnName = deploymentIdMapper.dcnName(deploymentId);
             final DcnInfo dcnInfo = dcnRepository.loadNetwork(dcnName);
             final DockerHost ansibleContainerDockerHost = loadDefaultAnsibleDockerHost();
+            removeOldAnsiblePlaybookContainers(ansibleContainerDockerHost);
             deployAnsiblePlaybookContainers(ansibleContainerDockerHost,
                     buildContainerForClientSideRouterConfig(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(dcnName)),
                     buildContainerForCloudSideRouterConfig(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(dcnName)));
@@ -109,6 +111,20 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             try {
                 dcnRepository.updateDcnState(dcnName, DcnDeploymentState.DEPLOYMENT_FAILED);
             } catch (DcnRepository.DcnNotFoundException dcnNotFoundException) { }
+        }
+    }
+
+    void removeOldAnsiblePlaybookContainers(DockerHost dockerHost) {
+        DockerClient apiClient = DefaultDockerClient.builder().uri(dockerHost.apiUrl()).build();
+        try {
+            final List<Container> containers = apiClient.listContainers(DockerClient.ListContainersParam.withStatusExited());
+            for (Container container : containers) {
+                log.debug("Removing old container " + container.id());
+                apiClient.removeContainer(container.id());
+            }
+        } catch (DockerException
+                | InterruptedException e) {
+            log.warn("Failed to remove old Ansible containers", e);
         }
     }
 
