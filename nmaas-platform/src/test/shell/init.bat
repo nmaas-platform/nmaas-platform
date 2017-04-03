@@ -9,7 +9,7 @@ set LF=^
 
 
 
-for /f "delims=" %%f in ('curl -X POST %API_URL%/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data\login.json') do (
+for /f "delims=" %%f in ('curl -sX POST %API_URL%/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data\login.json') do (
 REM set "LOGIN="
 	if defined LOGIN set "LOGIN=!LOGIN!!LF!"
 	set "LOGIN=!LOGIN!%%f"
