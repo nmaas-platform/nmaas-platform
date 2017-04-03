@@ -1,13 +1,7 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
+import net.geant.nmaas.portal.PersistentConfig;
+import net.geant.nmaas.portal.persistent.entity.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +14,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
 
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Comment;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.Tag;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -60,7 +52,6 @@ public class ApplicationRepositoryTest {
 	@Test
 	@WithMockUser(username="admin", roles={"ADMIN"})
 	public void testAddApplication() {
-
 		Application app1 = new Application("zabbix");
 		app1.setTags(new HashSet<Tag>());
 		app1.getTags().add(new Tag("monitoring1"));
@@ -80,12 +71,10 @@ public class ApplicationRepositoryTest {
 		commentRepo.save(subComment1);
 		
 		assertEquals(2, commentRepo.count());
-		
 	}
 
 	@Test
 	public void testTags() {
-		
 		Tag monitoringTag = new Tag("monitoring");
 		monitoringTag.setApplications(new HashSet<Application>());
 		monitoringTag = tagRepo.save(monitoringTag);
@@ -109,7 +98,6 @@ public class ApplicationRepositoryTest {
 		networkTag.getApplications().add(app1);
 		appRepo.saveAndFlush(app1);
 
-		
 		Application app2 = new Application("librenms");
 		app2.setTags(new HashSet<Tag>());
 		app2.getTags().add(monitoringTag);
@@ -129,8 +117,6 @@ public class ApplicationRepositoryTest {
 		assertNull(tagRepo.findByName("noexist"));
 		assertEquals(2, tagRepo.findByName("monitoring").getApplications().size());
 		assertEquals(1, tagRepo.findByName("management").getApplications().size());
-		
-		
 	}
-	
+
 }

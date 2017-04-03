@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
+@Rollback
 public class AppDeploymentOrchestratorTaskTest {
 
     private AppDeploymentOrchestratorTask task;
@@ -61,7 +64,6 @@ public class AppDeploymentOrchestratorTaskTest {
         applicationId = Identifier.newInstance(String.valueOf(application.getId()));
     }
 
-    @Transactional
     @Test
     public void shouldConstructServiceInfo() throws InvalidApplicationIdException {
         DockerContainerSpec spec = (DockerContainerSpec) task.constructNmServiceSpec(clientId, applicationId);
@@ -71,7 +73,6 @@ public class AppDeploymentOrchestratorTaskTest {
         assertThat(spec.getTemplate(), equalTo(oxidizedTemplate()));
     }
 
-    @Transactional
     @Test
     public void shouldBuildServiceName() {
         assertThat(task.buildServiceName(applications.findOne(Long.valueOf(applicationId.getValue()))),
