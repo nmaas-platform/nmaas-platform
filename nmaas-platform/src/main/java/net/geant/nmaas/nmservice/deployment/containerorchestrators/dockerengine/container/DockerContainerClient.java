@@ -121,8 +121,15 @@ public class DockerContainerClient {
 
     private void executeStopAndRemove(String containerId, DockerClient apiClient)
             throws DockerException, InterruptedException {
-        apiClient.stopContainer(containerId, 3);
-        apiClient.removeContainer(containerId);
+        if (checkIfContainerRunning(containerId, apiClient)) {
+            apiClient.stopContainer(containerId, 3);
+            apiClient.removeContainer(containerId);
+        }
+    }
+
+    private boolean checkIfContainerRunning(String containerId, DockerClient apiClient)
+            throws DockerException, InterruptedException {
+        return apiClient.listContainers(DockerClient.ListContainersParam.withStatusRunning()).stream().anyMatch(c -> c.id().equals(containerId));
     }
 
     public void pullImage(String imageName, DockerHost host)
