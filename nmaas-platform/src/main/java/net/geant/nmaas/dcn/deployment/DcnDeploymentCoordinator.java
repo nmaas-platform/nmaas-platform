@@ -154,6 +154,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             throw new InvalidDeploymentIdException();
         } catch (DcnRepository.DcnNotFoundException
                  | DockerHostNotFoundException
+                 | DockerHostInvalidException
                  | InterruptedException
                  | DockerException e) {
             log.error("Exception during DCN removal -> " + e.getMessage());
