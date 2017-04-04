@@ -10,6 +10,7 @@ import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
@@ -104,6 +105,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             throw new InvalidDeploymentIdException();
         } catch (DcnRepository.DcnNotFoundException
                 | DockerHostNotFoundException
+                | DockerHostInvalidException
                 | InterruptedException
                 | DockerException anyException) {
             log.error("Exception during DCN deployment -> " + anyException.getMessage());
@@ -180,7 +182,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         }
     }
 
-    private DockerHost loadDefaultAnsibleDockerHost() throws DockerHostNotFoundException {
+    private DockerHost loadDefaultAnsibleDockerHost() throws DockerHostNotFoundException, DockerHostInvalidException {
         return dockerHostRepository.loadByName(DockerHostRepository.ANSIBLE_DOCKER_HOST_NAME);
     }
 
