@@ -105,6 +105,15 @@ public class DockerHostManagerRestControllerTest {
     }
 
     @Test
+    public void shouldNotUpdateDockerHostWithWrongName() throws Exception {
+        mvc.perform(put(URL_PREFIX + "/{name}", SECOND_HOST_NAME)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(WRONG_DOCKER_HOST_NAME)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
     public void shouldListAllHDockerHosts() throws Exception {
         MvcResult result = mvc.perform(get(URL_PREFIX))
                 .andExpect(status().isOk())
