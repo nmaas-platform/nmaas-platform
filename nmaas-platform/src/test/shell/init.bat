@@ -98,8 +98,8 @@ curl -X POST %API_URL%/apps/1/comments --header "Authorization: Bearer %token%" 
 
 echo.
 echo ---------------------
-echo Get first app
-curl -X GET %API_URL%/apps/1 --header "Authorization: Bearer %token%"
+echo Get second app
+curl -X GET %API_URL%/apps/2/complete --header "Authorization: Bearer %token%"
 
 
 echo.

@@ -8,5 +8,31 @@
 	"wwwUrl": "https:\/\/github.com\/ytti\/oxidized\/wiki\/",
 	"sourceUrl": "https:\/\/github.com\/ytti\/oxidized\/",
 	"issuesUrl": "",
-	"dockerContainerTemplate": "{\"image\":\"oxidized/oxidized:latest\",\"exposedPort\":{\"protocol\":\"TCP\",\"targetPort\":8888},\"envVariables\":[\"CONFIG_RELOAD_INTERVAL=600\"],\"envVariablesInSpecRequired\":false,\"containerVolumes\":[\"/root/.config/oxidized\"]}"
+	"dockerContainerTemplate": {
+		"image": "oxidized/oxidized:latest",
+		"exposedPort": {
+			"protocol":"TCP",
+			"targetPort":8888
+		},
+		"envVariables": [
+			"CONFIG_RELOAD_INTERVAL=600"
+		],
+		"envVariablesInSpecRequired":false,
+		"containerVolumes": [
+			"/root/.config/oxidized"
+		]
+	},
+	"configTemplate": {
+		"template": {
+			"array": {
+				"name": "ipAddresses",
+				"data": [
+					{
+						"type": "input",
+						"name": "ipAddress" 
+					}
+				]
+			}
+		}
+	}
 }

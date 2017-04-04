@@ -38,5 +38,14 @@ public class ApplicationController extends AppBaseController {
 		net.geant.nmaas.portal.persistent.entity.Application app = getApp(id); 
 		return modelMapper.map(app, Application.class);
 	}
+
+	@RequestMapping(value="/{appId}/complete", method=RequestMethod.GET)
+	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@Transactional
+	public ApplicationComplete getApplicationComplete(@PathVariable(value = "appId", required=true) Long id) throws MissingElementException {
+		net.geant.nmaas.portal.persistent.entity.Application app = getApp(id); 
+		return modelMapper.map(app, ApplicationComplete.class);
+	}
+
 	
 }
