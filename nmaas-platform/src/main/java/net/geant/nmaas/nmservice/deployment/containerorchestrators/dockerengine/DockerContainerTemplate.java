@@ -171,4 +171,15 @@ public class DockerContainerTemplate implements NmServiceTemplate {
     public void setContainerVolumes(List<String> containerVolumes) {
         this.containerVolumes = containerVolumes;
     }
+
+    public static DockerContainerTemplate copy(DockerContainerTemplate toCopy) {
+        DockerContainerTemplate template = new DockerContainerTemplate();
+        template.setImage(toCopy.getImage());
+        template.setCommand(toCopy.getCommand());
+        template.setContainerVolumes(new ArrayList<>(toCopy.getContainerVolumes()));
+        template.setEnvVariables(new ArrayList<>(toCopy.getEnvVariables()));
+        template.setEnvVariablesInSpecRequired(toCopy.getEnvVariablesInSpecRequired());
+        template.setExposedPort(toCopy.getExposedPort());
+        return template;
+    }
 }

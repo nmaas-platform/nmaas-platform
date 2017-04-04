@@ -60,8 +60,7 @@ public class Application implements Serializable {
 	@OneToMany(orphanRemoval=true, fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="application")
 	private List<Comment> comments = new ArrayList<Comment>();
 
-	// TODO Try to switch to FetchType.LAZY
-	@OneToOne(cascade=CascadeType.ALL, optional=true, orphanRemoval=true, fetch=FetchType.EAGER)
+	@OneToOne(cascade=CascadeType.ALL, optional=true, orphanRemoval=true, fetch=FetchType.LAZY)
 	private DockerContainerTemplate dockerContainerTemplate;
 	
 	protected Application() {}

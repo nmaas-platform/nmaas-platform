@@ -1,12 +1,8 @@
 package net.geant.nmaas.orchestration.task;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
-import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -32,19 +28,7 @@ import static org.junit.Assert.assertTrue;
 @Rollback
 public class AppDeploymentOrchestratorTaskTest {
 
-    private AppDeploymentOrchestratorTask task;
-
-    @Autowired
-    private NmServiceDeploymentProvider serviceDeployment;
-
-    @Autowired
-    private DcnDeploymentProvider dcnDeployment;
-
-    @Autowired
-    private AppDeploymentMonitor appDeploymentMonitor;
-
-    @Autowired
-    private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
+    private AppDeploymentOrchestratorTaskHelper taskHelper;
 
     @Autowired
     private ApplicationRepository applications;
@@ -55,7 +39,7 @@ public class AppDeploymentOrchestratorTaskTest {
 
     @Before
     public void setup() {
-        task = new AppDeploymentOrchestratorTask(serviceDeployment, dcnDeployment, appDeploymentMonitor, appDeploymentStateChangeListener, applications);
+        taskHelper = new AppDeploymentOrchestratorTaskHelper(applications);
         clientId = Identifier.newInstance(String.valueOf(100L));
         Application application = new Application("testOxidized");
         application.setDockerContainerTemplate(oxidizedTemplate());
@@ -66,7 +50,7 @@ public class AppDeploymentOrchestratorTaskTest {
 
     @Test
     public void shouldConstructServiceInfo() throws InvalidApplicationIdException {
-        DockerContainerSpec spec = (DockerContainerSpec) task.constructNmServiceSpec(clientId, applicationId);
+        DockerContainerSpec spec = (DockerContainerSpec) taskHelper.constructNmServiceSpec(clientId, applicationId);
         assertThat(spec.getTemplate(), is(notNullValue()));
         spec.getTemplate().setId(null);
         spec.getTemplate().getExposedPort().setId(null);
@@ -75,7 +59,7 @@ public class AppDeploymentOrchestratorTaskTest {
 
     @Test
     public void shouldBuildServiceName() {
-        assertThat(task.buildServiceName(applications.findOne(Long.valueOf(applicationId.getValue()))),
+        assertThat(taskHelper.buildServiceName(applications.findOne(Long.valueOf(applicationId.getValue()))),
                 equalTo("testOxidized" + "-" + applicationId));
     }
 

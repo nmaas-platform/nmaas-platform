@@ -2,8 +2,8 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.task.AppConfigurationOrchestratorTask;
-import net.geant.nmaas.orchestration.task.AppDeploymentOrchestratorTask;
 import net.geant.nmaas.orchestration.task.AppRemovalOrchestratorTask;
+import net.geant.nmaas.orchestration.task.TaskRunner;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +37,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Identifier deploymentId = generateDeploymentId();
         stateRepository.storeNewDeployment(deploymentId);
         deploymentIdToApplicationIdMapper.storeMapping(deploymentId, applicationId);
-        AppDeploymentOrchestratorTask deployment = (AppDeploymentOrchestratorTask) context.getBean("appDeploymentOrchestratorTask");
-        deployment.populateIdentifiers(deploymentId, clientId, applicationId);
-        taskExecutor.execute(deployment);
+        new Thread(new TaskRunner(context, deploymentId, clientId, applicationId)).start();
         return deploymentId;
     }
 
