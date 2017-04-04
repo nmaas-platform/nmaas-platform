@@ -10,6 +10,6 @@ public enum AppInstanceState {
 	RUNNING,
 	UNDEPLOYING,
 	DONE,
-	FAILURE 
-	
+	FAILURE, 
+	UNKNOWN 
 }

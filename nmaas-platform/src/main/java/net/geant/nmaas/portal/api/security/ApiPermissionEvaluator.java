@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 
 public class ApiPermissionEvaluator implements PermissionEvaluator {
 
 	@Autowired
 	private CommentRepository commentRepository;
+	
+	@Autowired
+	private AppInstanceRepository appInstanceRepository;
 	
 	public ApiPermissionEvaluator() {
 		
@@ -46,6 +51,10 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 								return false;
 							else
 								return hasPermissionComment(authentication, (Long) targetId, permissionName);
+			case "appinstance": if(!(targetId instanceof Long))
+									return false;
+								else
+									return hasPermissionAppInstance(authentication, (Long) targetId, permissionName);
 		}
 		
 		return false;
@@ -60,5 +69,15 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 		
 		return false;
 	}
-	
+
+	private boolean hasPermissionAppInstance(Authentication authentication, Long appInstanceId, String permission) {
+		AppInstance appInstance = appInstanceRepository.findOne(appInstanceId);
+		switch(permission) {
+			case "owner":
+				return (appInstance != null && appInstance.getOwner() != null && appInstance.getOwner().getUsername() == authentication.getName());
+		}
+		
+		return false;
+	}
+
 }
