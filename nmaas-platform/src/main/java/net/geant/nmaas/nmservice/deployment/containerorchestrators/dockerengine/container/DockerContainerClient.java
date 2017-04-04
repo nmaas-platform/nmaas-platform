@@ -3,7 +3,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
-import com.spotify.docker.client.exceptions.ExecCreateConflictException;
 import com.spotify.docker.client.messages.*;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory;

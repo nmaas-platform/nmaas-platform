@@ -24,7 +24,6 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDep
     private AppLifecycleRepository repository;
 
     @Override
-    @Loggable(LogLevel.INFO)
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
         return retrieveCurrentState(deploymentId);
     }
