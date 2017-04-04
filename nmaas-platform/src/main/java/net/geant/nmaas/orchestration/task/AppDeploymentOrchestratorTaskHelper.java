@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component
 public class AppDeploymentOrchestratorTaskHelper {
 

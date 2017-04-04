@@ -9,46 +9,44 @@ import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope("prototype")
-public class AppConfigurationOrchestratorTask implements Runnable {
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class AppConfigurationOrchestratorTask {
 
-    @Autowired
     private NmServiceConfigurationProvider serviceConfiguration;
 
-    @Autowired
     private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
 
-    @Autowired
     private NmServiceRepository nmServiceRepository;
 
-    @Autowired
     private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
 
-    private Identifier deploymentId;
-
-    private AppConfiguration configuration;
-
-    public void populateProperties(Identifier deploymentId, AppConfiguration configuration) {
-        this.deploymentId = deploymentId;
-        this.configuration = configuration;
+    @Autowired
+    public AppConfigurationOrchestratorTask(
+            NmServiceConfigurationProvider serviceConfiguration,
+            DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper,
+            NmServiceRepository nmServiceRepository,
+            AppDeploymentStateChangeListener appDeploymentStateChangeListener) {
+        this.serviceConfiguration = serviceConfiguration;
+        this.deploymentIdToNmServiceNameMapper = deploymentIdToNmServiceNameMapper;
+        this.nmServiceRepository = nmServiceRepository;
+        this.appDeploymentStateChangeListener = appDeploymentStateChangeListener;
     }
 
-    @Override
-    public void run() {
-        configure();
-    }
-
-    private void configure() {
-        verifyIfAllPropertiesAreSet();
+    @Loggable(LogLevel.INFO)
+    public void configure(Identifier deploymentId, AppConfiguration configuration) {
+        verifyIfAllPropertiesAreSet(deploymentId, configuration);
         try {
             String serviceName = deploymentIdToNmServiceNameMapper.nmServiceName(deploymentId);
             NmServiceInfo serviceInfo = nmServiceRepository.loadService(serviceName);
@@ -62,7 +60,7 @@ public class AppConfigurationOrchestratorTask implements Runnable {
         }
     }
 
-    private void verifyIfAllPropertiesAreSet() {
+    private void verifyIfAllPropertiesAreSet(Identifier deploymentId, AppConfiguration configuration) {
         if (deploymentId == null || configuration == null)
             throw new NullPointerException();
     }

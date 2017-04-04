@@ -4,39 +4,40 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope("prototype")
-public class AppRemovalOrchestratorTask implements Runnable {
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class AppRemovalOrchestratorTask {
 
-    @Autowired
     private NmServiceDeploymentProvider serviceDeployment;
 
-    @Autowired
     private DcnDeploymentProvider dcnDeployment;
 
-    @Autowired
     private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
 
-    private Identifier deploymentId;
-
-    public void populateIdentifiers(Identifier deploymentId) {
-        this.deploymentId = deploymentId;
+    @Autowired
+    public AppRemovalOrchestratorTask(
+            NmServiceDeploymentProvider serviceDeployment,
+            DcnDeploymentProvider dcnDeployment,
+            AppDeploymentStateChangeListener appDeploymentStateChangeListener) {
+        this.serviceDeployment = serviceDeployment;
+        this.dcnDeployment = dcnDeployment;
+        this.appDeploymentStateChangeListener = appDeploymentStateChangeListener;
     }
 
-    @Override
-    public void run() {
-        remove();
-    }
-
-    private void remove() {
-        verifyIfAllPropertiesAreSet();
+    @Loggable(LogLevel.INFO)
+    public void remove(Identifier deploymentId) {
+        verifyIfAllPropertiesAreSet(deploymentId);
         try {
             serviceDeployment.removeNmService(deploymentId);
             dcnDeployment.removeDcn(deploymentId);
@@ -45,7 +46,7 @@ public class AppRemovalOrchestratorTask implements Runnable {
         }
     }
 
-    private void verifyIfAllPropertiesAreSet() {
+    private void verifyIfAllPropertiesAreSet(Identifier deploymentId) {
         if (deploymentId == null)
             throw new NullPointerException();
     }

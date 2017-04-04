@@ -1,9 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.task.AppConfigurationOrchestratorTask;
-import net.geant.nmaas.orchestration.task.AppRemovalOrchestratorTask;
-import net.geant.nmaas.orchestration.task.TaskRunner;
+import net.geant.nmaas.orchestration.task.OrchestratorTaskRunner;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Identifier deploymentId = generateDeploymentId();
         stateRepository.storeNewDeployment(deploymentId);
         deploymentIdToApplicationIdMapper.storeMapping(deploymentId, applicationId);
-        new Thread(new TaskRunner(context, deploymentId, clientId, applicationId)).start();
+        taskExecutor.execute(new OrchestratorTaskRunner(context, deploymentId, clientId, applicationId));
         return deploymentId;
     }
 
@@ -53,9 +51,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
         setApplicationIdIfNotProvided(deploymentId, configuration);
-        AppConfigurationOrchestratorTask configurationTask = (AppConfigurationOrchestratorTask) context.getBean("appConfigurationOrchestratorTask");
-        configurationTask.populateProperties(deploymentId, configuration);
-        taskExecutor.execute(configurationTask);
+        taskExecutor.execute(new OrchestratorTaskRunner(context, deploymentId, configuration));
     }
 
     private void setApplicationIdIfNotProvided(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
@@ -74,9 +70,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) throws InvalidDeploymentIdException {
-        AppRemovalOrchestratorTask removalTask = (AppRemovalOrchestratorTask) context.getBean("appRemovalOrchestratorTask");
-        removalTask.populateIdentifiers(deploymentId);
-        taskExecutor.execute(removalTask);
+        taskExecutor.execute(new OrchestratorTaskRunner(context, deploymentId));
     }
 
     @Override
