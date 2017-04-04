@@ -4,13 +4,13 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 
 public class ApplicationComplete extends Application {
 
-    private DockerContainerTemplate dockerContainerTemplate;
+    private DockerServiceTemplate dockerContainerTemplate;
 
-    public DockerContainerTemplate getDockerContainerTemplate() {
-        return dockerContainerTemplate;
-    }
+	public DockerServiceTemplate getDockerContainerTemplate() {
+		return dockerContainerTemplate;
+	}
 
-    public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
-        this.dockerContainerTemplate = dockerContainerTemplate;
-    }
+	public void setDockerContainerTemplate(DockerServiceTemplate dockerContainerTemplate) {
+		this.dockerContainerTemplate = dockerContainerTemplate;
+	}
 }
