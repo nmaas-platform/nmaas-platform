@@ -140,20 +140,20 @@ public class DockerHostRepository {
                 .orElseThrow(() -> new DockerHostNotFoundException("Did not find preferred Docker host in the repository."));
     }
 
-    private void validateDockerHostName(String name) throws DockerHostInvalidException {
+    protected void validateDockerHostName(String name) throws DockerHostInvalidException {
         if(name == null) {
             throw new DockerHostInvalidException("Docker host name cannot be null");
         }
     }
 
-    private void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
+    protected void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
         if(dockerHost == null) {
             throw new DockerHostInvalidException("Docker host cannot be null");
         }
         validateDockerHostName(dockerHost.getName());
     }
 
-    private void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
+    protected void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
         validateDockerHostName(name);
         validateDockerHost(dockerHost);
         if(!name.equals(dockerHost.getName())) {

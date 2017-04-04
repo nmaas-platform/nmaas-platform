@@ -27,7 +27,7 @@ public class DockerHostStateKeeperTest {
     private DockerHostStateKeeper stateKeeper;
 
     @Test
-    public void shouldAssignPorts() throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
+    public void shouldAssignPorts() throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException, DockerHostInvalidException {
         int assignedPort = stateKeeper.assignPort(DOCKER_HOST_NAME_1, SERVICE_NAME_1);
         assertThat(assignedPort, equalTo(1000));
         assignedPort = stateKeeper.assignPort(DOCKER_HOST_NAME_1, SERVICE_NAME_2);
@@ -39,7 +39,7 @@ public class DockerHostStateKeeperTest {
     }
 
     @Test
-    public void shouldAssignAddressPools() throws DockerHostNotFoundException {
+    public void shouldAssignAddressPools() throws DockerHostNotFoundException, DockerHostInvalidException {
         ContainerNetworkIpamSpec addressPool = stateKeeper.assignAddressPool(DOCKER_HOST_NAME_1, SERVICE_NAME_1);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.11.1.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));

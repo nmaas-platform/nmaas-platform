@@ -19,7 +19,7 @@ public class DockerHostStateKeeper {
 
     private Map<String, DockerHostState> states = new HashMap<>();
 
-    public int assignPort(String dockerHostName, String serviceName) throws DockerHostNotFoundException {
+    public int assignPort(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostInvalidException {
         addStateForDocketHostIfAbsent(dockerHostName);
         return states.get(dockerHostName).assignPort(serviceName);
     }
@@ -36,7 +36,7 @@ public class DockerHostStateKeeper {
         return states.get(dockerHostName).getAssignedPorts(serviceName).get(0);
     }
 
-    public int assignVlan(String dockerHostName, String serviceName) throws DockerHostNotFoundException {
+    public int assignVlan(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostInvalidException {
         addStateForDocketHostIfAbsent(dockerHostName);
         return states.get(dockerHostName).assignVlan(serviceName);
     }
@@ -53,7 +53,7 @@ public class DockerHostStateKeeper {
         return states.get(dockerHostName).getAssignedVlan(serviceName);
     }
 
-    public ContainerNetworkIpamSpec assignAddressPool(String dockerHostName, String serviceName) throws DockerHostNotFoundException {
+    public ContainerNetworkIpamSpec assignAddressPool(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostInvalidException {
         addStateForDocketHostIfAbsent(dockerHostName);
         return states.get(dockerHostName).assignAddresses(serviceName);
     }
@@ -70,7 +70,7 @@ public class DockerHostStateKeeper {
         return states.get(dockerHostName).getAssignedAddressPool(serviceName);
     }
 
-    private void addStateForDocketHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException {
+    private void addStateForDocketHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException, DockerHostInvalidException {
         if (!states.containsKey(dockerHostName)) {
             String dockerHostBaseDataNetworkAddress = dockerHostRepository.loadByName(dockerHostName).getBaseDataNetworkAddress().getHostAddress();
             final DockerHostState state = new DockerHostState(dockerHostName, dockerHostBaseDataNetworkAddress);

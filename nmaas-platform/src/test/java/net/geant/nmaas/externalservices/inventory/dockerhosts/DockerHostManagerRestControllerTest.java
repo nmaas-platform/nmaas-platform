@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -32,6 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DockerHostManagerRestControllerTest {
+
+    private final static String FIRST_HOST_NAME = "GN4-ANSIBLE-HOST2";
+    private final static String SECOND_HOST_NAME = "GN4-ANSIBLE-HOST";
+    private final static String THIRD_HOST_NAME = "GN4-DOCKER-3";
+    private final static String FOURTH_HOST_NAME = "GN4-DOCKER-1";
+    private final static String WRONG_DOCKER_HOST_NAME = "WRONG-DOCKER-HOST-NAME";
+    private final static String URL_PREFIX = "/platform/api/management/dockerhosts";
 
     @Autowired
     private DockerHostRepository dockerHostRepository;
@@ -44,46 +52,64 @@ public class DockerHostManagerRestControllerTest {
     }
 
     @Test
-    public void shouldAddNewHDockerHost() throws Exception {
-        mvc.perform(post("/platform/api/management/dockerhosts")
+    public void shouldAddNewDockerHost() throws Exception {
+        mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost()))
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(FIRST_HOST_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertEquals(initNewDockerHost(), dockerHostRepository.loadByName("GN4-ANSIBLE-HOST2"));
+        assertEquals(initNewDockerHost(FIRST_HOST_NAME), dockerHostRepository.loadByName(FIRST_HOST_NAME));
+    }
+
+    @Test
+    public void shouldNotAddExistingDockerHost() throws Exception {
+        mvc.perform(post(URL_PREFIX)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(FOURTH_HOST_NAME)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
     }
 
     @Test
     public void shouldRemoveDockerHost() throws Exception {
         int sizeBefore = dockerHostRepository.loadAll().size();
-        mvc.perform(delete("/platform/api/management/dockerhosts/{name}", "GN4-DOCKER-3"))
-                .andExpect(status().isOk())
+        mvc.perform(delete(URL_PREFIX + "/{name}", THIRD_HOST_NAME))
+                .andExpect(status().isNoContent())
                 .andReturn();
         assertEquals(sizeBefore - 1, dockerHostRepository.loadAll().size());
     }
 
     @Test
-    public void shouldUpdateDockerHost() throws Exception {
-        mvc.perform(post("/platform/api/management/dockerhosts/{name}", "GN4-ANSIBLE-HOST")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost()))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        assertNotNull(dockerHostRepository.loadByName("GN4-ANSIBLE-HOST2"));
-        boolean removedFormRepo = false;
-        try {
-            dockerHostRepository.loadByName("GN4-ANSIBLE-HOST");
-        } catch (DockerHostNotFoundException ex) {
-            removedFormRepo = true;
-        }
-        assertTrue(removedFormRepo);
+    public void shouldNotRemoveNotExistingDockerHost() throws Exception {
+        mvc.perform(delete(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME))
+                .andExpect(status().isNotFound())
+                .andReturn();
     }
 
     @Test
-    public void shouldListAllHDockerHost() throws Exception {
-        MvcResult result = mvc.perform(get("/platform/api/management/dockerhosts"))
+    public void shouldUpdateDockerHost() throws Exception {
+        mvc.perform(put(URL_PREFIX + "/{name}", SECOND_HOST_NAME)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(SECOND_HOST_NAME)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void shouldNotUpdateNotExisitngDockerHost() throws Exception {
+        mvc.perform(put(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(WRONG_DOCKER_HOST_NAME)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldListAllHDockerHosts() throws Exception {
+        MvcResult result = mvc.perform(get(URL_PREFIX))
                 .andExpect(status().isOk())
                 .andReturn();
+        //noinspection unchecked
         assertEquals(
                 dockerHostRepository.loadAll().size(),
                 ((List<DockerHost>) new ObjectMapper().readValue(
@@ -92,8 +118,8 @@ public class DockerHostManagerRestControllerTest {
     }
 
     @Test
-    public void shoulFetchDockerHostByName() throws Exception {
-        MvcResult result = mvc.perform(get("/platform/api/management/dockerhosts/{name}", "GN4-DOCKER-1"))
+    public void shouldFetchDockerHostByName() throws Exception {
+        MvcResult result = mvc.perform(get(URL_PREFIX + "/{name}", FOURTH_HOST_NAME))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
@@ -104,8 +130,14 @@ public class DockerHostManagerRestControllerTest {
     }
 
     @Test
-    public void shoulPreferredDockerHost() throws Exception {
-        MvcResult result = mvc.perform(get("/platform/api/management/dockerhosts/firstpreferred"))
+    public void shouldNotFetchNotExistingDockerHostByName() throws Exception {
+        mvc.perform(get(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldFetchPreferredDockerHost() throws Exception {
+        MvcResult result = mvc.perform(get(URL_PREFIX + "/firstpreferred"))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
@@ -115,9 +147,9 @@ public class DockerHostManagerRestControllerTest {
                         new TypeReference<DockerHost>() {})).getName());
     }
 
-    private DockerHost initNewDockerHost() throws UnknownHostException {
+    private DockerHost initNewDockerHost(String dockerHostName) throws UnknownHostException {
         return new DockerHost(
-                "GN4-ANSIBLE-HOST2",
+                dockerHostName,
                 InetAddress.getByName("192.168.0.1"),
                 9999,
                 InetAddress.getByName("192.168.0.1"),

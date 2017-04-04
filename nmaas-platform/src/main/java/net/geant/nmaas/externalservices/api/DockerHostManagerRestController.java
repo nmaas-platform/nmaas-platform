@@ -1,8 +1,7 @@
 package net.geant.nmaas.externalservices.api;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.*;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class DockerHostManagerRestController {
     }
 
     /**
-     * List all {@link DockerHost} instances stored in the repository
+     * List all {@link DockerHost} instances
      * @return list of {@link DockerHost} instances
      */
     @RequestMapping(
@@ -37,24 +36,25 @@ public class DockerHostManagerRestController {
     }
 
     /**
-     * Fetch by name {@link DockerHost} instance from the repository
+     * Fetch {@link DockerHost} instance by name
      * @param name Unique {@link DockerHost} name
-     * @return {@link DockerHost} instance fetched form the repository
-     * @throws {@link DockerHostNotFoundException}
+     * @return {@link DockerHost} instance
+     * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
+     * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
             value = "/{name}",
             method = RequestMethod.GET)
     public DockerHost getDockerHosts(
             @PathVariable("name") String name)
-            throws DockerHostNotFoundException {
+            throws DockerHostNotFoundException, DockerHostInvalidException {
         return dockerHostRepository.loadByName(name);
     }
 
     /**
-     * Fetch first preferred {@link DockerHost} instance from the repository
-     * @return {@link DockerHost} instance fetched form the repository
-     * @throws {@link DockerHostNotFoundException}
+     * Fetch first preferred {@link DockerHost} instance
+     * @return {@link DockerHost} instance
+     * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
     @RequestMapping(
             value = "/firstpreferred",
@@ -65,8 +65,10 @@ public class DockerHostManagerRestController {
     }
 
     /**
-     * Store {@link DockerHost} instance in the repository
+     * Store {@link DockerHost} instance
      * @param newDockerHost new {@link DockerHost} instance
+     * @throws DockerHostExistsException when Docker host exists (HttpStatus.CONFLICT)
+     * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
             value = "",
@@ -74,40 +76,60 @@ public class DockerHostManagerRestController {
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addDockerHost(
-            @RequestBody DockerHost newDockerHost) {
+            @RequestBody DockerHost newDockerHost) throws DockerHostExistsException, DockerHostInvalidException {
         dockerHostRepository.addDockerHost(newDockerHost);
     }
 
     /**
-     * Update {@link DockerHost} instance in the repository
+     * Update {@link DockerHost} instance
      * @param name Unique {@link DockerHost} name
      * @param dockerHost {@link DockerHost} instance pass to update
-     * @throws {@link DockerHostNotFoundException}
+     * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
+     * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
             value = "/{name}",
-            method = RequestMethod.POST,
+            method = RequestMethod.PUT,
             consumes = "application/json")
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateDockerHost(
             @PathVariable("name") String name,
             @RequestBody DockerHost dockerHost)
-            throws DockerHostNotFoundException {
+            throws DockerHostNotFoundException, DockerHostInvalidException {
         dockerHostRepository.updateDockerHost(name, dockerHost);
     }
 
     /**
-     * Removes {@link DockerHost} instance from the repository
+     * Removes {@link DockerHost} instance
      * @param name Unique {@link DockerHost} name
-     * @throws {@link DockerHostNotFoundException}
+     * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
+     * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
             value = "/{name}",
             method = RequestMethod.DELETE)
-    @ResponseStatus(code = HttpStatus.OK)
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeDockerHost(
             @PathVariable("name") String name)
-            throws DockerHostNotFoundException {
+            throws DockerHostNotFoundException, DockerHostInvalidException {
         dockerHostRepository.removeDockerHost(name);
+    }
+
+    @ExceptionHandler(DockerHostNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleDockerHostNotFoundException(DockerHostNotFoundException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(DockerHostInvalidException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public String handleDockerHostInvalidException(DockerHostInvalidException ex) {
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(DockerHostExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleDockerHostExistsException(DockerHostExistsException ex) {
+        return ex.getMessage();
     }
  }

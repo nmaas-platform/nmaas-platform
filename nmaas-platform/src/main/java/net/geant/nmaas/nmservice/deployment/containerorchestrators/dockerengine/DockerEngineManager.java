@@ -2,10 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.NetworkConfig;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.*;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerDeploymentDetails;
@@ -70,6 +67,9 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         } catch (DockerHostNotFoundException dockerHostNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Did not find any suitable Docker host for deployment.");
+        } catch (DockerHostInvalidException dockerHostNotFoundException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Provided Docker host cannot be used for deployment.");
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
