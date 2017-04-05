@@ -45,6 +45,10 @@ public class Identifier implements Serializable {
         return value;
     }
 
+    public Long longValue() {
+        return Long.valueOf(value);
+    }
+
     public String getValue() {
         return value;
     }

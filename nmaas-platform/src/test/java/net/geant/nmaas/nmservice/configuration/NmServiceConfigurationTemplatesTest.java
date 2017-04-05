@@ -3,13 +3,18 @@ package net.geant.nmaas.nmservice.configuration;
 import freemarker.template.Template;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
-import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -22,12 +27,16 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
+@Rollback
 public class NmServiceConfigurationTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
     private static final String TEST_CONFIG_ID_2 = "2";
     private static final String TEST_TEMPLATE_NAME_1 = "config-template";
     private static final String TEST_TEMPLATE_NAME_2 = "router.db-template";
+    private static final String OXIDIZED_APP_NAME = "Oxidized";
+    private static final String OXIDIZED_APP_VERSION = "0.19.0";
 
     @Autowired
     private NmServiceConfigurationTemplatesRepository templatesRepository;
@@ -35,9 +44,20 @@ public class NmServiceConfigurationTemplatesTest {
     @Autowired
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
+    @Before
+    public void setup() {
+        Application app = new Application(OXIDIZED_APP_NAME);
+        app.setVersion(OXIDIZED_APP_VERSION);
+        applicationRepository.save(app);
+    }
+
     @Test
     public void shouldPopulateAndPrintConfigurationFile() throws Exception {
-        List<Template> templates = templatesRepository.loadTemplates(AppLifecycleManager.OXIDIZED_APPLICATION_ID);
+        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(OXIDIZED_APP_NAME).get(0).getId()));
+        List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
         assertThat(templates.size(), equalTo(2));
         assertThat(templates.get(0).getName(), endsWith(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX));
         assertThat(SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName(templates.get(0).getName()),
@@ -46,7 +66,8 @@ public class NmServiceConfigurationTemplatesTest {
 
     @Test
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
-        List<Template> templates = templatesRepository.loadTemplates(AppLifecycleManager.OXIDIZED_APPLICATION_ID);
+        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(OXIDIZED_APP_NAME).get(0).getId()));
+        List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
         Optional<Template> tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME_1)).findFirst();
         NmServiceConfiguration nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_1, tut.orElseThrow(() -> new Exception()), testOxidizedDefaultConfigurationInputModel());

@@ -4,7 +4,11 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,10 +29,15 @@ public class NmServiceConfigurationTemplatesRepository {
 
     public static final String DEFAULT_TEMPLATE_FILE_NAME_SUFFIX = "-template";
 
+    @Autowired
+    private ApplicationRepository applicationRepository;
+
+    @Transactional
     public List<Template> loadTemplates(Identifier applicationId) throws ConfigTemplateHandlingException {
         try {
+            String configDirectory = constructConfigDirectoryForApplication(applicationRepository.getOne(applicationId.longValue()));
             List<String> configTemplatesFileNames =
-                    Files.list(Paths.get(DEFAULT_BASE_CONFIGURATION_TEMPLATES_DIRECTORY + File.separator + applicationId))
+                    Files.list(Paths.get(DEFAULT_BASE_CONFIGURATION_TEMPLATES_DIRECTORY + File.separator + configDirectory))
                             .filter(Files::isRegularFile)
                             .map(Path::toString)
                             .collect(Collectors.toList());
@@ -40,5 +49,12 @@ public class NmServiceConfigurationTemplatesRepository {
         } catch (IOException e) {
             throw new ConfigTemplateHandlingException("Problem with reading configuration templates for app " + applicationId);
         }
+    }
+
+    String constructConfigDirectoryForApplication(Application app) {
+        String directory = app.getName();
+        if (app.getVersion() != null && app.getVersion().length() > 0)
+            directory += "-" + app.getVersion();
+        return directory;
     }
 }

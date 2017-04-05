@@ -1,6 +1,6 @@
 {
 	"name":"Oxidized",
-	"version":"0.10.1",
+	"version":"0.19.0",
 	"license":"MIT",
 	"briefDescription":"This is Oxidized tool for configuration backup.",
 	"tags": [ "management", "backup", "configuration"],
