@@ -142,4 +142,13 @@ curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" -
 
 echo.
 echo ---------------------
+echo Create app2 instance
+curl -X POST %API_URL%/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
 
+echo.
+echo ---------------------
+echo Get app instance 1 state
+curl -X GET %API_URL%/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
