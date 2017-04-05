@@ -72,4 +72,17 @@ public class DefaultAppDeploymentMonitorTest {
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }
 
+    @Test
+    public void shouldTransitStatesFromInternalError() throws InvalidDeploymentIdException {
+        // introduction of Internal Error
+        monitor.notifyStateChange(deploymentId,NmServiceDeploymentState.CONFIGURATION_FAILED);
+        // app removal
+        monitor.notifyStateChange(deploymentId, NmServiceDeploymentState.REMOVED);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
+        monitor.notifyStateChange(deploymentId, DcnDeploymentState.REMOVAL_INITIATED);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
+        monitor.notifyStateChange(deploymentId, DcnDeploymentState.REMOVED);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
+    }
+
 }

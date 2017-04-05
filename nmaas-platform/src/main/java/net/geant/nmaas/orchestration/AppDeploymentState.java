@@ -387,6 +387,30 @@ public enum AppDeploymentState {
     INTERNAL_ERROR {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.INTERNAL_ERROR; }
+
+        @Override
+        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVAL_INITIATED:
+                    return APPLICATION_DCN_REMOVAL_IN_PROGRESS;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVED:
+                    return APPLICATION_NM_SERVICE_REMOVED;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
     }, GENERIC_ERROR {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.GENERIC_ERROR; }
