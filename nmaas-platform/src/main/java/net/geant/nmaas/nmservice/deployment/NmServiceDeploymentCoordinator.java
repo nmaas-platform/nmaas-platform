@@ -119,7 +119,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                 | ContainerNetworkCheckFailedException
                 | CouldNotConnectToOrchestratorException
                 | ContainerOrchestratorInternalErrorException e) {
-            System.out.println("NM Service deployment verification failed -> " + e.getMessage());
+            log.error("NM Service deployment verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED);
         }
     }
@@ -133,15 +133,18 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.removeNmService(serviceName);
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException e) {
-            throw new InvalidDeploymentIdException();
+            log.error("NM Service removal failed -> " + e.getMessage());
+            throw new InvalidDeploymentIdException(e.getMessage());
         } catch (CouldNotDestroyNmServiceException
                 | ContainerOrchestratorInternalErrorException
                 | CouldNotConnectToOrchestratorException e) {
             try {
-                System.out.println("NM Service removal failed -> " + e.getMessage());
+                log.error("NM Service removal failed -> " + e.getMessage());
                 serviceRepository.updateServiceState(serviceName, REMOVAL_FAILED);
                 notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
-            } catch (NmServiceRepository.ServiceNotFoundException ex) { }
+            } catch (NmServiceRepository.ServiceNotFoundException ex) {
+                log.error("NM Service removal failed notification failed -> " + e.getMessage());
+            }
         }
     }
 

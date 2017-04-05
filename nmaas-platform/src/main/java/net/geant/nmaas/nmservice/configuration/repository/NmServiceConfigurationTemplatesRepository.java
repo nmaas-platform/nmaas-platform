@@ -6,6 +6,8 @@ import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandling
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ public class NmServiceConfigurationTemplatesRepository {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    @Loggable(LogLevel.INFO)
     @Transactional
     public List<Template> loadTemplates(Identifier applicationId) throws ConfigTemplateHandlingException {
         try {
@@ -47,7 +50,7 @@ public class NmServiceConfigurationTemplatesRepository {
                 templates.add(cfg.getTemplate(configTemplatesFileName));
             return templates;
         } catch (IOException e) {
-            throw new ConfigTemplateHandlingException("Problem with reading configuration templates for app " + applicationId);
+            throw new ConfigTemplateHandlingException("Problem with reading configuration templates for app " + applicationId + " -> " + e.getMessage());
         }
     }
 
