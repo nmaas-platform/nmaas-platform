@@ -246,6 +246,8 @@ public class AppInstanceController extends AppBaseController {
 		case APPLICATION_CONFIGURATION_FAILED:
 		case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
 		case APPLICATION_REMOVAL_FAILED:
+			appInstanceState = AppInstanceState.FAILURE;
+			break;
 		default:
 			appInstanceState = AppInstanceState.UNKNOWN;
 			break;
