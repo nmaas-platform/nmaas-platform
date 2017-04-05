@@ -36,7 +36,7 @@ public class OrchestratorTaskRunner implements Runnable {
         this.context = context;
         this.deploymentId = deploymentId;
         this.appConfiguration = appConfiguration;
-        this.taskName = APP_DEPLOYMENT_ORCHESTRATOR_TASK;
+        this.taskName = APP_CONFIGURATION_ORCHESTRATOR_TASK;
     }
 
     public OrchestratorTaskRunner(ApplicationContext context, Identifier deploymentId) {
