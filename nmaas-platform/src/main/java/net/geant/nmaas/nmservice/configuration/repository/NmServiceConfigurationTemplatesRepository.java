@@ -10,6 +10,7 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -35,7 +36,7 @@ public class NmServiceConfigurationTemplatesRepository {
     private ApplicationRepository applicationRepository;
 
     @Loggable(LogLevel.INFO)
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public List<Template> loadTemplates(Identifier applicationId) throws ConfigTemplateHandlingException {
         try {
             String configDirectory = constructConfigDirectoryForApplication(applicationRepository.getOne(applicationId.longValue()));

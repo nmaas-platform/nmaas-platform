@@ -7,14 +7,13 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -27,8 +26,6 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Transactional
-@Rollback
 public class NmServiceConfigurationTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
@@ -47,11 +44,13 @@ public class NmServiceConfigurationTemplatesTest {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    private Long testAppId;
+
     @Before
     public void setup() {
         Application app = new Application(OXIDIZED_APP_NAME);
         app.setVersion(OXIDIZED_APP_VERSION);
-        applicationRepository.save(app);
+        testAppId = applicationRepository.save(app).getId();
     }
 
     @Test
@@ -80,6 +79,11 @@ public class NmServiceConfigurationTemplatesTest {
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
         assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
                 Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
+    }
+
+    @After
+    public void removeTestAppFromDatabase() {
+        applicationRepository.delete(testAppId);
     }
 
     private Map<String, Object> testOxidizedDefaultConfigurationInputModel() {

@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandling
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +25,6 @@ import static org.hamcrest.Matchers.equalTo;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Transactional
-@Rollback
 public class NmServiceConfigurationTemplatesRepositoryTest {
 
     private static final String TEST_APP_NAME = "testAppName";
@@ -39,11 +38,13 @@ public class NmServiceConfigurationTemplatesRepositoryTest {
     @Autowired
     private ApplicationRepository applicationRepository;
 
+    private Long testAppId;
+
     @Before
     public void setup() {
         Application app = new Application(OXIDIZED_APP_NAME);
         app.setVersion(OXIDIZED_APP_VERSION);
-        applicationRepository.save(app);
+        testAppId = applicationRepository.save(app).getId();
     }
 
     @Test
@@ -60,6 +61,11 @@ public class NmServiceConfigurationTemplatesRepositoryTest {
         assertThat(templatesRepository.constructConfigDirectoryForApplication(app), equalTo(TEST_APP_NAME));
         app.setVersion(TEST_APP_VERSION);
         assertThat(templatesRepository.constructConfigDirectoryForApplication(app), equalTo(TEST_APP_NAME + "-" + TEST_APP_VERSION));
+    }
+
+    @After
+    public void removeTestAppFromDatabase() {
+        applicationRepository.delete(testAppId);
     }
 
 }
