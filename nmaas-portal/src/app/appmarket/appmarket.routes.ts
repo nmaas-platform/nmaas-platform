@@ -2,11 +2,11 @@ import { Route } from '@angular/router';
 import { AppMarketComponent } from './index';
 import { AppListComponent } from './applist/index';
 import { AppDetailsComponent } from './appdetails/index';
-import { AppInstallComponent } from './appinstall/index';
 
 import { AuthGuard } from '../auth/auth.guard';
 
 import { AppListRoutes } from './applist/applist.routes';
+import { AppInstanceRoutes } from './appinstance/appinstance.routes';
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -16,8 +16,9 @@ export const AppMarketRoutes: Route[] = [
       canActivateChild: [AuthGuard],
       children: [
         ...AppListRoutes,
+        ...AppInstanceRoutes,
           { path: 'apps/:id', component: AppDetailsComponent },
-          { path: 'apps/:id/install', component: AppInstallComponent }
+          
       ]
     }
 ];

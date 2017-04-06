@@ -1,88 +1,100 @@
-		<div class="container">
-			<div class="row">
-				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
-					<div class="thumbnail">
-						<img src="assets/images/app-logo-example.png">
-					</div>
-				</div>
-				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<h2>{{app?.name}}</h2>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">				
-							<div class="btn-group pull-right">
-								<button type="button" class="btn btn-default">WWW</button>
-								<button type="button" class="btn btn-default">Source</button>
-								<button type="button" class="btn btn-default">Issues</button>
-							</div>
-						
-						</div>
-					</div>
-					
-					<hr>
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							Version: {{app?.version}}
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							License: {{app?.license}}
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{app?.tags}}
-						</div>
-					</div>
-					<hr>
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<p>
-								<span>Rating:</span>
-								<rate [pathUrl]="'/apps/' + id + '/rate'"></rate>
-							</p>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">	
-							<p>
-								<span>My rating:</span>
-								<rate [pathUrl]="'/apps/' + id + '/rate/my'"></rate>
-							</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<div class = "btn-group pull-right">
-								<a [routerLink]="['install']" class = "btn btn-primary">Subscribe</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>	
-		
-			
-			<div class='row'>
-				<h3>Screenshots</h3>
-				<hr>
-				<screenshots [pathUrl]="'/apps/' + id + '/screenshots'"></screenshots>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+			<div class="thumbnail">
+				<img src="assets/images/app-logo-example.png">
 			</div>
-			
+		</div>
+		<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
 			<div class="row">
-				<h3>Description</h3>
-				<hr>
-				{{app?.fullDescription}}
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<h2>{{app?.name}}</h2>
+				</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default">WWW</button>
+						<button type="button" class="btn btn-default">Source</button>
+						<button type="button" class="btn btn-default">Issues</button>
+					</div>
+
+				</div>
+			</div>
+
+			<hr>
+			<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Version:
+					{{app?.version}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">License:
+					{{app?.license}}</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					{{app?.tags}}</div>
 			</div>
 			<hr>
 			<div class="row">
-				<h3>Your comment:</h3>
-				<div>
-					<form role="form" action="#" method="post">
-						<div class = "form-group">
-							<label class="sr-only" for = "name">Your comment:</label>
-							<textarea name="comment" placeholder="Add some comment here..." class="form-control" rows = "5"></textarea>
-							<button type = "submit" class = "btn btn-default">Add</button>
-						</div>
-					</form>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<p>
+						<span>Rating:</span>
+						<rate [pathUrl]="'/apps/' + id + '/rate'"></rate>
+					</p>
+				</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<p>
+						<span>My rating:</span>
+						<rate [pathUrl]="'/apps/' + id + '/rate/my'"></rate>
+					</p>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="btn-group pull-right">
+						<button class="btn btn-primary" (click)="appInstallModal.show()">Subscribe</button>
+					</div>
 				</div>
 			</div>
-			<div class="row">
-				<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
-			</div>
 		</div>
+	</div>
+
+
+	<div class='row'>
+		<h3>Screenshots</h3>
+		<hr>
+		<screenshots [pathUrl]="'/apps/' + id + '/screenshots'"></screenshots>
+	</div>
+
+	<div class="row">
+		<h3>Description</h3>
+		<hr>
+		{{app?.fullDescription}}
+	</div>
+	<hr>
+	<div class="row">
+		<h3>Your comment:</h3>
+		<div>
+			<form role="form" action="#" method="post">
+				<div class="form-group">
+					<label class="sr-only" for="name">Your comment:</label>
+					<textarea name="comment" placeholder="Add some comment here..."
+						class="form-control" rows="5"></textarea>
+					<button type="submit" class="btn btn-default">Add</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
+	</div>
+
+	<nmaas-appInstallModal>
+		<div class="app-modal-header">Create new instance of {{app?.name}} instance</div>
+		<div class="app-modal-body">
+			<p>Id: {{app?.id}}</p>
+			<p>Name: {{app?.name}}</p>
+		</div>
+		<div class="app-modal-footer">
+			<button type="button" class="btn btn-default" (click)="appInstallModal.hide()">Close</button>
+			<button type="button" class="btn btn-primary" (click)="this.create()">Create</button>
+		</div>
+	</nmaas-appInstallModal>
+
+</div>
