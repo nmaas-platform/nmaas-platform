@@ -3,14 +3,17 @@ package net.geant.nmaas.portal.api.security;
 import java.io.Serializable;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 
+@Component
 public class ApiPermissionEvaluator implements PermissionEvaluator {
 
 	@Autowired
@@ -32,7 +35,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 	public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType,
 			Object permission) {
 		
-		if(authentication == null || targetId == null || targetType == null || permission == null || !(permission instanceof String))
+		if(authentication == null || authentication.getName() == null || targetId == null || targetType == null || permission == null || !(permission instanceof String))
 			return false;
 		
 		String targetName;
@@ -46,7 +49,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 		
 		permissionName = permissionName.toLowerCase();
 		
-		switch(targetType) {
+		switch(targetName) {
 			case "comment": if(!(targetId instanceof Long))
 								return false;
 							else
@@ -64,7 +67,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 		Comment comment = commentRepository.findOne(commentId);
 		switch(permission) {
 			case "owner":
-				return (comment != null && comment.getOwner() != null && comment.getOwner().getUsername() == authentication.getName());
+				return (comment != null && comment.getOwner() != null && authentication.getName().equals(comment.getOwner().getUsername()));
 		}
 		
 		return false;
@@ -74,7 +77,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 		AppInstance appInstance = appInstanceRepository.findOne(appInstanceId);
 		switch(permission) {
 			case "owner":
-				return (appInstance != null && appInstance.getOwner() != null && appInstance.getOwner().getUsername() == authentication.getName());
+				return (appInstance != null && appInstance.getOwner() != null && authentication.getName().equals(appInstance.getOwner().getUsername()));
 		}
 		
 		return false;
