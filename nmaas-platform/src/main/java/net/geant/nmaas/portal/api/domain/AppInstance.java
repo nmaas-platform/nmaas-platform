@@ -14,6 +14,8 @@ public class AppInstance {
 	
 	private User owner;
 	
+	private String configuration;
+	
 	private AppInstanceState state;
 	
 	public AppInstance() {
@@ -65,6 +67,14 @@ public class AppInstance {
 
 	public void setState(AppInstanceState state) {
 		this.state = state;
+	}
+
+	public String getConfiguration() {
+		return configuration;
+	}
+
+	public void setConfiguration(String configuration) {
+		this.configuration = configuration;
 	}
 
 

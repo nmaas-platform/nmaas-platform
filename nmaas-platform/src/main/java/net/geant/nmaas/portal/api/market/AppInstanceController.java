@@ -89,12 +89,14 @@ public class AppInstanceController extends AppBaseController {
 	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ROLE_ADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
 	public AppInstance getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
-			@NotNull Principal principal) throws MissingElementException {
+			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = appInstanceRepo.findOne(appInstanceId);
 		if (appInstance == null)
 			throw new MissingElementException("App instance not found.");
 
-		return modelMapper.map(appInstance, AppInstance.class);
+		AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
+		ai.setState(getAppInstanceState(appInstance).getState());
+		return ai;
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -163,6 +165,13 @@ public class AppInstanceController extends AppBaseController {
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
 
+		return getAppInstanceState(appInstance);
+	}
+
+	private AppInstanceStatus getAppInstanceState(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) throws ProcessingException, MissingElementException {
+		if(appInstance == null)
+			throw new MissingElementException("App instance is null");
+		
 		AppLifecycleState state = AppLifecycleState.UNKNOWN;
 		try {
 			state = appDeploymentMonitor.state(appInstance.getInternalId());
@@ -170,7 +179,7 @@ public class AppInstanceController extends AppBaseController {
 			throw new ProcessingException("Missing app instance");
 		}
 
-		return prepareAppInstanceStatus(appInstanceId, state);
+		return prepareAppInstanceStatus(appInstance.getId(), state);
 	}
 
 	private boolean validJSON(String json) {

@@ -19,6 +19,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -52,6 +54,7 @@ public class PersistentConfig {
 			UserRepository userRepo;
 			
 			@Override
+			@Transactional(propagation=Propagation.REQUIRES_NEW)
 			public User getCurrentAuditor() {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				if(auth == null)
