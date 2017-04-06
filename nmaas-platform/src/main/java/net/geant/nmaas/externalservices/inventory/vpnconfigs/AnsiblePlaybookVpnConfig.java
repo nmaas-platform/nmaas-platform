@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 public class AnsiblePlaybookVpnConfig {
 
     private Type type;
-    private static final int MAX_PROPRTY_LENGTH = 20;
+    private static final int MAX_PROPRTY_LENGTH = 50;
     private String targetRouter;
     private String vrfId;
     private String logicalInterface;
@@ -263,7 +263,7 @@ public class AnsiblePlaybookVpnConfig {
             nullMessage("VRF RD", exceptionMessage);
         } else if (vrfRd.length() > MAX_PROPRTY_LENGTH) {
             tooLongMessage("VRF RD", exceptionMessage);
-        }  else if (validateIpAddress(vrfRd)) {
+        } else if (!validateIpAddress(vrfRd)) {
             wrongIpMessage("VRF RD: " +  vrfRd, exceptionMessage);
         }
         if (vrfRt == null || vrfRt.isEmpty()) {
@@ -277,9 +277,11 @@ public class AnsiblePlaybookVpnConfig {
             tooLongMessage("BGP Group ID", exceptionMessage);
         }
         if (bgpNeighborIp == null || bgpNeighborIp.isEmpty()) {
-            nullMessage("BGP Neighbor ID", exceptionMessage);
+            nullMessage("BGP Neighbor IP", exceptionMessage);
         } else if (bgpNeighborIp.length() > MAX_PROPRTY_LENGTH) {
-            tooLongMessage("BGP Neighbor ID", exceptionMessage);
+            tooLongMessage("BGP Neighbor IP", exceptionMessage);
+        } else if (!validateIpAddress(bgpNeighborIp)) {
+            wrongIpMessage("BGP Neighbor IP: " +  bgpNeighborIp, exceptionMessage);
         }
         if (asn == null || asn.isEmpty()) {
             nullMessage("ASN", exceptionMessage);
@@ -305,13 +307,15 @@ public class AnsiblePlaybookVpnConfig {
             nullMessage("BGP Local IP", exceptionMessage);
         }  else if (bgpLocalIp.length() > MAX_PROPRTY_LENGTH) {
             tooLongMessage("BGP Local IP", exceptionMessage);
+        } else if (!validateIpAddress(bgpLocalIp)) {
+            wrongIpMessage("BGP Local IP: " +  bgpLocalIp, exceptionMessage);
         }
         if (bgpLocalCidr == null || bgpLocalCidr.isEmpty()) {
             nullMessage("BGP Local CIDR", exceptionMessage);
         } else if (bgpLocalCidr.length() > MAX_PROPRTY_LENGTH) {
             tooLongMessage("BGP Local CIDR", exceptionMessage);
         }
-        if (type.equals(Type.CLOUD_SIDE)) {
+        if (type != null && type.equals(Type.CLOUD_SIDE)) {
             if (policyCommunityOptions == null || policyCommunityOptions.isEmpty()) {
                 nullMessage("Policy Community Options", exceptionMessage);
             } else if (policyCommunityOptions.length() > MAX_PROPRTY_LENGTH) {
@@ -337,11 +341,14 @@ public class AnsiblePlaybookVpnConfig {
     }
 
     private void wrongIpMessage(String fieldName, StringBuilder exceptionMessage) {
-        exceptionMessage.append(fieldName).append(" is not in proper format/n");
+        exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
 
-    private boolean validateIpAddress(String ipAddress) {
+    protected boolean validateIpAddress(String ipAddress) {
         try {
+            if (ipAddress.contains(":")) {
+                ipAddress = ipAddress.substring(0, ipAddress.indexOf(":"));
+            }
             InetAddress.getByName(ipAddress);
             return true;
         } catch (UnknownHostException e) {
@@ -356,11 +363,11 @@ public class AnsiblePlaybookVpnConfig {
     }
 
     private void nullMessage(String fieldName, StringBuilder exceptionMessage) {
-        exceptionMessage.append(fieldName).append(" is NULL or empty/n");
+        exceptionMessage.append(fieldName).append(" is NULL or empty\n");
     }
 
     private void tooLongMessage(String fieldName, StringBuilder exceptionMessage) {
-        exceptionMessage.append(fieldName).append(" is too long/n");
+        exceptionMessage.append(fieldName).append(" is too long (max " + MAX_PROPRTY_LENGTH + " characters)\n");
     }
 
     public enum Type {

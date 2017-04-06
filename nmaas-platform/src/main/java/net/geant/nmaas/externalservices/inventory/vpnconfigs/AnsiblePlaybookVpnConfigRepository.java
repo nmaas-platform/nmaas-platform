@@ -28,7 +28,6 @@ public class AnsiblePlaybookVpnConfigRepository {
         customerVpnConig.setInterfaceVlan("8");
         customerVpnConig.setBgpLocalIp("192.168.144.4");
         customerVpnConig.setBgpLocalCidr("24");
-        //TODO user unique ids?
         customerSideVpnConfigs.put(Long.valueOf(1), customerVpnConig);
 
         AnsiblePlaybookVpnConfig cloudVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
@@ -49,7 +48,6 @@ public class AnsiblePlaybookVpnConfigRepository {
         cloudVpnConig.setPolicyStatementConnected("NMAAS-C-AS64522-CONNECTED->OTHER");
         cloudVpnConig.setPolicyStatementImport("NMAAS-C-AS64522-IMPORT");
         cloudVpnConig.setPolicyStatementExport("NMAAS-C-AS64522-EXPORT");
-        //TODO should we validate DockerHost name
         cloudSideVpnConfigs.put("GN4-DOCKER-1", cloudVpnConig);
     }
     
