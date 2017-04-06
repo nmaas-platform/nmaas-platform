@@ -242,7 +242,7 @@ public class AnsiblePlaybookVpnConfig {
         return result;
     }
 
-    public void validate() throws AnsiblePlaybookVpnConfigInvalidException {
+    void validate() throws AnsiblePlaybookVpnConfigInvalidException {
         StringBuilder exceptionMessage = new StringBuilder();
         if (targetRouter == null || targetRouter.isEmpty()) {
             nullMessage("Target Router", exceptionMessage);
@@ -344,7 +344,7 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
 
-    protected boolean validateIpAddress(String ipAddress) {
+    boolean validateIpAddress(String ipAddress) {
         try {
             if (ipAddress.contains(":")) {
                 ipAddress = ipAddress.substring(0, ipAddress.indexOf(":"));

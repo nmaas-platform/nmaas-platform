@@ -47,19 +47,22 @@ public class AnsiblePlaybookVpnConfigTest {
         assertTrue(true);
     }
 
+    @SuppressWarnings("StringBufferReplaceableByString")
     private String setEmptyExceptionMessage() {
-        return  "Target Router is NULL or empty\n" +
-                "VRF ID is NULL or empty\n" +
-                "Logical Interface is NULL or empty\n" +
-                "VRF RD is NULL or empty\n" +
-                "VRF RT is NULL or empty\n" +
-                "BGP Group ID is NULL or empty\n" +
-                "BGP Neighbor IP is NULL or empty\n" +
-                "ASN is NULL or empty\n" +
-                "Physical Interface is NULL or empty\n" +
-                "Interface Unit is NULL or empty\n" +
-                "Interface VLAN is NULL or empty\n" +
-                "BGP Local IP is NULL or empty\n" +
-                "BGP Local CIDR is NULL or empty\n";
+        StringBuilder messageException = new StringBuilder();
+        messageException.append("Target Router is NULL or empty\n");
+        messageException.append("VRF ID is NULL or empty\n");
+        messageException.append("Logical Interface is NULL or empty\n");
+        messageException.append("VRF RD is NULL or empty\n");
+        messageException.append("VRF RT is NULL or empty\n");
+        messageException.append("BGP Group ID is NULL or empty\n");
+        messageException.append("BGP Neighbor IP is NULL or empty\n");
+        messageException.append("ASN is NULL or empty\n");
+        messageException.append("Physical Interface is NULL or empty\n");
+        messageException.append("Interface Unit is NULL or empty\n");
+        messageException.append("Interface VLAN is NULL or empty\n");
+        messageException.append("BGP Local IP is NULL or empty\n");
+        messageException.append("BGP Local CIDR is NULL or empty\n");
+        return messageException.toString();
     }
 }
