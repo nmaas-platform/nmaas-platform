@@ -28,7 +28,7 @@ public class AnsiblePlaybookVpnConfigRepository {
         customerVpnConig.setInterfaceVlan("8");
         customerVpnConig.setBgpLocalIp("192.168.144.4");
         customerVpnConig.setBgpLocalCidr("24");
-        customerSideVpnConfigs.put(Long.valueOf(1), customerVpnConig);
+        customerSideVpnConfigs.put(1L, customerVpnConig);
 
         AnsiblePlaybookVpnConfig cloudVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
         cloudVpnConig.setTargetRouter("R3");
