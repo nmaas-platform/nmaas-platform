@@ -2,13 +2,13 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
-import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -16,10 +16,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState.*;
 
@@ -39,9 +37,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private DeploymentIdToNmServiceNameMapper deploymentIdMapper;
 
     @Autowired
-    AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener;
-
-    private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -149,13 +145,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
-        defaultAppDeploymentStateChangeListener.notifyStateChange(deploymentId, state);
-        stateChangeListeners.forEach((listener) -> listener.notifyStateChange(deploymentId, state));
-    }
-
-    @Override
-    public void addStateChangeListener(AppDeploymentStateChangeListener stateChangeListener) {
-        stateChangeListeners.add(stateChangeListener);
+        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
     }
 
 }

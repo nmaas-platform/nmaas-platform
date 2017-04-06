@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -34,14 +35,14 @@ public class NmServiceConfigurationTest {
     @Autowired
     private AppLifecycleRepository appLifecycleRepository;
 
-    @Autowired
-    private AppDeploymentStateChangeListener stateChangeListener;
-
     @Mock
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Mock
     private SshCommandExecutor sshCommandExecutor;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private Identifier deploymentId;
 
@@ -55,7 +56,7 @@ public class NmServiceConfigurationTest {
         configuration.setJsonInput("");
         appLifecycleRepository.storeNewDeployment(deploymentId);
         appLifecycleRepository.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
-        configurationExecutor = new SimpleNmServiceConfigurationExecutor(stateChangeListener, configurationsPreparer, sshCommandExecutor);
+        configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }
 
     @Test

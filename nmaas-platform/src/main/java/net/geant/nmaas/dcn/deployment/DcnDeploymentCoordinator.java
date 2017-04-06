@@ -13,18 +13,17 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFound
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,19 +44,17 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     private DeploymentIdToDcnNameMapper deploymentIdMapper;
 
-    private AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener;
-
-    private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public DcnDeploymentCoordinator(DockerHostRepository dockerHostRepository,
                                     DcnRepository dcnRepository,
                                     DeploymentIdToDcnNameMapper deploymentIdMapper,
-                                    AppDeploymentStateChangeListener defaultAppDeploymentStateChangeListener) {
+                                    ApplicationEventPublisher applicationEventPublisher) {
         this.dockerHostRepository = dockerHostRepository;
         this.dcnRepository = dcnRepository;
         this.deploymentIdMapper = deploymentIdMapper;
-        this.defaultAppDeploymentStateChangeListener = defaultAppDeploymentStateChangeListener;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -147,13 +144,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, DcnDeploymentState state) {
-        defaultAppDeploymentStateChangeListener.notifyStateChange(deploymentId, state);
-        stateChangeListeners.forEach((listener) -> listener.notifyStateChange(deploymentId, state));
-    }
-
-    @Override
-    public void addStateChangeListener(AppDeploymentStateChangeListener stateChangeListener) {
-        stateChangeListeners.add(stateChangeListener);
+        applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, state));
     }
 
     private void deployAnsiblePlaybookContainers(DockerHost dockerHost, ContainerConfig... ansibleContainerConfigs) throws DockerException, InterruptedException {

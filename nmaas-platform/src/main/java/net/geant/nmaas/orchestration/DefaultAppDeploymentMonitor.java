@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -9,6 +9,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDeploymentStateChangeListener {
+public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Autowired
     private AppLifecycleRepository repository;
@@ -42,38 +43,38 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor, AppDep
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
     }
 
-    @Override
+    @EventListener
     @Loggable(LogLevel.INFO)
-    public void notifyStateChange(Identifier deploymentId, DcnDeploymentState state) {
+    public void notifyStateChange(DcnDeploymentStateChangeEvent event) {
         try {
-            AppDeploymentState newDeploymentState = repository.loadCurrentState(deploymentId).nextState(state);
-            repository.updateDeploymentState(deploymentId, newDeploymentState);
+            AppDeploymentState newDeploymentState = repository.loadCurrentState(event.getDeploymentId()).nextState(event.getState());
+            repository.updateDeploymentState(event.getDeploymentId(), newDeploymentState);
         } catch (InvalidAppStateException e) {
             System.out.println("State notification failure -> " + e.getMessage());
-            repository.updateDeploymentState(deploymentId, AppDeploymentState.INTERNAL_ERROR);
+            repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
         } catch (InvalidDeploymentIdException e) {
             System.out.println("State notification failure -> " + e.getMessage());
         }
     }
 
-    @Override
+    @EventListener
     @Loggable(LogLevel.INFO)
-    public void notifyStateChange(Identifier deploymentId, NmServiceDeploymentState state) {
+    public void notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try {
-            AppDeploymentState newDeploymentState = repository.loadCurrentState(deploymentId).nextState(state);
-            repository.updateDeploymentState(deploymentId, newDeploymentState);
+            AppDeploymentState newDeploymentState = repository.loadCurrentState(event.getDeploymentId()).nextState(event.getState());
+            repository.updateDeploymentState(event.getDeploymentId(), newDeploymentState);
         } catch (InvalidAppStateException e) {
             System.out.println("State notification failure -> " + e.getMessage());
-            repository.updateDeploymentState(deploymentId, AppDeploymentState.INTERNAL_ERROR);
+            repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
         } catch (InvalidDeploymentIdException e) {
             System.out.println("State notification failure -> " + e.getMessage());
         }
     }
 
-    @Override
+    @EventListener
     @Loggable(LogLevel.INFO)
-    public void notifyGenericError(Identifier deploymentId) {
-        repository.updateDeploymentState(deploymentId, AppDeploymentState.GENERIC_ERROR);
+    public void notifyGenericError(AppDeploymentErrorEvent event) {
+        repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.GENERIC_ERROR);
     }
 
     private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {

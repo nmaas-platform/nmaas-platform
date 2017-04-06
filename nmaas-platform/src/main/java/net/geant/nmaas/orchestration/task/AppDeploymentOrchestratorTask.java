@@ -3,8 +3,8 @@ package net.geant.nmaas.orchestration.task;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.orchestration.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -16,6 +16,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -39,21 +40,21 @@ public class AppDeploymentOrchestratorTask {
 
     private AppDeploymentMonitor appDeploymentMonitor;
 
-    private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
-
     private AppDeploymentOrchestratorTaskHelper helper;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public AppDeploymentOrchestratorTask(NmServiceDeploymentProvider serviceDeployment,
                                          DcnDeploymentProvider dcnDeployment,
                                          AppDeploymentMonitor appDeploymentMonitor,
-                                         AppDeploymentStateChangeListener appDeploymentStateChangeListener,
-                                         AppDeploymentOrchestratorTaskHelper helper) {
+                                         AppDeploymentOrchestratorTaskHelper helper,
+                                         ApplicationEventPublisher applicationEventPublisher) {
         this.serviceDeployment = serviceDeployment;
         this.dcnDeployment = dcnDeployment;
         this.appDeploymentMonitor = appDeploymentMonitor;
-        this.appDeploymentStateChangeListener = appDeploymentStateChangeListener;
         this.helper = helper;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Loggable(LogLevel.INFO)
@@ -80,10 +81,10 @@ public class AppDeploymentOrchestratorTask {
                 | InvalidApplicationIdException
                 | InterruptedException e) {
             log.error("Exception during application deployment -> " + e.getMessage());
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
+            applicationEventPublisher.publishEvent(new AppDeploymentErrorEvent(this, deploymentId));
         } catch (Exception e) {
             log.error("Exception during application deployment -> " + e.getMessage());
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
+            applicationEventPublisher.publishEvent(new AppDeploymentErrorEvent(this, deploymentId));
         }
     }
 
