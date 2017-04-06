@@ -10,11 +10,11 @@ import java.util.Map;
  */
 public class AnsiblePlaybookVpnConfigRepository {
 
-    private Map<Long, AnsiblePlaybookVpnConfig> customerSideVpnConfigs = new HashMap<Long, AnsiblePlaybookVpnConfig>();
-    private Map<String, AnsiblePlaybookVpnConfig> cloudSideVpnConfigs = new HashMap<String, AnsiblePlaybookVpnConfig>();
+    private Map<Long, AnsiblePlaybookVpnConfig> customerSideVpnConfigs = new HashMap<>();
+    private Map<String, AnsiblePlaybookVpnConfig> cloudSideVpnConfigs = new HashMap<>();
 
     {
-        AnsiblePlaybookVpnConfig customerVpnConig = new AnsiblePlaybookVpnConfig();
+        AnsiblePlaybookVpnConfig customerVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
         customerVpnConig.setTargetRouter("R4");
         customerVpnConig.setVrfId("NMAAS-C-AS64522");
         customerVpnConig.setLogicalInterface("ge-0/0/4.144");
@@ -31,7 +31,7 @@ public class AnsiblePlaybookVpnConfigRepository {
         //TODO user unique ids?
         customerSideVpnConfigs.put(Long.valueOf(1), customerVpnConig);
 
-        AnsiblePlaybookVpnConfig cloudVpnConig = new AnsiblePlaybookVpnConfig();
+        AnsiblePlaybookVpnConfig cloudVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
         cloudVpnConig.setTargetRouter("R3");
         cloudVpnConig.setVrfId("NMAAS-C-AS64522");
         cloudVpnConig.setLogicalInterface("ge-0/0/4.239");
@@ -51,5 +51,39 @@ public class AnsiblePlaybookVpnConfigRepository {
         cloudVpnConig.setPolicyStatementExport("NMAAS-C-AS64522-EXPORT");
         //TODO should we validate DockerHost name
         cloudSideVpnConfigs.put("GN4-DOCKER-1", cloudVpnConig);
+    }
+    
+    public void addCustomerVpnConfig(long customerId, AnsiblePlaybookVpnConfig customerVpnConfig)
+            throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException {
+        validateCustomerId(customerId);
+        validateCustomerVpnConfig(customerVpnConfig);
+        try {
+            loadCustomerVpnConfigByCustomerId(customerId);
+            throw new AnsiblePlaybookVpnConfigExistsException(
+                    "Anisble playbook VPN configuration for customer " +  customerId +  " exists in the repository.");
+        } catch (AnsiblePlaybookVpnConfigNotFoundException ex) {
+            customerVpnConfig.setType(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
+            customerSideVpnConfigs.put(customerId, customerVpnConfig);
+        }
+    }
+
+    public AnsiblePlaybookVpnConfig loadCustomerVpnConfigByCustomerId(long customerId)
+            throws AnsiblePlaybookVpnConfigNotFoundException {
+        AnsiblePlaybookVpnConfig customerVpnConfig = customerSideVpnConfigs.get(customerId);
+        if(customerVpnConfig == null) {
+            throw new AnsiblePlaybookVpnConfigNotFoundException(
+                    "Did not find Ansible playbook configuration for customer " + customerId + " in the repository");
+        }
+        return customerVpnConfig;
+    }
+
+    private void validateCustomerVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig) {
+
+    }
+
+    protected void validateCustomerId(long customerId) throws AnsiblePlaybookVpnConfigInvalidException {
+        if(customerId < 0) {
+            throw new AnsiblePlaybookVpnConfigInvalidException("Customer ID has to be bigger then 0 (" + customerId + ")");
+        }
     }
 }
