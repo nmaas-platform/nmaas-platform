@@ -222,12 +222,11 @@ public class AppInstanceController extends AppBaseController {
 		case APPLICATION_CONFIGURATION_IN_PROGRESS:
 		case APPLICATION_CONFIGURED:
 		case APPLICATION_DEPLOYMENT_IN_PROGRESS:
-		case APPLICATION_DEPLOYMENT_FAILED:
+		case APPLICATION_DEPLOYED:
 		case APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS:
-		case APPLICATION_DEPLOYMENT_VERIFIED:
 			appInstanceState = AppInstanceState.DEPLOYING;
 			break;
-		case APPLICATION_DEPLOYED:
+		case APPLICATION_DEPLOYMENT_VERIFIED:
 			appInstanceState = AppInstanceState.RUNNING;
 			break;
 		case APPLICATION_REMOVAL_IN_PROGRESS:
@@ -237,7 +236,6 @@ public class AppInstanceController extends AppBaseController {
 			appInstanceState = AppInstanceState.DONE;
 			break;
 
-		case UNKNOWN:
 		case INTERNAL_ERROR:
 		case GENERIC_ERROR:
 		case REQUEST_VALIDATION_FAILED:
@@ -246,8 +244,10 @@ public class AppInstanceController extends AppBaseController {
 		case APPLICATION_CONFIGURATION_FAILED:
 		case APPLICATION_DEPLOYMENT_VERIFICATION_FAILED:
 		case APPLICATION_REMOVAL_FAILED:
+		case APPLICATION_DEPLOYMENT_FAILED:
 			appInstanceState = AppInstanceState.FAILURE;
 			break;
+		case UNKNOWN:
 		default:
 			appInstanceState = AppInstanceState.UNKNOWN;
 			break;
