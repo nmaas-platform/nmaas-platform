@@ -93,7 +93,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             deployAnsiblePlaybookContainers(ansibleContainerDockerHost,
                     buildContainerForClientSideRouterConfig(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(dcnName)),
                     buildContainerForCloudSideRouterConfig(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(dcnName)));
-            dcnRepository.updateDcnState(dcnName, DcnDeploymentState.DEPLOYMENT_INITIATED);
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED);
         } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException deploymentIdNotFoundException) {
             throw new InvalidDeploymentIdException();
@@ -103,9 +102,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                 | DockerException anyException) {
             log.error("Exception during DCN deployment -> " + anyException.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.DEPLOYMENT_FAILED);
-            try {
-                dcnRepository.updateDcnState(dcnName, DcnDeploymentState.DEPLOYMENT_FAILED);
-            } catch (DcnRepository.DcnNotFoundException dcnNotFoundException) { }
         }
     }
 
@@ -127,7 +123,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             deployAnsiblePlaybookContainers(ansibleContainerDockerHost,
                     buildContainerForClientSideRouterConfigRemoval(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(dcnName)),
                     buildContainerForCloudSideRouterConfigRemoval(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(dcnName)));
-            dcnRepository.updateDcnState(dcnName, DcnDeploymentState.REMOVAL_INITIATED);
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REMOVAL_INITIATED);
         } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException e) {
             throw new InvalidDeploymentIdException();
@@ -137,9 +132,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                  | DockerException e) {
             log.error("Exception during DCN removal -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REMOVAL_FAILED);
-            try {
-                dcnRepository.updateDcnState(dcnName, DcnDeploymentState.REMOVAL_FAILED);
-            } catch (DcnRepository.DcnNotFoundException dcnNotFoundException) { }
         }
     }
 
@@ -219,9 +211,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                 default:
                     newDcnDeploymentState = deploymentOrRemovalFailureDependingOnLastState(currentDcnDeploymentState);
             }
-            dcnRepository.updateDcnState(dcnName, newDcnDeploymentState);
-            if (statusUpdateShouldBeSentToListeners(newDcnDeploymentState))
-                notifyStateChangeListeners(deploymentId, newDcnDeploymentState);
+             notifyStateChangeListeners(deploymentId, newDcnDeploymentState);
         } catch (DcnRepository.DcnNotFoundException
                 | DeploymentIdToDcnNameMapper.EntryNotFoundException
                 | AnsiblePlaybookIdentifierConverterException e) {
@@ -245,12 +235,4 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         }
     }
 
-    boolean statusUpdateShouldBeSentToListeners(DcnDeploymentState newDcnDeploymentState) {
-        List<DcnDeploymentState> desiredStates = Arrays.asList(
-                DcnDeploymentState.DEPLOYED,
-                DcnDeploymentState.DEPLOYMENT_FAILED,
-                DcnDeploymentState.REMOVED,
-                DcnDeploymentState.REMOVAL_FAILED);
-        return desiredStates.contains(newDcnDeploymentState);
-    }
 }

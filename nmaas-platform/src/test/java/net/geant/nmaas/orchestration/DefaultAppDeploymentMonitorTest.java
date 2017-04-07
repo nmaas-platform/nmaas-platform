@@ -2,6 +2,9 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
+import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
+import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -30,12 +33,21 @@ public class DefaultAppDeploymentMonitorTest {
     private DefaultAppDeploymentMonitor monitor;
 
     @Autowired
+    private DcnRepository dcnRepository;
+
+    @Autowired
+    private DeploymentIdToDcnNameMapper mapper;
+
+    @Autowired
     private ApplicationEventPublisher publisher;
 
     private Identifier deploymentId = new Identifier("testDeploymentId");
 
     @Before
     public void setup() {
+        String dcnName = "dcnName";
+        dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, null));
+        mapper.storeMapping(deploymentId, dcnName);
         repository.updateDeploymentState(deploymentId, AppDeploymentState.REQUESTED);
     }
 

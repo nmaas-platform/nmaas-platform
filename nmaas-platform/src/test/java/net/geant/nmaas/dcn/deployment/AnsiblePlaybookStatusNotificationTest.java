@@ -7,6 +7,7 @@ import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
+import net.geant.nmaas.orchestration.Identifier;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,11 +38,13 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Autowired
     private DcnRepository dcnRepository;
 
-    @Mock
+    @Autowired
     private DeploymentIdToDcnNameMapper deploymentIdMapper;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+
+    private final Identifier deploymentId = Identifier.newInstance("this-is-example-dcn-id");
 
     private final String dcnName = "this-is-example-dcn-name";
 
@@ -51,6 +54,7 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Before
     public void setUp() throws JsonProcessingException {
+        deploymentIdMapper.storeMapping(deploymentId, dcnName);
         dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.DEPLOYMENT_INITIATED, null));
         AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, applicationEventPublisher);
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -46,6 +47,8 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void notifyStateChange(DcnDeploymentStateChangeEvent event) {
+        if (notRelevantDcnDeploymentStateChange(event.getState()))
+            return;
         try {
             AppDeploymentState newDeploymentState = repository.loadCurrentState(event.getDeploymentId()).nextState(event.getState());
             repository.updateDeploymentState(event.getDeploymentId(), newDeploymentState);
@@ -54,6 +57,18 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
             repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
         } catch (InvalidDeploymentIdException e) {
             System.out.println("State notification failure -> " + e.getMessage());
+        }
+    }
+
+    boolean notRelevantDcnDeploymentStateChange(DcnDeploymentState state) {
+        switch (state) {
+            case ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED:
+            case ANSIBLE_PLAYBOOK_CONFIG_FOR_CLOUD_SIDE_ROUTER_COMPLETED:
+            case ANSIBLE_PLAYBOOK_CONFIG_REMOVAL_FOR_CLIENT_SIDE_ROUTER_COMPLETED:
+            case ANSIBLE_PLAYBOOK_CONFIG_REMOVAL_FOR_CLOUD_SIDE_ROUTER_COMPLETED:
+                return true;
+            default:
+                return false;
         }
     }
 
