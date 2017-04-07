@@ -1,0 +1,37 @@
+					<div class = "row">
+						<table class = "table table-hover table-condensed">
+						   
+						   <thead>
+							  <tr>
+								 <th>Name</th>
+								 <th>Owner</th>
+								 <th>Created At</th>
+								 <th>Application</th>
+								 <th>State</th>
+								 <th>&nbsp;</th>
+							  </tr>
+						   </thead>
+						   
+						   <tbody>
+						      <template ngFor let-appInstance [ngForOf]="appInstances">		
+							  <tr>
+								 <td>{{appInstance?.name}}</td>
+								 <td>{{appInstance?.owner?.username}}</td>
+								 <td>{{appInstance?.createdAt | date}}</td>
+								 <td>{{appInstance?.applicationId}}</td>
+								 <td>{{appInstance?.state}}</td>
+								<td>
+									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button">
+										Details
+									</a>
+									<a *ngIf="appInstance?.state == appInstanceState.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-primary" role = "button">Go to app</a>							
+								</td>
+							  </tr>
+							  </template>
+						
+						   </tbody>
+						</table>
+						
+					</div>
+					
+				

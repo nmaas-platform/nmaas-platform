@@ -13,6 +13,7 @@ import { AppConfigService } from './service/appconfig.service';
 
 import { LoginComponent } from './login/login.component';
 import { AppMarketModule } from './appmarket/index';
+import { SharedModule } from './shared/index';
 
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
@@ -44,6 +45,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     FormsModule,
     HttpModule,
     AppMarketModule,
+    SharedModule,
     routing
   ],
   providers: [

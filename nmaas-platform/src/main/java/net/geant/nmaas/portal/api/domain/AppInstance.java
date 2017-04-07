@@ -18,6 +18,8 @@ public class AppInstance {
 	
 	private AppInstanceState state;
 	
+	private String url;
+	
 	public AppInstance() {
 	}
 
@@ -75,6 +77,14 @@ public class AppInstance {
 
 	public void setConfiguration(String configuration) {
 		this.configuration = configuration;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 

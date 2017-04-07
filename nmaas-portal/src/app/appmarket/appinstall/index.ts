@@ -1,1 +1,1 @@
-export * from './appinstall.component';
+export * from './appinstallmodal.component';

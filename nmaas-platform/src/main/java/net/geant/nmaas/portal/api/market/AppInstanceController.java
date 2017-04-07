@@ -27,6 +27,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppInstance;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
@@ -282,7 +283,17 @@ public class AppInstanceController extends AppBaseController {
 			ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
 		} catch (Exception e) {
 			ai.setState(AppInstanceState.UNKNOWN);
+			ai.setUrl(null);
 		}
+		
+		try {
+			ai.setUrl(this.appDeploymentMonitor.userAccessDetails(appInstance.getInternalId()).getUrl());
+		} catch (InvalidAppStateException e) {
+			ai.setUrl(null);
+		} catch (InvalidDeploymentIdException e) {
+			ai.setUrl(null);
+		}
+		
 		return ai;		
 	}
 }

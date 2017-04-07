@@ -7,7 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { AppMarketComponent } from './appmarket.component';
 import { AppListModule } from './applist/applist.module';
 import { AppDetailsComponent } from './appdetails/index';
-import { AppInstallComponent } from './appinstall/index';
+import { AppInstanceModule } from './appinstance/appinstance.module';
 
 import { NavbarComponent } from './navbar/index';
 import { LogoutComponent } from '../logout/index';
@@ -16,20 +16,22 @@ import { SharedModule } from '../shared/shared.module';
 
 import { AppsService } from '../service/apps.service';
 import { TagService } from '../service/tag.service';
+import { AppInstallModalComponent } from './appinstall/appinstallmodal.component';
 
 
 @NgModule({
     declarations: [
         AppMarketComponent,
         AppDetailsComponent,
-        AppInstallComponent,
-        NavbarComponent
+        NavbarComponent,
+        AppInstallModalComponent,
     ],
     imports: [ 
         CommonModule,
         RouterModule,
         SharedModule,
         AppListModule,
+        AppInstanceModule,
         AuthModule
     ],
     exports: [
