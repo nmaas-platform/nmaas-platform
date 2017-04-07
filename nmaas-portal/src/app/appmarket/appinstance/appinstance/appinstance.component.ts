@@ -36,6 +36,8 @@ export class AppInstanceComponent implements OnInit {
 
     constructor(private appsService: AppsService, private appInstanceService: AppInstanceService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
+    private configurationTemplate: string;
+    
     ngOnInit() {
         this.route.params.subscribe(params => {
             this.appInstanceId = +params['id'];
@@ -43,7 +45,10 @@ export class AppInstanceComponent implements OnInit {
             this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
                 this.appInstance = appInstance;
                 this.appInstanceStatus.state = appInstance.state;
-                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => this.app = app);
+                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => { 
+                    this.app = app;
+                    this.configurationTemplate = this.app.configTemplate.template;
+                });
             });
 
 
@@ -68,6 +73,10 @@ export class AppInstanceComponent implements OnInit {
             this.intervalCheckerSubscribtion.unsubscribe();
     }
 
+    public applyConfiguration(event): void {
+        this.appInstanceService.applyConfiguration(event).subscribe(() => console.log('Configuration applied'));
+    }
+    
     public unsubscribe(): void {
         if (this.appInstanceId) {
             this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));

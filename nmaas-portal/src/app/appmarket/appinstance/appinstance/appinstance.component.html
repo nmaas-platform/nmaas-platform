@@ -80,9 +80,13 @@
 				<p>Details: {{appInstanceStatus?.details}}</p>
 			</div>
 			
-			<div class="row disabled">
+			<div class="row">
 				<h3>Configuration</h3>
 				<hr>
+				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration(appInstance.id, $event)" >
+				
+				</json-schema-form>
+				<!-- 
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<h4>Add IP address for configuration management</h4>
 					<form class = "form-inline" role = "form">
@@ -100,6 +104,7 @@
 						<a href="#" class = "btn btn-default">Reset</a>
 					</div>
 				</div>
+				-->
 			</div>
 			<hr>
 		</div>

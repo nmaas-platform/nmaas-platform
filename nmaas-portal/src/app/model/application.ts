@@ -1,3 +1,5 @@
+import { ConfigTemplate } from './configtemplate';
+
 export class Application {
     constructor(public id: Number,
                 
@@ -9,7 +11,10 @@ export class Application {
                 public briefDescription: string,
                 public fullDescription: string,
                 
-                public tags:string[]) {
+                public tags:string[], 
+    
+                public configTemplate: ConfigTemplate) {
         
+                
     }
 }
