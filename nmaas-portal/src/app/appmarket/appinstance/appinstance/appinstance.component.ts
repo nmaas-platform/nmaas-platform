@@ -73,8 +73,8 @@ export class AppInstanceComponent implements OnInit {
             this.intervalCheckerSubscribtion.unsubscribe();
     }
 
-    public applyConfiguration(event): void {
-        this.appInstanceService.applyConfiguration(event).subscribe(() => console.log('Configuration applied'));
+    public applyConfiguration(configuration: string): void {
+        this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
     }
     
     public unsubscribe(): void {
