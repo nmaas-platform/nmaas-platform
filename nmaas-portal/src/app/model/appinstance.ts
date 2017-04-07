@@ -9,4 +9,5 @@ export class AppInstance {
     owner: User;  
     configuration: string;
     state: AppInstanceState;
+    url: string;
 }

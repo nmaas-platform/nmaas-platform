@@ -26,7 +26,8 @@ export class AppInstanceComponent implements OnInit {
 
     app: Application;
 
-    private appInstanceStatus: AppInstanceStatus;
+    private appInstanceStateEnum = AppInstanceState;
+    private appInstanceStatus: AppInstanceStatus = new AppInstanceStatus();
 
     private appInstanceId: Number;
     private appInstance: AppInstance;
@@ -41,6 +42,7 @@ export class AppInstanceComponent implements OnInit {
 
             this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
                 this.appInstance = appInstance;
+                this.appInstanceStatus.state = appInstance.state;
                 this.appsService.getApp(this.appInstance.applicationId).subscribe(app => this.app = app);
             });
 
