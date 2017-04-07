@@ -13,7 +13,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFound
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
@@ -23,9 +23,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;

@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice;
 
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

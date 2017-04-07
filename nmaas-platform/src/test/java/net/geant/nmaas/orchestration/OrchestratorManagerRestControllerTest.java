@@ -2,6 +2,8 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;

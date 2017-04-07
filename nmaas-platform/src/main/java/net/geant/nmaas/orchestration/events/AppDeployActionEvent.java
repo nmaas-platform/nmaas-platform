@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcn.deployment;
+package net.geant.nmaas.orchestration.events;
 
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.context.ApplicationEvent;
@@ -6,24 +6,16 @@ import org.springframework.context.ApplicationEvent;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DcnDeploymentStateChangeEvent extends ApplicationEvent {
+public class AppDeployActionEvent extends ApplicationEvent {
 
     private Identifier deploymentId;
 
-    private DcnDeploymentState state;
-
-    public DcnDeploymentStateChangeEvent(Object source, Identifier deploymentId, DcnDeploymentState state) {
+    public AppDeployActionEvent(Object source, Identifier deploymentId) {
         super(source);
         this.deploymentId = deploymentId;
-        this.state = state;
     }
 
     public Identifier getDeploymentId() {
         return deploymentId;
     }
-
-    public DcnDeploymentState getState() {
-        return state;
-    }
-
 }
