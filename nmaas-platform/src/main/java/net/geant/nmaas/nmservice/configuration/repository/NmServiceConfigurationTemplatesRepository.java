@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration.repository;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.utils.logging.LogLevel;

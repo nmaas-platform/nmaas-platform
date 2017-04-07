@@ -8,7 +8,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.ContainerNetworkDetailsVe
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
 import org.junit.Test;
 

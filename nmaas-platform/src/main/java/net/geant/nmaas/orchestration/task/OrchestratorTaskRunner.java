@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.task;
 
-import net.geant.nmaas.orchestration.AppConfiguration;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.context.ApplicationContext;
 
 public class OrchestratorTaskRunner implements Runnable {

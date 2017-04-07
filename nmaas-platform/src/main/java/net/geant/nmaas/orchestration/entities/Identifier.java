@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.entities;
 
 import java.io.Serializable;
 

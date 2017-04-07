@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.PortForwardingSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;

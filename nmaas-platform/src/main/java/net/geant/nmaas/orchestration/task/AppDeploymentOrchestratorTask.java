@@ -3,10 +3,10 @@ package net.geant.nmaas.orchestration.task;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.orchestration.AppDeploymentErrorEvent;
+import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppLifecycleState;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import static net.geant.nmaas.orchestration.AppLifecycleState.*;
+import static net.geant.nmaas.orchestration.entities.AppLifecycleState.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

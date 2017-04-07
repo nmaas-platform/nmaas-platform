@@ -2,8 +2,8 @@ package net.geant.nmaas.orchestration.task;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.orchestration.AppDeploymentErrorEvent;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.entities;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

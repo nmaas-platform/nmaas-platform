@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

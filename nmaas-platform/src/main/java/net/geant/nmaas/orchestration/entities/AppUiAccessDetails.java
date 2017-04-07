@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.entities;
 
 /**
  * Represent the user access details to the deployed application, typically its graphical user interface. In case of

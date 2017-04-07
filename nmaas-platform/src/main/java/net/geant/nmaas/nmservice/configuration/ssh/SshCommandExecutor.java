@@ -4,7 +4,6 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
 import net.geant.nmaas.nmservice.configuration.exceptions.SshConnectionException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
-import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

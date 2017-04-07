@@ -9,8 +9,8 @@ import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
-import net.geant.nmaas.orchestration.AppConfiguration;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
