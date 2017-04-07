@@ -83,7 +83,7 @@
 			<div class="row">
 				<h3>Configuration</h3>
 				<hr>
-				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration(appInstance.id, $event)" >
+				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration($event)" >
 				
 				</json-schema-form>
 				<!-- 
