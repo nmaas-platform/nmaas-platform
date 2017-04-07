@@ -3,6 +3,8 @@ import { RouterModule } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { FormsModule }   from '@angular/forms';
 
+import { JsonSchemaFormModule } from 'angular2-json-schema-form/src';
+
 import { AuthModule } from '../../auth/auth.module';
 import { SharedModule } from '../../shared/shared.module';
 
@@ -27,6 +29,7 @@ import { AppInstanceListComponent } from './appinstancelist/appinstancelist.comp
         RouterModule,
         SharedModule,
         AuthModule,
+        JsonSchemaFormModule.forRoot()
     ],
     exports: [
         AppInstanceComponent,

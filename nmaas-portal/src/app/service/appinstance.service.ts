@@ -70,6 +70,12 @@ export class AppInstanceService {
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
     }
 
+    public applyConfiguration(appInstanceId: Number, configuration): Observable<void> {
+        return this.authHttp.post(this.getUrl() + appInstanceId, configuration)
+            .timeout(10000)
+            .catch((error: any) => Observable.throw(error.json().message || 'Server error'));        
+    }
+    
     private getUrl(): string {
         return this.appConfig.getApiUrl() + AppInstanceService.APPINSTANCE_URL;
     }
