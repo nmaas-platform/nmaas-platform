@@ -64,7 +64,7 @@ public class DcnRestApiAuthTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
                 .accept(MediaType.APPLICATION_JSON))
-        		.andExpect(status().isCreated());
+        		.andExpect(status().isInternalServerError());
     }
 
     @Test

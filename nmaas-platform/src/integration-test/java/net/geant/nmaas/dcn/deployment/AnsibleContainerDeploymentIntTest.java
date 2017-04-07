@@ -2,7 +2,7 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -19,17 +19,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = {"net.geant.nmaas.portal.persistent.repositories"})
+@EnableJpaRepositories(basePackages = {"net.geant.nmaas"})
 @EnableJpaAuditing(auditorAwareRef="auditorProvider")
 @PropertySource("classpath:db.properties")
-@ComponentScan("net.geant.nmaas.portal.persistent.repositories")
-@EntityScan("net.geant.nmaas.portal.persistent.entity")
+@ComponentScan("net.geant.nmaas")
+@EntityScan("net.geant.nmaas")
 public class PersistentConfig {
 //	public final static String DRIVER="db.driver";
 //	public final static String URL="db.url";
@@ -52,6 +54,7 @@ public class PersistentConfig {
 			UserRepository userRepo;
 			
 			@Override
+			@Transactional(propagation=Propagation.REQUIRES_NEW)
 			public User getCurrentAuditor() {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				if(auth == null)

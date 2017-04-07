@@ -1,8 +1,8 @@
 package net.geant.nmaas.orchestration.api;
 
-import net.geant.nmaas.orchestration.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -41,32 +41,33 @@ public class DockerSwarmServiceSpec implements NmServiceSpec {
      */
     private List<PortForwardingSpec> ports;
 
+    public DockerSwarmServiceSpec() { }
+
     public DockerSwarmServiceSpec(String name, DockerSwarmNmServiceTemplate template) {
         this.name = name;
         this.template = template;
     }
 
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
     public Boolean verify() {
         if (name == null || name.isEmpty())
             return false;
         return true;
     }
 
-    @Override
-    public String uniqueDeploymentName() {
-        // TODO should be replaced with something more sophisticated
+    public String getName() {
         return name;
     }
 
-    @Override
-    public NmServiceTemplate template() {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public DockerSwarmNmServiceTemplate getTemplate() {
         return template;
+    }
+
+    public void setTemplate(DockerSwarmNmServiceTemplate template) {
+        this.template = template;
     }
 
     public String getCommand() {
@@ -75,14 +76,6 @@ public class DockerSwarmServiceSpec implements NmServiceSpec {
 
     public void setCommand(String command) {
         this.command = command;
-    }
-
-    public List<PortForwardingSpec> getPorts() {
-        return ports;
-    }
-
-    public void setPorts(List<PortForwardingSpec> ports) {
-        this.ports = ports;
     }
 
     public List<String> getCommandArguments() {
@@ -99,5 +92,13 @@ public class DockerSwarmServiceSpec implements NmServiceSpec {
 
     public void setEnvironmentVariables(List<String> environmentVariables) {
         this.environmentVariables = environmentVariables;
+    }
+
+    public List<PortForwardingSpec> getPorts() {
+        return ports;
+    }
+
+    public void setPorts(List<PortForwardingSpec> ports) {
+        this.ports = ports;
     }
 }

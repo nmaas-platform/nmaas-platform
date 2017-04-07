@@ -14,7 +14,11 @@ public class AppInstance {
 	
 	private User owner;
 	
+	private String configuration;
+	
 	private AppInstanceState state;
+	
+	private String url;
 	
 	public AppInstance() {
 	}
@@ -65,6 +69,22 @@ public class AppInstance {
 
 	public void setState(AppInstanceState state) {
 		this.state = state;
+	}
+
+	public String getConfiguration() {
+		return configuration;
+	}
+
+	public void setConfiguration(String configuration) {
+		this.configuration = configuration;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 

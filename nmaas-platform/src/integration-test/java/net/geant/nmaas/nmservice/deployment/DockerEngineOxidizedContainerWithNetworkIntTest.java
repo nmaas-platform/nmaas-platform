@@ -3,14 +3,12 @@ package net.geant.nmaas.nmservice.deployment;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,9 +33,6 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 	private ContainerOrchestrationProvider orchestrator;
 
 	@Autowired
-	private NmServiceTemplateRepository templates;
-
-	@Autowired
 	private NmServiceRepository nmServiceRepository;
 
 	@Autowired
@@ -49,8 +44,8 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 	public void setup() throws DockerHostNotFoundException {
 		DockerContainerSpec spec = new DockerContainerSpec(
 				serviceName,
-				(DockerEngineContainerTemplate) templates.loadTemplateByName("oxidized"));
-		spec.setClientDetails("demo", "jra2t5");
+				ITestHelper.oxidizedTemplate(),
+				100L);
 		final ContainerNetworkIpamSpec ipamSpec = new ContainerNetworkIpamSpec(
 				"192.168.239.0/24",
 				"192.168.239.3");

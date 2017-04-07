@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 
-import { AppsService } from '../../service/apps.service';
-import { Comment } from '../../model/comment';
+import { AppsService } from '../../service/index';
+import { Comment } from '../../model/index';
 
 @Component({
     selector: 'comments',

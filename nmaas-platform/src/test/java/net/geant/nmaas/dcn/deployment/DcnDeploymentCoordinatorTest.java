@@ -31,13 +31,4 @@ public class DcnDeploymentCoordinatorTest {
                 equalTo(DcnDeploymentState.ERROR));
     }
 
-    @Test
-    public void shouldCheckIfDcnStateNotificationIsRequired() {
-        assertTrue(coordinator.statusUpdateShouldBeSentToListeners(DcnDeploymentState.DEPLOYED));
-        assertTrue(coordinator.statusUpdateShouldBeSentToListeners(DcnDeploymentState.DEPLOYMENT_FAILED));
-        assertTrue(coordinator.statusUpdateShouldBeSentToListeners(DcnDeploymentState.REMOVED));
-        assertTrue(coordinator.statusUpdateShouldBeSentToListeners(DcnDeploymentState.REMOVAL_FAILED));
-        assertFalse(coordinator.statusUpdateShouldBeSentToListeners(DcnDeploymentState.DEPLOYMENT_INITIATED));
-    }
-
 }

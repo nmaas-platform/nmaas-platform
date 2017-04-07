@@ -4,8 +4,9 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
@@ -46,7 +47,7 @@ public class ContainerConfigBuilder {
         return containerBuilder.build();
     }
 
-    private static Map<String, List<PortBinding>> preparePortBindings(ContainerPortForwardingSpec containerPort, String hostPublicIpAddress, int assignedHostPort)  {
+    private static Map<String, List<PortBinding>> preparePortBindings(DockerContainerPortForwarding containerPort, String hostPublicIpAddress, int assignedHostPort)  {
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
         List<PortBinding> hostPorts = new ArrayList<>();
         hostPorts.add(PortBinding.of(hostPublicIpAddress, assignedHostPort));
@@ -54,7 +55,7 @@ public class ContainerConfigBuilder {
         return portBindings;
     }
 
-    private static String exposedPortString(ContainerPortForwardingSpec port) {
+    private static String exposedPortString(DockerContainerPortForwarding port) {
         StringBuilder sb = new StringBuilder();
         sb.append(port.getTargetPort());
         if (port.getProtocol() != null)
@@ -87,11 +88,16 @@ public class ContainerConfigBuilder {
 
     public static void verifyInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
         NmServiceSpec spec = service.getSpec();
-        if (DockerEngineContainerTemplate.class != spec.template().getClass() || DockerContainerSpec.class != spec.getClass())
-            throw new NmServiceRequestVerificationException("Service template and/or spec not in DockerEngine format");
-        if (!spec.template().verify())
+        if (DockerContainerSpec.class != spec.getClass())
+            throw new NmServiceRequestVerificationException("Service spec not in DockerEngine format");
+        DockerContainerSpec dockerContainerSpec = (DockerContainerSpec) spec;
+        if (dockerContainerSpec.getTemplate() == null)
+            throw new NmServiceRequestVerificationException("Service template not set in the spec");
+        if (DockerContainerTemplate.class != dockerContainerSpec.getTemplate().getClass())
+            throw new NmServiceRequestVerificationException("Service template not in DockerEngine format");
+        if (!dockerContainerSpec.getTemplate().verify())
             throw new NmServiceRequestVerificationException("Service template incorrect");
-        if (!spec.template().verifyNmServiceSpec(spec))
+        if (!dockerContainerSpec.getTemplate().verifyNmServiceSpec(dockerContainerSpec))
             throw new NmServiceRequestVerificationException("Service spec incorrect or missing required data");
         if (service.getNetwork() == null)
             throw new NmServiceRequestVerificationException("Network details not set");

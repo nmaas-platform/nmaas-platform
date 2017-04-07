@@ -113,7 +113,8 @@ public class DockerNetworkClient {
             throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = client(host.apiUrl());
         try {
-            executeRemove(networkId, apiClient);
+            if(checkIfNetworkExists(networkId, apiClient))
+                executeRemove(networkId, apiClient);
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
@@ -126,6 +127,11 @@ public class DockerNetworkClient {
         } finally {
             if (apiClient != null) apiClient.close();
         }
+    }
+
+    private boolean checkIfNetworkExists(String networkId, DockerClient apiClient)
+            throws DockerException, InterruptedException {
+        return apiClient.listNetworks().stream().anyMatch(n -> n.id().equals(networkId));
     }
 
     private void executeRemove(String networkId, DockerClient apiClient)

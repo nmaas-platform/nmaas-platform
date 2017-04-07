@@ -2,6 +2,8 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,8 +53,8 @@ public class OrchestratorManagerRestControllerTest {
 
     @Before
     public void setup() {
-        clientId = Identifier.newInstance("clientId1");
-        applicationId = Identifier.newInstance("applicationId1");
+        clientId = Identifier.newInstance("100L");
+        applicationId = Identifier.newInstance("15L");
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(applicationId, jsonInput);
@@ -64,8 +66,8 @@ public class OrchestratorManagerRestControllerTest {
         when(lifecycleManager.deployApplication(any(),any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("clientid", clientId.toString());
-        params.set("applicationid", applicationId.toString());
+        params.set("clientid", clientId.getValue());
+        params.set("applicationid", applicationId.getValue());
         mvc.perform(post("/platform/api/orchestration/deployments")
                 .params(params)
                 .accept(MediaType.APPLICATION_JSON))

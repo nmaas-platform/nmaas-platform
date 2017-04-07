@@ -8,7 +8,6 @@ import { Comment } from '../model/comment';
 import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
 
-
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/timeout';
@@ -57,4 +56,5 @@ export class AppsService {
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
     }
 
+    
 }

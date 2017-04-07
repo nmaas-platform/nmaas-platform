@@ -1,15 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.nmservice;
 
-import net.geant.nmaas.orchestration.Identifier;
+import java.io.Serializable;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public interface NmServiceTemplate {
-
-    Identifier getApplicationId();
-
-    String getName();
+public interface NmServiceTemplate extends Serializable {
 
     Boolean verify();
 
