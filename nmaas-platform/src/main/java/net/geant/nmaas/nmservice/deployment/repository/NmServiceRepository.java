@@ -1,9 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.repository;
 
+import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.nmservice.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +16,22 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-@Singleton
 public class NmServiceRepository {
 
+    @Autowired
+    private DeploymentIdToNmServiceNameMapper deploymentIdMapper;
+
     private Map<String, NmServiceInfo> services = new HashMap<>();
+
+    @EventListener
+    public void notifyStateChange(NmServiceDeploymentStateChangeEvent event)
+            throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, ServiceNotFoundException {
+        updateServiceState(deploymentIdMapper.nmServiceName(event.getDeploymentId()), event.getState());
+    }
+
+    private void updateServiceState(String serviceName, NmServiceDeploymentState state) throws ServiceNotFoundException {
+        loadService(serviceName).updateState(state);
+    }
 
     public String getServiceId(String serviceName) throws ServiceNotFoundException {
         return loadService(serviceName).getDeploymentId();
@@ -34,9 +49,6 @@ public class NmServiceRepository {
         loadService(serviceName).setDeploymentId(id);
     }
 
-    public void updateServiceState(String serviceName, NmServiceDeploymentState state) throws ServiceNotFoundException {
-        loadService(serviceName).updateState(state);
-    }
 
     public void updateServiceHost(String serviceName, NmServiceDeploymentHost host) throws ServiceNotFoundException {
         loadService(serviceName).setHost(host);

@@ -5,8 +5,11 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
 import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
+import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +39,13 @@ public class DefaultAppDeploymentMonitorTest {
     private DcnRepository dcnRepository;
 
     @Autowired
-    private DeploymentIdToDcnNameMapper mapper;
+    private NmServiceRepository nmServiceRepository;
+
+    @Autowired
+    private DeploymentIdToDcnNameMapper deploymentIdToDcnNameMapper;
+
+    @Autowired
+    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -47,7 +56,10 @@ public class DefaultAppDeploymentMonitorTest {
     public void setup() {
         String dcnName = "dcnName";
         dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, null));
-        mapper.storeMapping(deploymentId, dcnName);
+        deploymentIdToDcnNameMapper.storeMapping(deploymentId, dcnName);
+        String nmServiceName = "serviceName";
+        nmServiceRepository.storeService(new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null));
+        deploymentIdToNmServiceNameMapper.storeMapping(deploymentId, nmServiceName);
         repository.updateDeploymentState(deploymentId, AppDeploymentState.REQUESTED);
     }
 

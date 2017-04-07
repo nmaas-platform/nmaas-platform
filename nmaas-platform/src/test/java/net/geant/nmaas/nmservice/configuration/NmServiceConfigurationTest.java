@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
+import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -44,13 +45,22 @@ public class NmServiceConfigurationTest {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Autowired
+    private DeploymentIdToNmServiceNameMapper mapper;
+
+    @Autowired
+    private NmServiceRepository nmServiceRepository;
+
     private Identifier deploymentId;
 
     private AppConfiguration configuration;
 
     @Before
     public void setup() {
+        String serviceName = "name";
         deploymentId = Identifier.newInstance("id");
+        nmServiceRepository.storeService(new NmServiceInfo(serviceName, null, null));
+        mapper.storeMapping(deploymentId, serviceName);
         configuration = new AppConfiguration();
         configuration.setApplicationId(null);
         configuration.setJsonInput("");

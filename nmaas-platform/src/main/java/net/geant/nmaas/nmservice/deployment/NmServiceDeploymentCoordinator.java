@@ -134,13 +134,8 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (CouldNotDestroyNmServiceException
                 | ContainerOrchestratorInternalErrorException
                 | CouldNotConnectToOrchestratorException e) {
-            try {
-                log.error("NM Service removal failed -> " + e.getMessage());
-                serviceRepository.updateServiceState(serviceName, REMOVAL_FAILED);
-                notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
-            } catch (NmServiceRepository.ServiceNotFoundException ex) {
-                log.error("NM Service removal failed notification failed -> " + e.getMessage());
-            }
+            log.error("NM Service removal failed -> " + e.getMessage());
+            notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
         }
     }
 
