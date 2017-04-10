@@ -4,6 +4,8 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
 import net.geant.nmaas.nmservice.configuration.exceptions.SshConnectionException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ import java.nio.charset.Charset;
  */
 @Component("sshCommandExecutor")
 public class SshCommandExecutor {
+
+    private final static Logger log = LogManager.getLogger(SshCommandExecutor.class);
 
     @Autowired
     private Environment env;
@@ -35,9 +39,9 @@ public class SshCommandExecutor {
                     configId,
                     targetDirectoryFullPath,
                     configurationFileName);
-            BasicCredentials credentials = new BasicCredentials(env.getProperty("app.config.ssh.username"), env.getProperty("app.config.ssh.password"));
-            System.out.println("Connecting to " + host.getPublicIpAddress().getHostAddress());
-            System.out.println("Command: " + command.getCommand());
+            BasicCredentials credentials = new BasicCredentials(env.getProperty("app.config.ssh.username"));
+            log.debug("Connecting to " + host.getPublicIpAddress().getHostAddress());
+            log.debug("Command: " + command.getCommand());
             SingleCommandSshConnection.getConnection(host.getPublicIpAddress().getHostAddress(), credentials).executeSingleCommand(command);
         } catch (NmServiceConfigurationRepository.ConfigurationNotFoundException
                 | SshConnectionException
