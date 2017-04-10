@@ -26,6 +26,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
 
