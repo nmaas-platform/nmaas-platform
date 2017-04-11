@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Stores a static list of Ansible playbooks vpn configurations.
+ * Stores a static list of Ansible playbooks VPN configurations.
  *
  * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
  */
@@ -50,11 +50,18 @@ public class AnsiblePlaybookVpnConfigRepository {
         cloudVpnConig.setPolicyStatementExport("NMAAS-C-AS64522-EXPORT");
         cloudSideVpnConfigs.put("GN4-DOCKER-1", cloudVpnConig);
     }
-    
+
+    /**
+     * Store {@link AnsiblePlaybookVpnConfig} client instance in the repository
+     * @param customerId Client unique identifier
+     * @param customerVpnConfig New {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input
+     * @throws AnsiblePlaybookVpnConfigExistsException when Ansible playbook VPN configuration exists in the repository
+     */
     public void addCustomerVpnConfig(long customerId, AnsiblePlaybookVpnConfig customerVpnConfig)
             throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException {
         validateCustomerId(customerId);
-        validateCustomerVpnConfig(customerVpnConfig);
+        validateVpnConfig(customerVpnConfig);
         try {
             loadCustomerVpnConfigByCustomerId(customerId);
             throw new AnsiblePlaybookVpnConfigExistsException(
@@ -65,6 +72,75 @@ public class AnsiblePlaybookVpnConfigRepository {
         }
     }
 
+    /**
+     * Updates {@link AnsiblePlaybookVpnConfig} client instance in the repository
+     * @param customerId Client unique identifier
+     * @param customerVpnConfig Updated {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration doeas not exist in the repository
+     */
+    public void updateCustomerVpnConfig(long customerId, AnsiblePlaybookVpnConfig customerVpnConfig)
+            throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigNotFoundException {
+        validateCustomerId(customerId);
+        validateVpnConfig(customerVpnConfig);
+        try {
+            loadCustomerVpnConfigByCustomerId(customerId);
+            customerVpnConfig.setType(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
+            customerSideVpnConfigs.put(customerId, customerVpnConfig);
+        } catch (AnsiblePlaybookVpnConfigNotFoundException ex) {
+            throw new AnsiblePlaybookVpnConfigNotFoundException (
+                    "Anisble playbook VPN configuration for customer " +  customerId +  " does not exist in the repository.");
+        }
+    }
+
+    /**
+     * Store {@link AnsiblePlaybookVpnConfig} cloud instance in the repository
+     * @param dockerHostName DockerHost unique identifier
+     * @param cloudVpnConfig New {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input
+     * @throws AnsiblePlaybookVpnConfigExistsException when Ansible playbook VPN configuration exists in the repository
+     */
+    public void addCloudVpnConfig(String dockerHostName, AnsiblePlaybookVpnConfig cloudVpnConfig)
+            throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException {
+        validateDockerHostName(dockerHostName);
+        validateVpnConfig(cloudVpnConfig);
+        try {
+            loadCloudVpnConfigByDockerHost(dockerHostName);
+            throw new AnsiblePlaybookVpnConfigExistsException(
+                    "Anisble playbook VPN cloud configuration for DockerHost " +  dockerHostName +  " exists in the repository.");
+        } catch (AnsiblePlaybookVpnConfigNotFoundException ex) {
+            cloudVpnConfig.setType(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
+            cloudSideVpnConfigs.put(dockerHostName, cloudVpnConfig);
+        }
+    }
+
+    /**
+     * Updates {@link AnsiblePlaybookVpnConfig} cloud instance in the repository
+     * @param dockerHostName DockerHost unique identifier
+     * @param cloudVpnConfig Updated {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration doeas not exist in the repository
+     */
+    public void updateCloudVpnConfig(String dockerHostName, AnsiblePlaybookVpnConfig cloudVpnConfig)
+            throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigNotFoundException {
+        validateDockerHostName(dockerHostName);
+        validateVpnConfig(cloudVpnConfig);
+        try {
+            loadCloudVpnConfigByDockerHost(dockerHostName);
+            cloudVpnConfig.setType(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
+            cloudSideVpnConfigs.put(dockerHostName, cloudVpnConfig);
+        } catch (AnsiblePlaybookVpnConfigNotFoundException ex) {
+            throw new AnsiblePlaybookVpnConfigNotFoundException(
+                    "Anisble playbook VPN configuration for DockerHost " +  dockerHostName +  " does not exist in the repository.");
+        }
+    }
+
+    /**
+     * Loads {@link AnsiblePlaybookVpnConfig} instance from the repository by client id
+     * @param customerId Client unique identifier
+     * @return {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
+     */
     public AnsiblePlaybookVpnConfig loadCustomerVpnConfigByCustomerId(long customerId)
             throws AnsiblePlaybookVpnConfigNotFoundException {
         AnsiblePlaybookVpnConfig customerVpnConfig = customerSideVpnConfigs.get(customerId);
@@ -75,13 +151,53 @@ public class AnsiblePlaybookVpnConfigRepository {
         return customerVpnConfig;
     }
 
-    private void validateCustomerVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig) {
-
+    /**
+     * Loads all customer side {@link AnsiblePlaybookVpnConfig} instances
+     * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by customer id as key
+     */
+    public Map<Long, AnsiblePlaybookVpnConfig> loadAllClientVpnConfigs () {
+        return customerSideVpnConfigs;
     }
 
-    protected void validateCustomerId(long customerId) throws AnsiblePlaybookVpnConfigInvalidException {
+    /**
+     * Loads {@link AnsiblePlaybookVpnConfig} instance from the repository by Docker host name
+     * @param hostName Docker host unique name
+     * @return {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
+     */
+    public AnsiblePlaybookVpnConfig loadCloudVpnConfigByDockerHost (String hostName)
+            throws AnsiblePlaybookVpnConfigNotFoundException {
+        AnsiblePlaybookVpnConfig customerVpnConfig = cloudSideVpnConfigs.get(hostName);
+        if(customerVpnConfig == null) {
+            throw new AnsiblePlaybookVpnConfigNotFoundException(
+                    "Did not find Ansible playbook cloud configuration for DockerHost " + hostName + " in the repository");
+        }
+        return customerVpnConfig;
+    }
+
+    /**
+     * Loads all cloud side {@link AnsiblePlaybookVpnConfig} instances
+     * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by DockerHost name as a key
+     */
+    public Map<String, AnsiblePlaybookVpnConfig> loadAllCloudVpnConfigs () {
+        return cloudSideVpnConfigs;
+    }
+
+    void validateVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig)
+            throws AnsiblePlaybookVpnConfigInvalidException {
+        customerVpnConfig.validate();
+    }
+
+    void validateCustomerId(long customerId) throws AnsiblePlaybookVpnConfigInvalidException {
         if(customerId < 0) {
             throw new AnsiblePlaybookVpnConfigInvalidException("Customer ID has to be bigger then 0 (" + customerId + ")");
+        }
+    }
+
+    void validateDockerHostName(String dockerHostName)
+            throws AnsiblePlaybookVpnConfigInvalidException {
+        if(dockerHostName == null) {
+            throw new AnsiblePlaybookVpnConfigInvalidException("DockerHost name cannot be null.");
         }
     }
 }
