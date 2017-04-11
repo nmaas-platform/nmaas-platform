@@ -370,6 +370,10 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is too long (max " + MAX_PROPRTY_LENGTH + " characters)\n");
     }
 
+    int getMaxpropertyLength() {
+        return MAX_PROPRTY_LENGTH;
+    }
+
     public enum Type {
         CLIENT_SIDE,
         CLOUD_SIDE
