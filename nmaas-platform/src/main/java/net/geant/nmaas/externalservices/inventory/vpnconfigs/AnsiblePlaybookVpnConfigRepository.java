@@ -1,5 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +10,7 @@ import java.util.Map;
  *
  * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
  */
+@Service
 public class AnsiblePlaybookVpnConfigRepository {
 
     private Map<Long, AnsiblePlaybookVpnConfig> customerSideVpnConfigs = new HashMap<>();
@@ -152,14 +155,6 @@ public class AnsiblePlaybookVpnConfigRepository {
     }
 
     /**
-     * Loads all customer side {@link AnsiblePlaybookVpnConfig} instances
-     * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by customer id as key
-     */
-    public Map<Long, AnsiblePlaybookVpnConfig> loadAllClientVpnConfigs () {
-        return customerSideVpnConfigs;
-    }
-
-    /**
      * Loads {@link AnsiblePlaybookVpnConfig} instance from the repository by Docker host name
      * @param hostName Docker host unique name
      * @return {@link AnsiblePlaybookVpnConfig} instance
@@ -176,6 +171,14 @@ public class AnsiblePlaybookVpnConfigRepository {
     }
 
     /**
+     * Loads all customer side {@link AnsiblePlaybookVpnConfig} instances
+     * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by customer id as key
+     */
+    public Map<Long, AnsiblePlaybookVpnConfig> loadAllClientVpnConfigs () {
+        return customerSideVpnConfigs;
+    }
+
+    /**
      * Loads all cloud side {@link AnsiblePlaybookVpnConfig} instances
      * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by DockerHost name as a key
      */
@@ -183,18 +186,40 @@ public class AnsiblePlaybookVpnConfigRepository {
         return cloudSideVpnConfigs;
     }
 
-    void validateVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig)
+    /**
+     * Removes {@link AnsiblePlaybookVpnConfig} cloud instance from the repository
+     * @param hostName Unique Docker host name
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
+     */
+    public void removeCloudVpnConfig(String hostName)
+            throws AnsiblePlaybookVpnConfigNotFoundException {
+        loadCloudVpnConfigByDockerHost(hostName);
+        cloudSideVpnConfigs.remove(hostName);
+    }
+
+    /**
+     * Removes {@link AnsiblePlaybookVpnConfig} client instance from the repository
+     * @param consumerId Client unique identifier
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
+     */
+    public void removeClientVpnConfig(long consumerId)
+            throws AnsiblePlaybookVpnConfigNotFoundException {
+        loadCustomerVpnConfigByCustomerId(consumerId);
+        customerSideVpnConfigs.remove(consumerId);
+    }
+
+    private void validateVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig)
             throws AnsiblePlaybookVpnConfigInvalidException {
         customerVpnConfig.validate();
     }
 
-    void validateCustomerId(long customerId) throws AnsiblePlaybookVpnConfigInvalidException {
+    private void validateCustomerId(long customerId) throws AnsiblePlaybookVpnConfigInvalidException {
         if(customerId < 0) {
             throw new AnsiblePlaybookVpnConfigInvalidException("Customer ID has to be bigger then 0 (" + customerId + ")");
         }
     }
 
-    void validateDockerHostName(String dockerHostName)
+    private void validateDockerHostName(String dockerHostName)
             throws AnsiblePlaybookVpnConfigInvalidException {
         if(dockerHostName == null) {
             throw new AnsiblePlaybookVpnConfigInvalidException("DockerHost name cannot be null.");

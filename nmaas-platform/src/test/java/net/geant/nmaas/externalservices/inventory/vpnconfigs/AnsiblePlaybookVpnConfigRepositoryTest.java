@@ -125,6 +125,30 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
         repository.updateCloudVpnConfig(EXISTING_DOCKERHOST_NAME + "wrong", setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE));
     }
 
+    @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
+    public void shouldRemoveCloudVpnConfig() throws Exception {
+        AnsiblePlaybookVpnConfigRepository repository = new AnsiblePlaybookVpnConfigRepository();
+        repository.removeCloudVpnConfig(EXISTING_DOCKERHOST_NAME);
+        repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKERHOST_NAME);
+    }
+
+    @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
+    public void shouldThrowNotFoundExceptionDuringCloudVpnConfigRemoval() throws Exception {
+        repository.removeCloudVpnConfig(EXISTING_DOCKERHOST_NAME + "wrong");
+    }
+
+    @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
+    public void shouldRemoveConsumerVpnConfig() throws Exception {
+        AnsiblePlaybookVpnConfigRepository repository = new AnsiblePlaybookVpnConfigRepository();
+        repository.removeClientVpnConfig(EXISTING_CLIENT_ID);
+        repository.loadCustomerVpnConfigByCustomerId(EXISTING_CLIENT_ID);
+    }
+
+    @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
+    public void shouldThrowNotFoundExceptionDuringClientVpnConfigRemoval() throws Exception {
+        repository.removeClientVpnConfig(EXISTING_CLIENT_ID + 100);
+    }
+
     private AnsiblePlaybookVpnConfig setNewVpnConfig(String newVpnConfig, AnsiblePlaybookVpnConfig.Type type) {
         AnsiblePlaybookVpnConfig customerVpnConig = new AnsiblePlaybookVpnConfig(type);
         customerVpnConig.setTargetRouter(newVpnConfig);
