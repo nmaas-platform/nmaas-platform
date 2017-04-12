@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.api;
 
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class AppLifecycleManagerRestController {
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
             @RequestBody String configuration) throws InvalidDeploymentIdException {
-        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), new AppConfiguration(null, configuration));
+        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), new AppConfiguration(configuration));
     }
 
     @RequestMapping(value = "/{deploymentId}",

@@ -1,6 +1,5 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,23 +50,23 @@ public class VpnConfigDefaultInstanceAndValidationTest {
     }
 
     @Test
-    public void shouldReturnDefaultInstanceAndValidateIt() throws ConfigNotValidException {
+    public void shouldReturnDefaultInstanceAndValidateIt() throws AnsiblePlaybookVpnConfig.ConfigNotValidException {
         AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter().validate();
         AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter().validate();
     }
 
     @Test
-    public void shouldValidateCompleteAnsiblePlaybookVpnConfigForClientSideRouter() throws ConfigNotValidException {
+    public void shouldValidateCompleteAnsiblePlaybookVpnConfigForClientSideRouter() throws AnsiblePlaybookVpnConfig.ConfigNotValidException {
         ansiblePlaybookValidConfigForClientSideRouter.validate();
     }
 
     @Test
-    public void shouldValidateCompleteAnsiblePlaybookVpnConfigForCloudSideRouter() throws ConfigNotValidException {
+    public void shouldValidateCompleteAnsiblePlaybookVpnConfigForCloudSideRouter() throws AnsiblePlaybookVpnConfig.ConfigNotValidException {
         ansiblePlaybookValidConfigForCloudSideRouter.validate();
     }
 
-    @Test(expected = ConfigNotValidException.class)
-    public void shouldThrowExceptionOnMissingParam() throws ConfigNotValidException {
+    @Test(expected = AnsiblePlaybookVpnConfig.ConfigNotValidException.class)
+    public void shouldThrowExceptionOnMissingParam() throws AnsiblePlaybookVpnConfig.ConfigNotValidException {
         ansiblePlaybookValidConfigForClientSideRouter.setTargetRouter(null);
         ansiblePlaybookValidConfigForClientSideRouter.validate();
     }

@@ -1,18 +1,21 @@
-package net.geant.nmaas.orchestration.task;
+package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.events.AppRemoveActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,41 +23,35 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class AppRemovalOrchestratorTask {
+public class AppRemovalTask {
 
-    private final static Logger log = LogManager.getLogger(AppDeploymentOrchestratorTask.class);
+    private final static Logger log = LogManager.getLogger(AppRemovalTask.class);
 
     private NmServiceDeploymentProvider serviceDeployment;
 
     private DcnDeploymentProvider dcnDeployment;
 
-    private ApplicationEventPublisher applicationEventPublisher;
-
     @Autowired
-    public AppRemovalOrchestratorTask(
+    public AppRemovalTask(
             NmServiceDeploymentProvider serviceDeployment,
-            DcnDeploymentProvider dcnDeployment,
-            ApplicationEventPublisher applicationEventPublisher) {
+            DcnDeploymentProvider dcnDeployment) {
         this.serviceDeployment = serviceDeployment;
         this.dcnDeployment = dcnDeployment;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
+    @Async
+    @EventListener
     @Loggable(LogLevel.INFO)
-    public void remove(Identifier deploymentId) {
-        verifyIfAllPropertiesAreSet(deploymentId);
+    public void remove(AppRemoveActionEvent event) {
+        final Identifier deploymentId = event.getDeploymentId();
         try {
             serviceDeployment.removeNmService(deploymentId);
             dcnDeployment.removeDcn(deploymentId);
-        } catch (net.geant.nmaas.nmservice.InvalidDeploymentIdException e) {
-            log.error("Exception during application removal -> " + e.getMessage());
-            applicationEventPublisher.publishEvent(new AppDeploymentErrorEvent(this, deploymentId));
+        } catch (CouldNotRemoveNmServiceException e) {
+            log.warn("Service removal failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
+        } catch (CouldNotRemoveDcnException e) {
+            log.warn("DCN removal failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         }
-    }
-
-    private void verifyIfAllPropertiesAreSet(Identifier deploymentId) {
-        if (deploymentId == null)
-            throw new NullPointerException();
     }
 
 }

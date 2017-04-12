@@ -1,45 +1,34 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.validation.constraints.NotNull;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.AppInstance;
-import net.geant.nmaas.portal.api.domain.AppInstanceState;
-import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
-import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.*;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/portal/api/apps/instances")
@@ -153,8 +142,7 @@ public class AppInstanceController extends AppBaseController {
 		appInstanceRepo.save(appInstance);
 
 		try {
-			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), new AppConfiguration(
-					new Identifier(Long.toString(appInstance.getApplication().getId())), configuration));
+			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), new AppConfiguration(configuration));
 		} catch (InvalidDeploymentIdException e) {
 			throw new ProcessingException("Missing app instance");
 		}

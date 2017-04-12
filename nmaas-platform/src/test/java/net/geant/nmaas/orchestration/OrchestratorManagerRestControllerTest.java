@@ -57,7 +57,7 @@ public class OrchestratorManagerRestControllerTest {
         applicationId = Identifier.newInstance("15L");
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
-        appConfiguration = new AppConfiguration(applicationId, jsonInput);
+        appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager)).build();
     }
 

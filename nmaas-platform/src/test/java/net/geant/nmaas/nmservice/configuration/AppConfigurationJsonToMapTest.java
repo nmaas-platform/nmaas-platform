@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,17 +29,14 @@ public class AppConfigurationJsonToMapTest {
 
     @Before
     public void prepareAppConfiguration() {
-        Identifier applicationId = Identifier.newInstance("appId1");
         String jsonInput = "{\"routers\": [\"1.1.1.1\",\"2.2.2.2\"]}";
-        appConfiguration = new AppConfiguration(applicationId, jsonInput);
+        appConfiguration = new AppConfiguration(jsonInput);
     }
 
     @Test
     public void shouldMapJsonToMap() throws IOException {
-        @SuppressWarnings("unchecked")
         List<String> list = (List<String>) configurationsPreparer.getModelFromJson(appConfiguration).get("routers");
         assertThat(list.size(), equalTo(2));
-        System.out.println(list.toString());
         assertThat(list, Matchers.contains("1.1.1.1", "2.2.2.2"));
     }
 

@@ -1,6 +1,5 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.dcn.deployment.exceptions.ConfigNotValidException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 
 public class AnsiblePlaybookVpnConfig {
@@ -256,4 +255,10 @@ public class AnsiblePlaybookVpnConfig {
         REMOVE;
     }
 
+    public class ConfigNotValidException extends Exception {
+
+        public ConfigNotValidException(String message) {
+            super(message);
+        }
+    }
 }

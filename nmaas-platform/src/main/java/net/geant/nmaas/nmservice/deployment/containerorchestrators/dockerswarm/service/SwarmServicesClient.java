@@ -10,7 +10,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotConnectToOrchestratorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDestroyNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,14 +40,14 @@ public class SwarmServicesClient {
     }
 
     public void destroyService(String serviceId, DockerSwarmManager swarmManager)
-            throws CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+            throws CouldNotRemoveNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = DockerApiClientFactory.client(swarmManager.getApiUri());
         try {
             apiClient.removeService(serviceId);
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new CouldNotConnectToOrchestratorException("Could not connect to Docker Swarm -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
-            throw new CouldNotDestroyNmServiceException("Could not destroy service " + serviceId + " -> " + dockerException.getMessage(), dockerException);
+            throw new CouldNotRemoveNmServiceException("Could not destroy service " + serviceId + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException("Internal error -> " + interruptedException.getMessage(), interruptedException);
         } finally {

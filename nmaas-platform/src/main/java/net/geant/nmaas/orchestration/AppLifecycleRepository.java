@@ -11,12 +11,15 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.events.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -39,8 +42,24 @@ public class AppLifecycleRepository {
         deployments.put(deploymentId, AppDeploymentState.REQUESTED);
     }
 
-    public void updateDeploymentState(Identifier deploymentId, AppDeploymentState currentState) {
+    public Optional<ApplicationEvent> updateDeploymentState(Identifier deploymentId, AppDeploymentState currentState) {
         deployments.put(deploymentId, currentState);
+        return prepareEventIfRequired(deploymentId, currentState);
+    }
+
+    private Optional<ApplicationEvent> prepareEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
+        switch (currentState) {
+            case REQUEST_VALIDATED:
+                return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
+            case DEPLOYMENT_ENVIRONMENT_PREPARED:
+                return Optional.of(new AppDeployDcnActionEvent(this, deploymentId));
+            case APPLICATION_CONFIGURED:
+                return Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
+            case APPLICATION_DEPLOYED:
+                return Optional.of(new AppVerifyDeploymentActionEvent(this, deploymentId));
+            default:
+                return Optional.empty();
+        }
     }
 
     public AppDeploymentState loadCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {

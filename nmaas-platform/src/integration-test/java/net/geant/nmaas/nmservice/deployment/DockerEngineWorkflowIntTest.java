@@ -61,7 +61,7 @@ public class DockerEngineWorkflowIntTest {
 			CouldNotConnectToOrchestratorException,
 			CouldNotPrepareEnvironmentException,
 			CouldNotDeployNmServiceException,
-			CouldNotDestroyNmServiceException,
+            CouldNotRemoveNmServiceException,
 			InterruptedException,
 			NmServiceRepository.ServiceNotFoundException,
 			ContainerNetworkCheckFailedException,
@@ -84,7 +84,7 @@ public class DockerEngineWorkflowIntTest {
 		System.out.println("Cleaning up ... removing containers.");
 		try {
 			orchestrator.removeNmService(serviceName);
-		} catch (CouldNotDestroyNmServiceException | ContainerOrchestratorInternalErrorException e) {
+		} catch (CouldNotRemoveNmServiceException | ContainerOrchestratorInternalErrorException e) {
 			// service was already removed
 		}
 	}

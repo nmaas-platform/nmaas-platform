@@ -45,7 +45,7 @@ public interface ContainerOrchestrationProvider {
             throws ContainerCheckFailedException, ContainerNetworkCheckFailedException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
 
     void removeNmService(String serviceName)
-            throws CouldNotDestroyNmServiceException, ContainerOrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;
+            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;
 
     List<String> listServices(NmServiceDeploymentHost host)
             throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;

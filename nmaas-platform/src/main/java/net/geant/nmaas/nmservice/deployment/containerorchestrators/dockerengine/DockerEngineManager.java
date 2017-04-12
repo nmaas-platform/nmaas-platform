@@ -122,7 +122,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             nmServices.updateServiceId(serviceName, containerId);
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
             throw new CouldNotDeployNmServiceException(
-                    "Could not deploy service -> " + couldNotDeployNmServiceException.getMessage());
+                    "Could not deployNmService service -> " + couldNotDeployNmServiceException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new CouldNotDeployNmServiceException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
@@ -184,7 +184,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeNmService(String serviceName)
-            throws CouldNotDestroyNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+            throws CouldNotRemoveNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
         try {
             final NmServiceInfo service = nmServices.loadService(serviceName);
             final DockerHost host = (DockerHost) service.getHost();
@@ -192,13 +192,13 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             dockerContainerClient.remove(service.getDeploymentId(), host);
             dockerNetworkClient.remove(networkDetails.getDeploymentId(), host);
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotDestroyNmServiceException(
+            throw new CouldNotRemoveNmServiceException(
                     "Service not found in repository -> " + serviceNotFoundException.getMessage());
-        } catch (CouldNotDestroyNmServiceException couldNotDestroyNmServiceException) {
-            throw new CouldNotDestroyNmServiceException(
-                    "Could not destroy service -> " + couldNotDestroyNmServiceException.getMessage());
+        } catch (CouldNotRemoveNmServiceException couldNotRemoveNmServiceException) {
+            throw new CouldNotRemoveNmServiceException(
+                    "Could not destroy service -> " + couldNotRemoveNmServiceException.getMessage());
         } catch (CouldNotRemoveContainerNetworkException couldNotRemoveContainerNetworkException) {
-            throw new CouldNotDestroyNmServiceException(
+            throw new CouldNotRemoveNmServiceException(
                     "Failed to remove network -> " + couldNotRemoveContainerNetworkException.getMessage());
         }
     }

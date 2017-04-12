@@ -47,9 +47,8 @@ public class NmServiceConfigurationsPreparer {
     @Autowired
     private NmServiceRepository nmServices;
 
-    public List<String> generateAndStoreConfigurations(Identifier deploymentId, AppConfiguration appConfiguration)
+    public List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
             throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, NmServiceRepository.ServiceNotFoundException, ConfigTemplateHandlingException, IOException {
-        final Identifier applicationId = appConfiguration.getApplicationId();
         final Map<String, Object> appConfigurationModel = getModelFromJson(appConfiguration);
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
         List<String> configurationsIdentifiers = new ArrayList<>();
