@@ -19,7 +19,7 @@ public class AnsiblePlaybookVpnConfRestController {
     private AnsiblePlaybookVpnConfigRepository repository;
 
     @Autowired
-    AnsiblePlaybookVpnConfRestController(AnsiblePlaybookVpnConfigRepository repository) {
+    public AnsiblePlaybookVpnConfRestController(AnsiblePlaybookVpnConfigRepository repository) {
         this.repository = repository;
     }
 
@@ -28,7 +28,7 @@ public class AnsiblePlaybookVpnConfRestController {
      * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by DockerHost name as key
      */
     @RequestMapping(
-            value = "",
+            value = "/cloud",
             method = RequestMethod.GET)
     public Map<String, AnsiblePlaybookVpnConfig> listAllCloudVpnConfigs() {
         return repository.loadAllCloudVpnConfigs();
@@ -39,7 +39,7 @@ public class AnsiblePlaybookVpnConfRestController {
      * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by customer id as key
      */
     @RequestMapping(
-            value = "",
+            value = "/customer",
             method = RequestMethod.GET)
     public Map<Long, AnsiblePlaybookVpnConfig> listAllCustomerVpnConfigs() {
         return repository.loadAllClientVpnConfigs();
@@ -53,7 +53,7 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
-            value = "/{hostname}",
+            value = "/cloud/{hostname}",
             method = RequestMethod.GET)
     public AnsiblePlaybookVpnConfig getCloudVpnConfig(
             @PathVariable("hostname") String hostName)
@@ -69,7 +69,7 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
-            value = "/{customerid}",
+            value = "/customer/{customerid}",
             method = RequestMethod.GET)
     public AnsiblePlaybookVpnConfig getCustomerVpnConfig(
             @PathVariable("customerid") long customerId)
@@ -85,7 +85,7 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
-            value = "/{hostName}",
+            value = "/cloud/{hostname}",
             method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -104,12 +104,12 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
-            value = "/{customerid}",
+            value = "/customer/{customerid}",
             method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addCustomerVpnConfig(
-            @PathVariable("custmerid") long customerId,
+            @PathVariable("customerid") long customerId,
             @RequestBody AnsiblePlaybookVpnConfig newVpnConfig)
             throws AnsiblePlaybookVpnConfigExistsException, AnsiblePlaybookVpnConfigInvalidException {
         repository.addCustomerVpnConfig(customerId, newVpnConfig);
@@ -123,10 +123,10 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
-            value = "/{hostName}",
-            method = RequestMethod.POST,
+            value = "/cloud/{hostname}",
+            method = RequestMethod.PUT,
             consumes = "application/json")
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateCloudVpnConfig(
             @PathVariable("hostname") String hostName,
             @RequestBody AnsiblePlaybookVpnConfig newVpnConfig)
@@ -142,12 +142,12 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
-            value = "/{customerid}",
-            method = RequestMethod.POST,
+            value = "/customer/{customerid}",
+            method = RequestMethod.PUT,
             consumes = "application/json")
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateCustomerVpnConfig(
-            @PathVariable("custmerid") long customerId,
+            @PathVariable("customerid") long customerId,
             @RequestBody AnsiblePlaybookVpnConfig newVpnConfig)
             throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigNotFoundException {
         repository.updateCustomerVpnConfig(customerId, newVpnConfig);
@@ -159,11 +159,11 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigNotFoundException  when configuration does not exists (HttpStatus.NOT_FOUND)
      */
     @RequestMapping(
-            value = "/{hostName}",
+            value = "/cloud/{hostname}",
             method = RequestMethod.DELETE)
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeCloudVpnConfig(
-            @PathVariable("hostName") String hostName)
+            @PathVariable("hostname") String hostName)
             throws AnsiblePlaybookVpnConfigNotFoundException {
         repository.removeCloudVpnConfig(hostName);
     }
@@ -174,11 +174,11 @@ public class AnsiblePlaybookVpnConfRestController {
      * @throws AnsiblePlaybookVpnConfigNotFoundException  when configuration does not exists (HttpStatus.NOT_FOUND)
      */
     @RequestMapping(
-            value = "/{consumerid}",
+            value = "/customer/{customerid}",
             method = RequestMethod.DELETE)
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeConsumerVpnConfig(
-            @PathVariable("consumerid") long consumerId)
+            @PathVariable("customerid") long consumerId)
             throws AnsiblePlaybookVpnConfigNotFoundException {
         repository.removeClientVpnConfig(consumerId);
     }
