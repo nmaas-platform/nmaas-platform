@@ -11,7 +11,6 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AppRemovalTask {
 
     private final static Logger log = LogManager.getLogger(AppRemovalTask.class);

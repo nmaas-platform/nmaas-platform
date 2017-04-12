@@ -10,12 +10,17 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Component
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AppDeploymentVerificationTask {
 
     private final static Logger log = LogManager.getLogger(AppDeploymentVerificationTask.class);

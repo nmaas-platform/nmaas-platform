@@ -22,6 +22,8 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AppRequestVerificationTask {
 
     private final static Logger log = LogManager.getLogger(AppRequestVerificationTask.class);
