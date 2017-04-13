@@ -7,15 +7,18 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKee
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.*;
+import net.geant.nmaas.orchestration.entities.*;
+import net.geant.nmaas.orchestration.events.AppDeployDcnActionEvent;
+import net.geant.nmaas.orchestration.events.AppDeployServiceActionEvent;
+import net.geant.nmaas.orchestration.events.AppPrepareEnvironmentActionEvent;
+import net.geant.nmaas.orchestration.events.AppVerifyDeploymentActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +28,7 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-public class AppLifecycleRepository {
+public class AppDeploymentLifecycleStateKeeper {
 
     @Autowired
     private NmServiceRepository serviceRepository;
@@ -36,18 +39,18 @@ public class AppLifecycleRepository {
     @Autowired
     private DockerHostStateKeeper dockerHostStateKeeper;
 
-    private Map<Identifier, AppDeploymentState> deployments = new HashMap<>();
+    @Autowired
+    private AppDeploymentRepository appDeploymentRepository;
 
-    public void storeNewDeployment(Identifier deploymentId) {
-        deployments.put(deploymentId, AppDeploymentState.REQUESTED);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Optional<ApplicationEvent> updateDeploymentState(Identifier deploymentId, AppDeploymentState currentState) throws InvalidDeploymentIdException {
+        AppDeployment appDeployment = appDeploymentRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException());
+        appDeployment.setState(currentState);
+        appDeploymentRepository.save(appDeployment);
+        return triggerActionEventIfRequired(deploymentId, currentState);
     }
 
-    public Optional<ApplicationEvent> updateDeploymentState(Identifier deploymentId, AppDeploymentState currentState) {
-        deployments.put(deploymentId, currentState);
-        return prepareEventIfRequired(deploymentId, currentState);
-    }
-
-    private Optional<ApplicationEvent> prepareEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
+    private Optional<ApplicationEvent> triggerActionEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
         switch (currentState) {
             case REQUEST_VALIDATED:
                 return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
@@ -62,26 +65,22 @@ public class AppLifecycleRepository {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AppDeploymentState loadCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
-        AppDeploymentState deploymentState = deployments.get(deploymentId);
-        if (deploymentState != null)
-            return deploymentState;
-        else
-            throw new InvalidDeploymentIdException(
-                    "Deployment with id " + deploymentId + " not found in the repository. ");
+        return appDeploymentRepository.getStateByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InvalidDeploymentIdException(
+                        "Deployment with id " + deploymentId + " not found in the repository. "));
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Map<Identifier, AppLifecycleState> loadViewOfAllDeployments() {
         Map<Identifier, AppLifecycleState> view = new HashMap<>();
-        deployments.entrySet().stream()
-                .forEach(entry -> view.put(entry.getKey(), entry.getValue().lifecycleState()));
+        appDeploymentRepository.findAll().stream()
+                .forEach(item -> view.put(item.getDeploymentId(), item.getState().lifecycleState()));
         return view;
     }
 
-    public boolean isDeploymentStored(Identifier deploymentId) {
-        return (deployments.get(deploymentId) != null);
-    }
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AppUiAccessDetails loadAccessDetails(Identifier deploymentId) throws InvalidDeploymentIdException {
         try {
             String serviceName = deploymentIdMapper.nmServiceName(deploymentId);

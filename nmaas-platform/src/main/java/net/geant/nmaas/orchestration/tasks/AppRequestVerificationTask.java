@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -58,9 +58,9 @@ public class AppRequestVerificationTask {
         this.appRepository = appRepository;
     }
 
-    @Async
     @EventListener
     @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void verifyAppRequest(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException {
         final Identifier deploymentId = event.getDeploymentId();
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
@@ -78,8 +78,7 @@ public class AppRequestVerificationTask {
     }
 
     @Loggable(LogLevel.DEBUG)
-    @Transactional
-    NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) throws InvalidApplicationIdException {
+    public NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) throws InvalidApplicationIdException {
         final Application application = appRepository.findOne(Long.valueOf(applicationId.getValue()));
         if (application == null)
             throw new InvalidApplicationIdException("Application with id " + applicationId + " does not exist in repository");
@@ -91,12 +90,12 @@ public class AppRequestVerificationTask {
     }
 
     @Loggable(LogLevel.DEBUG)
-    String buildServiceName(Application application) {
+    public String buildServiceName(Application application) {
         return application.getName() + "-" + application.getId();
     }
 
     @Loggable(LogLevel.DEBUG)
-    DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId, NmServiceInfo serviceInfo) {
+    public DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId, NmServiceInfo serviceInfo) {
         DcnSpec dcn = new DcnSpec(buildDcnName(applicationId, clientId));
         if (serviceInfo != null && serviceInfo.getNetwork() != null)
             dcn.setNmServiceDeploymentNetworkDetails(serviceInfo.getNetwork());
@@ -106,7 +105,7 @@ public class AppRequestVerificationTask {
     }
 
     @Loggable(LogLevel.DEBUG)
-    String buildDcnName(Identifier applicationId, Identifier clientId) {
+    public String buildDcnName(Identifier applicationId, Identifier clientId) {
         return clientId + "-" + applicationId;
     }
 

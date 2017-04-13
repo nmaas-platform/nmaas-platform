@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.repositories;
 
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +24,12 @@ public class AppDeploymentRepositoryTest {
     @Autowired
     private AppDeploymentRepository repository;
 
+    private Identifier deploymentId = Identifier.newInstance("deploymentId");
+
     @Test
     public void shouldAddUpdateAndRemoveAppDeployment() {
         AppDeployment appDeployment = new AppDeployment();
-        appDeployment.setDeploymentId(Identifier.newInstance("deploymentId"));
+        appDeployment.setDeploymentId(deploymentId);
         appDeployment.setApplicationId(Identifier.newInstance("applicationId"));
         appDeployment.setClientId(Identifier.newInstance("clientId"));
         AppDeployment storedAppDeployment = repository.save(appDeployment);
@@ -35,7 +38,8 @@ public class AppDeploymentRepositoryTest {
         appDeployment.setConfiguration(new AppConfiguration("configuration-string"));
         repository.save(appDeployment);
         assertThat(repository.count(), equalTo(1L));
-        assertThat(repository.findByDeploymentId(Identifier.newInstance("deploymentId")).isPresent(), is(true));
+        assertThat(repository.findByDeploymentId(deploymentId).isPresent(), is(true));
+        assertThat(repository.getStateByDeploymentId(deploymentId).get(), equalTo(AppDeploymentState.REQUESTED));
         repository.delete(storedAppDeployment.getId());
         assertThat(repository.count(), equalTo(0L));
     }

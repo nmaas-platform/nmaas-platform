@@ -5,19 +5,20 @@ import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfiguration
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.orchestration.AppDeploymentLifecycleStateKeeper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppLifecycleRepository;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.orchestration.tasks.AppServiceDeploymentTask;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -37,7 +38,7 @@ public class NmServiceConfigurationTest {
     private AppDeploymentMonitor appDeploymentMonitor;
 
     @Autowired
-    private AppLifecycleRepository appLifecycleRepository;
+    private AppDeploymentLifecycleStateKeeper appDeploymentLifecycleStateKeeper;
 
     @Mock
     private NmServiceConfigurationsPreparer configurationsPreparer;
@@ -54,6 +55,12 @@ public class NmServiceConfigurationTest {
     @Autowired
     private NmServiceRepository nmServiceRepository;
 
+    @MockBean
+    private AppServiceDeploymentTask appServiceDeploymentTask;
+
+    @Autowired
+    private AppDeploymentRepository appDeploymentRepository;
+
     private Identifier deploymentId;
 
     private Identifier applicationId;
@@ -61,22 +68,28 @@ public class NmServiceConfigurationTest {
     private AppConfiguration configuration;
 
     @Before
-    public void setup() {
+    public void setup() throws InvalidDeploymentIdException {
         String serviceName = "name";
         deploymentId = Identifier.newInstance("id");
         applicationId = Identifier.newInstance("appId");
         nmServiceRepository.storeService(new NmServiceInfo(serviceName, null, null));
         mapper.storeMapping(deploymentId, serviceName);
         configuration = new AppConfiguration("");
-        appLifecycleRepository.storeNewDeployment(deploymentId);
-        appLifecycleRepository.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
+        appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
+        appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }
 
     @Test
-    public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException {
+    public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException {
         configurationExecutor.configureNmService(deploymentId, applicationId, configuration, null, null);
+        Thread.sleep(100);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
+    }
+
+    @After
+    public void cleanRepository() {
+        appDeploymentRepository.deleteAll();
     }
 
 }

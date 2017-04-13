@@ -26,4 +26,11 @@ public class DcnDeploymentStateChangeEvent extends ApplicationEvent {
         return state;
     }
 
+    @Override
+    public String toString() {
+        return "DcnDeploymentStateChangeEvent{" +
+                "deploymentId=" + deploymentId +
+                ", state=" + state +
+                '}';
+    }
 }

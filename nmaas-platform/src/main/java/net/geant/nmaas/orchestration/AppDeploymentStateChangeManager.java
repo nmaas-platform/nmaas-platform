@@ -6,7 +6,6 @@ import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
-import net.geant.nmaas.orchestration.events.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -29,22 +28,22 @@ public class AppDeploymentStateChangeManager {
     private final static Logger log = LogManager.getLogger(AppDeploymentStateChangeManager.class);
 
     @Autowired
-    private AppLifecycleRepository repository;
+    private AppDeploymentLifecycleStateKeeper repository;
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void notifyStateChange(DcnDeploymentStateChangeEvent event) {
+    public synchronized ApplicationEvent notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
         if (notRelevantDcnDeploymentStateChange(event.getState()))
-            return;
+            return null;
         try {
             final Identifier deploymentId = event.getDeploymentId();
             AppDeploymentState newDeploymentState = repository.loadCurrentState(deploymentId).nextState(event.getState());
             Optional<ApplicationEvent> action = repository.updateDeploymentState(deploymentId, newDeploymentState);
+            return action.orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
             repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
-        } catch (InvalidDeploymentIdException e) {
-            log.warn("State notification failure -> " + e.getMessage());
+            return null;
         }
     }
 
@@ -62,21 +61,21 @@ public class AppDeploymentStateChangeManager {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
+    public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
         try {
             AppDeploymentState newDeploymentState = repository.loadCurrentState(event.getDeploymentId()).nextState(event.getState());
-            repository.updateDeploymentState(event.getDeploymentId(), newDeploymentState);
+            Optional<ApplicationEvent> action = repository.updateDeploymentState(event.getDeploymentId(), newDeploymentState);
+            return action.orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
             repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
-        } catch (InvalidDeploymentIdException e) {
-            log.warn("State notification failure -> " + e.getMessage());
+            return null;
         }
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void notifyGenericError(AppDeploymentErrorEvent event) {
+    public synchronized void notifyGenericError(AppDeploymentErrorEvent event) throws InvalidDeploymentIdException {
         repository.updateDeploymentState(event.getDeploymentId(), AppDeploymentState.GENERIC_ERROR);
     }
 

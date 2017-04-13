@@ -14,6 +14,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -31,6 +33,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Identifier deployApplication(Identifier clientId, Identifier applicationId) {
         Identifier deploymentId = generateDeploymentId();
         AppDeployment appDeployment = new AppDeployment(deploymentId, clientId, applicationId);
@@ -48,7 +51,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     boolean deploymentIdAlreadyInUse(Identifier generatedId) {
-        return repository.findByDeploymentId(generatedId) != null;
+        return repository.findByDeploymentId(generatedId).isPresent();
     }
 
     @Override

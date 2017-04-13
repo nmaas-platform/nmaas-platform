@@ -22,7 +22,7 @@ import java.util.Map;
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Autowired
-    private AppLifecycleRepository repository;
+    private AppDeploymentLifecycleStateKeeper repository;
 
     @Override
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
