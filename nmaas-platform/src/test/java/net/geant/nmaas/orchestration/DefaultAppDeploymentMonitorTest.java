@@ -44,11 +44,13 @@ public class DefaultAppDeploymentMonitorTest {
     @MockBean
     private AppDcnDeploymentTask appDcnDeploymentTask;
     @MockBean
-    private AppServiceDeploymentTask appServiceDeploymentTask;
+    private AppDcnVerificationTask appDcnVerificationTask;
     @MockBean
     private AppConfigurationTask appConfigurationTask;
     @MockBean
-    private AppDeploymentVerificationTask appDeploymentVerificationTask;
+    private AppServiceDeploymentTask appServiceDeploymentTask;
+    @MockBean
+    private AppServiceVerificationTask appServiceVerificationTask;
     @MockBean
     private AppRemovalTask appRemovalTask;
 

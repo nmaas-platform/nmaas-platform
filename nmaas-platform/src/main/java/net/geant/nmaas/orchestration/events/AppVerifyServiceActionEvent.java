@@ -6,11 +6,11 @@ import org.springframework.context.ApplicationEvent;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class AppVerifyDeploymentActionEvent extends ApplicationEvent {
+public class AppVerifyServiceActionEvent extends ApplicationEvent {
 
     private Identifier deploymentId;
 
-    public AppVerifyDeploymentActionEvent(Object source, Identifier deploymentId) {
+    public AppVerifyServiceActionEvent(Object source, Identifier deploymentId) {
         super(source);
         this.deploymentId = deploymentId;
     }

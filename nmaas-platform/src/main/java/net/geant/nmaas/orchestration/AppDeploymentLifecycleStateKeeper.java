@@ -8,10 +8,7 @@ import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.entities.*;
-import net.geant.nmaas.orchestration.events.AppDeployDcnActionEvent;
-import net.geant.nmaas.orchestration.events.AppDeployServiceActionEvent;
-import net.geant.nmaas.orchestration.events.AppPrepareEnvironmentActionEvent;
-import net.geant.nmaas.orchestration.events.AppVerifyDeploymentActionEvent;
+import net.geant.nmaas.orchestration.events.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +53,12 @@ public class AppDeploymentLifecycleStateKeeper {
                 return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
             case DEPLOYMENT_ENVIRONMENT_PREPARED:
                 return Optional.of(new AppDeployDcnActionEvent(this, deploymentId));
+            case MANAGEMENT_VPN_CONFIGURED:
+                return Optional.of(new AppVerifyDcnActionEvent(this, deploymentId));
             case APPLICATION_CONFIGURED:
                 return Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
             case APPLICATION_DEPLOYED:
-                return Optional.of(new AppVerifyDeploymentActionEvent(this, deploymentId));
+                return Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
             default:
                 return Optional.empty();
         }

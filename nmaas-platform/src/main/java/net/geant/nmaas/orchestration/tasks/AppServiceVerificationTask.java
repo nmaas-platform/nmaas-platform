@@ -4,7 +4,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.AppVerifyDeploymentActionEvent;
+import net.geant.nmaas.orchestration.events.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,22 +19,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class AppDeploymentVerificationTask {
+public class AppServiceVerificationTask {
 
-    private final static Logger log = LogManager.getLogger(AppDeploymentVerificationTask.class);
+    private final static Logger log = LogManager.getLogger(AppServiceVerificationTask.class);
 
     private NmServiceDeploymentProvider serviceDeployment;
 
     private DcnDeploymentProvider dcnDeployment;
 
     @Autowired
-    public AppDeploymentVerificationTask(NmServiceDeploymentProvider serviceDeployment, DcnDeploymentProvider dcnDeployment) {
+    public AppServiceVerificationTask(NmServiceDeploymentProvider serviceDeployment, DcnDeploymentProvider dcnDeployment) {
         this.serviceDeployment = serviceDeployment;
         this.dcnDeployment = dcnDeployment;
     }
 
     @EventListener
-    public void verifyDeployment(AppVerifyDeploymentActionEvent event) throws InvalidDeploymentIdException {
+    public void verifyDeployment(AppVerifyServiceActionEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
         try {
             serviceDeployment.verifyNmService(deploymentId);
