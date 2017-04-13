@@ -19,8 +19,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -74,8 +72,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldRemoveDockerHost() throws Exception {
         int sizeBefore = dockerHostRepository.loadAll().size();
         mvc.perform(delete(URL_PREFIX + "/{name}", THIRD_HOST_NAME))
-                .andExpect(status().isNoContent())
-                .andReturn();
+                .andExpect(status().isNoContent());
         assertEquals(sizeBefore - 1, dockerHostRepository.loadAll().size());
     }
 

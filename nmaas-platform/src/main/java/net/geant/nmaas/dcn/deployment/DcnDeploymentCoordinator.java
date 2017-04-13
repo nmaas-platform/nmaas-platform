@@ -13,6 +13,9 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -47,14 +50,18 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     private ApplicationEventPublisher applicationEventPublisher;
 
+    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
+
     @Autowired
     public DcnDeploymentCoordinator(DockerHostRepository dockerHostRepository,
                                     DcnRepository dcnRepository,
                                     DeploymentIdToDcnNameMapper deploymentIdMapper,
+                                    AnsiblePlaybookVpnConfigRepository vpnConfigRepository,
                                     ApplicationEventPublisher applicationEventPublisher) {
         this.dockerHostRepository = dockerHostRepository;
         this.dcnRepository = dcnRepository;
         this.deploymentIdMapper = deploymentIdMapper;
+        this.vpnConfigRepository = vpnConfigRepository;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -65,12 +72,12 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
         dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, dcnSpec));
         try {
-            dcnRepository.updateAnsiblePlaybookForClientSideRouter(dcnName, AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter());
-            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter();
+            dcnRepository.updateAnsiblePlaybookForClientSideRouter(dcnName, vpnConfigRepository.loadDefaultCustomerVpnConfig());
+            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = vpnConfigRepository.loadDefaultCloudVpnConfig();
             cloudSideRouterVpnConfig.merge((ContainerNetworkDetails) dcnSpec.getNmServiceDeploymentNetworkDetails());
             dcnRepository.updateAnsiblePlaybookForCloudSideRouter(dcnName, cloudSideRouterVpnConfig);
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFIED);
-        } catch (DcnRepository.DcnNotFoundException e) {
+        } catch (DcnRepository.DcnNotFoundException | AnsiblePlaybookVpnConfigNotFoundException e) {
             log.error("Exception during DCN request verification -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
         }

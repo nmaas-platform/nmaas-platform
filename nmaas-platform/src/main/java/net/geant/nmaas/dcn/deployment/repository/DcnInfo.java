@@ -2,7 +2,7 @@ package net.geant.nmaas.dcn.deployment.repository;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnSpec;
-import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

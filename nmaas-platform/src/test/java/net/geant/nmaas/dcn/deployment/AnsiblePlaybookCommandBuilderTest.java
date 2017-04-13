@@ -1,7 +1,14 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +18,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class AnsiblePlaybookCommandBuilderTest {
+
+    @Autowired
+    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";
 
@@ -86,44 +98,44 @@ public class AnsiblePlaybookCommandBuilderTest {
                     "-e NMAAS_CUSTOMER_SERVICE_ID=" + ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER;
 
     @Test
-    public void shouldBuildCorrectAnsibleCommandForClientSideRouterConfig() {
+    public void shouldBuildCorrectAnsibleCommandForClientSideRouterConfig() throws AnsiblePlaybookVpnConfigNotFoundException {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.ADD,
                 AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE,
-                AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter(),
+                vpnConfigRepository.loadDefaultCustomerVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         for (String command : commands)
             assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLIENT_SIDE_ROUTER_CONFIG, Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
     @Test
-    public void shouldBuildCorrectAnsibleCommandForClientSideRouterConfigRemoval() {
+    public void shouldBuildCorrectAnsibleCommandForClientSideRouterConfigRemoval() throws AnsiblePlaybookVpnConfigNotFoundException {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.REMOVE,
                 AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE,
-                AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter(),
+                vpnConfigRepository.loadDefaultCustomerVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         for (String command : commands)
             assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLIENT_SIDE_ROUTER_CONFIG_REMOVAL, Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
     @Test
-    public void shouldBuildCorrectAnsibleCommandForCloudSideRouterConfig() {
+    public void shouldBuildCorrectAnsibleCommandForCloudSideRouterConfig() throws AnsiblePlaybookVpnConfigNotFoundException {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.ADD,
                 AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE,
-                AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter(),
+                vpnConfigRepository.loadDefaultCloudVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         for (String command : commands)
             assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLOUD_SIDE_ROUTER_CONFIG, Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
     @Test
-    public void shouldBuildCorrectAnsibleCommandForCloudSideRouterConfigRemoval() {
+    public void shouldBuildCorrectAnsibleCommandForCloudSideRouterConfigRemoval() throws AnsiblePlaybookVpnConfigNotFoundException {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.REMOVE,
                 AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE,
-                AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter(),
+                vpnConfigRepository.loadDefaultCloudVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         for (String command : commands)
             assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLOUD_SIDE_ROUTER_CONFIG_REMOVAL, Matchers.stringContainsInOrder(Arrays.asList(command)));

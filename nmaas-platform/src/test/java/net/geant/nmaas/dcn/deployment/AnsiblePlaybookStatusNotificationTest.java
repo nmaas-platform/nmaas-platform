@@ -7,6 +7,7 @@ import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,9 @@ public class AnsiblePlaybookStatusNotificationTest {
     private DcnRepository dcnRepository;
 
     @Autowired
+    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
+
+    @Autowired
     private DeploymentIdToDcnNameMapper deploymentIdMapper;
 
     @Autowired
@@ -56,7 +60,7 @@ public class AnsiblePlaybookStatusNotificationTest {
     public void setUp() throws JsonProcessingException {
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
         dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.DEPLOYMENT_INITIATED, null));
-        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, applicationEventPublisher);
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, vpnConfigRepository, applicationEventPublisher);
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
     }
