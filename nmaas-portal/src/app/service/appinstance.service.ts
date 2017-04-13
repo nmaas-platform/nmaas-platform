@@ -74,7 +74,7 @@ export class AppInstanceService {
     }
 
     public applyConfiguration(appInstanceId: Number, configuration): Observable<void> {
-        return this.authHttp.post(this.getUrl() + appInstanceId, configuration)
+        return this.authHttp.post(this.getUrl() + appInstanceId + '/configure', configuration)
             .timeout(10000)
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));        
     }
