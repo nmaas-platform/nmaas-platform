@@ -24,30 +24,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class OrchestratorApiSecurityTest {
 
-        @Autowired
-        private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-        @Autowired
-        private Filter springSecurityFilterChain;
+    @Autowired
+    private Filter springSecurityFilterChain;
 
-        @MockBean
-        private AppDeploymentLifecycleStateKeeper repository;
+    @MockBean
+    private AppDeploymentLifecycleStateKeeper repository;
 
-        private MockMvc mvc;
+    private MockMvc mvc;
 
-        @Before
-        public void setup() {
-            mvc = MockMvcBuilders
-                    .webAppContextSetup(context)
-                    .addFilters(springSecurityFilterChain)
-                    .build();
+    @Before
+    public void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .addFilters(springSecurityFilterChain)
+                .build();
+    }
 
-        }
-
-        @Test
-        public void shouldAuthorizeProperUser() throws Exception {
-            mvc.perform(get("/platform/api/orchestration/deployments")
-                    .with(httpBasic(context.getEnvironment().getProperty("api.client.nmaas.test.username"), context.getEnvironment().getProperty("api.client.nmaas.test.password"))))
-                    .andExpect(status().isOk());
-        }
+    @Test
+    public void shouldAuthorizeProperUser() throws Exception {
+        mvc.perform(get("/platform/api/orchestration/deployments")
+                .with(httpBasic(context.getEnvironment().getProperty("api.client.nmaas.test.username"), context.getEnvironment().getProperty("api.client.nmaas.test.password"))))
+                .andExpect(status().isOk());
+    }
 }

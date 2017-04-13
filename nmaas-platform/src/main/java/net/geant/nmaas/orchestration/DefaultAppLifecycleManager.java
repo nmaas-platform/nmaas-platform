@@ -66,7 +66,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) throws InvalidDeploymentIdException {
-        new AppRemoveActionEvent(this, deploymentId);
+        eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
     }
 
     @Override
