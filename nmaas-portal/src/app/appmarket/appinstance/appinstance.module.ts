@@ -9,7 +9,7 @@ import { AuthModule } from '../../auth/auth.module';
 import { SharedModule } from '../../shared/shared.module';
 
 import { AppInstanceComponent } from './appinstance/appinstance.component';
-import { AppInstanceProgressComponent } from './appinstanceprogress/appinstanceprogress.component';
+import { AppInstanceProgressModule } from './appinstanceprogress/appinstanceprogress.module';
 
 import { AppsService } from '../../service/apps.service';
 import { AppInstanceService } from '../../service/appinstance.service'; 
@@ -20,8 +20,7 @@ import { AppInstanceListComponent } from './appinstancelist/appinstancelist.comp
 @NgModule({
     declarations: [
         AppInstanceComponent,
-        AppInstanceProgressComponent,
-        AppInstanceListComponent
+        AppInstanceListComponent,
     ],
     imports: [ 
         CommonModule,
@@ -29,6 +28,7 @@ import { AppInstanceListComponent } from './appinstancelist/appinstancelist.comp
         RouterModule,
         SharedModule,
         AuthModule,
+        AppInstanceProgressModule,
         JsonSchemaFormModule.forRoot()
     ],
     exports: [

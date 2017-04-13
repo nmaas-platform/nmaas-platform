@@ -32,7 +32,7 @@ export class AppInstanceService {
     public getMyAppInstances(): Observable<AppInstance[]> {
         return this.authHttp.get(this.getUrl()+'my')
             .timeout(10000)
-            .map((res: Response) => res.json())
+            .map((res: Response) => res.json() as AppInstance[])
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));        
     }
     
@@ -46,7 +46,10 @@ export class AppInstanceService {
     public getAppInstanceState(id: Number): Observable<AppInstanceStatus> {
         return this.authHttp.get(this.getUrl() + id + '/state')
             .timeout(10000)
-            .map((res: Response) => res.json())
+            .map((res: Response) => { 
+                var ais = res.json(); 
+                return new AppInstanceStatus(ais.appInstanceId, <AppInstanceState>(AppInstanceState[<string>(ais.state)]), ais.details); 
+            })
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
     }
 
@@ -71,7 +74,7 @@ export class AppInstanceService {
     }
 
     public applyConfiguration(appInstanceId: Number, configuration): Observable<void> {
-        return this.authHttp.post(this.getUrl() + appInstanceId, configuration)
+        return this.authHttp.post(this.getUrl() + appInstanceId + '/configure', configuration)
             .timeout(10000)
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));        
     }
@@ -81,7 +84,8 @@ export class AppInstanceService {
     }
 
     public getProgressStages(): AppInstanceProgressStage[] {
-        return [new AppInstanceProgressStage('Subscription validation', AppInstanceState.VALIDATION),
+        return [
+            new AppInstanceProgressStage('Subscription validation', AppInstanceState.VALIDATION),
             new AppInstanceProgressStage('Environment creation', AppInstanceState.PREPARATION),
             new AppInstanceProgressStage('Setting up connectivity', AppInstanceState.CONNECTING),
             new AppInstanceProgressStage('Providing onfiguration', AppInstanceState.CONFIGURATION_AWAITING),

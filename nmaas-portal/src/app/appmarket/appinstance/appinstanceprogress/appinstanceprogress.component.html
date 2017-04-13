@@ -1,54 +1,16 @@
 <div class="stepwizard">
-	<div class="stepwizard-row setup-panel">
-		<template ngFor let-stage [ngForOf]="stages">
-			<div class="stepwizard-step" *ngIf="stage.isVisible(this.activeState)">
-				<button type="button" class="btn btn-circle">{{stage.activeState}}</button>
-				<p>{{stage.name}}</p>
-			</div>
+	<div class="stepwizard-row">
+
+		<template ngFor let-stage [ngForOf]="stages" >
+		<div class="stepwizard-step" *ngIf="stage.isVisible(activeState)">
+ 				<a type="button" class="btn btn-circle btn-default" [ngClass]="{ 
+					'btn-success': (stage.activeState < activeState && activeState != AppInstanceState.FAILURE), 
+					'btn-primary': (stage.activeState == activeState && activeState != AppInstanceState.FAILURE), 
+					'btn-danger': (activeState == AppInstanceState.FAILURE),  
+					'btn-default': (stage.activeState > activeState && activeState != AppInstanceState.FAILURE) || (activeState == AppInstanceState.UNKNOWN) || (stage.activeState == AppInstanceState.SUBSCRIBED) || (!stage?.activeState)
+				}">{{stage.activeState}}</a> 
+			<p>{{stage.name}}</p>
+		</div>
 		</template>
-<!-- 		
-
-				<button type="button" class="btn btn-circle btn-danger" [ngClass]="{ 
-					'btn-success': (stage.activeState < this.activeState && this.activeState !== appInstanceStateEnum.FAILURE && this.activeState !== appInstanceStateEnum.FAILURE),
-					'btn-primary': (stage.activeState === this.activeState && this.activeState != appInstanceStateEnum.FAILURE && this.activeState != appInstanceStateEnum.FAILURE),
-					'btn-danger': (this.activeState == appInstanceStateEnum.FAILURE)
-				}">{{stage.activeState}}</button>
-
-
-		<div class="stepwizard-step">
-			<a href="#step-1" type="button" class="btn btn-success btn-circle">1</a>
-			<p>Subscription validation</p>
-		</div>
-		<div class="stepwizard-step">
-			<a href="#step-2" type="button" class="btn btn-primary btn-circle">2</a>
-			<p>Environment creation</p>
-		</div>
-		<div class="stepwizard-step">
-			<a href="#step-3" type="button" class="btn btn-default btn-circle"
-				disabled="disabled">3</a>
-			<p>App container deployment</p>
-		</div>
-		<div class="stepwizard-step">
-			<a href="#step-4" type="button" class="btn btn-default btn-circle"
-				disabled="disabled">4</a>
-			<p>Management VPN configuration</p>
-		</div>
-		<div class="stepwizard-step">
-			<a href="#step-5" type="button" class="btn btn-default btn-circle"
-				disabled="disabled">5</a>
-			<p>App final configuration</p>
-		</div>
-		<div class="stepwizard-step">
-			<a href="#step-6" type="button" class="btn btn-default btn-circle"
-				disabled="disabled">6</a>
-			<p>App connectivity test</p>
-		</div>
-		<div class="stepwizard-step">
-			<a href="#step-7" type="button" class="btn btn-default btn-circle"
-				disabled="disabled">7</a>
-			<p>App ready</p>
-		</div>
--->
-		
 	</div>
 </div>
