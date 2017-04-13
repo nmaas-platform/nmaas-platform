@@ -1,13 +1,12 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.orchestration.AppDeploymentStateChanger;
-import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public interface DcnDeploymentProvider extends AppDeploymentStateChanger {
+public interface DcnDeploymentProvider {
 
     void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec);
 

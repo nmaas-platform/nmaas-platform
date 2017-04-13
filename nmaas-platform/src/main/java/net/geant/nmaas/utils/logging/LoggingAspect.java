@@ -68,8 +68,7 @@ public class LoggingAspect {
 		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
 		Logger logger = LogManager.getLogger(clazz);
 		String name = joinPoint.getSignature().getName();
-		logger.log(Level.ERROR,
-				MessageFormat.format(AFTER_THROWING, name, throwable.getMessage(), constructArgumentsString(joinPoint.getArgs())));
+		logger.log(Level.ERROR, MessageFormat.format(AFTER_THROWING, name, throwable.getMessage(), constructArgumentsString(joinPoint.getArgs())));
 	}
 
 	@AfterReturning(

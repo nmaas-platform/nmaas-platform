@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 
 import java.util.List;
 
@@ -11,20 +11,20 @@ public class ContainerConfigInput {
 
     public static ContainerConfigInput fromSpec(NmServiceInfo serviceInfo) {
         DockerContainerSpec spec = (DockerContainerSpec) serviceInfo.getSpec();
-        DockerEngineContainerTemplate template = (DockerEngineContainerTemplate) spec.template();
+        DockerContainerTemplate template = spec.getTemplate();
         ContainerConfigInput input = new ContainerConfigInput();
         input.setImage(template.getImage());
         input.setCommand(compileCommands(template));
         input.setExposedPort(template.getExposedPort());
-        input.setEnv(template.getEnv());
+        input.setEnv(template.getEnvVariables());
         if (template.getEnvVariablesInSpecRequired())
-            input.getEnv().addAll(spec.getEnvironmentVariables());
+            input.getEnv().addAll(spec.getEnvVariables());
         input.setContainerVolumes(template.getContainerVolumes());
         input.setUniqueDeploymentName(serviceInfo.getAppDeploymentId());
         return input;
     }
 
-    private static String compileCommands(DockerEngineContainerTemplate template) {
+    private static String compileCommands(DockerContainerTemplate template) {
         if (!commandInTemplateProvided(template))
             return null;
         StringBuilder commandBuilder = new StringBuilder();
@@ -32,7 +32,7 @@ public class ContainerConfigInput {
         return commandBuilder.toString();
     }
 
-    private static boolean commandInTemplateProvided(DockerEngineContainerTemplate template) {
+    private static boolean commandInTemplateProvided(DockerContainerTemplate template) {
         return template.getCommand() != null && !template.getCommand().isEmpty();
     }
 
@@ -40,7 +40,7 @@ public class ContainerConfigInput {
 
     private String command;
 
-    private ContainerPortForwardingSpec exposedPort;
+    private DockerContainerPortForwarding exposedPort;
 
     private List<String> env;
 
@@ -64,11 +64,11 @@ public class ContainerConfigInput {
         this.command = command;
     }
 
-    public ContainerPortForwardingSpec getExposedPort() {
+    public DockerContainerPortForwarding getExposedPort() {
         return exposedPort;
     }
 
-    public void setExposedPort(ContainerPortForwardingSpec exposedPort) {
+    public void setExposedPort(DockerContainerPortForwarding exposedPort) {
         this.exposedPort = exposedPort;
     }
 

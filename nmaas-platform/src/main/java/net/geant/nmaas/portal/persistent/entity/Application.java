@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,9 +59,11 @@ public class Application implements Serializable {
 	
 	@OneToMany(orphanRemoval=true, fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="application")
 	private List<Comment> comments = new ArrayList<Comment>();
+
+	@OneToOne(cascade=CascadeType.ALL, optional=true, orphanRemoval=true, fetch=FetchType.LAZY)
+	private DockerContainerTemplate dockerContainerTemplate;
 	
-	protected Application() {
-	}
+	protected Application() {}
 
 	public Application(String name) {
 		this.name = name;
@@ -72,7 +76,6 @@ public class Application implements Serializable {
 	public Long getId() {
 		return id;
 	}
-
 
 	public String getName() {
 		return name;
@@ -146,9 +149,11 @@ public class Application implements Serializable {
 		this.license = license;
 	}
 
+	public DockerContainerTemplate getDockerContainerTemplate() {
+		return dockerContainerTemplate;
+	}
 
-
-
-	
-	
+	public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
+		this.dockerContainerTemplate = dockerContainerTemplate;
+	}
 }

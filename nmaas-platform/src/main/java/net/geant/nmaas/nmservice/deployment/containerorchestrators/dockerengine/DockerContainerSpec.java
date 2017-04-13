@@ -1,7 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerPortForwardingSpec;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 
 import java.util.List;
@@ -10,85 +8,84 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class DockerContainerSpec implements NmServiceSpec {
-    /**
-     * System-defined name for the container.
-     */
-    final private String name;
 
     /**
-     * Template for this service
+     * System-defined name for the container
      */
-    final private DockerEngineContainerTemplate template;
+    private String name;
 
     /**
-     * Name of the client requesting the service (e.g. username)
+     * Template for this container
      */
-    private String clientName;
+    private DockerContainerTemplate template;
 
     /**
-     * Name of the organization of the client requesting the service (e.g. company abbreviated name)
+     * Unique identifier of the client requesting container deployment
      */
-    private String clientOrganizationName;
+    private Long clientId;
 
     /**
-     * The command to be run in the image
+     * The command to be run in the image at startup
+     * (apart from the one defined in the {@link DockerContainerTemplate})
      */
     private String command;
 
     /**
-     * A list of environment variables in the form of ["VAR=value"]
+     * Port exposed by the service/container for UI access
+     * (apart from the one defined in the {@link DockerContainerTemplate})
      */
-    private List<String> environmentVariables;
+    private DockerContainerPortForwarding exposedPort;
 
     /**
-     * List of exposed ports that this service is accessible on from the outside.
+     * A list of environment variables in the form of ["VAR=value"]
+     * (apart from the ones defined in the {@link DockerContainerTemplate})
      */
-    private List<ContainerPortForwardingSpec> ports;
+    private List<String> envVariables;
 
-    public DockerContainerSpec(String name, DockerEngineContainerTemplate template) {
+    public DockerContainerSpec() { }
+
+    public DockerContainerSpec(String name, DockerContainerTemplate template, Long clientId) {
         this.name = name;
         this.template = template;
+        this.clientId = clientId;
     }
 
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
     public Boolean verify() {
         if (name == null || name.isEmpty())
-            return false;
-        if (clientName == null || clientName.isEmpty())
-            return false;
-        if (clientOrganizationName == null || clientOrganizationName.isEmpty())
             return false;
         return true;
     }
 
     @Override
-    public String uniqueDeploymentName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(clientOrganizationName).append("-").append(clientName).append("-").append(name);
-        return sb.toString();
+    public String toString() {
+        return "DockerContainerSpec{" +
+                "name='" + name + '\'' +
+                ", template=" + template +
+                '}';
     }
 
-    @Override
-    public NmServiceTemplate template() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public DockerContainerTemplate getTemplate() {
         return template;
     }
 
-    public String getClientName() {
-        return clientName;
+    public void setTemplate(DockerContainerTemplate template) {
+        this.template = template;
     }
 
-    public void setClientDetails(String clientName, String clientOrganizationName) {
-        this.clientName = clientName;
-        this.clientOrganizationName = clientOrganizationName;
+    public Long getClientId() {
+        return clientId;
     }
 
-    public String getClientOrganizationName() {
-        return clientOrganizationName;
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 
     public String getCommand() {
@@ -99,19 +96,19 @@ public class DockerContainerSpec implements NmServiceSpec {
         this.command = command;
     }
 
-    public List<String> getEnvironmentVariables() {
-        return environmentVariables;
+    public List<String> getEnvVariables() {
+        return envVariables;
     }
 
-    public void setEnvironmentVariables(List<String> environmentVariables) {
-        this.environmentVariables = environmentVariables;
+    public void setEnvVariables(List<String> envVariables) {
+        this.envVariables = envVariables;
     }
 
-    public List<ContainerPortForwardingSpec> getPorts() {
-        return ports;
+    public DockerContainerPortForwarding getExposedPort() {
+        return exposedPort;
     }
 
-    public void setPorts(List<ContainerPortForwardingSpec> ports) {
-        this.ports = ports;
+    public void setExposedPort(DockerContainerPortForwarding exposedPort) {
+        this.exposedPort = exposedPort;
     }
 }

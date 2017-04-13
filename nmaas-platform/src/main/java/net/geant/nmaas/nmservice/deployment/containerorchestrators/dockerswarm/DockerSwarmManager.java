@@ -8,7 +8,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.s
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerswarm.service.SwarmServicesClient;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,6 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
             ServiceSpec dockerSpec = SwarmServiceSpecBuilder.build(spec);
             String serviceId = servicesManager.deployService(dockerSpec, dockerSwarms.loadPreferredDockerSwarmManager());
             nmServices.updateServiceId(serviceName, serviceId);
-            nmServices.updateServiceState(serviceName, NmServiceDeploymentState.DEPLOYED);
         } catch (NmServiceRequestVerificationException serviceSpecVerificationException) {
             throw new CouldNotDeployNmServiceException("Could not deploy service -> " + serviceSpecVerificationException.getMessage());
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
@@ -73,7 +71,6 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
         try {
             String serviceId = nmServices.getServiceId(serviceName);
             servicesManager.destroyService(serviceId, dockerSwarms.loadPreferredDockerSwarmManager());
-            nmServices.updateServiceState(serviceName, NmServiceDeploymentState.REMOVED);
         } catch (CouldNotDestroyNmServiceException couldNotDestroyNmServiceException) {
             throw new CouldNotDestroyNmServiceException("Could not destroy service -> " + couldNotDestroyNmServiceException.getMessage());
         } catch (DockerSwarmNotFoundException dockerSwarmNotFoundException) {

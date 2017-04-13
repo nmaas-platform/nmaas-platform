@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.orchestration.AppConfiguration;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;

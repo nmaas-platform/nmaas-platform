@@ -2,6 +2,10 @@ package net.geant.nmaas.dcn.deployment.repository;
 
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,9 +18,17 @@ import java.util.stream.Collectors;
 @Service
 public class DcnRepository {
 
+    @Autowired
+    private DeploymentIdToDcnNameMapper deploymentIdMapper;
+
     private Map<String, DcnInfo> networks = new HashMap<>();
 
-    public void updateDcnState(String dcnName, DcnDeploymentState state) throws DcnNotFoundException {
+    @EventListener
+    public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws DeploymentIdToDcnNameMapper.EntryNotFoundException, DcnNotFoundException {
+        updateDcnState(deploymentIdMapper.dcnName(event.getDeploymentId()), event.getState());
+    }
+
+    private void updateDcnState(String dcnName, DcnDeploymentState state) throws DcnNotFoundException {
         loadNetwork(dcnName).updateState(state);
     }
 

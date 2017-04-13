@@ -2,27 +2,26 @@ package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerDeploymentDetails;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
-import net.geant.nmaas.orchestration.AppConfiguration;
-import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
-import net.geant.nmaas.orchestration.AppDeploymentStateChanger;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,23 +29,24 @@ import java.util.List;
  */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurationProvider, AppDeploymentStateChanger {
+public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurationProvider {
 
     private final static Logger log = LogManager.getLogger(SimpleNmServiceConfigurationExecutor.class);
-
-    private AppDeploymentStateChangeListener stateChangeListener;
 
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
     private SshCommandExecutor sshCommandExecutor;
 
-    private List<AppDeploymentStateChangeListener> stateChangeListeners = new ArrayList<>();
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public SimpleNmServiceConfigurationExecutor(AppDeploymentStateChangeListener stateChangeListener, NmServiceConfigurationsPreparer configurationsPreparer, SshCommandExecutor sshCommandExecutor) {
-        this.stateChangeListener = stateChangeListener;
+    public SimpleNmServiceConfigurationExecutor(
+            NmServiceConfigurationsPreparer configurationsPreparer,
+            SshCommandExecutor sshCommandExecutor,
+            ApplicationEventPublisher applicationEventPublisher) {
         this.configurationsPreparer = configurationsPreparer;
         this.sshCommandExecutor = sshCommandExecutor;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -84,13 +84,7 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
-        stateChangeListener.notifyStateChange(deploymentId, state);
-        stateChangeListeners.forEach((listener) -> listener.notifyStateChange(deploymentId, state));
-    }
-
-    @Override
-    public void addStateChangeListener(AppDeploymentStateChangeListener stateChangeListener) {
-        stateChangeListeners.add(stateChangeListener);
+        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
     }
 
 }

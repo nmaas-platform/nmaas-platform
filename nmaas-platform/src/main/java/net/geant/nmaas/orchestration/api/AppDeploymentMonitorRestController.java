@@ -1,6 +1,9 @@
 package net.geant.nmaas.orchestration.api;
 
 import net.geant.nmaas.orchestration.*;
+import net.geant.nmaas.orchestration.entities.AppLifecycleState;
+import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;

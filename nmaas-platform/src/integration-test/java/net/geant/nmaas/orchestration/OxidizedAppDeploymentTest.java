@@ -1,6 +1,10 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.AppLifecycleState;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
@@ -9,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static net.geant.nmaas.orchestration.AppLifecycleManager.OXIDIZED_APPLICATION_ID;
@@ -28,10 +33,10 @@ public class OxidizedAppDeploymentTest {
     private AppLifecycleManager appLifecycleManager;
 
     @Autowired
-    private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
+    private AppDeploymentMonitor appDeploymentMonitor;
 
     @Autowired
-    private AppDeploymentMonitor appDeploymentMonitor;
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private Identifier clientId;
 
@@ -92,7 +97,7 @@ public class OxidizedAppDeploymentTest {
     }
 
     private void manuallyNotifyDcnDeploymentStateToDeployedAndVerifyManagementVpnConfigured(Identifier deploymentId) throws InvalidDeploymentIdException {
-        appDeploymentStateChangeListener.notifyStateChange(deploymentId, DcnDeploymentState.DEPLOYED);
+        applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYED));
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
     }
 

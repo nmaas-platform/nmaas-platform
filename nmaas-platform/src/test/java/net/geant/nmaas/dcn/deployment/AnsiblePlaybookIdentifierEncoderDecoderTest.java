@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
 import org.junit.Test;
 

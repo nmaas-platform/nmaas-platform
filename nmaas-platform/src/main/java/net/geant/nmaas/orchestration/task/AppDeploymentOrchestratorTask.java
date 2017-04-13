@@ -1,191 +1,153 @@
 package net.geant.nmaas.orchestration.task;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.dcn.deployment.DcnSpec;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceTemplateRepository;
+import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.AppDeploymentStateChangeListener;
-import net.geant.nmaas.orchestration.AppLifecycleState;
-import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.entities.AppLifecycleState;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import static net.geant.nmaas.orchestration.AppLifecycleState.*;
+import static net.geant.nmaas.orchestration.entities.AppLifecycleState.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope("prototype")
-public class AppDeploymentOrchestratorTask implements Runnable {
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class AppDeploymentOrchestratorTask {
 
     private final static Logger log = LogManager.getLogger(AppDeploymentOrchestratorTask.class);
 
     private static final int STATE_CHANGE_WAIT_INTERVAL_IN_MILIS = 500;
 
-    @Autowired
     private NmServiceDeploymentProvider serviceDeployment;
 
-    @Autowired
     private DcnDeploymentProvider dcnDeployment;
 
-    @Autowired
     private AppDeploymentMonitor appDeploymentMonitor;
 
-    @Autowired
-    private AppDeploymentStateChangeListener appDeploymentStateChangeListener;
+    private AppDeploymentOrchestratorTaskHelper helper;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    private NmServiceTemplateRepository applicationTemplates;
-
-    private Identifier deploymentId;
-
-    private Identifier clientId;
-
-    private Identifier applicationId;
-
-    public void populateIdentifiers(Identifier deploymentId, Identifier clientId, Identifier applicationId) {
-        this.deploymentId = deploymentId;
-        this.clientId = clientId;
-        this.applicationId = applicationId;
+    public AppDeploymentOrchestratorTask(NmServiceDeploymentProvider serviceDeployment,
+                                         DcnDeploymentProvider dcnDeployment,
+                                         AppDeploymentMonitor appDeploymentMonitor,
+                                         AppDeploymentOrchestratorTaskHelper helper,
+                                         ApplicationEventPublisher applicationEventPublisher) {
+        this.serviceDeployment = serviceDeployment;
+        this.dcnDeployment = dcnDeployment;
+        this.appDeploymentMonitor = appDeploymentMonitor;
+        this.helper = helper;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @Override
-    public void run() {
-        deploy();
-    }
-
-    private void deploy() {
+    @Loggable(LogLevel.INFO)
+    public void deploy(Identifier deploymentId, Identifier clientId, Identifier applicationId) {
         try {
-            verifyIfAllIdentifiersAreSet();
-            NmServiceInfo serviceInfo = serviceDeployment.verifyRequest(deploymentId, constructNmServiceSpec(clientId, applicationId));
-            dcnDeployment.verifyRequest(deploymentId, constructDcnSpec(clientId, applicationId, serviceInfo));
-            waitForRequestValidatedState();
+            helper.verifyIfAllIdentifiersAreSet(deploymentId, clientId, applicationId);
+            NmServiceInfo serviceInfo = serviceDeployment.verifyRequest(deploymentId, helper.constructNmServiceSpec(clientId, applicationId));
+            if (serviceInfo == null)
+                return;
+            dcnDeployment.verifyRequest(deploymentId, helper.constructDcnSpec(clientId, applicationId, serviceInfo));
+            waitForRequestValidatedState(deploymentId);
             serviceDeployment.prepareDeploymentEnvironment(deploymentId);
             dcnDeployment.prepareDeploymentEnvironment(deploymentId);
-            waitForEnvironmentPreparedState();
+            waitForEnvironmentPreparedState(deploymentId);
             dcnDeployment.deployDcn(deploymentId);
-            waitForVpnConfiguredState();
-            waitForAppConfiguredState();
+            waitForVpnConfiguredState(deploymentId);
+            waitForAppConfiguredState(deploymentId);
             serviceDeployment.deployNmService(deploymentId);
-            waitForAppDeployedState();
+            waitForAppDeployedState(deploymentId);
             serviceDeployment.verifyNmService(deploymentId);
-        } catch (InterruptedException e) {
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
-        } catch (InvalidAppStateException e) {
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
-        } catch (InvalidDeploymentIdException
-                | net.geant.nmaas.nmservice.InvalidDeploymentIdException e) {
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
-        } catch (InvalidApplicationIdException e) {
-            appDeploymentStateChangeListener.notifyGenericError(deploymentId);
+        } catch (InvalidAppStateException
+                | InvalidDeploymentIdException
+                | net.geant.nmaas.nmservice.InvalidDeploymentIdException
+                | InvalidApplicationIdException
+                | InterruptedException e) {
+            log.error("Exception during application deployment -> " + e.getMessage());
+            applicationEventPublisher.publishEvent(new AppDeploymentErrorEvent(this, deploymentId));
+        } catch (Exception e) {
+            log.error("Exception during application deployment -> " + e.getMessage());
+            applicationEventPublisher.publishEvent(new AppDeploymentErrorEvent(this, deploymentId));
         }
     }
 
-    private void waitForRequestValidatedState() throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
-        while (stateDifferentThen(REQUEST_VALIDATED)) {
-            if (stateIs(REQUEST_VALIDATION_FAILED))
+    private void waitForRequestValidatedState(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
+        while (stateDifferentThen(REQUEST_VALIDATED, deploymentId)) {
+            if (stateIs(REQUEST_VALIDATION_FAILED, deploymentId))
                 throw new InvalidAppStateException("Waited for " + REQUEST_VALIDATED + " but got " + REQUEST_VALIDATION_FAILED);
-            throwExceptionIfStateChangedToInternalError();
+            throwExceptionIfStateChangedToInternalError(deploymentId);
             waitBeforeNextStateCheck();
         }
     }
 
-    private void waitForEnvironmentPreparedState() throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
-        while (stateDifferentThen(DEPLOYMENT_ENVIRONMENT_PREPARED)) {
-            if (stateIs(DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED))
+    private void waitForEnvironmentPreparedState(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
+        while (stateDifferentThen(DEPLOYMENT_ENVIRONMENT_PREPARED, deploymentId)) {
+            if (stateIs(DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED, deploymentId))
                 throw new InvalidAppStateException("Waited for " + DEPLOYMENT_ENVIRONMENT_PREPARED + " but got " + DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED);
-            throwExceptionIfStateChangedToInternalError();
+            throwExceptionIfStateChangedToInternalError(deploymentId);
             waitBeforeNextStateCheck();
         }
     }
 
-    private void waitForVpnConfiguredState() throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
-        while (stateDifferentThen(MANAGEMENT_VPN_CONFIGURED)) {
-            if (stateIs(MANAGEMENT_VPN_CONFIGURATION_FAILED))
+    private void waitForVpnConfiguredState(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
+        while (stateDifferentThen(MANAGEMENT_VPN_CONFIGURED, deploymentId)) {
+            if (stateIs(MANAGEMENT_VPN_CONFIGURATION_FAILED, deploymentId))
                 throw new InvalidAppStateException("Waited for " + MANAGEMENT_VPN_CONFIGURED + " but got " + MANAGEMENT_VPN_CONFIGURATION_FAILED);
-            throwExceptionIfStateChangedToInternalError();
+            throwExceptionIfStateChangedToInternalError(deploymentId);
             waitBeforeNextStateCheck();
         }
     }
 
-    private void waitForAppConfiguredState() throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
-        while (stateDifferentThen(APPLICATION_CONFIGURED)) {
-            if (stateIs(APPLICATION_CONFIGURATION_FAILED))
+    private void waitForAppConfiguredState(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
+        while (stateDifferentThen(APPLICATION_CONFIGURED, deploymentId)) {
+            if (stateIs(APPLICATION_CONFIGURATION_FAILED, deploymentId))
                 throw new InvalidAppStateException("Waited for " + APPLICATION_CONFIGURED + " but got " + APPLICATION_CONFIGURATION_FAILED);
-            throwExceptionIfStateChangedToInternalError();
+            throwExceptionIfStateChangedToInternalError(deploymentId);
             waitBeforeNextStateCheck();
         }
     }
 
-    private void waitForAppDeployedState() throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
-        while (stateDifferentThen(APPLICATION_DEPLOYED)) {
-            if (stateIs(APPLICATION_DEPLOYMENT_FAILED))
+    private void waitForAppDeployedState(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException, InterruptedException {
+        while (stateDifferentThen(APPLICATION_DEPLOYED, deploymentId)) {
+            if (stateIs(APPLICATION_DEPLOYMENT_FAILED, deploymentId))
                 throw new InvalidAppStateException("Waited for " + APPLICATION_DEPLOYED + " but got " + APPLICATION_DEPLOYMENT_FAILED);
-            throwExceptionIfStateChangedToInternalError();
+            throwExceptionIfStateChangedToInternalError(deploymentId);
             waitBeforeNextStateCheck();
         }
     }
 
-    private void throwExceptionIfStateChangedToInternalError() throws InvalidDeploymentIdException, InvalidAppStateException {
-        if (stateIs(INTERNAL_ERROR))
+    private void throwExceptionIfStateChangedToInternalError(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException {
+        if (stateIs(INTERNAL_ERROR, deploymentId))
             throw new InvalidAppStateException("Waited for valid state but got " + INTERNAL_ERROR);
     }
 
-    private boolean stateDifferentThen(AppLifecycleState state) throws InvalidDeploymentIdException {
+    private boolean stateDifferentThen(AppLifecycleState state, Identifier deploymentId) throws InvalidDeploymentIdException {
         return !state.equals(appDeploymentMonitor.state(deploymentId));
     }
 
-    private boolean stateIs(AppLifecycleState state) throws InvalidDeploymentIdException {
+    private boolean stateIs(AppLifecycleState state, Identifier deploymentId) throws InvalidDeploymentIdException {
         return state.equals(appDeploymentMonitor.state(deploymentId));
     }
 
     private void waitBeforeNextStateCheck() throws InterruptedException {
         Thread.sleep(STATE_CHANGE_WAIT_INTERVAL_IN_MILIS);
-    }
-
-    private void verifyIfAllIdentifiersAreSet() {
-        if (deploymentId == null || clientId == null || applicationId == null)
-            throw new NullPointerException();
-    }
-
-    private NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) throws InvalidApplicationIdException {
-        final DockerEngineContainerTemplate template = (DockerEngineContainerTemplate) applicationTemplates.loadTemplateByApplicationId(applicationId);
-        if (template == null)
-            throw new InvalidApplicationIdException("Nm Service template for application id " + applicationId + " does not exist");
-        final String serviceName = buildServiceName(applicationId, template);
-        DockerContainerSpec dockerContainerSpec = new DockerContainerSpec(serviceName, template);
-        // client details should be read from database
-        dockerContainerSpec.setClientDetails("client-" + clientId, "organization-" + clientId);
-        return dockerContainerSpec;
-    }
-
-    private String buildServiceName(Identifier applicationId, DockerEngineContainerTemplate template) {
-        return template.getName() + "-" + applicationId;
-    }
-
-    private DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId, NmServiceInfo serviceInfo) {
-        DcnSpec dcn = new DcnSpec(buildDcnName(applicationId, clientId));
-        if (serviceInfo != null && serviceInfo.getNetwork() != null)
-            dcn.setNmServiceDeploymentNetworkDetails(serviceInfo.getNetwork());
-        else
-            log.warn("Failed to set NM service deployment network details in DCN spec");
-        return dcn;
-    }
-
-    private String buildDcnName(Identifier applicationId, Identifier clientId) {
-        return clientId + "-" + applicationId;
     }
 
 }
