@@ -350,6 +350,28 @@ public class AnsiblePlaybookVpnConfig {
         this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
     }
 
+    public AnsiblePlaybookVpnConfig copy() {
+        AnsiblePlaybookVpnConfig copy = new AnsiblePlaybookVpnConfig(this.type);
+        copy.setTargetRouter(this.targetRouter);
+        copy.setVrfId(this.vrfId);
+        copy.setLogicalInterface(this.logicalInterface);
+        copy.setVrfRd(this.vrfRd);
+        copy.setVrfRt(this.vrfRt);
+        copy.setBgpGroupId(this.bgpGroupId);
+        copy.setBgpNeighborIp(this.bgpNeighborIp);
+        copy.setAsn(this.asn);
+        copy.setPhysicalInterface(this.physicalInterface);
+        copy.setInterfaceUnit(this.interfaceUnit);
+        copy.setInterfaceVlan(this.interfaceVlan);
+        copy.setBgpLocalIp(this.bgpLocalIp);
+        copy.setBgpLocalCidr(this.bgpLocalCidr);
+        copy.setPolicyCommunityOptions(this.policyCommunityOptions);
+        copy.setPolicyStatementConnected(this.policyStatementConnected);
+        copy.setPolicyStatementImport(this.policyStatementImport);
+        copy.setPolicyStatementExport(this.policyStatementExport);
+        return copy;
+    }
+
     private void wrongIpMessage(String fieldName, StringBuilder exceptionMessage) {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }

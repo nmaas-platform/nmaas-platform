@@ -153,7 +153,7 @@ public class AnsiblePlaybookVpnConfigRepository {
             throw new AnsiblePlaybookVpnConfigNotFoundException(
                     "Did not find Ansible playbook configuration for customer " + customerId + " in the repository");
         }
-        return customerVpnConfig;
+        return customerVpnConfig.copy();
     }
 
     /**
@@ -169,7 +169,7 @@ public class AnsiblePlaybookVpnConfigRepository {
             throw new AnsiblePlaybookVpnConfigNotFoundException(
                     "Did not find Ansible playbook cloud configuration for DockerHost " + hostName + " in the repository");
         }
-        return customerVpnConfig;
+        return customerVpnConfig.copy();
     }
 
     /**
@@ -177,7 +177,7 @@ public class AnsiblePlaybookVpnConfigRepository {
      * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by customer id as key
      */
     public Map<Long, AnsiblePlaybookVpnConfig> loadAllClientVpnConfigs () {
-        return customerSideVpnConfigs;
+        return new HashMap<>(customerSideVpnConfigs);
     }
 
     /**
@@ -185,7 +185,7 @@ public class AnsiblePlaybookVpnConfigRepository {
      * @return {@link Map} of {@link AnsiblePlaybookVpnConfig} instances by DockerHost name as a key
      */
     public Map<String, AnsiblePlaybookVpnConfig> loadAllCloudVpnConfigs () {
-        return cloudSideVpnConfigs;
+        return new HashMap<>(cloudSideVpnConfigs);
     }
 
     /**
