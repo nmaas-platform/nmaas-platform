@@ -1,43 +1,54 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, Output, ViewEncapsulation, ViewChildren, QueryList } from '@angular/core';
 
-import { AppInstanceState, AppInstanceProgressStage } from '../../../model/index';
+import { AppInstanceState, AppInstanceProgressStage, AppInstanceStateAware } from '../../../model/index';
 
 @Component({
     selector: 'nmaas-appinstanceprogress',
     templateUrl: './appinstanceprogress.component.html',
     styleUrls: ['./appinstanceprogress.component.css']
 })
+@AppInstanceStateAware
 export class AppInstanceProgressComponent implements OnInit {
 
-    @Input()
-    stages: AppInstanceProgressStage[];
 
     @Input()
-    public activeState: AppInstanceState = AppInstanceState.UNKNOWN;
+    stages: AppInstanceProgressStage[]  = new Array<AppInstanceProgressStage>();
 
-    private appInstanceStateEnum = AppInstanceState;
 
+    @Input()
+    activeState: AppInstanceState = AppInstanceState.UNKNOWN;
+    
     constructor() { }
 
     ngOnInit() {
 
     }
 
-    public setState(appInstanceState: AppInstanceState): void {
-        console.debug('Set progress state: ' + appInstanceState);
-        this.activeState = appInstanceState;
+    ngAfterViewInit() {
+        // available here
     }
 
-    public isSuccess(stage: AppInstanceProgressStage):boolean {
-        return ( stage.activeState > AppInstanceState.SUBSCRIBED && stage.activeState < this.activeState)
+    public getCurrentStage(): AppInstanceProgressStage {
+        for(let stage of this.stages)
+            if(this.activeState === stage.activeState)
+                return stage; 
+        return null;
     }
     
-    public isCurrent(stage: AppInstanceProgressStage):boolean {
-        return ( stage.activeState == this.activeState);
-    }
-    
-    public isFailed(stage: AppInstanceProgressStage): boolean {
-        return (this.activeState == AppInstanceState.FAILURE);
-    }
-    
+//    public setState(state: AppInstanceState): void {
+//        console.debug('Set progress state: ' + state);
+//        this.activeState = state;
+//        for(let step of this.steps) {
+//            if(this.activeState == AppInstanceState.FAILURE)
+//                step.stepState = AppInstanceProgressStepState.FAILED;
+//            else if(step.stage.activeState < this.activeState)
+//                step.stepState = AppInstanceProgressStepState.SUCCESS;
+//            else if(step.stage.activeState == this.activeState)
+//                step.stepState = AppInstanceProgressStepState.ACTIVE;
+//            else 
+//                step.stepState = AppInstanceProgressStepState.DISABLED;
+//        }
+//            
+//    }
+
 }
