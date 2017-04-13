@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
+import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.AppDeployDcnActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -34,8 +35,11 @@ public class AppDcnDeploymentTask {
         final Identifier deploymentId = event.getDeploymentId();
         try {
             dcnDeployment.deployDcn(deploymentId);
+            dcnDeployment.verifyDcn(deploymentId);
         } catch (CouldNotDeployDcnException e) {
             log.warn("DCN request verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
+        } catch (CouldNotVerifyDcnException e) {
+            log.warn("DCN verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         }
     }
 }

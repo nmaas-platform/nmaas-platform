@@ -127,8 +127,14 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyDcn(Identifier deploymentId) throws CouldNotVerifyDcnException {
-        // TODO implement DCN verification functionality
-        notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFIED);
+        try {
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFICATION_INITIATED);
+            // TODO implement DCN verification functionality
+            Thread.sleep(1000);
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFIED);
+        } catch (InterruptedException e) {
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFICATION_FAILED);
+        }
     }
 
     @Override

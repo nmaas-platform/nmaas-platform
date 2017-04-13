@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -39,11 +38,8 @@ public class AppDeploymentVerificationTask {
         final Identifier deploymentId = event.getDeploymentId();
         try {
             serviceDeployment.verifyNmService(deploymentId);
-            dcnDeployment.verifyDcn(deploymentId);
         } catch (CouldNotVerifyNmServiceException e) {
             log.warn("Service verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
-        } catch (CouldNotVerifyDcnException e) {
-            log.warn("DCN verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         }
     }
 

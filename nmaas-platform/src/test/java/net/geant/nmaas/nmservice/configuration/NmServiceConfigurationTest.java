@@ -76,7 +76,7 @@ public class NmServiceConfigurationTest {
         mapper.storeMapping(deploymentId, serviceName);
         configuration = new AppConfiguration("");
         appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
-        appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
+        appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_VERIFIED);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }
 

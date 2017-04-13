@@ -101,11 +101,17 @@ public class DefaultAppDeploymentMonitorTest {
         publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.ENVIRONMENT_PREPARED));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARED));
-        // dcn deployment
+        // dcn deployment and verification
         publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
         publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYED));
+        Thread.sleep(DELAY);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
+        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.VERIFICATION_INITIATED));
+        Thread.sleep(DELAY);
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
+        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.VERIFIED));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
         // app configuration
