@@ -10,7 +10,7 @@ import { AppInstanceService } from '../../../service/appinstance.service';
 
 import { AppInstanceProgressComponent } from '../appinstanceprogress/appinstanceprogress.component';
 
-import { Application, AppInstance, AppInstanceState, AppInstanceStatus, AppInstanceProgressStage } from '../../../model/index';
+import { Application, AppInstance, AppInstanceState, AppInstanceStateAware, AppInstanceStatus, AppInstanceProgressStage } from '../../../model/index';
 
 @Component({
     selector: 'nmaas-appinstance',
@@ -18,6 +18,7 @@ import { Application, AppInstance, AppInstanceState, AppInstanceStatus, AppInsta
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
     providers: [AppsService, AppInstanceService]
 })
+@AppInstanceStateAware
 export class AppInstanceComponent implements OnInit {
 
     @ViewChild(AppInstanceProgressComponent)
@@ -26,8 +27,7 @@ export class AppInstanceComponent implements OnInit {
 
     app: Application;
 
-    private appInstanceStateEnum = AppInstanceState;
-    private appInstanceStatus: AppInstanceStatus = new AppInstanceStatus();
+    private appInstanceStatus: AppInstanceStatus; // = new AppInstanceStatus();
 
     private appInstanceId: Number;
     private appInstance: AppInstance;
@@ -44,7 +44,6 @@ export class AppInstanceComponent implements OnInit {
 
             this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
                 this.appInstance = appInstance;
-                this.appInstanceStatus.state = appInstance.state;
                 this.appsService.getApp(this.appInstance.applicationId).subscribe(app => { 
                     this.app = app;
                     this.configurationTemplate = this.app.configTemplate.template;
@@ -58,8 +57,8 @@ export class AppInstanceComponent implements OnInit {
                     console.debug('Tick: get app instance status');
                     this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
                         appInstanceStatus => {
+                            console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
                             this.appInstanceStatus = appInstanceStatus;
-                            //this.appInstanceProgress.setState(this.appInstanceStatus.state);
                             this.appInstanceProgress.activeState = this.appInstanceStatus.state;
                         }
                     )

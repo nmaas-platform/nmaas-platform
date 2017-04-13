@@ -1,10 +1,12 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig.Action;
-import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig.Type;
+import static net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig.Action;
+import static net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig.Type;
 
 public class AnsiblePlaybookCommandBuilder {
 

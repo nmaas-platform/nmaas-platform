@@ -1,10 +1,16 @@
 package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 
@@ -14,7 +20,12 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class AnsiblePlaybookContainerBuilderTest {
+
+    @Autowired
+    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";
 
@@ -84,9 +95,9 @@ public class AnsiblePlaybookContainerBuilderTest {
     private AnsiblePlaybookContainerBuilder containerConfigBuilder;
 
     @Test
-    public void shouldBuildAnsiblePlaybookContainerConfigForClientSideRouter() {
+    public void shouldBuildAnsiblePlaybookContainerConfigForClientSideRouter() throws AnsiblePlaybookVpnConfigNotFoundException {
         ContainerConfig containerConfig = containerConfigBuilder.buildContainerForClientSideRouterConfig(
-                AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForClientSideRouter(),
+                vpnConfigRepository.loadDefaultCustomerVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(containerConfig.image())));
         for (String volumeEntry : containerConfig.hostConfig().binds())
@@ -96,9 +107,9 @@ public class AnsiblePlaybookContainerBuilderTest {
     }
 
     @Test
-    public void shouldBuildAnsiblePlaybookContainerConfigForCloudSideRouter() {
+    public void shouldBuildAnsiblePlaybookContainerConfigForCloudSideRouter() throws AnsiblePlaybookVpnConfigNotFoundException {
         ContainerConfig containerConfig = containerConfigBuilder.buildContainerForCloudSideRouterConfig(
-                AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter(),
+                vpnConfigRepository.loadDefaultCloudVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(containerConfig.image())));
         for (String volumeEntry : containerConfig.hostConfig().binds())
@@ -108,8 +119,8 @@ public class AnsiblePlaybookContainerBuilderTest {
     }
 
     @Test
-    public void shouldMergeConfigWithProvidedNetworkDetails() {
-        AnsiblePlaybookVpnConfig config = AnsiblePlaybookVpnConfigDefaults.ansiblePlaybookForCloudSideRouter();
+    public void shouldMergeConfigWithProvidedNetworkDetails() throws AnsiblePlaybookVpnConfigNotFoundException {
+        AnsiblePlaybookVpnConfig config = vpnConfigRepository.loadDefaultCloudVpnConfig();
         ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(
                 1024,
                 new ContainerNetworkIpamSpec("10.11.1.0/24", "10.11.1.254"),

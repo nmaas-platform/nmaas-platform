@@ -62,7 +62,7 @@
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<div class = "btn-group pull-right">
-								<a *ngIf="appInstance?.state == appInstanceStateEnum.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-primary" role = "button">Go to app</a>
+								<a *ngIf="appInstance?.state == AppInstanceState.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-primary" role = "button">Go to app</a>
 								<button class = "btn btn-danger" (click)="unsubscribe()">Unsubscribe</button>
 							</div>
 						</div>
@@ -74,37 +74,19 @@
 				<h3>Installation progress</h3>
 				<hr>
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<nmaas-appinstanceprogress [stages]='getStages()'></nmaas-appinstanceprogress>
+					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 				</div>
-				<p>State: {{appInstanceStatus?.state}}</p>
+				<p>State: {{appInstanceStatus?.state ? AppInstanceState[appInstanceStatus?.state] : '...'}}</p>
 				<p>Details: {{appInstanceStatus?.details}}</p>
 			</div>
 			
-			<div class="row">
+			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state != AppInstanceState.CONFIGURATION_AWAITING}" >
 				<h3>Configuration</h3>
 				<hr>
 				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration($event)" >
 				
 				</json-schema-form>
-				<!-- 
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<h4>Add IP address for configuration management</h4>
-					<form class = "form-inline" role = "form">
-						<div class="form-group">
-							<label for = "ipaddress">IP Address:</label>
-							<input type="text" name="ipaddress" class="form-control-sm" placeholder="IP Address here">
-							<button type = "submit" class = "btn btn-sm"><span class="glyphicon glyphicon-plus"></span></button>
-						</div>
-					</form>
-				</div>
-				
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<div class = "btn-group pull-right">
-						<a href="#" class = "btn btn-success">Apply configuration</a>
-						<a href="#" class = "btn btn-default">Reset</a>
-					</div>
-				</div>
-				-->
+
 			</div>
 			<hr>
 		</div>

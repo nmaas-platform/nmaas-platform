@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.repository;
 
-import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
