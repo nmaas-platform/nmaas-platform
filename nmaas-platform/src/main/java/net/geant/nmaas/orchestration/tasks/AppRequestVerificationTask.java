@@ -106,7 +106,7 @@ public class AppRequestVerificationTask {
 
     @Loggable(LogLevel.DEBUG)
     public String buildDcnName(Identifier applicationId, Identifier clientId) {
-        return clientId + "-" + applicationId;
+        return clientId + "-" + applicationId + "-" + System.nanoTime();
     }
 
 }
