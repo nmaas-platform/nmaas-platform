@@ -65,7 +65,7 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 			CouldNotConnectToOrchestratorException,
 			CouldNotPrepareEnvironmentException,
 			CouldNotDeployNmServiceException,
-			CouldNotDestroyNmServiceException,
+            CouldNotRemoveNmServiceException,
 			InterruptedException,
 			NmServiceRepository.ServiceNotFoundException,
 			ContainerNetworkCheckFailedException,

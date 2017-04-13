@@ -64,7 +64,7 @@ public class OxidizedAppDeploymentTest {
         waitAndVerifyDeploymentEnvironmentPrepared(deploymentId);
         waitAndVerifyManagementVpnConfigurationInProgress(deploymentId);
         manuallyNotifyDcnDeploymentStateToDeployedAndVerifyManagementVpnConfigured(deploymentId);
-        appLifecycleManager.applyConfiguration(deploymentId, new AppConfiguration(applicationId, jsonInput));
+        appLifecycleManager.applyConfiguration(deploymentId, new AppConfiguration(jsonInput));
         // this won't work since the configuration file needs to be download from a running NMaaS Portal instance
         waitAndVerifyApplicationConfigured(deploymentId);
         waitAndVerifyApplicationDeployed(deploymentId);

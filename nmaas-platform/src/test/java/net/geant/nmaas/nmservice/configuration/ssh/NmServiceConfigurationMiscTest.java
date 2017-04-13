@@ -4,11 +4,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -16,6 +16,9 @@ import static org.hamcrest.Matchers.is;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class NmServiceConfigurationMiscTest {
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private SshCommandExecutor sshCommandExecutor;
@@ -59,6 +62,13 @@ public class NmServiceConfigurationMiscTest {
         assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(1), is(true));
         assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(13), is(true));
         assertThat(sshConnectionUnderTest.exitStatusIndicatesThatSomethingWentWrong(0), is(false));
+    }
+
+    @Test
+    public void shouldReadProperUrlFromProperties() {
+        final String sourceUrl = env.getProperty("app.config.download.url");
+        final Integer serverPort = env.getProperty("server.port", Integer.class);
+        assertThat(sourceUrl, containsString(serverPort.toString()));
     }
 
 }

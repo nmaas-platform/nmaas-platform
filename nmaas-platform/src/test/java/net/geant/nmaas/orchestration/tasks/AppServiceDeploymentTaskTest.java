@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.task;
+package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
@@ -26,12 +26,13 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 @Transactional
 @Rollback
-public class AppDeploymentOrchestratorTaskTest {
-
-    private AppDeploymentOrchestratorTaskHelper taskHelper;
+public class AppServiceDeploymentTaskTest {
 
     @Autowired
     private ApplicationRepository applications;
+
+    @Autowired
+    private AppRequestVerificationTask task;
 
     private Identifier clientId;
 
@@ -39,7 +40,6 @@ public class AppDeploymentOrchestratorTaskTest {
 
     @Before
     public void setup() {
-        taskHelper = new AppDeploymentOrchestratorTaskHelper(applications);
         clientId = Identifier.newInstance(String.valueOf(100L));
         Application application = new Application("testOxidized");
         application.setDockerContainerTemplate(oxidizedTemplate());
@@ -50,7 +50,7 @@ public class AppDeploymentOrchestratorTaskTest {
 
     @Test
     public void shouldConstructServiceInfo() throws InvalidApplicationIdException {
-        DockerContainerSpec spec = (DockerContainerSpec) taskHelper.constructNmServiceSpec(clientId, applicationId);
+        DockerContainerSpec spec = (DockerContainerSpec) task.constructNmServiceSpec(clientId, applicationId);
         assertThat(spec.getTemplate(), is(notNullValue()));
         spec.getTemplate().setId(null);
         spec.getTemplate().getExposedPort().setId(null);
@@ -59,7 +59,7 @@ public class AppDeploymentOrchestratorTaskTest {
 
     @Test
     public void shouldBuildServiceName() {
-        assertThat(taskHelper.buildServiceName(applications.findOne(Long.valueOf(applicationId.getValue()))),
+        assertThat(task.buildServiceName(applications.findOne(Long.valueOf(applicationId.getValue()))),
                 equalTo("testOxidized" + "-" + applicationId));
     }
 

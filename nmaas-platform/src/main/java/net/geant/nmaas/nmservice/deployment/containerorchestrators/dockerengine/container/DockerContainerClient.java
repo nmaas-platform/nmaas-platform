@@ -100,7 +100,7 @@ public class DockerContainerClient {
     }
 
     public void remove(String containerId, DockerHost host)
-            throws CouldNotConnectToOrchestratorException, CouldNotDestroyNmServiceException, ContainerOrchestratorInternalErrorException {
+            throws CouldNotConnectToOrchestratorException, CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
             executeStopAndRemove(containerId, apiClient);
@@ -108,7 +108,7 @@ public class DockerContainerClient {
             throw new CouldNotConnectToOrchestratorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
-            throw new CouldNotDestroyNmServiceException(
+            throw new CouldNotRemoveNmServiceException(
                     "Could not remove container " + containerId + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(

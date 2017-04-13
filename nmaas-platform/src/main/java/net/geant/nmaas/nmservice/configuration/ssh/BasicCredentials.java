@@ -9,6 +9,11 @@ public class BasicCredentials {
 
     private final String password;
 
+    public BasicCredentials(String username) {
+        this.username = username;
+        this.password = null;
+    }
+
     public BasicCredentials(String username, String password) {
         this.username = username;
         this.password = password;

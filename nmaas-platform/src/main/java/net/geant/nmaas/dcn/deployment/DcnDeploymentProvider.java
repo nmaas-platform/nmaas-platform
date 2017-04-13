@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.dcn.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
@@ -8,14 +8,14 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface DcnDeploymentProvider {
 
-    void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec);
+    void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec) throws DcnRequestVerificationException;
 
-    void prepareDeploymentEnvironment(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareDcnException;
 
-    void deployDcn(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void deployDcn(Identifier deploymentId) throws CouldNotDeployDcnException;
 
-    void verifyDcn(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void verifyDcn(Identifier deploymentId) throws CouldNotVerifyDcnException;
 
-    void removeDcn(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void removeDcn(Identifier deploymentId) throws CouldNotRemoveDcnException;
 
 }

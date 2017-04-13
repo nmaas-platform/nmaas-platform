@@ -174,6 +174,42 @@ public enum AppDeploymentState {
     },
     MANAGEMENT_VPN_CONFIGURED {
         @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case VERIFICATION_INITIATED:
+                    return MANAGEMENT_VPN_VERIFICATION_IN_PROGRESS;
+                case VERIFICATION_FAILED:
+                    return MANAGEMENT_VPN_VERIFICATION_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    MANAGEMENT_VPN_CONFIGURATION_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_FAILED; }
+    },
+    MANAGEMENT_VPN_VERIFICATION_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case VERIFIED:
+                    return MANAGEMENT_VPN_VERIFIED;
+                case VERIFICATION_FAILED:
+                    return MANAGEMENT_VPN_VERIFICATION_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    MANAGEMENT_VPN_VERIFIED {
+        @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURED; }
 
         @Override
@@ -188,7 +224,7 @@ public enum AppDeploymentState {
             }
         }
     },
-    MANAGEMENT_VPN_CONFIGURATION_FAILED {
+    MANAGEMENT_VPN_VERIFICATION_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_FAILED; }
     },

@@ -36,7 +36,7 @@ public class SshConnection {
 		if (ssh == null || !isConnected())
 			throw new SshConnectionException("Not connected.");
 		try {
-			ssh.authPassword(credentials.getUsername(), credentials.getPassword());
+			ssh.authPublickey(credentials.getUsername());
 		} catch(IOException ex) {
 			throw new SshConnectionException("Unable to authenticate due to some errors -> " + ex.getMessage());
 		}

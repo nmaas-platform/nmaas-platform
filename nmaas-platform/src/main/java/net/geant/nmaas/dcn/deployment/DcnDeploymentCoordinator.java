@@ -7,6 +7,7 @@ import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.exceptions.*;
 import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
@@ -67,7 +68,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec) {
+    public void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec) throws DcnRequestVerificationException {
         final String dcnName = dcnSpec.name();
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
         dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, dcnSpec));
@@ -80,19 +81,20 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         } catch (DcnRepository.DcnNotFoundException | AnsiblePlaybookVpnConfigNotFoundException e) {
             log.error("Exception during DCN request verification -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
+            throw new DcnRequestVerificationException("Exception during DCN request verification -> " + e.getMessage());
         }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareDcnException {
         // TODO implement DCN environment preparation functionality (currently not required)
         notifyStateChangeListeners(deploymentId, DcnDeploymentState.ENVIRONMENT_PREPARED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployDcn(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public void deployDcn(Identifier deploymentId) throws CouldNotDeployDcnException {
         String dcnName = null;
         try {
             dcnName = deploymentIdMapper.dcnName(deploymentId);
@@ -103,15 +105,15 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                     buildContainerForClientSideRouterConfig(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(dcnName)),
                     buildContainerForCloudSideRouterConfig(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(dcnName)));
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED);
-        } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException deploymentIdNotFoundException) {
-            throw new InvalidDeploymentIdException();
-        } catch (DcnRepository.DcnNotFoundException
+        } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException
+                | DcnRepository.DcnNotFoundException
                 | DockerHostNotFoundException
                 | DockerHostInvalidException
                 | InterruptedException
                 | DockerException anyException) {
             log.error("Exception during DCN deployment -> " + anyException.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.DEPLOYMENT_FAILED);
+            throw new CouldNotDeployDcnException("Exception during DCN deployment -> " + anyException.getMessage());
         }
     }
 
@@ -131,14 +133,20 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDcn(Identifier deploymentId) throws InvalidDeploymentIdException {
-        // TODO implement DCN verification functionality
-        notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFIED);
+    public void verifyDcn(Identifier deploymentId) throws CouldNotVerifyDcnException {
+        try {
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFICATION_INITIATED);
+            // TODO implement DCN verification functionality
+            Thread.sleep(1000);
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFIED);
+        } catch (InterruptedException e) {
+            notifyStateChangeListeners(deploymentId, DcnDeploymentState.VERIFICATION_FAILED);
+        }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeDcn(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public void removeDcn(Identifier deploymentId) throws CouldNotRemoveDcnException {
         String dcnName = null;
         try {
             dcnName = deploymentIdMapper.dcnName(deploymentId);
@@ -148,15 +156,15 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                     buildContainerForClientSideRouterConfigRemoval(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(dcnName)),
                     buildContainerForCloudSideRouterConfigRemoval(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(dcnName)));
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REMOVAL_INITIATED);
-        } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException e) {
-            throw new InvalidDeploymentIdException();
-        } catch (DcnRepository.DcnNotFoundException
-                 | DockerHostNotFoundException
-                 | DockerHostInvalidException
-                 | InterruptedException
-                 | DockerException e) {
+        } catch (DeploymentIdToDcnNameMapper.EntryNotFoundException
+                | DcnRepository.DcnNotFoundException
+                | DockerHostNotFoundException
+                | DockerHostInvalidException
+                | InterruptedException
+                | DockerException e) {
             log.error("Exception during DCN removal -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DcnDeploymentState.REMOVAL_FAILED);
+            throw new CouldNotRemoveDcnException("Exception during DCN removal -> " + e.getMessage());
         }
     }
 

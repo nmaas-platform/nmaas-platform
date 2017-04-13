@@ -1,53 +1,42 @@
 package net.geant.nmaas.orchestration.entities;
 
+import javax.persistence.*;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Entity
+@Table(name="app_deployment_configuration")
 public class AppConfiguration {
 
-    private Identifier applicationId;
+    @Id
+    @GeneratedValue( strategy = GenerationType.AUTO )
+    @Column(name="id")
+    private Long id;
 
+    @Column(nullable = false)
     private String jsonInput;
 
     public AppConfiguration() {}
 
-    public AppConfiguration(Identifier applicationId, String jsonInput) {
-        this.applicationId = applicationId;
+    public AppConfiguration(String jsonInput) {
         this.jsonInput = jsonInput;
     }
 
-    public void setApplicationId(Identifier applicationId) {
-        this.applicationId = applicationId;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setJsonInput(String jsonInput) {
         this.jsonInput = jsonInput;
     }
 
-    public Identifier getApplicationId() {
-        return applicationId;
-    }
-
     public String getJsonInput() {
         return jsonInput;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AppConfiguration that = (AppConfiguration) o;
-
-        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null)
-            return false;
-        return jsonInput != null ? jsonInput.equals(that.jsonInput) : that.jsonInput == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = applicationId != null ? applicationId.hashCode() : 0;
-        result = 31 * result + (jsonInput != null ? jsonInput.hashCode() : 0);
-        return result;
-    }
 }

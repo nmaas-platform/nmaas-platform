@@ -26,4 +26,12 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
     public NmServiceDeploymentState getState() {
         return state;
     }
+
+    @Override
+    public String toString() {
+        return "NmServiceDeploymentStateChangeEvent{" +
+                "deploymentId=" + deploymentId +
+                ", state=" + state +
+                '}';
+    }
 }

@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -10,14 +10,14 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface NmServiceDeploymentProvider {
 
-    NmServiceInfo verifyRequest(Identifier deploymentId, NmServiceSpec serviceSpec);
+    NmServiceInfo verifyRequest(Identifier deploymentId, NmServiceSpec serviceSpec) throws NmServiceRequestVerificationException;
 
-    void prepareDeploymentEnvironment(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException;
 
-    void deployNmService(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void deployNmService(Identifier deploymentId) throws CouldNotDeployNmServiceException;
 
-    void verifyNmService(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException;
 
-    void removeNmService(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException;
 
 }

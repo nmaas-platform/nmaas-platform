@@ -56,29 +56,29 @@ public class DockerSwarmManager implements ContainerOrchestrationProvider {
             String serviceId = servicesManager.deployService(dockerSpec, dockerSwarms.loadPreferredDockerSwarmManager());
             nmServices.updateServiceId(serviceName, serviceId);
         } catch (NmServiceRequestVerificationException serviceSpecVerificationException) {
-            throw new CouldNotDeployNmServiceException("Could not deploy service -> " + serviceSpecVerificationException.getMessage());
+            throw new CouldNotDeployNmServiceException("Could not deployNmService service -> " + serviceSpecVerificationException.getMessage());
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
-            throw new CouldNotDeployNmServiceException("Could not deploy service -> " + couldNotDeployNmServiceException.getMessage());
+            throw new CouldNotDeployNmServiceException("Could not deployNmService service -> " + couldNotDeployNmServiceException.getMessage());
         } catch (DockerSwarmNotFoundException dockerSwarmNotFoundException) {
-            throw new ContainerOrchestratorInternalErrorException("Could not deploy service -> " + dockerSwarmNotFoundException.getMessage());
+            throw new ContainerOrchestratorInternalErrorException("Could not deployNmService service -> " + dockerSwarmNotFoundException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new ContainerOrchestratorInternalErrorException("Could not deploy service -> " + serviceNotFoundException.getMessage());
+            throw new ContainerOrchestratorInternalErrorException("Could not deployNmService service -> " + serviceNotFoundException.getMessage());
         }
     }
 
     @Override
-    public void removeNmService(String serviceName) throws CouldNotDestroyNmServiceException, ContainerOrchestratorInternalErrorException {
+    public void removeNmService(String serviceName) throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             String serviceId = nmServices.getServiceId(serviceName);
             servicesManager.destroyService(serviceId, dockerSwarms.loadPreferredDockerSwarmManager());
-        } catch (CouldNotDestroyNmServiceException couldNotDestroyNmServiceException) {
-            throw new CouldNotDestroyNmServiceException("Could not destroy service -> " + couldNotDestroyNmServiceException.getMessage());
+        } catch (CouldNotRemoveNmServiceException couldNotRemoveNmServiceException) {
+            throw new CouldNotRemoveNmServiceException("Could not destroy service -> " + couldNotRemoveNmServiceException.getMessage());
         } catch (DockerSwarmNotFoundException dockerSwarmNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException("Could not destroy service -> " + dockerSwarmNotFoundException.getMessage());
         } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException("Could not destroy service -> " + serviceNotFoundException.getMessage());
         } catch (CouldNotConnectToOrchestratorException couldNotConnectToOrchestratorException) {
-            throw new CouldNotDestroyNmServiceException("Could not destroy service -> " + couldNotConnectToOrchestratorException.getMessage());
+            throw new CouldNotRemoveNmServiceException("Could not destroy service -> " + couldNotConnectToOrchestratorException.getMessage());
         }
     }
 

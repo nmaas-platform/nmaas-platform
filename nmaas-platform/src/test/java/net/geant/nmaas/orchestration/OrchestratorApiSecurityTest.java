@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,26 +24,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class OrchestratorApiSecurityTest {
 
-        @Autowired
-        private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-        @Autowired
-        private Filter springSecurityFilterChain;
+    @Autowired
+    private Filter springSecurityFilterChain;
 
-        private MockMvc mvc;
+    @MockBean
+    private AppDeploymentLifecycleStateKeeper repository;
 
-        @Before
-        public void setup() {
-            mvc = MockMvcBuilders
-                    .webAppContextSetup(context)
-                    .addFilters(springSecurityFilterChain)
-                    .build();
-        }
+    private MockMvc mvc;
 
-        @Test
-        public void shouldAuthorizeProperUser() throws Exception {
-            mvc.perform(get("/platform/api/orchestration/deployments")
-                    .with(httpBasic(context.getEnvironment().getProperty("api.client.nmaas.test.username"), context.getEnvironment().getProperty("api.client.nmaas.test.password"))))
-                    .andExpect(status().isOk());
-        }
+    @Before
+    public void setup() {
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .addFilters(springSecurityFilterChain)
+                .build();
+    }
+
+    @Test
+    public void shouldAuthorizeProperUser() throws Exception {
+        mvc.perform(get("/platform/api/orchestration/deployments")
+                .with(httpBasic(context.getEnvironment().getProperty("api.client.nmaas.test.username"), context.getEnvironment().getProperty("api.client.nmaas.test.password"))))
+                .andExpect(status().isOk());
+    }
 }

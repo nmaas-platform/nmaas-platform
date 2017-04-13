@@ -1,5 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
+import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -28,7 +30,7 @@ public class AnsibleContainerDeploymentIntTest {
 
     @Ignore
     @Test
-    public void shouldVerifyAndDeployDefaultContainer() throws InvalidDeploymentIdException {
+    public void shouldVerifyAndDeployDefaultContainer() throws DcnRequestVerificationException, CouldNotDeployDcnException {
         dcnDeployment.verifyRequest(deploymentId, new DcnSpec(uniqueDcnName));
         dcnDeployment.deployDcn(deploymentId);
     }
