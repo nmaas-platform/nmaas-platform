@@ -1,5 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -340,6 +342,14 @@ public class AnsiblePlaybookVpnConfig {
         exception(exceptionMessage.toString());
     }
 
+    public void merge(ContainerNetworkDetails networkDetails) {
+        this.interfaceUnit = String.valueOf(networkDetails.getVlanNumber());
+        this.interfaceVlan = String.valueOf(networkDetails.getVlanNumber());
+        this.bgpLocalIp = networkDetails.getIpAddresses().getGateway();
+        this.bgpNeighborIp = networkDetails.getIpAddresses().getIpAddressOfContainer();
+        this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
+    }
+
     private void wrongIpMessage(String fieldName, StringBuilder exceptionMessage) {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
@@ -377,5 +387,10 @@ public class AnsiblePlaybookVpnConfig {
     public enum Type {
         CLIENT_SIDE,
         CLOUD_SIDE
+    }
+
+    public enum Action {
+        ADD,
+        REMOVE
     }
 }

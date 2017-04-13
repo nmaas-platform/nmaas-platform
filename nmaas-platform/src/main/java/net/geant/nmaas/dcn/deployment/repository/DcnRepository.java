@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.repository;
 
-import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import org.springframework.stereotype.Service;
 

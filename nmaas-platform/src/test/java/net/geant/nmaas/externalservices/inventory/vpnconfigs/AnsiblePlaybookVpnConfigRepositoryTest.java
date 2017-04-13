@@ -149,6 +149,16 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
         repository.removeClientVpnConfig(EXISTING_CLIENT_ID + 100);
     }
 
+    @Test
+    public void shouldLoadDefaultCloudVpnConfig() throws Exception {
+        assertEquals(EXISTING_CLOUD_SIDE_ROUTER_NAME, repository.loadDefaultCloudVpnConfig().getTargetRouter());
+    }
+
+    @Test
+    public void shouldLoadDefaultCustomerVpnConfig() throws Exception {
+        assertEquals(EXISTING_CLIENT_SIDE_ROUTER_NAME, repository.loadDefaultCustomerVpnConfig().getTargetRouter());
+    }
+
     private AnsiblePlaybookVpnConfig setNewVpnConfig(String newVpnConfig, AnsiblePlaybookVpnConfig.Type type) {
         AnsiblePlaybookVpnConfig customerVpnConig = new AnsiblePlaybookVpnConfig(type);
         customerVpnConig.setTargetRouter(newVpnConfig);

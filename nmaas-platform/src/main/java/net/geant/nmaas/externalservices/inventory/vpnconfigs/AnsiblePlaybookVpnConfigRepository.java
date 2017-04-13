@@ -15,6 +15,8 @@ public class AnsiblePlaybookVpnConfigRepository {
 
     private Map<Long, AnsiblePlaybookVpnConfig> customerSideVpnConfigs = new HashMap<>();
     private Map<String, AnsiblePlaybookVpnConfig> cloudSideVpnConfigs = new HashMap<>();
+    private final static String DEFAULT_DOCKERHOST_NAME = "GN4-DOCKER-1";
+    private final static long DEFAULT_CUSTOMER_ID = 1L;
 
     {
         AnsiblePlaybookVpnConfig customerVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
@@ -31,7 +33,7 @@ public class AnsiblePlaybookVpnConfigRepository {
         customerVpnConig.setInterfaceVlan("8");
         customerVpnConig.setBgpLocalIp("192.168.144.4");
         customerVpnConig.setBgpLocalCidr("24");
-        customerSideVpnConfigs.put(1L, customerVpnConig);
+        customerSideVpnConfigs.put(DEFAULT_CUSTOMER_ID, customerVpnConig);
 
         AnsiblePlaybookVpnConfig cloudVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
         cloudVpnConig.setTargetRouter("R3");
@@ -51,7 +53,7 @@ public class AnsiblePlaybookVpnConfigRepository {
         cloudVpnConig.setPolicyStatementConnected("NMAAS-C-AS64522-CONNECTED->OTHER");
         cloudVpnConig.setPolicyStatementImport("NMAAS-C-AS64522-IMPORT");
         cloudVpnConig.setPolicyStatementExport("NMAAS-C-AS64522-EXPORT");
-        cloudSideVpnConfigs.put("GN4-DOCKER-1", cloudVpnConig);
+        cloudSideVpnConfigs.put(DEFAULT_DOCKERHOST_NAME, cloudVpnConig);
     }
 
     /**
@@ -206,6 +208,24 @@ public class AnsiblePlaybookVpnConfigRepository {
             throws AnsiblePlaybookVpnConfigNotFoundException {
         loadCustomerVpnConfigByCustomerId(consumerId);
         customerSideVpnConfigs.remove(consumerId);
+    }
+
+    /**
+     * Loads default Ansible playbook VPN customer configuration
+     * @return {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
+     */
+    public AnsiblePlaybookVpnConfig loadDefaultCustomerVpnConfig() throws AnsiblePlaybookVpnConfigNotFoundException {
+        return loadCustomerVpnConfigByCustomerId(DEFAULT_CUSTOMER_ID);
+    }
+
+    /**
+     * Loads default Ansible playbook VPN cloud configuration
+     * @return {@link AnsiblePlaybookVpnConfig} instance
+     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
+     */
+    public AnsiblePlaybookVpnConfig loadDefaultCloudVpnConfig() throws AnsiblePlaybookVpnConfigNotFoundException {
+        return loadCloudVpnConfigByDockerHost(DEFAULT_DOCKERHOST_NAME);
     }
 
     private void validateVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig)
