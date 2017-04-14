@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from "@angular/router";
 import { CommonModule } from '@angular/common';
+import { FormsModule }   from '@angular/forms';
 
 import { AuthModule } from '../auth/auth.module';
 
@@ -19,6 +20,7 @@ import { TagService } from '../service/tag.service';
 import { AppInstallModalComponent } from './appinstall/appinstallmodal.component';
 
 
+
 @NgModule({
     declarations: [
         AppMarketComponent,
@@ -27,6 +29,7 @@ import { AppInstallModalComponent } from './appinstall/appinstallmodal.component
         AppInstallModalComponent,
     ],
     imports: [ 
+        FormsModule,
         CommonModule,
         RouterModule,
         SharedModule,

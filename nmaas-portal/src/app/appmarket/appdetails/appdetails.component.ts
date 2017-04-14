@@ -35,11 +35,4 @@ export class AppDetailsComponent implements OnInit {
 
     }
 
-    public create(): void {
-        this.appInstanceService.createAppInstance(this.id, this.app.name + '-TEST').subscribe(
-            instanceId => {
-                this.appInstallModal.hide();
-                this.router.navigate(['/instances', instanceId.id]);
-            });
-    }
 }

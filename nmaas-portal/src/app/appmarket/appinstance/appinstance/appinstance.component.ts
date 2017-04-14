@@ -52,7 +52,7 @@ export class AppInstanceComponent implements OnInit {
 
 
 
-            this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(
+            this.intervalCheckerSubscribtion = IntervalObservable.create(3000).subscribe(
                 () => {
                     console.debug('Tick: get app instance status');
                     this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
@@ -60,6 +60,8 @@ export class AppInstanceComponent implements OnInit {
                             console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
                             this.appInstanceStatus = appInstanceStatus;
                             this.appInstanceProgress.activeState = this.appInstanceStatus.state;
+                            if(this.appInstanceStatus.state == AppInstanceState.RUNNING && !this.appInstance.url)
+                                this.updateAppInstance();
                         }
                     )
                 }
@@ -67,6 +69,12 @@ export class AppInstanceComponent implements OnInit {
         });
     }
 
+    private updateAppInstance() {
+        this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
+                this.appInstance = appInstance;
+            });
+    }
+    
     ngOnDestroy() {
         if (this.intervalCheckerSubscribtion)
             this.intervalCheckerSubscribtion.unsubscribe();
