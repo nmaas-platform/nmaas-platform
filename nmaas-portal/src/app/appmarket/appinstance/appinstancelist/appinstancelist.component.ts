@@ -17,7 +17,7 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
-    private appInstanceState = AppInstanceState;
+    private AppInstanceState: typeof AppInstanceState = AppInstanceState;
     
     private appInstances: AppInstance[];
 

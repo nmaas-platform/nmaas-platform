@@ -70,8 +70,10 @@ export class AppInstanceComponent implements OnInit {
     }
 
     private updateAppInstance() {
+        console.log("update app instance")
         this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-                this.appInstance = appInstance;
+                console.log("updated app instance url: " + appInstance.url);
+            this.appInstance = appInstance;
             });
     }
     
