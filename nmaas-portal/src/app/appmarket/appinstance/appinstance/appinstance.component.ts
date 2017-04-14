@@ -37,46 +37,46 @@ export class AppInstanceComponent implements OnInit {
     constructor(private appsService: AppsService, private appInstanceService: AppInstanceService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
     private configurationTemplate: string;
-    
+
     ngOnInit() {
         this.route.params.subscribe(params => {
             this.appInstanceId = +params['id'];
 
             this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
                 this.appInstance = appInstance;
-                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => { 
+                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
                     this.app = app;
                     this.configurationTemplate = this.app.configTemplate.template;
                 });
             });
 
 
-
-            this.intervalCheckerSubscribtion = IntervalObservable.create(3000).subscribe(
-                () => {
-                    console.debug('Tick: get app instance status');
-                    this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
-                        appInstanceStatus => {
-                            console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
-                            this.appInstanceStatus = appInstanceStatus;
-                            this.appInstanceProgress.activeState = this.appInstanceStatus.state;
-                            if(this.appInstanceStatus.state == AppInstanceState.RUNNING && !this.appInstance.url)
-                                this.updateAppInstance();
-                        }
-                    )
-                }
-            );
+            this.updateAppInstanceState();
+            this.intervalCheckerSubscribtion = IntervalObservable.create(3000).subscribe(() => this.updateAppInstanceState());
         });
+    }
+
+    private updateAppInstanceState() {
+        this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
+            appInstanceStatus => {
+                console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
+                this.appInstanceStatus = appInstanceStatus;
+                this.appInstanceProgress.activeState = this.appInstanceStatus.state;
+                if (this.appInstanceStatus.state == AppInstanceState.RUNNING && !this.appInstance.url)
+                    this.updateAppInstance();
+            }
+        )
+
     }
 
     private updateAppInstance() {
         console.log("update app instance")
         this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-                console.log("updated app instance url: " + appInstance.url);
+            console.log("updated app instance url: " + appInstance.url);
             this.appInstance = appInstance;
-            });
+        });
     }
-    
+
     ngOnDestroy() {
         if (this.intervalCheckerSubscribtion)
             this.intervalCheckerSubscribtion.unsubscribe();
@@ -85,7 +85,7 @@ export class AppInstanceComponent implements OnInit {
     public applyConfiguration(configuration: string): void {
         this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
     }
-    
+
     public unsubscribe(): void {
         if (this.appInstanceId) {
             this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
