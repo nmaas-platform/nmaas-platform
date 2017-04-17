@@ -84,9 +84,7 @@ public class AppInstanceController extends AppBaseController {
 		if (appInstance == null)
 			throw new MissingElementException("App instance not found.");
 
-		AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
-		ai.setState(getAppInstanceState(appInstance).getState());
-		return ai;
+		return mapAppInstance(appInstance);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

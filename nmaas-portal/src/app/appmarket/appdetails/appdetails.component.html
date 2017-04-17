@@ -85,16 +85,7 @@
 		<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
 	</div>
 
-	<nmaas-appInstallModal>
-		<div class="app-modal-header">Create new instance of {{app?.name}} instance</div>
-		<div class="app-modal-body">
-			<p>Id: {{app?.id}}</p>
-			<p>Name: {{app?.name}}</p>
-		</div>
-		<div class="app-modal-footer">
-			<button type="button" class="btn btn-default" (click)="appInstallModal.hide()">Close</button>
-			<button type="button" class="btn btn-primary" (click)="this.create()">Create</button>
-		</div>
+	<nmaas-appInstallModal [app]="app">
 	</nmaas-appInstallModal>
 
 </div>

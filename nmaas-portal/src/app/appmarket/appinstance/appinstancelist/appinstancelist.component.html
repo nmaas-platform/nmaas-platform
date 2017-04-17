@@ -24,7 +24,7 @@
 									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button">
 										Details
 									</a>
-									<a *ngIf="appInstance?.state == appInstanceState.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-primary" role = "button">Go to app</a>							
+									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">Go to app</a>							
 								</td>
 							  </tr>
 							  </template>
