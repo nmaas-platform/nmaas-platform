@@ -28,6 +28,12 @@ public class SkipPathRequestMatcher implements RequestMatcher {
 		matchers = new OrRequestMatcher(list);
 	}
 	
+	public SkipPathRequestMatcher(RequestMatcher[] skipPaths) {
+		Assert.notNull(skipPaths);
+		List<RequestMatcher> list = Arrays.stream(skipPaths).collect(Collectors.toList());
+		list.add(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name()));		
+		matchers = new OrRequestMatcher(list);
+	}
 	
 	@Override
 	public boolean matches(HttpServletRequest request) {

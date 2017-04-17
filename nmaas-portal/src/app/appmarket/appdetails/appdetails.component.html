@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
 			<div class="thumbnail">
-				<img src="assets/images/app-logo-example.png">
+				<img src="{{appImagesService.getAppLogoUrl(id)}}" onError="this.src='assets/images/app-logo-example.png'">
 			</div>
 		</div>
 		<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">

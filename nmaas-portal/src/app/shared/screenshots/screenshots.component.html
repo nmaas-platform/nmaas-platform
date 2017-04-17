@@ -1,48 +1,29 @@
-				<div class='col-md-12'>
-				  <div class="carousel slide media-carousel" id="media">
-					<div class="carousel-inner">
-					  <div class="item  active">
-						<div class="row">
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>          
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/300x50"></a>
-						  </div>
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/200x150"></a>
-						  </div>        
-						</div>
-					  </div>
-					  <div class="item">
-						<div class="row">
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>          
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>        
-						</div>
-					  </div>
-					  <div class="item">
-						<div class="row">
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>          
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>
-						  <div class="col-md-4">
-							<a class="thumbnail" href="#"><img alt="" src="http://placehold.it/150x150"></a>
-						  </div>      
-						</div>
-					  </div>
-					</div>
 
-					<a data-slide="prev" href="#media" class="left carousel-control">&lt;</a>
-					<a data-slide="next" href="#media" class="right carousel-control">&gt;</a>
-				  </div>                          
+<div class='col-md-12'>
+	<div class="carousel slide media-carousel" id="media">
+		<div class="carousel-inner">
+			<div class="item"
+				*ngFor="let row of imagesFileInfo | group:3; let firstRow = first"
+				[ngClass]="{'active': firstRow}">
+				<div class="row">
+					<div class="col-md-4" *ngFor="let fileInfo of row">
+						<a class="thumbnail" (click)="showImage(appsService.getAppScreenshotUrl(pathUrl+'/'+fileInfo.id))"><img
+							[src]="appsService.getAppScreenshotUrl(pathUrl+'/'+fileInfo.id)"></a>
+					</div>
 				</div>
+			</div>
+		</div>
+
+		<a data-slide="prev" href="#media" class="left carousel-control">&lt;</a>
+		<a data-slide="next" href="#media" class="right carousel-control">&gt;</a>
+	</div>
+</div>
+<nmaas-modal>
+<div class="nmaas-modal-header">Screenshot</div>
+<div class="nmaas-modal-body">
+	<img src="{{selectedImg}}">
+</div>
+<div class="nmaas-modal-footer">
+	<button type="button" class="btn btn-default" (click)="modal.hide()">Close</button>
+</div>
+<nmaas-modal>

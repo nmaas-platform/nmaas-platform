@@ -25,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,7 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
 	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/signup";
 	private final static String AUTH_BASIC_TOKEN = "/portal/api/auth/basic/token";
-
+	private final static String APP_LOGO = "/portal/api/apps/{appId:[\\d+]}/logo";
+	private final static String APP_SCREENSHOTS = "/portal/api/apps/{appId:[\\d+]}/screenshots/**";
+	
     private static final String ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME = "api.client.ansible.username";
     private static final String ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.ansible.password";
     private static final String NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME = "api.client.nmaas.test.username";
@@ -113,16 +116,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
+				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
+				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
 				.antMatchers("/portal/api/**").authenticated()
 			.and()
 //				.addFilterBefore(statelessLoginFilter("/platform/**",	inMemoryUserDetailsService()), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(
-								new String[] { 	AUTH_BASIC_LOGIN, 
-												AUTH_BASIC_SIGNUP, 
-												AUTH_BASIC_TOKEN,
-												"/platform/**"}), 
+								new AntPathRequestMatcher[] { 
+										new AntPathRequestMatcher(AUTH_BASIC_LOGIN), 
+										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP), 
+										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
+										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
+										new AntPathRequestMatcher("/platform/**")
+								}), 
 								null,//failureHandler, 
 								tokenAuthenticationService), 
 						UsernamePasswordAuthenticationFilter.class);		

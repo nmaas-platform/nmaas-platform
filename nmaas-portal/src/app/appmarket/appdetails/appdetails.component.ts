@@ -5,8 +5,7 @@ import { Location }                 from '@angular/common';
 
 import { RateComponent } from '../../shared/rate/rate.component';
 import { ScreenshotsComponent } from '../../shared/screenshots/screenshots.component';
-import { AppsService } from '../../service/apps.service';
-import { AppInstanceService } from '../../service/appinstance.service';
+import { AppsService, AppImagesService, AppInstanceService } from '../../service/index';
 import { Application } from '../../model/application';
 import { AppInstallModalComponent } from '../appinstall/appinstallmodal.component';
 
@@ -14,7 +13,7 @@ import { AppInstallModalComponent } from '../appinstall/appinstallmodal.componen
     selector: 'nmaas-appdetails',
     templateUrl: './appdetails.component.html',
     styleUrls: ['../../../assets/css/main.css', './appdetails.component.css'],
-    providers: [AppsService, RateComponent, AppInstanceService, AppInstallModalComponent]
+    providers: [AppsService, RateComponent, AppImagesService, AppInstanceService, AppInstallModalComponent]
 })
 export class AppDetailsComponent implements OnInit {
 
@@ -25,7 +24,7 @@ export class AppDetailsComponent implements OnInit {
 
     private id: Number;
 
-    constructor(private appsService: AppsService, private appInstanceService: AppInstanceService, private router: Router, private route: ActivatedRoute, private location: Location) { }
+    constructor(private appsService: AppsService, private appImagesService: AppImagesService, private appInstanceService: AppInstanceService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
     ngOnInit() {
         this.route.params.subscribe(params => {

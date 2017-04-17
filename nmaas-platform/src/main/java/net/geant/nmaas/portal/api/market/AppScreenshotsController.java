@@ -133,7 +133,7 @@ public class AppScreenshotsController extends AppBaseController {
 		File file = fileStorage.getFile(imageFile.getId());
 		
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(new MediaType(imageFile.getContentType()));
+		headers.setContentType(MediaType.parseMediaType(imageFile.getContentType()));
 		headers.setContentLength(file.length());
 		
 		InputStreamResource streamFile = new InputStreamResource(new FileInputStream(file));
