@@ -1,9 +1,9 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.*;
 import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,9 @@ public class AnsiblePlaybookCommandBuilderTest {
 
     @Autowired
     private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
+
+    @Autowired
+    private AnsiblePlaybookVpnConfigRepositoryInit repositoryInit;
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";
 
@@ -96,6 +99,17 @@ public class AnsiblePlaybookCommandBuilderTest {
                     "-e NMAAS_CUSTOMER_POLICY_STATEMENT_IMPORT=NMAAS-C-AS64522-IMPORT " +
                     "-e NMAAS_CUSTOMER_POLICY_STATEMENT_EXPORT=NMAAS-C-AS64522-EXPORT " +
                     "-e NMAAS_CUSTOMER_SERVICE_ID=" + ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER;
+
+    @Before
+    public void populateRepositoryWithDefaults()
+            throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException {
+        repositoryInit.initWithDefaults();
+    }
+
+    @After
+    public void cleanRepository() throws AnsiblePlaybookVpnConfigNotFoundException {
+        repositoryInit.clean();
+    }
 
     @Test
     public void shouldBuildCorrectAnsibleCommandForClientSideRouterConfig() throws AnsiblePlaybookVpnConfigNotFoundException {

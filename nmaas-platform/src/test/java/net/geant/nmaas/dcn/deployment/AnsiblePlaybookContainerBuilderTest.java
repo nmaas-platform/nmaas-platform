@@ -1,11 +1,11 @@
 package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.*;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -26,6 +27,12 @@ public class AnsiblePlaybookContainerBuilderTest {
 
     @Autowired
     private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
+
+    @Autowired
+    private AnsiblePlaybookContainerBuilder containerConfigBuilder;
+
+    @Autowired
+    private AnsiblePlaybookVpnConfigRepositoryInit repositoryInit;
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";
 
@@ -91,8 +98,16 @@ public class AnsiblePlaybookContainerBuilderTest {
                     "-e NMAAS_CUSTOMER_POLICY_STATEMENT_EXPORT=NMAAS-C-AS64522-EXPORT " +
                     "-e NMAAS_CUSTOMER_SERVICE_ID=" + ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER;
 
-    @Autowired
-    private AnsiblePlaybookContainerBuilder containerConfigBuilder;
+    @Before
+    public void populateRepositoryWithDefaults()
+            throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException {
+        repositoryInit.initWithDefaults();
+    }
+
+    @After
+    public void cleanRepository() throws AnsiblePlaybookVpnConfigNotFoundException {
+        repositoryInit.clean();
+    }
 
     @Test
     public void shouldBuildAnsiblePlaybookContainerConfigForClientSideRouter() throws AnsiblePlaybookVpnConfigNotFoundException {

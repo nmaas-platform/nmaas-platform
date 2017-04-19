@@ -32,9 +32,9 @@ public class AnsiblePlaybookVpnConfig {
     private String policyStatementImport;
     private String policyStatementExport;
 
-    AnsiblePlaybookVpnConfig() {}
+    public AnsiblePlaybookVpnConfig() {}
 
-    AnsiblePlaybookVpnConfig(Type type) {
+    public AnsiblePlaybookVpnConfig(Type type) {
         this.type = type;
     }
 

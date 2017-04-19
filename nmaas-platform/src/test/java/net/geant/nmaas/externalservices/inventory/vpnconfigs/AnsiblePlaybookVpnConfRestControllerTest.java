@@ -2,7 +2,9 @@ package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigRepositoryInit;
 import net.geant.nmaas.externalservices.api.AnsiblePlaybookVpnConfRestController;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,11 +46,20 @@ public class AnsiblePlaybookVpnConfRestControllerTest {
     @Autowired
     private AnsiblePlaybookVpnConfigRepository repository;
 
+    @Autowired
+    private AnsiblePlaybookVpnConfigRepositoryInit repositoryInit;
+
     private MockMvc mvc;
 
     @Before
-    public void init() {
+    public void init() throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException {
+        repositoryInit.initWithDefaults();
         mvc = MockMvcBuilders.standaloneSetup(new AnsiblePlaybookVpnConfRestController(repository)).build();
+    }
+
+    @After
+    public void cleanRepository() throws AnsiblePlaybookVpnConfigNotFoundException {
+        repositoryInit.clean();
     }
 
     @Test
