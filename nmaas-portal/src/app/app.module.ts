@@ -19,7 +19,6 @@ import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 import { LogoutComponent } from './logout/logout.component';
 
-
 export function appConfigFactory( config: AppConfigService) {
 	return function create() {
 		return config.load();

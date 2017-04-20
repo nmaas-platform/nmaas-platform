@@ -5,18 +5,19 @@ import { Location }                 from '@angular/common';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 //import 'rxjs/add/operator/switchMap';
 
-import { AppsService } from '../../../service/apps.service';
-import { AppInstanceService } from '../../../service/appinstance.service';
+import { AppsService, AppInstanceService, AppImagesService } from '../../../service/index';
 
 import { AppInstanceProgressComponent } from '../appinstanceprogress/appinstanceprogress.component';
 
 import { Application, AppInstance, AppInstanceState, AppInstanceStateAware, AppInstanceStatus, AppInstanceProgressStage } from '../../../model/index';
 
+import { SecurePipe } from '../../../pipe/index';
+
 @Component({
     selector: 'nmaas-appinstance',
     templateUrl: './appinstance.component.html',
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-    providers: [AppsService, AppInstanceService]
+    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe ]
 })
 @AppInstanceStateAware
 export class AppInstanceComponent implements OnInit {
@@ -34,7 +35,7 @@ export class AppInstanceComponent implements OnInit {
 
     private intervalCheckerSubscribtion;
 
-    constructor(private appsService: AppsService, private appInstanceService: AppInstanceService, private router: Router, private route: ActivatedRoute, private location: Location) { }
+    constructor(private appsService: AppsService, private appImagesService: AppImagesService, private appInstanceService: AppInstanceService, private router: Router, private route: ActivatedRoute, private location: Location) { }
 
     private configurationTemplate: string;
 

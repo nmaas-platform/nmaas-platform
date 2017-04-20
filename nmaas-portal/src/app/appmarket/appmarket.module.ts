@@ -19,14 +19,14 @@ import { AppsService } from '../service/apps.service';
 import { TagService } from '../service/tag.service';
 import { AppInstallModalComponent } from './appinstall/appinstallmodal.component';
 
-
+import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
     declarations: [
         AppMarketComponent,
         AppDetailsComponent,
         NavbarComponent,
-        AppInstallModalComponent,
+        AppInstallModalComponent
     ],
     imports: [ 
         FormsModule,
@@ -35,7 +35,8 @@ import { AppInstallModalComponent } from './appinstall/appinstallmodal.component
         SharedModule,
         AppListModule,
         AppInstanceModule,
-        AuthModule
+        AuthModule,
+        PipesModule
     ],
     exports: [
         AppMarketComponent

@@ -7,6 +7,7 @@ import { JsonSchemaFormModule } from 'angular2-json-schema-form/src';
 
 import { AuthModule } from '../../auth/auth.module';
 import { SharedModule } from '../../shared/shared.module';
+import { PipesModule } from '../../pipe/pipes.module';
 
 import { AppInstanceComponent } from './appinstance/appinstance.component';
 import { AppInstanceProgressModule } from './appinstanceprogress/appinstanceprogress.module';
@@ -29,6 +30,7 @@ import { AppInstanceListComponent } from './appinstancelist/appinstancelist.comp
         SharedModule,
         AuthModule,
         AppInstanceProgressModule,
+        PipesModule,
         JsonSchemaFormModule.forRoot()
     ],
     exports: [

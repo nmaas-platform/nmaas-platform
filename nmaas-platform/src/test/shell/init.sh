@@ -38,7 +38,7 @@ curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Con
 
 echo 
 echo App2 logo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/oxidized.svg;type=image/svg" $API_URL/apps/2/logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/oxidized.svg;type=image/svg+xml" $API_URL/apps/2/logo
 
 echo 
 echo App2 screenshots
@@ -51,7 +51,7 @@ curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Con
 
 echo 
 echo App3 logo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/pmacct.svg;type=image/svg" $API_URL/apps/3/logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/pmacct.svg;type=image/svg+xml" $API_URL/apps/3/logo
 
 echo 
 echo App3 screenshots
