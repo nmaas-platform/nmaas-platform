@@ -1,12 +1,15 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
-import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
-import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.repositories.DcnRepository;
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
@@ -71,12 +74,18 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
 
-    private Identifier deploymentId = new Identifier("testDeploymentId");
+    private final Identifier deploymentId = Identifier.newInstance("this-is-example-dcn-id");
+
+    private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
 
     @Before
     public void setup() throws InvalidDeploymentIdException {
         String dcnName = "dcnName";
-        dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, null));
+        DcnSpec spec = new DcnSpec(dcnName, clientId);
+        ContainerNetworkDetails containerNetworkDetails =
+                new ContainerNetworkDetails(8080, new ContainerNetworkIpamSpec("", ""), 505);
+        spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
+        dcnRepository.storeNetwork(new DcnInfo(spec));
         deploymentIdToDcnNameMapper.storeMapping(deploymentId, dcnName);
         String nmServiceName = "serviceName";
         nmServiceRepository.storeService(new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null));

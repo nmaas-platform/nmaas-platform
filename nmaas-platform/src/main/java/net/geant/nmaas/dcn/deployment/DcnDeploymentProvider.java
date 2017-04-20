@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 

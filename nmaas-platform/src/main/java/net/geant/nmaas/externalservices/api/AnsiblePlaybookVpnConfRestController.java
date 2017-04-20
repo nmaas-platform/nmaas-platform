@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.api;
 
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -30,7 +30,7 @@ public class AppDcnVerificationTask {
     }
 
     @EventListener
-    public void deployDcn(AppVerifyDcnActionEvent event) throws InvalidDeploymentIdException {
+    public void verifyDcn(AppVerifyDcnActionEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
         try {
             dcnDeployment.verifyDcn(deploymentId);

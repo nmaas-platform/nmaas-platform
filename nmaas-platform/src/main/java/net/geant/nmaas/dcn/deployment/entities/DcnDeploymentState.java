@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcn.deployment;
+package net.geant.nmaas.dcn.deployment.entities;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

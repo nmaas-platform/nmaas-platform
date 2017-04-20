@@ -4,10 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.api.AnsibleNotificationRestController;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
-import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
-import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.repositories.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +54,8 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-dcn-id");
 
+    private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
+
     private final String dcnName = "this-is-example-dcn-name";
 
     private String statusUpdateJsonContent;
@@ -57,12 +63,17 @@ public class AnsiblePlaybookStatusNotificationTest {
     private MockMvc mvc;
 
     @Before
-    public void setUp() throws JsonProcessingException {
+    public void setUp() throws JsonProcessingException, DeploymentIdToDcnNameMapper.EntryNotFoundException, DcnRepository.DcnNotFoundException {
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
-        dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.DEPLOYMENT_INITIATED, null));
+        DcnSpec spec = new DcnSpec(dcnName, clientId);
+        ContainerNetworkDetails containerNetworkDetails =
+                new ContainerNetworkDetails(8080, new ContainerNetworkIpamSpec("", ""), 505);
+        spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
+        dcnRepository.storeNetwork(new DcnInfo(spec));
+        dcnRepository.notifyStateChange(new DcnDeploymentStateChangeEvent(this,deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
         AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, vpnConfigRepository, applicationEventPublisher);
-        mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
+        mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }
 
     @Test

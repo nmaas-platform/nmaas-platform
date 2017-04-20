@@ -1,7 +1,5 @@
 package net.geant.nmaas.orchestration.entities;
 
-import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 
 /**

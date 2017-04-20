@@ -1,6 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigRepositoryInit;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

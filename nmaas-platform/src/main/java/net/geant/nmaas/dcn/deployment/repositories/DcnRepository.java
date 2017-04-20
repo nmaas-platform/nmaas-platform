@@ -1,7 +1,8 @@
-package net.geant.nmaas.dcn.deployment.repository;
+package net.geant.nmaas.dcn.deployment.repositories;
 
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
 import org.springframework.beans.factory.annotation.Autowired;

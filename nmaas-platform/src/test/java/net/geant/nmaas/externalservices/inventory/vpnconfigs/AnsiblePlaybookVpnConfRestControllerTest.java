@@ -3,6 +3,7 @@ package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigRepositoryInit;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.externalservices.api.AnsiblePlaybookVpnConfRestController;
 import org.junit.After;
 import org.junit.Before;

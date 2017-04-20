@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;

@@ -36,7 +36,7 @@ public class AppDcnDeploymentTask {
         try {
             dcnDeployment.deployDcn(deploymentId);
         } catch (CouldNotDeployDcnException e) {
-            log.warn("DCN request verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
+            log.warn("DCN deployment failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         }
     }
 }

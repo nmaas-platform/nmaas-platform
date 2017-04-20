@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.*;
 import org.hamcrest.Matchers;
 import org.junit.After;

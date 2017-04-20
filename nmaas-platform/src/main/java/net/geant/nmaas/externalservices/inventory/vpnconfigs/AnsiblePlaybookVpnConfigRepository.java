@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class AnsiblePlaybookVpnConfigRepository {
             customerSideVpnConfigs.put(customerId, customerVpnConfig);
         } catch (AnsiblePlaybookVpnConfigNotFoundException ex) {
             throw new AnsiblePlaybookVpnConfigNotFoundException (
-                    "Anisble playbook VPN configuration for customer " +  customerId +  " does not exist in the repository.");
+                    "Ansible playbook VPN configuration for customer " +  customerId +  " does not exist in the repository.");
         }
     }
 

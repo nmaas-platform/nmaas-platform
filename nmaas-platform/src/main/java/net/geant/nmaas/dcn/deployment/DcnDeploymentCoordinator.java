@@ -7,17 +7,18 @@ import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.*;
-import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
-import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.repositories.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
-import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -69,9 +70,9 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec) throws DcnRequestVerificationException {
-        final String dcnName = dcnSpec.name();
+        final String dcnName = dcnSpec.getName();
         deploymentIdMapper.storeMapping(deploymentId, dcnName);
-        dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, dcnSpec));
+        dcnRepository.storeNetwork(new DcnInfo(dcnSpec));
         try {
             dcnRepository.updateAnsiblePlaybookForClientSideRouter(dcnName, vpnConfigRepository.loadDefaultCustomerVpnConfig());
             AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = vpnConfigRepository.loadDefaultCloudVpnConfig();

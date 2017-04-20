@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.entities;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 

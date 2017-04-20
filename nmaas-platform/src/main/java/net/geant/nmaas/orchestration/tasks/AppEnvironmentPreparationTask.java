@@ -7,7 +7,6 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +28,12 @@ public class AppEnvironmentPreparationTask {
 
     private DcnDeploymentProvider dcnDeployment;
 
-    private AppDeploymentRepository repository;
-
     @Autowired
     public AppEnvironmentPreparationTask(
             NmServiceDeploymentProvider serviceDeployment,
-            DcnDeploymentProvider dcnDeployment,
-            AppDeploymentRepository repository) {
+            DcnDeploymentProvider dcnDeployment) {
         this.serviceDeployment = serviceDeployment;
         this.dcnDeployment = dcnDeployment;
-        this.repository = repository;
     }
 
     @EventListener

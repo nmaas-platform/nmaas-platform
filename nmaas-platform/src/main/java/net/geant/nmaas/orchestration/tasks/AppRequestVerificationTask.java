@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.dcn.deployment.DcnSpec;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
@@ -95,8 +95,8 @@ public class AppRequestVerificationTask {
     }
 
     @Loggable(LogLevel.DEBUG)
-    public DcnSpec constructDcnSpec(Identifier clientId, Identifier applicationId, NmServiceInfo serviceInfo) {
-        DcnSpec dcn = new DcnSpec(buildDcnName(applicationId, clientId));
+    public DcnSpec constructDcnSpec(Identifier clientId, Identifier deploymentId, NmServiceInfo serviceInfo) {
+        DcnSpec dcn = new DcnSpec(buildDcnName(clientId, deploymentId), clientId);
         if (serviceInfo != null && serviceInfo.getNetwork() != null)
             dcn.setNmServiceDeploymentNetworkDetails(serviceInfo.getNetwork());
         else
@@ -105,8 +105,8 @@ public class AppRequestVerificationTask {
     }
 
     @Loggable(LogLevel.DEBUG)
-    public String buildDcnName(Identifier applicationId, Identifier clientId) {
-        return clientId + "-" + applicationId + "-" + System.nanoTime();
+    public String buildDcnName(Identifier clientId, Identifier deploymentId) {
+        return clientId + "-" + deploymentId + "-" + System.nanoTime();
     }
 
 }
