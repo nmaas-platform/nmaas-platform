@@ -11,11 +11,13 @@ import { AppInstanceProgressComponent } from '../appinstanceprogress/appinstance
 
 import { Application, AppInstance, AppInstanceState, AppInstanceStateAware, AppInstanceStatus, AppInstanceProgressStage } from '../../../model/index';
 
+import { SecurePipe } from '../../../pipe/index';
+
 @Component({
     selector: 'nmaas-appinstance',
     templateUrl: './appinstance.component.html',
     styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-    providers: [AppsService, AppImagesService, AppInstanceService]
+    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe ]
 })
 @AppInstanceStateAware
 export class AppInstanceComponent implements OnInit {

@@ -4,7 +4,7 @@ import { ModalComponent } from '../index';
 
 import { AppsService, AppImagesService } from '../../service/index';
 import { FileInfo } from '../../model/fileinfo';
-import { GroupPipe } from '../../pipe/group.pipe';
+import { GroupPipe, SecurePipe } from '../../pipe/index';
 
 
 @Component({
@@ -12,7 +12,7 @@ import { GroupPipe } from '../../pipe/group.pipe';
     templateUrl: './screenshots.component.html',
     styleUrls: ['./screenshots.component.css'],
     encapsulation: ViewEncapsulation.None,
-    providers: [ModalComponent, AppsService, AppImagesService, GroupPipe ]
+    providers: [ModalComponent, AppsService, AppImagesService, GroupPipe, SecurePipe ]
 })
 export class ScreenshotsComponent implements OnInit {
 

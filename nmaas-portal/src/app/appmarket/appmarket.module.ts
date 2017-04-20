@@ -19,7 +19,7 @@ import { AppsService } from '../service/apps.service';
 import { TagService } from '../service/tag.service';
 import { AppInstallModalComponent } from './appinstall/appinstallmodal.component';
 
-import { GroupPipe } from '../pipe/group.pipe';
+import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
     declarations: [
@@ -35,7 +35,8 @@ import { GroupPipe } from '../pipe/group.pipe';
         SharedModule,
         AppListModule,
         AppInstanceModule,
-        AuthModule
+        AuthModule,
+        PipesModule
     ],
     exports: [
         AppMarketComponent

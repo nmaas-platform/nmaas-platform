@@ -116,8 +116,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
-				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
-				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
+//				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
+//				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
 				.antMatchers("/portal/api/**").authenticated()
 			.and()
@@ -128,8 +128,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN), 
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP), 
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
-										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
-										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
+//										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
+//										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/platform/**")
 								}), 
 								null,//failureHandler, 

@@ -3,6 +3,8 @@ import { RouterModule } from "@angular/router";
 import { CommonModule } from '@angular/common';
 import { FormsModule }   from '@angular/forms';
 
+import { PipesModule } from '../../pipe/pipes.module';
+
 import { AuthModule } from '../../auth/auth.module';
 import { SharedModule } from '../../shared/shared.module';
 
@@ -26,6 +28,7 @@ import { TagService } from '../../service/tag.service';
         RouterModule,
         SharedModule,
         AuthModule,
+        PipesModule,
     ],
     exports: [
         AppListComponent

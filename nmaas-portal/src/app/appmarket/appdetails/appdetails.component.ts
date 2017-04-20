@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, Params }   from '@angular/router';
 import { Location }                 from '@angular/common';
 //import 'rxjs/add/operator/switchMap';
 
+import { SecurePipe } from '../../pipe/index';
 import { RateComponent } from '../../shared/rate/rate.component';
 import { ScreenshotsComponent } from '../../shared/screenshots/screenshots.component';
 import { AppsService, AppImagesService, AppInstanceService } from '../../service/index';
@@ -13,7 +14,7 @@ import { AppInstallModalComponent } from '../appinstall/appinstallmodal.componen
     selector: 'nmaas-appdetails',
     templateUrl: './appdetails.component.html',
     styleUrls: ['../../../assets/css/main.css', './appdetails.component.css'],
-    providers: [AppsService, RateComponent, AppImagesService, AppInstanceService, AppInstallModalComponent]
+    providers: [AppsService, RateComponent, AppImagesService, AppInstanceService, AppInstallModalComponent, SecurePipe ]
 })
 export class AppDetailsComponent implements OnInit {
 

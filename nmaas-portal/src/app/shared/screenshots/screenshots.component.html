@@ -7,8 +7,9 @@
 				[ngClass]="{'active': firstRow}">
 				<div class="row">
 					<div class="col-md-4" *ngFor="let fileInfo of row">
-						<a class="thumbnail" (click)="showImage(appsService.getAppScreenshotUrl(pathUrl+'/'+fileInfo.id))"><img
-							[src]="appsService.getAppScreenshotUrl(pathUrl+'/'+fileInfo.id)"></a>
+						<a class="thumbnail" (click)="showImage(appsService.getAppScreenshotUrl(pathUrl+'/'+fileInfo.id))">
+							<img [src]="appsService.getAppScreenshotUrl(pathUrl+'/'+fileInfo.id) | secure">
+						</a>
 					</div>
 				</div>
 			</div>
@@ -21,7 +22,7 @@
 <nmaas-modal (click)="modal.hide()">
 <div class="nmaas-modal-header">Screenshot</div>
 <div class="nmaas-modal-body">
-	<img src="{{selectedImg}}">
+	<img [src]="selectedImg | secure">
 </div>
 <div class="nmaas-modal-footer">
 	<button type="button" class="btn btn-default" (click)="modal.hide()">Close</button>

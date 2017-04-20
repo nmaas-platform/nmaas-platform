@@ -7,10 +7,11 @@ import { AppImagesService } from '../../../service/appimages.service';
 import { RateComponent } from '../../../shared/rate/rate.component';
 import { DefaultLogo } from '../../../directive/defaultlogo.directive';
 
+import { SecurePipe } from '../../../pipe/index';
 
 @Component({
   selector: 'nmaas-applist-element',
-  providers: [ DefaultLogo, RateComponent, AppImagesService ],
+  providers: [ DefaultLogo, RateComponent, AppImagesService, SecurePipe ],
   templateUrl: './appelement.component.html',
   styleUrls: [ './appelement.component.css' ],
   encapsulation: ViewEncapsulation.None

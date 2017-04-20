@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
-import { GroupPipe } from "./index";
+import { AuthModule } from "../auth/auth.module";
+
+import { GroupPipe, SecurePipe, AuthHttpWrapper } from "./index";
 
 @NgModule({
-  declarations:[ GroupPipe ],
-  imports:[ CommonModule ],
-  exports:[ GroupPipe ]
+  declarations:[ GroupPipe, SecurePipe ],
+  imports:[ CommonModule, AuthModule ],
+  exports:[ GroupPipe, SecurePipe ],
+  providers: [ AuthHttpWrapper ]
 })
-
 export class PipesModule{}
