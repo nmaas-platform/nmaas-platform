@@ -15,7 +15,7 @@ public class AnsiblePlaybookVpnConfigRepository {
 
     private Map<Long, AnsiblePlaybookVpnConfig> customerSideVpnConfigs = new HashMap<>();
     private Map<String, AnsiblePlaybookVpnConfig> cloudSideVpnConfigs = new HashMap<>();
-    public final static String DEFAULT_DOCKERHOST_NAME = "GN4-DOCKER-1";
+    public final static String DEFAULT_DOCKERHOST_NAME = "docker-host-1";
     public final static long DEFAULT_CUSTOMER_ID = 1L;
 
     /**

@@ -26,7 +26,7 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     private static final String NEW_ROUTER_NAME = "R13";
     private static final String NEW_DOCKERHOST_NAME = "GN4-DOCKER-2";
-    private static final String EXISTING_DOCKERHOST_NAME = "GN4-DOCKER-1";
+    private static final String EXISTING_DOCKERHOST_NAME = AnsiblePlaybookVpnConfigRepository.DEFAULT_DOCKERHOST_NAME;
     private static final String EXISTING_CLIENT_SIDE_ROUTER_NAME = "R4";
     private static final String EXISTING_CLOUD_SIDE_ROUTER_NAME = "R3";
     private static final long EXISTING_CLIENT_ID = 1L;

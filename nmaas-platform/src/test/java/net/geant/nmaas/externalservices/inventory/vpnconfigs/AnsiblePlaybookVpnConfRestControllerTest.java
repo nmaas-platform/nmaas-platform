@@ -32,11 +32,11 @@ public class AnsiblePlaybookVpnConfRestControllerTest {
     private static final String FIRST_NEW_DOCKERHOST_NAME = "GN4-DOCKER-2";
     private static final String SECOND_NEW_DOCKERHOST_NAME = "GN4-DOCKER-3";
     private static final String THIRD_NEW_DOCKERHOST_NAME = "GN4-DOCKER-4";
-    private static final String EXISTING_DOCKERHOST_NAME = "GN4-DOCKER-1";
+    private static final String EXISTING_DOCKERHOST_NAME = AnsiblePlaybookVpnConfigRepository.DEFAULT_DOCKERHOST_NAME;
     private static final String FIRST_NEW_ROUTER_NAME = "R5";
     private static final String EXISTING_CLOUD_ROUTER_NAME = "R3";
     private static final String EXISTING_CUSTOMER_ROUTER_NAME = "R4";
-    private static final long FIRST_NEW_COSTOMER_ID = 2L;
+    private static final long FIRST_NEW_CUSTOMER_ID = 2L;
     private static final long SECOND_NEW_CUSTOMER_ID = 3L;
     private static final long THIRD_NEW_CUSTOMER_ID = 4L;
     private static final long EXISTING_CUSTOMER_ID = 1L;
@@ -168,14 +168,14 @@ public class AnsiblePlaybookVpnConfRestControllerTest {
 
     @Test
     public void shouldAddNewCustomerVpnConfig() throws Exception {
-        mvc.perform(post(URL_PREFIX + "/customer/{consumerid}", FIRST_NEW_COSTOMER_ID)
+        mvc.perform(post(URL_PREFIX + "/customer/{consumerid}", FIRST_NEW_CUSTOMER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(setNewVpnConfig(FIRST_NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         assertEquals(
                 setNewVpnConfig(FIRST_NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE),
-                repository.loadCustomerVpnConfigByCustomerId(FIRST_NEW_COSTOMER_ID));
+                repository.loadCustomerVpnConfigByCustomerId(FIRST_NEW_CUSTOMER_ID));
     }
 
     @Test
