@@ -68,7 +68,7 @@ public class NmServiceConfigurationTest {
     private AppConfiguration configuration;
 
     @Before
-    public void setup() throws InvalidDeploymentIdException {
+    public void setup() throws InvalidDeploymentIdException, InterruptedException {
         String serviceName = "name";
         deploymentId = Identifier.newInstance("id");
         applicationId = Identifier.newInstance("appId");
@@ -77,6 +77,7 @@ public class NmServiceConfigurationTest {
         configuration = new AppConfiguration("");
         appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_VERIFIED);
+        Thread.sleep(100);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }
 
