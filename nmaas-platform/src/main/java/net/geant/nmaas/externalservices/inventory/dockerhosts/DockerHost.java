@@ -203,4 +203,12 @@ public class DockerHost implements NmServiceDeploymentHost {
         result = 31 * result + (isPreferred() ? 1 : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "DockerHost{" +
+                "name='" + name + '\'' +
+                ", apiIpAddress=" + apiIpAddress +
+                '}';
+    }
 }

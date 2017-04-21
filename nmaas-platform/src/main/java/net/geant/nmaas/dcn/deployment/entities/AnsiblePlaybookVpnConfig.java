@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * Ansible playbooks vpn configuration properties.
+ * VPN configuration properties for Ansible playbooks.
  *
  * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
  */

@@ -13,6 +13,8 @@ import net.geant.nmaas.orchestration.events.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,7 @@ public class AppConfigurationTask {
     }
 
     @EventListener
+    @Loggable(LogLevel.INFO)
     public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));

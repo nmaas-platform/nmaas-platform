@@ -16,4 +16,11 @@ public class ContainerDeploymentDetails implements NmServiceDeploymentDetails {
     public String getAttachedVolumeName() {
         return attachedVolumeName;
     }
+
+    @Override
+    public String toString() {
+        return "ContainerDeploymentDetails{" +
+                "attachedVolumeName='" + attachedVolumeName + '\'' +
+                '}';
+    }
 }

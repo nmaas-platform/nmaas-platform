@@ -80,10 +80,6 @@ public class DcnInfo {
         this.cloudEndpointDetails = cloudEndpointDetails;
     }
 
-    public void updateState(DcnDeploymentState state) {
-        this.state = state;
-    }
-
     public DcnDeploymentState getState() {
         return state;
     }

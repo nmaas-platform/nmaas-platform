@@ -56,6 +56,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException());
         appDeployment.setConfiguration(configuration);
