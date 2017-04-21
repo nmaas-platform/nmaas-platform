@@ -1,11 +1,10 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
+import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.dcn.deployment.repositories.DcnRepository;
 import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
@@ -62,11 +61,9 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private DefaultAppDeploymentMonitor monitor;
     @Autowired
-    private DcnRepository dcnRepository;
+    private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
     private NmServiceRepository nmServiceRepository;
-    @Autowired
-    private DeploymentIdToDcnNameMapper deploymentIdToDcnNameMapper;
     @Autowired
     private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
     @Autowired
@@ -82,15 +79,14 @@ public class DefaultAppDeploymentMonitorTest {
     public void setup() throws InvalidDeploymentIdException {
         String dcnName = "dcnName";
         DcnSpec spec = new DcnSpec(dcnName, clientId);
-        ContainerNetworkDetails containerNetworkDetails =
-                new ContainerNetworkDetails(8080, new ContainerNetworkIpamSpec("", ""), 505);
+        ContainerNetworkIpamSpec containerNetworkIpamSpec = new ContainerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
+        ContainerNetworkDetails containerNetworkDetails = new ContainerNetworkDetails(8080, containerNetworkIpamSpec, 505);
         spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
-        dcnRepository.storeNetwork(new DcnInfo(spec));
-        deploymentIdToDcnNameMapper.storeMapping(deploymentId, dcnName);
+        dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         String nmServiceName = "serviceName";
         nmServiceRepository.storeService(new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null));
         deploymentIdToNmServiceNameMapper.storeMapping(deploymentId, nmServiceName);
-        appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance(""), Identifier.newInstance("")));
+        appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));
         repository.updateDeploymentState(deploymentId, AppDeploymentState.REQUESTED);
     }
 

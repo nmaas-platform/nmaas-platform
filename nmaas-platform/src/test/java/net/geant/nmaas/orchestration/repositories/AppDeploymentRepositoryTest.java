@@ -26,12 +26,14 @@ public class AppDeploymentRepositoryTest {
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
+    private Identifier clientId = Identifier.newInstance("clientId");
+
     @Test
     public void shouldAddUpdateAndRemoveAppDeployment() {
         AppDeployment appDeployment = new AppDeployment();
         appDeployment.setDeploymentId(deploymentId);
         appDeployment.setApplicationId(Identifier.newInstance("applicationId"));
-        appDeployment.setClientId(Identifier.newInstance("clientId"));
+        appDeployment.setClientId(clientId);
         AppDeployment storedAppDeployment = repository.save(appDeployment);
         assertThat(storedAppDeployment.getId(), is(notNullValue()));
         appDeployment = repository.findOne(storedAppDeployment.getId());
@@ -40,6 +42,7 @@ public class AppDeploymentRepositoryTest {
         assertThat(repository.count(), equalTo(1L));
         assertThat(repository.findByDeploymentId(deploymentId).isPresent(), is(true));
         assertThat(repository.getStateByDeploymentId(deploymentId).get(), equalTo(AppDeploymentState.REQUESTED));
+        assertThat(repository.getClientIdByDeploymentId(deploymentId).get(), equalTo(clientId));
         repository.delete(storedAppDeployment.getId());
         assertThat(repository.count(), equalTo(0L));
     }

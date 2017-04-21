@@ -7,12 +7,16 @@ import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.dcn.deployment.repositories.DcnRepository;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,60 +43,58 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Mock
     private DockerHostRepository dockerHostRepository;
-
     @Autowired
-    private DcnRepository dcnRepository;
-
+    private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
     private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
-
     @Autowired
-    private DeploymentIdToDcnNameMapper deploymentIdMapper;
-
+    private AppDeploymentRepository appDeploymentRepository;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-dcn-id");
-
     private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
-
+    private final Identifier applicationId = Identifier.newInstance("this-is-example-application-id");
     private final String dcnName = "this-is-example-dcn-name";
-
     private String statusUpdateJsonContent;
-
     private MockMvc mvc;
 
     @Before
-    public void setUp() throws JsonProcessingException, DeploymentIdToDcnNameMapper.EntryNotFoundException, DcnRepository.DcnNotFoundException {
-        deploymentIdMapper.storeMapping(deploymentId, dcnName);
+    public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidClientIdException {
+        appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, applicationId));
         DcnSpec spec = new DcnSpec(dcnName, clientId);
-        ContainerNetworkDetails containerNetworkDetails =
-                new ContainerNetworkDetails(8080, new ContainerNetworkIpamSpec("", ""), 505);
+        ContainerNetworkIpamSpec containerNetworkIpamSpec = new ContainerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
+        ContainerNetworkDetails containerNetworkDetails = new ContainerNetworkDetails(8080, containerNetworkIpamSpec, 505);
         spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
-        dcnRepository.storeNetwork(new DcnInfo(spec));
-        dcnRepository.notifyStateChange(new DcnDeploymentStateChangeEvent(this,deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepository, deploymentIdMapper, vpnConfigRepository, applicationEventPublisher);
+        dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepositoryManager, vpnConfigRepository, applicationEventPublisher);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }
 
+    @After
+    public void cleanup() {
+        appDeploymentRepository.deleteAll();
+    }
+
     @Test
     public void testAnsiblePlaybookStatusApiUpdate() throws Exception {
-        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(dcnName))
+        assertThat(dcnRepositoryManager.loadCurrentState(deploymentId), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(deploymentId.value()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        Thread.sleep(100);
-        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(dcnName))
+        Thread.sleep(200);
+        assertThat(dcnRepositoryManager.loadCurrentState(deploymentId), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(deploymentId.value()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        Thread.sleep(100);
-        assertThat(dcnRepository.loadCurrentState(dcnName), is(DcnDeploymentState.DEPLOYED));
+        Thread.sleep(200);
+        assertThat(dcnRepositoryManager.loadCurrentState(deploymentId), is(DcnDeploymentState.DEPLOYED));
     }
 
 }
