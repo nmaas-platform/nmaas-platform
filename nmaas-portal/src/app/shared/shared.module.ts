@@ -1,18 +1,20 @@
 import { NgModule }       from '@angular/core';
 import { CommonModule }   from '@angular/common';
 
-import { CommentsComponent, FooterComponent, RateComponent, ScreenshotsComponent } from "./index";
+import { CommentsComponent, FooterComponent, RateComponent, ScreenshotsComponent, ModalComponent } from "./index";
+import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
     imports: [
-        CommonModule
+        CommonModule,
+        PipesModule
     ],
     declarations: [
       RateComponent,
       FooterComponent,
       CommentsComponent,
-      ScreenshotsComponent
-
+      ScreenshotsComponent,
+      ModalComponent
     ],
     providers: [
     ],
@@ -20,7 +22,8 @@ import { CommentsComponent, FooterComponent, RateComponent, ScreenshotsComponent
       RateComponent,
       FooterComponent,
       CommentsComponent,
-      ScreenshotsComponent
+      ScreenshotsComponent,
+      ModalComponent
     ]
 })
 export class SharedModule {}

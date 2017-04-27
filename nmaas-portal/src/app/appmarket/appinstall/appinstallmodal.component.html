@@ -1,17 +1,13 @@
-<div (click)="hide()" class="modal fade" tabindex="-1"
-	[ngClass]="{'in': visibleAnimate}"
-	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<ng-content select=".app-modal-header"></ng-content>
-			</div>
-			<div class="modal-body">
-				<ng-content select=".app-modal-body"></ng-content>
-			</div>
-			<div class="modal-footer">
-				<ng-content select=".app-modal-footer"></ng-content>
-			</div>
+<nmaas-modal>
+	<div class="nmaas-modal-header">Create new instance of {{app?.name}} instance</div>
+	<div class="nmaas-modal-body">
+		<div class="form-group">
+			<label for="name">Instance name</label> 
+			<input type="text" class="form-control" id="name" [(ngModel)]="name">
 		</div>
 	</div>
-</div>
+	<div class="nmaas-modal-footer">
+		<button type="button" class="btn btn-default" (click)="modal.hide()">Close</button>
+		<button type="button" class="btn btn-primary" (click)="create()">Create</button>
+	</div>
+<nmaas-modal>

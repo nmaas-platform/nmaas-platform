@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from "@angular/router";
 import { CommonModule } from '@angular/common';
+import { FormsModule }   from '@angular/forms';
 
 import { AuthModule } from '../auth/auth.module';
 
@@ -18,21 +19,24 @@ import { AppsService } from '../service/apps.service';
 import { TagService } from '../service/tag.service';
 import { AppInstallModalComponent } from './appinstall/appinstallmodal.component';
 
+import { PipesModule } from '../pipe/pipes.module';
 
 @NgModule({
     declarations: [
         AppMarketComponent,
         AppDetailsComponent,
         NavbarComponent,
-        AppInstallModalComponent,
+        AppInstallModalComponent
     ],
     imports: [ 
+        FormsModule,
         CommonModule,
         RouterModule,
         SharedModule,
         AppListModule,
         AppInstanceModule,
-        AuthModule
+        AuthModule,
+        PipesModule
     ],
     exports: [
         AppMarketComponent

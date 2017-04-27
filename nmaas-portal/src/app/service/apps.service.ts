@@ -56,5 +56,7 @@ export class AppsService {
             .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
     }
 
-    
+    public getAppScreenshotUrl(urlPath: string): string {
+        return this.appConfig.getApiUrl() + urlPath;
+    }
 }
