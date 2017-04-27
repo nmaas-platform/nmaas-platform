@@ -1,16 +1,12 @@
 package net.geant.nmaas.orchestration.tasks;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerDeploymentDetails;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -35,9 +31,7 @@ public class AppConfigurationTask {
 
     private NmServiceConfigurationProvider serviceConfiguration;
 
-    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
-
-    private NmServiceRepository nmServiceRepository;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     private AppDeploymentRepository repository;
 
@@ -46,13 +40,11 @@ public class AppConfigurationTask {
     @Autowired
     public AppConfigurationTask(
             NmServiceConfigurationProvider serviceConfiguration,
-            DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper,
-            NmServiceRepository nmServiceRepository,
+            NmServiceRepositoryManager nmServiceRepositoryManager,
             AppDeploymentRepository repository,
             ApplicationEventPublisher applicationEventPublisher) {
         this.serviceConfiguration = serviceConfiguration;
-        this.deploymentIdToNmServiceNameMapper = deploymentIdToNmServiceNameMapper;
-        this.nmServiceRepository = nmServiceRepository;
+        this.nmServiceRepositoryManager = nmServiceRepositoryManager;
         this.repository = repository;
         this.applicationEventPublisher = applicationEventPublisher;
     }
@@ -61,24 +53,17 @@ public class AppConfigurationTask {
     @Loggable(LogLevel.INFO)
     public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
-        AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        DockerHost dockerHost = null;
-        ContainerDeploymentDetails containerDetails = null;
+        final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         try {
-            String serviceName = deploymentIdToNmServiceNameMapper.nmServiceName(deploymentId);
-            NmServiceInfo serviceInfo = nmServiceRepository.loadService(serviceName);
-            dockerHost = (DockerHost) serviceInfo.getHost();
-            containerDetails = (ContainerDeploymentDetails) serviceInfo.getDetails();
-        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException
-                | NmServiceRepository.ServiceNotFoundException e) {
-            log.error("Exception during application configuration preparation -> " + e.getMessage());
-            applicationEventPublisher.publishEvent(new AppDeploymentErrorEvent(this, deploymentId));
-            return;
-        }
-        try {
-            serviceConfiguration.configureNmService(deploymentId, appDeployment.getApplicationId(), appDeployment.getConfiguration(), dockerHost, containerDetails);
-        } catch (NmServiceConfigurationFailedException e) {
-            log.warn("Service configuration failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
+            serviceConfiguration.configureNmService(
+                    deploymentId,
+                    appDeployment.getApplicationId(),
+                    appDeployment.getConfiguration(),
+                    service.getHost(),
+                    service.getDockerContainer().getVolumesDetails());
+        } catch (NmServiceConfigurationFailedException configurationFailedException) {
+            log.warn("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
         }
     }
 

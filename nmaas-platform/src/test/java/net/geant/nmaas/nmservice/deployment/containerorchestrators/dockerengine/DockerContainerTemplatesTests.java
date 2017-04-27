@@ -1,6 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class DockerContainerTemplatesTests {
 
     private static final String jsonRepresentationOfOxidizedTemplate =
-            "{\"image\":\"oxidized/oxidized:latest\",\"exposedPort\":{\"protocol\":\"TCP\",\"targetPort\":8888},\"envVariables\":[\"CONFIG_RELOAD_INTERVAL=600\"],\"envVariablesInSpecRequired\":false,\"containerVolumes\":[\"/root/.config/oxidized\"]}";
+            "{\"image\":\"oxidized/oxidized:latest\",\"exposedPort\":{\"protocol\":\"TCP\",\"targetPort\":8888},\"envVariables\":[\"CONFIG_RELOAD_INTERVAL=600\"],\"containerVolumes\":[\"/root/.config/oxidized\"]}";
 
     private DockerContainerTemplate oxidizedTemplate;
 
@@ -25,7 +27,6 @@ public class DockerContainerTemplatesTests {
         oxidizedTemplate =
                 new DockerContainerTemplate("oxidized/oxidized:latest");
         oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
-        oxidizedTemplate.setEnvVariablesInSpecRequired(false);
         oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
         oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
     }

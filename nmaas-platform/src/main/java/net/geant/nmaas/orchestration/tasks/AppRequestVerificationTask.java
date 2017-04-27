@@ -4,11 +4,8 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.AppVerifyRequestActionEvent;
@@ -63,13 +60,12 @@ public class AppRequestVerificationTask {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void verifyAppRequest(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException {
         final Identifier deploymentId = event.getDeploymentId();
-        AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         final Identifier clientId = appDeployment.getClientId();
         final Identifier applicationId = appDeployment.getApplicationId();
-        NmServiceInfo serviceInfo = null;
         try {
-            serviceInfo = serviceDeployment.verifyRequest(deploymentId, constructNmServiceSpec(clientId, applicationId));
-            dcnDeployment.verifyRequest(deploymentId, constructDcnSpec(clientId, applicationId, serviceInfo));
+            serviceDeployment.verifyRequest(deploymentId, clientId, template(applicationId));
+            dcnDeployment.verifyRequest(deploymentId, constructDcnSpec(clientId, applicationId));
         } catch (NmServiceRequestVerificationException e) {
             log.warn("Service request verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         } catch (DcnRequestVerificationException e) {
@@ -78,35 +74,21 @@ public class AppRequestVerificationTask {
     }
 
     @Loggable(LogLevel.DEBUG)
-    public NmServiceSpec constructNmServiceSpec(Identifier clientId, Identifier applicationId) throws InvalidApplicationIdException {
+    public DockerContainerTemplate template(Identifier applicationId) throws InvalidApplicationIdException {
         final Application application = appRepository.findOne(Long.valueOf(applicationId.getValue()));
         if (application == null)
             throw new InvalidApplicationIdException("Application with id " + applicationId + " does not exist in repository");
-        DockerContainerTemplate template = DockerContainerTemplate.copy(application.getDockerContainerTemplate());
-        return new DockerContainerSpec(
-                buildServiceName(application),
-                template,
-                Long.valueOf(clientId.getValue()));
+        return DockerContainerTemplate.copy(application.getDockerContainerTemplate());
     }
 
     @Loggable(LogLevel.DEBUG)
-    public String buildServiceName(Application application) {
-        return application.getName() + "-" + application.getId();
+    public DcnSpec constructDcnSpec(Identifier clientId, Identifier deploymentId) {
+        return new DcnSpec(buildDcnName(clientId), clientId);
     }
 
     @Loggable(LogLevel.DEBUG)
-    public DcnSpec constructDcnSpec(Identifier clientId, Identifier deploymentId, NmServiceInfo serviceInfo) {
-        DcnSpec dcn = new DcnSpec(buildDcnName(clientId, deploymentId), clientId);
-        if (serviceInfo != null && serviceInfo.getNetwork() != null)
-            dcn.setNmServiceDeploymentNetworkDetails(serviceInfo.getNetwork());
-        else
-            log.warn("Failed to set NM service deployment network details in DCN spec");
-        return dcn;
-    }
-
-    @Loggable(LogLevel.DEBUG)
-    public String buildDcnName(Identifier clientId, Identifier deploymentId) {
-        return clientId + "-" + deploymentId + "-" + System.nanoTime();
+    public String buildDcnName(Identifier clientId) {
+        return clientId + "-" + System.nanoTime();
     }
 
 }

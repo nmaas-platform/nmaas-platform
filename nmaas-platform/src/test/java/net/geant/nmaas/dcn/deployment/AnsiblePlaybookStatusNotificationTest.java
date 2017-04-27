@@ -7,10 +7,9 @@ import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.repositories.DockerNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -42,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AnsiblePlaybookStatusNotificationTest {
 
     @Mock
-    private DockerHostRepository dockerHostRepository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
@@ -51,6 +50,8 @@ public class AnsiblePlaybookStatusNotificationTest {
     private AppDeploymentRepository appDeploymentRepository;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private DockerNetworkRepository dockerNetworkRepository;
 
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-dcn-id");
     private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
@@ -63,12 +64,9 @@ public class AnsiblePlaybookStatusNotificationTest {
     public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidClientIdException {
         appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, applicationId));
         DcnSpec spec = new DcnSpec(dcnName, clientId);
-        ContainerNetworkIpamSpec containerNetworkIpamSpec = new ContainerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
-        ContainerNetworkDetails containerNetworkDetails = new ContainerNetworkDetails(8080, containerNetworkIpamSpec, 505);
-        spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepository, dcnRepositoryManager, vpnConfigRepository, applicationEventPublisher);
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dockerHostRepositoryManager, dcnRepositoryManager, vpnConfigRepository, applicationEventPublisher, dockerNetworkRepository);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }

@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.nmservice;
+package net.geant.nmaas.nmservice.deployment.entities;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

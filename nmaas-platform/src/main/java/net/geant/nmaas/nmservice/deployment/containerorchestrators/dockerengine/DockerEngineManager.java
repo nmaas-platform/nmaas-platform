@@ -1,21 +1,21 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.NetworkConfig;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.*;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerDeploymentDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkConfigBuilder;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkManager;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentDetails;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,184 +30,180 @@ import java.util.List;
 public class DockerEngineManager implements ContainerOrchestrationProvider {
 
     @Autowired
-    private DockerContainerClient dockerContainerClient;
+    private DockerContainerManager dockerContainerManager;
 
     @Autowired
-    private DockerNetworkClient dockerNetworkClient;
+    private DockerNetworkManager dockerNetworkManager;
 
     @Autowired
-    private NmServiceRepository nmServices;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     @Autowired
-    private DockerHostRepository dockerHosts;
-
-    @Autowired
-    private DockerHostStateKeeper dockerHostStateKeeper;
+    private DockerHostRepositoryManager dockerHosts;
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
+    public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
-            final NmServiceInfo service = nmServices.loadService(serviceName);
-            final DockerHost host = dockerHosts.loadPreferredDockerHost();
-            nmServices.updateServiceHost(serviceName, host);
-            NmServiceDeploymentDetails containerDetails = new ContainerDeploymentDetails(ContainerConfigBuilder.getPrimaryVolumeName(service.getAppDeploymentId()));
-            nmServices.updateServiceDeploymentDetails(serviceName, containerDetails);
-            final String dockerHostName = host.getName();
-            final int publicPort = dockerHostStateKeeper.assignPort(dockerHostName, serviceName);
-            final int vlanNumber = dockerHostStateKeeper.assignVlan(dockerHostName, serviceName);
-            final ContainerNetworkIpamSpec addresses = dockerHostStateKeeper.assignAddressPool(dockerHostName, serviceName);
-            final ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(publicPort, addresses, vlanNumber);
-            nmServices.updateServiceNetworkDetails(serviceName, networkDetails);
-            ContainerConfigBuilder.verifyInput(nmServices.loadService(serviceName));
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
+            final Identifier clientId = service.getClientId();
+            declareNewNetworkForClientIfNotExists(clientId);
+            final DockerNetwork network = dockerNetworkManager.networkForClient(clientId);
+            nmServiceRepositoryManager.updateDockerHost(deploymentId, network.getDockerHost());
+            ContainerConfigBuilder.verifyInput(service);
+            final DockerContainer container = dockerContainerManager.declareNewContainerForDeployment(deploymentId, network);
+            nmServiceRepositoryManager.updateDockerContainer(deploymentId, container);
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository ->  Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (DockerHostNotFoundException dockerHostNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Did not find any suitable Docker host for deployment.");
-        } catch (DockerHostInvalidException dockerHostNotFoundException) {
+                    "Did not find any suitable Docker Host for deployment.");
+        } catch (DockerHostInvalidException dockerHostInvalidException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Provided Docker host cannot be used for deployment.");
-        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Service not found in repository -> " + serviceNotFoundException.getMessage());
+                    "Could not use the selected Docker Host for deployment.");
         }
+    }
+
+    private void declareNewNetworkForClientIfNotExists(Identifier clientId) throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException {
+        if (!dockerNetworkManager.networkForClientAlreadyConfigured(clientId))
+            dockerNetworkManager.declareNewNetworkForClientOnHost(clientId, dockerHosts.loadPreferredDockerHost());
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(String serviceName)
-            throws CouldNotPrepareEnvironmentException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void prepareDeploymentEnvironment(Identifier deploymentId)
+            throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
         try {
-            final NmServiceInfo service = nmServices.loadService(serviceName);
-            final DockerHost host = (DockerHost) service.getHost();
-            createDedicatedNetworkOnDockerHost(serviceName, service, host);
-            downloadContainerImageOnDockerHost(service, host);
-        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
+            deployNetworkForClientOnDockerHostIfNotDoneBefore(service);
+            downloadContainerImageOnDockerHost(service);
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new CouldNotPrepareEnvironmentException(
-                    "Service not found in repository -> " + serviceNotFoundException.getMessage());
-        } catch (NmServiceRequestVerificationException serviceSpecVerificationException) {
-            throw new CouldNotPrepareEnvironmentException(
-                    "Service spec verification failed -> " + serviceSpecVerificationException.getMessage());
-        } catch (ContainerNetworkDetailsVerificationException containerNetworkDetailsVerificationException) {
-            throw new CouldNotPrepareEnvironmentException(
-                    "Service network details verification failed -> " + containerNetworkDetailsVerificationException.getMessage());
+                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (CouldNotCreateContainerNetworkException couldNotCreateContainerNetworkException) {
             throw new CouldNotPrepareEnvironmentException(
                     "Failed to create network -> " + couldNotCreateContainerNetworkException.getMessage());
         }
     }
 
-    private void createDedicatedNetworkOnDockerHost(String serviceName, NmServiceInfo service, DockerHost host) throws NmServiceRequestVerificationException, ContainerNetworkDetailsVerificationException, CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException, NmServiceRepository.ServiceNotFoundException {
-        final NetworkConfig networkConfig = ContainerNetworkConfigBuilder.build(service);
-        final String networkId = dockerNetworkClient.create(networkConfig, host);
-        nmServices.updateNetworkId(serviceName, networkId);
+    private void deployNetworkForClientOnDockerHostIfNotDoneBefore(NmServiceInfo service)
+            throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
+        dockerNetworkManager.deployNetworkForClient(service.getClientId());
     }
 
-    private void downloadContainerImageOnDockerHost(NmServiceInfo service, DockerHost host) throws ContainerOrchestratorInternalErrorException {
-        final String imageName = ((DockerContainerSpec) service.getSpec()).getTemplate().getImage();
-        dockerContainerClient.pullImage(imageName, host);
+    private void downloadContainerImageOnDockerHost(NmServiceInfo service)
+            throws ContainerOrchestratorInternalErrorException {
+        dockerContainerManager.pullImage(service.getTemplate().getImage(), service.getHost());
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployNmService(String serviceName)
-            throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void deployNmService(Identifier deploymentId)
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            final NmServiceInfo service = nmServices.loadService(serviceName);
-            final DockerHost host = (DockerHost) service.getHost();
-            final String containerId = createContainer(service, host);
-            final ContainerNetworkDetails containerNetworkDetails = connectContainerToNetwork(service, host, containerId);
-            startContainer(host, containerId);
-            configureRoutingOnStartedContainer(service, host, containerId, containerNetworkDetails);
-            nmServices.updateServiceId(serviceName, containerId);
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
+            final DockerContainer container = service.getDockerContainer();
+            final String containerId = createContainer(service);
+            container.setDeploymentId(containerId);
+            nmServiceRepositoryManager.updateDockerContainer(deploymentId, container);
+            connectContainerToNetwork(service);
+            startContainer(service);
+            configureRoutingOnStartedContainer(service);
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            throw new CouldNotDeployNmServiceException(
+                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (CouldNotDeployNmServiceException couldNotDeployNmServiceException) {
             throw new CouldNotDeployNmServiceException(
                     "Could not deployNmService service -> " + couldNotDeployNmServiceException.getMessage());
-        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotDeployNmServiceException(
-                    "Service not found in repository -> " + serviceNotFoundException.getMessage());
         } catch (CouldNotConnectContainerToNetworkException couldNotConnectContainerToNetworkException) {
             throw new CouldNotDeployNmServiceException(
                     "Failed to connect container to network -> " + couldNotConnectContainerToNetworkException.getMessage());
         }
     }
 
-    private String createContainer(NmServiceInfo service, DockerHost host)
-            throws CouldNotConnectToOrchestratorException, CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
-        final ContainerConfig config = ContainerConfigBuilder.build(service);
-        return dockerContainerClient.create(config, service.getAppDeploymentId(), host);
-    }
-
-    private ContainerNetworkDetails connectContainerToNetwork(NmServiceInfo service, DockerHost host, String containerId)
-            throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
-        final ContainerNetworkDetails containerNetworkDetails = (ContainerNetworkDetails) service.getNetwork();
-        dockerNetworkClient.connectContainerToNetwork(containerId, containerNetworkDetails, host);
-        return containerNetworkDetails;
-    }
-
-    private void startContainer(DockerHost host, String containerId)
+    private String createContainer(NmServiceInfo service)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
-        dockerContainerClient.start(containerId, host);
+        final ContainerConfig config = ContainerConfigBuilder.build(service);
+        return dockerContainerManager.create(config, service.getDeploymentId().value(), service.getHost());
     }
 
-    private void configureRoutingOnStartedContainer(NmServiceInfo service, DockerHost host, String containerId, ContainerNetworkDetails containerNetworkDetails)
+    private void connectContainerToNetwork(NmServiceInfo service)
+            throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
+        dockerNetworkManager.connectContainerToNetwork(service.getClientId(), service.getDockerContainer());
+    }
+
+    private void startContainer(NmServiceInfo service)
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
+        dockerContainerManager.start(service.getDockerContainer().getDeploymentId(), service.getHost());
+    }
+
+    private void configureRoutingOnStartedContainer(NmServiceInfo service)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         for (String managedDeviceIpAddress : service.getManagedDevicesIpAddresses()) {
-            dockerContainerClient.addStaticRoute(containerId, managedDeviceIpAddress, containerNetworkDetails.getIpAddresses().getGateway(), host);
+            dockerContainerManager.addStaticRoute(
+                    service.getDockerContainer().getDeploymentId(),
+                    managedDeviceIpAddress,
+                    service.getDockerContainer().getNetworkDetails().getIpAddresses().getGateway(),
+                    service.getHost());
         }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void checkService(String serviceName)
-            throws ContainerCheckFailedException, ContainerNetworkCheckFailedException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void checkService(Identifier deploymentId)
+            throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
         try {
-            final NmServiceInfo service = nmServices.loadService(serviceName);
-            final DockerHost host = (DockerHost) service.getHost();
-            checkContainerNetworkAndContainerItself(service, host);
-        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
+            checkContainerNetworkAndContainerItself(service);
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Service not found in repository -> " + serviceNotFoundException.getMessage());
-        }  catch (ContainerNotFoundException containerNotFoundException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Container not found on the deployment host -> " + containerNotFoundException.getMessage());
+                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         }
     }
 
-    private void checkContainerNetworkAndContainerItself(NmServiceInfo service, DockerHost host)
-            throws ContainerCheckFailedException, ContainerNotFoundException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException, ContainerNetworkCheckFailedException {
-        final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
-        dockerContainerClient.checkService(service.getDeploymentId(), host);
-        dockerNetworkClient.checkNetwork(networkDetails.getDeploymentId(), service.getDeploymentId(), host);
+    private void checkContainerNetworkAndContainerItself(NmServiceInfo service)
+            throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
+        dockerContainerManager.checkService(service.getDockerContainer().getDeploymentId(), service.getHost());
+        dockerNetworkManager.verifyNetwork(service.getClientId());
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeNmService(String serviceName)
-            throws CouldNotRemoveNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
+    public void removeNmService(Identifier deploymentId)
+            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            final NmServiceInfo service = nmServices.loadService(serviceName);
-            final DockerHost host = (DockerHost) service.getHost();
-            final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
-            dockerContainerClient.remove(service.getDeploymentId(), host);
-            dockerNetworkClient.remove(networkDetails.getDeploymentId(), host);
-        } catch (NmServiceRepository.ServiceNotFoundException serviceNotFoundException) {
-            throw new CouldNotRemoveNmServiceException(
-                    "Service not found in repository -> " + serviceNotFoundException.getMessage());
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
+            removeContainer(service);
+            removeNetworkIfNoContainerAttached(service);
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (CouldNotRemoveNmServiceException couldNotRemoveNmServiceException) {
             throw new CouldNotRemoveNmServiceException(
-                    "Could not destroy service -> " + couldNotRemoveNmServiceException.getMessage());
+                    "Could not remove container -> " + couldNotRemoveNmServiceException.getMessage());
         } catch (CouldNotRemoveContainerNetworkException couldNotRemoveContainerNetworkException) {
             throw new CouldNotRemoveNmServiceException(
                     "Failed to remove network -> " + couldNotRemoveContainerNetworkException.getMessage());
         }
     }
 
+    private void removeContainer(NmServiceInfo service)
+            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
+        dockerContainerManager.remove(service.getDockerContainer().getDeploymentId(), service.getHost());
+    }
+
+    private void removeNetworkIfNoContainerAttached(NmServiceInfo service)
+            throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
+        dockerNetworkManager.removeIfNoContainersAttached(service.getClientId());
+    }
+
     @Override
     @Loggable(LogLevel.INFO)
-    public List<String> listServices(NmServiceDeploymentHost host)
-            throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
-        return dockerContainerClient.containers((DockerHost) host);
+    public List<String> listServices(DockerHost host)
+            throws ContainerOrchestratorInternalErrorException {
+        return dockerContainerManager.containers(host);
     }
 
     @Override

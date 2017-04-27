@@ -1,12 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
-import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.entities.*;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -96,6 +91,22 @@ public class DcnRepositoryManagerTest {
         assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getAnsiblePlaybookForCloudSideRouter().getLogicalInterface(), equalTo("ifaceName"));
     }
 
+    @Test
+    public void shouldUpdateCloudEndpointDetails() throws InvalidDeploymentIdException, InvalidClientIdException {
+        storeDefaultDcnInfoInRepository();
+        DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(501, "10.10.0.0/24", "10.10.0.254");
+        dcnRepositoryManager.updateDcnCloudEndpointDetails(deploymentId, dcnCloudEndpointDetails);
+        assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails().getId(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails().getVlanNumber(), equalTo(501));
+        assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails().getSubnet(), equalTo("10.10.0.0/24"));
+        assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails().getGateway(), equalTo("10.10.0.254"));
+        dcnCloudEndpointDetails = dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails();
+        dcnCloudEndpointDetails.setGateway("gw");
+        dcnRepositoryManager.updateDcnCloudEndpointDetails(deploymentId, dcnCloudEndpointDetails);
+        assertThat(dcnRepositoryManager.loadNetwork(deploymentId).getCloudEndpointDetails().getGateway(), equalTo("gw"));
+    }
+
     @Test(expected = InvalidDeploymentIdException.class)
     public void shouldThrowExceptionOnMissingDeployment() throws InvalidDeploymentIdException, InvalidClientIdException {
         appDeploymentRepository.deleteAll();
@@ -123,6 +134,11 @@ public class DcnRepositoryManagerTest {
     }
 
     @Test(expected = InvalidClientIdException.class)
+    public void shouldThrowExceptionDuringCloudEndpointDetailsUpdateOnMissingDcnForGivenClient() throws InvalidDeploymentIdException, InvalidClientIdException {
+        dcnRepositoryManager.updateDcnCloudEndpointDetails(deploymentId, null);
+    }
+
+    @Test(expected = InvalidClientIdException.class)
     public void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() throws InvalidDeploymentIdException, InvalidClientIdException {
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
     }
@@ -134,9 +150,6 @@ public class DcnRepositoryManagerTest {
 
     private void storeDefaultDcnInfoInRepository() {
         DcnSpec spec = new DcnSpec(dcnName, clientId);
-        ContainerNetworkIpamSpec containerNetworkIpamSpec = new ContainerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
-        ContainerNetworkDetails containerNetworkDetails = new ContainerNetworkDetails(8080, containerNetworkIpamSpec, 505);
-        spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
     }
 }

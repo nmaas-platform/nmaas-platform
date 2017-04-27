@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;

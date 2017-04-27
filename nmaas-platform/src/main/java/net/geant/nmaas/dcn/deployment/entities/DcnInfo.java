@@ -1,6 +1,5 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 import javax.persistence.*;
@@ -13,26 +12,26 @@ import javax.persistence.*;
 public class DcnInfo {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name="id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable=false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable=false)
     private Identifier clientId;
 
-    @Column(nullable = false)
+    @Column(nullable=false)
     private DcnDeploymentState state = DcnDeploymentState.INIT;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
     private DcnCloudEndpointDetails cloudEndpointDetails;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
     private AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
     private AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter;
 
     public DcnInfo() { }
@@ -40,8 +39,6 @@ public class DcnInfo {
     public DcnInfo(DcnSpec spec) {
         this.name = spec.getName();
         this.clientId = spec.getClientId();
-        this.cloudEndpointDetails =
-                new DcnCloudEndpointDetails((ContainerNetworkDetails)spec.getNmServiceDeploymentNetworkDetails());
     }
 
     public Long getId() {

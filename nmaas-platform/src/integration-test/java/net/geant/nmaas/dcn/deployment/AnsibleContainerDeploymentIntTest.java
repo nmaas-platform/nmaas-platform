@@ -3,7 +3,7 @@ package net.geant.nmaas.dcn.deployment;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Ignore;
 import org.junit.Test;

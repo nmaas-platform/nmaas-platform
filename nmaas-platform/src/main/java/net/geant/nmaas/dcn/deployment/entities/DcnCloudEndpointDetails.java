@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 
 import javax.persistence.*;
 
@@ -12,31 +12,30 @@ import javax.persistence.*;
 public class DcnCloudEndpointDetails {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
-    @Column(name="id")
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable=false)
     private int vlanNumber;
 
-    @Column(nullable = false)
-    private String gateway;
+    @Column(nullable=false)
+    private String subnet;
 
-    @Column(nullable = false)
-    private String ipAddressOfContainer;
+    @Column(nullable=false)
+    private String gateway;
 
     public DcnCloudEndpointDetails() { }
 
-    public DcnCloudEndpointDetails(int vlanNumber, String gateway, String ipAddressOfContainer) {
+    public DcnCloudEndpointDetails(int vlanNumber, String subnet, String gateway) {
         this.vlanNumber = vlanNumber;
+        this.subnet = subnet;
         this.gateway = gateway;
-        this.ipAddressOfContainer = ipAddressOfContainer;
     }
 
-    public DcnCloudEndpointDetails(ContainerNetworkDetails containerNetworkDetails) {
-        this(containerNetworkDetails.getVlanNumber(),
-                containerNetworkDetails.getIpAddresses().getGateway(),
-                containerNetworkDetails.getIpAddresses().getIpAddressOfContainer());
+    public DcnCloudEndpointDetails(DockerNetwork dockerNetwork) {
+        this(dockerNetwork.getVlanNumber(),
+                dockerNetwork.getSubnet(),
+                dockerNetwork.getGateway());
     }
 
     public Long getId() {
@@ -55,6 +54,14 @@ public class DcnCloudEndpointDetails {
         this.vlanNumber = vlanNumber;
     }
 
+    public String getSubnet() {
+        return subnet;
+    }
+
+    public void setSubnet(String subnet) {
+        this.subnet = subnet;
+    }
+
     public String getGateway() {
         return gateway;
     }
@@ -63,11 +70,4 @@ public class DcnCloudEndpointDetails {
         this.gateway = gateway;
     }
 
-    public String getIpAddressOfContainer() {
-        return ipAddressOfContainer;
-    }
-
-    public void setIpAddressOfContainer(String ipAddressOfContainer) {
-        this.ipAddressOfContainer = ipAddressOfContainer;
-    }
 }

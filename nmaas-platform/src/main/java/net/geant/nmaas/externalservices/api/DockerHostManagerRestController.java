@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.*;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +17,11 @@ import java.util.List;
 @RequestMapping(value = "/platform/api/management/dockerhosts")
 public class DockerHostManagerRestController {
 
-    private DockerHostRepository dockerHostRepository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     @Autowired
-    public DockerHostManagerRestController(DockerHostRepository dockerHostRepository) {
-        this.dockerHostRepository = dockerHostRepository;
+    public DockerHostManagerRestController(DockerHostRepositoryManager dockerHostRepositoryManager) {
+        this.dockerHostRepositoryManager = dockerHostRepositoryManager;
     }
 
     /**
@@ -32,7 +32,7 @@ public class DockerHostManagerRestController {
             value = "",
             method = RequestMethod.GET)
     public List<DockerHost> listAllDockerHosts() {
-        return dockerHostRepository.loadAll();
+        return dockerHostRepositoryManager.loadAll();
     }
 
     /**
@@ -48,7 +48,7 @@ public class DockerHostManagerRestController {
     public DockerHost getDockerHosts(
             @PathVariable("name") String name)
             throws DockerHostNotFoundException, DockerHostInvalidException {
-        return dockerHostRepository.loadByName(name);
+        return dockerHostRepositoryManager.loadByName(name);
     }
 
     /**
@@ -61,7 +61,7 @@ public class DockerHostManagerRestController {
             method = RequestMethod.GET)
     public DockerHost getPreferedDockerHosts()
             throws DockerHostNotFoundException {
-        return dockerHostRepository.loadPreferredDockerHost();
+        return dockerHostRepositoryManager.loadPreferredDockerHost();
     }
 
     /**
@@ -77,7 +77,7 @@ public class DockerHostManagerRestController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addDockerHost(
             @RequestBody DockerHost newDockerHost) throws DockerHostExistsException, DockerHostInvalidException {
-        dockerHostRepository.addDockerHost(newDockerHost);
+        dockerHostRepositoryManager.addDockerHost(newDockerHost);
     }
 
     /**
@@ -96,7 +96,7 @@ public class DockerHostManagerRestController {
             @PathVariable("name") String name,
             @RequestBody DockerHost dockerHost)
             throws DockerHostNotFoundException, DockerHostInvalidException {
-        dockerHostRepository.updateDockerHost(name, dockerHost);
+        dockerHostRepositoryManager.updateDockerHost(name, dockerHost);
     }
 
     /**
@@ -112,7 +112,7 @@ public class DockerHostManagerRestController {
     public void removeDockerHost(
             @PathVariable("name") String name)
             throws DockerHostNotFoundException, DockerHostInvalidException {
-        dockerHostRepository.removeDockerHost(name);
+        dockerHostRepositoryManager.removeDockerHost(name);
     }
 
     @ExceptionHandler(DockerHostNotFoundException.class)

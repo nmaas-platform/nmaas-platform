@@ -3,11 +3,22 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
-import com.spotify.docker.client.messages.*;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory;
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import com.spotify.docker.client.messages.Container;
+import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.ExecCreation;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
+import net.geant.nmaas.orchestration.entities.Identifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,15 +29,48 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-public class DockerContainerClient {
+public class DockerContainerManager {
+
+    private DockerHostStateKeeper dockerHostStateKeeper;
+
+    private DockerApiClient dockerApiClient;
+
+    @Autowired
+    public DockerContainerManager(DockerHostStateKeeper dockerHostStateKeeper, DockerApiClient dockerApiClient) {
+        this.dockerHostStateKeeper = dockerHostStateKeeper;
+        this.dockerApiClient = dockerApiClient;
+    }
+
+    public DockerContainer declareNewContainerForDeployment(Identifier deploymentId, DockerNetwork network)
+            throws DockerHostNotFoundException, DockerHostInvalidException {
+        final DockerContainer dockerContainer = new DockerContainer();
+        dockerContainer.setVolumesDetails(new DockerContainerVolumesDetails(ContainerConfigBuilder.getPrimaryVolumeName(deploymentId.value())));
+        final int assignedPublicPort = dockerHostStateKeeper.assignPortForContainer(network.getDockerHost().getName(), dockerContainer);
+        String containerIpAddress = obtainIpAddressForNewContainer(network);
+        final DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec(containerIpAddress, network.getSubnet(), network.getGateway());
+        dockerContainer.setNetworkDetails(new DockerContainerNetDetails(assignedPublicPort, addresses));
+        return dockerContainer;
+    }
+
+    String obtainIpAddressForNewContainer(DockerNetwork network) {
+        String containerIpAddress = DockerNetworkIpamSpec.obtainFirstIpAddressFromNetwork(network.getSubnet());
+        while(addressAlreadyAssigned(containerIpAddress, network.getDockerContainers()))
+            containerIpAddress = DockerNetworkIpamSpec.obtainNextIpAddressFromNetwork(containerIpAddress);
+        return containerIpAddress;
+    }
+
+    boolean addressAlreadyAssigned(String containerIpAddress, List<DockerContainer> dockerContainers) {
+        return dockerContainers.stream()
+                .map(c -> c.getNetworkDetails().getIpAddresses().getIpAddressOfContainer())
+                .anyMatch(s -> s.equals(containerIpAddress));
+    }
 
     public String create(ContainerConfig containerConfig, String name, DockerHost host)
-            throws CouldNotConnectToOrchestratorException, CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            return executeCreate(containerConfig, name, apiClient);
+            return executeCreate(containerConfig, name, host.apiUrl());
         } catch (DockerTimeoutException dockerTimeoutException) {
-            throw new CouldNotConnectToOrchestratorException(
+            throw new ContainerOrchestratorInternalErrorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new CouldNotDeployNmServiceException(
@@ -34,51 +78,42 @@ public class DockerContainerClient {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
-    private String executeCreate(ContainerConfig containerConfig, String name, DockerClient apiClient)
+    private String executeCreate(ContainerConfig containerConfig, String name, String apiUrl)
             throws DockerException, InterruptedException {
-        final ContainerCreation container = apiClient.createContainer(containerConfig, name);
-        return container.id();
+        return dockerApiClient.createContainer(apiUrl, containerConfig, name);
     }
 
     public void start(String containerId, DockerHost host)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
-            executeStart(containerId, apiClient);
+            executeStart(containerId, host.apiUrl());
         } catch (DockerException dockerException) {
             throw new CouldNotDeployNmServiceException(
                     "Could not create given container -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
-    private void executeStart(String containerId, DockerClient apiClient)
+    private void executeStart(String containerId, String apiUrl)
             throws DockerException, InterruptedException {
-        apiClient.startContainer(containerId);
+        dockerApiClient.startContainer(apiUrl, containerId);
     }
 
     public void addStaticRoute(String containerId, String deviceAddress, String gatewayAddress, DockerHost host)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
-            executeExec(containerId, addIpRouteCommand(deviceAddress, gatewayAddress), apiClient);
+            executeExec(containerId, addIpRouteCommand(deviceAddress, gatewayAddress), host.apiUrl());
         } catch (DockerException dockerException) {
             throw new CouldNotDeployNmServiceException(
                     "Could not exec route add on container -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
@@ -93,19 +128,18 @@ public class DockerContainerClient {
         return commands;
     }
 
-    private void executeExec(String containerId, List<String> commands, DockerClient apiClient) throws DockerException, InterruptedException {
-        final ExecCreation execCreation = apiClient.execCreate(containerId, commands.stream().toArray(String[]::new), DockerClient.ExecCreateParam.privileged(true));
+    private void executeExec(String containerId, List<String> commands, String apiUrl) throws DockerException, InterruptedException {
+        final ExecCreation execCreation = dockerApiClient.execCreate(apiUrl, containerId, commands.stream().toArray(String[]::new), DockerClient.ExecCreateParam.privileged(true));
         final String execId = execCreation.id();
-        apiClient.execStart(execId);
+        dockerApiClient.execStart(apiUrl, execId);
     }
 
     public void remove(String containerId, DockerHost host)
-            throws CouldNotConnectToOrchestratorException, CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
+            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            executeStopAndRemove(containerId, apiClient);
+            executeStopAndRemove(containerId, host.apiUrl());
         } catch (DockerTimeoutException dockerTimeoutException) {
-            throw new CouldNotConnectToOrchestratorException(
+            throw new ContainerOrchestratorInternalErrorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new CouldNotRemoveNmServiceException(
@@ -113,52 +147,46 @@ public class DockerContainerClient {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
-    private void executeStopAndRemove(String containerId, DockerClient apiClient)
+    private void executeStopAndRemove(String containerId, String apiUrl)
             throws DockerException, InterruptedException {
-        if (checkIfContainerRunning(containerId, apiClient)) {
-            apiClient.stopContainer(containerId, 3);
-            apiClient.removeContainer(containerId);
+        if (checkIfContainerRunning(containerId, apiUrl)) {
+            dockerApiClient.stopContainer(apiUrl,containerId, 3);
+            dockerApiClient.removeContainer(apiUrl, containerId);
         }
     }
 
-    private boolean checkIfContainerRunning(String containerId, DockerClient apiClient)
+    private boolean checkIfContainerRunning(String containerId, String apiUrl)
             throws DockerException, InterruptedException {
-        return apiClient.listContainers(DockerClient.ListContainersParam.withStatusRunning()).stream().anyMatch(c -> c.id().equals(containerId));
+        return dockerApiClient.listContainers(apiUrl, DockerClient.ListContainersParam.withStatusRunning()).stream().anyMatch(c -> c.id().equals(containerId));
     }
 
     public void pullImage(String imageName, DockerHost host)
             throws ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
         try {
-            executePullImage(imageName, apiClient);
+            executePullImage(imageName, host.apiUrl());
         } catch (DockerException dockerException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Could not pull image " + imageName + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
-    private void executePullImage(String imageName, DockerClient apiClient)
+    private void executePullImage(String imageName, String apiUrl)
             throws DockerException, InterruptedException {
-        apiClient.pull(imageName);
+        dockerApiClient.pull(apiUrl, imageName);
     }
 
     public List<String> containers(DockerHost host)
-            throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
+            throws ContainerOrchestratorInternalErrorException {
         try {
-            return executeListContainersAndReturnIds(apiClient);
+            return executeListContainersAndReturnIds(host.apiUrl());
         } catch (DockerTimeoutException dockerTimeoutException) {
-            throw new CouldNotConnectToOrchestratorException(
+            throw new ContainerOrchestratorInternalErrorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new ContainerOrchestratorInternalErrorException(
@@ -166,24 +194,21 @@ public class DockerContainerClient {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
-    private List<String> executeListContainersAndReturnIds(DockerClient apiClient) throws DockerException, InterruptedException {
-        List<Container> containers = apiClient.listContainers(DockerClient.ListContainersParam.allContainers());
+    private List<String> executeListContainersAndReturnIds(String apiUrl) throws DockerException, InterruptedException {
+        List<Container> containers = dockerApiClient.listContainers(apiUrl, DockerClient.ListContainersParam.allContainers());
         return containers.stream().map((container -> container.id())).collect(Collectors.toList());
     }
 
     public void checkService(String containerId, DockerHost host)
-            throws ContainerCheckFailedException, ContainerNotFoundException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException {
-        DockerClient apiClient = DockerApiClientFactory.client(host.apiUrl());
+            throws ContainerCheckFailedException, ContainerOrchestratorInternalErrorException {
         try {
-            if (!NmServiceDeploymentState.DEPLOYED.equals(executeInspectContainerAndReturnContainerState(containerId, apiClient)))
+            if (!NmServiceDeploymentState.DEPLOYED.equals(executeInspectContainerAndReturnContainerState(containerId, host.apiUrl())))
                 throw new ContainerCheckFailedException("Container with id " + containerId + " is stopped");
         } catch (DockerTimeoutException dockerTimeoutException) {
-            throw new CouldNotConnectToOrchestratorException(
+            throw new ContainerOrchestratorInternalErrorException(
                     "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new ContainerOrchestratorInternalErrorException(
@@ -191,14 +216,12 @@ public class DockerContainerClient {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } finally {
-            if (apiClient != null) apiClient.close();
         }
     }
 
-    private NmServiceDeploymentState executeInspectContainerAndReturnContainerState(String containerId, DockerClient apiClient)
+    private NmServiceDeploymentState executeInspectContainerAndReturnContainerState(String containerId, String apiUrl)
             throws DockerException, InterruptedException {
-        ContainerInfo containerInfo = apiClient.inspectContainer(containerId);
+        ContainerInfo containerInfo = dockerApiClient.inspectContainer(apiUrl, containerId);
         return serviceStateFromContainerInfo(containerInfo);
     }
 

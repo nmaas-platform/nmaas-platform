@@ -1,7 +1,5 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
 
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceTemplate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -9,14 +7,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
 @Table(name="docker_container_template")
-public class DockerContainerTemplate implements NmServiceTemplate {
+public class DockerContainerTemplate {
 
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO )
@@ -26,6 +22,7 @@ public class DockerContainerTemplate implements NmServiceTemplate {
     /**
      * The name of the image to use for the container
      */
+    @Column(nullable=false)
     private String image;
 
     /**
@@ -37,7 +34,7 @@ public class DockerContainerTemplate implements NmServiceTemplate {
      * Port exposed by the service/container for UI access.
      * During container configuration for this port a published port needs to be assigned.
      */
-    @OneToOne(fetch=FetchType.EAGER, orphanRemoval=true, cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
     private DockerContainerPortForwarding exposedPort;
 
     /**
@@ -46,11 +43,6 @@ public class DockerContainerTemplate implements NmServiceTemplate {
     @ElementCollection(fetch=FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private List<String> envVariables = new ArrayList<>();
-
-    /**
-     * Field indicating if additional environment variables must be provided in service specification
-     */
-    private Boolean envVariablesInSpecRequired = false;
 
     /**
      * This field represents all the directories on the container for which remote containerVolumes need to be mounted.
@@ -67,25 +59,6 @@ public class DockerContainerTemplate implements NmServiceTemplate {
     }
 
     @Override
-    public Boolean verify() {
-        if (image == null || image.isEmpty())
-            return false;
-        return true;
-    }
-
-    @Override
-    public Boolean verifyNmServiceSpec(NmServiceSpec spec) {
-        if (spec == null || DockerContainerSpec.class != spec.getClass())
-            return false;
-        DockerContainerSpec dockerSpec = (DockerContainerSpec) spec;
-        if (!dockerSpec.verify())
-            return false;
-        if (envVariablesInSpecRequired && isEmpty(dockerSpec.getEnvVariables().toArray()))
-            return false;
-        return true;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -96,9 +69,8 @@ public class DockerContainerTemplate implements NmServiceTemplate {
         if (image != null ? !image.equals(that.image) : that.image != null) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (exposedPort != null ? !exposedPort.equals(that.exposedPort) : that.exposedPort != null) return false;
-        if (envVariables != null ? !(envVariables.size() == that.envVariables.size()) : that.envVariables != null) return false;
-        if (envVariablesInSpecRequired != null ? !envVariablesInSpecRequired.equals(that.envVariablesInSpecRequired) : that.envVariablesInSpecRequired != null) return false;
-        return containerVolumes != null ? containerVolumes.size() == that.containerVolumes.size() : that.containerVolumes == null;
+        if (envVariables != null ? !envVariables.equals(that.envVariables) : that.envVariables != null) return false;
+        return containerVolumes != null ? containerVolumes.equals(that.containerVolumes) : that.containerVolumes == null;
     }
 
     @Override
@@ -156,14 +128,6 @@ public class DockerContainerTemplate implements NmServiceTemplate {
         this.envVariables = envVariables;
     }
 
-    public Boolean getEnvVariablesInSpecRequired() {
-        return envVariablesInSpecRequired;
-    }
-
-    public void setEnvVariablesInSpecRequired(Boolean envVariablesInSpecRequired) {
-        this.envVariablesInSpecRequired = envVariablesInSpecRequired;
-    }
-
     public List<String> getContainerVolumes() {
         return containerVolumes;
     }
@@ -178,7 +142,6 @@ public class DockerContainerTemplate implements NmServiceTemplate {
         template.setCommand(toCopy.getCommand());
         template.setContainerVolumes(new ArrayList<>(toCopy.getContainerVolumes()));
         template.setEnvVariables(new ArrayList<>(toCopy.getEnvVariables()));
-        template.setEnvVariablesInSpecRequired(toCopy.getEnvVariablesInSpecRequired());
         template.setExposedPort(toCopy.getExposedPort());
         return template;
     }

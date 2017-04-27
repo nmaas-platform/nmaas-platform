@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
@@ -57,6 +58,15 @@ public class DcnRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDcnCloudEndpointDetails(Identifier deploymentId, DcnCloudEndpointDetails dcnCloudEndpointDetails)
+            throws InvalidDeploymentIdException, InvalidClientIdException {
+        Identifier clientId = getClientIdByDeploymentId(deploymentId);
+        DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+        dcnInfo.setCloudEndpointDetails(dcnCloudEndpointDetails);
+        dcnInfoRepository.save(dcnInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void storeDcnInfo(DcnInfo dcnInfo) {
         dcnInfoRepository.save(dcnInfo);
     }
@@ -80,5 +90,4 @@ public class DcnRepositoryManager {
     private Identifier getClientIdByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
         return appDeploymentRepository.getClientIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
-
 }

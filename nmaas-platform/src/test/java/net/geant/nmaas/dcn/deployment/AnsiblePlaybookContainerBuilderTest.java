@@ -2,9 +2,11 @@ package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.*;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigExistsException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -137,10 +139,10 @@ public class AnsiblePlaybookContainerBuilderTest {
     @Test
     public void shouldMergeConfigWithProvidedNetworkDetails() throws AnsiblePlaybookVpnConfigNotFoundException {
         AnsiblePlaybookVpnConfig config = vpnConfigRepository.loadDefaultCloudVpnConfig();
-        ContainerNetworkDetails networkDetails = new ContainerNetworkDetails(
-                1024,
-                new ContainerNetworkIpamSpec("10.11.1.0/24", "10.11.1.254"),
-                123);
+        DcnCloudEndpointDetails networkDetails = new DcnCloudEndpointDetails(
+                123,
+                "10.11.1.0/24",
+                "10.11.1.254");
         config.merge(networkDetails);
         assertThat(config.getInterfaceUnit(), equalTo("123"));
         assertThat(config.getInterfaceVlan(), equalTo("123"));

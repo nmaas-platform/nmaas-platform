@@ -1,10 +1,11 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentLifecycleStateKeeper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.entities.*;
@@ -21,6 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -50,10 +53,7 @@ public class NmServiceConfigurationTest {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    private DeploymentIdToNmServiceNameMapper mapper;
-
-    @Autowired
-    private NmServiceRepository nmServiceRepository;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     @MockBean
     private AppServiceDeploymentTask appServiceDeploymentTask;
@@ -61,24 +61,28 @@ public class NmServiceConfigurationTest {
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
 
-    private Identifier deploymentId;
+    private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
-    private Identifier applicationId;
+    private Identifier clientId = Identifier.newInstance("clientId");
+
+    private Identifier applicationId = Identifier.newInstance("appId");
 
     private AppConfiguration configuration;
 
     @Before
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
-        String serviceName = "name";
-        deploymentId = Identifier.newInstance("id");
-        applicationId = Identifier.newInstance("appId");
-        nmServiceRepository.storeService(new NmServiceInfo(serviceName, null, null));
-        mapper.storeMapping(deploymentId, serviceName);
+        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
         configuration = new AppConfiguration("");
         appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_VERIFIED);
         Thread.sleep(100);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
+    }
+
+    @After
+    public void cleanRepository() throws InvalidDeploymentIdException {
+        appDeploymentRepository.deleteAll();
+        nmServiceRepositoryManager.removeService(deploymentId);
     }
 
     @Test
@@ -88,9 +92,12 @@ public class NmServiceConfigurationTest {
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
     }
 
-    @After
-    public void cleanRepository() {
-        appDeploymentRepository.deleteAll();
+    public static DockerContainerTemplate oxidizedTemplate() {
+        DockerContainerTemplate oxidizedTemplate = new DockerContainerTemplate("oxidized/oxidized:latest");
+        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
+        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
+        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
+        return oxidizedTemplate;
     }
 
 }

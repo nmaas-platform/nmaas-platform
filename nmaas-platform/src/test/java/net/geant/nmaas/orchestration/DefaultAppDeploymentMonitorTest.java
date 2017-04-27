@@ -5,13 +5,11 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
@@ -28,6 +26,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -63,9 +63,7 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
-    private NmServiceRepository nmServiceRepository;
-    @Autowired
-    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
     private ApplicationEventPublisher publisher;
     @Autowired
@@ -79,15 +77,23 @@ public class DefaultAppDeploymentMonitorTest {
     public void setup() throws InvalidDeploymentIdException {
         String dcnName = "dcnName";
         DcnSpec spec = new DcnSpec(dcnName, clientId);
-        ContainerNetworkIpamSpec containerNetworkIpamSpec = new ContainerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
-        ContainerNetworkDetails containerNetworkDetails = new ContainerNetworkDetails(8080, containerNetworkIpamSpec, 505);
-        spec.setNmServiceDeploymentNetworkDetails(containerNetworkDetails);
+        DockerNetworkIpamSpec dockerNetworkIpamSpec = new DockerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
+        DockerContainerNetDetails dockerContainerNetDetails = new DockerContainerNetDetails(8080, dockerNetworkIpamSpec);
+        DockerContainerVolumesDetails dockerContainerVolumesDetails = new DockerContainerVolumesDetails("/home/directory");
+        DockerContainer dockerContainer = new DockerContainer();
+        dockerContainer.setNetworkDetails(dockerContainerNetDetails);
+        dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
-        String nmServiceName = "serviceName";
-        nmServiceRepository.storeService(new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null));
-        deploymentIdToNmServiceNameMapper.storeMapping(deploymentId, nmServiceName);
+        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
+        nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
         appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));
         repository.updateDeploymentState(deploymentId, AppDeploymentState.REQUESTED);
+    }
+
+    @After
+    public void cleanRepository() throws InvalidDeploymentIdException {
+        appDeploymentRepository.deleteAll();
+        nmServiceRepositoryManager.removeService(deploymentId);
     }
 
     private static final int DELAY = 200;
@@ -168,9 +174,13 @@ public class DefaultAppDeploymentMonitorTest {
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }
 
-    @After
-    public void cleanRepository() {
-        appDeploymentRepository.deleteAll();
+    public static DockerContainerTemplate oxidizedTemplate() {
+        DockerContainerTemplate oxidizedTemplate =
+                new DockerContainerTemplate("oxidized/oxidized:latest");
+        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
+        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
+        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
+        return oxidizedTemplate;
     }
 
 }

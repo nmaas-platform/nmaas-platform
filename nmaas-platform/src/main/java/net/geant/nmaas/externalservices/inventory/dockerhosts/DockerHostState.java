@@ -1,6 +1,8 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,56 +19,53 @@ public class DockerHostState {
 
     public static final int MIN_ASSIGNABLE_VLAN_NUMBER = 500;
 
-    public static final int ADDRESS_POOL_MIN_ASSIGNABLE_NETWORK = 1;
+    public static final int ADDRESS_POOL_MIN_ASSIGNABLE_ADDRESS = 1;
 
     public static final int ADDRESS_POOL_DEFAULT_GATEWAY = 254;
 
     public static final int ADDRESS_POOL_DEFAULT_MASK_LENGTH = 24;
-
-    private final String dockerHostName;
 
     private final String dockerHostAddressPoolBase;
 
     /**
      * Map of ports on the public interface currently assigned for containers/services deployed on the host.
      */
-    private final Map<Integer, String> assignedPorts = new HashMap<>();
+    private final Map<Integer, DockerContainer> assignedPorts = new HashMap<>();
 
     /**
      * Map of numbers of VLANs currently configured on the data interface for containers/services deployed on the host.
      */
-    private final Map<Integer, String> assignedVlans = new HashMap<>();
+    private final Map<Integer, DockerNetwork> assignedVlans = new HashMap<>();
 
     /**
      * Map of objects representing pool of addresses assigned for containers/services deployed on the host.
      */
-    private final Map<ContainerNetworkIpamSpec, String> assignedAddressPools = new HashMap<>();
+    private final Map<DockerNetworkIpamSpec, DockerNetwork> assignedAddressPools = new HashMap<>();
 
-    public DockerHostState(String dockerHostName, String dockerHostAddressPoolBase) {
-        this.dockerHostName = dockerHostName;
+    DockerHostState(String dockerHostAddressPoolBase) {
         this.dockerHostAddressPoolBase = dockerHostAddressPoolBase;
     }
 
     /**
      * Checks currently assigned ports on the host, assigns a new port and returns its number.
-     * Currently it is assumed that a given NM service/tool will expose only a single public interface - the one client
-     * should use to access the GUI.
+     * Currently it is assumed that a given NM service/tool/container will expose only a single public interface
+     * that the client should use to access the GUI.
      *
-     * @param serviceName Name of the service
+     * @param container Docker container
      * @return Assigned port
      */
-    public int assignPort(String serviceName) {
-        return assignPorts(1, serviceName).get(0);
+    int assignPort(DockerContainer container) {
+        return assignPorts(1, container).get(0);
     }
 
     /**
      * Checks currently assigned ports on the host, assigns requested number of new ports and returns a list of them.
      *
-     * @param number Number of ports to be assigned for given service
-     * @param serviceName Name of the service
+     * @param number Number of ports to be assigned for given service/container
+     * @param container Docker container
      * @return List of assigned ports
      */
-    private List<Integer> assignPorts(int number, String serviceName) {
+    private List<Integer> assignPorts(int number, DockerContainer container) {
         List<Integer> newAssignedPorts = new ArrayList<>();
         int count = 0;
         int portNumber = MIN_ASSIGNABLE_PORT_NUMBER;
@@ -77,79 +76,80 @@ public class DockerHostState {
             count++;
             portNumber++;
         }
-        newAssignedPorts.forEach((port) -> assignedPorts.put(port, serviceName));
+        newAssignedPorts.forEach((port) -> assignedPorts.put(port, container));
         return newAssignedPorts;
     }
 
-    public void removePortAssignment(List<Integer> ports) {
+    void removePortAssignment(List<Integer> ports) {
         ports.forEach((port) -> assignedPorts.remove(port));
     }
 
-    public List<Integer> getAssignedPorts(String serviceName) throws MappingNotFoundException {
+    List<Integer> getAssignedPorts(DockerContainer container) throws MappingNotFoundException {
         List<Integer> foundPorts = assignedPorts.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(serviceName))
+                .filter(entry -> entry.getValue().equals(container))
                 .map(entry -> entry.getKey())
                 .collect(Collectors.toList());
         if (foundPorts.isEmpty())
-            throw new MappingNotFoundException("No ports found for service " + serviceName);
+            throw new MappingNotFoundException("No ports found for container " + container.getId());
         return foundPorts;
     }
 
     /**
      * Checks currently assigned VLANs on the host, assigns new VLAN and returns its number.
      *
-     * @return VLAN number
+     * @param network Docker network
+     * @return Number of assigned VLAN
      */
-    public int assignVlan(String serviceName) {
+    int assignVlan(DockerNetwork network) {
         int vlanNumber = MIN_ASSIGNABLE_VLAN_NUMBER;
         while (assignedVlans.keySet().contains(vlanNumber))
             vlanNumber++;
-        assignedVlans.put(vlanNumber, serviceName);
+        assignedVlans.put(vlanNumber, network);
         return vlanNumber;
     }
 
-    public void removeVlanAssignment(int vlanNumber) {
+    void removeVlanAssignment(int vlanNumber) {
         assignedVlans.remove(vlanNumber);
     }
 
-    public int getAssignedVlan(String serviceName) throws MappingNotFoundException {
-        Map.Entry<Integer, String> foundMapping = assignedVlans.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(serviceName))
+    int getAssignedVlan(DockerNetwork network) throws MappingNotFoundException {
+        Map.Entry<Integer, DockerNetwork> foundMapping = assignedVlans.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(network))
                 .findFirst()
-                .orElseThrow(() -> new MappingNotFoundException("No VLAN number found for service " + serviceName));
+                .orElseThrow(() -> new MappingNotFoundException("No VLAN number found for network " + network.getId()));
         return foundMapping.getKey();
     }
 
     /**
      * Checks currently assigned address pools on the host, assigns new pool and returns it.
      *
-     * @param serviceName Name of the service
+     * @param network Docker network
      * @return Assigned address pool
      */
-    public ContainerNetworkIpamSpec assignAddresses(String serviceName) {
-        int network = ADDRESS_POOL_MIN_ASSIGNABLE_NETWORK;
-        ContainerNetworkIpamSpec candidateAddressPool = null;
+    DockerNetworkIpamSpec assignAddresses(DockerNetwork network) {
+        int address = ADDRESS_POOL_MIN_ASSIGNABLE_ADDRESS;
+        DockerNetworkIpamSpec candidateAddressPool = null;
         do {
-            candidateAddressPool = ContainerNetworkIpamSpec.fromParameters(
+            candidateAddressPool = DockerNetworkIpamSpec.fromParameters(
                     dockerHostAddressPoolBase,
-                    network,
+                    address,
                     ADDRESS_POOL_DEFAULT_GATEWAY,
                     ADDRESS_POOL_DEFAULT_MASK_LENGTH);
-            network++;
+            address++;
         } while (assignedAddressPools.containsKey(candidateAddressPool));
-        assignedAddressPools.put(candidateAddressPool, serviceName);
+        assignedAddressPools.put(candidateAddressPool, network);
         return candidateAddressPool;
     }
 
-    public void removeAddressPoolAssignment(ContainerNetworkIpamSpec addressPool) {
+    void removeAddressPoolAssignment(DockerNetworkIpamSpec addressPool) {
         assignedAddressPools.remove(addressPool);
     }
 
-    public ContainerNetworkIpamSpec getAssignedAddressPool(String serviceName) throws MappingNotFoundException {
-        Map.Entry<ContainerNetworkIpamSpec, String> foundMapping = assignedAddressPools.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(serviceName))
+    DockerNetworkIpamSpec getAssignedAddressPool(DockerNetwork network) throws MappingNotFoundException {
+        Map.Entry<DockerNetworkIpamSpec, DockerNetwork> foundMapping = assignedAddressPools.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(network))
                 .findFirst()
-                .orElseThrow(() -> new MappingNotFoundException("No address pool found for service " + serviceName));
+                .orElseThrow(() -> new MappingNotFoundException("No address pool found for network " + network.getId()));
         return foundMapping.getKey();
     }
 

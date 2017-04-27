@@ -3,9 +3,9 @@ package net.geant.nmaas.nmservice.deployment.exceptions;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class ContainerNetworkDetailsVerificationException extends Exception {
+public class DockerNetworkCheckFailedException extends Exception {
 
-    public ContainerNetworkDetailsVerificationException(String message) {
+    public DockerNetworkCheckFailedException(String message) {
         super(message);
     }
 

@@ -1,7 +1,6 @@
-package net.geant.nmaas.externalservices.inventory.dockerhosts;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
 
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
-
+import javax.persistence.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,7 +11,14 @@ import java.net.URL;
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DockerHost implements NmServiceDeploymentHost {
+@Entity
+@Table(name="docker_host")
+public class DockerHost {
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="id")
+    private Long id;
 
     /**
      * Unique name identifying this Docker host.
@@ -95,72 +101,80 @@ public class DockerHost implements NmServiceDeploymentHost {
         }
     }
 
-    public Integer getApiPort() {
-        return apiPort;
+    public Long getId() {
+        return id;
     }
 
-    public InetAddress getApiIpAddress() {
-        return apiIpAddress;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public InetAddress getPublicIpAddress() {
-        return publicIpAddress;
-    }
-
-    public String getAccessInterfaceName() {
-        return accessInterfaceName;
-    }
-
-    public String getDataInterfaceName() {
-        return dataInterfaceName;
-    }
-
-    public InetAddress getBaseDataNetworkAddress() {
-        return baseDataNetworkAddress;
-    }
-
-    public String getVolumesPath() {
-        return volumesPath;
-    }
-
-    public boolean isPreferred() {
-        return preferred;
-    }
-
     public void setName(String name) {
         this.name = name;
+    }
+
+    public InetAddress getApiIpAddress() {
+        return apiIpAddress;
     }
 
     public void setApiIpAddress(InetAddress apiIpAddress) {
         this.apiIpAddress = apiIpAddress;
     }
 
+    public Integer getApiPort() {
+        return apiPort;
+    }
+
     public void setApiPort(Integer apiPort) {
         this.apiPort = apiPort;
+    }
+
+    public InetAddress getPublicIpAddress() {
+        return publicIpAddress;
     }
 
     public void setPublicIpAddress(InetAddress publicIpAddress) {
         this.publicIpAddress = publicIpAddress;
     }
 
+    public String getAccessInterfaceName() {
+        return accessInterfaceName;
+    }
+
     public void setAccessInterfaceName(String accessInterfaceName) {
         this.accessInterfaceName = accessInterfaceName;
+    }
+
+    public String getDataInterfaceName() {
+        return dataInterfaceName;
     }
 
     public void setDataInterfaceName(String dataInterfaceName) {
         this.dataInterfaceName = dataInterfaceName;
     }
 
+    public InetAddress getBaseDataNetworkAddress() {
+        return baseDataNetworkAddress;
+    }
+
     public void setBaseDataNetworkAddress(InetAddress baseDataNetworkAddress) {
         this.baseDataNetworkAddress = baseDataNetworkAddress;
     }
 
+    public String getVolumesPath() {
+        return volumesPath;
+    }
+
     public void setVolumesPath(String volumesPath) {
         this.volumesPath = volumesPath;
+    }
+
+    public boolean isPreferred() {
+        return preferred;
     }
 
     public void setPreferred(boolean preferred) {

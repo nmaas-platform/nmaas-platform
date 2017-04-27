@@ -1,7 +1,8 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 
 import javax.persistence.*;
 import java.net.InetAddress;
@@ -360,11 +361,11 @@ public class AnsiblePlaybookVpnConfig {
         exception(exceptionMessage.toString());
     }
 
-    public void merge(ContainerNetworkDetails networkDetails) {
-        this.interfaceUnit = String.valueOf(networkDetails.getVlanNumber());
-        this.interfaceVlan = String.valueOf(networkDetails.getVlanNumber());
-        this.bgpLocalIp = networkDetails.getIpAddresses().getGateway();
-        this.bgpNeighborIp = networkDetails.getIpAddresses().getIpAddressOfContainer();
+    public void merge(DcnCloudEndpointDetails dcnCloudEndpointDetails) {
+        this.interfaceUnit = String.valueOf(dcnCloudEndpointDetails.getVlanNumber());
+        this.interfaceVlan = String.valueOf(dcnCloudEndpointDetails.getVlanNumber());
+        this.bgpLocalIp = dcnCloudEndpointDetails.getGateway();
+        this.bgpNeighborIp = DockerNetworkIpamSpec.obtainFirstIpAddressFromNetwork(dcnCloudEndpointDetails.getSubnet());
         this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
     }
 

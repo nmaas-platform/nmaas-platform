@@ -1,13 +1,10 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -18,7 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import static net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState.*;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
 
 @Component
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
@@ -30,29 +27,21 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private ContainerOrchestrationProvider orchestrator;
 
     @Autowired
-    private NmServiceRepository serviceRepository;
-
-    @Autowired
-    private DeploymentIdToNmServiceNameMapper deploymentIdMapper;
+    private NmServiceRepositoryManager repositoryManager;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Loggable(LogLevel.INFO)
-    public NmServiceInfo verifyRequest(Identifier deploymentId, NmServiceSpec nmServiceSpec) throws NmServiceRequestVerificationException {
-        final String nmServiceName = ((DockerContainerSpec) nmServiceSpec).getName();
-        deploymentIdMapper.storeMapping(deploymentId, nmServiceName);
-        serviceRepository.storeService(new NmServiceInfo(nmServiceName, INIT, nmServiceSpec));
+    public void verifyRequest(Identifier deploymentId, Identifier clientId, DockerContainerTemplate template)
+            throws NmServiceRequestVerificationException {
+        repositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, template));
         try {
-            serviceRepository.updateServiceAppDeploymentId(nmServiceName, deploymentId.value());
-            orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(nmServiceName);
+            orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
-            return serviceRepository.loadService(nmServiceName);
-        } catch (CouldNotConnectToOrchestratorException
-                | ContainerOrchestratorInternalErrorException
-                | NmServiceRequestVerificationException
-                | NmServiceRepository.ServiceNotFoundException e) {
+        } catch (NmServiceRequestVerificationException
+                | ContainerOrchestratorInternalErrorException e) {
             log.error("NM Service request verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
             throw new NmServiceRequestVerificationException(e.getMessage());
@@ -66,14 +55,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Override
     @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException {
-        String serviceName = null;
         try {
-            serviceName = deploymentIdMapper.nmServiceName(deploymentId);
-            orchestrator.prepareDeploymentEnvironment(serviceName);
+            orchestrator.prepareDeploymentEnvironment(deploymentId);
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
-        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException
-                | CouldNotPrepareEnvironmentException
-                | CouldNotConnectToOrchestratorException
+        } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {
             log.error("NM Service deployment environment preparation failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
@@ -84,15 +69,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Override
     @Loggable(LogLevel.INFO)
     public void deployNmService(Identifier deploymentId) throws CouldNotDeployNmServiceException {
-        String serviceName = null;
         try {
-            serviceName = deploymentIdMapper.nmServiceName(deploymentId);
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_INITIATED);
-            orchestrator.deployNmService(serviceName);
+            orchestrator.deployNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, DEPLOYED);
-        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException
-                | CouldNotDeployNmServiceException
-                | CouldNotConnectToOrchestratorException
+        } catch (CouldNotDeployNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             log.error("NM Service deployment failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED);
@@ -103,15 +84,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException {
-        String serviceName = null;
         try {
-            serviceName = deploymentIdMapper.nmServiceName(deploymentId);
-            orchestrator.checkService(serviceName);
+            orchestrator.checkService(deploymentId);
             notifyStateChangeListeners(deploymentId, VERIFIED);
-        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException
-                | ContainerCheckFailedException
-                | ContainerNetworkCheckFailedException
-                | CouldNotConnectToOrchestratorException
+        } catch (ContainerCheckFailedException
+                | DockerNetworkCheckFailedException
                 | ContainerOrchestratorInternalErrorException e) {
             log.error("NM Service deployment verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED);
@@ -122,15 +99,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Override
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException {
-        String serviceName = null;
         try {
-            serviceName = deploymentIdMapper.nmServiceName(deploymentId);
-            orchestrator.removeNmService(serviceName);
+            orchestrator.removeNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, REMOVED);
-        } catch (DeploymentIdToNmServiceNameMapper.EntryNotFoundException
-                | CouldNotRemoveNmServiceException
-                | ContainerOrchestratorInternalErrorException
-                | CouldNotConnectToOrchestratorException e) {
+        } catch (CouldNotRemoveNmServiceException
+                | ContainerOrchestratorInternalErrorException e) {
             log.error("NM Service removal failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
             throw new CouldNotRemoveNmServiceException("NM Service removal failed -> " + e.getMessage());
