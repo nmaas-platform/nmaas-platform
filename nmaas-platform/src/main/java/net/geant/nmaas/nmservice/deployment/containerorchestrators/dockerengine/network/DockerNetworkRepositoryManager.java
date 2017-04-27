@@ -54,6 +54,7 @@ public class DockerNetworkRepositoryManager {
         repository.save(dockerNetwork);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public DockerNetwork loadNetwork(Identifier clientId) throws InvalidClientIdException {
         return repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
     }

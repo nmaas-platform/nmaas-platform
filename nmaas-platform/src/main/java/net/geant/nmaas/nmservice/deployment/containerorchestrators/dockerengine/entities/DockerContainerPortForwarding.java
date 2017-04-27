@@ -68,6 +68,13 @@ public class DockerContainerPortForwarding implements Serializable {
         this.targetPort = targetPort;
     }
 
+    public static DockerContainerPortForwarding copy(DockerContainerPortForwarding toCopy) {
+        DockerContainerPortForwarding copy = new DockerContainerPortForwarding();
+        copy.setProtocol(toCopy.getProtocol());
+        copy.setTargetPort(toCopy.getTargetPort());
+        return copy;
+    }
+
     public enum Protocol {
         TCP("tcp"),
         UDP("udp");

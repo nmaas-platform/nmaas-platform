@@ -46,17 +46,16 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
-            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
-            final Identifier clientId = service.getClientId();
+            final Identifier clientId = nmServiceRepositoryManager.loadClientId(deploymentId);
             declareNewNetworkForClientIfNotExists(clientId);
             final DockerNetwork network = dockerNetworkManager.networkForClient(clientId);
             nmServiceRepositoryManager.updateDockerHost(deploymentId, network.getDockerHost());
-            ContainerConfigBuilder.verifyInput(service);
             final DockerContainer container = dockerContainerManager.declareNewContainerForDeployment(deploymentId, network);
             nmServiceRepositoryManager.updateDockerContainer(deploymentId, container);
+            ContainerConfigBuilder.verifyInput(nmServiceRepositoryManager.loadService(deploymentId));
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Service not found in repository ->  Invalid deployment id " + invalidDeploymentIdException.getMessage());
+                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (DockerHostNotFoundException dockerHostNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Did not find any suitable Docker Host for deployment.");
@@ -66,7 +65,8 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         }
     }
 
-    private void declareNewNetworkForClientIfNotExists(Identifier clientId) throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException {
+    private void declareNewNetworkForClientIfNotExists(Identifier clientId)
+            throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException {
         if (!dockerNetworkManager.networkForClientAlreadyConfigured(clientId))
             dockerNetworkManager.declareNewNetworkForClientOnHost(clientId, dockerHosts.loadPreferredDockerHost());
     }

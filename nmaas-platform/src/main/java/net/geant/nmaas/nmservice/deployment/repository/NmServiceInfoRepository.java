@@ -22,4 +22,6 @@ public interface NmServiceInfoRepository extends JpaRepository<NmServiceInfo, Lo
     @Query("SELECT n.dockerContainer.id FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
     Optional<String> getContainerIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
+    @Query("SELECT n.clientId FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
+    Optional<Identifier> getClientIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 }
