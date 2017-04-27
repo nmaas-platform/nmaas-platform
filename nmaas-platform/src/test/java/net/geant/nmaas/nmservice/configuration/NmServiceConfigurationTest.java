@@ -75,7 +75,7 @@ public class NmServiceConfigurationTest {
         configuration = new AppConfiguration("");
         appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_VERIFIED);
-        Thread.sleep(100);
+        Thread.sleep(200);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }
 
@@ -88,7 +88,7 @@ public class NmServiceConfigurationTest {
     @Test
     public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException {
         configurationExecutor.configureNmService(deploymentId, applicationId, configuration, null, null);
-        Thread.sleep(100);
+        Thread.sleep(200);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
     }
 

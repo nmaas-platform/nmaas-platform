@@ -11,6 +11,7 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,7 +99,7 @@ public class DockerNetworkManagerTest {
     }
 
     @Test
-    public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException {
+    public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException {
         final NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
         final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
@@ -120,6 +121,7 @@ public class DockerNetworkManagerTest {
         networkManager.disconnectContainerFromNetwork(clientId, dockerContainer.getDeploymentId());
         networkManager.removeIfNoContainersAttached(clientId);
         assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        nmServiceRepositoryManager.removeService(deploymentId);
     }
 
 }
