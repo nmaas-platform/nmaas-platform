@@ -138,14 +138,14 @@ public class DockerNetworkManager {
 
     private void executeCheckNetwork(String networkId, List<String> localContainers, String apiUrl)
             throws DockerNetworkCheckFailedException, DockerException, InterruptedException {
-        List<String> remoteContainers = dockerApiClient.listContainersInNetwork(apiUrl, networkId);
-        verifyIfAllContainersPresent(networkId, remoteContainers, localContainers);
+        int noOfRemoteContainers = dockerApiClient.countContainersInNetwork(apiUrl, networkId);
+        verifyIfAllContainersPresent(networkId, noOfRemoteContainers, localContainers);
     }
 
-    void verifyIfAllContainersPresent(String networkId, List<String> remoteContainers, List<String> localContainers) throws DockerNetworkCheckFailedException {
-        if (localContainers.size() > 0 && (remoteContainers == null || remoteContainers.isEmpty()))
+    void verifyIfAllContainersPresent(String networkId, int noOfRemoteContainers, List<String> localContainers) throws DockerNetworkCheckFailedException {
+        if (localContainers.size() > 0 && noOfRemoteContainers == 0)
             throw new DockerNetworkCheckFailedException("Docker network " + networkId + " verification failed. None containers attached.");
-        if (localContainers.stream().filter(id -> !remoteContainers.contains(id)).collect(Collectors.toList()).size() > 0)
+        if (localContainers.size() != noOfRemoteContainers)
             throw new DockerNetworkCheckFailedException("Docker network " + networkId + " verification failed. Some containers not attached.");
     }
 

@@ -80,10 +80,10 @@ public class DockerApiClient {
         }
     }
 
-    public List<String> listContainersInNetwork(String apiUrl, String networkId) throws DockerException, InterruptedException {
+    public int countContainersInNetwork(String apiUrl, String networkId) throws DockerException, InterruptedException {
         try (DockerClient client = DefaultDockerClient.builder().uri(apiUrl).build()) {
             ImmutableMap<String, Network.Container> containers = client.inspectNetwork(networkId).containers();
-            return containers != null ? containers.values().stream().map(c -> c.endpointId()).collect(Collectors.toList()) : null;
+            return containers != null ? containers.values().size() : 0;
         }
     }
 

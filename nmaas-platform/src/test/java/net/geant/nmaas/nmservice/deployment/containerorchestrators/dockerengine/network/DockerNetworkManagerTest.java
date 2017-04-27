@@ -85,7 +85,7 @@ public class DockerNetworkManagerTest {
     public void shouldDeployAndRemoveNewNetworkForClient()
             throws ContainerOrchestratorInternalErrorException, CouldNotCreateContainerNetworkException, DockerException, InterruptedException, DockerNetworkCheckFailedException, CouldNotRemoveContainerNetworkException {
         when(dockerApiClient.createNetwork(Mockito.any(), Mockito.any())).thenReturn("networkId");
-        when(dockerApiClient.listContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(null);
+        when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(0);
         when(dockerApiClient.listNetworks(Mockito.any())).thenReturn(Arrays.asList("networkId"));
         networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
         assertThat(networkManager.networkForClient(clientId).getDeploymentId(), is(nullValue()));
@@ -113,7 +113,7 @@ public class DockerNetworkManagerTest {
         nmServiceRepositoryManager.storeService(service);
         networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
         networkManager.connectContainerToNetwork(clientId, dockerContainer);
-        when(dockerApiClient.listContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList("container1Deployed", "container2Deployed"));
+        when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(1);
         networkManager.verifyNetwork(clientId);
         assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
         networkManager.removeIfNoContainersAttached(clientId);
