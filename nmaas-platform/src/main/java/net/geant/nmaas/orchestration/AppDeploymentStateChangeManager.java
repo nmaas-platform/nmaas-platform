@@ -72,7 +72,7 @@ public class AppDeploymentStateChangeManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyDcnDeployed(DcnDeployedEvent event) {
-        lifecycleStateKeeper.getAllWaitingForDcn(event.getClientId())
+        lifecycleStateKeeper.loadAllWaitingForDcn(event.getClientId())
                 .forEach(d -> eventPublisher.publishEvent(
                         new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT)));
     }

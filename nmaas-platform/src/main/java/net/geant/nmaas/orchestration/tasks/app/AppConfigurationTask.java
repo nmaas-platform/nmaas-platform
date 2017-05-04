@@ -4,11 +4,11 @@ import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
@@ -32,23 +32,23 @@ public class AppConfigurationTask {
 
     private NmServiceRepositoryManager nmServiceRepositoryManager;
 
-    private AppDeploymentRepository repository;
+    private AppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
     public AppConfigurationTask(
             NmServiceConfigurationProvider serviceConfiguration,
             NmServiceRepositoryManager nmServiceRepositoryManager,
-            AppDeploymentRepository repository) {
+            AppDeploymentRepositoryManager repositoryManager) {
         this.serviceConfiguration = serviceConfiguration;
         this.nmServiceRepositoryManager = nmServiceRepositoryManager;
-        this.repository = repository;
+        this.repositoryManager = repositoryManager;
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
-        final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         try {
             serviceConfiguration.configureNmService(

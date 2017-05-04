@@ -40,7 +40,7 @@ public class AppDcnRequestOrVerificationTask {
     @Loggable(LogLevel.INFO)
     public ApplicationEvent requestOrVerifyDcn(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
-        final Identifier clientId = appDeploymentRepositoryManager.getClientIdByDeploymentId(deploymentId);
+        final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
         return dcnDeployment.checkIfExists(clientId)
                 ? new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT)
                 : new DcnVerifyRequestActionEvent(this, clientId);

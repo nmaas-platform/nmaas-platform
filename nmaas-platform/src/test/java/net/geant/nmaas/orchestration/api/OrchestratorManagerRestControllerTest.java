@@ -1,6 +1,7 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;

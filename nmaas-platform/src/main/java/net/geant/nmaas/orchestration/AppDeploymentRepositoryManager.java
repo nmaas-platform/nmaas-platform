@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -20,6 +22,11 @@ public class AppDeploymentRepositoryManager {
 
     @Autowired
     private AppDeploymentRepository repository;
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void store(AppDeployment appDeployment) {
+        repository.save(appDeployment);
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateState(Identifier deploymentId, AppDeploymentState currentState) throws InvalidDeploymentIdException {
@@ -34,16 +41,32 @@ public class AppDeploymentRepositoryManager {
                 .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
+        AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        appDeployment.setConfiguration(configuration);
+        repository.save(appDeployment);
+    }
+
+    public Optional<AppDeployment> load(Identifier deploymentId) {
+        return repository.findByDeploymentId(deploymentId);
+    }
+
     public List<AppDeployment> loadAll() {
         return repository.findAll();
     }
 
-    public List<AppDeployment> getAllWaitingForDcn(Identifier clientId) {
+    public List<AppDeployment> loadAllWaitingForDcn(Identifier clientId) {
         return repository.findByClientIdAndState(clientId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
     }
 
-    public Identifier getClientIdByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public Identifier loadClientIdByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
         return repository.getClientIdByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
     }
+
+    public void removeAll() {
+        repository.deleteAll();
+    }
 }
+

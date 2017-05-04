@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -92,7 +93,7 @@ public class AnsiblePlaybookStatusNotificationTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         Thread.sleep(200);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), is(DcnDeploymentState.VERIFICATION_INITIATED));
+        assertThat(dcnRepositoryManager.loadCurrentState(clientId), anyOf(is(DcnDeploymentState.VERIFICATION_INITIATED), is(DcnDeploymentState.DEPLOYED)));
     }
 
 }

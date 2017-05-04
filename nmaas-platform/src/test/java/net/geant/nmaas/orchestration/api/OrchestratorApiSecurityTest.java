@@ -1,5 +1,6 @@
-package net.geant.nmaas.orchestration;
+package net.geant.nmaas.orchestration.api;
 
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
