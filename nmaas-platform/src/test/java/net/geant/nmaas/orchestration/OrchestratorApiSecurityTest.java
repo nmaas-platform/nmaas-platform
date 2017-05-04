@@ -31,7 +31,7 @@ public class OrchestratorApiSecurityTest {
     private Filter springSecurityFilterChain;
 
     @MockBean
-    private AppDeploymentLifecycleStateKeeper repository;
+    private AppDeploymentRepositoryManager repository;
 
     private MockMvc mvc;
 

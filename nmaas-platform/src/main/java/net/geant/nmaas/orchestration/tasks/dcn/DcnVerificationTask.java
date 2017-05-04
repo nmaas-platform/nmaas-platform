@@ -1,9 +1,9 @@
-package net.geant.nmaas.orchestration.tasks;
+package net.geant.nmaas.orchestration.tasks.dcn;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.AppVerifyDcnActionEvent;
+import net.geant.nmaas.orchestration.events.dcn.DcnVerifyActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,24 +18,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class AppDcnVerificationTask {
+public class DcnVerificationTask {
 
-    private final static Logger log = LogManager.getLogger(AppDcnVerificationTask.class);
+    private final static Logger log = LogManager.getLogger(DcnVerificationTask.class);
 
     private DcnDeploymentProvider dcnDeployment;
 
     @Autowired
-    public AppDcnVerificationTask(DcnDeploymentProvider dcnDeployment) {
+    public DcnVerificationTask(DcnDeploymentProvider dcnDeployment) {
         this.dcnDeployment = dcnDeployment;
     }
 
     @EventListener
-    public void verifyDcn(AppVerifyDcnActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+    public void verifyDcn(DcnVerifyActionEvent event) throws InvalidDeploymentIdException {
+        final Identifier clientId = event.getClientId();
         try {
-            dcnDeployment.verifyDcn(deploymentId);
+            dcnDeployment.verifyDcn(clientId);
         } catch (CouldNotVerifyDcnException e) {
-            log.warn("DCN verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
+            log.warn("DCN verification failed for client " + clientId.value() + " -> " + e.getMessage());
         }
     }
 }

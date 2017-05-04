@@ -1,11 +1,9 @@
-package net.geant.nmaas.orchestration.tasks;
+package net.geant.nmaas.orchestration.tasks.app;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
@@ -27,14 +25,10 @@ public class AppRemovalTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
 
-    private DcnDeploymentProvider dcnDeployment;
-
     @Autowired
     public AppRemovalTask(
-            NmServiceDeploymentProvider serviceDeployment,
-            DcnDeploymentProvider dcnDeployment) {
+            NmServiceDeploymentProvider serviceDeployment) {
         this.serviceDeployment = serviceDeployment;
-        this.dcnDeployment = dcnDeployment;
     }
 
     @EventListener
@@ -43,11 +37,8 @@ public class AppRemovalTask {
         final Identifier deploymentId = event.getDeploymentId();
         try {
             serviceDeployment.removeNmService(deploymentId);
-            dcnDeployment.removeDcn(deploymentId);
         } catch (CouldNotRemoveNmServiceException e) {
             log.warn("Service removal failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
-        } catch (CouldNotRemoveDcnException e) {
-            log.warn("DCN removal failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         }
     }
 

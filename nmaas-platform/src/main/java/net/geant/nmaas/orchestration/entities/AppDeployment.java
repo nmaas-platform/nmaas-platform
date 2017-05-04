@@ -14,7 +14,7 @@ public class AppDeployment {
     @Column(name="id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
     @Column(nullable = false)
@@ -29,8 +29,7 @@ public class AppDeployment {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
 
-    public AppDeployment() {
-    }
+    public AppDeployment() { }
 
     public AppDeployment(Identifier deploymentId, Identifier clientId, Identifier applicationId) {
         this.deploymentId = deploymentId;

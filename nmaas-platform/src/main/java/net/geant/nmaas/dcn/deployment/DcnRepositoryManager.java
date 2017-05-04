@@ -7,8 +7,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -24,12 +22,9 @@ public class DcnRepositoryManager {
     @Autowired
     private DcnInfoRepository dcnInfoRepository;
 
-    @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
-
     @EventListener
-    public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidDeploymentIdException, InvalidClientIdException {
-        updateDcnState(getClientIdByDeploymentId(event.getDeploymentId()), event.getState());
+    public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidClientIdException {
+        updateDcnState(event.getClientId(), event.getState());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -40,27 +35,24 @@ public class DcnRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateAnsiblePlaybookForClientSideRouter(Identifier deploymentId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
-            throws InvalidDeploymentIdException, InvalidClientIdException {
-        Identifier clientId = getClientIdByDeploymentId(deploymentId);
+    public void updateAnsiblePlaybookForClientSideRouter(Identifier clientId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
+            throws InvalidClientIdException {
         DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
         dcnInfo.setAnsiblePlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateAnsiblePlaybookForCloudSideRouter(Identifier deploymentId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
-            throws InvalidDeploymentIdException, InvalidClientIdException {
-        Identifier clientId = getClientIdByDeploymentId(deploymentId);
+    public void updateAnsiblePlaybookForCloudSideRouter(Identifier clientId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
+            throws InvalidClientIdException {
         DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
         dcnInfo.setAnsiblePlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateDcnCloudEndpointDetails(Identifier deploymentId, DcnCloudEndpointDetails dcnCloudEndpointDetails)
-            throws InvalidDeploymentIdException, InvalidClientIdException {
-        Identifier clientId = getClientIdByDeploymentId(deploymentId);
+    public void updateDcnCloudEndpointDetails(Identifier clientId, DcnCloudEndpointDetails dcnCloudEndpointDetails)
+            throws InvalidClientIdException {
         DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
         dcnInfo.setCloudEndpointDetails(dcnCloudEndpointDetails);
         dcnInfoRepository.save(dcnInfo);
@@ -77,17 +69,12 @@ public class DcnRepositoryManager {
         dcnInfoRepository.delete(dcnInfo.getId());
     }
 
-    public DcnInfo loadNetwork(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidClientIdException {
-        Identifier clientId = getClientIdByDeploymentId(deploymentId);
+    public DcnInfo loadNetwork(Identifier clientId) throws InvalidClientIdException {
         return dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
     }
 
-    public DcnDeploymentState loadCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException, InvalidClientIdException {
-        Identifier clientId = getClientIdByDeploymentId(deploymentId);
+    public DcnDeploymentState loadCurrentState(Identifier clientId) throws InvalidClientIdException {
         return dcnInfoRepository.getStateByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
     }
 
-    private Identifier getClientIdByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return appDeploymentRepository.getClientIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-    }
 }

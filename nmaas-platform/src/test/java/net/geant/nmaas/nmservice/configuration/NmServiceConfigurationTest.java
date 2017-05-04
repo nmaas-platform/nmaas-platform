@@ -6,12 +6,12 @@ import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.orchestration.AppDeploymentLifecycleStateKeeper;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.orchestration.tasks.AppServiceDeploymentTask;
+import net.geant.nmaas.orchestration.tasks.app.AppServiceDeploymentTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class NmServiceConfigurationTest {
     private AppDeploymentMonitor appDeploymentMonitor;
 
     @Autowired
-    private AppDeploymentLifecycleStateKeeper appDeploymentLifecycleStateKeeper;
+    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     @Mock
     private NmServiceConfigurationsPreparer configurationsPreparer;
@@ -74,7 +74,7 @@ public class NmServiceConfigurationTest {
         nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
         configuration = new AppConfiguration("");
         appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
-        appDeploymentLifecycleStateKeeper.updateDeploymentState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_VERIFIED);
+        appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
         Thread.sleep(200);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }

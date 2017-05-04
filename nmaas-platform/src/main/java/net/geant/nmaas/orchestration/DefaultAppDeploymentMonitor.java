@@ -1,5 +1,11 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostState;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -11,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +31,13 @@ import java.util.Map;
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Autowired
-    private AppDeploymentLifecycleStateKeeper repository;
+    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+
+    @Autowired
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
+
+    @Autowired
+    private DockerHostStateKeeper dockerHostStateKeeper;
 
     @Override
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
@@ -31,7 +46,14 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Override
     public Map<Identifier, AppLifecycleState> allDeployments() {
-        return repository.loadViewOfAllDeployments();
+        return loadViewOfAllDeployments();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    Map<Identifier, AppLifecycleState> loadViewOfAllDeployments() {
+        Map<Identifier, AppLifecycleState> view = new HashMap<>();
+        appDeploymentRepositoryManager.loadAll().forEach(item -> view.put(item.getDeploymentId(), item.getState().lifecycleState()));
+        return view;
     }
 
     @Override
@@ -43,12 +65,28 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
     }
 
-    private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.loadCurrentState(deploymentId).lifecycleState();
+    AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return appDeploymentRepositoryManager.loadState(deploymentId).lifecycleState();
     }
 
-    private AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.loadAccessDetails(deploymentId);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) throws InvalidDeploymentIdException {
+        try {
+            return accessDetails(nmServiceRepositoryManager.loadService(deploymentId));
+        } catch (DockerHostNotFoundException e) {
+            throw new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. ");
+        }
+    }
+
+    AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
+        try {
+            final DockerHost host = serviceInfo.getHost();
+            final String accessAddress = host.getPublicIpAddress().getHostAddress();
+            final Integer accessPort = dockerHostStateKeeper.getAssignedPort(serviceInfo.getHost().getName(), serviceInfo.getDockerContainer());
+            return new AppUiAccessDetails(new StringBuilder().append("http://").append(accessAddress).append(":").append(accessPort).toString());
+        } catch (DockerHostState.MappingNotFoundException e) {
+            throw new DockerHostNotFoundException("Problem with loading access port -> " + e.getMessage());
+        }
     }
 
 }

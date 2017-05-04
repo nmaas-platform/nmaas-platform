@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static net.geant.nmaas.orchestration.AppLifecycleManager.OXIDIZED_APPLICATION_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -25,9 +24,10 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class OxidizedAppDeploymentTest {
+public class OxidizedAppDeploymentIntTest {
 
     private static final String TEST_CLIENT_ID = "testClientId";
+    private static final String TEST_OXIDIZED_APP_ID = "Oxidized-0.19.0";
 
     @Autowired
     private AppLifecycleManager appLifecycleManager;
@@ -47,7 +47,7 @@ public class OxidizedAppDeploymentTest {
     @Before
     public void setup() {
         clientId = Identifier.newInstance(TEST_CLIENT_ID);
-        applicationId = OXIDIZED_APPLICATION_ID;
+        applicationId = Identifier.newInstance(TEST_OXIDIZED_APP_ID);
         jsonInput = "" +
                 "{" +
                     "\"routers\": [\"1.1.1.1\",\"2.2.2.2\"], " +

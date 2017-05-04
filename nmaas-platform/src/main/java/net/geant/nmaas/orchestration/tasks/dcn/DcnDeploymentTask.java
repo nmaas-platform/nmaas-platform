@@ -1,10 +1,9 @@
-package net.geant.nmaas.orchestration.tasks;
+package net.geant.nmaas.orchestration.tasks.dcn;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.AppDeployDcnActionEvent;
+import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,24 +18,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class AppDcnDeploymentTask {
+public class DcnDeploymentTask {
 
-    private final static Logger log = LogManager.getLogger(AppDcnDeploymentTask.class);
+    private final static Logger log = LogManager.getLogger(DcnDeploymentTask.class);
 
     private DcnDeploymentProvider dcnDeployment;
 
     @Autowired
-    public AppDcnDeploymentTask(DcnDeploymentProvider dcnDeployment) {
+    public DcnDeploymentTask(DcnDeploymentProvider dcnDeployment) {
         this.dcnDeployment = dcnDeployment;
     }
 
     @EventListener
-    public void deployDcn(AppDeployDcnActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+    public void deployDcn(DcnDeployActionEvent event) throws InvalidDeploymentIdException {
+        final Identifier clientId = event.getClientId();
         try {
-            dcnDeployment.deployDcn(deploymentId);
+            dcnDeployment.deployDcn(clientId);
         } catch (CouldNotDeployDcnException e) {
-            log.warn("DCN deployment failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
+            log.warn("DCN deployment failed for client " + clientId.value() + " -> " + e.getMessage());
         }
     }
 }

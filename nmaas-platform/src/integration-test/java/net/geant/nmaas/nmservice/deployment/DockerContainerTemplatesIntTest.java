@@ -30,7 +30,7 @@ public class DockerContainerTemplatesIntTest {
     public void shouldSerializeOxidizedContainerTemplateAndPullImage() throws IOException, DockerHostNotFoundException, DockerException, InterruptedException {
         ObjectMapper mapper = new ObjectMapper();
         DockerContainerTemplate fromJson = mapper.readValue(jsonRepresentationOfOxidizedTemplate, DockerContainerTemplate.class);
-        DockerApiClient.client(dockerHostRepositoryManager.loadPreferredDockerHost().apiUrl()).pull(fromJson.getImage());
+        new DockerApiClient().pull(dockerHostRepositoryManager.loadPreferredDockerHost().apiUrl(), fromJson.getImage());
     }
 
 }

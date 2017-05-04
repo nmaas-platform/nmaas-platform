@@ -1,9 +1,5 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
@@ -16,7 +12,7 @@ import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.orchestration.tasks.*;
+import net.geant.nmaas.orchestration.tasks.app.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,9 +40,7 @@ public class DefaultAppDeploymentMonitorTest {
     @MockBean
     private AppEnvironmentPreparationTask appEnvironmentPreparationTask;
     @MockBean
-    private AppDcnDeploymentTask appDcnDeploymentTask;
-    @MockBean
-    private AppDcnVerificationTask appDcnVerificationTask;
+    private AppDcnRequestOrVerificationTask appDcnRequestOrVerificationTask;
     @MockBean
     private AppConfigurationTask appConfigurationTask;
     @MockBean
@@ -57,11 +51,9 @@ public class DefaultAppDeploymentMonitorTest {
     private AppRemovalTask appRemovalTask;
 
     @Autowired
-    private AppDeploymentLifecycleStateKeeper repository;
+    private AppDeploymentRepositoryManager repository;
     @Autowired
     private DefaultAppDeploymentMonitor monitor;
-    @Autowired
-    private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
@@ -69,7 +61,7 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
 
-    private final Identifier deploymentId = Identifier.newInstance("this-is-example-dcn-id");
+    private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
 
     private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
 
@@ -83,11 +75,11 @@ public class DefaultAppDeploymentMonitorTest {
         DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(dockerContainerNetDetails);
         dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
-        dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
+//        dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
         nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
         appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));
-        repository.updateDeploymentState(deploymentId, AppDeploymentState.REQUESTED);
+        repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
     }
 
     @After
@@ -103,28 +95,13 @@ public class DefaultAppDeploymentMonitorTest {
         // request verification
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REQUEST_VERIFIED));
         Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.REQUEST_VALIDATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REQUEST_VERIFIED));
-        Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.REQUEST_VALIDATED));
         // environment preparation
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.ENVIRONMENT_PREPARED));
         Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.ENVIRONMENT_PREPARED));
-        Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARED));
-        // dcn deployment and verification
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.VERIFICATION_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.VERIFIED));
+        // dcn already exists or was just deployed
+        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
         // app configuration
@@ -146,13 +123,7 @@ public class DefaultAppDeploymentMonitorTest {
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED));
         // app removal
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVAL_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVED));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }
@@ -164,12 +135,6 @@ public class DefaultAppDeploymentMonitorTest {
         Thread.sleep(DELAY);
         // app removal
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVAL_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVED));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }

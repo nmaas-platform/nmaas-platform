@@ -1,11 +1,9 @@
-package net.geant.nmaas.orchestration.tasks;
+package net.geant.nmaas.orchestration.tasks.app;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotPrepareDcnException;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.AppPrepareEnvironmentActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -26,14 +24,10 @@ public class AppEnvironmentPreparationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
 
-    private DcnDeploymentProvider dcnDeployment;
-
     @Autowired
     public AppEnvironmentPreparationTask(
-            NmServiceDeploymentProvider serviceDeployment,
-            DcnDeploymentProvider dcnDeployment) {
+            NmServiceDeploymentProvider serviceDeployment) {
         this.serviceDeployment = serviceDeployment;
-        this.dcnDeployment = dcnDeployment;
     }
 
     @EventListener
@@ -41,11 +35,8 @@ public class AppEnvironmentPreparationTask {
         final Identifier deploymentId = event.getDeploymentId();
         try {
             serviceDeployment.prepareDeploymentEnvironment(deploymentId);
-            dcnDeployment.prepareDeploymentEnvironment(deploymentId);
         } catch (CouldNotPrepareEnvironmentException e) {
             log.warn("Service environment preparation failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
-        } catch (CouldNotPrepareDcnException e) {
-            log.warn("DCN preparation failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
         }
     }
 }

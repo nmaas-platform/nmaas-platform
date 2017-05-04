@@ -1,7 +1,10 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.dcn.deployment.exceptions.*;
+import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
+import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
+import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
+import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
@@ -9,14 +12,14 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface DcnDeploymentProvider {
 
-    void verifyRequest(Identifier deploymentId, DcnSpec dcnSpec) throws DcnRequestVerificationException;
+    boolean checkIfExists(Identifier clientId);
 
-    void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareDcnException;
+    void verifyRequest(Identifier clientId, DcnSpec dcnSpec) throws DcnRequestVerificationException;
 
-    void deployDcn(Identifier deploymentId) throws CouldNotDeployDcnException;
+    void deployDcn(Identifier clientId) throws CouldNotDeployDcnException;
 
-    void verifyDcn(Identifier deploymentId) throws CouldNotVerifyDcnException;
+    void verifyDcn(Identifier clientId) throws CouldNotVerifyDcnException;
 
-    void removeDcn(Identifier deploymentId) throws CouldNotRemoveDcnException;
+    void removeDcn(Identifier clientId) throws CouldNotRemoveDcnException;
 
 }

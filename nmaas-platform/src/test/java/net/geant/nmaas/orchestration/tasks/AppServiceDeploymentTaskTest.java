@@ -4,6 +4,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
+import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.Before;
@@ -33,23 +34,15 @@ public class AppServiceDeploymentTaskTest {
     @Autowired
     private AppRequestVerificationTask task;
 
-    private Identifier clientId;
-
     private Identifier applicationId;
 
     @Before
     public void setup() {
-        clientId = Identifier.newInstance(String.valueOf(100L));
         Application application = new Application("testOxidized");
         application.setDockerContainerTemplate(oxidizedTemplate());
         application = applications.save(application);
         assertThat(application.getId(), is(notNullValue()));
         applicationId = Identifier.newInstance(String.valueOf(application.getId()));
-    }
-
-    @Test
-    public void shouldBuildServiceName() {
-        assertThat(task.buildDcnName(clientId), containsString(clientId.value()));
     }
 
     @Test
