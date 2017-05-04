@@ -6,11 +6,10 @@ import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.orchestration.tasks.app.AppServiceDeploymentTask;
 import org.junit.After;
 import org.junit.Before;
@@ -58,9 +57,6 @@ public class NmServiceConfigurationTest {
     @MockBean
     private AppServiceDeploymentTask appServiceDeploymentTask;
 
-    @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
-
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
     private Identifier clientId = Identifier.newInstance("clientId");
@@ -73,7 +69,7 @@ public class NmServiceConfigurationTest {
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
         nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
         configuration = new AppConfiguration("");
-        appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
+        appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
         Thread.sleep(200);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
@@ -81,7 +77,7 @@ public class NmServiceConfigurationTest {
 
     @After
     public void cleanRepository() throws InvalidDeploymentIdException {
-        appDeploymentRepository.deleteAll();
+        appDeploymentRepositoryManager.removeAll();
         nmServiceRepositoryManager.removeService(deploymentId);
     }
 
