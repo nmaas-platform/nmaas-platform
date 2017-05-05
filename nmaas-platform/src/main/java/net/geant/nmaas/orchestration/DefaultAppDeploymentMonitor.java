@@ -1,10 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostState;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
@@ -35,9 +31,6 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
-
-    @Autowired
-    private DockerHostStateKeeper dockerHostStateKeeper;
 
     @Override
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
@@ -71,22 +64,13 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) throws InvalidDeploymentIdException {
-        try {
-            return accessDetails(nmServiceRepositoryManager.loadService(deploymentId));
-        } catch (DockerHostNotFoundException e) {
-            throw new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. ");
-        }
+        return accessDetails(nmServiceRepositoryManager.loadService(deploymentId));
     }
 
-    AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) throws DockerHostNotFoundException {
-        try {
-            final DockerHost host = serviceInfo.getHost();
-            final String accessAddress = host.getPublicIpAddress().getHostAddress();
-            final Integer accessPort = dockerHostStateKeeper.getAssignedPort(serviceInfo.getHost().getName(), serviceInfo.getDockerContainer());
-            return new AppUiAccessDetails(new StringBuilder().append("http://").append(accessAddress).append(":").append(accessPort).toString());
-        } catch (DockerHostState.MappingNotFoundException e) {
-            throw new DockerHostNotFoundException("Problem with loading access port -> " + e.getMessage());
-        }
+    AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) {
+        final String accessAddress = serviceInfo.getHost().getPublicIpAddress().getHostAddress();
+        final Integer accessPort = serviceInfo.getDockerContainer().getNetworkDetails().getPublicPort();
+        return new AppUiAccessDetails(new StringBuilder().append("http://").append(accessAddress).append(":").append(accessPort).toString());
     }
 
 }

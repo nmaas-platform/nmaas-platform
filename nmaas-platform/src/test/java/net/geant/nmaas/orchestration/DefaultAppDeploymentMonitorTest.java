@@ -1,6 +1,9 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostExistsException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
@@ -10,6 +13,7 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.orchestration.tasks.app.*;
@@ -23,6 +27,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -60,32 +66,34 @@ public class DefaultAppDeploymentMonitorTest {
     private ApplicationEventPublisher publisher;
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
+    @Autowired
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
 
     private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
 
     @Before
-    public void setup() throws InvalidDeploymentIdException {
-        String dcnName = "dcnName";
-        DcnSpec spec = new DcnSpec(dcnName, clientId);
+    public void setup() throws InvalidDeploymentIdException, UnknownHostException, DockerHostExistsException, DockerHostInvalidException, DockerHostNotFoundException {
+        dockerHostRepositoryManager.addDockerHost(dockerHost());
         DockerNetworkIpamSpec dockerNetworkIpamSpec = new DockerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
         DockerContainerNetDetails dockerContainerNetDetails = new DockerContainerNetDetails(8080, dockerNetworkIpamSpec);
         DockerContainerVolumesDetails dockerContainerVolumesDetails = new DockerContainerVolumesDetails("/home/directory");
         DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(dockerContainerNetDetails);
         dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
-//        dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
         nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
+        nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
         appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));
         repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
     }
 
     @After
-    public void cleanRepository() throws InvalidDeploymentIdException {
+    public void cleanRepository() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
         appDeploymentRepository.deleteAll();
         nmServiceRepositoryManager.removeService(deploymentId);
+        dockerHostRepositoryManager.removeDockerHost("dh");
     }
 
     private static final int DELAY = 200;
@@ -139,6 +147,18 @@ public class DefaultAppDeploymentMonitorTest {
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }
 
+    @Test(expected = InvalidAppStateException.class)
+    public void shouldThrowExceptionWhenReadingAccessDetailsInWrongAppState() throws InvalidAppStateException, InvalidDeploymentIdException {
+        repository.updateState(deploymentId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+        monitor.userAccessDetails(deploymentId);
+    }
+
+    @Test
+    public void shouldBuildProperAccessDetails() throws InvalidAppStateException, InvalidDeploymentIdException {
+        repository.updateState(deploymentId, AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
+        assertThat(monitor.userAccessDetails(deploymentId).getUrl(), equalTo("http://192.168.0.1:8080"));
+    }
+
     public static DockerContainerTemplate oxidizedTemplate() {
         DockerContainerTemplate oxidizedTemplate =
                 new DockerContainerTemplate("oxidized/oxidized:latest");
@@ -146,6 +166,19 @@ public class DefaultAppDeploymentMonitorTest {
         oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
         oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
         return oxidizedTemplate;
+    }
+
+    public static DockerHost dockerHost() throws UnknownHostException {
+        return new DockerHost(
+                "dh",
+                InetAddress.getByName("192.168.0.1"),
+                9999,
+                InetAddress.getByName("192.168.0.1"),
+                "eth0",
+                "eth1",
+                InetAddress.getByName("192.168.1.1"),
+                "/home/mgmt/ansible/volumes",
+                false);
     }
 
 }
