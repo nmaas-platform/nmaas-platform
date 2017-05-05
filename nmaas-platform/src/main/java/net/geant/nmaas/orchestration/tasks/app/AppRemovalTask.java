@@ -26,8 +26,7 @@ public class AppRemovalTask {
     private NmServiceDeploymentProvider serviceDeployment;
 
     @Autowired
-    public AppRemovalTask(
-            NmServiceDeploymentProvider serviceDeployment) {
+    public AppRemovalTask(NmServiceDeploymentProvider serviceDeployment) {
         this.serviceDeployment = serviceDeployment;
     }
 

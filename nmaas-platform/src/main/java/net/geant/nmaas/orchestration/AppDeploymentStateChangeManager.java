@@ -58,6 +58,8 @@ public class AppDeploymentStateChangeManager {
                 return Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
             case APPLICATION_DEPLOYED:
                 return Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
+            case APPLICATION_REMOVED:
+                return Optional.of(new AppRemoveDcnIfRequiredEvent(this, deploymentId));
             default:
                 return Optional.empty();
         }
