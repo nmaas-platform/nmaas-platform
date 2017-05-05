@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import com.spotify.docker.client.messages.ContainerConfig;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
@@ -9,6 +8,7 @@ import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkManager;
@@ -50,7 +50,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             declareNewNetworkForClientIfNotExists(clientId);
             final DockerNetwork network = dockerNetworkManager.networkForClient(clientId);
             nmServiceRepositoryManager.updateDockerHost(deploymentId, network.getDockerHost());
-            final DockerContainer container = dockerContainerManager.declareNewContainerForDeployment(deploymentId, network);
+            final DockerContainer container = dockerContainerManager.declareNewContainerForDeployment(deploymentId);
             nmServiceRepositoryManager.updateDockerContainer(deploymentId, container);
             ContainerConfigBuilder.verifyInput(nmServiceRepositoryManager.loadService(deploymentId));
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
@@ -59,9 +59,6 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         } catch (DockerHostNotFoundException dockerHostNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Did not find any suitable Docker Host for deployment.");
-        } catch (DockerHostInvalidException dockerHostInvalidException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Could not use the selected Docker Host for deployment.");
         }
     }
 
@@ -105,6 +102,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
         try {
             final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
             final DockerContainer container = service.getDockerContainer();
+            container.setNetworkDetails(obtainNetworkDetailsForContainer(service.getClientId()));
             final String containerId = createContainer(service);
             container.setDeploymentId(containerId);
             nmServiceRepositoryManager.updateDockerContainer(deploymentId, container);
@@ -121,6 +119,10 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
             throw new CouldNotDeployNmServiceException(
                     "Failed to connect container to network -> " + couldNotConnectContainerToNetworkException.getMessage());
         }
+    }
+
+    private DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
+        return dockerNetworkManager.obtainNetworkDetailsForContainer(clientId);
     }
 
     private String createContainer(NmServiceInfo service)

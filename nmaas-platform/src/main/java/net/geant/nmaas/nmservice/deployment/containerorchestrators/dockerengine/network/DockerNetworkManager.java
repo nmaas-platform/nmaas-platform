@@ -10,10 +10,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidE
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -147,6 +144,33 @@ public class DockerNetworkManager {
             throw new DockerNetworkCheckFailedException("Docker network " + networkId + " verification failed. None containers attached.");
         if (localContainers.size() != noOfRemoteContainers)
             throw new DockerNetworkCheckFailedException("Docker network " + networkId + " verification failed. Some containers not attached.");
+    }
+
+    public DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
+        try {
+            final DockerNetwork network = networkForClient(clientId);
+            // TODO should use a valid container here or refactor the port assignment
+            final int assignedPublicPort = dockerHostStateKeeper.assignPortForContainer(network.getDockerHost().getName(), null);
+            String containerIpAddress = obtainIpAddressForNewContainer(network);
+            final DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec(containerIpAddress, network.getSubnet(), network.getGateway());
+            return new DockerContainerNetDetails(assignedPublicPort, addresses);
+        } catch (DockerHostNotFoundException
+                | DockerHostInvalidException e) {
+            throw new ContainerOrchestratorInternalErrorException("Problems with port assignment for container -> " + e.getMessage());
+        }
+    }
+
+    String obtainIpAddressForNewContainer(DockerNetwork network) {
+        String containerIpAddress = DockerNetworkIpamSpec.obtainFirstIpAddressFromNetwork(network.getSubnet());
+        while(addressAlreadyAssigned(containerIpAddress, network.getDockerContainers()))
+            containerIpAddress = DockerNetworkIpamSpec.obtainNextIpAddressFromNetwork(containerIpAddress);
+        return containerIpAddress;
+    }
+
+    boolean addressAlreadyAssigned(String containerIpAddress, List<DockerContainer> dockerContainers) {
+        return dockerContainers.stream()
+                .map(c -> c.getNetworkDetails().getIpAddresses().getIpAddressOfContainer())
+                .anyMatch(s -> s.equals(containerIpAddress));
     }
 
     public void connectContainerToNetwork(Identifier clientId, DockerContainer container)

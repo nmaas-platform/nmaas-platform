@@ -7,11 +7,10 @@ import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.ExecCreation;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
@@ -31,38 +30,17 @@ import java.util.stream.Collectors;
 @Component
 public class DockerContainerManager {
 
-    private DockerHostStateKeeper dockerHostStateKeeper;
-
     private DockerApiClient dockerApiClient;
 
     @Autowired
-    public DockerContainerManager(DockerHostStateKeeper dockerHostStateKeeper, DockerApiClient dockerApiClient) {
-        this.dockerHostStateKeeper = dockerHostStateKeeper;
+    public DockerContainerManager(DockerApiClient dockerApiClient) {
         this.dockerApiClient = dockerApiClient;
     }
 
-    public DockerContainer declareNewContainerForDeployment(Identifier deploymentId, DockerNetwork network)
-            throws DockerHostNotFoundException, DockerHostInvalidException {
+    public DockerContainer declareNewContainerForDeployment(Identifier deploymentId) {
         final DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setVolumesDetails(new DockerContainerVolumesDetails(ContainerConfigBuilder.getPrimaryVolumeName(deploymentId.value())));
-        final int assignedPublicPort = dockerHostStateKeeper.assignPortForContainer(network.getDockerHost().getName(), dockerContainer);
-        String containerIpAddress = obtainIpAddressForNewContainer(network);
-        final DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec(containerIpAddress, network.getSubnet(), network.getGateway());
-        dockerContainer.setNetworkDetails(new DockerContainerNetDetails(assignedPublicPort, addresses));
         return dockerContainer;
-    }
-
-    String obtainIpAddressForNewContainer(DockerNetwork network) {
-        String containerIpAddress = DockerNetworkIpamSpec.obtainFirstIpAddressFromNetwork(network.getSubnet());
-        while(addressAlreadyAssigned(containerIpAddress, network.getDockerContainers()))
-            containerIpAddress = DockerNetworkIpamSpec.obtainNextIpAddressFromNetwork(containerIpAddress);
-        return containerIpAddress;
-    }
-
-    boolean addressAlreadyAssigned(String containerIpAddress, List<DockerContainer> dockerContainers) {
-        return dockerContainers.stream()
-                .map(c -> c.getNetworkDetails().getIpAddresses().getIpAddressOfContainer())
-                .anyMatch(s -> s.equals(containerIpAddress));
     }
 
     public String create(ContainerConfig containerConfig, String name, DockerHost host)
