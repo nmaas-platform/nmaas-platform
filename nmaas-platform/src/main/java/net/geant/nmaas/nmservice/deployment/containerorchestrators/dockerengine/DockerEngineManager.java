@@ -192,6 +192,7 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
     private void removeContainer(NmServiceInfo service)
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         dockerContainerManager.remove(service.getDockerContainer().getDeploymentId(), service.getHost());
+        dockerNetworkManager.disconnectContainerFromNetwork(service.getClientId(), service.getDockerContainer().getDeploymentId());
     }
 
     private void removeNetworkIfNoContainerAttached(NmServiceInfo service)
