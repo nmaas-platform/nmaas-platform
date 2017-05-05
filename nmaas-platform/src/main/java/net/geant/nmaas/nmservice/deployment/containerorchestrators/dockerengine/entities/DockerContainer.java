@@ -16,7 +16,7 @@ public class DockerContainer {
     /**
      * Network details for deployed container obtained from remote OSS system.
      */
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, optional=false)
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
     private DockerContainerNetDetails networkDetails;
 
     /**
