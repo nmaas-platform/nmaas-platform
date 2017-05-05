@@ -145,6 +145,20 @@ public class DcnRepositoryManagerTest {
         dcnRepositoryManager.loadCurrentState(clientId);
     }
 
+    @Test
+    public void shouldRemoveDcnOnRemovedStateNotification() throws InvalidClientIdException {
+        storeDefaultDcnInfoInRepository();
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REQUEST_VERIFIED));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId), is(notNullValue()));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REMOVED));
+        try {
+            dcnRepositoryManager.loadNetwork(clientId);
+        } catch (InvalidClientIdException e) {
+            return;
+        }
+        assertThat(true, is(false));
+    }
+
     private void storeDefaultDcnInfoInRepository() {
         DcnSpec spec = new DcnSpec("", clientId);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));

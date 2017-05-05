@@ -25,6 +25,8 @@ public class DcnRepositoryManager {
     @EventListener
     public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidClientIdException {
         updateDcnState(event.getClientId(), event.getState());
+        if (DcnDeploymentState.REMOVED.equals(loadCurrentState(event.getClientId())))
+            removeDcnInfo(event.getClientId());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
