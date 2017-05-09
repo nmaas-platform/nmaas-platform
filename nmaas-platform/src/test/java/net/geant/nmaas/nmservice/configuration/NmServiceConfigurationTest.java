@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
@@ -22,10 +23,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -81,7 +86,8 @@ public class NmServiceConfigurationTest {
     }
 
     @Test
-    public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException {
+    public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException, IOException, ConfigTemplateHandlingException {
+        when(configurationsPreparer.generateAndStoreConfigurations(any(), any(), any())).thenAnswer((invocationOnMock) -> {Thread.sleep(500); return new ArrayList<String>();});
         configurationExecutor.configureNmService(deploymentId, applicationId, configuration, null, null);
         Thread.sleep(200);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
