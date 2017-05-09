@@ -71,7 +71,6 @@ public class NmServiceConfigurationTest {
         configuration = new AppConfiguration("");
         appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
-        Thread.sleep(200);
         configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
     }
 
