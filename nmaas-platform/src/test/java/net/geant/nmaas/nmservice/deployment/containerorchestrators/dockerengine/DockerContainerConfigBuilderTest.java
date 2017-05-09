@@ -54,13 +54,25 @@ public class DockerContainerConfigBuilderTest {
 
     @Test(expected = NmServiceRequestVerificationException.class)
     public void shouldVerifySpecAndThrowException() throws NmServiceRequestVerificationException {
-        ContainerConfigBuilder.verifyInput(serviceInfo);
+        ContainerConfigBuilder.verifyInitInput(serviceInfo);
     }
 
     @Test
-    public void shouldVerifyInputAndContinue() throws NmServiceRequestVerificationException {
+    public void shouldVerifyInitInput() throws NmServiceRequestVerificationException {
+        serviceInfo.setDockerContainer(new DockerContainer());
+        ContainerConfigBuilder.verifyInitInput(serviceInfo);
+    }
+
+    @Test(expected = NmServiceRequestVerificationException.class)
+    public void shouldVerifyFinalInputAndThrowException() throws NmServiceRequestVerificationException {
+        serviceInfo.setDockerContainer(new DockerContainer());
+        ContainerConfigBuilder.verifyFinalInput(serviceInfo);
+    }
+
+    @Test
+    public void shouldVerifyFinalInputAndContinue() throws NmServiceRequestVerificationException {
         serviceInfo.setDockerContainer(dockerContainer);
-        ContainerConfigBuilder.verifyInput(serviceInfo);
+        ContainerConfigBuilder.verifyFinalInput(serviceInfo);
     }
 
     @Test

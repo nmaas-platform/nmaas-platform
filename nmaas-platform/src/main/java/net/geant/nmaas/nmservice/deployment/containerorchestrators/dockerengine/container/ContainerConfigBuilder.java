@@ -81,13 +81,17 @@ public class ContainerConfigBuilder {
         return hostVolumeName + "-" + counter;
     }
 
-    public static void verifyInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
+    public static void verifyInitInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
         if (service.getTemplate() == null)
             throw new NmServiceRequestVerificationException("Service template not set");
         if (service.getHost() == null)
             throw new NmServiceRequestVerificationException("Docker host not set");
         if (service.getDockerContainer() == null)
             throw new NmServiceRequestVerificationException("Docker container initial details are missing");
+    }
+
+    public static void verifyFinalInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
+        verifyInitInput(service);
         if (service.getDockerContainer().getNetworkDetails() == null)
             throw new NmServiceRequestVerificationException("Docker container network details not set");
         DockerContainerNetDetails networkDetails = service.getDockerContainer().getNetworkDetails();

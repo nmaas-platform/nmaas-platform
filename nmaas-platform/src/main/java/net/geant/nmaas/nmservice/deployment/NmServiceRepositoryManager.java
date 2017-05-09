@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
@@ -52,6 +53,20 @@ public class NmServiceRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDockerContainerNetworkDetails(Identifier deploymentId, DockerContainerNetDetails netDetails) throws InvalidDeploymentIdException {
+        NmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        nmServiceInfo.getDockerContainer().setNetworkDetails(netDetails);
+        repository.save(nmServiceInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDockerContainerDeploymentId(Identifier deploymentId, String containerId) throws InvalidDeploymentIdException {
+        NmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        nmServiceInfo.getDockerContainer().setDeploymentId(containerId);
+        repository.save(nmServiceInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateManagedDevices(Identifier deploymentId, List<String> ipAddresses) throws InvalidDeploymentIdException {
         NmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setManagedDevicesIpAddresses(ipAddresses);
@@ -75,10 +90,6 @@ public class NmServiceRepositoryManager {
 
     public NmServiceDeploymentState loadCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
         return repository.getStateByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-    }
-
-    public String loadContainerId(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.getContainerIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
     public Identifier loadClientId(Identifier deploymentId) throws InvalidDeploymentIdException {

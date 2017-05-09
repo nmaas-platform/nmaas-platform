@@ -25,7 +25,7 @@ public class NmServiceInfo {
     /**
      * Unique name of the service provided by the caller
      */
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String name;
 
     /**
@@ -37,7 +37,7 @@ public class NmServiceInfo {
     /**
      * Identifier of the application deployment assigned by application lifecycle manager
      */
-    @Column(nullable=false)
+    @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
     /**
