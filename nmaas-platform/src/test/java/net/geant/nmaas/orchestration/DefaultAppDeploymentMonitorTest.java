@@ -1,22 +1,22 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.DeploymentIdToDcnNameMapper;
-import net.geant.nmaas.dcn.deployment.repository.DcnInfo;
-import net.geant.nmaas.dcn.deployment.repository.DcnRepository;
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostExistsException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.orchestration.tasks.*;
+import net.geant.nmaas.orchestration.tasks.app.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +26,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -42,9 +46,7 @@ public class DefaultAppDeploymentMonitorTest {
     @MockBean
     private AppEnvironmentPreparationTask appEnvironmentPreparationTask;
     @MockBean
-    private AppDcnDeploymentTask appDcnDeploymentTask;
-    @MockBean
-    private AppDcnVerificationTask appDcnVerificationTask;
+    private AppDcnRequestOrVerificationTask appDcnRequestOrVerificationTask;
     @MockBean
     private AppConfigurationTask appConfigurationTask;
     @MockBean
@@ -55,34 +57,43 @@ public class DefaultAppDeploymentMonitorTest {
     private AppRemovalTask appRemovalTask;
 
     @Autowired
-    private AppDeploymentLifecycleStateKeeper repository;
+    private AppDeploymentRepositoryManager repository;
     @Autowired
     private DefaultAppDeploymentMonitor monitor;
     @Autowired
-    private DcnRepository dcnRepository;
-    @Autowired
-    private NmServiceRepository nmServiceRepository;
-    @Autowired
-    private DeploymentIdToDcnNameMapper deploymentIdToDcnNameMapper;
-    @Autowired
-    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
     private ApplicationEventPublisher publisher;
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
+    @Autowired
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
-    private Identifier deploymentId = new Identifier("testDeploymentId");
+    private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
+
+    private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
 
     @Before
-    public void setup() throws InvalidDeploymentIdException {
-        String dcnName = "dcnName";
-        dcnRepository.storeNetwork(new DcnInfo(dcnName, DcnDeploymentState.INIT, null));
-        deploymentIdToDcnNameMapper.storeMapping(deploymentId, dcnName);
-        String nmServiceName = "serviceName";
-        nmServiceRepository.storeService(new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null));
-        deploymentIdToNmServiceNameMapper.storeMapping(deploymentId, nmServiceName);
-        appDeploymentRepository.save(new AppDeployment(deploymentId, Identifier.newInstance(""), Identifier.newInstance("")));
-        repository.updateDeploymentState(deploymentId, AppDeploymentState.REQUESTED);
+    public void setup() throws InvalidDeploymentIdException, UnknownHostException, DockerHostExistsException, DockerHostInvalidException, DockerHostNotFoundException {
+        dockerHostRepositoryManager.addDockerHost(dockerHost());
+        DockerNetworkIpamSpec dockerNetworkIpamSpec = new DockerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
+        DockerContainerNetDetails dockerContainerNetDetails = new DockerContainerNetDetails(8080, dockerNetworkIpamSpec);
+        DockerContainerVolumesDetails dockerContainerVolumesDetails = new DockerContainerVolumesDetails("/home/directory");
+        DockerContainer dockerContainer = new DockerContainer();
+        dockerContainer.setNetworkDetails(dockerContainerNetDetails);
+        dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
+        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
+        nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
+        nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
+        appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));
+        repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
+    }
+
+    @After
+    public void cleanRepository() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
+        appDeploymentRepository.deleteAll();
+        nmServiceRepositoryManager.removeService(deploymentId);
+        dockerHostRepositoryManager.removeDockerHost("dh");
     }
 
     private static final int DELAY = 200;
@@ -92,28 +103,13 @@ public class DefaultAppDeploymentMonitorTest {
         // request verification
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REQUEST_VERIFIED));
         Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.REQUEST_VALIDATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REQUEST_VERIFIED));
-        Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.REQUEST_VALIDATED));
         // environment preparation
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.ENVIRONMENT_PREPARED));
         Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.ENVIRONMENT_PREPARED));
-        Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARED));
-        // dcn deployment and verification
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.DEPLOYED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.VERIFICATION_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.VERIFIED));
+        // dcn already exists or was just deployed
+        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.MANAGEMENT_VPN_CONFIGURED));
         // app configuration
@@ -135,13 +131,7 @@ public class DefaultAppDeploymentMonitorTest {
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED));
         // app removal
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVAL_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVED));
         Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }
@@ -154,18 +144,41 @@ public class DefaultAppDeploymentMonitorTest {
         // app removal
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED));
         Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVAL_INITIATED));
-        Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
-        publisher.publishEvent(new DcnDeploymentStateChangeEvent(this, deploymentId, DcnDeploymentState.REMOVED));
-        Thread.sleep(DELAY);
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
     }
 
-    @After
-    public void cleanRepository() {
-        appDeploymentRepository.deleteAll();
+    @Test(expected = InvalidAppStateException.class)
+    public void shouldThrowExceptionWhenReadingAccessDetailsInWrongAppState() throws InvalidAppStateException, InvalidDeploymentIdException {
+        repository.updateState(deploymentId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+        monitor.userAccessDetails(deploymentId);
+    }
+
+    @Test
+    public void shouldBuildProperAccessDetails() throws InvalidAppStateException, InvalidDeploymentIdException {
+        repository.updateState(deploymentId, AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
+        assertThat(monitor.userAccessDetails(deploymentId).getUrl(), equalTo("http://192.168.0.1:8080"));
+    }
+
+    public static DockerContainerTemplate oxidizedTemplate() {
+        DockerContainerTemplate oxidizedTemplate =
+                new DockerContainerTemplate("oxidized/oxidized:latest");
+        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
+        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
+        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
+        return oxidizedTemplate;
+    }
+
+    public static DockerHost dockerHost() throws UnknownHostException {
+        return new DockerHost(
+                "dh",
+                InetAddress.getByName("192.168.0.1"),
+                9999,
+                InetAddress.getByName("192.168.0.1"),
+                "eth0",
+                "eth1",
+                InetAddress.getByName("192.168.1.1"),
+                "/home/mgmt/ansible/volumes",
+                false);
     }
 
 }

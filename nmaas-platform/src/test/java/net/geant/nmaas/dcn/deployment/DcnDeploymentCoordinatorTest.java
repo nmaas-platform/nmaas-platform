@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

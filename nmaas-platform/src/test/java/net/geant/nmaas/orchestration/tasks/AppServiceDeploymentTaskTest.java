@@ -1,10 +1,10 @@
 package net.geant.nmaas.orchestration.tasks;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
+import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.Before;
@@ -34,13 +34,10 @@ public class AppServiceDeploymentTaskTest {
     @Autowired
     private AppRequestVerificationTask task;
 
-    private Identifier clientId;
-
     private Identifier applicationId;
 
     @Before
     public void setup() {
-        clientId = Identifier.newInstance(String.valueOf(100L));
         Application application = new Application("testOxidized");
         application.setDockerContainerTemplate(oxidizedTemplate());
         application = applications.save(application);
@@ -49,18 +46,8 @@ public class AppServiceDeploymentTaskTest {
     }
 
     @Test
-    public void shouldConstructServiceInfo() throws InvalidApplicationIdException {
-        DockerContainerSpec spec = (DockerContainerSpec) task.constructNmServiceSpec(clientId, applicationId);
-        assertThat(spec.getTemplate(), is(notNullValue()));
-        spec.getTemplate().setId(null);
-        spec.getTemplate().getExposedPort().setId(null);
-        assertThat(spec.getTemplate(), equalTo(oxidizedTemplate()));
-    }
-
-    @Test
-    public void shouldBuildServiceName() {
-        assertThat(task.buildServiceName(applications.findOne(Long.valueOf(applicationId.getValue()))),
-                equalTo("testOxidized" + "-" + applicationId));
+    public void shouldRetrieveTemplate() throws InvalidApplicationIdException {
+        assertThat(task.template(applicationId), equalTo(oxidizedTemplate()));
     }
 
     @Test
@@ -69,10 +56,8 @@ public class AppServiceDeploymentTaskTest {
     }
 
     private DockerContainerTemplate oxidizedTemplate() {
-        DockerContainerTemplate oxidizedTemplate =
-                new DockerContainerTemplate("oxidized/oxidized:latest");
+        DockerContainerTemplate oxidizedTemplate = new DockerContainerTemplate("oxidized/oxidized:latest");
         oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
-        oxidizedTemplate.setEnvVariablesInSpecRequired(false);
         oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
         oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
         return oxidizedTemplate;

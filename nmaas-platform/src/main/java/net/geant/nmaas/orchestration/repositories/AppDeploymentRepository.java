@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,7 +16,12 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     Optional<AppDeployment> findByDeploymentId(Identifier deploymentId);
 
+    List<AppDeployment> findByClientIdAndState(Identifier clientId, AppDeploymentState state);
+
     @Query("SELECT a.state FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<AppDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
+    @Query("SELECT a.clientId FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
+    Optional<Identifier> getClientIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
 }

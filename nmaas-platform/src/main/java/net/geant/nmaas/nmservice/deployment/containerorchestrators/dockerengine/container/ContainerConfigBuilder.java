@@ -3,14 +3,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceSpec;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +19,7 @@ import java.util.Map;
 public class ContainerConfigBuilder {
 
     public static ContainerConfig build(NmServiceInfo service) {
-        final DockerHost host = (DockerHost) service.getHost();
-        final ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
+        final DockerContainerNetDetails networkDetails = service.getDockerContainer().getNetworkDetails();
         final ContainerConfigInput configInput = ContainerConfigInput.fromSpec(service);
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
         containerBuilder.image(configInput.getImage());
@@ -34,11 +29,11 @@ public class ContainerConfigBuilder {
         final HostConfig.Builder hostBuilder = HostConfig.builder();
         hostBuilder.portBindings(preparePortBindings(
                 configInput.getExposedPort(),
-                host.getPublicIpAddress().getHostAddress(),
+                service.getHost().getPublicIpAddress().getHostAddress(),
                 networkDetails.getPublicPort()));
         final List<String> volumeBinds = prepareVolumeBindings(
                 configInput.getContainerVolumes(),
-                host.getVolumesPath(),
+                service.getHost().getVolumesPath(),
                 configInput.getUniqueDeploymentName());
         hostBuilder.appendBinds(volumeBinds);
         hostBuilder.privileged(true);
@@ -86,33 +81,28 @@ public class ContainerConfigBuilder {
         return hostVolumeName + "-" + counter;
     }
 
-    public static void verifyInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
-        NmServiceSpec spec = service.getSpec();
-        if (DockerContainerSpec.class != spec.getClass())
-            throw new NmServiceRequestVerificationException("Service spec not in DockerEngine format");
-        DockerContainerSpec dockerContainerSpec = (DockerContainerSpec) spec;
-        if (dockerContainerSpec.getTemplate() == null)
-            throw new NmServiceRequestVerificationException("Service template not set in the spec");
-        if (DockerContainerTemplate.class != dockerContainerSpec.getTemplate().getClass())
-            throw new NmServiceRequestVerificationException("Service template not in DockerEngine format");
-        if (!dockerContainerSpec.getTemplate().verify())
-            throw new NmServiceRequestVerificationException("Service template incorrect");
-        if (!dockerContainerSpec.getTemplate().verifyNmServiceSpec(dockerContainerSpec))
-            throw new NmServiceRequestVerificationException("Service spec incorrect or missing required data");
-        if (service.getNetwork() == null)
-            throw new NmServiceRequestVerificationException("Network details not set");
-        if (ContainerNetworkDetails.class != service.getNetwork().getClass())
-            throw new NmServiceRequestVerificationException("Network details not in DockerEngine format");
-        ContainerNetworkDetails networkDetails = (ContainerNetworkDetails) service.getNetwork();
+    public static void verifyInitInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
+        if (service.getTemplate() == null)
+            throw new NmServiceRequestVerificationException("Service template not set");
+        if (service.getHost() == null)
+            throw new NmServiceRequestVerificationException("Docker host not set");
+        if (service.getDockerContainer() == null)
+            throw new NmServiceRequestVerificationException("Docker container initial details are missing");
+    }
+
+    public static void verifyFinalInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
+        verifyInitInput(service);
+        if (service.getDockerContainer().getNetworkDetails() == null)
+            throw new NmServiceRequestVerificationException("Docker container network details not set");
+        DockerContainerNetDetails networkDetails = service.getDockerContainer().getNetworkDetails();
         if (networkDetails.getPublicPort() == 0
-                || networkDetails.getVlanNumber() == 0
                 || networkDetails.getIpAddresses() == null
                 || !networkDetails.getIpAddresses().verify()) {
             throw new NmServiceRequestVerificationException("Network details not valid. Some parameters are be missing.");
         }
     }
 
-    public static String getPrimaryVolumeName(String baseName) {
+    static String getPrimaryVolumeName(String baseName) {
         return generateNewHostVolumeDirectoryName(baseName, 1);
     }
 }

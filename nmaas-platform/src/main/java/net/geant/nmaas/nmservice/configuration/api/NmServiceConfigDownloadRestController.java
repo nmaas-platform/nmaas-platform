@@ -22,7 +22,7 @@ public class NmServiceConfigDownloadRestController {
     private NmServiceConfigurationRepository configurations;
 
     @RequestMapping(value = "/{configId}", method = RequestMethod.GET)
-    public void notifyDcnConfigurationStatus(@PathVariable String configId, HttpServletResponse response)
+    public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)
             throws NmServiceConfigurationRepository.ConfigurationNotFoundException, IOException {
         System.out.println("Received configuration download request (configId -> " + configId + ")");
         final NmServiceConfiguration configuration = configurations.loadConfig(configId);

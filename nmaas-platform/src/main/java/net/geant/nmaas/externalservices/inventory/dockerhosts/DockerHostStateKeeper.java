@@ -1,6 +1,8 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +17,13 @@ import java.util.Map;
 public class DockerHostStateKeeper {
 
     @Autowired
-    private DockerHostRepository dockerHostRepository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private Map<String, DockerHostState> states = new HashMap<>();
 
-    public int assignPort(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostInvalidException {
-        addStateForDocketHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignPort(serviceName);
+    public int assignPortForContainer(String dockerHostName, DockerContainer container) throws DockerHostNotFoundException, DockerHostInvalidException {
+        addStateForDockerHostIfAbsent(dockerHostName);
+        return states.get(dockerHostName).assignPort(container);
     }
 
     public void removePortAssignment(String dockerHostName, List<Integer> ports) throws DockerHostNotFoundException {
@@ -30,15 +32,15 @@ public class DockerHostStateKeeper {
         states.get(dockerHostName).removePortAssignment(ports);
     }
 
-    public int getAssignedPort(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
+    public int getAssignedPort(String dockerHostName, DockerContainer container) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
         if (!states.containsKey(dockerHostName))
             throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedPorts(serviceName).get(0);
+        return states.get(dockerHostName).getAssignedPorts(container).get(0);
     }
 
-    public int assignVlan(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostInvalidException {
-        addStateForDocketHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignVlan(serviceName);
+    public int assignVlanForNetwork(String dockerHostName, DockerNetwork network) throws DockerHostNotFoundException, DockerHostInvalidException {
+        addStateForDockerHostIfAbsent(dockerHostName);
+        return states.get(dockerHostName).assignVlan(network);
     }
 
     public void removeVlanAssignment(String dockerHostName, int vlanNumber) throws DockerHostNotFoundException {
@@ -47,33 +49,33 @@ public class DockerHostStateKeeper {
         states.get(dockerHostName).removeVlanAssignment(vlanNumber);
     }
 
-    public int getAssignedVlan(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
+    public int getAssignedVlan(String dockerHostName, DockerNetwork network) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
         if (!states.containsKey(dockerHostName))
             throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedVlan(serviceName);
+        return states.get(dockerHostName).getAssignedVlan(network);
     }
 
-    public ContainerNetworkIpamSpec assignAddressPool(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostInvalidException {
-        addStateForDocketHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignAddresses(serviceName);
+    public DockerNetworkIpamSpec assignAddressPoolForNetwork(String dockerHostName, DockerNetwork network) throws DockerHostNotFoundException, DockerHostInvalidException {
+        addStateForDockerHostIfAbsent(dockerHostName);
+        return states.get(dockerHostName).assignAddresses(network);
     }
 
-    public void removeAddressPoolAssignment(String dockerHostName, ContainerNetworkIpamSpec addressPool) throws DockerHostNotFoundException {
+    public void removeAddressPoolAssignment(String dockerHostName, DockerNetworkIpamSpec addressPool) throws DockerHostNotFoundException {
         if (!states.containsKey(dockerHostName))
             throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
         states.get(dockerHostName).removeAddressPoolAssignment(addressPool);
     }
 
-    public ContainerNetworkIpamSpec getAssignedAddressPool(String dockerHostName, String serviceName) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
+    public DockerNetworkIpamSpec getAssignedAddressPool(String dockerHostName, DockerNetwork network) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
         if (!states.containsKey(dockerHostName))
             throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedAddressPool(serviceName);
+        return states.get(dockerHostName).getAssignedAddressPool(network);
     }
 
-    private void addStateForDocketHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException, DockerHostInvalidException {
+    private void addStateForDockerHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException, DockerHostInvalidException {
         if (!states.containsKey(dockerHostName)) {
-            String dockerHostBaseDataNetworkAddress = dockerHostRepository.loadByName(dockerHostName).getBaseDataNetworkAddress().getHostAddress();
-            final DockerHostState state = new DockerHostState(dockerHostName, dockerHostBaseDataNetworkAddress);
+            String dockerHostBaseDataNetworkAddress = dockerHostRepositoryManager.loadByName(dockerHostName).getBaseDataNetworkAddress().getHostAddress();
+            final DockerHostState state = new DockerHostState(dockerHostBaseDataNetworkAddress);
             states.put(dockerHostName, state);
         }
     }

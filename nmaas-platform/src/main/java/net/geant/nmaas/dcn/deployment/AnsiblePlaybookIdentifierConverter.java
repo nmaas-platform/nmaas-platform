@@ -9,12 +9,12 @@ public class AnsiblePlaybookIdentifierConverter {
 
     private static final String CLOUD_SIDE_ROUTER_PREFIX = "CLOUD-ROUTER";
 
-    public static String encodeForClientSideRouter(String plainDcnName) {
-        return encode(CLIENT_SIDE_ROUTER_PREFIX + plainDcnName);
+    public static String encodeForClientSideRouter(String plainDeploymentId) {
+        return encode(CLIENT_SIDE_ROUTER_PREFIX + plainDeploymentId);
     }
 
-    public static String encodeForCloudSideRouter(String plainDcnName) {
-        return encode(CLOUD_SIDE_ROUTER_PREFIX + plainDcnName);
+    public static String encodeForCloudSideRouter(String plainDeploymentId) {
+        return encode(CLOUD_SIDE_ROUTER_PREFIX + plainDeploymentId);
     }
 
     private static String encode(String plainString) {

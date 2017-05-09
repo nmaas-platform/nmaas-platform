@@ -1,9 +1,9 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHost;
-import net.geant.nmaas.nmservice.InvalidDeploymentIdException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,7 +22,8 @@ import java.net.UnknownHostException;
 @SpringBootTest
 public class AnsibleContainerDeploymentIntTest {
 
-    Identifier deploymentId = new Identifier("exampledeploymentid");
+    Identifier deploymentId = Identifier.newInstance("exampledeploymentid");
+    Identifier clientId = Identifier.newInstance("exampleclientid");
     String uniqueDcnName = "company1-client1-nmaas-ansible-239487523809475";
 
     @Autowired
@@ -31,7 +32,7 @@ public class AnsibleContainerDeploymentIntTest {
     @Ignore
     @Test
     public void shouldVerifyAndDeployDefaultContainer() throws DcnRequestVerificationException, CouldNotDeployDcnException {
-        dcnDeployment.verifyRequest(deploymentId, new DcnSpec(uniqueDcnName));
+        dcnDeployment.verifyRequest(deploymentId, new DcnSpec(uniqueDcnName, clientId));
         dcnDeployment.deployDcn(deploymentId);
     }
 

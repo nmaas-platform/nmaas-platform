@@ -107,7 +107,6 @@ echo ---------------------
 echo Get comments for first app
 curl -X GET %API_URL%/apps/1/comments --header "Authorization: Bearer %token%"
 
-
 echo.
 echo ---------------------
 echo Rate App1
@@ -120,7 +119,6 @@ curl -X GET %API_URL%/apps/1/rate/my --header "Authorization: Bearer %token%"
 echo.
 curl -X GET %API_URL%/apps/1/rate/user/1 --header "Authorization: Bearer %token%" 
 
-
 echo.
 echo Rate App2
 curl -X POST %API_URL%/apps/2/rate/my/2 --header "Authorization: Bearer %token%" 
@@ -128,7 +126,6 @@ curl -X POST %API_URL%/apps/2/rate/my/2 --header "Authorization: Bearer %token%"
 echo.
 echo Rate App3
 curl -X POST %API_URL%/apps/3/rate/my/5 --header "Authorization: Bearer %token%" 
-
 
 echo.
 echo ---------------------
@@ -139,16 +136,3 @@ echo.
 echo ---------------------
 echo By tag:
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
-
-echo.
-echo ---------------------
-echo Create app2 instance
-curl -X POST %API_URL%/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
-
-echo.
-echo ---------------------
-echo Get app instance 1 state
-curl -X GET %API_URL%/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
-
-echo.
-echo ---------------------

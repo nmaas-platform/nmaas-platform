@@ -12,12 +12,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
  */
 public interface AppLifecycleManager {
 
-    public static final Identifier OXIDIZED_APPLICATION_ID = Identifier.newInstance("oxidizedApplicationId");
-
-    public static final Identifier TOMCAT_ALPINE_APPLICATION_ID = Identifier.newInstance("tomcatAlpineApplicationId");
-
-    public static final Identifier PMACCT_GRAFANA_APPLICATION_ID = Identifier.newInstance("pmacctGrafanaApplicationId");
-
     /**
      * Triggers the NMaaS application deployment process which may take some time. This process is executed asynchronously
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases

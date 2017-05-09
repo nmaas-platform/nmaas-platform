@@ -1,7 +1,8 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentHost;
+import net.geant.nmaas.orchestration.entities.Identifier;
 
 import java.util.List;
 
@@ -24,29 +25,29 @@ public interface ContainerOrchestrationProvider {
      * on which requested service should be deployed.
      * It also obtains the target host network configuration details.
      *
-     * @param serviceName service to be deployed
+     * @param deploymentId unique identifier of service deployment
      */
-    void verifyRequestObtainTargetHostAndNetworkDetails(String serviceName)
-            throws NmServiceRequestVerificationException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
+    void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
+            throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException;
 
     /**
      * Executes all initial configuration steps in order to enable further deployment of the service. This step includes
      * dedicated network configuration on the host.
      *
-     * @param serviceName service to be deployed
+     * @param deploymentId unique identifier of service deployment
      */
-    void prepareDeploymentEnvironment(String serviceName)
-            throws CouldNotPrepareEnvironmentException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
+    void prepareDeploymentEnvironment(Identifier deploymentId)
+            throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException;
 
-    void deployNmService(String serviceName)
-            throws CouldNotDeployNmServiceException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
+    void deployNmService(Identifier deploymentId)
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException;
 
-    void checkService(String serviceName)
-            throws ContainerCheckFailedException, ContainerNetworkCheckFailedException, CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
+    void checkService(Identifier deploymentId)
+            throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException;
 
-    void removeNmService(String serviceName)
-            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException, CouldNotConnectToOrchestratorException;
+    void removeNmService(Identifier deploymentId)
+            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException;
 
-    List<String> listServices(NmServiceDeploymentHost host)
-            throws CouldNotConnectToOrchestratorException, ContainerOrchestratorInternalErrorException;
+    List<String> listServices(DockerHost host)
+            throws ContainerOrchestratorInternalErrorException;
 }

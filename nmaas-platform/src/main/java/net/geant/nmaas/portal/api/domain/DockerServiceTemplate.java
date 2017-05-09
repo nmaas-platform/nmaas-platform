@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.api.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerPortForwarding.Protocol;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding.Protocol;
 
 public class DockerServiceTemplate {
 	

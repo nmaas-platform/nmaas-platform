@@ -17,7 +17,6 @@
 		"envVariables": [
 			"CONFIG_RELOAD_INTERVAL=600"
 		],
-		"envVariablesInSpecRequired":false,
 		"containerVolumes": [
 			"/root/.config/oxidized"
 		]

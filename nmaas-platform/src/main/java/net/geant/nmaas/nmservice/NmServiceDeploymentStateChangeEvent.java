@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice;
 
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.context.ApplicationEvent;
 

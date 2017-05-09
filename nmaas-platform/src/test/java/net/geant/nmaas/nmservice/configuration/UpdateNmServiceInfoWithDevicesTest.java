@@ -1,12 +1,14 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,35 +33,44 @@ public class UpdateNmServiceInfoWithDevicesTest {
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Autowired
-    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
-    @Autowired
-    private NmServiceRepository nmServiceRepository;
+    private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
-    private String nmServiceName = "testNmServiceName1";
-
-    private Identifier deploymentId;
+    private Identifier clientId = Identifier.newInstance("clientId");
 
     private AppConfiguration appConfiguration;
 
     @Before
     public void setup() {
-        NmServiceInfo serviceInfo = new NmServiceInfo(nmServiceName, NmServiceDeploymentState.INIT, null);
-        nmServiceRepository.storeService(serviceInfo);
+        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, clientId, oxidizedTemplate());
+        nmServiceRepositoryManager.storeService(serviceInfo);
         deploymentId = Identifier.newInstance("deploymentId");
-        deploymentIdToNmServiceNameMapper.storeMapping(deploymentId, nmServiceName);
-        appConfiguration = new AppConfiguration();
-        appConfiguration.setJsonInput("" +
+        appConfiguration = new AppConfiguration("" +
                 "{\"routers\": [\"1.1.1.1\",\"2.2.2.2\"], " +
                 "\"oxidizedUsername\":\"user\", " +
                 "\"oxidizedPassword\":\"pass\"}");
     }
 
+    @After
+    public void cleanRepositories() throws InvalidDeploymentIdException {
+        nmServiceRepositoryManager.removeService(deploymentId);
+    }
+
     @Test
-    public void shouldUpdateNmServiceInfoWithDevices() throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, NmServiceRepository.ServiceNotFoundException, IOException {
+    public void shouldUpdateNmServiceInfoWithDevices() throws InvalidDeploymentIdException, IOException {
         final Map<String, Object> modelFromJson = configurationsPreparer.getModelFromJson(appConfiguration);
         configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, modelFromJson);
-        assertThat(nmServiceRepository.loadService(nmServiceName).getManagedDevicesIpAddresses(), Matchers.contains("1.1.1.1", "2.2.2.2"));
+        assertThat(nmServiceRepositoryManager.loadService(deploymentId).getManagedDevicesIpAddresses(), Matchers.contains("1.1.1.1", "2.2.2.2"));
+    }
+
+    public static DockerContainerTemplate oxidizedTemplate() {
+        DockerContainerTemplate oxidizedTemplate =
+                new DockerContainerTemplate("oxidized/oxidized:latest");
+        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
+        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
+        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
+        return oxidizedTemplate;
     }
 
 }
