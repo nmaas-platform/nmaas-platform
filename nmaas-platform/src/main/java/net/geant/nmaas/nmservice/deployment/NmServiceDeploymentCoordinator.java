@@ -23,7 +23,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private final static Logger log = LogManager.getLogger(NmServiceDeploymentCoordinator.class);
 
     @Autowired
-    @Qualifier("DockerEngine")
     private ContainerOrchestrationProvider orchestrator;
 
     @Autowired
