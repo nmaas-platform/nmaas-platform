@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
@@ -51,7 +50,7 @@ public class NmServiceConfigurationTest {
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Mock
-    private SshCommandExecutor sshCommandExecutor;
+    private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
@@ -76,7 +75,7 @@ public class NmServiceConfigurationTest {
         configuration = new AppConfiguration("");
         appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
-        configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, sshCommandExecutor, applicationEventPublisher);
+        configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, configDownloadCommandExecutor, applicationEventPublisher);
     }
 
     @After

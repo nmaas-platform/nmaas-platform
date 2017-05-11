@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.configuration.ssh;
+package net.geant.nmaas.utils.ssh;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
