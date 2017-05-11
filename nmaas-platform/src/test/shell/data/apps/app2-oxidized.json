@@ -8,18 +8,23 @@
 	"wwwUrl": "https:\/\/github.com\/ytti\/oxidized\/wiki\/",
 	"sourceUrl": "https:\/\/github.com\/ytti\/oxidized\/",
 	"issuesUrl": "",
-	"dockerContainerTemplate": {
-		"image": "oxidized/oxidized:latest",
-		"exposedPort": {
-			"protocol":"TCP",
-			"targetPort":8888
-		},
-		"envVariables": [
-			"CONFIG_RELOAD_INTERVAL=600"
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"DOCKER_ENGINE"
 		],
-		"containerVolumes": [
-			"/root/.config/oxidized"
-		]
+		"dockerContainerTemplate": {
+			"image": "oxidized/oxidized:latest",
+			"exposedPort": {
+				"protocol": "TCP",
+				"targetPort": 8888
+			},
+			"envVariables": [
+				"CONFIG_RELOAD_INTERVAL=600"
+			],
+			"containerVolumes": [
+				"/root/.config/oxidized"
+			]
+		}
 	},
 	"configTemplate": {
 		"template": {

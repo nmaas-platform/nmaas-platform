@@ -68,7 +68,7 @@ public class AppRequestVerificationTask {
         final Application application = appRepository.findOne(Long.valueOf(applicationId.getValue()));
         if (application == null)
             throw new InvalidApplicationIdException("Application with id " + applicationId + " does not exist in repository");
-        return DockerContainerTemplate.copy(application.getDockerContainerTemplate());
+        return DockerContainerTemplate.copy(application.getAppDeploymentSpec().getDockerContainerTemplate());
     }
 
 }
