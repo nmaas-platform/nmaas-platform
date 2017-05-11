@@ -1,15 +1,22 @@
 import { Pipe, PipeTransform, OnDestroy, WrappedValue, ChangeDetectorRef, Injectable } from '@angular/core';
 
-import { RequestOptions, ResponseContentType } from '@angular/http';
+import { Http, Headers, Request, Response, RequestOptionsArgs, RequestOptions, ResponseContentType } from '@angular/http';
 import { AuthHttp } from 'angular2-jwt';
 
 import { Subscription } from 'rxjs/Subscription';
 import { Subscriber } from 'rxjs/Subscriber';
+
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
+
 
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 
 @Injectable()
 export class AuthHttpWrapper {
@@ -19,6 +26,10 @@ export class AuthHttpWrapper {
     
     
     public get(url: string): Observable<any> {
+        console.debug('Secure get url ' + url);
+        if(!url)
+            return Observable.throw('Empty url');
+        
        let requestOptions: RequestOptions = new RequestOptions( { responseType: ResponseContentType.Blob });
         
        return new Observable<any>((observer: Subscriber<any>) => {
@@ -26,6 +37,11 @@ export class AuthHttpWrapper {
  
             this.authHttp
                 .get(url, requestOptions)
+                .catch((error: Response | any) => {
+                    var errMsg:string = 'Unable to get ' + url;
+                    console.debug(errMsg);
+                    return Observable.throw(errMsg);
+                })
                 .subscribe(m => {
                     objectUrl = URL.createObjectURL(m.blob());
                     observer.next(objectUrl);
@@ -118,12 +134,18 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     }
 
     private dispose() {
-        this.subscription.unsubscribe();
-        this.internalSubscription.unsubscribe();
+        
+        if(this.subscription)
+            this.subscription.unsubscribe();
+        this.subscription = null;
+        
+        if(this.internalSubscription)
+            this.internalSubscription.unsubscribe();
         this.internalSubscription = null;
+       
         this.latestValue = null;
         this.latestReturnedValue = null;
-        this.subscription = null;
+        
         this.obj = null;
     }
 
