@@ -1,7 +1,6 @@
-package net.geant.nmaas.portal.persistent.entity;
+package net.geant.nmaas.orchestration.entities;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import javax.persistence.*;
 import java.io.Serializable;

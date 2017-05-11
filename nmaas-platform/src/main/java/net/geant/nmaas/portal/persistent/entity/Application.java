@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
