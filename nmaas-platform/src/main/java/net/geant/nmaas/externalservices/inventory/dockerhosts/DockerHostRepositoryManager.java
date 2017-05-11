@@ -143,7 +143,8 @@ public class DockerHostRepositoryManager {
     }
 
     /**
-     * Loads first preferred {@link DockerHost} instance from the repository
+     * Loads first preferred {@link DockerHost} instance from the repository.
+     * Note that this method should be replaced with more sophisticated selection algorithm.
      *
      * @return {@link DockerHost} instance loaded form the repository
      * @throws DockerHostNotFoundException when preferred Docker host does not exists in the repository
@@ -154,6 +155,16 @@ public class DockerHostRepositoryManager {
             return preferredHosts.iterator().next();
         else
             throw new DockerHostNotFoundException("Did not find preferred Docker host in the repository.");
+    }
+
+    /**
+     * Loads default {@link DockerHost} instance to be used for Docker Compose deployments.
+     *
+     * @return {@link DockerHost} instance loaded form the repository
+     * @throws DockerHostNotFoundException when preferred Docker host does not exists in the repository
+     */
+    public DockerHost loadPreferredDockerHostForDockerCompose() throws DockerHostNotFoundException {
+        return repository.findByName("GN4-DOCKER-2").orElseThrow(() -> new DockerHostNotFoundException("Did not find preferred Docker host in the repository."));
     }
 
     void validateDockerHostName(String name) throws DockerHostInvalidException {

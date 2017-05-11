@@ -25,6 +25,7 @@ public class DockerHostRepositoryManagerTest {
     private final static String TEST_DOCKER_HOST_NAME = "TEST-DOCKER-HOST-1";
     private final static String PREFERRED_DOCKER_HOST_NAME = "GN4-DOCKER-1";
     private final static String EXISTING_DOCKER_HOST_NAME = "GN4-DOCKER-1";
+    private final static String PREFERRED_DOCKER_HOST_FOR_DOCKER_COMPOSE_NAME = "GN4-DOCKER-2";
     private final static String VOLUME_PATH = "/new/path";
 
     @Test
@@ -113,6 +114,13 @@ public class DockerHostRepositoryManagerTest {
             dockerHostRepositoryManager.addDockerHost(preferredDockerHost);
             assertTrue(true);
         }
+    }
+
+    @Test
+    public void shouldLoadPreferredDockerHostForDockerCompose() throws Exception {
+        assertEquals(
+                dockerHostRepositoryManager.loadByName(PREFERRED_DOCKER_HOST_FOR_DOCKER_COMPOSE_NAME),
+                dockerHostRepositoryManager.loadPreferredDockerHostForDockerCompose());
     }
 
     private DockerHost initNewDockerHost(String hostName) throws Exception {
