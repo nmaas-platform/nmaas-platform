@@ -10,9 +10,9 @@ import java.util.UUID;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class SimpleNmServiceConfigurationHelper {
+class SimpleNmServiceConfigurationHelper {
 
-    public static String generateConfigId(NmServiceConfigurationRepository configurations) {
+    static String generateConfigId(NmServiceConfigurationRepository configurations) {
         String generatedConfigId;
         do {
             generatedConfigId = UUID.randomUUID().toString();
@@ -20,7 +20,7 @@ public class SimpleNmServiceConfigurationHelper {
         return generatedConfigId;
     }
 
-    public static String configFileNameFromTemplateName(String templateName) throws ConfigTemplateHandlingException {
+    static String configFileNameFromTemplateName(String templateName) throws ConfigTemplateHandlingException {
         if (!templateName.endsWith(NmServiceConfigurationTemplatesRepository.DEFAULT_TEMPLATE_FILE_NAME_SUFFIX))
             throw new ConfigTemplateHandlingException("Invalid configuration template file name -> " + templateName);
         templateName = templateName.substring(templateName.lastIndexOf(File.separator) + 1);
