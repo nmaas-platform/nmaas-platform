@@ -3,9 +3,9 @@ package net.geant.nmaas.nmservice.deployment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spotify.docker.client.exceptions.DockerException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClientFactory;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerTemplate;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,17 +20,17 @@ import java.io.IOException;
 public class DockerContainerTemplatesIntTest {
 
     @Autowired
-    private DockerHostRepository dockerHostRepository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private static final String jsonRepresentationOfOxidizedTemplate =
-            "{\"image\":\"oxidized/oxidized:latest\",\"exposedPort\":{\"protocol\":\"TCP\",\"targetPort\":8888},\"envVariables\":[\"CONFIG_RELOAD_INTERVAL=600\"],\"envVariablesInSpecRequired\":false,\"containerVolumes\":[\"/root/.config/oxidized\"]}";
+            "{\"image\":\"oxidized/oxidized:latest\",\"exposedPort\":{\"protocol\":\"TCP\",\"targetPort\":8888},\"envVariables\":[\"CONFIG_RELOAD_INTERVAL=600\"],\"containerVolumes\":[\"/root/.config/oxidized\"]}";
 
     @Ignore
     @Test
     public void shouldSerializeOxidizedContainerTemplateAndPullImage() throws IOException, DockerHostNotFoundException, DockerException, InterruptedException {
         ObjectMapper mapper = new ObjectMapper();
         DockerContainerTemplate fromJson = mapper.readValue(jsonRepresentationOfOxidizedTemplate, DockerContainerTemplate.class);
-        DockerApiClientFactory.client(dockerHostRepository.loadPreferredDockerHost().apiUrl()).pull(fromJson.getImage());
+        new DockerApiClient().pull(dockerHostRepositoryManager.loadPreferredDockerHost().apiUrl(), fromJson.getImage());
     }
 
 }

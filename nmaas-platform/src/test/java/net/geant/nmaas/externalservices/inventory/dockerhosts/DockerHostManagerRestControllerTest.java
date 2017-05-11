@@ -3,6 +3,7 @@ package net.geant.nmaas.externalservices.inventory.dockerhosts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.DockerHostManagerRestController;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,13 +41,13 @@ public class DockerHostManagerRestControllerTest {
     private final static String URL_PREFIX = "/platform/api/management/dockerhosts";
 
     @Autowired
-    private DockerHostRepository dockerHostRepository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private MockMvc mvc;
 
     @Before
     public void init() {
-        mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerRestController(dockerHostRepository)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerRestController(dockerHostRepositoryManager)).build();
     }
 
     @Test
@@ -56,7 +57,7 @@ public class DockerHostManagerRestControllerTest {
                 .content(new ObjectMapper().writeValueAsString(initNewDockerHost(FIRST_HOST_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertEquals(initNewDockerHost(FIRST_HOST_NAME), dockerHostRepository.loadByName(FIRST_HOST_NAME));
+        assertEquals(initNewDockerHost(FIRST_HOST_NAME), dockerHostRepositoryManager.loadByName(FIRST_HOST_NAME));
     }
 
     @Test
@@ -70,10 +71,10 @@ public class DockerHostManagerRestControllerTest {
 
     @Test
     public void shouldRemoveDockerHost() throws Exception {
-        int sizeBefore = dockerHostRepository.loadAll().size();
+        int sizeBefore = dockerHostRepositoryManager.loadAll().size();
         mvc.perform(delete(URL_PREFIX + "/{name}", THIRD_HOST_NAME))
                 .andExpect(status().isNoContent());
-        assertEquals(sizeBefore - 1, dockerHostRepository.loadAll().size());
+        assertEquals(sizeBefore - 1, dockerHostRepositoryManager.loadAll().size());
     }
 
     @Test
@@ -117,7 +118,7 @@ public class DockerHostManagerRestControllerTest {
                 .andReturn();
         //noinspection unchecked
         assertEquals(
-                dockerHostRepository.loadAll().size(),
+                dockerHostRepositoryManager.loadAll().size(),
                 ((List<DockerHost>) new ObjectMapper().readValue(
                         result.getResponse().getContentAsString(),
                         new TypeReference<List<DockerHost>>() {})).size());

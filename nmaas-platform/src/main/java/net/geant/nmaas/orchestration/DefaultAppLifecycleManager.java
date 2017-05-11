@@ -3,11 +3,10 @@ package net.geant.nmaas.orchestration;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.AppRemoveActionEvent;
-import net.geant.nmaas.orchestration.events.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
@@ -26,7 +25,7 @@ import java.util.UUID;
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Autowired
-    private AppDeploymentRepository repository;
+    private AppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -37,7 +36,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public Identifier deployApplication(Identifier clientId, Identifier applicationId) {
         Identifier deploymentId = generateDeploymentId();
         AppDeployment appDeployment = new AppDeployment(deploymentId, clientId, applicationId);
-        repository.save(appDeployment);
+        repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
     }
@@ -51,16 +50,16 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     boolean deploymentIdAlreadyInUse(Identifier generatedId) {
-        return repository.findByDeploymentId(generatedId).isPresent();
+        return repositoryManager.load(generatedId).isPresent();
     }
 
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
-        AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException());
+        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException());
         appDeployment.setConfiguration(configuration);
-        repository.save(appDeployment);
+        repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
     }
 

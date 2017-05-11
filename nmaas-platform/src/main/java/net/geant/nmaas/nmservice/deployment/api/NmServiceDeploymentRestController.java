@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.api;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotConnectToOrchestratorException;
@@ -25,7 +25,7 @@ public class NmServiceDeploymentRestController {
     private ContainerOrchestrationProvider orchestrator;
 
     @Autowired
-    private DockerHostRepository dockerHostRepository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String basicInfo() {
@@ -34,7 +34,7 @@ public class NmServiceDeploymentRestController {
 
     @RequestMapping(value = "/deployed", method = RequestMethod.GET)
     public List<String> services(HttpServletResponse response) throws DockerHostNotFoundException, ContainerOrchestratorInternalErrorException, CouldNotConnectToOrchestratorException {
-        return orchestrator.listServices(dockerHostRepository.loadPreferredDockerHost());
+        return orchestrator.listServices(dockerHostRepositoryManager.loadPreferredDockerHost());
     }
 
     @ExceptionHandler(DockerHostNotFoundException.class)

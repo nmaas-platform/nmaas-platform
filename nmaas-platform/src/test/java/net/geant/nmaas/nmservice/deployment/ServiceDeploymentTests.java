@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class ServiceDeploymentTests {
 	private ContainerOrchestrationProvider orchestrator;
 
 	@Test
-	public void shouldInjectDockerSwarm() {
+	public void shouldInjectDockerEngine() {
 		assertThat(orchestrator, is(notNullValue()));
 		assertThat(orchestrator.info(), containsString("DockerEngine"));
 	}

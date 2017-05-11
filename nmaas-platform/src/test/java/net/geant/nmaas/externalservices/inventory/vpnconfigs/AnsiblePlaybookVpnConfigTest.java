@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.vpnconfigs;
 
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -89,7 +90,7 @@ public class AnsiblePlaybookVpnConfigTest {
 
     @SuppressWarnings("StringBufferReplaceableByString")
     private String setTooLongExceptionMessage(AnsiblePlaybookVpnConfig.Type type) {
-        int max = new AnsiblePlaybookVpnConfig().getMaxpropertyLength();
+        int max = AnsiblePlaybookVpnConfig.MAX_PROPERTY_LENGTH;
         StringBuilder messageException = new StringBuilder();
         messageException.append("Target Router is too long (max ").append(max).append(" characters)\n");
         messageException.append("VRF ID is too long (max ").append(max).append(" characters)\n");

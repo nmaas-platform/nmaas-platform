@@ -1,14 +1,13 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerContainerSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.ContainerNetworkIpamSpec;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,27 +30,33 @@ public class DockerEngineWorkflowIntTest {
 	private ContainerOrchestrationProvider orchestrator;
 
 	@Autowired
-	private NmServiceRepository nmServiceRepository;
+	private NmServiceRepositoryManager nmServiceRepositoryManager;
 
 	@Autowired
-	private DockerHostRepository dockerHostRepository;
+	private DockerHostRepositoryManager dockerHostRepositoryManager;
 
-	String serviceName = "tomcat-alpine";
+	@Autowired
+	private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
+
+	private Identifier deploymentId = Identifier.newInstance("deploymentId");
+
+	private Identifier clientId = Identifier.newInstance("clientId");
 
 	@Before
 	public void setup() throws DockerHostNotFoundException {
-		DockerContainerSpec spec = new DockerContainerSpec(
-				serviceName,
-				ITestHelper.alpineTomcatTemplate(),
-				100L);
-		final ContainerNetworkIpamSpec ipamSpec = new ContainerNetworkIpamSpec(
-				"10.10.1.0/24",
-				"10.10.1.254");
-		final ContainerNetworkDetails testNetworkDetails1 = new ContainerNetworkDetails(8080, ipamSpec, 123);
-		final NmServiceInfo service = new NmServiceInfo(serviceName, NmServiceDeploymentState.INIT, spec);
-		service.setHost(dockerHostRepository.loadPreferredDockerHost());
-		service.setNetwork(testNetworkDetails1);
-		nmServiceRepository.storeService(service);
+		final NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, ITestHelper.alpineTomcatTemplate());
+		final DockerHost dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
+		service.setHost(dockerHost);
+		final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
+		final DockerContainerNetDetails testNetworkDetails1 = new DockerContainerNetDetails(8080, ipamSpec);
+		final DockerContainerVolumesDetails testVolumeDetails1 = new DockerContainerVolumesDetails("/home/directory");
+		final DockerContainer dockerContainer = new DockerContainer();
+		dockerContainer.setNetworkDetails(testNetworkDetails1);
+		dockerContainer.setVolumesDetails(testVolumeDetails1);
+		service.setDockerContainer(dockerContainer);
+		nmServiceRepositoryManager.storeService(service);
+		final DockerNetwork dockerNetwork = new DockerNetwork(clientId, dockerHost, 100, "10.10.1.0/24", "10.10.1.254");
+		dockerNetworkRepositoryManager.storeNetwork(dockerNetwork);
 	}
 
 	@Ignore
@@ -61,29 +66,28 @@ public class DockerEngineWorkflowIntTest {
 			CouldNotConnectToOrchestratorException,
 			CouldNotPrepareEnvironmentException,
 			CouldNotDeployNmServiceException,
-            CouldNotRemoveNmServiceException,
-			InterruptedException,
-			NmServiceRepository.ServiceNotFoundException,
-			ContainerNetworkCheckFailedException,
-			ContainerCheckFailedException {
+			CouldNotRemoveNmServiceException,
+			DockerNetworkCheckFailedException,
+			ContainerCheckFailedException,
+			InvalidDeploymentIdException,
+			InterruptedException {
 		// orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(serviceName);
-		orchestrator.prepareDeploymentEnvironment(serviceName);
-		orchestrator.deployNmService(serviceName);
+		orchestrator.prepareDeploymentEnvironment(deploymentId);
+		orchestrator.deployNmService(deploymentId);
 		Thread.sleep(2000);
-		orchestrator.checkService(serviceName);
-		assertThat(orchestrator.listServices(nmServiceRepository.loadService(serviceName).getHost()),
-				Matchers.hasItem(nmServiceRepository.loadService(serviceName).getDeploymentId()));
-		orchestrator.removeNmService(serviceName);
+		orchestrator.checkService(deploymentId);
+		assertThat(orchestrator.listServices(nmServiceRepositoryManager.loadService(deploymentId).getHost()),
+				Matchers.hasItem(nmServiceRepositoryManager.loadService(deploymentId).getDockerContainer().getDeploymentId()));
+		orchestrator.removeNmService(deploymentId);
 		Thread.sleep(2000);
-		assertThat(orchestrator.listServices(nmServiceRepository.loadService(serviceName).getHost()),
-				Matchers.not(Matchers.hasItem(nmServiceRepository.loadService(serviceName).getDeploymentId())));
+		assertThat(orchestrator.listServices(nmServiceRepositoryManager.loadService(deploymentId).getHost()),
+				Matchers.not(Matchers.hasItem(nmServiceRepositoryManager.loadService(deploymentId).getDockerContainer().getDeploymentId())));
 	}
 
 	@After
 	public void cleanServices() throws CouldNotConnectToOrchestratorException {
-		System.out.println("Cleaning up ... removing containers.");
 		try {
-			orchestrator.removeNmService(serviceName);
+			orchestrator.removeNmService(deploymentId);
 		} catch (CouldNotRemoveNmServiceException | ContainerOrchestratorInternalErrorException e) {
 			// service was already removed
 		}

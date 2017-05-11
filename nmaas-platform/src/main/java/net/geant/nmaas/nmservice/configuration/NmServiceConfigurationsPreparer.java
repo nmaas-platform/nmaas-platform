@@ -3,14 +3,14 @@ package net.geant.nmaas.nmservice.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import net.geant.nmaas.nmservice.DeploymentIdToNmServiceNameMapper;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +42,10 @@ public class NmServiceConfigurationsPreparer {
     private NmServiceConfigurationTemplatesRepository templates;
 
     @Autowired
-    private DeploymentIdToNmServiceNameMapper deploymentIdToNmServiceNameMapper;
-
-    @Autowired
-    private NmServiceRepository nmServices;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     public List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
-            throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, NmServiceRepository.ServiceNotFoundException, ConfigTemplateHandlingException, IOException {
+            throws ConfigTemplateHandlingException, IOException, InvalidDeploymentIdException {
         final Map<String, Object> appConfigurationModel = getModelFromJson(appConfiguration);
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
         List<String> configurationsIdentifiers = new ArrayList<>();
@@ -72,9 +69,8 @@ public class NmServiceConfigurationsPreparer {
 
     @Loggable(LogLevel.DEBUG)
     void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel)
-            throws DeploymentIdToNmServiceNameMapper.EntryNotFoundException, NmServiceRepository.ServiceNotFoundException {
-        final String nmServiceName = deploymentIdToNmServiceNameMapper.nmServiceName(deploymentId);
-        nmServices.updateManagedDevices(nmServiceName, (List<String>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY));
+            throws InvalidDeploymentIdException {
+        nmServiceRepositoryManager.updateManagedDevices(deploymentId, (List<String>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY));
     }
 
     void storeConfigurationInRepository(String configId, NmServiceConfiguration configuration) {

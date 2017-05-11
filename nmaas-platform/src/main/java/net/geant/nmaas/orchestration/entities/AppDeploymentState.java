@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.entities;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentState;
-import net.geant.nmaas.nmservice.deployment.nmservice.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 
 /**
@@ -14,50 +13,6 @@ public enum AppDeploymentState {
         public AppLifecycleState lifecycleState() {
             return AppLifecycleState.REQUESTED;
         }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REQUEST_VERIFIED:
-                    return REQUESTED_DCN_REQUEST_VALIDATED;
-                case REQUEST_VERIFICATION_FAILED:
-                    return REQUEST_VALIDATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-
-        @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REQUEST_VERIFIED:
-                    return REQUESTED_NM_SERVICE_REQUEST_VALIDATED;
-                case REQUEST_VERIFICATION_FAILED:
-                    return REQUEST_VALIDATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    REQUESTED_NM_SERVICE_REQUEST_VALIDATED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.REQUEST_VALIDATION_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REQUEST_VERIFIED:
-                    return REQUEST_VALIDATED;
-                case REQUEST_VERIFICATION_FAILED:
-                    return REQUEST_VALIDATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    REQUESTED_DCN_REQUEST_VALIDATED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.REQUEST_VALIDATION_IN_PROGRESS; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
@@ -76,22 +31,10 @@ public enum AppDeploymentState {
         public AppLifecycleState lifecycleState() { return AppLifecycleState.REQUEST_VALIDATED; }
 
         @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case ENVIRONMENT_PREPARED:
-                    return DEPLOYMENT_ENVIRONMENT_FOR_DCN_PREPARED;
-                case ENVIRONMENT_PREPARATION_FAILED:
-                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-
-        @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
                 case ENVIRONMENT_PREPARED:
-                    return DEPLOYMENT_ENVIRONMENT_FOR_NM_SERVICE_PREPARED;
+                    return DEPLOYMENT_ENVIRONMENT_PREPARED;
                 case ENVIRONMENT_PREPARATION_FAILED:
                     return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
                 default:
@@ -104,49 +47,15 @@ public enum AppDeploymentState {
         public AppLifecycleState lifecycleState() { return AppLifecycleState.REQUEST_VALIDATION_FAILED; }
 
     },
-    DEPLOYMENT_ENVIRONMENT_FOR_NM_SERVICE_PREPARED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case ENVIRONMENT_PREPARED:
-                    return DEPLOYMENT_ENVIRONMENT_PREPARED;
-                case ENVIRONMENT_PREPARATION_FAILED:
-                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    DEPLOYMENT_ENVIRONMENT_FOR_DCN_PREPARED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case ENVIRONMENT_PREPARED:
-                    return DEPLOYMENT_ENVIRONMENT_PREPARED;
-                case ENVIRONMENT_PREPARATION_FAILED:
-                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
     DEPLOYMENT_ENVIRONMENT_PREPARED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARED; }
 
         @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
-                case DEPLOYMENT_INITIATED:
-                    return MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS;
-                case DEPLOYMENT_FAILED:
-                    return MANAGEMENT_VPN_CONFIGURATION_FAILED;
+                case READY_FOR_DEPLOYMENT:
+                    return MANAGEMENT_VPN_CONFIGURED;
                 default:
                     throw new InvalidAppStateException(message(this, state));
             }
@@ -154,61 +63,11 @@ public enum AppDeploymentState {
     },
     DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED; }
-    },
-    MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case DEPLOYED:
-                    return MANAGEMENT_VPN_CONFIGURED;
-                case DEPLOYMENT_FAILED:
-                    return MANAGEMENT_VPN_CONFIGURATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
         }
     },
     MANAGEMENT_VPN_CONFIGURED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case VERIFICATION_INITIATED:
-                    return MANAGEMENT_VPN_VERIFICATION_IN_PROGRESS;
-                case VERIFICATION_FAILED:
-                    return MANAGEMENT_VPN_VERIFICATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    MANAGEMENT_VPN_CONFIGURATION_FAILED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_FAILED; }
-    },
-    MANAGEMENT_VPN_VERIFICATION_IN_PROGRESS {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case VERIFIED:
-                    return MANAGEMENT_VPN_VERIFIED;
-                case VERIFICATION_FAILED:
-                    return MANAGEMENT_VPN_VERIFICATION_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    MANAGEMENT_VPN_VERIFIED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURED; }
 
@@ -223,10 +82,6 @@ public enum AppDeploymentState {
                     throw new InvalidAppStateException(message(this, state));
             }
         }
-    },
-    MANAGEMENT_VPN_VERIFICATION_FAILED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.MANAGEMENT_VPN_CONFIGURATION_FAILED; }
     },
     APPLICATION_CONFIGURATION_IN_PROGRESS {
         @Override
@@ -299,89 +154,9 @@ public enum AppDeploymentState {
     APPLICATION_DEPLOYMENT_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED; }
-    },
-    APPLICATION_DEPLOYMENT_VERIFIED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REMOVAL_INITIATED:
-                    return APPLICATION_DCN_REMOVAL_IN_PROGRESS;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REMOVED:
-                    return APPLICATION_NM_SERVICE_REMOVED;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    APPLICATION_DEPLOYMENT_VERIFICATION_FAILED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED; }
-    },
-    APPLICATION_NM_SERVICE_REMOVED {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REMOVAL_INITIATED:
-                    return APPLICATION_NM_SERVICE_REMOVED_AND_DCN_REMOVAL_IN_PROGRESS;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    APPLICATION_DCN_REMOVAL_IN_PROGRESS {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REMOVED:
-                    return APPLICATION_DCN_REMOVED;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-
-        @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REMOVED:
-                    return APPLICATION_NM_SERVICE_REMOVED_AND_DCN_REMOVAL_IN_PROGRESS;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-    },
-    APPLICATION_NM_SERVICE_REMOVED_AND_DCN_REMOVAL_IN_PROGRESS {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
-
-        @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
             switch (state) {
                 case REMOVED:
                     return APPLICATION_REMOVED;
@@ -392,9 +167,25 @@ public enum AppDeploymentState {
             }
         }
     },
-    APPLICATION_DCN_REMOVED {
+    APPLICATION_DEPLOYMENT_VERIFIED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS; }
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVED:
+                    return APPLICATION_REMOVED;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    APPLICATION_DEPLOYMENT_VERIFICATION_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
@@ -425,22 +216,10 @@ public enum AppDeploymentState {
         public AppLifecycleState lifecycleState() { return AppLifecycleState.INTERNAL_ERROR; }
 
         @Override
-        public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-            switch (state) {
-                case REMOVAL_INITIATED:
-                    return APPLICATION_DCN_REMOVAL_IN_PROGRESS;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
-                default:
-                    throw new InvalidAppStateException(message(this, state));
-            }
-        }
-
-        @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
                 case REMOVED:
-                    return APPLICATION_NM_SERVICE_REMOVED;
+                    return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
                     return APPLICATION_REMOVAL_FAILED;
                 default:
@@ -454,16 +233,8 @@ public enum AppDeploymentState {
 
     public abstract AppLifecycleState lifecycleState();
 
-    public AppDeploymentState nextState(DcnDeploymentState state) throws InvalidAppStateException {
-        throw new InvalidAppStateException(message(this, state));
-    }
-
     public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
         throw new InvalidAppStateException(message(this, state));
-    }
-
-    private static String message(AppDeploymentState currentState, DcnDeploymentState receivedState) {
-        return "Illegal attempt to transit from " + currentState + " on " + receivedState;
     }
 
     private static String message(AppDeploymentState currentState, NmServiceDeploymentState receivedState) {

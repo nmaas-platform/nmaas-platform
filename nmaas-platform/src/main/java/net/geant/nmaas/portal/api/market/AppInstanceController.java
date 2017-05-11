@@ -203,12 +203,10 @@ public class AppInstanceController extends AppBaseController {
 		case REQUEST_VALIDATED:
 			appInstanceState = AppInstanceState.VALIDATION;
 			break;
-
 		case DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS:
-		case DEPLOYMENT_ENVIRONMENT_PREPARED:
 			appInstanceState = AppInstanceState.PREPARATION;
 			break;
-
+		case DEPLOYMENT_ENVIRONMENT_PREPARED:
 		case MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS:
 			appInstanceState = AppInstanceState.CONNECTING;
 			break;
@@ -231,7 +229,6 @@ public class AppInstanceController extends AppBaseController {
 		case APPLICATION_REMOVED:
 			appInstanceState = AppInstanceState.DONE;
 			break;
-
 		case INTERNAL_ERROR:
 		case GENERIC_ERROR:
 		case REQUEST_VALIDATION_FAILED:
