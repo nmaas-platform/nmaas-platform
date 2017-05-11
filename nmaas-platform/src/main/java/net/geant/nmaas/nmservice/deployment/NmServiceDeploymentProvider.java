@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
@@ -9,7 +9,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface NmServiceDeploymentProvider {
 
-    void verifyRequest(Identifier deploymentId, Identifier clientId, DockerContainerTemplate template) throws NmServiceRequestVerificationException;
+    void verifyRequest(Identifier deploymentId, Identifier clientId, AppDeploymentSpec template) throws NmServiceRequestVerificationException;
 
     void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException;
 
