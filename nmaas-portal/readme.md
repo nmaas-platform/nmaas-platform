@@ -6,7 +6,7 @@ Technologies:
  * JWT authentication
  * Spring 4 with REST API for GUI backend
 
-Prerequisities:
+Prerequisites:
 ---
 
  + install npm (from NodeJS 6.9.5+)

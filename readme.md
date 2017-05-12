@@ -1,5 +1,7 @@
 # Network Management as a Service (NMaaS)
 
+Implemented within GN4-2 JRA2-T5.
+
 ## Portal (GUI)
 Defaults:
  * url:
