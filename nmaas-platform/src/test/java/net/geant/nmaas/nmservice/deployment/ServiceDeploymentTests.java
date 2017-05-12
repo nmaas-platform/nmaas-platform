@@ -18,7 +18,7 @@ public class ServiceDeploymentTests {
 
 	@Autowired
 	@Qualifier("DockerEngine")
-	private ContainerOrchestrationProvider orchestrator;
+	private ContainerOrchestrator orchestrator;
 
 	@Test
 	public void shouldInjectDockerEngine() {

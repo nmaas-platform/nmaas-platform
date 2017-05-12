@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 import java.util.List;
@@ -9,14 +10,23 @@ import java.util.List;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public interface ContainerOrchestrationProvider {
+public interface ContainerOrchestrator {
 
     /**
-     * Provides basic information about currently used orchestration provider.
+     * Provides basic information about currently used container orchestrator.
      *
      * @return information about the orchestration provider
      */
     String info();
+
+    /**
+     * Verifies if currently used container orchestrator is on the list of supported deployment environments specified
+     * for NM service being requested.
+     *
+     * @param supportedDeploymentEnvironments list of deployment environments supported by an application
+     */
+    void verifyDeploymentEnvironmentSupport(List<AppDeploymentEnv> supportedDeploymentEnvironments)
+            throws NmServiceRequestVerificationException;
 
     /**
      * Checks if requested NM service deployment is possible taking into account available resources, currently

@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -24,7 +25,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Autowired
     @Qualifier("DockerEngine")
-    private ContainerOrchestrationProvider orchestrator;
+    private ContainerOrchestrator orchestrator;
 
     @Autowired
     private NmServiceRepositoryManager repositoryManager;
@@ -34,10 +35,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, Identifier clientId, DockerContainerTemplate template)
+    public void verifyRequest(Identifier deploymentId, Identifier clientId, AppDeploymentSpec deploymentSpec)
             throws NmServiceRequestVerificationException {
-        repositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, template));
         try {
+            orchestrator.verifyDeploymentEnvironmentSupport(deploymentSpec.getSupportedDeploymentEnvironments());
+            final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, clientId, DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
+            repositoryManager.storeService(serviceInfo);
             orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (NmServiceRequestVerificationException

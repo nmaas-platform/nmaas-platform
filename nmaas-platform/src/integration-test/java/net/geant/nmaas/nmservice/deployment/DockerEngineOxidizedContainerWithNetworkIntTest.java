@@ -29,7 +29,7 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 
 	@Autowired
 	@Qualifier("DockerEngine")
-	private ContainerOrchestrationProvider orchestrator;
+	private ContainerOrchestrator orchestrator;
 
 	@Autowired
 	private NmServiceRepositoryManager nmServiceRepositoryManager;

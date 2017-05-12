@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -54,21 +53,17 @@ public class AppRequestVerificationTask {
     public void verifyAppRequest(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException {
         final Identifier deploymentId = event.getDeploymentId();
         final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        final Identifier clientId = appDeployment.getClientId();
-        final Identifier applicationId = appDeployment.getApplicationId();
-        try {
-            serviceDeployment.verifyRequest(deploymentId, clientId, template(applicationId));
-        } catch (NmServiceRequestVerificationException e) {
-            log.warn("Service request verification failed for deployment " + deploymentId.value() + " -> " + e.getMessage());
-        }
-    }
-
-    @Loggable(LogLevel.DEBUG)
-    public DockerContainerTemplate template(Identifier applicationId) throws InvalidApplicationIdException {
-        final Application application = appRepository.findOne(Long.valueOf(applicationId.getValue()));
+        final Application application = appRepository.findOne(Long.valueOf(appDeployment.getApplicationId().getValue()));
         if (application == null)
-            throw new InvalidApplicationIdException("Application with id " + applicationId + " does not exist in repository");
-        return DockerContainerTemplate.copy(application.getDockerContainerTemplate());
+            throw new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository");
+        try {
+            serviceDeployment.verifyRequest(
+                    deploymentId,
+                    appDeployment.getClientId(),
+                    application.getAppDeploymentSpec());
+        } catch (NmServiceRequestVerificationException e) {
+            log.warn("Service request verification failed for deployment " + deploymentId + " -> " + e.getMessage());
+        }
     }
 
 }
