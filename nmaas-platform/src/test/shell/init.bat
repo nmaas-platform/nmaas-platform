@@ -135,7 +135,6 @@ curl -X GET %API_URL%/tags --header "Authorization: Bearer %token%" --header "Ac
 echo.
 echo ---------------------
 echo By tag:
-<<<<<<< HEAD
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
 echo.
@@ -172,4 +171,4 @@ curl -X GET %API_URL%/apps/1/logo
 
 =======
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
->>>>>>> refs/remotes/origin/develop
+
