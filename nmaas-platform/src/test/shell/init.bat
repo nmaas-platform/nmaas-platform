@@ -168,7 +168,3 @@ echo ---------------------
 echo Get app 1 logo without token
 curl -X GET %API_URL%/apps/1/logo
 
-
-=======
-curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
-
