@@ -1,10 +1,17 @@
+# NMaaS Portal (GUI)
+
+Technologies:
+ * Angular 2 (2.3.1)
+ * Bootstrap 3
+ * JWT authentication
+ * Spring 4 with REST API for GUI backend
 
 Prerequisities:
 ---
 
- + install npm
+ + install npm (from NodeJS 6.9.5+)
    - [https://nodejs.org](https://nodejs.org)
- + install angular-cli 
+ + install angular-cli (1.0.0-beta.28.3)
    - [http://cli.angular.io](http://cli.angular.io)
    - npm install -g angular-cli
  + install git
