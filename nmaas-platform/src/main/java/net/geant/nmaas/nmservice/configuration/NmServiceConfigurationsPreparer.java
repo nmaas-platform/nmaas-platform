@@ -31,7 +31,7 @@ import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurati
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-public class NmServiceConfigurationsPreparer {
+class NmServiceConfigurationsPreparer {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "routers";
 
@@ -44,7 +44,7 @@ public class NmServiceConfigurationsPreparer {
     @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
 
-    public List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
+    List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
             throws ConfigTemplateHandlingException, IOException, InvalidDeploymentIdException {
         final Map<String, Object> appConfigurationModel = getModelFromJson(appConfiguration);
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);

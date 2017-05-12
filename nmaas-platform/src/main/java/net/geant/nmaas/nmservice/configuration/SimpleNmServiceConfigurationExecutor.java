@@ -1,10 +1,9 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.configuration.exceptions.CommandExecutionException;
+import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.configuration.ssh.SshCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -35,17 +34,17 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
 
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
-    private SshCommandExecutor sshCommandExecutor;
+    private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
 
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public SimpleNmServiceConfigurationExecutor(
             NmServiceConfigurationsPreparer configurationsPreparer,
-            SshCommandExecutor sshCommandExecutor,
+            ConfigDownloadCommandExecutor configDownloadCommandExecutor,
             ApplicationEventPublisher applicationEventPublisher) {
         this.configurationsPreparer = configurationsPreparer;
-        this.sshCommandExecutor = sshCommandExecutor;
+        this.configDownloadCommandExecutor = configDownloadCommandExecutor;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -82,7 +81,7 @@ public class SimpleNmServiceConfigurationExecutor implements NmServiceConfigurat
     @Loggable(LogLevel.DEBUG)
     void triggerConfigurationDownloadOnRemoteHost(String configId, DockerHost host, String targetDirectoryName)
             throws CommandExecutionException {
-        sshCommandExecutor.executeConfigDownloadCommand(configId, host, targetDirectoryName);
+        configDownloadCommandExecutor.executeConfigDownloadCommand(configId, host, targetDirectoryName);
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
