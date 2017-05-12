@@ -4,10 +4,11 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidE
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
-import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 @Component
 @Profile("docker-compose")
-public class DockerComposeManager implements ContainerOrchestrationProvider {
+public class DockerComposeManager implements ContainerOrchestrator {
 
     @Autowired
     private NmServiceRepositoryManager repositoryManager;
@@ -36,6 +37,11 @@ public class DockerComposeManager implements ContainerOrchestrationProvider {
 
     @Autowired
     private DockerComposeFilePreparer composeFilePreparer;
+
+    @Override
+    public void verifyDeploymentEnvironmentSupport(List<AppDeploymentEnv> supportedDeploymentEnvironments) throws NmServiceRequestVerificationException {
+        // TODO
+    }
 
     @Override
     public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId) throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {

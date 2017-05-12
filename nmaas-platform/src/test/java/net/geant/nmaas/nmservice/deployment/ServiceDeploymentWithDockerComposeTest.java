@@ -18,7 +18,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 public class ServiceDeploymentWithDockerComposeTest {
 
 	@Autowired
-	private ContainerOrchestrationProvider orchestrator;
+	private ContainerOrchestrator orchestrator;
 
 	@Test
 	public void shouldInjectDockerComposeManager() {
