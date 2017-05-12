@@ -1,0 +1,16 @@
+0.1.0 (2017/05/12)
+
+	* Feature 1.
+	[New Feature] [NMAAS-x] [nmaas-platform]
+
+	Short description of Feature 1.
+
+	* Feature 2.
+	[New Feature] [NMAAS-x] [nmaas-portal]
+
+	Short description of Feature 2.
+
+    * Feature 3.
+    [New Feature] [NMAAS-x, NMAAS-y] [nmaas-platform, nmaas-portal]
+
+    Short description of Feature 3.
