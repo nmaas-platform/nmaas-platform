@@ -1,6 +1,10 @@
-package net.geant.nmaas.nmservice.configuration.ssh;
+package net.geant.nmaas.nmservice.configuration;
 
-public class NmServiceConfigDownloadCommand {
+import net.geant.nmaas.utils.ssh.Command;
+
+import java.util.function.Predicate;
+
+public class ConfigDownloadCommand implements Command {
 
 	private static final String MKDIR_COMMAND = "mkdir -p";
 	private static final String WGET_COMMAND = "wget";
@@ -19,7 +23,7 @@ public class NmServiceConfigDownloadCommand {
 	private static final String COLON = ":";
 	private static final String DOUBLE_AMPERSAND = "&&";
 
-	public static NmServiceConfigDownloadCommand command(
+	public static ConfigDownloadCommand command(
 			String authorizationHash,
 			String sourceUrl,
 			String configId,
@@ -62,7 +66,7 @@ public class NmServiceConfigDownloadCommand {
 				.append(SPACE)
 				.append(targetDirectory)
 				.append(targetFile);
-		return new NmServiceConfigDownloadCommand(sb.toString());
+		return new ConfigDownloadCommand(sb.toString());
 	}
 
 	private static String appendSlashToSourceUrlIfRequired(String sourceUrl) {
@@ -77,13 +81,19 @@ public class NmServiceConfigDownloadCommand {
 		return targetDirectory;
 	}
 
-	String command;
+	private String command;
 
-	public NmServiceConfigDownloadCommand(String command) {
+	private ConfigDownloadCommand(String command) {
 		this.command = command;
 	}
 
-	public String getCommand() {
+	@Override
+	public String asString() {
 		return command;
+	}
+
+	@Override
+	public Predicate<String> isOutputCorrect() {
+		return o -> o.contains("connected") && o.contains("... 200");
 	}
 }

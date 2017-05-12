@@ -2,6 +2,7 @@ package net.geant.nmaas.portal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import javax.servlet.Filter;
 
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -34,12 +36,12 @@ public class PortalConfig {
 			@Autowired
 			private UserRepository userRepository;
 			
-			// For demo purposes
 			@Override
+			@Transactional
 			public void afterPropertiesSet() {
-				addUser("admin", "admin", new Role[] { Role.ADMIN, Role.MANAGER });
-				addUser("manager", "manager", Role.MANAGER);
-				addUser("user", "user", Role.USER);
+				Optional<User> admin = userRepository.findByUsername("admin");
+				if(!admin.isPresent())
+					addUser("admin", "admin", new Role[] { Role.ADMIN, Role.MANAGER, Role.USER });
 			}
 
 			private void addUser(String username, String password, Role role) {								
