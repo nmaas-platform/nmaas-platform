@@ -107,7 +107,6 @@ echo ---------------------
 echo Get comments for first app
 curl -X GET %API_URL%/apps/1/comments --header "Authorization: Bearer %token%"
 
-
 echo.
 echo ---------------------
 echo Rate App1
@@ -120,7 +119,6 @@ curl -X GET %API_URL%/apps/1/rate/my --header "Authorization: Bearer %token%"
 echo.
 curl -X GET %API_URL%/apps/1/rate/user/1 --header "Authorization: Bearer %token%" 
 
-
 echo.
 echo Rate App2
 curl -X POST %API_URL%/apps/2/rate/my/2 --header "Authorization: Bearer %token%" 
@@ -128,7 +126,6 @@ curl -X POST %API_URL%/apps/2/rate/my/2 --header "Authorization: Bearer %token%"
 echo.
 echo Rate App3
 curl -X POST %API_URL%/apps/3/rate/my/5 --header "Authorization: Bearer %token%" 
-
 
 echo.
 echo ---------------------
@@ -138,6 +135,7 @@ curl -X GET %API_URL%/tags --header "Authorization: Bearer %token%" --header "Ac
 echo.
 echo ---------------------
 echo By tag:
+<<<<<<< HEAD
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
 echo.
@@ -172,3 +170,6 @@ echo Get app 1 logo without token
 curl -X GET %API_URL%/apps/1/logo
 
 
+=======
+curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
+>>>>>>> refs/remotes/origin/develop
