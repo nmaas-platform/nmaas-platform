@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerManager;
@@ -14,6 +14,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkManager;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -29,7 +30,7 @@ import java.util.List;
  */
 @Component
 @Profile("docker-engine")
-public class DockerEngineManager implements ContainerOrchestrationProvider {
+public class DockerEngineManager implements ContainerOrchestrator {
 
     @Autowired
     private DockerContainerManager dockerContainerManager;
@@ -42,6 +43,15 @@ public class DockerEngineManager implements ContainerOrchestrationProvider {
 
     @Autowired
     private DockerHostRepositoryManager dockerHosts;
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void verifyDeploymentEnvironmentSupport(List<AppDeploymentEnv> supportedDeploymentEnvironments)
+            throws NmServiceRequestVerificationException {
+        if(!supportedDeploymentEnvironments.contains(AppDeploymentEnv.DOCKER_ENGINE))
+            throw new NmServiceRequestVerificationException(
+                    "Service deployment not possible with currently used container orchestrator");
+    }
 
     @Override
     @Loggable(LogLevel.INFO)

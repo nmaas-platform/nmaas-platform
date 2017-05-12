@@ -2,13 +2,13 @@ package net.geant.nmaas.portal.api.domain;
 
 public class ApplicationComplete extends Application {
 
-    private DockerServiceTemplate dockerContainerTemplate;
+    private AppDeploymentSpec appDeploymentSpec;
 
-	public DockerServiceTemplate getDockerContainerTemplate() {
-		return dockerContainerTemplate;
+	public AppDeploymentSpec getAppDeploymentSpec() {
+		return appDeploymentSpec;
 	}
 
-	public void setDockerContainerTemplate(DockerServiceTemplate dockerContainerTemplate) {
-		this.dockerContainerTemplate = dockerContainerTemplate;
+	public void setAppDeploymentSpec(AppDeploymentSpec appDeploymentSpec) {
+		this.appDeploymentSpec = appDeploymentSpec;
 	}
 }

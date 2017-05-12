@@ -1,28 +1,13 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 @Entity
 @Table(name="application")
@@ -60,8 +45,8 @@ public class Application implements Serializable {
 	@OneToMany(orphanRemoval=true, fetch=FetchType.LAZY, cascade=CascadeType.ALL, mappedBy="application")
 	private List<Comment> comments = new ArrayList<Comment>();
 
-	@OneToOne(cascade=CascadeType.ALL, optional=true, orphanRemoval=true, fetch=FetchType.LAZY)
-	private DockerContainerTemplate dockerContainerTemplate;
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
+	private AppDeploymentSpec appDeploymentSpec;
 	
 	protected Application() {}
 
@@ -149,11 +134,11 @@ public class Application implements Serializable {
 		this.license = license;
 	}
 
-	public DockerContainerTemplate getDockerContainerTemplate() {
-		return dockerContainerTemplate;
+	public AppDeploymentSpec getAppDeploymentSpec() {
+		return appDeploymentSpec;
 	}
 
-	public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
-		this.dockerContainerTemplate = dockerContainerTemplate;
+	public void setAppDeploymentSpec(AppDeploymentSpec appDeploymentSpec) {
+		this.appDeploymentSpec = appDeploymentSpec;
 	}
 }

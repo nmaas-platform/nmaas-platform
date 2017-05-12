@@ -27,7 +27,7 @@ public class DockerEngineWorkflowIntTest {
 
 	@Autowired
 	@Qualifier("DockerEngine")
-	private ContainerOrchestrationProvider orchestrator;
+	private ContainerOrchestrator orchestrator;
 
 	@Autowired
 	private NmServiceRepositoryManager nmServiceRepositoryManager;

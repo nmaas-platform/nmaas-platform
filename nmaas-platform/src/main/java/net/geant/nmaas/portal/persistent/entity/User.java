@@ -60,6 +60,25 @@ public class User {
 	}
 
 
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setNewRoles(List<Role> roles) {
+		this.roles.clear();
+		for (Role role : roles) {
+			this.roles.add(new UserRole(this, role));
+		}	
+	}
+	
+	public void setRoles(List<UserRole> roles) {
+		this.roles = roles;
+	}
+
 	public String getUsername() {
 		return username;
 	}

@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.deployment.api;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.ContainerOrchestrationProvider;
+import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotConnectToOrchestratorException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.List;
 public class NmServiceDeploymentRestController {
 
     @Autowired
-    private ContainerOrchestrationProvider orchestrator;
+    private ContainerOrchestrator orchestrator;
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
