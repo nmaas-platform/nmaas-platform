@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.auth.basic;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import net.geant.nmaas.portal.api.auth.UserLogin;
 import net.geant.nmaas.portal.api.auth.UserRefreshToken;
 import net.geant.nmaas.portal.api.auth.UserSignup;
 import net.geant.nmaas.portal.api.auth.UserToken;
+import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -90,8 +92,8 @@ public class BasicAuthController {
 	}
 	
 	@RequestMapping(value="/ping", method=RequestMethod.GET)
-	public String ping(Principal principal) {
-		return (principal != null ? principal.getName() : null ) + "," + System.currentTimeMillis();
+	public Pong ping(Principal principal) {
+		return new Pong(new Date(System.currentTimeMillis()), (principal != null ? principal.getName() : null));
 	}
 	
 }

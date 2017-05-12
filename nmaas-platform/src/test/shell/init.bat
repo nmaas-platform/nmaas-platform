@@ -58,7 +58,7 @@ curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "C
 
 echo.
 echo App2 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\oxidized.svg;type=image/svg" %API_URL%/apps/2/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\oxidized.svg;type=image/svg+xml" %API_URL%/apps/2/logo
 
 echo.
 echo App2 screenshots
@@ -71,7 +71,7 @@ curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "C
 
 echo.
 echo App3 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\pmacct.svg;type=image/svg" %API_URL%/apps/3/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\pmacct.svg;type=image/svg+xml" %API_URL%/apps/3/logo
 
 echo.
 echo App3 screenshots
@@ -136,3 +136,35 @@ echo.
 echo ---------------------
 echo By tag:
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Create app2 instance
+curl -X POST %API_URL%/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
+
+echo.
+echo ---------------------
+echo Get app instance 1 state
+curl -X GET %API_URL%/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+
+echo.
+echo ---------------------
+echo Get app instance 1
+curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Send configuration to instance 1
+curl -X POST %API_URL%/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
+
+echo.
+echo ---------------------
+echo Get app instance 1
+curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Get app 1 logo without token
+curl -X GET %API_URL%/apps/1/logo
+

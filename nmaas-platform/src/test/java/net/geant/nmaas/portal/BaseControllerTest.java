@@ -1,11 +1,17 @@
 package net.geant.nmaas.portal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -14,10 +20,11 @@ import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 
+@ContextConfiguration(classes = {ApiSecurityConfig.class, ConvertersConfig.class, PersistentConfig.class})
 public class BaseControllerTest {
 
-	protected final static String USERNAME = "tester";
-	protected final static String PASSWORD = "tester123";
+	protected final static String ADMIN_USERNAME = "admin";
+	protected final static String ADMIN_PASSWORD = "admin";
 	
     @Autowired
     protected WebApplicationContext context;
@@ -42,12 +49,18 @@ public class BaseControllerTest {
 		return mvc;
 	}
 	
+	protected void prepareSecurity() {
+		SecurityContext context = SecurityContextHolder.createEmptyContext();		
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, Arrays.asList(new SimpleGrantedAuthority(Role.ADMIN.authority()))));
+		SecurityContextHolder.setContext(context);
+	}
+	
     protected String getValidUserTokenFor(Role role) {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);
-		User tester = new User(USERNAME, PASSWORD, roles);
+		User admin = new User(ADMIN_USERNAME, ADMIN_PASSWORD, roles);
 		
-		String token = tokenService.getToken(tester);
+		String token = tokenService.getToken(admin);
 		
 		return token;
     }

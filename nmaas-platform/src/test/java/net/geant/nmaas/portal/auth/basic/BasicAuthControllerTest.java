@@ -30,7 +30,7 @@ public class BasicAuthControllerTest extends BaseControllerTest {
     	
     	mvc.perform(get("/portal/api/auth/basic/ping")
     				.header("Authorization", "Bearer " + token))
-    				.andExpect(content().string(containsString(USERNAME)))
+    				.andExpect(content().string(containsString(ADMIN_USERNAME)))
     				.andExpect(status().isOk());
     		
     }
