@@ -3,7 +3,7 @@ package net.geant.nmaas.dcn.deployment;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,6 +51,7 @@ public class AnsibleContainerDeploymentIntTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("10.16.0.0"),
+                "/home/mgmt/ansible/scripts",
                 "/home/mgmt/ansible/volumes",
                 false);
     }

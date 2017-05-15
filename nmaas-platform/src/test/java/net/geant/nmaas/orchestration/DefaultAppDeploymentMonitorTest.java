@@ -7,6 +7,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostReposito
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -177,7 +178,8 @@ public class DefaultAppDeploymentMonitorTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("192.168.1.1"),
-                "/home/mgmt/ansible/volumes",
+                "/home/mgmt/scripts",
+                "/home/mgmt/volumes",
                 false);
     }
 

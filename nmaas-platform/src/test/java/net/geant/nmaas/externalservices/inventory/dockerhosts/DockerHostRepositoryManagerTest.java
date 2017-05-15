@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class DockerHostRepositoryManagerTest {
     @Test
     public void shouldUpdateDockerHost() throws Exception {
         dockerHostRepositoryManager.addDockerHost(initNewDockerHost(TEST_DOCKER_HOST_NAME));
-        assertEquals("/home/mgmt/ansible/volumes", dockerHostRepositoryManager.loadByName(TEST_DOCKER_HOST_NAME).getVolumesPath());
+        assertEquals("/home/mgmt/volumes", dockerHostRepositoryManager.loadByName(TEST_DOCKER_HOST_NAME).getVolumesPath());
         DockerHost dockerHost = initNewDockerHost(TEST_DOCKER_HOST_NAME);
         dockerHost.setVolumesPath(VOLUME_PATH);
         dockerHostRepositoryManager.updateDockerHost(TEST_DOCKER_HOST_NAME, dockerHost);
@@ -132,7 +132,8 @@ public class DockerHostRepositoryManagerTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("192.168.1.1"),
-                "/home/mgmt/ansible/volumes",
+                "/home/mgmt/scripts",
+                "/home/mgmt/volumes",
                 false);
     }
 }

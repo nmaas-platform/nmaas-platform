@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -42,6 +43,7 @@ public class DockerContainerConfigBuilderTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("10.10.0.0"),
+                "/data/scripts",
                 "/data/volumes",
                 true);
         serviceInfo = new NmServiceInfo(deploymentId, clientId, testTemplate1);

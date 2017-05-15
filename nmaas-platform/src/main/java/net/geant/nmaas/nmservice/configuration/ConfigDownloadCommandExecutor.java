@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;

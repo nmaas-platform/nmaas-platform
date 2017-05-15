@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,6 +35,7 @@ public class DockerHostRepositoryManager {
                     "eth0",
                     "eth1",
                     InetAddress.getByName("10.11.0.0"),
+                    "/home/mgmt/nmaasplatform/scripts",
                     "/home/mgmt/nmaasplatform/volumes",
                     true));
             addDockerHost(new DockerHost(
@@ -45,6 +46,7 @@ public class DockerHostRepositoryManager {
                     "eth0",
                     "eth1",
                     InetAddress.getByName("10.12.0.0"),
+                    "/home/mgmt/nmaasplatform/scripts",
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
             addDockerHost(new DockerHost(
@@ -55,6 +57,7 @@ public class DockerHostRepositoryManager {
                     "eth0",
                     "eth1",
                     InetAddress.getByName("10.13.0.0"),
+                    "/home/mgmt/nmaasplatform/scripts",
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
             addDockerHost(new DockerHost(
@@ -65,6 +68,7 @@ public class DockerHostRepositoryManager {
                     "eth0",
                     "eth1",
                     InetAddress.getByName("10.16.0.0"),
+                    "/home/mgmt/nmaasplatform/scripts",
                     "/home/mgmt/ansible/volumes",
                     false));
         } catch (DockerHostExistsException e) {
