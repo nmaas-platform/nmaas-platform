@@ -5,13 +5,15 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
  */
 public class DockerComposeFile {
 
-    private byte[] configFileContent;
+    public static final String DEFAULT_DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
+
+    private byte[] composeFileContent;
 
     public DockerComposeFile(byte[] configFileContent) {
-        this.configFileContent = configFileContent;
+        this.composeFileContent = configFileContent;
     }
 
-    public byte[] getConfigFileContent() {
-        return configFileContent;
+    public byte[] getComposeFileContent() {
+        return composeFileContent;
     }
 }
