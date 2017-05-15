@@ -36,14 +36,14 @@ public class UpdateNmServiceInfoWithDevicesTest {
     private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
+    private Identifier applicationId = Identifier.newInstance("applicationId");
     private Identifier clientId = Identifier.newInstance("clientId");
 
     private AppConfiguration appConfiguration;
 
     @Before
     public void setup() {
-        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, clientId, oxidizedTemplate());
+        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
         nmServiceRepositoryManager.storeService(serviceInfo);
         deploymentId = Identifier.newInstance("deploymentId");
         appConfiguration = new AppConfiguration("" +

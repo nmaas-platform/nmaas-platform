@@ -96,4 +96,7 @@ public class NmServiceRepositoryManager {
         return repository.getClientIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
+    public Identifier loadApplicationId(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.getApplicationIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
 }

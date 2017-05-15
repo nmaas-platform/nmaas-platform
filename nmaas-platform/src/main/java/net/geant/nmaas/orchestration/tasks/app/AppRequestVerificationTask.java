@@ -59,6 +59,7 @@ public class AppRequestVerificationTask {
         try {
             serviceDeployment.verifyRequest(
                     deploymentId,
+                    appDeployment.getApplicationId(),
                     appDeployment.getClientId(),
                     application.getAppDeploymentSpec());
         } catch (NmServiceRequestVerificationException e) {

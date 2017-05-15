@@ -9,7 +9,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface NmServiceDeploymentProvider {
 
-    void verifyRequest(Identifier deploymentId, Identifier clientId, AppDeploymentSpec template) throws NmServiceRequestVerificationException;
+    void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec template) throws NmServiceRequestVerificationException;
 
     void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException;
 

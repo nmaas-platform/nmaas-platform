@@ -71,7 +71,7 @@ public class DefaultAppDeploymentMonitorTest {
     private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
-
+    private final Identifier applicationId = Identifier.newInstance("this-is-example-application-id");
     private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
 
     @Before
@@ -83,7 +83,7 @@ public class DefaultAppDeploymentMonitorTest {
         DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(dockerContainerNetDetails);
         dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
-        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
+        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate()));
         nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
         nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
         appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));

@@ -39,11 +39,13 @@ public class NmServiceRepositoryManagerTest {
 
     private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
 
+    private Identifier applicationId = Identifier.newInstance("applicationId");
+
     private Identifier clientId = Identifier.newInstance("clientId");
 
     @Before
     public void setup() throws Exception {
-        NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, oxidizedTemplate());
+        NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
         repositoryManager.storeService(service);
         dockerHostRepositoryManager.addDockerHost(dockerHost("dh"));
     }
@@ -56,10 +58,11 @@ public class NmServiceRepositoryManagerTest {
 
     @Test
     public void shouldStoreUpdateAndRemoveServiceInfo() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
-        NmServiceInfo service = new NmServiceInfo(deploymentId2, clientId, oxidizedTemplate());
+        NmServiceInfo service = new NmServiceInfo(deploymentId2, applicationId, clientId, oxidizedTemplate());
         repositoryManager.storeService(service);
         assertThat(repositoryManager.loadService(deploymentId), is(notNullValue()));
         assertThat(repositoryManager.loadClientId(deploymentId), equalTo(clientId));
+        assertThat(repositoryManager.loadApplicationId(deploymentId), equalTo(applicationId));
         assertThat(repositoryManager.loadCurrentState(deploymentId), equalTo(NmServiceDeploymentState.INIT));
         assertThat(repositoryManager.loadService(deploymentId).getHost(), is(nullValue()));
         repositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
@@ -74,7 +77,7 @@ public class NmServiceRepositoryManagerTest {
 
     @Test(expected = Exception.class)
     public void shouldNotAllowForTwoServicesWithTheSameDeploymentId() throws InvalidDeploymentIdException {
-        NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, oxidizedTemplate());
+        NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
         repositoryManager.storeService(service);
     }
 

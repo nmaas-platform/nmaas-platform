@@ -71,7 +71,7 @@ public class NmServiceConfigurationTest {
 
     @Before
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
-        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, clientId, oxidizedTemplate()));
+        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate()));
         configuration = new AppConfiguration("");
         appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);

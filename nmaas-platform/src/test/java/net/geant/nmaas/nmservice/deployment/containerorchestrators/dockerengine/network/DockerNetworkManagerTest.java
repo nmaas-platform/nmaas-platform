@@ -53,6 +53,8 @@ public class DockerNetworkManagerTest {
 
     private Identifier deploymentId;
 
+    private Identifier applicationId;
+
     private Identifier clientId;
 
     private DockerHost dockerHost;
@@ -62,6 +64,7 @@ public class DockerNetworkManagerTest {
     @Before
     public void setup() throws DockerHostNotFoundException {
         deploymentId = Identifier.newInstance("deploymentId");
+        applicationId = Identifier.newInstance("applicationId");
         clientId = Identifier.newInstance("clientId");
         dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
         networkManager = new DockerNetworkManager(dockerNetworkRepositoryManager, dockerHostStateKeeper, dockerApiClient);
@@ -102,7 +105,7 @@ public class DockerNetworkManagerTest {
 
     @Test
     public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException {
-        final NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, new DockerContainerTemplate("image"));
+        final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
         final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
         final DockerContainerNetDetails testNetworkDetails1 = new DockerContainerNetDetails(8080, ipamSpec);
