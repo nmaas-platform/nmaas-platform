@@ -23,10 +23,20 @@ public class CommandExecutionTest {
                     "&& " +
                     "wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic dXNlcjpwYXNz\" http://1.1.1.1:9999/platform/api/dockercompose/files/deploymentId -O /home/user/dir/deploymentId/docker-compose.yml";
 
-    private static final String CORRECT_DOCKER_COMPOSE_UP_DOWNLOAD_COMMAND =
+    private static final String CORRECT_DOCKER_COMPOSE_UP_COMMAND =
                     "cd /home/user/dir/deploymentId/ " +
                     "&& " +
-                    "docker-compose up";
+                    "docker-compose up -d";
+
+    private static final String CORRECT_DOCKER_COMPOSE_PULL_COMMAND =
+            "cd /home/user/dir/deploymentId/ " +
+                    "&& " +
+                    "docker-compose pull";
+
+    private static final String CORRECT_DOCKER_COMPOSE_REMOVE_COMMAND =
+            "cd /home/user/dir/deploymentId/ " +
+                    "&& " +
+                    "docker-compose rm -f -s";
 
     @Autowired
     private DockerComposeCommandExecutor dockerComposeCommandExecutor;
@@ -54,8 +64,22 @@ public class CommandExecutionTest {
     @Test
     public void shouldPrepareDockerComposeUpCommandString() {
         String targetDirectory = "/home/user/dir/deploymentId/";
-        DockerComposeUpCommand command = DockerComposeUpCommand.command(targetDirectory);
-        assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_UP_DOWNLOAD_COMMAND));
+        DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.UP, targetDirectory);
+        assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_UP_COMMAND));
+    }
+
+    @Test
+    public void shouldPrepareDockerComposePullCommandString() {
+        String targetDirectory = "/home/user/dir/deploymentId/";
+        DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.PULL, targetDirectory);
+        assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_PULL_COMMAND));
+    }
+
+    @Test
+    public void shouldPrepareDockerComposeRemoveCommandString() {
+        String targetDirectory = "/home/user/dir/deploymentId/";
+        DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.REMOVE, targetDirectory);
+        assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_REMOVE_COMMAND));
     }
 
 }
