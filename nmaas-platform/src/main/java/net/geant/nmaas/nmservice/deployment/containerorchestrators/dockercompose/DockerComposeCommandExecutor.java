@@ -59,6 +59,10 @@ public class DockerComposeCommandExecutor {
         executeComposeCommand(deploymentId, DockerComposeCommand.CommandType.PULL, host);
     }
 
+    void executeComposeStopCommand(Identifier deploymentId, DockerHost host) throws CommandExecutionException {
+        executeComposeCommand(deploymentId, DockerComposeCommand.CommandType.STOP, host);
+    }
+
     void executeComposeRemoveCommand(Identifier deploymentId, DockerHost host) throws CommandExecutionException {
         executeComposeCommand(deploymentId, DockerComposeCommand.CommandType.REMOVE, host);
     }

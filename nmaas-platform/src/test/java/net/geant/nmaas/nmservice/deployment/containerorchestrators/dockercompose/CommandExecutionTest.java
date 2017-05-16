@@ -33,10 +33,15 @@ public class CommandExecutionTest {
                     "&& " +
                     "docker-compose pull";
 
+    private static final String CORRECT_DOCKER_COMPOSE_STOP_COMMAND =
+            "cd /home/user/dir/deploymentId/ " +
+                    "&& " +
+                    "docker-compose stop";
+
     private static final String CORRECT_DOCKER_COMPOSE_REMOVE_COMMAND =
             "cd /home/user/dir/deploymentId/ " +
                     "&& " +
-                    "docker-compose rm -f -s";
+                    "docker-compose rm -f";
 
     @Autowired
     private DockerComposeCommandExecutor dockerComposeCommandExecutor;
@@ -73,6 +78,13 @@ public class CommandExecutionTest {
         String targetDirectory = "/home/user/dir/deploymentId/";
         DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.PULL, targetDirectory);
         assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_PULL_COMMAND));
+    }
+
+    @Test
+    public void shouldPrepareDockerComposeStopCommandString() {
+        String targetDirectory = "/home/user/dir/deploymentId/";
+        DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.STOP, targetDirectory);
+        assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_STOP_COMMAND));
     }
 
     @Test

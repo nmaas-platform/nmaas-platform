@@ -126,6 +126,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     public void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             final NmServiceInfo service = repositoryManager.loadService(deploymentId);
+            composeCommandExecutor.executeComposeStopCommand(deploymentId, service.getHost());
             composeCommandExecutor.executeComposeRemoveCommand(deploymentId, service.getHost());
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new CouldNotRemoveNmServiceException(
