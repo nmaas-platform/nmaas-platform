@@ -9,4 +9,7 @@ public class DockerComposeTemplateHandlingException extends Exception {
         super(message);
     }
 
+    public DockerComposeTemplateHandlingException(String message, Exception e) {
+        super(message, e);
+    }
 }

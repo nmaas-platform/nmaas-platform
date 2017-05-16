@@ -17,6 +17,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFile.TemplateVariable;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -39,8 +41,11 @@ public class DockerComposeFilePreparer {
 
     private Map<String, Object> buildModel(int assignedPublicPort, String assignedHostVolume) {
         Map<String, Object> model = new HashMap<>();
-        model.put("port", assignedPublicPort);
-        model.put("volume", assignedHostVolume);
+        model.put(TemplateVariable.PORT.value(), assignedPublicPort);
+        model.put(TemplateVariable.VOLUME.value(), assignedHostVolume);
+        model.put(TemplateVariable.CONTAINER_IP_ADDRESS.value(), "");
+        model.put(TemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), "");
+        model.put(TemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), "");
         return model;
     }
 
@@ -59,9 +64,9 @@ public class DockerComposeFilePreparer {
             osWriter.flush();
             composeFile = new DockerComposeFile(os.toByteArray());
         } catch (TemplateException e) {
-            throw new DockerComposeTemplateHandlingException("Propagating TemplateException");
+            throw new DockerComposeTemplateHandlingException("Propagating TemplateException", e);
         } catch (IOException e) {
-            throw new DockerComposeTemplateHandlingException("Propagating IOException");
+            throw new DockerComposeTemplateHandlingException("Propagating IOException", e);
         }
         return composeFile;
     }

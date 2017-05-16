@@ -16,4 +16,22 @@ public class DockerComposeFile {
     public byte[] getComposeFileContent() {
         return composeFileContent;
     }
+
+    public enum TemplateVariable {
+        PORT("port"),
+        VOLUME("volume"),
+        CONTAINER_IP_ADDRESS("container_ip_address"),
+        ACCESS_DOCKER_NETWORK_NAME("nmaas_ext_access_network"),
+        DCN_DOCKER_NETWORK_NAME("nmaas_dcn_network");
+
+        private String value;
+
+        TemplateVariable(String value) {
+            this.value = value;
+        }
+
+        public String value() {
+            return value;
+        }
+    }
 }
