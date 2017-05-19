@@ -56,6 +56,11 @@ public class DockerNetwork {
      */
     private String deploymentId;
 
+    /**
+     * Human readable name of the network assigned during deployment
+     */
+    private String deploymentName;
+
     public DockerNetwork() { }
 
     public DockerNetwork(Identifier clientId, DockerHost dockerHost) {
@@ -133,5 +138,13 @@ public class DockerNetwork {
 
     public void setDeploymentId(String deploymentId) {
         this.deploymentId = deploymentId;
+    }
+
+    public String getDeploymentName() {
+        return deploymentName;
+    }
+
+    public void setDeploymentName(String deploymentName) {
+        this.deploymentName = deploymentName;
     }
 }

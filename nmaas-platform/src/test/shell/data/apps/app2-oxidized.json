@@ -10,7 +10,8 @@
 	"issuesUrl": "",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_ENGINE"
+			"DOCKER_ENGINE",
+			"DOCKER_COMPOSE"
 		],
 		"dockerContainerTemplate": {
 			"image": "oxidized/oxidized:latest",
@@ -36,28 +37,28 @@
 						"title": "Username"
 					},
 					"oxidizedPassword": {
-					  "type": "string",
-					  "title": "Password"
+						"type": "string",
+						"title": "Password"
 					},
-				  "routers": {
-					"type": "array",
-					"minItems": 1,
-					"items": {
-					  "type": "string",
-					  "title": "IP address"
+					"routers": {
+						"type": "array",
+						"minItems": 1,
+						"items": {
+							"type": "string",
+							"title": "IP address"
+						}
 					}
-				  }
 				},
 				"required": [
 					"oxidizedUsername", "oxidizedPassword", "routers"    
 				]
 			},
 			"form": [
-					"*",
-					{
-						"type": "submit",
-						"title": "Apply configuration"
-					}
+				"*",
+				{
+					"type": "submit",
+					"title": "Apply configuration"
+				}
 			]
 		}
 	}

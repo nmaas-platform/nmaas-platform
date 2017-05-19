@@ -31,21 +31,21 @@ public class DockerComposeFilePreparer {
     @Autowired
     private DockerComposeFileTemplateRepository fileTemplateRepository;
 
-    void buildAndStoreComposeFile(Identifier deploymentId, Identifier applicationId, int assignedPublicPort, String assignedHostVolume)
+    void buildAndStoreComposeFile(Identifier deploymentId, Identifier applicationId, DockerComposeFileInput input)
             throws DockerComposeTemplateHandlingException {
-        final Map<String, Object> model = buildModel(assignedPublicPort, assignedHostVolume);
+        final Map<String, Object> model = buildModel(input);
         Template composeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
         DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(composeFileTemplate, model);
         fileRepository.storeFileContent(deploymentId, composeFile);
     }
 
-    private Map<String, Object> buildModel(int assignedPublicPort, String assignedHostVolume) {
+    private Map<String, Object> buildModel(DockerComposeFileInput input) {
         Map<String, Object> model = new HashMap<>();
-        model.put(TemplateVariable.PORT.value(), assignedPublicPort);
-        model.put(TemplateVariable.VOLUME.value(), assignedHostVolume);
-        model.put(TemplateVariable.CONTAINER_IP_ADDRESS.value(), "");
-        model.put(TemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), "");
-        model.put(TemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), "");
+        model.put(TemplateVariable.PORT.value(), input.getPort());
+        model.put(TemplateVariable.VOLUME.value(), input.getVolume());
+        model.put(TemplateVariable.CONTAINER_IP_ADDRESS.value(), input.getContainerIpAddress());
+        model.put(TemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), input.getExternalAccessNetworkName());
+        model.put(TemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), input.getDcnNetworkName());
         return model;
     }
 

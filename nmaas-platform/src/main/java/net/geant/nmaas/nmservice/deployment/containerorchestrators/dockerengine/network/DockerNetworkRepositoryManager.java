@@ -33,9 +33,10 @@ public class DockerNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateNetworkId(Identifier clientId, String networkId) throws InvalidClientIdException {
+    public void updateNetworkIdAndNetworkName(Identifier clientId, String networkId, String networkName) throws InvalidClientIdException {
         DockerNetwork dockerNetwork = repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
         dockerNetwork.setDeploymentId(networkId);
+        dockerNetwork.setDeploymentName(networkName);
         repository.save(dockerNetwork);
     }
 
