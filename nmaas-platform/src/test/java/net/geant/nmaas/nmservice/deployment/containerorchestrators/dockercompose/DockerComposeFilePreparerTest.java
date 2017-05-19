@@ -53,13 +53,13 @@ public class DockerComposeFilePreparerTest {
 
     @Test
     public void shouldBuildComposeFile() throws Exception {
-        DockerComposeFileInput input = new DockerComposeFileInput(50, "/home/dir");
+        DockerComposeFileInput input = new DockerComposeFileInput(5000, "/home/dir");
         input.setContainerIpAddress("");
         input.setExternalAccessNetworkName("");
         input.setDcnNetworkName("");
         composeFilePreparer.buildAndStoreComposeFile(deploymentId, Identifier.newInstance(String.valueOf(testAppId)), input);
         assertThat(new String(composeFileRepository.loadFileContent(deploymentId).getComposeFileContent(), "UTF-8"),
-                allOf(containsString("50:"), containsString("/home/dir:")));
+                allOf(containsString("5000:"), containsString("/home/dir:")));
     }
 
 }

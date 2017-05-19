@@ -7,9 +7,9 @@ public class DockerComposeFileInput {
 
     /**
      * It is assumed that such network is pre-configured manually on all Docker Hosts supporting Docker Compose -based
-     * container deployment. Exemplary command to be issued: "docker network create -d bridge nmaas-ext-access".
+     * container deployment. Exemplary command to be issued: "docker network create -d bridge nmaas-access".
      */
-    public static final String DEFAULT_EXTERNAL_ACCESS_NETWORK_NAME = "nmaas-ext-access";
+    public static final String DEFAULT_EXTERNAL_ACCESS_NETWORK_NAME = "nmaas-access";
 
     private int port;
 

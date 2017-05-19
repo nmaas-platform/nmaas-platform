@@ -70,7 +70,7 @@ public class DockerComposeCommandExecutor {
     private void executeComposeCommand(Identifier deploymentId, DockerComposeCommand.CommandType commandType, DockerHost host) throws CommandExecutionException {
         try {
             final String targetDirectoryFullPath = host.getWorkingPath() + "/" + deploymentId.value();
-            final DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.UP, targetDirectoryFullPath);
+            final DockerComposeCommand command = DockerComposeCommand.command(commandType, targetDirectoryFullPath);
             SingleCommandExecutor.getExecutor(
                     host.getPublicIpAddress().getHostAddress(),
                     env.getProperty("app.compose.ssh.username")).executeSingleCommand(command);

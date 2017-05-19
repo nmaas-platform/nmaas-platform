@@ -28,7 +28,7 @@ public class ConfigDownloadCommandExecutor {
         try {
             final String authorizationHash = generateHash(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password"));
             final String sourceUrl = env.getProperty("app.config.download.url");
-            final String targetDirectoryFullPath = host.getVolumesPath() + "/" + targetDirectoryName;
+            final String targetDirectoryFullPath = constructTargetDirectoryFullPath(host, targetDirectoryName);
             final String configurationFileName = configurations.loadConfig(configId).getConfigFileName();
             ConfigDownloadCommand command =  ConfigDownloadCommand.command(
                     authorizationHash,
@@ -44,6 +44,14 @@ public class ConfigDownloadCommandExecutor {
                 | CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute configuration download command -> " + e.getMessage());
         }
+    }
+
+    private String constructTargetDirectoryFullPath(DockerHost host, String targetDirectoryName) {
+        // if target directory name starts with a slash it is assumed that it is a complete path to volume directory
+        // and therefore it is returned without any modifications
+        if (targetDirectoryName.startsWith("/"))
+            return targetDirectoryName;
+        return host.getVolumesPath() + "/" + targetDirectoryName;
     }
 
     String generateHash(String username, String password) {

@@ -54,7 +54,7 @@ public class DockerNetworkConfigBuilder {
     }
 
     private static String networkName(String uniqueName, int vlanNumber) {
-        return new StringBuilder().append("nmaas-").append(uniqueName).append("-vlan").append(vlanNumber).toString();
+        return new StringBuilder().append("nmaas-dcn-").append(uniqueName).append("-vlan").append(vlanNumber).toString();
     }
 
     private static String parentInterfaceName(String interfaceName, int vlanNumber) {
