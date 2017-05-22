@@ -67,16 +67,24 @@ public class DockerComposeCommandExecutor {
         executeComposeCommand(deploymentId, DockerComposeCommand.CommandType.REMOVE, host);
     }
 
+    void executeComposeExecCommand(Identifier deploymentId, DockerHost host, String commandBody) throws CommandExecutionException {
+        executeComposeCommand(deploymentId, DockerComposeCommand.CommandType.EXEC, commandBody, host);
+    }
+
     private void executeComposeCommand(Identifier deploymentId, DockerComposeCommand.CommandType commandType, DockerHost host) throws CommandExecutionException {
+        executeComposeCommand(deploymentId, commandType, null, host);
+    }
+
+    private void executeComposeCommand(Identifier deploymentId, DockerComposeCommand.CommandType commandType, String commandBody, DockerHost host) throws CommandExecutionException {
         try {
             final String targetDirectoryFullPath = host.getWorkingPath() + "/" + deploymentId.value();
-            final DockerComposeCommand command = DockerComposeCommand.command(commandType, targetDirectoryFullPath);
+            final DockerComposeCommand command = DockerComposeCommand.command(commandType, commandBody, targetDirectoryFullPath);
             SingleCommandExecutor.getExecutor(
                     host.getPublicIpAddress().getHostAddress(),
                     env.getProperty("app.compose.ssh.username")).executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
-            throw new CommandExecutionException("Failed to execute compose command -> " + e.getMessage());
+            throw new CommandExecutionException("Failed to execute compose " + commandType.name() + " command -> " + e.getMessage());
         }
     }
 }

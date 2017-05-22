@@ -150,6 +150,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
             throws DockerComposeTemplateHandlingException, InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException, ContainerOrchestratorInternalErrorException {
         String assignedHostVolume = service.getDockerContainer().getVolumesDetails().getAttachedVolumeName();
         final DockerComposeFileInput dockerComposeFileInput = new DockerComposeFileInput(containerNetDetails.getPublicPort(), assignedHostVolume);
+        dockerComposeFileInput.setContainerName(service.getDeploymentId().value());
         dockerComposeFileInput.setContainerIpAddress(containerNetDetails.getIpAddresses().getIpAddressOfContainer());
         dockerComposeFileInput.setDcnNetworkName(dockerNetworkName);
         composeFilePreparer.buildAndStoreComposeFile(service.getDeploymentId(), repositoryManager.loadApplicationId(service.getDeploymentId()), dockerComposeFileInput);
@@ -174,17 +175,46 @@ public class DockerComposeManager implements ContainerOrchestrator {
         try {
             final NmServiceInfo service = loadService(deploymentId);
             deployContainers(service);
+            configureRoutingOnStartedContainer(service);
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new CouldNotDeployNmServiceException(
                     "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (CommandExecutionException commandExecutionException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Couldn't execute docker compose up command on remote host -> " + commandExecutionException.getMessage());
+                    "Problem with docker compose command execution on remote host -> " + commandExecutionException.getMessage());
         }
     }
 
     private void deployContainers(NmServiceInfo service) throws CommandExecutionException {
         composeCommandExecutor.executeComposeUpCommand(service.getDeploymentId(), service.getHost());
+    }
+
+    private void configureRoutingOnStartedContainer(NmServiceInfo service)
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, CommandExecutionException {
+        for (String managedDeviceIpAddress : service.getManagedDevicesIpAddresses()) {
+            addStaticRouteOnContainer(
+                    service,
+                    addIpRouteCommand(managedDeviceIpAddress, service.getDockerContainer().getNetworkDetails().getIpAddresses().getGateway()));
+        }
+    }
+
+    private void addStaticRouteOnContainer(NmServiceInfo service, String command) throws CommandExecutionException {
+        composeCommandExecutor.executeComposeExecCommand(service.getDeploymentId(), service.getHost(), commandBodyWithPrecedingContainerName(service, command));
+    }
+
+    private String commandBodyWithPrecedingContainerName(NmServiceInfo service, String command) {
+        return service.getDeploymentId() + " " + command;
+    }
+
+    private String addIpRouteCommand(String deviceAddress, String gatewayAddress) {
+        StringBuilder command = new StringBuilder();
+        command.append("ip").append(" ")
+                .append("route").append(" ")
+                .append("add").append(" ")
+                .append(deviceAddress + "/32").append(" ")
+                .append("via").append(" ")
+                .append(gatewayAddress);
+        return command.toString();
     }
 
     @Override

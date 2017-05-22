@@ -11,6 +11,8 @@ public class DockerComposeFileInput {
      */
     public static final String DEFAULT_EXTERNAL_ACCESS_NETWORK_NAME = "nmaas-access";
 
+    private String containerName;
+
     private int port;
 
     private String volume;
@@ -24,6 +26,14 @@ public class DockerComposeFileInput {
     public DockerComposeFileInput(int port, String volume) {
         this.port = port;
         this.volume = volume;
+    }
+
+    public String getContainerName() {
+        return containerName;
+    }
+
+    public void setContainerName(String containerName) {
+        this.containerName = containerName;
     }
 
     public int getPort() {

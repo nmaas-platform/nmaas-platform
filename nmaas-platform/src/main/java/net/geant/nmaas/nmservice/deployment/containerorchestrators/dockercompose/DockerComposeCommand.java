@@ -12,6 +12,10 @@ public class DockerComposeCommand implements Command {
 	private static final String DOUBLE_AMPERSAND = "&&";
 
 	public static DockerComposeCommand command(CommandType commandType, String targetDirectory) {
+		return command(commandType, null, targetDirectory);
+	}
+
+	public static DockerComposeCommand command(CommandType commandType, String commandBody, String targetDirectory) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(CD)
 				.append(SPACE)
@@ -22,6 +26,9 @@ public class DockerComposeCommand implements Command {
 		sb.append(DOCKER_COMPOSE)
 				.append(SPACE)
 				.append(commandType.value);
+		if (commandBody != null && !commandBody.isEmpty())
+		    sb.append(SPACE)
+                    .append(commandBody);
 		return new DockerComposeCommand(sb.toString());
 	}
 
@@ -42,7 +49,7 @@ public class DockerComposeCommand implements Command {
 	}
 
 	public enum CommandType {
-		UP("up -d"), PULL("pull"), STOP("stop"), REMOVE("rm -f");
+		UP("up -d"), PULL("pull"), STOP("stop"), REMOVE("rm -f"), EXEC("exec");
 
 		private String value;
 

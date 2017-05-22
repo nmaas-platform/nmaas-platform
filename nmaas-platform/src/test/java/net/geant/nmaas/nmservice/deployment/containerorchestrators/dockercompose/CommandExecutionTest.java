@@ -43,6 +43,11 @@ public class CommandExecutionTest {
                     "&& " +
                     "docker-compose rm -f";
 
+    private static final String CORRECT_DOCKER_COMPOSE_EXEC_COMMAND =
+            "cd /home/user/dir/deploymentId/ " +
+                    "&& " +
+                    "docker-compose exec service ip route add ...";
+
     @Autowired
     private DockerComposeCommandExecutor dockerComposeCommandExecutor;
 
@@ -92,6 +97,14 @@ public class CommandExecutionTest {
         String targetDirectory = "/home/user/dir/deploymentId/";
         DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.REMOVE, targetDirectory);
         assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_REMOVE_COMMAND));
+    }
+
+    @Test
+    public void shouldPrepareDockerComposeExecCommandString() {
+        String targetDirectory = "/home/user/dir/deploymentId/";
+        String commandBody = "service ip route add ...";
+        DockerComposeCommand command = DockerComposeCommand.command(DockerComposeCommand.CommandType.EXEC, commandBody, targetDirectory);
+        assertThat(command.asString(), equalTo(CORRECT_DOCKER_COMPOSE_EXEC_COMMAND));
     }
 
 }

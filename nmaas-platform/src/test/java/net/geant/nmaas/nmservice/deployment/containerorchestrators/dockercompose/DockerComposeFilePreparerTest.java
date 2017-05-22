@@ -54,6 +54,7 @@ public class DockerComposeFilePreparerTest {
     @Test
     public void shouldBuildComposeFile() throws Exception {
         DockerComposeFileInput input = new DockerComposeFileInput(5000, "/home/dir");
+        input.setContainerName(deploymentId.value());
         input.setContainerIpAddress("");
         input.setExternalAccessNetworkName("");
         input.setDcnNetworkName("");

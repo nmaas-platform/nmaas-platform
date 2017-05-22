@@ -18,6 +18,7 @@ public class DockerComposeFile {
     }
 
     public enum TemplateVariable {
+        CONTAINER_NAME("container_name"),
         PORT("port"),
         VOLUME("volume"),
         CONTAINER_IP_ADDRESS("container_ip_address"),

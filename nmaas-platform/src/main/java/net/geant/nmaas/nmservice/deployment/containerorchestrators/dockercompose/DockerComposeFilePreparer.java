@@ -41,6 +41,7 @@ public class DockerComposeFilePreparer {
 
     private Map<String, Object> buildModel(DockerComposeFileInput input) {
         Map<String, Object> model = new HashMap<>();
+        model.put(TemplateVariable.CONTAINER_NAME.value(), input.getContainerName());
         model.put(TemplateVariable.PORT.value(), String.valueOf(input.getPort()));
         model.put(TemplateVariable.VOLUME.value(), input.getVolume());
         model.put(TemplateVariable.CONTAINER_IP_ADDRESS.value(), input.getContainerIpAddress());
