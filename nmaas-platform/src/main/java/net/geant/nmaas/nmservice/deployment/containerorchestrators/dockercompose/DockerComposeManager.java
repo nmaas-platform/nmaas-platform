@@ -63,7 +63,8 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId) throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
+    public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
+            throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
             final Identifier clientId = repositoryManager.loadClientId(deploymentId);
             declareNewNetworkForClientIfNotExists(clientId);
@@ -107,11 +108,11 @@ public class DockerComposeManager implements ContainerOrchestrator {
         try {
             final NmServiceInfo service = loadService(deploymentId);
             String dockerNetworkName = deployNetworkForClientOnDockerHostIfNotDoneBefore(service);
-            DockerContainerNetDetails netDetails = obtainNetworkDetailsForContainer(service);
+            DockerContainerNetDetails netDetails = obtainNetworkDetailsForContainerAndUpdate(service);
+            addContainerToNetwork(loadService(deploymentId));
             buildAndStoreComposeFile(service, dockerNetworkName, netDetails);
             downloadComposeFileOnDockerHost(service);
             downloadContainerImageOnDockerHost(service);
-            updateContainerNetworkDetails(deploymentId, netDetails);
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new CouldNotPrepareEnvironmentException(
                     "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
@@ -142,8 +143,15 @@ public class DockerComposeManager implements ContainerOrchestrator {
         return dockerNetworkManager.deployNetworkForClient(service.getClientId());
     }
 
-    private DockerContainerNetDetails obtainNetworkDetailsForContainer(NmServiceInfo service) throws ContainerOrchestratorInternalErrorException {
-        return dockerNetworkManager.obtainNetworkDetailsForContainer(service.getClientId());
+    private DockerContainerNetDetails obtainNetworkDetailsForContainerAndUpdate(NmServiceInfo service)
+            throws ContainerOrchestratorInternalErrorException, InvalidDeploymentIdException {
+        DockerContainerNetDetails netDetails = dockerNetworkManager.obtainNetworkDetailsForContainer(service.getClientId());
+        repositoryManager.updateDockerContainerNetworkDetails(service.getDeploymentId(), netDetails);
+        return netDetails;
+    }
+
+    private void addContainerToNetwork(NmServiceInfo service) throws ContainerOrchestratorInternalErrorException {
+        dockerNetworkManager.addContainerToNetwork(service.getClientId(), service.getDockerContainer());
     }
 
     private void buildAndStoreComposeFile(NmServiceInfo service, String dockerNetworkName, DockerContainerNetDetails containerNetDetails)
@@ -162,10 +170,6 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     private void downloadContainerImageOnDockerHost(NmServiceInfo service) throws CommandExecutionException {
         composeCommandExecutor.executeComposePullCommand(service.getDeploymentId(), service.getHost());
-    }
-
-    private void updateContainerNetworkDetails(Identifier deploymentId, DockerContainerNetDetails netDetails) throws InvalidDeploymentIdException {
-        repositoryManager.updateDockerContainerNetworkDetails(deploymentId, netDetails);
     }
 
     @Override
@@ -243,9 +247,10 @@ public class DockerComposeManager implements ContainerOrchestrator {
         }
     }
 
-    private void stopAndRemoveContainers(NmServiceInfo service) throws CommandExecutionException {
+    private void stopAndRemoveContainers(NmServiceInfo service) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
         composeCommandExecutor.executeComposeStopCommand(service.getDeploymentId(), service.getHost());
         composeCommandExecutor.executeComposeRemoveCommand(service.getDeploymentId(), service.getHost());
+        dockerNetworkManager.removeContainerFromNetwork(service.getClientId(), service.getDockerContainer().getId());
     }
 
     private void removeNetworkIfNoContainerAttached(NmServiceInfo service)

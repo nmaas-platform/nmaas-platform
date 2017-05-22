@@ -178,6 +178,16 @@ public class DockerNetworkManager {
                 .anyMatch(s -> s.equals(containerIpAddress));
     }
 
+    public void addContainerToNetwork(Identifier clientId, DockerContainer container)
+            throws ContainerOrchestratorInternalErrorException {
+        try {
+            repositoryManager.updateAddContainer(clientId, container);
+        } catch (InvalidClientIdException invalidClientIdException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "No network found in repository for client " + clientId, invalidClientIdException);
+        }
+    }
+
     public void connectContainerToNetwork(Identifier clientId, DockerContainer container)
             throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
         DockerNetwork network = null;
@@ -216,6 +226,16 @@ public class DockerNetworkManager {
                         .endpointConfig(endpointConfig)
                         .build();
         dockerApiClient.connectToNetwork(apiUrl, networkId, networkConnection);
+    }
+
+    public void removeContainerFromNetwork(Identifier clientId, Long containerId)
+            throws ContainerOrchestratorInternalErrorException {
+        try {
+            repositoryManager.updateRemoveContainer(clientId, containerId);
+        } catch (InvalidClientIdException invalidClientIdException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "No network found in repository for client " + clientId, invalidClientIdException);
+        }
     }
 
     /**

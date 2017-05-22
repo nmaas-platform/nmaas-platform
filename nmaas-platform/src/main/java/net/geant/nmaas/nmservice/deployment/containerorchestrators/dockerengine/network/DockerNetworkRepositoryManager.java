@@ -56,6 +56,14 @@ public class DockerNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateRemoveContainer(Identifier clientId, Long containerId) throws InvalidClientIdException {
+        DockerNetwork dockerNetwork = repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+        List<DockerContainer> updatedListOfContainers = dockerNetwork.getDockerContainers().stream().filter(c -> !c.getId().equals(containerId)).collect(Collectors.toList());
+        dockerNetwork.setDockerContainers(updatedListOfContainers);
+        repository.save(dockerNetwork);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public DockerNetwork loadNetwork(Identifier clientId) throws InvalidClientIdException {
         return repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
     }
