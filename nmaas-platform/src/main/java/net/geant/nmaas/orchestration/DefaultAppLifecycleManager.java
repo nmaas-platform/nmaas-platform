@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
@@ -57,10 +58,16 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException());
+        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        throwExceptionIfInInvalidState(appDeployment);
         appDeployment.setConfiguration(configuration);
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
+    }
+
+    private void throwExceptionIfInInvalidState(AppDeployment appDeployment) throws InvalidDeploymentIdException {
+        if (!appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED))
+            throw new InvalidDeploymentIdException("Not able to apply configuration in current application deployment state -> " + appDeployment.getState());
     }
 
     @Override
