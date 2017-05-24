@@ -1,4 +1,3 @@
-
 # NMaaS Platform (backend)
 
 ##### NMaaS Platform implements mechanisms for on-demand NM service deployment in the cloud environment and connectivity setup between the managed equipment and the running service. 
@@ -7,7 +6,7 @@
 ###### For connectivity setup a set of [Ansible](https://www.ansible.com/) playbooks is executed.
 
 ###### Platform exposes two types of API, namely Java-based and REST webservice.
-
+--
 #### Technologies
 ---
  * Java 8

@@ -1,15 +1,6 @@
 # Network Management as a Service (NMaaS)
 
-Implemented within GN4-2 JRA2-T5.
+#### Cloud-based, multi-tenant and secure Network Management platform for simplified and automated domain network management.
 
-## Portal (GUI)
-Defaults:
- * url:
-   * WWW: http://<HOSTNAME>:9009
-   * API: http://<HOSTNAME>:9001/portal/api
- * Access:
-   * username: admin
-   * password: admin
-   
-## Platform (backend)
-
+##### Implemented within GN4-2 JRA2-T5.
+--
