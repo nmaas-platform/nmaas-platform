@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.*;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

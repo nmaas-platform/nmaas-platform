@@ -10,7 +10,11 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidE
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -72,14 +76,15 @@ public class DockerNetworkManager {
         }
     }
 
-    public void deployNetworkForClient(Identifier clientId) throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
+    public String deployNetworkForClient(Identifier clientId) throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
         try {
             final DockerNetwork network = repositoryManager.loadNetwork(clientId);
             if (networkAlreadyDeployed(network))
-                return;
+                return network.getDeploymentName();
             final NetworkConfig networkConfig = DockerNetworkConfigBuilder.build(network);
             final String networkId = executeCreateNetwork(networkConfig, network.getDockerHost().apiUrl());
-            repositoryManager.updateNetworkId(clientId, networkId);
+            repositoryManager.updateNetworkIdAndNetworkName(clientId, networkId, networkConfig.name());
+            return networkConfig.name();
         } catch (DockerNetworkDetailsVerificationException verificationException) {
             throw new CouldNotCreateContainerNetworkException(
                     "Network specification verification failed -> " + verificationException.getMessage(), verificationException);
@@ -173,6 +178,16 @@ public class DockerNetworkManager {
                 .anyMatch(s -> s.equals(containerIpAddress));
     }
 
+    public void addContainerToNetwork(Identifier clientId, DockerContainer container)
+            throws ContainerOrchestratorInternalErrorException {
+        try {
+            repositoryManager.updateAddContainer(clientId, container);
+        } catch (InvalidClientIdException invalidClientIdException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "No network found in repository for client " + clientId, invalidClientIdException);
+        }
+    }
+
     public void connectContainerToNetwork(Identifier clientId, DockerContainer container)
             throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
         DockerNetwork network = null;
@@ -211,6 +226,16 @@ public class DockerNetworkManager {
                         .endpointConfig(endpointConfig)
                         .build();
         dockerApiClient.connectToNetwork(apiUrl, networkId, networkConnection);
+    }
+
+    public void removeContainerFromNetwork(Identifier clientId, Long containerId)
+            throws ContainerOrchestratorInternalErrorException {
+        try {
+            repositoryManager.updateRemoveContainer(clientId, containerId);
+        } catch (InvalidClientIdException invalidClientIdException) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "No network found in repository for client " + clientId, invalidClientIdException);
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
+package net.geant.nmaas.nmservice.deployment.entities;
 
 import javax.persistence.*;
 import java.net.InetAddress;
@@ -57,6 +57,11 @@ public class DockerHost {
     private InetAddress baseDataNetworkAddress;
 
     /**
+     * Default root directory on the Docker host for scripts execution
+     */
+    private String workingPath;
+
+    /**
      * Default root directory on the Docker host on which volumes will be created and mounted on deployed containers.
      */
     private String volumesPath;
@@ -75,6 +80,7 @@ public class DockerHost {
                       String accessInterfaceName,
                       String dataInterfaceName,
                       InetAddress baseDataNetworkAddress,
+                      String workingPath,
                       String volumesPath,
                       boolean preferred) {
         this.name = name;
@@ -84,6 +90,7 @@ public class DockerHost {
         this.accessInterfaceName = accessInterfaceName;
         this.dataInterfaceName = dataInterfaceName;
         this.baseDataNetworkAddress = baseDataNetworkAddress;
+        this.workingPath = workingPath;
         this.volumesPath = volumesPath;
         this.preferred = preferred;
     }
@@ -163,6 +170,14 @@ public class DockerHost {
 
     public void setBaseDataNetworkAddress(InetAddress baseDataNetworkAddress) {
         this.baseDataNetworkAddress = baseDataNetworkAddress;
+    }
+
+    public String getWorkingPath() {
+        return workingPath;
+    }
+
+    public void setWorkingPath(String workingPath) {
+        this.workingPath = workingPath;
     }
 
     public String getVolumesPath() {

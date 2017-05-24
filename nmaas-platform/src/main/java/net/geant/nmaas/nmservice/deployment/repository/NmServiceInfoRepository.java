@@ -24,4 +24,8 @@ public interface NmServiceInfoRepository extends JpaRepository<NmServiceInfo, Lo
 
     @Query("SELECT n.clientId FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
     Optional<Identifier> getClientIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
+    @Query("SELECT n.applicationId FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
+    Optional<Identifier> getApplicationIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+
 }

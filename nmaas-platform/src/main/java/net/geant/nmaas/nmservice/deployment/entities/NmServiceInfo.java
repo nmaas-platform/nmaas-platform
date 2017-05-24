@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.deployment.entities;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -37,8 +36,14 @@ public class NmServiceInfo {
     /**
      * Identifier of the application deployment assigned by application lifecycle manager
      */
-    @Column(nullable = false, unique = true)
+    @Column(nullable=false, unique=true)
     private Identifier deploymentId;
+
+    /**
+     * Identifier of the application being deployed
+     */
+    @Column(nullable=false)
+    private Identifier applicationId;
 
     /**
      * Identifier of the client requesting application deployment
@@ -75,9 +80,10 @@ public class NmServiceInfo {
 
     public NmServiceInfo() { }
 
-    public NmServiceInfo(Identifier deploymentId, Identifier clientId, DockerContainerTemplate template) {
+    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, DockerContainerTemplate template) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
+        this.applicationId = applicationId;
         this.clientId = clientId;
         this.template = template;
     }
@@ -112,6 +118,14 @@ public class NmServiceInfo {
 
     public void setDeploymentId(Identifier deploymentId) {
         this.deploymentId = deploymentId;
+    }
+
+    public Identifier getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(Identifier applicationId) {
+        this.applicationId = applicationId;
     }
 
     public Identifier getClientId() {

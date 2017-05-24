@@ -38,13 +38,13 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 	private DockerHostRepositoryManager dockerHostRepositoryManager;
 
 	private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
+	private Identifier applicationId = Identifier.newInstance("applicationId");
 	private Identifier clientId = Identifier.newInstance("clientId");
 
 	@Before
 	public void setup() throws DockerHostNotFoundException {
 		final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("192.168.239.0/24", "192.168.239.3");
-		final NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, ITestHelper.oxidizedTemplate());
+		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, ITestHelper.oxidizedTemplate());
 		service.setHost(dockerHostRepositoryManager.loadPreferredDockerHost());
 		final DockerContainerNetDetails testNetworkDetails1 = new DockerContainerNetDetails(9000, ipamSpec);
 		final DockerContainer dockerContainer = new DockerContainer();

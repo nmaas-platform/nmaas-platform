@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
 
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 import javax.persistence.*;
@@ -54,6 +55,11 @@ public class DockerNetwork {
      * Identifier assigned by Docker Engine during network deployment
      */
     private String deploymentId;
+
+    /**
+     * Human readable name of the network assigned during deployment
+     */
+    private String deploymentName;
 
     public DockerNetwork() { }
 
@@ -132,5 +138,13 @@ public class DockerNetwork {
 
     public void setDeploymentId(String deploymentId) {
         this.deploymentId = deploymentId;
+    }
+
+    public String getDeploymentName() {
+        return deploymentName;
+    }
+
+    public void setDeploymentName(String deploymentName) {
+        this.deploymentName = deploymentName;
     }
 }

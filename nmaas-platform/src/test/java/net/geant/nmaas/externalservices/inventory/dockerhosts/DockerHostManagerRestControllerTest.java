@@ -3,7 +3,7 @@ package net.geant.nmaas.externalservices.inventory.dockerhosts;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.DockerHostManagerRestController;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,10 +20,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -163,7 +160,8 @@ public class DockerHostManagerRestControllerTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("192.168.1.1"),
-                "/home/mgmt/ansible/volumes",
+                "/home/mgmt/scripts",
+                "/home/mgmt/volumes",
                 false);
     }
 }

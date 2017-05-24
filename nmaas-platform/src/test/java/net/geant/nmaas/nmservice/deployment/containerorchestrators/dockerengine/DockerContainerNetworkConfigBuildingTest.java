@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkConfigBuilder;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkDetailsVerificationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
@@ -30,7 +30,9 @@ public class DockerContainerNetworkConfigBuildingTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("10.10.0.0"),
-                "/data/volumes", true);
+                "/data/scripts",
+                "/data/volumes",
+                true);
         testDockerNetwork1 = new DockerNetwork(clientId, testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
     }
 

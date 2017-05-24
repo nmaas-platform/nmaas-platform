@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -28,6 +29,7 @@ public class DockerContainerConfigBuilderTest {
     private NmServiceInfo serviceInfo;
     private DockerContainer dockerContainer;
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
+    private Identifier applicationId = Identifier.newInstance("applicationId");
     private Identifier clientId = Identifier.newInstance("clientId");
 
     @Before
@@ -42,9 +44,10 @@ public class DockerContainerConfigBuilderTest {
                 "eth0",
                 "eth1",
                 InetAddress.getByName("10.10.0.0"),
+                "/data/scripts",
                 "/data/volumes",
                 true);
-        serviceInfo = new NmServiceInfo(deploymentId, clientId, testTemplate1);
+        serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId, testTemplate1);
         serviceInfo.setHost(testDockerHost1);
         serviceInfo.setManagedDevicesIpAddresses(Arrays.asList("1.1.1.1", "2.2.2.2", "3.3.3.3"));
         DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec("1.1.0.0/24", "1.1.1.254");

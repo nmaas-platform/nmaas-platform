@@ -4,6 +4,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFound
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -39,12 +40,12 @@ public class DockerEngineWorkflowIntTest {
 	private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
 
 	private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
+	private Identifier applicationId = Identifier.newInstance("applicationId");
 	private Identifier clientId = Identifier.newInstance("clientId");
 
 	@Before
 	public void setup() throws DockerHostNotFoundException {
-		final NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, ITestHelper.alpineTomcatTemplate());
+		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, ITestHelper.alpineTomcatTemplate());
 		final DockerHost dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
 		service.setHost(dockerHost);
 		final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");

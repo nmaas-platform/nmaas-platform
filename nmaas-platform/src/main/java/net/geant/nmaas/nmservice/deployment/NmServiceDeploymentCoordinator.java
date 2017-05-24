@@ -12,7 +12,6 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private final static Logger log = LogManager.getLogger(NmServiceDeploymentCoordinator.class);
 
     @Autowired
-    @Qualifier("DockerEngine")
     private ContainerOrchestrator orchestrator;
 
     @Autowired
@@ -35,11 +33,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, Identifier clientId, AppDeploymentSpec deploymentSpec)
+    public void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec deploymentSpec)
             throws NmServiceRequestVerificationException {
         try {
             orchestrator.verifyDeploymentEnvironmentSupport(deploymentSpec.getSupportedDeploymentEnvironments());
-            final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, clientId, DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
+            final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
             repositoryManager.storeService(serviceInfo);
             orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);

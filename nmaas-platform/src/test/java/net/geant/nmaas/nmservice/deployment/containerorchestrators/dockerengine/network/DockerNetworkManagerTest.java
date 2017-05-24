@@ -7,6 +7,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKee
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -52,6 +53,8 @@ public class DockerNetworkManagerTest {
 
     private Identifier deploymentId;
 
+    private Identifier applicationId;
+
     private Identifier clientId;
 
     private DockerHost dockerHost;
@@ -61,6 +64,7 @@ public class DockerNetworkManagerTest {
     @Before
     public void setup() throws DockerHostNotFoundException {
         deploymentId = Identifier.newInstance("deploymentId");
+        applicationId = Identifier.newInstance("applicationId");
         clientId = Identifier.newInstance("clientId");
         dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
         networkManager = new DockerNetworkManager(dockerNetworkRepositoryManager, dockerHostStateKeeper, dockerApiClient);
@@ -101,7 +105,7 @@ public class DockerNetworkManagerTest {
 
     @Test
     public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException {
-        final NmServiceInfo service = new NmServiceInfo(deploymentId, clientId, new DockerContainerTemplate("image"));
+        final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
         final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
         final DockerContainerNetDetails testNetworkDetails1 = new DockerContainerNetDetails(8080, ipamSpec);

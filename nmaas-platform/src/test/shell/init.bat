@@ -137,31 +137,31 @@ echo ---------------------
 echo By tag:
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
-echo.
-echo ---------------------
-echo Create app2 instance
-curl -X POST %API_URL%/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
+rem echo.
+rem echo ---------------------
+rem echo Create app2 instance
+rem curl -X POST %API_URL%/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
 
-echo.
-echo ---------------------
-echo Get app instance 1 state
-curl -X GET %API_URL%/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
+rem echo.
+rem echo ---------------------
+rem echo Get app instance 1 state
+rem curl -X GET %API_URL%/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
 
-echo.
-echo ---------------------
-echo Get app instance 1
-curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+rem echo.
+rem echo ---------------------
+rem echo Get app instance 1
+rem curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
-echo.
-echo ---------------------
-echo Send configuration to instance 1
-curl -X POST %API_URL%/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
+rem echo.
+rem echo ---------------------
+rem echo Send configuration to instance 1
+rem curl -X POST %API_URL%/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
 
-echo.
-echo ---------------------
-echo Get app instance 1
-curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+rem echo.
+rem echo ---------------------
+rem echo Get app instance 1
+rem curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
 echo.
 echo ---------------------
