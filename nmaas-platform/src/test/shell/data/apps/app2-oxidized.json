@@ -40,17 +40,23 @@
 						"type": "string",
 						"title": "Password"
 					},
-					"routers": {
+					"targets": {
+						"title": "Routers",
 						"type": "array",
 						"minItems": 1,
 						"items": {
-							"type": "string",
-							"title": "IP address"
+							"type": "object",
+							"properties": {
+								"ipAddress": {
+									"title": "IP address",
+									"type": "string"
+								}
+							}
 						}
 					}
 				},
 				"required": [
-					"oxidizedUsername", "oxidizedPassword", "routers"    
+					"oxidizedUsername", "oxidizedPassword", "targets"
 				]
 			},
 			"form": [
