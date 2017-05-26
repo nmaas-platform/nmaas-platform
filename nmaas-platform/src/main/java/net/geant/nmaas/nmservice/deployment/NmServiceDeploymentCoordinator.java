@@ -37,9 +37,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             throws NmServiceRequestVerificationException {
         try {
             orchestrator.verifyDeploymentEnvironmentSupport(deploymentSpec.getSupportedDeploymentEnvironments());
-            final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
+            final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
+            if (deploymentSpec.getDockerContainerTemplate() != null)
+                serviceInfo.setTemplate(DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
             repositoryManager.storeService(serviceInfo);
-            orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(deploymentId);
+            orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (NmServiceRequestVerificationException
                 | ContainerOrchestratorInternalErrorException e) {

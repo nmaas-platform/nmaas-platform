@@ -10,10 +10,12 @@ services:
       MYSQL_DATABASE: librenms-t6
       MYSQL_USER: librenms-t6
       MYSQL_PASSWORD: pwd4librenms-t6
+    networks:
+      nmaas-inter-container:
   ${container_name}:
     depends_on:
       - mysql
-    image: aweinert/librenms
+    image: docker-hub.man.poznan.pl:5000/aweinert/librenms:1.0
     container_name: librenms-t6
     ports:
      - ${port}:80
@@ -33,6 +35,7 @@ services:
       nmaas-ext-access:
       nmaas-dcn:
         ipv4_address: ${container_ip_address}
+      nmaas-inter-container:
     privileged: true
 
 networks:
@@ -42,3 +45,4 @@ networks:
   nmaas-dcn:
     external:
       name: ${nmaas_dcn_network}
+  nmaas-inter-container:
