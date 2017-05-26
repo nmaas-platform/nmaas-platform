@@ -4,6 +4,11 @@ import net.geant.nmaas.utils.ssh.Command;
 
 import java.util.function.Predicate;
 
+/**
+ * Represents the configuration file download command to be executed on remote machine.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 public class ConfigDownloadCommand implements Command {
 
 	private static final String MKDIR_COMMAND = "mkdir -p";

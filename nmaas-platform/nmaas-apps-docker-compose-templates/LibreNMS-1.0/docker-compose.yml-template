@@ -18,7 +18,7 @@ services:
     image: docker-hub.man.poznan.pl:5000/aweinert/librenms:1.0
     container_name: librenms-t6
     ports:
-     - ${port}:80
+      - ${port}:80
     volumes:
       - ${volume}:/data
     environment:
