@@ -18,26 +18,26 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("docker-compose")
-public class ServiceDeploymentWithDockerComposeTest {
+@ActiveProfiles("kubernetes")
+public class ServiceDeploymentWithKubernetesTest {
 
 	@Autowired
 	private ContainerOrchestrator orchestrator;
 
 	@Test
-	public void shouldInjectDockerComposeManager() {
+	public void shouldInjectKubernetesManager() {
 		assertThat(orchestrator, is(notNullValue()));
-		assertThat(orchestrator.info(), containsString("DockerCompose"));
+		assertThat(orchestrator.info(), containsString("Kubernetes"));
 	}
 
 	@Test
-	public void shouldConfirmSupportForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
-		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE, AppDeploymentEnv.DOCKER_COMPOSE));
+	public void shouldConfirmSupportForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
+		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
-	public void shouldNotifyIncompatibilityForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
-		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE, AppDeploymentEnv.KUBERNETES));
+	public void shouldNotifyIncompatibilityForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
+		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE, AppDeploymentEnv.DOCKER_ENGINE));
 	}
 
 }
