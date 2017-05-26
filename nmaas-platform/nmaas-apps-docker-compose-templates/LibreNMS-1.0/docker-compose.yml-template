@@ -3,7 +3,6 @@ version: '2'
 services:
   mysql:
     image: k0st/alpine-mariadb
-    container_name: librenms-t6-db
     volumes:
      - ./mysql:/var/lib/mysql
     environment:
@@ -16,7 +15,6 @@ services:
     depends_on:
       - mysql
     image: docker-hub.man.poznan.pl:5000/aweinert/librenms:1.0
-    container_name: librenms-t6
     ports:
       - ${port}:80
     volumes:
