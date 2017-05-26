@@ -9,7 +9,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.DockerContainerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
-import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkManager;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
@@ -55,7 +54,7 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
+    public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
             final Identifier clientId = repositoryManager.loadClientId(deploymentId);
@@ -228,13 +227,6 @@ public class DockerEngineManager implements ContainerOrchestrator {
     private void removeNetworkIfNoContainerAttached(NmServiceInfo service)
             throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
         dockerNetworkManager.removeIfNoContainersAttached(service.getClientId());
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    public List<String> listServices(DockerHost host)
-            throws ContainerOrchestratorInternalErrorException {
-        return dockerContainerManager.containers(host);
     }
 
     @Override
