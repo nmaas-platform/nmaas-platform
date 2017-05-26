@@ -9,8 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -30,6 +28,11 @@ public class DcnDeploymentCoordinatorTest {
                 equalTo(DcnDeploymentState.REMOVAL_FAILED));
         assertThat(coordinator.deploymentOrRemovalFailureDependingOnLastState(DcnDeploymentState.DEPLOYED),
                 equalTo(DcnDeploymentState.ERROR));
+    }
+
+    @Test
+    public void shouldReadCorrectAnsibleDockerApiUrlFromProperties() {
+        assertThat(coordinator.getAnsibleDockerApiUrl(), equalTo("http://10.134.250.6:2375"));
     }
 
 }

@@ -39,7 +39,7 @@ public class AnsibleContainerDeploymentIntTest {
     @Ignore
     @Test
     public void shouldRemoveOldContainersFromAnsibleHost() throws UnknownHostException {
-        dcnDeployment.removeOldAnsiblePlaybookContainers(defaultAnsibleHost());
+        dcnDeployment.removeOldAnsiblePlaybookContainers();
     }
 
     private DockerHost defaultAnsibleHost() throws UnknownHostException {

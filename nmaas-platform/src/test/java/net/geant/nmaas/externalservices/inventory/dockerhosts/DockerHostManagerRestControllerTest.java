@@ -30,10 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class DockerHostManagerRestControllerTest {
 
-    private final static String FIRST_HOST_NAME = "GN4-ANSIBLE-HOST2";
-    private final static String SECOND_HOST_NAME = "GN4-ANSIBLE-HOST";
     private final static String THIRD_HOST_NAME = "GN4-DOCKER-3";
     private final static String FOURTH_HOST_NAME = "GN4-DOCKER-1";
+    private final static String NEW_DOCKER_HOST_NAME = "GN4-DOCKER-X";
     private final static String WRONG_DOCKER_HOST_NAME = "WRONG-DOCKER-HOST-NAME";
     private final static String URL_PREFIX = "/platform/api/management/dockerhosts";
 
@@ -48,13 +47,17 @@ public class DockerHostManagerRestControllerTest {
     }
 
     @Test
-    public void shouldAddNewDockerHost() throws Exception {
+    public void shouldAddAndRemoveNewDockerHost() throws Exception {
+        int sizeBefore = dockerHostRepositoryManager.loadAll().size();
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(FIRST_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(NEW_DOCKER_HOST_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertEquals(initNewDockerHost(FIRST_HOST_NAME), dockerHostRepositoryManager.loadByName(FIRST_HOST_NAME));
+        assertEquals(sizeBefore + 1, dockerHostRepositoryManager.loadAll().size());
+        mvc.perform(delete(URL_PREFIX + "/{name}", NEW_DOCKER_HOST_NAME))
+                .andExpect(status().isNoContent());
+        assertEquals(sizeBefore, dockerHostRepositoryManager.loadAll().size());
     }
 
     @Test
@@ -67,14 +70,6 @@ public class DockerHostManagerRestControllerTest {
     }
 
     @Test
-    public void shouldRemoveDockerHost() throws Exception {
-        int sizeBefore = dockerHostRepositoryManager.loadAll().size();
-        mvc.perform(delete(URL_PREFIX + "/{name}", THIRD_HOST_NAME))
-                .andExpect(status().isNoContent());
-        assertEquals(sizeBefore - 1, dockerHostRepositoryManager.loadAll().size());
-    }
-
-    @Test
     public void shouldNotRemoveNotExistingDockerHost() throws Exception {
         mvc.perform(delete(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME))
                 .andExpect(status().isNotFound())
@@ -83,15 +78,15 @@ public class DockerHostManagerRestControllerTest {
 
     @Test
     public void shouldUpdateDockerHost() throws Exception {
-        mvc.perform(put(URL_PREFIX + "/{name}", SECOND_HOST_NAME)
+        mvc.perform(put(URL_PREFIX + "/{name}", THIRD_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(SECOND_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(THIRD_HOST_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    public void shouldNotUpdateNotExisitngDockerHost() throws Exception {
+    public void shouldNotUpdateNotExistingDockerHost() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewDockerHost(WRONG_DOCKER_HOST_NAME)))
@@ -101,7 +96,7 @@ public class DockerHostManagerRestControllerTest {
 
     @Test
     public void shouldNotUpdateDockerHostWithWrongName() throws Exception {
-        mvc.perform(put(URL_PREFIX + "/{name}", SECOND_HOST_NAME)
+        mvc.perform(put(URL_PREFIX + "/{name}", THIRD_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewDockerHost(WRONG_DOCKER_HOST_NAME)))
                 .accept(MediaType.APPLICATION_JSON))

@@ -85,7 +85,7 @@ public class DockerHostRepositoryManagerTest {
 
     @Test
     public void shouldLoadAllDockerHosts() {
-        assertEquals(4, dockerHostRepositoryManager.loadAll().size());
+        assertEquals(3, dockerHostRepositoryManager.loadAll().size());
     }
 
     @Test(expected = DockerHostInvalidException.class)
@@ -100,7 +100,9 @@ public class DockerHostRepositoryManagerTest {
 
     @Test
     public void shouldLoadPreferredDockerHost() throws Exception {
-        assertEquals(dockerHostRepositoryManager.loadByName(PREFERRED_DOCKER_HOST_NAME), dockerHostRepositoryManager.loadPreferredDockerHost());
+        assertEquals(
+                dockerHostRepositoryManager.loadByName(PREFERRED_DOCKER_HOST_NAME),
+                dockerHostRepositoryManager.loadPreferredDockerHost());
     }
 
     @Test
