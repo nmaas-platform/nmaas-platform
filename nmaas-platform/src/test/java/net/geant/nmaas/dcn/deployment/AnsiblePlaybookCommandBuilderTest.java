@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource("classpath:application-test.properties")
 public class AnsiblePlaybookCommandBuilderTest {
 
     @Autowired
@@ -120,7 +122,9 @@ public class AnsiblePlaybookCommandBuilderTest {
                 vpnConfigRepository.loadDefaultCustomerVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         for (String command : commands)
-            assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLIENT_SIDE_ROUTER_CONFIG, Matchers.stringContainsInOrder(Arrays.asList(command)));
+            assertThat(
+                    EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLIENT_SIDE_ROUTER_CONFIG,
+                    Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
     @Test
@@ -131,7 +135,9 @@ public class AnsiblePlaybookCommandBuilderTest {
                 vpnConfigRepository.loadDefaultCustomerVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         for (String command : commands)
-            assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLIENT_SIDE_ROUTER_CONFIG_REMOVAL, Matchers.stringContainsInOrder(Arrays.asList(command)));
+            assertThat(
+                    EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLIENT_SIDE_ROUTER_CONFIG_REMOVAL,
+                    Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
     @Test
@@ -142,7 +148,9 @@ public class AnsiblePlaybookCommandBuilderTest {
                 vpnConfigRepository.loadDefaultCloudVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         for (String command : commands)
-            assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLOUD_SIDE_ROUTER_CONFIG, Matchers.stringContainsInOrder(Arrays.asList(command)));
+            assertThat(
+                    EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLOUD_SIDE_ROUTER_CONFIG,
+                    Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
     @Test
@@ -153,7 +161,9 @@ public class AnsiblePlaybookCommandBuilderTest {
                 vpnConfigRepository.loadDefaultCloudVpnConfig(),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         for (String command : commands)
-            assertThat(EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLOUD_SIDE_ROUTER_CONFIG_REMOVAL, Matchers.stringContainsInOrder(Arrays.asList(command)));
+            assertThat(
+                    EXAMPLE_COMPLETE_ANSIBLE_PLAYBOOK_COMMAND_FOR_CLOUD_SIDE_ROUTER_CONFIG_REMOVAL,
+                    Matchers.stringContainsInOrder(Arrays.asList(command)));
     }
 
 }
