@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -38,15 +38,8 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
-    public Map<Identifier, AppLifecycleState> allDeployments() {
-        return loadViewOfAllDeployments();
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Map<Identifier, AppLifecycleState> loadViewOfAllDeployments() {
-        Map<Identifier, AppLifecycleState> view = new HashMap<>();
-        appDeploymentRepositoryManager.loadAll().forEach(item -> view.put(item.getDeploymentId(), item.getState().lifecycleState()));
-        return view;
+    public List<AppDeployment> allDeployments() {
+        return appDeploymentRepositoryManager.loadAll();
     }
 
     @Override

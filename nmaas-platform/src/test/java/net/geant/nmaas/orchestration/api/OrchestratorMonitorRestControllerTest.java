@@ -1,12 +1,9 @@
 package net.geant.nmaas.orchestration.api;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
-import net.geant.nmaas.orchestration.api.AppDeploymentMonitorRestController;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
@@ -19,10 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,46 +36,53 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OrchestratorMonitorRestControllerTest {
 
     @Mock
-    AppDeploymentMonitor deploymentMonitor;
+    private AppDeploymentMonitor deploymentMonitor;
 
     private MockMvc mvc;
 
     private Identifier deploymentId;
 
-    private Map<Identifier, AppLifecycleState> deployments;
+    private List<AppDeployment> deployments;
 
     private AppUiAccessDetails accessDetails;
 
     @Before
     public void setup() {
         deploymentId = Identifier.newInstance("deploymentId1");
-        deployments = new HashMap<>();
-        deployments.put(Identifier.newInstance("deploymentId2"), AppLifecycleState.APPLICATION_CONFIGURED);
-        deployments.put(deploymentId, AppLifecycleState.APPLICATION_CONFIGURATION_FAILED);
-        deployments.put(Identifier.newInstance("deploymentId3"), AppLifecycleState.APPLICATION_DEPLOYED);
+        AppDeployment deployment1 = new AppDeployment(deploymentId, Identifier.newInstance("clientId1"), Identifier.newInstance("applicationId1"));
+        AppDeployment deployment2 = new AppDeployment(Identifier.newInstance("deploymentId2"), Identifier.newInstance("clientId2"), Identifier.newInstance("applicationId2"));
+        deployment2.setState(AppDeploymentState.APPLICATION_DEPLOYED);
+        AppDeployment deployment3 = new AppDeployment(Identifier.newInstance("deploymentId3"), Identifier.newInstance("clientId3"), Identifier.newInstance("applicationId3"));
+        deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
+        deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails("http://testurl:8080");
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor)).build();
     }
 
     @Test
-    public void shouldRetrieveAllDeploymentsWithTheirStatus() throws Exception {
+    public void shouldRetrieveAllDeployments() throws Exception {
         when(deploymentMonitor.allDeployments()).thenReturn(deployments).thenReturn(deployments);
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType type = mapper.getTypeFactory().constructCollectionType(ArrayList.class, AppDeploymentView.class);
         MvcResult result = mvc.perform(get("/platform/api/orchestration/deployments"))
                 .andExpect(status().isOk())
                 .andReturn();
-        Map<Identifier, AppLifecycleState> retrievedDeployments =
-                new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<Map<Identifier,AppLifecycleState>>() {});
+        List<AppDeploymentView> retrievedDeployments = mapper.readValue(result.getResponse().getContentAsString(), type);
         assertThat(retrievedDeployments.size(), equalTo(deployments.size()));
-        assertThat(retrievedDeployments.get(deploymentId), equalTo(deployments.get(deploymentId)));
+        assertThat(
+                retrievedDeployments.stream().map(d -> d.getDeploymentId()).collect(Collectors.toList()),
+                contains("deploymentId1", "deploymentId2", "deploymentId3"));
     }
 
     @Test
     public void shouldRetrieveCurrentDeploymentLifecycleStatus() throws Exception {
-        when(deploymentMonitor.state(deploymentId)).thenReturn(deployments.get(deploymentId));
+        when(deploymentMonitor.state(deploymentId)).thenReturn(AppLifecycleState.APPLICATION_CONFIGURED);
         MvcResult result = mvc.perform(get("/platform/api/orchestration/deployments/{deploymentId}/state", deploymentId.toString()))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertThat(new ObjectMapper().readValue(result.getResponse().getContentAsString(), AppLifecycleState.class), equalTo(deployments.get(deploymentId)));
+        assertThat(
+                new ObjectMapper().readValue(result.getResponse().getContentAsString(), AppLifecycleState.class),
+                equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
     }
 
     @Test

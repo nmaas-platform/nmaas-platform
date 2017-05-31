@@ -104,7 +104,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
 	            .antMatchers("/platform/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
-				.antMatchers("/platform/api/orchestration/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 				.antMatchers("/platform/api/dockercompose/files/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 				.antMatchers("/platform/api/management/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
@@ -117,7 +116,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/**").permitAll()
 				.antMatchers("/portal/api/**").authenticated()
+				.antMatchers("/platform/api/orchestration/**").authenticated()
 			.and()
 //				.addFilterBefore(statelessLoginFilter("/platform/**",	inMemoryUserDetailsService()), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(statelessAuthFilter(
@@ -128,11 +129,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
-										new AntPathRequestMatcher("/platform/**")
-								}), 
+										new AntPathRequestMatcher("/platform/api/dcns/notifications/**"),
+										new AntPathRequestMatcher("/platform/api/dcns/**"),
+										new AntPathRequestMatcher("/platform/api/services/**"),
+										new AntPathRequestMatcher("/platform/api/configs/**"),
+										new AntPathRequestMatcher("/platform/api/dockercompose/files/**")
+								}),
 								null,//failureHandler, 
-								tokenAuthenticationService), 
-						UsernamePasswordAuthenticationFilter.class);		
+								tokenAuthenticationService),
+						UsernamePasswordAuthenticationFilter.class);
 	}
 
 //	private InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryConfigurer() {
