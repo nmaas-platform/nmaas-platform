@@ -19,8 +19,6 @@ import java.util.List;
 @Component
 public class DockerHostRepositoryManager {
 
-    public static final String ANSIBLE_DOCKER_HOST_NAME = "GN4-ANSIBLE-HOST";
-
     @Autowired
     private DockerHostRepository repository;
 
@@ -59,17 +57,6 @@ public class DockerHostRepositoryManager {
                     InetAddress.getByName("10.13.0.0"),
                     "/home/mgmt/nmaasplatform/scripts",
                     "/home/mgmt/nmaasplatform/volumes",
-                    false));
-            addDockerHost(new DockerHost(
-                    ANSIBLE_DOCKER_HOST_NAME,
-                    InetAddress.getByName("10.134.250.6"),
-                    2375,
-                    InetAddress.getByName("10.134.250.6"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.16.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/ansible/volumes",
                     false));
         } catch (DockerHostExistsException e) {
             // nothing to do
