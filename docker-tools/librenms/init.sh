@@ -82,6 +82,9 @@ echo "\$config['rrdcached']       = \"unix:/var/run/rrdcached/rrdcached.sock\";"
 echo "\$config['log_file']      = \"/data/logs/librenms.log\";" >> /data/config/config.php
 echo "\$config['log_dir']       = \"/data/logs\";" >> /data/config/config.php
 
+# addding global flag to disable icmp checks
+echo "\$config['icmp_check'] = false;" >> /data/config/config.php
+
 # some php configs
 sed -i 's/pm.max_children = 5/pm.max_children = 50/g' /etc/php/7.0/fpm/pool.d/www.conf
 sed -i 's/pm.start_servers = 2/pm.start_servers = 5/g' /etc/php/7.0/fpm/pool.d/www.conf
