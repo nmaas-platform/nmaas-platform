@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.*;
 public class NmServiceConfigurationLibreNmsTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
-    private static final String TEST_TEMPLATE_NAME = "hoststoadd.cfg-template";
+    private static final String TEST_TEMPLATE_NAME = "addhosts.cfg-template";
     private static final String LIBRENMS_APP_NAME = "LibreNMS";
     private static final String LIBRENMS_APP_VERSION = "1.0";
 
@@ -71,7 +71,7 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
                         TEST_CONFIG_ID_1,
                         tut.orElseThrow(() -> new Exception()),
                         testLibreNmsDefaultConfigurationInputModel());
-        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("hoststoadd.cfg"));
+        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("addhosts.cfg"));
         assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
                 Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
     }
