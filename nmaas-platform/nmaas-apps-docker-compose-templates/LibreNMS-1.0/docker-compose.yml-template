@@ -4,17 +4,17 @@ services:
   mysql:
     image: k0st/alpine-mariadb
     volumes:
-     - ${volume}/mysql:/var/lib/mysql
+      - ${volume}/mysql:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: librenms-t6
-      MYSQL_USER: librenms-t6
-      MYSQL_PASSWORD: pwd4librenms-t6
+      MYSQL_DATABASE: librenms_nmaas
+      MYSQL_USER: librenms_nmaas
+      MYSQL_PASSWORD: pwd4librenms_nmaas
     networks:
       nmaas-inter-container:
   ${container_name}:
     depends_on:
       - mysql
-    image: docker-hub.man.poznan.pl:5000/aweinert/librenms:1.1
+    image: docker-hub.man.poznan.pl:5000/aweinert/librenms:1.2
     ports:
       - ${port}:80
     volumes:
@@ -22,13 +22,10 @@ services:
     environment:
       DB_TYPE: mysql
       DB_HOST: mysql
-      DB_NAME: librenms-t6
-      DB_USER: librenms-t6
-      DB_PASS: pwd4librenms-t6
+      DB_NAME: librenms_nmaas
+      DB_USER: librenms_nmaas
+      DB_PASS: pwd4librenms_nmaas
       POLLER: 16
-      MYSQL_ENV_MYSQL_DATABASE: librenms-t6
-      MYSQL_ENV_MYSQL_USER: librenms-t6
-      MYSQL_ENV_MYSQL_PASSWORD: pwd4librenms-t6
     networks:
       nmaas-ext-access:
       nmaas-dcn:
