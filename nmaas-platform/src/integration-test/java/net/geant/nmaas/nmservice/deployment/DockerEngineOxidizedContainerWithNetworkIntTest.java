@@ -9,7 +9,6 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,8 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -65,13 +62,11 @@ public class DockerEngineOxidizedContainerWithNetworkIntTest {
 			ContainerCheckFailedException,
 			InvalidDeploymentIdException,
 			InterruptedException {
-		orchestrator.verifyRequestObtainTargetHostAndNetworkDetails(deploymentId);
+		orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
 		orchestrator.prepareDeploymentEnvironment(deploymentId);
 		orchestrator.deployNmService(deploymentId);
 		Thread.sleep(2000);
 		orchestrator.checkService(deploymentId);
-		assertThat(orchestrator.listServices(nmServiceRepositoryManager.loadService(deploymentId).getHost()),
-				Matchers.hasItem(nmServiceRepositoryManager.loadService(deploymentId).getDockerContainer().getDeploymentId()));
 	}
 
 }

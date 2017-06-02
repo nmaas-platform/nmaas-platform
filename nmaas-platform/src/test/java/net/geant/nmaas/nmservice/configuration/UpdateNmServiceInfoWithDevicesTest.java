@@ -35,33 +35,40 @@ public class UpdateNmServiceInfoWithDevicesTest {
     @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
 
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
+    private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
+    private Identifier applicationId1 = Identifier.newInstance("applicationId1");
+    private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
+    private Identifier applicationId2 = Identifier.newInstance("applicationId2");
     private Identifier clientId = Identifier.newInstance("clientId");
-
-    private AppConfiguration appConfiguration;
 
     @Before
     public void setup() {
-        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
+        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId1, applicationId1, clientId, oxidizedTemplate());
         nmServiceRepositoryManager.storeService(serviceInfo);
-        deploymentId = Identifier.newInstance("deploymentId");
-        appConfiguration = new AppConfiguration("" +
-                "{\"routers\": [\"1.1.1.1\",\"2.2.2.2\"], " +
-                "\"oxidizedUsername\":\"user\", " +
-                "\"oxidizedPassword\":\"pass\"}");
+        serviceInfo = new NmServiceInfo(deploymentId2, applicationId2, clientId);
+        nmServiceRepositoryManager.storeService(serviceInfo);
     }
 
     @After
     public void cleanRepositories() throws InvalidDeploymentIdException {
-        nmServiceRepositoryManager.removeService(deploymentId);
+        nmServiceRepositoryManager.removeService(deploymentId1);
+        nmServiceRepositoryManager.removeService(deploymentId2);
     }
 
     @Test
-    public void shouldUpdateNmServiceInfoWithDevices() throws InvalidDeploymentIdException, IOException {
+    public void shouldUpdateNmServiceInfoWithDevicesFromOxidizedConfig() throws InvalidDeploymentIdException, IOException {
+        AppConfiguration appConfiguration = new AppConfiguration(AppConfigurationJsonToMapTest.EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT);
         final Map<String, Object> modelFromJson = configurationsPreparer.getModelFromJson(appConfiguration);
-        configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, modelFromJson);
-        assertThat(nmServiceRepositoryManager.loadService(deploymentId).getManagedDevicesIpAddresses(), Matchers.contains("1.1.1.1", "2.2.2.2"));
+        configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId1, modelFromJson);
+        assertThat(nmServiceRepositoryManager.loadService(deploymentId1).getManagedDevicesIpAddresses(), Matchers.contains("1.1.1.1", "2.2.2.2"));
+    }
+
+    @Test
+    public void shouldUpdateNmServiceInfoWithDevicesFromLibreNmsConfig() throws InvalidDeploymentIdException, IOException {
+        AppConfiguration appConfiguration = new AppConfiguration(AppConfigurationJsonToMapTest.EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT);
+        final Map<String, Object> modelFromJson = configurationsPreparer.getModelFromJson(appConfiguration);
+        configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId2, modelFromJson);
+        assertThat(nmServiceRepositoryManager.loadService(deploymentId2).getManagedDevicesIpAddresses(), Matchers.contains("192.168.1.1", "10.10.3.2"));
     }
 
     public static DockerContainerTemplate oxidizedTemplate() {

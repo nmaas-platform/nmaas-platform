@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName;
 import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.generateConfigId;
@@ -33,7 +34,8 @@ import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurati
 @Component
 class NmServiceConfigurationsPreparer {
 
-    private static final String DEFAULT_MANAGED_DEVICE_KEY = "routers";
+    private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";
+    private static final String DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY = "ipAddress";
 
     @Autowired
     private NmServiceConfigurationRepository configurations;
@@ -70,7 +72,11 @@ class NmServiceConfigurationsPreparer {
     @Loggable(LogLevel.DEBUG)
     void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel)
             throws InvalidDeploymentIdException {
-        nmServiceRepositoryManager.updateManagedDevices(deploymentId, (List<String>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY));
+        List<Object> devices = (List<Object>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY);
+        List<String> ipAddresses = devices.stream()
+                .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
+                .collect(Collectors.toList());
+        nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }
 
     void storeConfigurationInRepository(String configId, NmServiceConfiguration configuration) {

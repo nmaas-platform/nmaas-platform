@@ -26,14 +26,12 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class NmServiceConfigurationTemplatesTest {
+public class NmServiceConfigurationLibreNmsTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
-    private static final String TEST_CONFIG_ID_2 = "2";
-    private static final String TEST_TEMPLATE_NAME_1 = "config-template";
-    private static final String TEST_TEMPLATE_NAME_2 = "router.db-template";
-    private static final String OXIDIZED_APP_NAME = "Oxidized";
-    private static final String OXIDIZED_APP_VERSION = "0.19.0";
+    private static final String TEST_TEMPLATE_NAME = "addhosts.cfg-template";
+    private static final String LIBRENMS_APP_NAME = "LibreNMS";
+    private static final String LIBRENMS_APP_VERSION = "1.0";
 
     @Autowired
     private NmServiceConfigurationTemplatesRepository templatesRepository;
@@ -48,16 +46,16 @@ public class NmServiceConfigurationTemplatesTest {
 
     @Before
     public void setup() {
-        Application app = new Application(OXIDIZED_APP_NAME);
-        app.setVersion(OXIDIZED_APP_VERSION);
+        Application app = new Application(LIBRENMS_APP_NAME);
+        app.setVersion(LIBRENMS_APP_VERSION);
         testAppId = applicationRepository.save(app).getId();
     }
 
     @Test
     public void shouldPopulateAndPrintConfigurationFile() throws Exception {
-        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(OXIDIZED_APP_NAME).get(0).getId()));
-        List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
-        assertThat(templates.size(), equalTo(2));
+        Identifier libreNmsIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(LIBRENMS_APP_NAME).get(0).getId()));
+        List<Template> templates = templatesRepository.loadTemplates(libreNmsIdentifier);
+        assertThat(templates.size(), equalTo(1));
         assertThat(templates.get(0).getName(), endsWith(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX));
         assertThat(SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName(templates.get(0).getName()),
                 not(containsString(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX)));
@@ -65,20 +63,17 @@ public class NmServiceConfigurationTemplatesTest {
 
     @Test
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
-        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(OXIDIZED_APP_NAME).get(0).getId()));
+        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(LIBRENMS_APP_NAME).get(0).getId()));
         List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
-        Optional<Template> tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME_1)).findFirst();
+        Optional<Template> tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME)).findFirst();
         NmServiceConfiguration nmServiceConfiguration =
-                configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_1, tut.orElseThrow(() -> new Exception()), testOxidizedDefaultConfigurationInputModel());
-        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
+                configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
+                        TEST_CONFIG_ID_1,
+                        tut.orElseThrow(() -> new Exception()),
+                        testLibreNmsDefaultConfigurationInputModel());
+        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("addhosts.cfg"));
         assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
-                Matchers.allOf(containsString("user123"), containsString("pass123")));
-        tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME_2)).findFirst();
-        nmServiceConfiguration =
-                configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(TEST_CONFIG_ID_2, tut.orElseThrow(() -> new Exception()), testOxidizedDefaultConfigurationInputModel());
-        assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
-        assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
-                Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
+                Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
     }
 
     @After
@@ -86,14 +81,20 @@ public class NmServiceConfigurationTemplatesTest {
         applicationRepository.delete(testAppId);
     }
 
-    private Map<String, Object> testOxidizedDefaultConfigurationInputModel() {
+    private Map<String, Object> testLibreNmsDefaultConfigurationInputModel() {
         Map<String, Object> model = new HashMap<>();
-        model.put("oxidizedUsername", "user123");
-        model.put("oxidizedPassword", "pass123");
-        List<String> routers = new ArrayList<>();
-        routers.add("7.7.7.7");
-        routers.add("8.8.8.8");
-        model.put("routers", routers);
+        List<Map> routers = new ArrayList<>();
+        Map<String, String> router1 = new HashMap<>();
+        router1.put("ipAddress", "192.168.1.1");
+        router1.put("snmpCommunity", "public");
+        router1.put("snmpVersion", "v2c");
+        routers.add(router1);
+        Map<String, String> router2 = new HashMap<>();
+        router2.put("ipAddress", "10.10.3.2");
+        router2.put("snmpCommunity", "private");
+        router2.put("snmpVersion", "v2");
+        routers.add(router2);
+        model.put("targets", routers);
         return model;
     }
 
