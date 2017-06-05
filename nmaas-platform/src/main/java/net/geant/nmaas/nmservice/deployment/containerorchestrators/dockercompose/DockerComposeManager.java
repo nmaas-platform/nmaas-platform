@@ -63,7 +63,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
+    public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
             final Identifier clientId = repositoryManager.loadClientId(deploymentId);
@@ -256,12 +256,6 @@ public class DockerComposeManager implements ContainerOrchestrator {
     private void removeNetworkIfNoContainerAttached(NmServiceInfo service)
             throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
         dockerNetworkManager.removeIfNoContainersAttached(service.getClientId());
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    public List<String> listServices(DockerHost host) throws ContainerOrchestratorInternalErrorException {
-        return null;
     }
 
     @Override

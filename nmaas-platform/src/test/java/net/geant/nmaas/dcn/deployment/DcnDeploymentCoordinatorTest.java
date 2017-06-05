@@ -5,18 +5,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource("classpath:application-test.properties")
 public class DcnDeploymentCoordinatorTest {
 
     @Autowired
@@ -30,6 +30,11 @@ public class DcnDeploymentCoordinatorTest {
                 equalTo(DcnDeploymentState.REMOVAL_FAILED));
         assertThat(coordinator.deploymentOrRemovalFailureDependingOnLastState(DcnDeploymentState.DEPLOYED),
                 equalTo(DcnDeploymentState.ERROR));
+    }
+
+    @Test
+    public void shouldReadCorrectAnsibleDockerApiUrlFromProperties() {
+        assertThat(coordinator.getAnsibleDockerApiUrl(), equalTo("http://192.168.1.1:2375"));
     }
 
 }

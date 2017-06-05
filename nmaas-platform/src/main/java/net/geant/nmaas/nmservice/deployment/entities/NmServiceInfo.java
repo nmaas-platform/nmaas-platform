@@ -54,7 +54,7 @@ public class NmServiceInfo {
     /**
      * Container template for this service
      */
-    @OneToOne(cascade=CascadeType.ALL, optional=false, orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
     private DockerContainerTemplate template;
 
     /**
@@ -79,6 +79,13 @@ public class NmServiceInfo {
     private List<String> managedDevicesIpAddresses;
 
     public NmServiceInfo() { }
+
+    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId) {
+        this.name = deploymentId.value();
+        this.deploymentId = deploymentId;
+        this.applicationId = applicationId;
+        this.clientId = clientId;
+    }
 
     public NmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, DockerContainerTemplate template) {
         this.name = deploymentId.value();
