@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
-import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -32,7 +31,7 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequestObtainTargetHostAndNetworkDetails(Identifier deploymentId)
+    public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
 
     }
@@ -63,12 +62,6 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void removeNmService(Identifier deploymentId)
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
 
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    public List<String> listServices(DockerHost host) throws ContainerOrchestratorInternalErrorException {
-        return null;
     }
 
     @Override
