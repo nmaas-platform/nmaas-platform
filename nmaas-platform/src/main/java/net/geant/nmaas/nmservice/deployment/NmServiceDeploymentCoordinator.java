@@ -59,6 +59,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException {
         try {
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
             orchestrator.prepareDeploymentEnvironment(deploymentId);
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
