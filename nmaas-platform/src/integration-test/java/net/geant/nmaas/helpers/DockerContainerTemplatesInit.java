@@ -1,11 +1,11 @@
-package net.geant.nmaas.nmservice.deployment;
+package net.geant.nmaas.helpers;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 
 import java.util.Arrays;
 
-public class ITestHelper {
+public class DockerContainerTemplatesInit {
 
     public static DockerContainerTemplate oxidizedTemplate() {
         DockerContainerTemplate oxidizedTemplate =

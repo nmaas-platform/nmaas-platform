@@ -33,7 +33,7 @@ public class AnsiblePlaybookVpnConfigRepository {
         try {
             loadCustomerVpnConfigByCustomerId(customerId);
             throw new AnsiblePlaybookVpnConfigExistsException(
-                    "Anisble playbook VPN configuration for customer " +  customerId +  " exists in the repository.");
+                    "Ansible playbook VPN configuration for customer " +  customerId +  " exists in the repository.");
         } catch (AnsiblePlaybookVpnConfigNotFoundException ex) {
             customerVpnConfig.setType(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
             customerSideVpnConfigs.put(customerId, customerVpnConfig);
