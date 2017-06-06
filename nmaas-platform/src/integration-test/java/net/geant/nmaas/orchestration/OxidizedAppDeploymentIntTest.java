@@ -7,8 +7,8 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigExistsException;
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
-import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
+import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
@@ -41,7 +41,6 @@ import static org.hamcrest.Matchers.*;
 @TestPropertySource("classpath:application-test.properties")
 public class OxidizedAppDeploymentIntTest {
 
-    private static final String TEST_CLIENT_ID = "testClientId";
     private static final String OXIDIZED_APP_NAME = "Oxidized";
     private static final String OXIDIZED_APP_VERSION = "0.19.0";
 
@@ -68,7 +67,7 @@ public class OxidizedAppDeploymentIntTest {
 
     @Before
     public void setup() throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException, DockerException, InterruptedException {
-        clientId = Identifier.newInstance(TEST_CLIENT_ID);
+        clientId = Identifier.newInstance(String.valueOf(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID));
         storeOxidizedApp();
         ansiblePlaybookVpnConfigRepositoryInit.initWithDefaults();
         DockerApiClientMockInit.mockMethods(dockerApiClient);

@@ -91,8 +91,8 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             final DockerNetwork dockerNetwork = dockerNetworkRepository.findByClientId(dcnSpec.getClientId()).orElseThrow(() -> new InvalidClientIdException());
             final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerNetwork);
             dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, dcnCloudEndpointDetails);
-            dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpnConfigRepository.loadDefaultCustomerVpnConfig());
-            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = vpnConfigRepository.loadDefaultCloudVpnConfig();
+            dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpnConfigRepository.loadCustomerVpnConfigByCustomerId(clientId.longValue()));
+            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = vpnConfigRepository.loadCloudVpnConfigByDockerHost(dockerNetwork.getDockerHost().getName());
             cloudSideRouterVpnConfig.merge(dcnCloudEndpointDetails);
             dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, cloudSideRouterVpnConfig);
             notifyStateChangeListeners(clientId, DcnDeploymentState.REQUEST_VERIFIED);

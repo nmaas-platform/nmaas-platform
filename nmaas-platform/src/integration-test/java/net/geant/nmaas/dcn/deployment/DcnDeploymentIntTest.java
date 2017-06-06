@@ -65,9 +65,8 @@ public class DcnDeploymentIntTest {
     private DcnDeploymentStateChangeManager dcnDeploymentStateChangeManager;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance("clientId");
+    private Identifier clientId = Identifier.newInstance(String.valueOf(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID));
     private Identifier applicationId = Identifier.newInstance("applicationId");
-    private String dcnName = "dcnName1";
 
     private DcnDeploymentCoordinator dcnDeployment;
 
@@ -100,7 +99,7 @@ public class DcnDeploymentIntTest {
             CouldNotDeployDcnException,
             CouldNotRemoveDcnException,
             InvalidClientIdException, InterruptedException {
-        dcnDeployment.verifyRequest(clientId, new DcnSpec(dcnName, clientId));
+        dcnDeployment.verifyRequest(clientId, new DcnSpec("dcnName1", clientId));
         Thread.sleep(500);
         assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REQUEST_VERIFIED));
         dcnDeployment.deployDcn(clientId);

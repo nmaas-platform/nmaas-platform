@@ -16,8 +16,6 @@ public class AnsiblePlaybookVpnConfigRepository {
 
     private Map<Long, AnsiblePlaybookVpnConfig> customerSideVpnConfigs = new HashMap<>();
     private Map<String, AnsiblePlaybookVpnConfig> cloudSideVpnConfigs = new HashMap<>();
-    public final static String DEFAULT_DOCKERHOST_NAME = "docker-host-1";
-    public final static long DEFAULT_CUSTOMER_ID = 1L;
 
     /**
      * Store {@link AnsiblePlaybookVpnConfig} client instance in the repository
@@ -179,24 +177,6 @@ public class AnsiblePlaybookVpnConfigRepository {
 
     public void removeAllClientVpnConfigs() {
         customerSideVpnConfigs = new HashMap<>();
-    }
-
-    /**
-     * Loads default Ansible playbook VPN customer configuration
-     * @return {@link AnsiblePlaybookVpnConfig} instance
-     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
-     */
-    public AnsiblePlaybookVpnConfig loadDefaultCustomerVpnConfig() throws AnsiblePlaybookVpnConfigNotFoundException {
-        return loadCustomerVpnConfigByCustomerId(DEFAULT_CUSTOMER_ID);
-    }
-
-    /**
-     * Loads default Ansible playbook VPN cloud configuration
-     * @return {@link AnsiblePlaybookVpnConfig} instance
-     * @throws AnsiblePlaybookVpnConfigNotFoundException when Ansible playbook VPN configuration does not exists in the repository
-     */
-    public AnsiblePlaybookVpnConfig loadDefaultCloudVpnConfig() throws AnsiblePlaybookVpnConfigNotFoundException {
-        return loadCloudVpnConfigByDockerHost(DEFAULT_DOCKERHOST_NAME);
     }
 
     private void validateVpnConfig(AnsiblePlaybookVpnConfig customerVpnConfig)
