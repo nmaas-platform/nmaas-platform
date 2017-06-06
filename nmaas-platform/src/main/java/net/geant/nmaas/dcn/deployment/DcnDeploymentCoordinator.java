@@ -33,6 +33,11 @@ import java.util.List;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
 
+/**
+ * Default DCN deployment provider implementation.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsiblePlaybookExecutionStateListener {

@@ -19,10 +19,10 @@ public class AnsibleNotificationRestController {
         this.stateListener = stateListener;
     }
 
-    @RequestMapping(value = "/{encodedServiceId}/status", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "/{encodedPlaybookId}/status", method = RequestMethod.POST, consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void notifyDcnConfigurationStatus(@PathVariable String encodedServiceId, @RequestBody AnsiblePlaybookStatus input) {
-        stateListener.notifyPlaybookExecutionState(encodedServiceId, input.convertedStatus());
+    public void notifyDcnConfigurationStatus(@PathVariable String encodedPlaybookId, @RequestBody AnsiblePlaybookStatus input) {
+        stateListener.notifyPlaybookExecutionState(encodedPlaybookId, input.convertedStatus());
     }
 
 }
