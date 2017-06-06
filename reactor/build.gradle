@@ -18,14 +18,6 @@ dependencies {
 	testCompile('org.mockito:mockito-core:1.10.19')
 }
 
-jacocoTestReport {
-	reports {
-		xml.enabled false
-		csv.enabled false
-		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
-	}
-}
-
 test {
     systemProperties 'property': 'value'    
     afterTest { desc, result ->
