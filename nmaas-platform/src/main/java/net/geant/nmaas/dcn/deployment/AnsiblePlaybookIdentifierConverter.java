@@ -3,6 +3,9 @@ package net.geant.nmaas.dcn.deployment;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 public class AnsiblePlaybookIdentifierConverter {
 
     private static final String CLIENT_SIDE_ROUTER_PREFIX = "CLIENT-ROUTER";

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Repository
 public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Long> {
 

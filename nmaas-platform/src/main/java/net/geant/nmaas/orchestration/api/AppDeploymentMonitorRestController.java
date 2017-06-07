@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
-import net.geant.nmaas.orchestration.*;
+import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
+ * Exposes REST API methods to retrieve information on application deployments.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
@@ -26,17 +28,37 @@ public class AppDeploymentMonitorRestController {
         this.deploymentMonitor = deploymentMonitor;
     }
 
+    /**
+     * Retrieves information on all deployments including their identifier and current state.
+     *
+     * @return deployments organized in a map
+     */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public Map<Identifier, AppLifecycleState> listAllDeployments() {
         return deploymentMonitor.allDeployments();
     }
 
+    /**
+     * Returns currents state of particular deployment.
+     *
+     * @param deploymentId application deployment identifier
+     * @return current deployment state
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     */
     @RequestMapping(value = "{deploymentId}/state", method = RequestMethod.GET)
     public AppLifecycleState loadDeploymentState(
             @PathVariable String deploymentId) throws InvalidDeploymentIdException {
         return deploymentMonitor.state(Identifier.newInstance(deploymentId));
     }
 
+    /**
+     * Returns deployed application access information.
+     *
+     * @param deploymentId application deployment identifier
+     * @return application access information
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     * @throws InvalidAppStateException if deployment didn't complete yet
+     */
     @RequestMapping(value = "{deploymentId}/access", method = RequestMethod.GET)
     public AppUiAccessDetails loadDeploymentUserAccessInfo(
             @PathVariable String deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException {

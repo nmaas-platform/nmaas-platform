@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component( "restAuthenticationEntryPoint" )
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

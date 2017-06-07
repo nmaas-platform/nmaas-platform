@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
 
