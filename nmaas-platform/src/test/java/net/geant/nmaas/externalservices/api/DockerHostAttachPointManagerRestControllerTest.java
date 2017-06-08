@@ -29,12 +29,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerHostAttachPointRestControllerTest {
+public class DockerHostAttachPointManagerRestControllerTest {
 
     private final static String URL_PREFIX = "/platform/api/management/network";
 
     private static final String FIRST_DOCKER_HOST_NAME = "dh-1";
     private static final String SECOND_DOCKER_HOST_NAME = "dh-2";
+
+    private static final String EXAMPLE_DOCKER_HOST_ATTACH_POINT_JSON = "" +
+            "{" +
+                "\"dockerHostName\":\"" + FIRST_DOCKER_HOST_NAME + "\"," +
+                "\"routerName\":\"R3\"," +
+                "\"routerId\":\"172.16.3.3\"," +
+                "\"routerInterfaceName\":\"ge-0/0/4\"" +
+            "}";
 
     @Autowired
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
@@ -44,7 +52,7 @@ public class DockerHostAttachPointRestControllerTest {
     @Before
     public void init() {
         mvc = MockMvcBuilders
-                .standaloneSetup(new DockerHostAttachPointRestController(dockerHostAttachPointRepository))
+                .standaloneSetup(new DockerHostAttachPointManagerRestController(dockerHostAttachPointRepository))
                 .build();
     }
 
@@ -64,6 +72,27 @@ public class DockerHostAttachPointRestControllerTest {
         assertThat(
                 dockerHostAttachPoint(FIRST_DOCKER_HOST_NAME).getRouterName(),
                 equalTo(dockerHostAttachPointRepository.findByDockerHostName(FIRST_DOCKER_HOST_NAME).get().getRouterName()));
+    }
+
+    @Test
+    public void shouldAddNewDockerHostAttachPointFromJson() throws Exception {
+        mvc.perform(post(URL_PREFIX + "/dockerhosts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(EXAMPLE_DOCKER_HOST_ATTACH_POINT_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        assertThat(
+                dockerHostAttachPointRepository.findByDockerHostName(FIRST_DOCKER_HOST_NAME).isPresent(),
+                is(true));
+        assertThat(
+                dockerHostAttachPointRepository.findByDockerHostName(FIRST_DOCKER_HOST_NAME).get().getRouterName(),
+                equalTo("R3"));
+        assertThat(
+                dockerHostAttachPointRepository.findByDockerHostName(FIRST_DOCKER_HOST_NAME).get().getRouterId(),
+                equalTo("172.16.3.3"));
+        assertThat(
+                dockerHostAttachPointRepository.findByDockerHostName(FIRST_DOCKER_HOST_NAME).get().getRouterInterfaceName(),
+                equalTo("ge-0/0/4"));
     }
 
     @Test

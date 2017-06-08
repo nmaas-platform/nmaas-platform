@@ -15,12 +15,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/platform/api/management/network")
-public class CustomerNetworkAttachPointRestController {
+public class CustomerNetworkAttachPointManagerRestController {
 
     private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
 
     @Autowired
-    public CustomerNetworkAttachPointRestController(
+    public CustomerNetworkAttachPointManagerRestController(
             BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository) {
         this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
     }

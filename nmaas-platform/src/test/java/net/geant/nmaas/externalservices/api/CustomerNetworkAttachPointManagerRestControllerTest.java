@@ -29,11 +29,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class CustomerNetworkAttachPointRestControllerTest {
+public class CustomerNetworkAttachPointManagerRestControllerTest {
 
     private final static String URL_PREFIX = "/platform/api/management/network";
 
     private static final long FIRST_CUSTOMER_ID = 1L;
+
+    private static final String EXAMPLE_CUSTOMER_NETWORK_ATTACH_POINT_JSON = "" +
+            "{" +
+                "\"customerId\":\"" + FIRST_CUSTOMER_ID + "\"," +
+                "\"routerName\":\"R4\"," +
+                "\"routerId\":\"172.16.4.4\"," +
+                "\"routerInterfaceName\":\"ge-0/0/4\"," +
+                "\"routerInterfaceUnit\":\"144\"," +
+                "\"routerInterfaceVlan\":\"8\"," +
+                "\"bgpLocalIp\":\"192.168.144.4\"," +
+                "\"bgpNeighborIp\":\"192.168.144.14\"," +
+                "\"asNumber\":\"64522\"" +
+            "}";
 
     @Autowired
     private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
@@ -43,7 +56,7 @@ public class CustomerNetworkAttachPointRestControllerTest {
     @Before
     public void init() {
         mvc = MockMvcBuilders
-                .standaloneSetup(new CustomerNetworkAttachPointRestController(basicCustomerNetworkAttachPointRepository))
+                .standaloneSetup(new CustomerNetworkAttachPointManagerRestController(basicCustomerNetworkAttachPointRepository))
                 .build();
     }
 
@@ -63,6 +76,25 @@ public class CustomerNetworkAttachPointRestControllerTest {
         assertThat(
                 basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).get().getCustomerId(),
                 equalTo(FIRST_CUSTOMER_ID));
+    }
+
+    @Test
+    public void shouldAddNewCustomerNetworkAttachPointFromJson() throws Exception {
+        mvc.perform(post(URL_PREFIX + "/customernetworks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(EXAMPLE_CUSTOMER_NETWORK_ATTACH_POINT_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        assertThat(basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).isPresent(), is(true));
+        assertThat(
+                basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).get().getCustomerId(),
+                equalTo(FIRST_CUSTOMER_ID));
+        assertThat(
+                basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).get().getRouterName(),
+                equalTo("R4"));
+        assertThat(
+                basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).get().getAsNumber(),
+                equalTo("64522"));
     }
 
     @Test
