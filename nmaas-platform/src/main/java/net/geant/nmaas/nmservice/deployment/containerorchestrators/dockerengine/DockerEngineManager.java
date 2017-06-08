@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import com.spotify.docker.client.messages.ContainerConfig;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;

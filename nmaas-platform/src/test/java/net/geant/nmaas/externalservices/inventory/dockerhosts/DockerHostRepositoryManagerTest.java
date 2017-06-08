@@ -1,5 +1,8 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +38,7 @@ public class DockerHostRepositoryManagerTest {
         dockerHostRepositoryManager.removeDockerHost(TEST_DOCKER_HOST_NAME);
     }
 
-    @Test(expected = DockerHostExistsException.class)
+    @Test(expected = DockerHostAlreadyExistsException.class)
     public void shouldNotAddTheSameDockerHost() throws Exception {
         dockerHostRepositoryManager.addDockerHost(initNewDockerHost(EXISTING_DOCKER_HOST_NAME));
     }

@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.dockerhosts;
+package net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions;
 
 /**
  * @author Jakub Gutkowski <jgutkow@man.poznan.pl>

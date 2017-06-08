@@ -1,5 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;

@@ -1,5 +1,9 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.repositories.DockerHostRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +62,7 @@ public class DockerHostRepositoryManager {
                     "/home/mgmt/nmaasplatform/scripts",
                     "/home/mgmt/nmaasplatform/volumes",
                     false));
-        } catch (DockerHostExistsException e) {
+        } catch (DockerHostAlreadyExistsException e) {
             // nothing to do
         }
     }
@@ -67,15 +71,15 @@ public class DockerHostRepositoryManager {
      * Store {@link DockerHost} instance in the repository
      *
      * @param newDockerHost New {@link DockerHost} instance
-     * @throws DockerHostExistsException when Docker host exists in the repository
+     * @throws DockerHostAlreadyExistsException when Docker host exists in the repository
      * @throws DockerHostInvalidException when invalid input
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addDockerHost(DockerHost newDockerHost) throws DockerHostExistsException, DockerHostInvalidException {
+    public void addDockerHost(DockerHost newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException {
         validateDockerHost(newDockerHost);
         try {
             loadByName(newDockerHost.getName());
-            throw new DockerHostExistsException("Docker host with " +  newDockerHost.getName() +  " name exists in the repository.");
+            throw new DockerHostAlreadyExistsException("Docker host with " +  newDockerHost.getName() +  " name exists in the repository.");
         } catch (DockerHostNotFoundException ex) {
             repository.save(newDockerHost);
         }

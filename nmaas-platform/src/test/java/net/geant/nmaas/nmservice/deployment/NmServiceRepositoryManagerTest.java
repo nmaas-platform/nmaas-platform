@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;

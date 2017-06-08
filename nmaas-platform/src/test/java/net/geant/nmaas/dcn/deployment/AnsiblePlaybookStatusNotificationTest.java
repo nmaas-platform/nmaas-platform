@@ -7,7 +7,6 @@ import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.repositories.DockerNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -42,8 +41,6 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
-    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
-    @Autowired
     private AppDeploymentRepository appDeploymentRepository;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
@@ -63,7 +60,7 @@ public class AnsiblePlaybookStatusNotificationTest {
         DcnSpec spec = new DcnSpec(dcnName, clientId);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dcnRepositoryManager, vpnConfigRepository, applicationEventPublisher, dockerNetworkRepository);
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dcnRepositoryManager, null, null, applicationEventPublisher, dockerNetworkRepository);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }
