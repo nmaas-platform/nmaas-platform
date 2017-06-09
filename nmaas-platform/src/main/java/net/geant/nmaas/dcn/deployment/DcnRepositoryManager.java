@@ -85,4 +85,8 @@ public class DcnRepositoryManager {
         return dcnInfoRepository.getStateByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
     }
 
+    public boolean exists(Identifier clientId) {
+        return dcnInfoRepository.findByClientId(clientId).isPresent();
+    }
+
 }

@@ -76,11 +76,18 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
     @Loggable(LogLevel.INFO)
     public boolean checkIfExists(Identifier clientId) {
         try {
-            dcnRepositoryManager.loadCurrentState(clientId);
-            return true;
+            return dcnExists(clientId) && dcnIsNotRemoved(clientId);
         } catch (InvalidClientIdException e) {
             return false;
         }
+    }
+
+    private boolean dcnExists(Identifier clientId) {
+        return dcnRepositoryManager.exists(clientId);
+    }
+
+    private boolean dcnIsNotRemoved(Identifier clientId) throws InvalidClientIdException {
+        return !dcnRepositoryManager.loadCurrentState(clientId).equals(DcnDeploymentState.REMOVED);
     }
 
     @Override
