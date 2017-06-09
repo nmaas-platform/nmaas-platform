@@ -1,65 +1,64 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import com.spotify.docker.client.exceptions.DockerException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import net.geant.nmaas.helpers.DockerApiClientMockInit;
+import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource("classpath:application-test.properties")
 public class DockerEngineWorkflowIntTest {
 
 	@Autowired
-	@Qualifier("DockerEngine")
 	private ContainerOrchestrator orchestrator;
 
 	@Autowired
 	private NmServiceRepositoryManager nmServiceRepositoryManager;
-
 	@Autowired
 	private DockerHostRepositoryManager dockerHostRepositoryManager;
 
-	@Autowired
-	private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
+	@MockBean
+	private ApplicationEventPublisher applicationEventPublisher;
+	@MockBean
+	private DockerApiClient dockerApiClient;
 
 	private Identifier deploymentId = Identifier.newInstance("deploymentId");
 	private Identifier applicationId = Identifier.newInstance("applicationId");
 	private Identifier clientId = Identifier.newInstance("clientId");
 
 	@Before
-	public void setup() throws DockerHostNotFoundException {
-		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, ITestHelper.alpineTomcatTemplate());
-		final DockerHost dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
-		service.setHost(dockerHost);
-		final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
-		final DockerContainerNetDetails testNetworkDetails1 = new DockerContainerNetDetails(8080, ipamSpec);
-		final DockerContainerVolumesDetails testVolumeDetails1 = new DockerContainerVolumesDetails("/home/directory");
-		final DockerContainer dockerContainer = new DockerContainer();
-		dockerContainer.setNetworkDetails(testNetworkDetails1);
-		dockerContainer.setVolumesDetails(testVolumeDetails1);
-		service.setDockerContainer(dockerContainer);
+	public void setup() throws DockerHostNotFoundException, DockerException, InterruptedException {
+		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplatesInit.alpineTomcatTemplate());
 		nmServiceRepositoryManager.storeService(service);
-		final DockerNetwork dockerNetwork = new DockerNetwork(clientId, dockerHost, 100, "10.10.1.0/24", "10.10.1.254");
-		dockerNetworkRepositoryManager.storeNetwork(dockerNetwork);
+		DockerApiClientMockInit.mockMethods(dockerApiClient);
 	}
 
-	@Ignore
+	@After
+	public void clear() throws InvalidDeploymentIdException, InvalidClientIdException {
+		nmServiceRepositoryManager.removeService(deploymentId);
+	}
+
 	@Test
 	public void shouldDeployNewContainerWithDedicatedNetwork() throws
+			NmServiceRequestVerificationException,
 			ContainerOrchestratorInternalErrorException,
 			CouldNotConnectToOrchestratorException,
 			CouldNotPrepareEnvironmentException,
@@ -67,23 +66,12 @@ public class DockerEngineWorkflowIntTest {
 			CouldNotRemoveNmServiceException,
 			DockerNetworkCheckFailedException,
 			ContainerCheckFailedException,
-			InvalidDeploymentIdException,
-			InterruptedException {
-		// orchestrator.verifyRequestAndObtainInitialDeploymentDetails(serviceName);
+			InvalidDeploymentIdException {
+		orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
 		orchestrator.prepareDeploymentEnvironment(deploymentId);
 		orchestrator.deployNmService(deploymentId);
-		Thread.sleep(2000);
 		orchestrator.checkService(deploymentId);
 		orchestrator.removeNmService(deploymentId);
-	}
-
-	@After
-	public void cleanServices() throws CouldNotConnectToOrchestratorException {
-		try {
-			orchestrator.removeNmService(deploymentId);
-		} catch (CouldNotRemoveNmServiceException | ContainerOrchestratorInternalErrorException e) {
-			// service was already removed
-		}
 	}
 
 }

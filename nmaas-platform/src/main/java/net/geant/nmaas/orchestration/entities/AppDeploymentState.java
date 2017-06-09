@@ -4,6 +4,8 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 
 /**
+ * Application deployment states.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public enum AppDeploymentState {
@@ -33,8 +35,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
-                case ENVIRONMENT_PREPARED:
-                    return DEPLOYMENT_ENVIRONMENT_PREPARED;
+                case ENVIRONMENT_PREPARATION_INITIATED:
+                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS;
                 case ENVIRONMENT_PREPARATION_FAILED:
                     return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
                 default:
@@ -46,6 +48,20 @@ public enum AppDeploymentState {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.REQUEST_VALIDATION_FAILED; }
 
+    },
+    DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case ENVIRONMENT_PREPARED:
+                    return DEPLOYMENT_ENVIRONMENT_PREPARED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
     },
     DEPLOYMENT_ENVIRONMENT_PREPARED {
         @Override

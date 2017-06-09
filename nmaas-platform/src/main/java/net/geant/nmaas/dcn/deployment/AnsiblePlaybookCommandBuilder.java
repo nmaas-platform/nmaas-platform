@@ -8,6 +8,9 @@ import java.util.List;
 import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.Action;
 import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.Type;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 public class AnsiblePlaybookCommandBuilder {
 
     private static final String ANSIBLE_RUN_SCRIPT_PARAM_EXTRA_VARS_NMAAS_CUSTOMER_VRF_ID_KEY = "NMAAS_CUSTOMER_VRF_ID";

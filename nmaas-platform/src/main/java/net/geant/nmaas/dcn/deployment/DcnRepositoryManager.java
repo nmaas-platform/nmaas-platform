@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -73,6 +75,10 @@ public class DcnRepositoryManager {
 
     public DcnInfo loadNetwork(Identifier clientId) throws InvalidClientIdException {
         return dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    }
+
+    public List<DcnInfo> loadAllNetworks() {
+        return dcnInfoRepository.findAll();
     }
 
     public DcnDeploymentState loadCurrentState(Identifier clientId) throws InvalidClientIdException {

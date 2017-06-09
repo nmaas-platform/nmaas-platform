@@ -1,11 +1,9 @@
 package net.geant.nmaas.dcn.deployment;
 
-import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.*;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
@@ -37,6 +35,11 @@ import java.util.List;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
 
+/**
+ * Default DCN deployment provider implementation.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsiblePlaybookExecutionStateListener {
@@ -55,6 +58,8 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     private DockerNetworkRepository dockerNetworkRepository;
 
+    private DockerApiClient dockerApiClient;
+
     @Value("${ansible.docker.api.url}")
     private String ansibleDockerApiUrl;
 
@@ -63,12 +68,14 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                                     DockerHostAttachPointRepository dockerHostAttachPointRepository,
                                     BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
                                     ApplicationEventPublisher applicationEventPublisher,
-                                    DockerNetworkRepository dockerNetworkRepository) {
+                                    DockerNetworkRepository dockerNetworkRepository,
+                                    DockerApiClient dockerApiClient) {
         this.dcnRepositoryManager = dcnRepositoryManager;
         this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
         this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
         this.applicationEventPublisher = applicationEventPublisher;
         this.dockerNetworkRepository = dockerNetworkRepository;
+        this.dockerApiClient = dockerApiClient;
     }
 
     @Override
@@ -133,17 +140,16 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         }
     }
 
-    void removeOldAnsiblePlaybookContainers() {
-        DockerClient apiClient = DefaultDockerClient.builder().uri(ansibleDockerApiUrl).build();
+    private void removeOldAnsiblePlaybookContainers() {
         try {
-            final List<Container> containers = apiClient.listContainers(DockerClient.ListContainersParam.withStatusExited());
+            final List<Container> containers = dockerApiClient.listContainers(ansibleDockerApiUrl, DockerClient.ListContainersParam.withStatusExited());
             for (Container container : containers) {
                 log.debug("Removing old container " + container.id());
-                apiClient.removeContainer(container.id());
+                dockerApiClient.removeContainer(ansibleDockerApiUrl, container.id());
             }
         } catch (DockerException
                 | InterruptedException e) {
-            log.warn("Failed to removeIfNoContainersAttached old Ansible containers", e);
+            log.warn("Failed to remove old Ansible containers", e);
         }
     }
 
@@ -183,10 +189,9 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
     }
 
     private void deployAnsiblePlaybookContainers(ContainerConfig... ansibleContainerConfigs) throws DockerException, InterruptedException {
-        DockerClient apiClient = DefaultDockerClient.builder().uri(ansibleDockerApiUrl).build();
         for (ContainerConfig containerConfig : ansibleContainerConfigs) {
-            ContainerCreation ansibleContainer = apiClient.createContainer(containerConfig, ansibleContainerName());
-            apiClient.startContainer(ansibleContainer.id());
+            String ansibleContainerId = dockerApiClient.createContainer(ansibleDockerApiUrl, containerConfig, ansibleContainerName());
+            dockerApiClient.startContainer(ansibleDockerApiUrl, ansibleContainerId);
         }
     }
 

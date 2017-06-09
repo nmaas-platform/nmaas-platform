@@ -88,11 +88,11 @@ export class AppInstanceService {
             new AppInstanceProgressStage('Subscription validation', AppInstanceState.VALIDATION),
             new AppInstanceProgressStage('Environment creation', AppInstanceState.PREPARATION),
             new AppInstanceProgressStage('Setting up connectivity', AppInstanceState.CONNECTING),
-            new AppInstanceProgressStage('Providing onfiguration', AppInstanceState.CONFIGURATION_AWAITING),
+            new AppInstanceProgressStage('Applying app configuration', AppInstanceState.CONFIGURATION_AWAITING),
             new AppInstanceProgressStage('App container deployment', AppInstanceState.DEPLOYING),
             new AppInstanceProgressStage('App running', AppInstanceState.RUNNING),
             new AppInstanceProgressStage('Undeploying', AppInstanceState.UNDEPLOYING, [AppInstanceState.UNDEPLOYING, AppInstanceState.DONE]),
-            new AppInstanceProgressStage('Done', AppInstanceState.DONE, [AppInstanceState.UNDEPLOYING, AppInstanceState.DONE])
+            new AppInstanceProgressStage('Removed', AppInstanceState.DONE, [AppInstanceState.UNDEPLOYING, AppInstanceState.DONE])
         ];
     }
 
