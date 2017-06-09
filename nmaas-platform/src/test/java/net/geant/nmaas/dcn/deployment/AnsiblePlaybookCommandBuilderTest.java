@@ -1,7 +1,10 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.*;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigExistsException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
+import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -119,7 +122,7 @@ public class AnsiblePlaybookCommandBuilderTest {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.ADD,
                 AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE,
-                vpnConfigRepository.loadDefaultCustomerVpnConfig(),
+                vpnConfigRepository.loadCustomerVpnConfigByCustomerId(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         for (String command : commands)
             assertThat(
@@ -132,7 +135,7 @@ public class AnsiblePlaybookCommandBuilderTest {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.REMOVE,
                 AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE,
-                vpnConfigRepository.loadDefaultCustomerVpnConfig(),
+                vpnConfigRepository.loadCustomerVpnConfigByCustomerId(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         for (String command : commands)
             assertThat(
@@ -145,7 +148,7 @@ public class AnsiblePlaybookCommandBuilderTest {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.ADD,
                 AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE,
-                vpnConfigRepository.loadDefaultCloudVpnConfig(),
+                vpnConfigRepository.loadCloudVpnConfigByDockerHost(AnsiblePlaybookVpnConfigRepositoryInit.TEST_DOCKER_HOST_NAME),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         for (String command : commands)
             assertThat(
@@ -158,7 +161,7 @@ public class AnsiblePlaybookCommandBuilderTest {
         final List<String> commands = AnsiblePlaybookCommandBuilder.command(
                 AnsiblePlaybookVpnConfig.Action.REMOVE,
                 AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE,
-                vpnConfigRepository.loadDefaultCloudVpnConfig(),
+                vpnConfigRepository.loadCloudVpnConfigByDockerHost(AnsiblePlaybookVpnConfigRepositoryInit.TEST_DOCKER_HOST_NAME),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         for (String command : commands)
             assertThat(

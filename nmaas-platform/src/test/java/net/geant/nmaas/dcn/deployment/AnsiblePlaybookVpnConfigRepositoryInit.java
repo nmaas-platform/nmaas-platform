@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AnsiblePlaybookVpnConfigRepositoryInit {
 
+    public static final long TEST_CUSTOMER_ID = 105L;
+    public static final String TEST_DOCKER_HOST_NAME = "GN4-DOCKER-1";
+
     @Autowired
     private AnsiblePlaybookVpnConfigRepository repository;
 
@@ -29,7 +32,7 @@ public class AnsiblePlaybookVpnConfigRepositoryInit {
         customerVpnConig.setInterfaceVlan("8");
         customerVpnConig.setBgpLocalIp("192.168.144.4");
         customerVpnConig.setBgpLocalCidr("24");
-        repository.addCustomerVpnConfig(AnsiblePlaybookVpnConfigRepository.DEFAULT_CUSTOMER_ID, customerVpnConig);
+        repository.addCustomerVpnConfig(TEST_CUSTOMER_ID, customerVpnConig);
 
         AnsiblePlaybookVpnConfig cloudVpnConig = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
         cloudVpnConig.setTargetRouter("R3");
@@ -49,7 +52,7 @@ public class AnsiblePlaybookVpnConfigRepositoryInit {
         cloudVpnConig.setPolicyStatementConnected("NMAAS-C-AS64522-CONNECTED->OTHER");
         cloudVpnConig.setPolicyStatementImport("NMAAS-C-AS64522-IMPORT");
         cloudVpnConig.setPolicyStatementExport("NMAAS-C-AS64522-EXPORT");
-        repository.addCloudVpnConfig(AnsiblePlaybookVpnConfigRepository.DEFAULT_DOCKERHOST_NAME, cloudVpnConig);
+        repository.addCloudVpnConfig(TEST_DOCKER_HOST_NAME, cloudVpnConig);
     }
 
     public void clean() {

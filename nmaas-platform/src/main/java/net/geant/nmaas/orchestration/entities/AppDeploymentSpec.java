@@ -6,6 +6,12 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Application deployment specification. Contains information about supported deployment options represented by
+ * {@link AppDeploymentEnv} and the {@link DockerContainerTemplate} if deployment using plain Docker Engine is supported.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Entity
 public class AppDeploymentSpec implements Serializable {
 

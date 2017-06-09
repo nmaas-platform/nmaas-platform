@@ -117,7 +117,7 @@ public class AnsiblePlaybookContainerBuilderTest {
     @Test
     public void shouldBuildAnsiblePlaybookContainerConfigForClientSideRouter() throws AnsiblePlaybookVpnConfigNotFoundException {
         ContainerConfig containerConfig = containerConfigBuilder.buildContainerForClientSideRouterConfig(
-                vpnConfigRepository.loadDefaultCustomerVpnConfig(),
+                vpnConfigRepository.loadCustomerVpnConfigByCustomerId(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID),
                 ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER);
         assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(containerConfig.image())));
         for (String volumeEntry : containerConfig.hostConfig().binds())
@@ -129,7 +129,7 @@ public class AnsiblePlaybookContainerBuilderTest {
     @Test
     public void shouldBuildAnsiblePlaybookContainerConfigForCloudSideRouter() throws AnsiblePlaybookVpnConfigNotFoundException {
         ContainerConfig containerConfig = containerConfigBuilder.buildContainerForCloudSideRouterConfig(
-                vpnConfigRepository.loadDefaultCloudVpnConfig(),
+                vpnConfigRepository.loadCloudVpnConfigByDockerHost(AnsiblePlaybookVpnConfigRepositoryInit.TEST_DOCKER_HOST_NAME),
                 ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER);
         assertThat(EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLOUD_SIDE_ROUTER_DOCKER_RUN_COMMAND, stringContainsInOrder(Arrays.asList(containerConfig.image())));
         for (String volumeEntry : containerConfig.hostConfig().binds())
@@ -140,7 +140,7 @@ public class AnsiblePlaybookContainerBuilderTest {
 
     @Test
     public void shouldMergeConfigWithProvidedNetworkDetails() throws AnsiblePlaybookVpnConfigNotFoundException {
-        AnsiblePlaybookVpnConfig config = vpnConfigRepository.loadDefaultCloudVpnConfig();
+        AnsiblePlaybookVpnConfig config = vpnConfigRepository.loadCloudVpnConfigByDockerHost(AnsiblePlaybookVpnConfigRepositoryInit.TEST_DOCKER_HOST_NAME);
         DcnCloudEndpointDetails networkDetails = new DcnCloudEndpointDetails(
                 123,
                 "10.11.1.0/24",

@@ -33,14 +33,14 @@ public class AnsiblePlaybookVpnConfRestControllerTest {
     private static final String FIRST_NEW_DOCKERHOST_NAME = "GN4-DOCKER-2";
     private static final String SECOND_NEW_DOCKERHOST_NAME = "GN4-DOCKER-3";
     private static final String THIRD_NEW_DOCKERHOST_NAME = "GN4-DOCKER-4";
-    private static final String EXISTING_DOCKERHOST_NAME = AnsiblePlaybookVpnConfigRepository.DEFAULT_DOCKERHOST_NAME;
+    private static final String EXISTING_DOCKERHOST_NAME = AnsiblePlaybookVpnConfigRepositoryInit.TEST_DOCKER_HOST_NAME;
     private static final String FIRST_NEW_ROUTER_NAME = "R5";
     private static final String EXISTING_CLOUD_ROUTER_NAME = "R3";
     private static final String EXISTING_CUSTOMER_ROUTER_NAME = "R4";
     private static final long FIRST_NEW_CUSTOMER_ID = 2L;
     private static final long SECOND_NEW_CUSTOMER_ID = 3L;
     private static final long THIRD_NEW_CUSTOMER_ID = 4L;
-    private static final long EXISTING_CUSTOMER_ID = 1L;
+    private static final long EXISTING_CUSTOMER_ID = AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID;
     private static final String NEW_CLOUD_INTERFACE_VLAN = "13";
     private static final String NEW_CUSTOMER_INTERFACE_VLAN = "14";
 

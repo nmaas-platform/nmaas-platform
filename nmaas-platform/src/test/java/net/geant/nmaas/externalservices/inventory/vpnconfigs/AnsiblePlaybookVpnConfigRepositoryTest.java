@@ -26,11 +26,11 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
     private AnsiblePlaybookVpnConfigRepositoryInit repositoryInit;
 
     private static final String NEW_ROUTER_NAME = "R13";
-    private static final String NEW_DOCKERHOST_NAME = "GN4-DOCKER-2";
-    private static final String EXISTING_DOCKERHOST_NAME = AnsiblePlaybookVpnConfigRepository.DEFAULT_DOCKERHOST_NAME;
+    private static final String NEW_DOCKER_HOST_NAME = "GN4-DOCKER-2";
+    private static final String EXISTING_DOCKER_HOST_NAME = AnsiblePlaybookVpnConfigRepositoryInit.TEST_DOCKER_HOST_NAME;
     private static final String EXISTING_CLIENT_SIDE_ROUTER_NAME = "R4";
     private static final String EXISTING_CLOUD_SIDE_ROUTER_NAME = "R3";
-    private static final long EXISTING_CLIENT_ID = 1L;
+    private static final long EXISTING_CLIENT_ID = AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID;
     private static final long NEW_CLIENT_ID = 2L;
 
     @Before
@@ -46,8 +46,8 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     @Test
     public void shouldAddNewCloudVpnConfig () throws Exception {
-        repository.addCloudVpnConfig(NEW_DOCKERHOST_NAME, setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE));
-        assertEquals(setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE), repository.loadCloudVpnConfigByDockerHost(NEW_DOCKERHOST_NAME));
+        repository.addCloudVpnConfig(NEW_DOCKER_HOST_NAME, setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE));
+        assertEquals(setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE), repository.loadCloudVpnConfigByDockerHost(NEW_DOCKER_HOST_NAME));
     }
 
     @Test(expected = AnsiblePlaybookVpnConfigInvalidException.class)
@@ -57,7 +57,7 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     @Test(expected = AnsiblePlaybookVpnConfigExistsException.class)
     public void shouldThrowExistsExceptionWhenAddingCloudConfig() throws Exception {
-        repository.addCloudVpnConfig(EXISTING_DOCKERHOST_NAME, setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE));
+        repository.addCloudVpnConfig(EXISTING_DOCKER_HOST_NAME, setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE));
     }
 
     @Test
@@ -78,12 +78,12 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     @Test
     public void shouldLoadCloudConfigByDockerHostName () throws Exception {
-        assertEquals(EXISTING_CLOUD_SIDE_ROUTER_NAME, repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKERHOST_NAME).getTargetRouter());
+        assertEquals(EXISTING_CLOUD_SIDE_ROUTER_NAME, repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKER_HOST_NAME).getTargetRouter());
     }
 
     @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
     public void shouldThrowNotFoundExceptionForLoadCloudConfig() throws Exception {
-        repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKERHOST_NAME + "wrong");
+        repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKER_HOST_NAME + "wrong");
     }
 
     @Test
@@ -104,7 +104,7 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     @Test
     public void shouldLoadAllCloudVpnConfigs () {
-        assertEquals(EXISTING_CLOUD_SIDE_ROUTER_NAME, repository.loadAllCloudVpnConfigs().get(EXISTING_DOCKERHOST_NAME).getTargetRouter());
+        assertEquals(EXISTING_CLOUD_SIDE_ROUTER_NAME, repository.loadAllCloudVpnConfigs().get(EXISTING_DOCKER_HOST_NAME).getTargetRouter());
         assertEquals(1, repository.loadAllClientVpnConfigs().size());
     }
 
@@ -127,9 +127,9 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     @Test
     public void shouldUpdateCloudVpnConfig() throws Exception {
-        repository.updateCloudVpnConfig(EXISTING_DOCKERHOST_NAME, setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE));
+        repository.updateCloudVpnConfig(EXISTING_DOCKER_HOST_NAME, setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE));
         assertEquals(1, repository.loadAllClientVpnConfigs().size());
-        assertEquals(NEW_ROUTER_NAME, repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKERHOST_NAME).getTargetRouter());
+        assertEquals(NEW_ROUTER_NAME, repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKER_HOST_NAME).getTargetRouter());
     }
 
     @Test(expected = AnsiblePlaybookVpnConfigInvalidException.class)
@@ -139,18 +139,18 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
 
     @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
     public void shouldThrowNotFoundExceptionForUpdateCloudVpnConfig() throws Exception {
-        repository.updateCloudVpnConfig(EXISTING_DOCKERHOST_NAME + "wrong", setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE));
+        repository.updateCloudVpnConfig(EXISTING_DOCKER_HOST_NAME + "wrong", setNewVpnConfig(NEW_ROUTER_NAME, AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE));
     }
 
     @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
     public void shouldRemoveCloudVpnConfig() throws Exception {
-        repository.removeCloudVpnConfig(EXISTING_DOCKERHOST_NAME);
-        repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKERHOST_NAME);
+        repository.removeCloudVpnConfig(EXISTING_DOCKER_HOST_NAME);
+        repository.loadCloudVpnConfigByDockerHost(EXISTING_DOCKER_HOST_NAME);
     }
 
     @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
     public void shouldThrowNotFoundExceptionDuringCloudVpnConfigRemoval() throws Exception {
-        repository.removeCloudVpnConfig(EXISTING_DOCKERHOST_NAME + "wrong");
+        repository.removeCloudVpnConfig(EXISTING_DOCKER_HOST_NAME + "wrong");
     }
 
     @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
@@ -162,16 +162,6 @@ public class AnsiblePlaybookVpnConfigRepositoryTest {
     @Test(expected = AnsiblePlaybookVpnConfigNotFoundException.class)
     public void shouldThrowNotFoundExceptionDuringClientVpnConfigRemoval() throws Exception {
         repository.removeClientVpnConfig(EXISTING_CLIENT_ID + 100);
-    }
-
-    @Test
-    public void shouldLoadDefaultCloudVpnConfig() throws Exception {
-        assertEquals(EXISTING_CLOUD_SIDE_ROUTER_NAME, repository.loadDefaultCloudVpnConfig().getTargetRouter());
-    }
-
-    @Test
-    public void shouldLoadDefaultCustomerVpnConfig() throws Exception {
-        assertEquals(EXISTING_CLIENT_SIDE_ROUTER_NAME, repository.loadDefaultCustomerVpnConfig().getTargetRouter());
     }
 
     private AnsiblePlaybookVpnConfig setNewVpnConfig(String newVpnConfig, AnsiblePlaybookVpnConfig.Type type) {

@@ -1,7 +1,6 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
 import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 
 import javax.persistence.*;

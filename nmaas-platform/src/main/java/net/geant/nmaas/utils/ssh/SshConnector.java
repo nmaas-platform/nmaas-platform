@@ -7,6 +7,9 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 public class SshConnector {
 
 	private SSHClient ssh;

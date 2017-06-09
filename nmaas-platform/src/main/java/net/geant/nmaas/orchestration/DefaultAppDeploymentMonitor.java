@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Default {@link AppDeploymentMonitor} implementation.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component

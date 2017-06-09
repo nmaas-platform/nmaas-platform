@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.entities;
 
 /**
- * Represent the user access details to the deployed application, typically its graphical user interface. In case of
+ * User access details to the deployed application, typically its graphical user interface. In case of
  * web based GUIs this would be a HTTP URL.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
