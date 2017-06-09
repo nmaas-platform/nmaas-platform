@@ -5,6 +5,8 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerH
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,20 @@ public class DockerHostStateKeeperTest {
     private static final DockerNetwork NETWORK_3 = new DockerNetwork();
 
     @Autowired
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
+
+    @Autowired
     private DockerHostStateKeeper dockerHostStateKeeper;
+
+    @Before
+    public void init() {
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
+    }
+
+    @After
+    public void clean() {
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
+    }
 
     @Test
     public void shouldAssignPorts() throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException, DockerHostInvalidException {

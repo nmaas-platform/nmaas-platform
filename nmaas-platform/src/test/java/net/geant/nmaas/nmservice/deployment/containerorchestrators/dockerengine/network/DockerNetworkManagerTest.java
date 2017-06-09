@@ -1,9 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
 
 import com.spotify.docker.client.exceptions.DockerException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
@@ -13,6 +14,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,11 +65,17 @@ public class DockerNetworkManagerTest {
 
     @Before
     public void setup() throws DockerHostNotFoundException {
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         deploymentId = Identifier.newInstance("deploymentId");
         applicationId = Identifier.newInstance("applicationId");
         clientId = Identifier.newInstance("clientId");
         dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
         networkManager = new DockerNetworkManager(dockerNetworkRepositoryManager, dockerHostStateKeeper, dockerApiClient);
+    }
+
+    @After
+    public void clean() {
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
     }
 
     @Test

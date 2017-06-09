@@ -4,6 +4,8 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerH
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,16 @@ public class DockerHostRepositoryManagerTest {
     private final static String EXISTING_DOCKER_HOST_NAME = "GN4-DOCKER-1";
     private final static String PREFERRED_DOCKER_HOST_FOR_DOCKER_COMPOSE_NAME = "GN4-DOCKER-2";
     private final static String VOLUME_PATH = "/new/path";
+
+    @Before
+    public void init() {
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
+    }
+
+    @After
+    public void clean() {
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
+    }
 
     @Test
     public void shouldAddDockerHost() throws Exception {

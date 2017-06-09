@@ -3,6 +3,13 @@
 API_URL=http://localhost:9000/platform/api
 echo $API_URL
 echo
+echo Adding default Docker Hosts
+curl -X POST $API_URL/management/dockerhosts --header "Authorization: Basic bm1hYXNUZXN0OnNmRiQjNGZ3YkVl" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-1.json
+curl -X POST $API_URL/management/dockerhosts --header "Authorization: Basic bm1hYXNUZXN0OnNmRiQjNGZ3YkVl" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-2.json
+curl -X POST $API_URL/management/dockerhosts --header "Authorization: Basic bm1hYXNUZXN0OnNmRiQjNGZ3YkVl" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-3.json
+echo
+curl -X GET $API_URL/management/dockerhosts --header "Authorization: Basic bm1hYXNUZXN0OnNmRiQjNGZ3YkVl"
+echo
 echo Adding default Docker Host attachment points
 curl -X POST $API_URL/management/network/dockerhosts --header "Authorization: Basic bm1hYXNUZXN0OnNmRiQjNGZ3YkVl" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/network/docker-host-1-attach-point.json
 echo

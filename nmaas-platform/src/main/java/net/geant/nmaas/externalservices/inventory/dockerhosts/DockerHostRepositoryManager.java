@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -25,47 +22,6 @@ public class DockerHostRepositoryManager {
 
     @Autowired
     private DockerHostRepository repository;
-
-    @PostConstruct
-    public void storeDefaultDockerHosts() throws UnknownHostException, DockerHostInvalidException {
-        try {
-            addDockerHost(new DockerHost(
-                    "GN4-DOCKER-1",
-                    InetAddress.getByName("10.134.250.1"),
-                    2375,
-                    InetAddress.getByName("10.134.250.1"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.11.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/nmaasplatform/volumes",
-                    true));
-            addDockerHost(new DockerHost(
-                    "GN4-DOCKER-2",
-                    InetAddress.getByName("10.134.250.2"),
-                    2375,
-                    InetAddress.getByName("10.134.250.2"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.12.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/nmaasplatform/volumes",
-                    false));
-            addDockerHost(new DockerHost(
-                    "GN4-DOCKER-3",
-                    InetAddress.getByName("10.134.250.3"),
-                    2375,
-                    InetAddress.getByName("10.134.250.3"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.13.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/nmaasplatform/volumes",
-                    false));
-        } catch (DockerHostAlreadyExistsException e) {
-            // nothing to do
-        }
-    }
 
     /**
      * Store {@link DockerHost} instance in the repository
