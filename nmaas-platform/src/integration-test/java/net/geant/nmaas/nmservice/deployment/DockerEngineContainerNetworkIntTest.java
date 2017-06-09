@@ -1,8 +1,9 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import com.spotify.docker.client.exceptions.DockerException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
@@ -11,6 +12,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotCreateContainerNe
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveContainerNetworkException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,16 +46,23 @@ public class DockerEngineContainerNetworkIntTest {
 
     @Before
     public void setup() throws DockerException, InterruptedException {
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         when(dockerApiClient.createNetwork(any(), any())).thenReturn(dockerNetworkId);
+    }
+
+    @After
+    public void clear() {
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
     }
 
     @Test
     public void shouldCreateInspectAndRemoteSimpleNetwork() throws
-            DockerHostNotFoundException,
             CouldNotCreateContainerNetworkException,
             CouldNotRemoveContainerNetworkException,
             ContainerOrchestratorInternalErrorException,
-            InterruptedException, InvalidClientIdException {
+            InterruptedException,
+            InvalidClientIdException,
+            DockerHostNotFoundException {
         dockerNetworkManager.declareNewNetworkForClientOnHost(clientId, dockerHostRepositoryManager.loadPreferredDockerHost());
         assertThat(dockerNetworkRepositoryManager.checkNetwork(clientId), is(true));
         assertThat(

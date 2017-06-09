@@ -60,7 +60,7 @@ public class AnsiblePlaybookStatusNotificationTest {
         DcnSpec spec = new DcnSpec(dcnName, clientId);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dcnRepositoryManager, null, null, applicationEventPublisher, dockerNetworkRepository);
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dcnRepositoryManager, null, null, applicationEventPublisher, dockerNetworkRepository, null);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }
