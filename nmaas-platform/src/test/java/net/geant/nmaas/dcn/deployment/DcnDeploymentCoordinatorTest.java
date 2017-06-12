@@ -2,6 +2,7 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import org.junit.Test;
@@ -44,20 +45,22 @@ public class DcnDeploymentCoordinatorTest {
     }
 
     @Test
-    public void shouldVerifyIfDcnAlreadyExists() throws InvalidClientIdException {
+    public void shouldCheckCurrentDcnState() throws InvalidClientIdException {
         Identifier clientId = Identifier.newInstance("id");
-        assertThat(coordinator.checkIfExists(clientId), is(false));
+        assertThat(coordinator.checkState(clientId), equalTo(DcnState.NONE));
         DcnInfo dcnInfo = new DcnInfo();
         dcnInfo.setClientId(Identifier.newInstance("id2"));
         dcnInfo.setName("name");
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
-        assertThat(coordinator.checkIfExists(clientId), is(false));
+        assertThat(coordinator.checkState(clientId), equalTo(DcnState.NONE));
         dcnInfo.setClientId(Identifier.newInstance("id"));
         dcnInfo.setName("name2");
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
-        assertThat(coordinator.checkIfExists(clientId), is(true));
+        assertThat(coordinator.checkState(clientId), equalTo(DcnState.PROCESSED));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.VERIFIED));
+        assertThat(coordinator.checkState(clientId), equalTo(DcnState.DEPLOYED));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REMOVED));
-        assertThat(coordinator.checkIfExists(clientId), is(false));
+        assertThat(coordinator.checkState(clientId), equalTo(DcnState.REMOVED));
     }
 
 }
