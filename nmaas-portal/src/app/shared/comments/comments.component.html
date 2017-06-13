@@ -1,0 +1,41 @@
+				<h3>Comments:</h3>
+				<ul class="media-list">
+					<template ngFor let-comment [ngForOf]="comments">
+					<li *ngIf="!comment.parentId" class="media">
+						<div class="media-left">
+						  <a href="#">
+							<span class="glyphicon glyphicon-user"></span>
+							<!-- img class="media-object" src="" alt="USER" -->
+						  </a>
+						</div>
+						<div class="media-body">
+						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}}</h6>
+						  <p>{{comment.comment}}</p>
+						  <hr>															
+																					
+							<ul *ngIf="comment.subComments !== null" class="media-list">
+								<template ngFor let-subcomment [ngForOf]="comment.subComments">
+							
+								<li class="media">
+									<div class="media-left">
+									  <a href="#">
+										<span class="glyphicon glyphicon-user"></span>
+										<!-- img class="media-object" src="" alt="USER" -->
+									  </a>
+									</div>
+									<div class="media-body">
+									  <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}}</h6>
+									  <p>{{subcomment.comment}}</p>
+									  <hr>
+									</div>							
+								</li>
+								</template>
+							</ul>
+						
+						
+						</div>
+					
+					
+					</li>
+					</template>
+				</ul>

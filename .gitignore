@@ -2,7 +2,7 @@
 */.gradle
 */build/
 */bin/
-reactor/gradle/*
+.gradle
 
 ### STS ###
 .apt_generated
@@ -17,3 +17,4 @@ reactor/gradle/*
 *.iws
 *.iml
 *.ipr
+

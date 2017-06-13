@@ -1,0 +1,25 @@
+version: "2"
+
+services:
+  ${container_name}:
+    restart: always
+    image: oxidized/oxidized:latest
+    ports:
+      - ${port}:8888/tcp
+    environment:
+      CONFIG_RELOAD_INTERVAL: 600
+    volumes:
+      - ${volume}:/root/.config/oxidized
+    networks:
+      nmaas-ext-access:
+      nmaas-dcn:
+        ipv4_address: ${container_ip_address}
+    privileged: true
+
+networks:
+  nmaas-ext-access:
+    external:
+      name: ${nmaas_ext_access_network}
+  nmaas-dcn:
+    external:
+      name: ${nmaas_dcn_network}

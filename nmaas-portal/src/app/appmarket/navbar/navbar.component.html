@@ -1,0 +1,37 @@
+		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<img src="assets/images/geant-logo-small-purple.png">
+				</div>
+				
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav">
+						<li><a [routerLink]="['/']">Market</a></li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Applications <b class = "caret"></b></a>
+							
+							<ul class="dropdown-menu">
+								<li><a [routerLink]="['/instances']">Subscribed</a></li>
+								<li class = "divider"></li>
+								<li><a href="#">Infrastructure</a></li>
+							</ul>
+						</li>
+					</ul>
+				
+				
+					
+					<ul class = "nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class = "glyphicon glyphicon-user"></span> {{authService.getUsername()}} <b class = "caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="#">Profile</a></li>
+								<li class = "divider"></li>
+								<li><a [routerLink]="['/login']">Logout</a></li>
+							</ul>
+						</li>
+					</ul>							
+
+
+				</div>
+			</div>
+		</nav>

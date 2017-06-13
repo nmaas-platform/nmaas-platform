@@ -1,0 +1,93 @@
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+					<div class="thumbnail">
+						<img [src]="appImagesService.getAppLogoUrl(app?.id) | secure" onError="this.src='assets/images/app-logo-example.png'"/>
+					</div>
+				</div>
+				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							<h2>{{appInstance?.name}}</h2>
+							<h3>{{app?.name}}</h3>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">				
+							<div class="btn-group pull-right">
+								<button type="button" class="btn btn-default">WWW</button>
+								<button type="button" class="btn btn-default">Source</button>
+								<button type="button" class="btn btn-default">Issues</button>
+							</div>
+						
+						</div>
+					</div>
+					
+					<hr>
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							Version: {{app?.version}}
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							License: {{app?.license}}
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							Tags: {{app?.tags}}
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							<p>
+								<span>Rating:</span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star-empty"></span>
+								<span class="text">4.4</span>
+							</p>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">	
+							<p>
+								<span>Your rating:</span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star"></span>
+								<span class="glyphicon glyphicon-star-empty"></span>
+								<span class="glyphicon glyphicon-star-empty"></span>
+								<span class="text">3</span>
+							</p>
+						</div>
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class = "btn-group pull-right">
+								<a *ngIf="appInstanceStatus?.state == AppInstanceState.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
+								<button class = "btn btn-danger" (click)="unsubscribe()">Unsubscribe</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		
+			<div class='row'>
+				<h3>Installation progress</h3>
+				<hr>
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
+				</div>
+				<p>State: {{appInstanceStatus?.state ? AppInstanceState[appInstanceStatus?.state] : '...'}}</p>
+				<p>Details: {{appInstanceStatus?.details}}</p>
+			</div>
+			
+			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state != AppInstanceState.CONFIGURATION_AWAITING}" >
+				<h3>Configuration</h3>
+				<hr>
+				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration($event)" >
+				
+				</json-schema-form>
+
+			</div>
+			<hr>
+		</div>
+	

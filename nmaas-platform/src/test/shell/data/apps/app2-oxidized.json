@@ -1,0 +1,71 @@
+{
+	"name":"Oxidized",
+	"version":"0.19.0",
+	"license":"MIT",
+	"briefDescription":"This is Oxidized tool for configuration backup.",
+	"tags": [ "management", "backup", "configuration"],
+	"fullDescription": "Oxidized is a network device configuration backup tool. It's a RANCID replacement!\n\n>- automatically adds/removes threads to meet configured retrieval interval\n- restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])\n-\n\t- syslog udp+file example to catch config change event (ios/junos) and trigger config fetch\n-\n\t- will signal ios/junos user who made change, which output modules can use (via POST)\n-\n\t- The git output module uses this info - 'git blame' will for each line show who made the change and when\n- restful API to reload list of nodes (GET /reload)\n- restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])\n- restful API to show list of nodes (GET /nodes)\n- restful API to show list of version for a node (/node/version[NODE]) and diffs\n",
+	"wwwUrl": "https:\/\/github.com\/ytti\/oxidized\/wiki\/",
+	"sourceUrl": "https:\/\/github.com\/ytti\/oxidized\/",
+	"issuesUrl": "",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"DOCKER_ENGINE",
+			"DOCKER_COMPOSE"
+		],
+		"dockerContainerTemplate": {
+			"image": "oxidized/oxidized:latest",
+			"exposedPort": {
+				"protocol": "TCP",
+				"targetPort": 8888
+			},
+			"envVariables": [
+				"CONFIG_RELOAD_INTERVAL=600"
+			],
+			"containerVolumes": [
+				"/root/.config/oxidized"
+			]
+		}
+	},
+	"configTemplate": {
+		"template": {
+			"schema": {
+				"type": "object",
+				"properties": {
+					"oxidizedUsername": {
+						"type": "string",
+						"title": "Username"
+					},
+					"oxidizedPassword": {
+						"type": "string",
+						"title": "Password"
+					},
+					"targets": {
+						"title": "Routers",
+						"type": "array",
+						"minItems": 1,
+						"items": {
+							"type": "object",
+							"properties": {
+								"ipAddress": {
+									"title": "IP address",
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"required": [
+					"oxidizedUsername", "oxidizedPassword", "targets"
+				]
+			},
+			"form": [
+				"*",
+				{
+					"type": "submit",
+					"title": "Apply configuration"
+				}
+			]
+		}
+	}
+}

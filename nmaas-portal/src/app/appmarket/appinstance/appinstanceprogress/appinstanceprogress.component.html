@@ -1,0 +1,16 @@
+<div class="stepwizard">
+	<div class="stepwizard-row">
+
+		<template ngFor let-stage [ngForOf]="stages" >
+		<div class="stepwizard-step" *ngIf="stage.isVisible(activeState)">
+ 				<a type="button" class="btn btn-circle btn-default" [ngClass]="{ 
+					'btn-success': (stage.activeState < activeState && activeState != AppInstanceState.FAILURE), 
+					'btn-primary': (stage.activeState == activeState && activeState != AppInstanceState.FAILURE), 
+					'btn-danger': (activeState == AppInstanceState.FAILURE),  
+					'btn-default': (stage.activeState > activeState && activeState != AppInstanceState.FAILURE) || (activeState == AppInstanceState.UNKNOWN) || (stage.activeState == AppInstanceState.SUBSCRIBED) || (!stage?.activeState)
+				}">{{stage.activeState}}</a> 
+			<p>{{stage.name}}</p>
+		</div>
+		</template>
+	</div>
+</div>

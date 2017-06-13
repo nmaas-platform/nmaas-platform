@@ -2,15 +2,11 @@ apply from: '../reactor/build.gradle'
 apply plugin: 'org.springframework.boot'
 
 buildscript {
-	ext {
-//		springBootVersion = '1.4.2.RELEASE'
-		dockerClientVersion = '6.1.1'
-	}
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:1.5.1.RELEASE')
 	}
 }
 
@@ -36,12 +32,42 @@ configurations {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('com.spotify:docker-client:6.1.1')
+	compile('org.springframework.boot:spring-boot-starter-security')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+
+	compile('org.modelmapper:modelmapper:0.7.7')
+	compile('org.modelmapper.extensions:modelmapper-spring:0.7.7')
+	
+	runtime('com.h2database:h2')
+	runtime('mysql:mysql-connector-java')
+	runtime('org.postgresql:postgresql')
+	
+	compile('io.jsonwebtoken:jjwt:0.7.0')
+
+	compile('com.spotify:docker-client:8.3.0')
+	compile('org.freemarker:freemarker:2.3.20')
+	compile('com.hierynomus:sshj:0.21.1')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.springframework.security:spring-security-test:4.2.1.RELEASE')
 }
 
 task integrationTest(type: Test) {
 	testClassesDir = sourceSets.integrationTest.output.classesDir
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
+	afterTest { desc, result ->
+		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
+	}
 }
+
+jacocoTestReport {
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
+	}
+	executionData(test, integrationTest)
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test

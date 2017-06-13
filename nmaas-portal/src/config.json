@@ -1,0 +1,4 @@
+{
+	"apiUrl": "http://localhost:9000/portal/api",
+	"tokenName": "token"
+}

@@ -1,0 +1,3 @@
+<#list targets as target>
+${target.ipAddress}:junos
+</#list>
