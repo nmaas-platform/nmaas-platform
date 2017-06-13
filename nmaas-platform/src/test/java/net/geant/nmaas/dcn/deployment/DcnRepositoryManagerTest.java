@@ -54,7 +54,7 @@ public class DcnRepositoryManagerTest {
     public void shouldAddUpdateAndRemoteDcns() throws InvalidClientIdException {
         storeDefaultDcnInfoInRepository();
         assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.INIT));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForClientSideRouter(), is(nullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter(), is(nullValue()));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REQUEST_VERIFIED));
         assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REQUEST_VERIFIED));
         assertThat(dcnRepositoryManager.loadNetwork(clientId), is(notNullValue()));
@@ -67,13 +67,13 @@ public class DcnRepositoryManagerTest {
         storeDefaultDcnInfoInRepository();
         AnsiblePlaybookVpnConfig vpn = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
         dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForClientSideRouter(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForClientSideRouter().getId(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForClientSideRouter().getLogicalInterface(), is(nullValue()));
-        vpn = dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForClientSideRouter();
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter().getId(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter().getLogicalInterface(), is(nullValue()));
+        vpn = dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter();
         vpn.setLogicalInterface("ifaceName");
         dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForClientSideRouter().getLogicalInterface(), equalTo("ifaceName"));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter().getLogicalInterface(), equalTo("ifaceName"));
     }
 
     @Test
@@ -81,13 +81,13 @@ public class DcnRepositoryManagerTest {
         storeDefaultDcnInfoInRepository();
         AnsiblePlaybookVpnConfig vpn = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
         dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForCloudSideRouter(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForCloudSideRouter().getId(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForCloudSideRouter().getLogicalInterface(), is(nullValue()));
-        vpn = dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForCloudSideRouter();
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter().getId(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter().getLogicalInterface(), is(nullValue()));
+        vpn = dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter();
         vpn.setLogicalInterface("ifaceName");
         dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getAnsiblePlaybookForCloudSideRouter().getLogicalInterface(), equalTo("ifaceName"));
+        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter().getLogicalInterface(), equalTo("ifaceName"));
     }
 
     @Test
@@ -147,21 +147,7 @@ public class DcnRepositoryManagerTest {
         dcnRepositoryManager.loadCurrentState(clientId);
     }
 
-    @Test
-    public void shouldRemoveDcnOnRemovedStateNotification() throws InvalidClientIdException {
-        storeDefaultDcnInfoInRepository();
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REQUEST_VERIFIED));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId), is(notNullValue()));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REMOVED));
-        try {
-            dcnRepositoryManager.loadNetwork(clientId);
-        } catch (InvalidClientIdException e) {
-            return;
-        }
-        assertThat(true, is(false));
-    }
-
-    private void storeDefaultDcnInfoInRepository() {
+    private void storeDefaultDcnInfoInRepository() throws InvalidClientIdException {
         DcnSpec spec = new DcnSpec("", clientId);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
     }

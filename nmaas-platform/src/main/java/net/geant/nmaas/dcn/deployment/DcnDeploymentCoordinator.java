@@ -74,21 +74,23 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     @Override
     @Loggable(LogLevel.INFO)
-    public boolean checkIfExists(Identifier clientId) {
+    public DcnState checkState(Identifier clientId) {
         try {
-            dcnRepositoryManager.loadCurrentState(clientId);
-            return true;
+            return DcnState.fromDcnDeploymentState(dcnRepositoryManager.loadCurrentState(clientId));
         } catch (InvalidClientIdException e) {
-            return false;
+            return DcnState.NONE;
         }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyRequest(Identifier clientId, DcnSpec dcnSpec) throws DcnRequestVerificationException {
-        dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
         try {
-            final DockerNetwork dockerNetwork = dockerNetworkRepository.findByClientId(dcnSpec.getClientId()).orElseThrow(() -> new InvalidClientIdException());
+            storeDcnInfoIfNotExists(clientId, dcnSpec);
+            notifyStateChangeListeners(clientId, DcnDeploymentState.REQUESTED);
+            final DockerNetwork dockerNetwork = dockerNetworkRepository
+                    .findByClientId(dcnSpec.getClientId())
+                    .orElseThrow(() -> new InvalidClientIdException("No Docker network found for client " + clientId));
             final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerNetwork);
             dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, dcnCloudEndpointDetails);
             dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpnConfigRepository.loadCustomerVpnConfigByCustomerId(clientId.longValue()));
@@ -104,6 +106,11 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         }
     }
 
+    private void storeDcnInfoIfNotExists(Identifier clientId, DcnSpec dcnSpec) throws InvalidClientIdException {
+        if (!dcnRepositoryManager.exists(clientId))
+            dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
+    }
+
     @Override
     @Loggable(LogLevel.INFO)
     public void deployDcn(Identifier clientId) throws CouldNotDeployDcnException {
@@ -111,8 +118,12 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             final DcnInfo dcnInfo = dcnRepositoryManager.loadNetwork(clientId);
             removeOldAnsiblePlaybookContainers();
             deployAnsiblePlaybookContainers(
-                    buildContainerForClientSideRouterConfig(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(clientId.value())),
-                    buildContainerForCloudSideRouterConfig(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(clientId.value())));
+                    buildContainerForClientSideRouterConfig(
+                            dcnInfo.getPlaybookForClientSideRouter(),
+                            encodeForClientSideRouter(clientId.value())),
+                    buildContainerForCloudSideRouterConfig(
+                            dcnInfo.getPlaybookForCloudSideRouter(),
+                            encodeForCloudSideRouter(clientId.value())));
             notifyStateChangeListeners(clientId, DcnDeploymentState.DEPLOYMENT_INITIATED);
         } catch ( InvalidClientIdException
                 | InterruptedException
@@ -155,8 +166,8 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         try {
             final DcnInfo dcnInfo = dcnRepositoryManager.loadNetwork(clientId);
             deployAnsiblePlaybookContainers(
-                    buildContainerForClientSideRouterConfigRemoval(dcnInfo.getAnsiblePlaybookForClientSideRouter(), encodeForClientSideRouter(clientId.value())),
-                    buildContainerForCloudSideRouterConfigRemoval(dcnInfo.getAnsiblePlaybookForCloudSideRouter(), encodeForCloudSideRouter(clientId.value())));
+                    buildContainerForClientSideRouterConfigRemoval(dcnInfo.getPlaybookForClientSideRouter(), encodeForClientSideRouter(clientId.value())),
+                    buildContainerForCloudSideRouterConfigRemoval(dcnInfo.getPlaybookForCloudSideRouter(), encodeForCloudSideRouter(clientId.value())));
             notifyStateChangeListeners(clientId, DcnDeploymentState.REMOVAL_INITIATED);
         } catch ( InvalidClientIdException
                 | InterruptedException
