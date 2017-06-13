@@ -145,7 +145,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     private DockerContainerNetDetails obtainNetworkDetailsForContainerAndUpdate(NmServiceInfo service)
             throws ContainerOrchestratorInternalErrorException, InvalidDeploymentIdException {
-        DockerContainerNetDetails netDetails = dockerNetworkManager.obtainNetworkDetailsForContainer(service.getClientId());
+        DockerContainerNetDetails netDetails = dockerNetworkManager.obtainNetworkDetailsForContainer(service.getClientId(), service.getDeploymentId());
         repositoryManager.updateDockerContainerNetworkDetails(service.getDeploymentId(), netDetails);
         return netDetails;
     }

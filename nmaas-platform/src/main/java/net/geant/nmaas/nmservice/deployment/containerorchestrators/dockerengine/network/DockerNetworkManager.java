@@ -6,9 +6,9 @@ import com.spotify.docker.client.exceptions.NetworkNotFoundException;
 import com.spotify.docker.client.messages.EndpointConfig;
 import com.spotify.docker.client.messages.NetworkConfig;
 import com.spotify.docker.client.messages.NetworkConnection;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
@@ -151,11 +151,11 @@ public class DockerNetworkManager {
             throw new DockerNetworkCheckFailedException("Docker network " + networkId + " verification failed. Some containers not attached.");
     }
 
-    public DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
+    public DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId, Identifier deploymentId)
+            throws ContainerOrchestratorInternalErrorException {
         try {
             final DockerNetwork network = networkForClient(clientId);
-            // TODO should use a valid container here or refactor the port assignment
-            final int assignedPublicPort = dockerHostStateKeeper.assignPortForContainer(network.getDockerHost().getName(), null);
+            final int assignedPublicPort = dockerHostStateKeeper.assignPortForContainer(network.getDockerHost().getName(), deploymentId);
             String containerIpAddress = obtainIpAddressForNewContainer(network);
             final DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec(containerIpAddress, network.getSubnet(), network.getGateway());
             return new DockerContainerNetDetails(assignedPublicPort, addresses);
