@@ -38,7 +38,7 @@ public class AppDeploymentMonitorRestController {
     /**
      * Retrieves information on all deployments including their identifier and current state.
      *
-     * @return deployments organized in a map
+     * @return list of deployments
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
