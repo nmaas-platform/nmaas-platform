@@ -1,0 +1,32 @@
+0.1.0 (2017/06/13)
+
+	* Project setup.
+	[New Feature] [nmaas-platform, nmaas-portal]
+	
+	Prepared gradle multi module project and package structure for two main system components: platform and portal.
+
+	* Containerized application deployment and configuration.
+	[New Feature] [NMAAS-66, NMAAS-70, NMAAS-79] [nmaas-platform]
+
+	Implemented support for Docker container deployment and configuration with dedicated network setup on the Docker Host using Docker Engine Remote API.
+
+	* Secure data plane connectivity setup.
+	[New Feature] [NMAAS-71, NMAAS-83] [nmaas-platform]
+
+	Implemented client DCN/VPN configuration by means of Ansible playbooks execution.
+
+	* Support for Oxidized application.
+	[New Feature] [NMAAS-77] [nmaas-platform]
+
+	Implemented support for complete Oxidized application deployment workflow.
+
+	* Backend for NMaaS Portal.
+    [New Feature] [NMAAS-75, NMAAS-94] [nmaas-platform]
+	
+    Implemented nmaas-portal API backend (part of the nmaas-platform) and integrated it with the rest of nmaas-platform.
+
+    * First version of NMaaS Portal.
+    [New Feature] [NMAAS-65, NMAAS-81, NMAAS-103] [nmaas-portal]
+
+	Implemented first nmaas-portal web-based GUI supporting Oxidized application instance deployment.
+	

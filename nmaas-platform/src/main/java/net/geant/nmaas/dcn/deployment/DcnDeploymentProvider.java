@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
@@ -15,12 +16,12 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 public interface DcnDeploymentProvider {
 
     /**
-     * Checks if DCN for given client already exists in the system.
+     * Checks current state of given client's DCN.
      *
      * @param clientId identifier of the client
-     * @return <code>true</code> if DCN already exists
+     * @return DCN state information
      */
-    boolean checkIfExists(Identifier clientId);
+    DcnState checkState(Identifier clientId);
 
     /**
      * Verifies if requested DCN for given client can be deployed.

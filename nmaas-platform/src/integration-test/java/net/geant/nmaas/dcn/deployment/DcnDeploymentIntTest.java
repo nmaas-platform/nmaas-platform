@@ -129,7 +129,7 @@ public class DcnDeploymentIntTest {
         Thread.sleep(300);
         dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(clientId.value()), AnsiblePlaybookStatus.Status.SUCCESS);
         Thread.sleep(500);
-        assertThat(dcnRepositoryManager.loadAllNetworks().size(), equalTo(0));
+        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REMOVED));
     }
 
 }

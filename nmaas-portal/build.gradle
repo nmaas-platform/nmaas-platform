@@ -1,14 +1,11 @@
-//jar {
-//	baseName = 'nmaas-portal'
-//	version = project.version
-//}
 import org.gradle.internal.os.OperatingSystem;
-
 
 plugins {
 	id "com.moowork.node" version "1.0.1"
 	id 'java'
 }
+
+apply from: '../reactor/build.gradle'
 
 task buildGUI(type: Exec) {
 	println 'Building using angular-cli'
@@ -25,7 +22,7 @@ buildGUI.dependsOn(npm_install)
 task dist(type: Zip) {
 	from 'build/app' 
 	baseName project.name
-//	version project.version
+	version project.version
 }
 buildGUI.doLast { tasks.dist.execute() }
 

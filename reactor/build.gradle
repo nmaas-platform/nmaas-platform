@@ -3,7 +3,7 @@ apply plugin: 'idea'
 apply plugin: "jacoco"
 apply plugin: 'eclipse'
 
-version = '0.0.1-SNAPSHOT'
+version = '0.2.0-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 sourceCompatibility = 1.8
