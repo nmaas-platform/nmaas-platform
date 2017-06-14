@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
+ * Exposes REST API methods to manage application deployment lifecycle.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
@@ -22,6 +24,13 @@ public class AppLifecycleManagerRestController {
         this.lifecycleManager = lifecycleManager;
     }
 
+    /**
+     * Requests new application deployment.
+     *
+     * @param clientId identifier of the user/client requesting the deployment
+     * @param applicationId identifier of the application
+     * @return unique identifier of the application deployment
+     */
     @RequestMapping(value = "",
             params = {"clientid", "applicationid"},
             method = RequestMethod.POST)
@@ -32,6 +41,13 @@ public class AppLifecycleManagerRestController {
         return lifecycleManager.deployApplication(Identifier.newInstance(clientId), Identifier.newInstance(applicationId));
     }
 
+    /**
+     * Applies application configuration provided by the user/client for given deployment.
+     *
+     * @param deploymentId unique identifier of the application deployment
+     * @param configuration initial application configuration provided by the user/client
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     */
     @RequestMapping(value = "/{deploymentId}",
             method = RequestMethod.POST,
             consumes = "application/json")
@@ -42,6 +58,12 @@ public class AppLifecycleManagerRestController {
         lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), new AppConfiguration(configuration));
     }
 
+    /**
+     * Requests application instance removal.
+     *
+     * @param deploymentId unique identifier of the application deployment
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     */
     @RequestMapping(value = "/{deploymentId}",
             method = RequestMethod.DELETE)
     @ResponseStatus(code = HttpStatus.OK)

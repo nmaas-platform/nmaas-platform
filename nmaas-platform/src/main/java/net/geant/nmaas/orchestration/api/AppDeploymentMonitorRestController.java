@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Exposes REST API methods to retrieve information on application deployments.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
@@ -33,6 +35,11 @@ public class AppDeploymentMonitorRestController {
         this.deploymentMonitor = deploymentMonitor;
     }
 
+    /**
+     * Retrieves information on all deployments including their identifier and current state.
+     *
+     * @return deployments organized in a map
+     */
     @RequestMapping(value = "", method = RequestMethod.GET)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<AppDeploymentView> listAllDeployments() {
@@ -41,6 +48,13 @@ public class AppDeploymentMonitorRestController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns currents state of particular deployment.
+     *
+     * @param deploymentId application deployment identifier
+     * @return current deployment state
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "{deploymentId}/state", method = RequestMethod.GET)
     public AppLifecycleState loadDeploymentState(
@@ -48,6 +62,14 @@ public class AppDeploymentMonitorRestController {
         return deploymentMonitor.state(Identifier.newInstance(deploymentId));
     }
 
+    /**
+     * Returns deployed application access information.
+     *
+     * @param deploymentId application deployment identifier
+     * @return application access information
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     * @throws InvalidAppStateException if deployment didn't complete yet
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "{deploymentId}/access", method = RequestMethod.GET)
     public AppUiAccessDetails loadDeploymentUserAccessInfo(

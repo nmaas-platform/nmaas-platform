@@ -36,14 +36,41 @@ public class AppDcnRequestOrVerificationTask {
         this.dcnDeployment = dcnDeployment;
     }
 
+    /**
+     * Checks current state of DCN for given client and depending on the result requests new DCN deployment
+     * (or re-deployment), publishes notification that DCN is already deployed and running or does nothing.
+     *
+     * @param event object of type {@link AppRequestNewOrVerifyExistingDcnEvent}
+     * @return action event to be processed by the system or <code>null</code> if no action is required
+     * @throws InvalidDeploymentIdException if no deployment with given identifier exists in the system
+     */
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent requestOrVerifyDcn(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
         final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
-        return dcnDeployment.checkIfExists(clientId)
-                ? new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT)
-                : new DcnVerifyRequestActionEvent(this, clientId);
+        switch(dcnDeployment.checkState(clientId)) {
+            case NONE:
+            case REMOVED:
+                return dcnDeploymentEvent(clientId);
+            case DEPLOYED:
+                return dcnReadyNotificationEvent(deploymentId);
+            case PROCESSED:
+                return noEvent();
+        }
+        return noEvent();
+    }
+
+    private DcnVerifyRequestActionEvent dcnDeploymentEvent(Identifier clientId) {
+        return new DcnVerifyRequestActionEvent(this, clientId);
+    }
+
+    private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {
+        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT);
+    }
+
+    private ApplicationEvent noEvent() {
+        return null;
     }
 
 }

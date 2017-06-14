@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
+ * Default {@link AppDeploymentMonitor} implementation.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
