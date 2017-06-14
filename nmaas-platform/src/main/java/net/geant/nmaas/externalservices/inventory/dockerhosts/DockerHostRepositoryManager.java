@@ -84,11 +84,9 @@ public class DockerHostRepositoryManager {
      *
      * @param hostName Unique {@link DockerHost} name
      * @return {@link DockerHost} instance loaded form the repository
-     * @throws DockerHostNotFoundException  when Docker host does not exists in the repository
-     * @throws DockerHostInvalidException when invalid input
+     * @throws DockerHostNotFoundException when Docker host does not exists in the repository
      */
-    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException, DockerHostInvalidException {
-        validateDockerHostName(hostName);
+    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException {
         return repository.findByName(hostName)
                 .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker Host with " + hostName + " name in the repository"));
     }
@@ -108,30 +106,20 @@ public class DockerHostRepositoryManager {
             throw new DockerHostNotFoundException("Did not find preferred Docker host in the repository.");
     }
 
-    /**
-     * Loads default {@link DockerHost} instance to be used for Docker Compose deployments.
-     *
-     * @return {@link DockerHost} instance loaded form the repository
-     * @throws DockerHostNotFoundException when preferred Docker host does not exists in the repository
-     */
-    public DockerHost loadPreferredDockerHostForDockerCompose() throws DockerHostNotFoundException {
-        return repository.findByName("GN4-DOCKER-2").orElseThrow(() -> new DockerHostNotFoundException("Did not find preferred Docker host in the repository."));
-    }
-
-    void validateDockerHostName(String name) throws DockerHostInvalidException {
+    private void validateDockerHostName(String name) throws DockerHostInvalidException {
         if(name == null) {
             throw new DockerHostInvalidException("Docker host name cannot be null");
         }
     }
 
-    void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
+    private void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
         if(dockerHost == null) {
             throw new DockerHostInvalidException("Docker host cannot be null");
         }
         validateDockerHostName(dockerHost.getName());
     }
 
-    void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
+    private void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
         validateDockerHostName(name);
         validateDockerHost(dockerHost);
         if(!name.equals(dockerHost.getName())) {

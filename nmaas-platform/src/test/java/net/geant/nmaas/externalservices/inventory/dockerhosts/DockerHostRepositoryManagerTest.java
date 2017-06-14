@@ -67,11 +67,6 @@ public class DockerHostRepositoryManagerTest {
         dockerHostRepositoryManager.loadByName(TEST_DOCKER_HOST_NAME);
     }
 
-    @Test(expected = DockerHostInvalidException.class)
-    public void shouldNotRemoveDockerHostWithoutName() throws Exception {
-        dockerHostRepositoryManager.removeDockerHost(null);
-    }
-
     @Test
     public void shouldUpdateDockerHost() throws Exception {
         dockerHostRepositoryManager.addDockerHost(initNewDockerHost(TEST_DOCKER_HOST_NAME));
@@ -103,11 +98,6 @@ public class DockerHostRepositoryManagerTest {
         assertEquals(3, dockerHostRepositoryManager.loadAll().size());
     }
 
-    @Test(expected = DockerHostInvalidException.class)
-    public void shouldNotLoadDockerHostWithNullProvided() throws Exception {
-        dockerHostRepositoryManager.loadByName(null);
-    }
-
     @Test(expected = DockerHostNotFoundException.class)
     public void shouldNotLoadNotExistingDockerHost() throws Exception {
         dockerHostRepositoryManager.loadByName("WRONG-DOCKER-HOST-NAME");
@@ -131,13 +121,6 @@ public class DockerHostRepositoryManagerTest {
             dockerHostRepositoryManager.addDockerHost(preferredDockerHost);
             assertTrue(true);
         }
-    }
-
-    @Test
-    public void shouldLoadPreferredDockerHostForDockerCompose() throws Exception {
-        assertEquals(
-                dockerHostRepositoryManager.loadByName(PREFERRED_DOCKER_HOST_FOR_DOCKER_COMPOSE_NAME),
-                dockerHostRepositoryManager.loadPreferredDockerHostForDockerCompose());
     }
 
     private DockerHost initNewDockerHost(String hostName) throws Exception {

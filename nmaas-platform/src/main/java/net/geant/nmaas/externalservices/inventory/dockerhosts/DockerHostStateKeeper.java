@@ -1,19 +1,20 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.entities.DockerHostState;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.entities.NumberAssignment;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostStateNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.repositories.DockerHostStateRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,175 +34,281 @@ public class DockerHostStateKeeper {
     @Autowired
     private DockerHostStateRepository stateRepository;
 
-    public int assignPortForContainer(String dockerHostName, Identifier deploymentId) throws DockerHostNotFoundException, DockerHostInvalidException {
-        addStateForDockerHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignPort(container);
-    }
-
-    public void removePortAssignment(String dockerHostName, Identifier deploymentId) throws DockerHostNotFoundException {
-        if (!states.containsKey(dockerHostName))
-            throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        states.get(dockerHostName).removePortAssignment(ports);
-    }
-
-    public int getAssignedPort(String dockerHostName, Identifier deploymentId) throws DockerHostNotFoundException, MappingNotFoundException {
-        if (!states.containsKey(dockerHostName))
-            throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedPorts(container).get(0);
-    }
-
-    public int assignVlanForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException, DockerHostInvalidException {
-        addStateForDockerHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignVlan(network);
-    }
-
-    public void removeVlanAssignment(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
-        if (!states.containsKey(dockerHostName))
-            throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        states.get(dockerHostName).removeVlanAssignment(vlanNumber);
-    }
-
-    public int getAssignedVlan(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException, MappingNotFoundException {
-        if (!states.containsKey(dockerHostName))
-            throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedVlan(network);
-    }
-
-    public DockerNetworkIpamSpec assignAddressPoolForNetwork(String dockerHostName, DockerNetwork network) throws DockerHostNotFoundException, DockerHostInvalidException {
-        addStateForDockerHostIfAbsent(dockerHostName);
-        return states.get(dockerHostName).assignAddresses(network);
-    }
-
-    public void removeAddressPoolAssignment(String dockerHostName, DockerNetworkIpamSpec addressPool) throws DockerHostNotFoundException {
-        if (!states.containsKey(dockerHostName))
-            throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        states.get(dockerHostName).removeAddressPoolAssignment(addressPool);
-    }
-
-    public DockerNetworkIpamSpec getAssignedAddressPool(String dockerHostName, DockerNetwork network) throws DockerHostNotFoundException, DockerHostState.MappingNotFoundException {
-        if (!states.containsKey(dockerHostName))
-            throw new DockerHostNotFoundException("State for given Docker Host was not stored before.");
-        return states.get(dockerHostName).getAssignedAddressPool(network);
-    }
-
-    private void addStateForDockerHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException, DockerHostInvalidException {
-        if (!states.containsKey(dockerHostName)) {
-            String dockerHostBaseDataNetworkAddress = dockerHostRepositoryManager.loadByName(dockerHostName).getBaseDataNetworkAddress().getHostAddress();
-            final DockerHostState state = new DockerHostState(dockerHostBaseDataNetworkAddress);
-            states.put(dockerHostName, state);
-        }
-    }
+    @Autowired
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     /**
-     * Checks currently assigned ports on the host, assigns a new port and returns its number.
+     * Checks {@link DockerHostState} of given Docker Host for currently assigned ports on the host, assigns a new port
+     * and returns its number.
      * Currently it is assumed that a given NM service/tool/container will expose only a single public interface
      * that the client should use to access the GUI.
      *
-     * @param container Docker container
-     * @return Assigned port
+     * @param dockerHostName name identifying a Docker Host
+     * @param deploymentId identifier of NM service deployment in the system
+     * @return assigned port number
+     * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
-    int assignPort(DockerContainer container) {
-        return assignPorts(1, container).get(0);
+    @Transactional
+    public Integer assignPortForContainer(String dockerHostName, Identifier deploymentId) throws DockerHostNotFoundException {
+        addStateForDockerHostIfAbsent(dockerHostName);
+        return assignPort(stateForDockerHost(dockerHostName), deploymentId);
     }
 
-    /**
-     * Checks currently assigned ports on the host, assigns requested number of new ports and returns a list of them.
-     *
-     * @param number Number of ports to be assigned for given service/container
-     * @param container Docker container
-     * @return List of assigned ports
-     */
-    private List<Integer> assignPorts(int number, DockerContainer container) {
+    private Integer assignPort(DockerHostState state, Identifier deploymentId) {
+        return assignPorts(1, state, deploymentId).get(0);
+    }
+
+    private List<Integer> assignPorts(int number, DockerHostState state, Identifier deploymentId) {
         List<Integer> newAssignedPorts = new ArrayList<>();
         int count = 0;
         int portNumber = MIN_ASSIGNABLE_PORT_NUMBER;
         while(count < number) {
-            while(assignedPorts.keySet().contains(portNumber))
+            while(portAlreadyAssigned(state.getPortAssignments(), portNumber))
                 portNumber++;
             newAssignedPorts.add(portNumber);
             count++;
             portNumber++;
         }
-        newAssignedPorts.forEach((port) -> assignedPorts.put(port, container));
+        newAssignedPorts.forEach((port) -> state.getPortAssignments().add(new NumberAssignment(port, deploymentId)));
+        stateRepository.save(state);
         return newAssignedPorts;
     }
 
-    void removePortAssignment(List<Integer> ports) {
-        ports.forEach((port) -> assignedPorts.remove(port));
-    }
-
-    List<Integer> getAssignedPorts(DockerContainer container) throws MappingNotFoundException {
-        List<Integer> foundPorts = assignedPorts.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(container))
-                .map(entry -> entry.getKey())
-                .collect(Collectors.toList());
-        if (foundPorts.isEmpty())
-            throw new MappingNotFoundException("No ports found for container " + container.getId());
-        return foundPorts;
+    private boolean portAlreadyAssigned(List<NumberAssignment> portAssignments, int portNumber) {
+        return portAssignments.stream().anyMatch(a -> a.getNumber().equals(portNumber));
     }
 
     /**
-     * Checks currently assigned VLANs on the host, assigns new VLAN and returns its number.
+     * Removes port assignments for given deployment.
      *
-     * @param network Docker network
-     * @return Number of assigned VLAN
+     * @param dockerHostName name identifying a Docker Host
+     * @param deploymentId identifier of NM service deployment in the system
+     * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
-    int assignVlan(DockerNetwork network) {
+    @Transactional
+    public void removePortAssignment(String dockerHostName, Identifier deploymentId) throws DockerHostStateNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName))
+            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+        removePortAssignment(stateForDockerHost(dockerHostName), deploymentId);
+    }
+
+    private void removePortAssignment(DockerHostState state, Identifier deploymentId) {
+        List<NumberAssignment> ports = state.getPortAssignments().stream()
+                .filter(a -> a.getOwnerId().equals(deploymentId))
+                .collect(Collectors.toList());
+        ports.forEach(port -> state.getPortAssignments().remove(port));
+        stateRepository.save(state);
+    }
+
+    /**
+     * Retrieves a port already assigned for given deployment.
+     *
+     * @param dockerHostName name identifying a Docker Host
+     * @param deploymentId identifier of NM service deployment in the system
+     * @return assigned port number
+     * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
+     */
+    @Transactional
+    public Integer getAssignedPort(String dockerHostName, Identifier deploymentId) throws DockerHostStateNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName))
+            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+        if (getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).size() > 0)
+            return getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).get(0);
+        else
+            return null;
+    }
+
+    private List<Integer> getAssignedPorts(DockerHostState state, Identifier deploymentId) {
+        return state.getPortAssignments().stream()
+                .filter(a -> a.getOwnerId().equals(deploymentId))
+                .map(a -> a.getNumber())
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks {@link DockerHostState} of given Docker Host for currently assigned VLANs on the host, assigns a new VLAN
+     * and returns its number.
+     *
+     * @param dockerHostName name identifying a Docker Host
+     * @param clientId identifier of a client/customer
+     * @return assigned VLAN number
+     * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
+     */
+    @Transactional
+    public int assignVlanForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
+        addStateForDockerHostIfAbsent(dockerHostName);
+        return assignVlan(stateForDockerHost(dockerHostName), clientId);
+    }
+
+    private int assignVlan(DockerHostState state, Identifier clientId) {
         int vlanNumber = MIN_ASSIGNABLE_VLAN_NUMBER;
-        while (assignedVlans.keySet().contains(vlanNumber))
+        while(vlanAlreadyAssigned(state.getVlanAssignments(), vlanNumber))
             vlanNumber++;
-        assignedVlans.put(vlanNumber, network);
+        state.getVlanAssignments().add(new NumberAssignment(vlanNumber, clientId));
+        stateRepository.save(state);
         return vlanNumber;
     }
 
-    void removeVlanAssignment(int vlanNumber) {
-        assignedVlans.remove(vlanNumber);
-    }
-
-    int getAssignedVlan(DockerNetwork network) throws MappingNotFoundException {
-        Map.Entry<Integer, DockerNetwork> foundMapping = assignedVlans.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(network))
-                .findFirst()
-                .orElseThrow(() -> new MappingNotFoundException("No VLAN number found for network " + network.getId()));
-        return foundMapping.getKey();
+    private boolean vlanAlreadyAssigned(List<NumberAssignment> vlanAssignments, int vlanNumber) {
+        return vlanAssignments.stream().anyMatch(a -> a.getNumber().equals(vlanNumber));
     }
 
     /**
-     * Checks currently assigned address pools on the host, assigns new pool and returns it.
+     * Removes VLAN assignment for given client/customer.
      *
-     * @param network Docker network
-     * @return Assigned address pool
+     * @param dockerHostName name identifying a Docker Host
+     * @param clientId identifier of a client/customer
+     * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
-    DockerNetworkIpamSpec assignAddresses(DockerNetwork network) {
-        int address = ADDRESS_POOL_MIN_ASSIGNABLE_ADDRESS;
-        DockerNetworkIpamSpec candidateAddressPool = null;
-        do {
-            candidateAddressPool = DockerNetworkIpamSpec.fromParameters(
-                    dockerHostAddressPoolBase,
-                    address,
-                    ADDRESS_POOL_DEFAULT_GATEWAY,
-                    ADDRESS_POOL_DEFAULT_MASK_LENGTH);
+    @Transactional
+    public void removeVlanAssignment(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName))
+            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+        removeVlanAssignment(stateForDockerHost(dockerHostName), clientId);
+    }
+
+    private void removeVlanAssignment(DockerHostState state, Identifier clientId) {
+        Optional<NumberAssignment> vlan = state.getVlanAssignments().stream()
+                .filter(a -> a.getOwnerId().equals(clientId))
+                .findFirst();
+        if (vlan.isPresent()) {
+            state.getVlanAssignments().remove(vlan.get());
+            stateRepository.save(state);
+        }
+    }
+
+    /**
+     * Retrieves a VLAN already assigned for given client/customer.
+     *
+     * @param dockerHostName name identifying a Docker Host
+     * @param clientId identifier of a client/customer
+     * @return assigned VLAN number
+     * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
+     */
+    @Transactional
+    public Integer getAssignedVlan(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName))
+            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+        return getAssignedVlan(stateForDockerHost(dockerHostName), clientId);
+    }
+
+    private Integer getAssignedVlan(DockerHostState state, Identifier clientId) {
+        return state.getVlanAssignments().stream()
+                .filter(a -> a.getOwnerId().equals(clientId))
+                .map(a -> a.getNumber())
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * Checks {@link DockerHostState} of given Docker Host for currently assigned network addresses on the host,
+     * assigns a new address and returns its number.
+     *
+     * @param dockerHostName name identifying a Docker Host
+     * @param clientId identifier of a client/customer
+     * @return assigned network address
+     * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
+     */
+    @Transactional
+    public DockerNetworkIpamSpec assignAddressPoolForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
+        addStateForDockerHostIfAbsent(dockerHostName);
+        return assignAddresses(stateForDockerHost(dockerHostName), clientId);
+    }
+
+    private DockerNetworkIpamSpec assignAddresses(DockerHostState state, Identifier clientId) {
+        Integer address = ADDRESS_POOL_MIN_ASSIGNABLE_ADDRESS;
+        while(addressAlreadyAssigned(state.getAddressAssignments(), address))
             address++;
-        } while (assignedAddressPools.containsKey(candidateAddressPool));
-        assignedAddressPools.put(candidateAddressPool, network);
-        return candidateAddressPool;
+        state.getAddressAssignments().add(new NumberAssignment(address, clientId));
+        stateRepository.save(state);
+        return DockerNetworkIpamSpec.fromParameters(
+                state.getDockerHostAddressPoolBase(),
+                address,
+                ADDRESS_POOL_DEFAULT_GATEWAY,
+                ADDRESS_POOL_DEFAULT_MASK_LENGTH);
     }
 
-    void removeAddressPoolAssignment(DockerNetworkIpamSpec addressPool) {
-        assignedAddressPools.remove(addressPool);
+    private boolean addressAlreadyAssigned(List<NumberAssignment> addressAssignments, Integer address) {
+        return addressAssignments.stream().anyMatch(a -> a.getNumber().equals(address));
     }
 
-    DockerNetworkIpamSpec getAssignedAddressPool(DockerNetwork network) throws MappingNotFoundException {
-        Map.Entry<DockerNetworkIpamSpec, DockerNetwork> foundMapping = assignedAddressPools.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(network))
-                .findFirst()
-                .orElseThrow(() -> new MappingNotFoundException("No address pool found for network " + network.getId()));
-        return foundMapping.getKey();
+    /**
+     * Removes address assignment for given client/customer.
+     *
+     * @param dockerHostName name identifying a Docker Host
+     * @param clientId identifier of a client/customer
+     * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
+     */
+    @Transactional
+    public void removeAddressPoolAssignment(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName))
+            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+        removeAddressPoolAssignment(stateForDockerHost(dockerHostName), clientId);
     }
 
-    public class MappingNotFoundException extends Exception {
-        public MappingNotFoundException(String message) {
-            super(message);
+    private void removeAddressPoolAssignment(DockerHostState state, Identifier clientId) {
+        Optional<NumberAssignment> vlan = state.getAddressAssignments().stream()
+                .filter(a -> a.getOwnerId().equals(clientId))
+                .findFirst();
+        if (vlan.isPresent()) {
+            state.getAddressAssignments().remove(vlan.get());
+            stateRepository.save(state);
+        }
+    }
+
+    /**
+     * Retrieves an address already assigned for given client/customer.
+     *
+     * @param dockerHostName name identifying a Docker Host
+     * @param clientId identifier of a client/customer
+     * @return assigned network address
+     * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
+     */
+    @Transactional
+    public DockerNetworkIpamSpec getAssignedAddressPool(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName))
+            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+        return getAssignedAddressPool(stateForDockerHost(dockerHostName), clientId);
+    }
+
+    private DockerNetworkIpamSpec getAssignedAddressPool(DockerHostState state, Identifier clientId) {
+        return state.getAddressAssignments().stream()
+                .filter(a -> a.getOwnerId().equals(clientId))
+                .map(a -> DockerNetworkIpamSpec.fromParameters(
+                                state.getDockerHostAddressPoolBase(),
+                                a.getNumber(),
+                                ADDRESS_POOL_DEFAULT_GATEWAY,
+                                ADDRESS_POOL_DEFAULT_MASK_LENGTH))
+                .findFirst().orElse(null);
+    }
+
+    private void addStateForDockerHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException {
+        if (stateForDockerHostNotExists(dockerHostName)) {
+            String dockerHostBaseDataNetworkAddress =
+                    dockerHostRepositoryManager.loadByName(dockerHostName).getBaseDataNetworkAddress().getHostAddress();
+            DockerHostState state = new DockerHostState(dockerHostName, dockerHostBaseDataNetworkAddress);
+            stateRepository.save(state);
+        }
+    }
+
+    private boolean stateForDockerHostNotExists(String dockerHostName) {
+        return !stateRepository.findByDockerHostName(dockerHostName).isPresent();
+    }
+
+    private DockerHostState stateForDockerHost(String dockerHostName) {
+        return stateRepository.findByDockerHostName(dockerHostName).orElse(null);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void removeAllAssignments(String dockerHostName) {
+        try {
+            if (stateForDockerHostNotExists(dockerHostName))
+                throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+            DockerHostState state = stateForDockerHost(dockerHostName);
+            state.setPortAssignments(new ArrayList<>());
+            state.setVlanAssignments(new ArrayList<>());
+            state.setAddressAssignments(new ArrayList<>());
+            stateRepository.save(state);
+        } catch (DockerHostStateNotFoundException ignored) {
         }
     }
 }

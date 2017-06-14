@@ -7,7 +7,6 @@ import com.spotify.docker.client.messages.EndpointConfig;
 import com.spotify.docker.client.messages.NetworkConfig;
 import com.spotify.docker.client.messages.NetworkConnection;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
@@ -48,14 +47,13 @@ public class DockerNetworkManager {
         repositoryManager.storeNetwork(dockerNetwork);
         try {
             dockerNetwork = repositoryManager.loadNetwork(clientId);
-            int assignedVlan = dockerHostStateKeeper.assignVlanForNetwork(dockerHost.getName(), dockerNetwork);
+            int assignedVlan = dockerHostStateKeeper.assignVlanForNetwork(dockerHost.getName(), clientId);
             dockerNetwork.setVlanNumber(assignedVlan);
-            DockerNetworkIpamSpec assignedAddresses = dockerHostStateKeeper.assignAddressPoolForNetwork(dockerHost.getName(), dockerNetwork);
+            DockerNetworkIpamSpec assignedAddresses = dockerHostStateKeeper.assignAddressPoolForNetwork(dockerHost.getName(), clientId);
             dockerNetwork.setSubnet(assignedAddresses.getSubnetWithMask());
             dockerNetwork.setGateway(assignedAddresses.getGateway());
             repositoryManager.updateNetwork(dockerNetwork);
-        } catch (DockerHostNotFoundException
-                | DockerHostInvalidException e) {
+        } catch (DockerHostNotFoundException e) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + e.getMessage(), e);
         } catch (InvalidClientIdException invalidClientIdException) {
@@ -144,7 +142,7 @@ public class DockerNetworkManager {
         verifyIfAllContainersPresent(networkId, noOfRemoteContainers, localContainers);
     }
 
-    void verifyIfAllContainersPresent(String networkId, int noOfRemoteContainers, List<String> localContainers) throws DockerNetworkCheckFailedException {
+    private void verifyIfAllContainersPresent(String networkId, int noOfRemoteContainers, List<String> localContainers) throws DockerNetworkCheckFailedException {
         if (localContainers.size() > 0 && noOfRemoteContainers == 0)
             throw new DockerNetworkCheckFailedException("Docker network " + networkId + " verification failed. None containers attached.");
         if (localContainers.size() != noOfRemoteContainers)
@@ -159,8 +157,7 @@ public class DockerNetworkManager {
             String containerIpAddress = obtainIpAddressForNewContainer(network);
             final DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec(containerIpAddress, network.getSubnet(), network.getGateway());
             return new DockerContainerNetDetails(assignedPublicPort, addresses);
-        } catch (DockerHostNotFoundException
-                | DockerHostInvalidException e) {
+        } catch (DockerHostNotFoundException e) {
             throw new ContainerOrchestratorInternalErrorException("Problems with port assignment for container -> " + e.getMessage());
         }
     }
