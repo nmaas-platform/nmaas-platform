@@ -1,14 +1,15 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.repositories.DockerHostRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -22,60 +23,19 @@ public class DockerHostRepositoryManager {
     @Autowired
     private DockerHostRepository repository;
 
-    @PostConstruct
-    public void storeDefaultDockerHosts() throws UnknownHostException, DockerHostInvalidException {
-        try {
-            addDockerHost(new DockerHost(
-                    "GN4-DOCKER-1",
-                    InetAddress.getByName("10.134.250.1"),
-                    2375,
-                    InetAddress.getByName("10.134.250.1"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.11.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/nmaasplatform/volumes",
-                    true));
-            addDockerHost(new DockerHost(
-                    "GN4-DOCKER-2",
-                    InetAddress.getByName("10.134.250.2"),
-                    2375,
-                    InetAddress.getByName("10.134.250.2"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.12.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/nmaasplatform/volumes",
-                    false));
-            addDockerHost(new DockerHost(
-                    "GN4-DOCKER-3",
-                    InetAddress.getByName("10.134.250.3"),
-                    2375,
-                    InetAddress.getByName("10.134.250.3"),
-                    "eth0",
-                    "eth1",
-                    InetAddress.getByName("10.13.0.0"),
-                    "/home/mgmt/nmaasplatform/scripts",
-                    "/home/mgmt/nmaasplatform/volumes",
-                    false));
-        } catch (DockerHostExistsException e) {
-            // nothing to do
-        }
-    }
-
     /**
      * Store {@link DockerHost} instance in the repository
      *
      * @param newDockerHost New {@link DockerHost} instance
-     * @throws DockerHostExistsException when Docker host exists in the repository
+     * @throws DockerHostAlreadyExistsException when Docker host exists in the repository
      * @throws DockerHostInvalidException when invalid input
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addDockerHost(DockerHost newDockerHost) throws DockerHostExistsException, DockerHostInvalidException {
+    public void addDockerHost(DockerHost newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException {
         validateDockerHost(newDockerHost);
         try {
             loadByName(newDockerHost.getName());
-            throw new DockerHostExistsException("Docker host with " +  newDockerHost.getName() +  " name exists in the repository.");
+            throw new DockerHostAlreadyExistsException("Docker host with " +  newDockerHost.getName() +  " name exists in the repository.");
         } catch (DockerHostNotFoundException ex) {
             repository.save(newDockerHost);
         }
@@ -124,11 +84,9 @@ public class DockerHostRepositoryManager {
      *
      * @param hostName Unique {@link DockerHost} name
      * @return {@link DockerHost} instance loaded form the repository
-     * @throws DockerHostNotFoundException  when Docker host does not exists in the repository
-     * @throws DockerHostInvalidException when invalid input
+     * @throws DockerHostNotFoundException when Docker host does not exists in the repository
      */
-    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException, DockerHostInvalidException {
-        validateDockerHostName(hostName);
+    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException {
         return repository.findByName(hostName)
                 .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker Host with " + hostName + " name in the repository"));
     }
@@ -148,30 +106,20 @@ public class DockerHostRepositoryManager {
             throw new DockerHostNotFoundException("Did not find preferred Docker host in the repository.");
     }
 
-    /**
-     * Loads default {@link DockerHost} instance to be used for Docker Compose deployments.
-     *
-     * @return {@link DockerHost} instance loaded form the repository
-     * @throws DockerHostNotFoundException when preferred Docker host does not exists in the repository
-     */
-    public DockerHost loadPreferredDockerHostForDockerCompose() throws DockerHostNotFoundException {
-        return repository.findByName("GN4-DOCKER-2").orElseThrow(() -> new DockerHostNotFoundException("Did not find preferred Docker host in the repository."));
-    }
-
-    void validateDockerHostName(String name) throws DockerHostInvalidException {
+    private void validateDockerHostName(String name) throws DockerHostInvalidException {
         if(name == null) {
             throw new DockerHostInvalidException("Docker host name cannot be null");
         }
     }
 
-    void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
+    private void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
         if(dockerHost == null) {
             throw new DockerHostInvalidException("Docker host cannot be null");
         }
         validateDockerHostName(dockerHost.getName());
     }
 
-    void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
+    private void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
         validateDockerHostName(name);
         validateDockerHost(dockerHost);
         if(!name.equals(dockerHost.getName())) {

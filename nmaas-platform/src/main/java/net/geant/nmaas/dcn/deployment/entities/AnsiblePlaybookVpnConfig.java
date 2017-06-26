@@ -1,6 +1,5 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 
 import javax.persistence.*;
@@ -25,6 +24,7 @@ public class AnsiblePlaybookVpnConfig {
 
     private Type type;
     private String targetRouter;
+    private String targetRouterId;
     private String vrfId;
     private String logicalInterface;
     private String vrfRd;
@@ -70,6 +70,14 @@ public class AnsiblePlaybookVpnConfig {
 
     public void setTargetRouter(String targetRouter) {
         this.targetRouter = targetRouter;
+    }
+
+    public String getTargetRouterId() {
+        return targetRouterId;
+    }
+
+    public void setTargetRouterId(String targetRouterId) {
+        this.targetRouterId = targetRouterId;
     }
 
     public String getVrfId() {
@@ -200,68 +208,6 @@ public class AnsiblePlaybookVpnConfig {
         this.policyStatementExport = policyStatementExport;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AnsiblePlaybookVpnConfig)) return false;
-
-        AnsiblePlaybookVpnConfig that = (AnsiblePlaybookVpnConfig) o;
-
-        if (type != that.type) return false;
-        if (getTargetRouter() != null ? !getTargetRouter().equals(that.getTargetRouter()) : that.getTargetRouter() != null)
-            return false;
-        if (getVrfId() != null ? !getVrfId().equals(that.getVrfId()) : that.getVrfId() != null) return false;
-        if (getLogicalInterface() != null ? !getLogicalInterface().equals(that.getLogicalInterface()) : that.getLogicalInterface() != null)
-            return false;
-        if (getVrfRd() != null ? !getVrfRd().equals(that.getVrfRd()) : that.getVrfRd() != null) return false;
-        if (getVrfRt() != null ? !getVrfRt().equals(that.getVrfRt()) : that.getVrfRt() != null) return false;
-        if (getBgpGroupId() != null ? !getBgpGroupId().equals(that.getBgpGroupId()) : that.getBgpGroupId() != null)
-            return false;
-        if (getBgpNeighborIp() != null ? !getBgpNeighborIp().equals(that.getBgpNeighborIp()) : that.getBgpNeighborIp() != null)
-            return false;
-        if (getAsn() != null ? !getAsn().equals(that.getAsn()) : that.getAsn() != null) return false;
-        if (getPhysicalInterface() != null ? !getPhysicalInterface().equals(that.getPhysicalInterface()) : that.getPhysicalInterface() != null)
-            return false;
-        if (getInterfaceUnit() != null ? !getInterfaceUnit().equals(that.getInterfaceUnit()) : that.getInterfaceUnit() != null)
-            return false;
-        if (getInterfaceVlan() != null ? !getInterfaceVlan().equals(that.getInterfaceVlan()) : that.getInterfaceVlan() != null)
-            return false;
-        if (getBgpLocalIp() != null ? !getBgpLocalIp().equals(that.getBgpLocalIp()) : that.getBgpLocalIp() != null)
-            return false;
-        if (getBgpLocalCidr() != null ? !getBgpLocalCidr().equals(that.getBgpLocalCidr()) : that.getBgpLocalCidr() != null)
-            return false;
-        if (getPolicyCommunityOptions() != null ? !getPolicyCommunityOptions().equals(that.getPolicyCommunityOptions()) : that.getPolicyCommunityOptions() != null)
-            return false;
-        if (getPolicyStatementConnected() != null ? !getPolicyStatementConnected().equals(that.getPolicyStatementConnected()) : that.getPolicyStatementConnected() != null)
-            return false;
-        if (getPolicyStatementImport() != null ? !getPolicyStatementImport().equals(that.getPolicyStatementImport()) : that.getPolicyStatementImport() != null)
-            return false;
-        return getPolicyStatementExport() != null ? getPolicyStatementExport().equals(that.getPolicyStatementExport()) : that.getPolicyStatementExport() == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = type.hashCode();
-        result = 31 * result + (getTargetRouter() != null ? getTargetRouter().hashCode() : 0);
-        result = 31 * result + (getVrfId() != null ? getVrfId().hashCode() : 0);
-        result = 31 * result + (getLogicalInterface() != null ? getLogicalInterface().hashCode() : 0);
-        result = 31 * result + (getVrfRd() != null ? getVrfRd().hashCode() : 0);
-        result = 31 * result + (getVrfRt() != null ? getVrfRt().hashCode() : 0);
-        result = 31 * result + (getBgpGroupId() != null ? getBgpGroupId().hashCode() : 0);
-        result = 31 * result + (getBgpNeighborIp() != null ? getBgpNeighborIp().hashCode() : 0);
-        result = 31 * result + (getAsn() != null ? getAsn().hashCode() : 0);
-        result = 31 * result + (getPhysicalInterface() != null ? getPhysicalInterface().hashCode() : 0);
-        result = 31 * result + (getInterfaceUnit() != null ? getInterfaceUnit().hashCode() : 0);
-        result = 31 * result + (getInterfaceVlan() != null ? getInterfaceVlan().hashCode() : 0);
-        result = 31 * result + (getBgpLocalIp() != null ? getBgpLocalIp().hashCode() : 0);
-        result = 31 * result + (getBgpLocalCidr() != null ? getBgpLocalCidr().hashCode() : 0);
-        result = 31 * result + (getPolicyCommunityOptions() != null ? getPolicyCommunityOptions().hashCode() : 0);
-        result = 31 * result + (getPolicyStatementConnected() != null ? getPolicyStatementConnected().hashCode() : 0);
-        result = 31 * result + (getPolicyStatementImport() != null ? getPolicyStatementImport().hashCode() : 0);
-        result = 31 * result + (getPolicyStatementExport() != null ? getPolicyStatementExport().hashCode() : 0);
-        return result;
-    }
-
     public void validate() throws AnsiblePlaybookVpnConfigInvalidException {
         StringBuilder exceptionMessage = new StringBuilder();
         if (targetRouter == null || targetRouter.isEmpty()) {
@@ -368,28 +314,6 @@ public class AnsiblePlaybookVpnConfig {
         this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
     }
 
-    public AnsiblePlaybookVpnConfig copy() {
-        AnsiblePlaybookVpnConfig copy = new AnsiblePlaybookVpnConfig(this.type);
-        copy.setTargetRouter(this.targetRouter);
-        copy.setVrfId(this.vrfId);
-        copy.setLogicalInterface(this.logicalInterface);
-        copy.setVrfRd(this.vrfRd);
-        copy.setVrfRt(this.vrfRt);
-        copy.setBgpGroupId(this.bgpGroupId);
-        copy.setBgpNeighborIp(this.bgpNeighborIp);
-        copy.setAsn(this.asn);
-        copy.setPhysicalInterface(this.physicalInterface);
-        copy.setInterfaceUnit(this.interfaceUnit);
-        copy.setInterfaceVlan(this.interfaceVlan);
-        copy.setBgpLocalIp(this.bgpLocalIp);
-        copy.setBgpLocalCidr(this.bgpLocalCidr);
-        copy.setPolicyCommunityOptions(this.policyCommunityOptions);
-        copy.setPolicyStatementConnected(this.policyStatementConnected);
-        copy.setPolicyStatementImport(this.policyStatementImport);
-        copy.setPolicyStatementExport(this.policyStatementExport);
-        return copy;
-    }
-
     private void wrongIpMessage(String fieldName, StringBuilder exceptionMessage) {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
@@ -428,5 +352,13 @@ public class AnsiblePlaybookVpnConfig {
     public enum Action {
         ADD,
         REMOVE
+    }
+
+    public class AnsiblePlaybookVpnConfigInvalidException extends Exception {
+
+        public AnsiblePlaybookVpnConfigInvalidException(String message) {
+            super(message);
+        }
+
     }
 }

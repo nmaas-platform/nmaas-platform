@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.dockerhosts;
+package net.geant.nmaas.externalservices.inventory.dockerhosts.repositories;
 
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.springframework.data.jpa.repository.JpaRepository;

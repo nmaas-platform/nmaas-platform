@@ -5,6 +5,9 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 
 import java.util.Arrays;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 public class DockerContainerTemplatesInit {
 
     public static DockerContainerTemplate oxidizedTemplate() {

@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.dockerhosts;
+package net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions;
 
 public class DockerHostNotFoundException extends Exception {
 

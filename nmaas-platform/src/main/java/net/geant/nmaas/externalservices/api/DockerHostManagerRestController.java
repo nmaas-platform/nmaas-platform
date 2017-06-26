@@ -1,6 +1,9 @@
 package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.*;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -67,7 +70,7 @@ public class DockerHostManagerRestController {
     /**
      * Store {@link DockerHost} instance
      * @param newDockerHost new {@link DockerHost} instance
-     * @throws DockerHostExistsException when Docker host exists (HttpStatus.CONFLICT)
+     * @throws DockerHostAlreadyExistsException when Docker host exists (HttpStatus.CONFLICT)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @RequestMapping(
@@ -76,7 +79,7 @@ public class DockerHostManagerRestController {
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addDockerHost(
-            @RequestBody DockerHost newDockerHost) throws DockerHostExistsException, DockerHostInvalidException {
+            @RequestBody DockerHost newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException {
         dockerHostRepositoryManager.addDockerHost(newDockerHost);
     }
 
@@ -127,9 +130,9 @@ public class DockerHostManagerRestController {
         return ex.getMessage();
     }
 
-    @ExceptionHandler(DockerHostExistsException.class)
+    @ExceptionHandler(DockerHostAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleDockerHostExistsException(DockerHostExistsException ex) {
+    public String handleDockerHostExistsException(DockerHostAlreadyExistsException ex) {
         return ex.getMessage();
     }
  }

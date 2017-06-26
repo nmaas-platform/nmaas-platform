@@ -1,13 +1,15 @@
 package net.geant.nmaas.orchestration;
 
 import com.spotify.docker.client.exceptions.DockerException;
-import net.geant.nmaas.dcn.deployment.AnsiblePlaybookVpnConfigRepositoryInit;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigExistsException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
+import net.geant.nmaas.helpers.NetworkAttachPointsInit;
 import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
@@ -43,6 +45,7 @@ public class OxidizedAppDeploymentIntTest {
 
     private static final String OXIDIZED_APP_NAME = "Oxidized";
     private static final String OXIDIZED_APP_VERSION = "0.19.0";
+    private static final long CUSTOMER_ID = 1L;
 
     @Autowired
     private AppLifecycleManager appLifecycleManager;
@@ -58,24 +61,33 @@ public class OxidizedAppDeploymentIntTest {
     @MockBean
     private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
     @Autowired
-    private AnsiblePlaybookVpnConfigRepositoryInit ansiblePlaybookVpnConfigRepositoryInit;
-    @Autowired
     private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
+    @Autowired
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
+    @Autowired
+    private DockerHostAttachPointRepository dockerHostAttachPointRepository;
+    @Autowired
+    private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
 
     private Identifier clientId;
     private Long testAppId;
 
     @Before
-    public void setup() throws AnsiblePlaybookVpnConfigInvalidException, AnsiblePlaybookVpnConfigExistsException, DockerException, InterruptedException {
-        clientId = Identifier.newInstance(String.valueOf(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID));
+    public void setup() throws DockerException, InterruptedException {
+        clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
         storeOxidizedApp();
-        ansiblePlaybookVpnConfigRepositoryInit.initWithDefaults();
         DockerApiClientMockInit.mockMethods(dockerApiClient);
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
+        NetworkAttachPointsInit.initDockerHostAttachPoints(dockerHostAttachPointRepository);
+        NetworkAttachPointsInit.initBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
     }
 
     @After
     public void clear() throws InvalidClientIdException {
         dockerNetworkRepositoryManager.removeNetwork(clientId);
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
+        NetworkAttachPointsInit.cleanDockerHostAttachPoints(dockerHostAttachPointRepository);
+        NetworkAttachPointsInit.cleanBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
     }
 
     @Test

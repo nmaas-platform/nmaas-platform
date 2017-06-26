@@ -10,8 +10,11 @@ import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigNotFoundException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
+import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.expceptions.AttachPointNotFoundException;
+import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.repositories.DockerNetworkRepository;
@@ -50,7 +53,9 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     private ApplicationEventPublisher applicationEventPublisher;
 
-    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
+    private DockerHostAttachPointRepository dockerHostAttachPointRepository;
+
+    private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
 
     private DockerNetworkRepository dockerNetworkRepository;
 
@@ -61,12 +66,14 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     @Autowired
     public DcnDeploymentCoordinator(DcnRepositoryManager dcnRepositoryManager,
-                                    AnsiblePlaybookVpnConfigRepository vpnConfigRepository,
+                                    DockerHostAttachPointRepository dockerHostAttachPointRepository,
+                                    BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
                                     ApplicationEventPublisher applicationEventPublisher,
                                     DockerNetworkRepository dockerNetworkRepository,
                                     DockerApiClient dockerApiClient) {
         this.dcnRepositoryManager = dcnRepositoryManager;
-        this.vpnConfigRepository = vpnConfigRepository;
+        this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
+        this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
         this.applicationEventPublisher = applicationEventPublisher;
         this.dockerNetworkRepository = dockerNetworkRepository;
         this.dockerApiClient = dockerApiClient;
@@ -93,13 +100,24 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                     .orElseThrow(() -> new InvalidClientIdException("No Docker network found for client " + clientId));
             final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerNetwork);
             dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, dcnCloudEndpointDetails);
-            dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpnConfigRepository.loadCustomerVpnConfigByCustomerId(clientId.longValue()));
-            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig = vpnConfigRepository.loadCloudVpnConfigByDockerHost(dockerNetwork.getDockerHost().getName());
+            CustomerNetworkAttachPoint customerNetworkAttachPoint = basicCustomerNetworkAttachPointRepository
+                   .findByCustomerId(clientId.longValue())
+                   .orElseThrow(() -> new AttachPointNotFoundException(clientId.value()));
+            AnsiblePlaybookVpnConfig customerSideRouterVpnConfig =
+                    AnsiblePlaybookVpnConfigBuilder.fromCustomerNetworkAttachPoint(customerNetworkAttachPoint);
+            dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(
+                    clientId,
+                    customerSideRouterVpnConfig);
+            CloudAttachPoint cloudAttachPoint = dockerHostAttachPointRepository
+                    .findByDockerHostName(dockerNetwork.getDockerHost().getName())
+                    .orElseThrow(() -> new AttachPointNotFoundException(dockerNetwork.getDockerHost().getName()));
+            AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig =
+                    AnsiblePlaybookVpnConfigBuilder.fromCloudAttachPoint(customerSideRouterVpnConfig, cloudAttachPoint);
             cloudSideRouterVpnConfig.merge(dcnCloudEndpointDetails);
             dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, cloudSideRouterVpnConfig);
             notifyStateChangeListeners(clientId, DcnDeploymentState.REQUEST_VERIFIED);
         } catch ( InvalidClientIdException
-                | AnsiblePlaybookVpnConfigNotFoundException e) {
+                | AttachPointNotFoundException e) {
             log.error("Exception during DCN request verification -> " + e.getMessage());
             notifyStateChangeListeners(clientId, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
             throw new DcnRequestVerificationException("Exception during DCN request verification -> " + e.getMessage());

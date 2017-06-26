@@ -1,9 +1,13 @@
-package net.geant.nmaas.externalservices.inventory.dockerhosts;
+package net.geant.nmaas.externalservices.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.DockerHostManagerRestController;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.repositories.DockerHostRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +47,13 @@ public class DockerHostManagerRestControllerTest {
 
     @Before
     public void init() {
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerRestController(dockerHostRepositoryManager)).build();
+    }
+
+    @After
+    public void clean() {
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
     }
 
     @Test

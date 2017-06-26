@@ -1,8 +1,10 @@
-package net.geant.nmaas.externalservices.inventory.vpnconfigs;
+package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import org.junit.Test;
 
+import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.MAX_PROPERTY_LENGTH;
+import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.Type;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -26,45 +28,45 @@ public class AnsiblePlaybookVpnConfigTest {
     @Test
     public void shouldNotValidateEmptyPropertiesForCustomer () throws Exception {
         try {
-            new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE).validate();
+            new AnsiblePlaybookVpnConfig(Type.CLIENT_SIDE).validate();
             assertTrue(false);
-        } catch (AnsiblePlaybookVpnConfigInvalidException ex) {
-            assertEquals(setEmptyExceptionMessage(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE), ex.getMessage());
+        } catch (AnsiblePlaybookVpnConfig.AnsiblePlaybookVpnConfigInvalidException ex) {
+            assertEquals(setEmptyExceptionMessage(Type.CLIENT_SIDE), ex.getMessage());
         }
     }
 
     @Test
     public void shouldNotValidateEmptyPropertiesForCloud () throws Exception {
         try {
-            new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE).validate();
+            new AnsiblePlaybookVpnConfig(Type.CLOUD_SIDE).validate();
             assertTrue(false);
-        } catch (AnsiblePlaybookVpnConfigInvalidException ex) {
-            assertEquals(setEmptyExceptionMessage(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE), ex.getMessage());
+        } catch (AnsiblePlaybookVpnConfig.AnsiblePlaybookVpnConfigInvalidException ex) {
+            assertEquals(setEmptyExceptionMessage(Type.CLOUD_SIDE), ex.getMessage());
         }
     }
 
     @Test
     public void shouldNotValidateTooLongPropertiesForCloud () throws Exception {
         try {
-            setTooLongValuesToVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE).validate();
+            setTooLongValuesToVpnConfig(Type.CLOUD_SIDE).validate();
             assertTrue(false);
-        } catch (AnsiblePlaybookVpnConfigInvalidException ex) {
-            assertEquals(setTooLongExceptionMessage(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE), ex.getMessage());
+        } catch (AnsiblePlaybookVpnConfig.AnsiblePlaybookVpnConfigInvalidException ex) {
+            assertEquals(setTooLongExceptionMessage(Type.CLOUD_SIDE), ex.getMessage());
         }
     }
 
     @Test
     public void shouldNotValidateTooLongPropertiesForCustomer () throws Exception {
         try {
-            setTooLongValuesToVpnConfig(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE).validate();
+            setTooLongValuesToVpnConfig(Type.CLIENT_SIDE).validate();
             assertTrue(false);
-        } catch (AnsiblePlaybookVpnConfigInvalidException ex) {
-            assertEquals(setTooLongExceptionMessage(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE), ex.getMessage());
+        } catch (AnsiblePlaybookVpnConfig.AnsiblePlaybookVpnConfigInvalidException ex) {
+            assertEquals(setTooLongExceptionMessage(Type.CLIENT_SIDE), ex.getMessage());
         }
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    private String setEmptyExceptionMessage(AnsiblePlaybookVpnConfig.Type type) {
+    private String setEmptyExceptionMessage(Type type) {
         StringBuilder messageException = new StringBuilder();
         messageException.append("Target Router is NULL or empty\n");
         messageException.append("VRF ID is NULL or empty\n");
@@ -79,7 +81,7 @@ public class AnsiblePlaybookVpnConfigTest {
         messageException.append("Interface VLAN is NULL or empty\n");
         messageException.append("BGP Local IP is NULL or empty\n");
         messageException.append("BGP Local CIDR is NULL or empty\n");
-        if (type.equals(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE)) {
+        if (type.equals(Type.CLOUD_SIDE)) {
             messageException.append("Policy Community Options is NULL or empty\n");
             messageException.append("Policy Statement Connected is NULL or empty\n");
             messageException.append("Policy Statement Import is NULL or empty\n");
@@ -89,8 +91,8 @@ public class AnsiblePlaybookVpnConfigTest {
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    private String setTooLongExceptionMessage(AnsiblePlaybookVpnConfig.Type type) {
-        int max = AnsiblePlaybookVpnConfig.MAX_PROPERTY_LENGTH;
+    private String setTooLongExceptionMessage(Type type) {
+        int max = MAX_PROPERTY_LENGTH;
         StringBuilder messageException = new StringBuilder();
         messageException.append("Target Router is too long (max ").append(max).append(" characters)\n");
         messageException.append("VRF ID is too long (max ").append(max).append(" characters)\n");
@@ -105,7 +107,7 @@ public class AnsiblePlaybookVpnConfigTest {
         messageException.append("Interface VLAN is too long (max ").append(max).append(" characters)\n");
         messageException.append("BGP Local IP is too long (max ").append(max).append(" characters)\n");
         messageException.append("BGP Local CIDR is too long (max ").append(max).append(" characters)\n");
-        if (type.equals(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE)) {
+        if (type.equals(Type.CLOUD_SIDE)) {
             messageException.append("Policy Community Options is too long (max ").append(max).append(" characters)\n");
             messageException.append("Policy Statement Connected is too long (max ").append(max).append(" characters)\n");
             messageException.append("Policy Statement Import is too long (max ").append(max).append(" characters)\n");
@@ -114,7 +116,7 @@ public class AnsiblePlaybookVpnConfigTest {
         return messageException.toString();
     }
 
-    private AnsiblePlaybookVpnConfig setTooLongValuesToVpnConfig(AnsiblePlaybookVpnConfig.Type type) {
+    private AnsiblePlaybookVpnConfig setTooLongValuesToVpnConfig(Type type) {
         AnsiblePlaybookVpnConfig customerVpnConig = new AnsiblePlaybookVpnConfig(type);
         customerVpnConig.setTargetRouter(TOO_LONG_VALUE);
         customerVpnConig.setVrfId(TOO_LONG_VALUE);
@@ -129,7 +131,7 @@ public class AnsiblePlaybookVpnConfigTest {
         customerVpnConig.setInterfaceVlan(TOO_LONG_VALUE);
         customerVpnConig.setBgpLocalIp(TOO_LONG_VALUE);
         customerVpnConig.setBgpLocalCidr(TOO_LONG_VALUE);
-        if (type.equals(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE)) {
+        if (type.equals(Type.CLOUD_SIDE)) {
             customerVpnConig.setPolicyCommunityOptions(TOO_LONG_VALUE);
             customerVpnConig.setPolicyStatementConnected(TOO_LONG_VALUE);
             customerVpnConig.setPolicyStatementImport(TOO_LONG_VALUE);
