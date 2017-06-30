@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,6 +32,7 @@ public class AppLifecycleManagerRestController {
      * @param applicationId identifier of the application
      * @return unique identifier of the application deployment
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "",
             params = {"clientid", "applicationid"},
             method = RequestMethod.POST)
@@ -48,6 +50,7 @@ public class AppLifecycleManagerRestController {
      * @param configuration initial application configuration provided by the user/client
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/{deploymentId}",
             method = RequestMethod.POST,
             consumes = "application/json")
@@ -64,6 +67,7 @@ public class AppLifecycleManagerRestController {
      * @param deploymentId unique identifier of the application deployment
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/{deploymentId}",
             method = RequestMethod.DELETE)
     @ResponseStatus(code = HttpStatus.OK)

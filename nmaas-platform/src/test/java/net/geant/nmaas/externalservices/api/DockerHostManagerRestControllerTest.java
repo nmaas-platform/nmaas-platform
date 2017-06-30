@@ -2,10 +2,11 @@ package net.geant.nmaas.externalservices.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.api.DockerHostManagerRestController;
+import net.geant.nmaas.externalservices.api.model.DockerHostDetails;
+import net.geant.nmaas.externalservices.api.model.DockerHostMapper;
+import net.geant.nmaas.externalservices.api.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.repositories.DockerHostRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +62,7 @@ public class DockerHostManagerRestControllerTest {
         int sizeBefore = dockerHostRepositoryManager.loadAll().size();
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(NEW_DOCKER_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(NEW_DOCKER_HOST_NAME))))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         assertEquals(sizeBefore + 1, dockerHostRepositoryManager.loadAll().size());
@@ -74,7 +75,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldNotAddExistingDockerHost() throws Exception {
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(FOURTH_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(FOURTH_HOST_NAME))))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
     }
@@ -90,7 +91,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldUpdateDockerHost() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", THIRD_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(THIRD_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(THIRD_HOST_NAME))))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -99,7 +100,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldNotUpdateNotExistingDockerHost() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(WRONG_DOCKER_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(WRONG_DOCKER_HOST_NAME))))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -108,7 +109,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldNotUpdateDockerHostWithWrongName() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", THIRD_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewDockerHost(WRONG_DOCKER_HOST_NAME)))
+                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(WRONG_DOCKER_HOST_NAME))))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());
     }
@@ -121,9 +122,9 @@ public class DockerHostManagerRestControllerTest {
         //noinspection unchecked
         assertEquals(
                 dockerHostRepositoryManager.loadAll().size(),
-                ((List<DockerHost>) new ObjectMapper().readValue(
+                ((List<DockerHostView>) new ObjectMapper().readValue(
                         result.getResponse().getContentAsString(),
-                        new TypeReference<List<DockerHost>>() {})).size());
+                        new TypeReference<List<DockerHostView>>() {})).size());
     }
 
     @Test
@@ -133,9 +134,9 @@ public class DockerHostManagerRestControllerTest {
                 .andReturn();
         assertEquals(
                 "GN4-DOCKER-1",
-                ((DockerHost) new ObjectMapper().readValue(
+                ((DockerHostDetails) new ObjectMapper().readValue(
                 result.getResponse().getContentAsString(),
-                new TypeReference<DockerHost>() {})).getName());
+                new TypeReference<DockerHostDetails>() {})).getName());
     }
 
     @Test
@@ -151,9 +152,9 @@ public class DockerHostManagerRestControllerTest {
                 .andReturn();
         assertEquals(
                 "GN4-DOCKER-1",
-                ((DockerHost) new ObjectMapper().readValue(
+                ((DockerHostDetails) new ObjectMapper().readValue(
                         result.getResponse().getContentAsString(),
-                        new TypeReference<DockerHost>() {})).getName());
+                        new TypeReference<DockerHostDetails>() {})).getName());
     }
 
     private DockerHost initNewDockerHost(String dockerHostName) throws UnknownHostException {
