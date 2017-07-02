@@ -13,10 +13,10 @@ public class ConfigTemplate implements Serializable {
 
 	@Basic(fetch=FetchType.EAGER)
 	@Lob
-	String template;
+	@Column(nullable = false)
+	private String template;
 
 	protected ConfigTemplate() {
-		
 	}
 	
 	public ConfigTemplate(String template) {
