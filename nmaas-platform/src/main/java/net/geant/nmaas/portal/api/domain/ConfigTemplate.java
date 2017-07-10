@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.domain;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,7 +18,6 @@ public class ConfigTemplate {
 	@JsonRawValue
 	String template;
 
-	//@JsonGetter("template")
 	public String getTemplate() {
 		return template;
 	}
@@ -28,9 +26,8 @@ public class ConfigTemplate {
 		this.template = template;
 	}
 
-	
 	@JsonSetter("template")
-	public void setTemplate(JsonNode json) {
+	public void setRawTemplate(JsonNode json) {
 		this.template = json.toString();
 	}
 	
