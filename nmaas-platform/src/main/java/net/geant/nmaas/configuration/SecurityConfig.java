@@ -38,7 +38,7 @@ import javax.servlet.Filter;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	private final static String SSL_ENABLED="server.ssl.enabled";
+	private final static String SSL_ENABLED = "server.ssl.enabled";
 	
 	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
 	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/signup";
@@ -48,17 +48,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
     private static final String ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME = "api.client.ansible.username";
     private static final String ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.ansible.password";
-    private static final String NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME = "api.client.nmaas.test.username";
-    private static final String NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.nmaas.test.password";
 	private static final String NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "api.client.config.download.username";
 	private static final String NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "api.client.config.download.password";
 
 	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
-	private static final String AUTH_ROLE_NMAAS_TEST_CLIENT = "NMAAS_TEST_CLIENT";
 	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
 
 	@Autowired
-	TokenAuthenticationService tokenAuthenticationService;
+	private TokenAuthenticationService tokenAuthenticationService;
 	
 	@Autowired
 	private Environment env;
@@ -69,10 +66,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT)
-				.and()
-				.withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.and()
 				.withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
@@ -94,8 +87,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.authorizeRequests()
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
-	            .antMatchers("/platform/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
-	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 				.antMatchers("/platform/api/dockercompose/files/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 	            .and().httpBasic()
@@ -120,14 +111,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(
 								new AntPathRequestMatcher[] { 
-										new AntPathRequestMatcher(AUTH_BASIC_LOGIN), 
+										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
-										new AntPathRequestMatcher("/platform/api/dcns/notifications/**"),
-										new AntPathRequestMatcher("/platform/api/dcns/**"),
-										new AntPathRequestMatcher("/platform/api/services/**"),
+										new AntPathRequestMatcher("/platform/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/platform/api/configs/**"),
 										new AntPathRequestMatcher("/platform/api/dockercompose/files/**")
 								}),

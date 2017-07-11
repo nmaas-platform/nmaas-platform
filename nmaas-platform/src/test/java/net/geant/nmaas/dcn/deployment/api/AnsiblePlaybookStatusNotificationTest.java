@@ -1,7 +1,8 @@
-package net.geant.nmaas.dcn.deployment;
+package net.geant.nmaas.dcn.deployment.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.dcn.deployment.*;
 import net.geant.nmaas.dcn.deployment.api.AnsibleNotificationRestController;
 import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
@@ -23,6 +24,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +75,7 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Test
     public void testAnsiblePlaybookStatusApiUpdate() throws Exception {
         assertThat(dcnRepositoryManager.loadCurrentState(clientId), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(clientId.value()))
+        mvc.perform(MockMvcRequestBuilders.post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(clientId.value()))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))

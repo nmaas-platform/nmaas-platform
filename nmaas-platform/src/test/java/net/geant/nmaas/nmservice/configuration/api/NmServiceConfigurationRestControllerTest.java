@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.configuration;
+package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
@@ -56,6 +56,13 @@ public class NmServiceConfigurationRestControllerTest {
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + TEST_OXIDIZED_CONFIG_FIRST_FILENAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
                 .andExpect(content().bytes(configFileBytes));
+    }
+
+    @Test
+    public void shouldForbidDownload() throws Exception {
+        mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
+                .with(httpBasic("testClient", "testPassword")))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
