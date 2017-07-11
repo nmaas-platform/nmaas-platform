@@ -1,3 +1,15 @@
+0.2.0 (2017/07/11)
+
+	* Containerized application deployment using Docker Compose.
+	[New Feature] [NMAAS-116] [nmaas-platform]
+
+	Implemented support for Docker container deployment with dedicated network setup on the Docker Host using Docker Compose tool.
+
+	* Support for LibreNMS application.
+	[New Feature] [NMAAS-86] [nmaas-platform]
+
+	Implemented support for complete LibreNMS application deployment workflow using Docker Compose.
+
 0.1.0 (2017/06/13)
 
 	* Project setup.
