@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.log4j.LogManager;
@@ -27,9 +28,10 @@ public class NmServiceConfigDownloadRestController {
 
     @RequestMapping(value = "/{configId}", method = RequestMethod.GET)
     public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)
-            throws NmServiceConfigurationRepository.ConfigurationNotFoundException, IOException {
+            throws ConfigurationNotFoundException, IOException {
         log.info("Received configuration download request (configId -> " + configId + ")");
-        final NmServiceConfiguration configuration = configurations.loadConfig(configId);
+        final NmServiceConfiguration configuration
+                = configurations.findByConfigId(configId).orElseThrow(() -> new ConfigurationNotFoundException(configId));
         response.setCharacterEncoding("UTF-8");
         response.addHeader("Content-disposition", "attachment;filename=" + configuration.getConfigFileName());
         response.setContentType("application/octet-stream");
@@ -37,9 +39,9 @@ public class NmServiceConfigDownloadRestController {
         response.flushBuffer();
     }
 
-    @ExceptionHandler(NmServiceConfigurationRepository.ConfigurationNotFoundException.class)
+    @ExceptionHandler(ConfigurationNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleConfigurationNotFoundException(NmServiceConfigurationRepository.ConfigurationNotFoundException ex) {
+    public String handleConfigurationNotFoundException(ConfigurationNotFoundException ex) {
         log.warn("Requested configuration file not found -> " + ex.getMessage());
         return ex.getMessage();
     }

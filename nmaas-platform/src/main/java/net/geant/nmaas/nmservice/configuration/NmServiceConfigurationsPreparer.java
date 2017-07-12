@@ -3,8 +3,8 @@ package net.geant.nmaas.nmservice.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
@@ -53,7 +53,7 @@ class NmServiceConfigurationsPreparer {
         List<String> configurationsIdentifiers = new ArrayList<>();
         for (Template template : loadConfigTemplatesForApplication(applicationId)) {
             String configId = generateConfigId(configurations);
-            storeConfigurationInRepository(configId, buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel));
+            storeConfigurationInRepository(buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel));
             configurationsIdentifiers.add(configId);
         }
         return configurationsIdentifiers;
@@ -79,8 +79,8 @@ class NmServiceConfigurationsPreparer {
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }
 
-    void storeConfigurationInRepository(String configId, NmServiceConfiguration configuration) {
-        configurations.storeConfig(configId, configuration);
+    private void storeConfigurationInRepository(NmServiceConfiguration configuration) {
+        configurations.save(configuration);
     }
 
     NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model)

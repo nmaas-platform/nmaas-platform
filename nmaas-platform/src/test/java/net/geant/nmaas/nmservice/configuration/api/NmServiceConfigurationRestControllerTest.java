@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class NmServiceConfigurationRestControllerTest {
     private Filter springSecurityFilterChain;
 
     @Autowired
-    private NmServiceConfigurationRepository configurationRepository;
+    private NmServiceConfigurationRepository configurations;
 
     private MockMvc mvc;
 
@@ -49,7 +49,7 @@ public class NmServiceConfigurationRestControllerTest {
         byte[] configFileBytes = new byte[]{1,2,3,4,5};
         NmServiceConfiguration configuration
                 = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileBytes);
-        configurationRepository.storeConfig(TEST_OXIDIZED_CONFIG_FIRST_ID, configuration);
+        configurations.save(configuration);
         mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
                 .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
                 .andExpect(status().isOk())

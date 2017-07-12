@@ -16,7 +16,7 @@ class SimpleNmServiceConfigurationHelper {
         String generatedConfigId;
         do {
             generatedConfigId = UUID.randomUUID().toString();
-        } while(configurations.isConfigStored(generatedConfigId));
+        } while(configurations.findByConfigId(generatedConfigId).isPresent());
         return generatedConfigId;
     }
 

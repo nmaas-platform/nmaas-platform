@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/platform/api/management/configs")
-public class NmServiceConfigAdminRestController {
+public class NmServiceConfigTemplateAdminRestController {
 
 
 
