@@ -14,7 +14,7 @@ public class NmServiceConfiguration {
     @Column(name="id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String configId;
 
     @Column(nullable = false)
@@ -22,7 +22,7 @@ public class NmServiceConfiguration {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    @Column(name = "configFileContent", nullable = false)
+    @Column(nullable = false)
     private byte[] configFileContent;
 
     public NmServiceConfiguration() { }

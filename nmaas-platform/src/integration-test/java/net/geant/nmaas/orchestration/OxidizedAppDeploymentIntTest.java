@@ -11,6 +11,8 @@ import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
 import net.geant.nmaas.helpers.NetworkAttachPointsInit;
 import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
+import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
@@ -55,6 +57,8 @@ public class OxidizedAppDeploymentIntTest {
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private ApplicationRepository applicationRepository;
+    @Autowired
+    private NmServiceConfigurationTemplatesRepository templatesRepository;
 
     @MockBean
     private DockerApiClient dockerApiClient;
@@ -76,6 +80,7 @@ public class OxidizedAppDeploymentIntTest {
     public void setup() throws DockerException, InterruptedException {
         clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
         storeOxidizedApp();
+        storeOxidizedConfigurationTemplates();
         DockerApiClientMockInit.mockMethods(dockerApiClient);
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         NetworkAttachPointsInit.initDockerHostAttachPoints(dockerHostAttachPointRepository);
@@ -88,6 +93,8 @@ public class OxidizedAppDeploymentIntTest {
         DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
         NetworkAttachPointsInit.cleanDockerHostAttachPoints(dockerHostAttachPointRepository);
         NetworkAttachPointsInit.cleanBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
+        applicationRepository.deleteAll();
+        templatesRepository.deleteAll();
     }
 
     @Test
@@ -124,6 +131,19 @@ public class OxidizedAppDeploymentIntTest {
                     "\"ipAddress\": \"2.2.2.2\"" +
                 "}]" +
                 "}";
+    }
+
+    private void storeOxidizedConfigurationTemplates() {
+        NmServiceConfigurationTemplate oxidizedConfigTemplate1 = new NmServiceConfigurationTemplate();
+        oxidizedConfigTemplate1.setApplicationId(testAppId);
+        oxidizedConfigTemplate1.setConfigFileName("config");
+        oxidizedConfigTemplate1.setConfigFileTemplateContent("");
+        templatesRepository.save(oxidizedConfigTemplate1);
+        NmServiceConfigurationTemplate oxidizedConfigTemplate2 = new NmServiceConfigurationTemplate();
+        oxidizedConfigTemplate2.setApplicationId(testAppId);
+        oxidizedConfigTemplate2.setConfigFileName("router.db");
+        oxidizedConfigTemplate2.setConfigFileTemplateContent("");
+        templatesRepository.save(oxidizedConfigTemplate2);
     }
 
     private void waitAndVerifyDeploymentEnvironmentPrepared(Identifier deploymentId) throws InvalidDeploymentIdException, InterruptedException {

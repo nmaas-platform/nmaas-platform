@@ -2,8 +2,8 @@ package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
@@ -15,11 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository.DEFAULT_TEMPLATE_FILE_NAME_SUFFIX;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -29,9 +32,7 @@ import static org.hamcrest.Matchers.*;
 public class NmServiceConfigurationLibreNmsTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
-    private static final String TEST_TEMPLATE_NAME = "addhosts.cfg-template";
-    private static final String LIBRENMS_APP_NAME = "LibreNMS";
-    private static final String LIBRENMS_APP_VERSION = "1.0";
+    private static final String TEST_TEMPLATE_NAME = "addhosts.cfg";
 
     @Autowired
     private NmServiceConfigurationTemplatesRepository templatesRepository;
@@ -42,34 +43,35 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
     @Autowired
     private ApplicationRepository applicationRepository;
 
-    private Long testAppId;
+    private Long librenmsAppId;
 
     @Before
     public void setup() {
-        Application app = new Application(LIBRENMS_APP_NAME);
-        app.setVersion(LIBRENMS_APP_VERSION);
-        testAppId = applicationRepository.save(app).getId();
+        Application app = new Application("librenmsAppName");
+        app.setVersion("librenmsAppVersion");
+        librenmsAppId = applicationRepository.save(app).getId();
+        NmServiceConfigurationTemplate librenmsConfigTemplate1 = new NmServiceConfigurationTemplate();
+        librenmsConfigTemplate1.setApplicationId(librenmsAppId);
+        librenmsConfigTemplate1.setConfigFileName("addhosts.cfg");
+        librenmsConfigTemplate1.setConfigFileTemplateContent("<#list targets as target>\\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\\n</#list>");
+        templatesRepository.save(librenmsConfigTemplate1);
     }
 
     @Test
-    public void shouldPopulateAndPrintConfigurationFile() throws Exception {
-        Identifier libreNmsIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(LIBRENMS_APP_NAME).get(0).getId()));
-        List<Template> templates = templatesRepository.loadTemplates(libreNmsIdentifier);
+    public void shouldLoadLibrenmsTemplatesFromRepository() throws Exception {
+        List<NmServiceConfigurationTemplate> templates = templatesRepository.findAllByApplicationId(librenmsAppId);
         assertThat(templates.size(), equalTo(1));
-        assertThat(templates.get(0).getName(), endsWith(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX));
-        assertThat(SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName(templates.get(0).getName()),
-                not(containsString(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX)));
+        assertThat(templates.get(0).getConfigFileName(), equalTo(TEST_TEMPLATE_NAME));
     }
 
     @Test
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
-        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(LIBRENMS_APP_NAME).get(0).getId()));
-        List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
-        Optional<Template> tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME)).findFirst();
+        List<NmServiceConfigurationTemplate> nmServiceConfigurationTemplates = templatesRepository.findAllByApplicationId(librenmsAppId);
+        Template template = configurationsPreparer.convertToTemplate(nmServiceConfigurationTemplates.get(0));
         NmServiceConfiguration nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
                         TEST_CONFIG_ID_1,
-                        tut.orElseThrow(() -> new Exception()),
+                        template,
                         testLibreNmsDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("addhosts.cfg"));
         assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
@@ -78,7 +80,8 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
 
     @After
     public void removeTestAppFromDatabase() {
-        applicationRepository.delete(testAppId);
+        applicationRepository.deleteAll();
+        templatesRepository.deleteAll();
     }
 
     private Map<String, Object> testLibreNmsDefaultConfigurationInputModel() {
