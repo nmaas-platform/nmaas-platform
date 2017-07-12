@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.api.AnsibleNotificationRestController;
-import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 
 /**
  * Defines a method to be used by {@link AnsibleNotificationRestController} upon reception of a Ansible playbook

@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcn.deployment.api;
 
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookExecutionStateListener;
+import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
