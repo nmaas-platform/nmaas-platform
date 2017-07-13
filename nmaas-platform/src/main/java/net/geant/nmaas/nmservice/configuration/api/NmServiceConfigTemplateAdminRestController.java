@@ -24,7 +24,7 @@ public class NmServiceConfigTemplateAdminRestController {
      * Lists all {@link NmServiceConfigurationTemplate} stored in repository.
      * @return list of {@link NmServiceConfigurationTemplate} objects
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
     @RequestMapping(
             value = "",
             method = RequestMethod.GET)
@@ -36,7 +36,7 @@ public class NmServiceConfigTemplateAdminRestController {
      * Stores new {@link NmServiceConfigurationTemplate} in repository.
      * @param configurationTemplate template to be stored
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
     @RequestMapping(
             value = "",
             method = RequestMethod.POST,
