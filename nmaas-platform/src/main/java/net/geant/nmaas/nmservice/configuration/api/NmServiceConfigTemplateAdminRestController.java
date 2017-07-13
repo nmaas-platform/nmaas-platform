@@ -4,7 +4,6 @@ import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTe
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,12 +44,6 @@ public class NmServiceConfigTemplateAdminRestController {
     public void addConfigurationTemplate(
             @RequestBody NmServiceConfigurationTemplate configurationTemplate) {
         templates.save(configurationTemplate);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String handleAccessDeniedException(AccessDeniedException ex) {
-        return ex.getMessage();
     }
 
 }

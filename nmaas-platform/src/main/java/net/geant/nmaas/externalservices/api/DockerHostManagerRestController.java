@@ -152,9 +152,4 @@ public class DockerHostManagerRestController {
         return ex.getMessage();
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String handleAccessDeniedException(AccessDeniedException ex) {
-        return ex.getMessage();
-    }
 }

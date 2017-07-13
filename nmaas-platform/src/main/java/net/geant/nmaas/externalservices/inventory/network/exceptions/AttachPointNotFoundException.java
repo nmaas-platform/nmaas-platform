@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.network.expceptions;
+package net.geant.nmaas.externalservices.inventory.network.exceptions;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

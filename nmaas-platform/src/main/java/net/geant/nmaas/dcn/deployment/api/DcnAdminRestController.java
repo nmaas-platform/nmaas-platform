@@ -3,10 +3,10 @@ package net.geant.nmaas.dcn.deployment.api;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.DcnView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,16 +29,10 @@ public class DcnAdminRestController {
     @RequestMapping(
             value = "",
             method = RequestMethod.GET)
-    public List<DcnView> listAllDockerHosts() {
+    public List<DcnView> listAllDcns() {
         return dcnRepositoryManager.loadAllNetworks().stream()
                 .map(dcn -> new DcnView(dcn))
                 .collect(Collectors.toList());
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String handleAccessDeniedException(AccessDeniedException ex) {
-        return ex.getMessage();
     }
 
 }
