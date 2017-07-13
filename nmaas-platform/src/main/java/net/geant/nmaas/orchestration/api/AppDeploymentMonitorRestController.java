@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration.api;
 
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -8,9 +9,9 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +31,12 @@ public class AppDeploymentMonitorRestController {
 
     private AppDeploymentMonitor deploymentMonitor;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public AppDeploymentMonitorRestController(AppDeploymentMonitor deploymentMonitor) {
+    public AppDeploymentMonitorRestController(AppDeploymentMonitor deploymentMonitor, ModelMapper modelMapper) {
         this.deploymentMonitor = deploymentMonitor;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -44,12 +48,12 @@ public class AppDeploymentMonitorRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<AppDeploymentView> listAllDeployments() {
         return deploymentMonitor.allDeployments().stream()
-                .map(d -> new AppDeploymentView(d))
+                .map(d -> modelMapper.map(d, AppDeploymentView.class))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Returns currents state of particular deployment.
+     * Returns current state of particular deployment.
      *
      * @param deploymentId application deployment identifier
      * @return current deployment state
@@ -87,13 +91,6 @@ public class AppDeploymentMonitorRestController {
     @ExceptionHandler(InvalidAppStateException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public String handleInvalidAppStateException(InvalidAppStateException ex) {
-        log.warn("Requested deployment in invalid state -> " + ex.getMessage());
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("Requested deployment in invalid state -> " + ex.getMessage());
         return ex.getMessage();
     }

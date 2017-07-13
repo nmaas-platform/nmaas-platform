@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.api;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -10,6 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +41,9 @@ public class OrchestratorMonitorRestControllerTest {
     @Mock
     private AppDeploymentMonitor deploymentMonitor;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     private MockMvc mvc;
 
     private Identifier deploymentId;
@@ -56,7 +62,7 @@ public class OrchestratorMonitorRestControllerTest {
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails("http://testurl:8080");
-        mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
     }
 
     @Test
@@ -108,5 +114,18 @@ public class OrchestratorMonitorRestControllerTest {
         when(deploymentMonitor.userAccessDetails(deploymentId)).thenThrow(new InvalidAppStateException(""));
         mvc.perform(get("/platform/api/orchestration/deployments/{deploymentId}/access", deploymentId.toString()))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void shouldMapAppDeploymentToAppDeploymentView() {
+        AppDeployment source = new AppDeployment(
+                Identifier.newInstance("deploymentId"),
+                Identifier.newInstance("1"),
+                Identifier.newInstance("2"));
+        AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);
+        assertThat(output.getDeploymentId(), equalTo(source.getDeploymentId().value()));
+        assertThat(output.getClientId(), equalTo(source.getClientId().value()));
+        assertThat(output.getApplicationId(), equalTo(source.getApplicationId().value()));
+        assertThat(output.getState(), equalTo(source.getState().name()));
     }
 }

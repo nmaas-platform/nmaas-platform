@@ -1,6 +1,4 @@
-package net.geant.nmaas.orchestration.api;
-
-import net.geant.nmaas.orchestration.entities.AppDeployment;
+package net.geant.nmaas.orchestration.api.model;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -14,11 +12,11 @@ public class AppDeploymentView {
 
     public AppDeploymentView() {}
 
-    public AppDeploymentView(AppDeployment appDeployment) {
-        this.deploymentId = appDeployment.getDeploymentId().value();
-        this.clientId = appDeployment.getClientId().value();
-        this.applicationId = appDeployment.getApplicationId().value();
-        this.state = appDeployment.getState().name();
+    public AppDeploymentView(String deploymentId, String clientId, String applicationId, String state) {
+        this.deploymentId = deploymentId;
+        this.clientId = clientId;
+        this.applicationId = applicationId;
+        this.state = state;
     }
 
     public String getDeploymentId() {
