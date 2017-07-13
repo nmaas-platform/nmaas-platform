@@ -8,15 +8,15 @@ import java.net.InetAddress;
 public class DockerHostView {
 
     private String name;
-    private InetAddress apiIpAddress;
+    private String apiIpAddress;
     private Integer apiPort;
-    private InetAddress publicIpAddress;
+    private String publicIpAddress;
     private boolean preferred;
 
     public DockerHostView() {
     }
 
-    public DockerHostView(String name, InetAddress apiIpAddress, Integer apiPort, InetAddress publicIpAddress, boolean preferred) {
+    public DockerHostView(String name, String apiIpAddress, Integer apiPort, String publicIpAddress, boolean preferred) {
         this.name = name;
         this.apiIpAddress = apiIpAddress;
         this.apiPort = apiPort;
@@ -32,11 +32,11 @@ public class DockerHostView {
         this.name = name;
     }
 
-    public InetAddress getApiIpAddress() {
+    public String getApiIpAddress() {
         return apiIpAddress;
     }
 
-    public void setApiIpAddress(InetAddress apiIpAddress) {
+    public void setApiIpAddress(String apiIpAddress) {
         this.apiIpAddress = apiIpAddress;
     }
 
@@ -48,11 +48,11 @@ public class DockerHostView {
         this.apiPort = apiPort;
     }
 
-    public InetAddress getPublicIpAddress() {
+    public String getPublicIpAddress() {
         return publicIpAddress;
     }
 
-    public void setPublicIpAddress(InetAddress publicIpAddress) {
+    public void setPublicIpAddress(String publicIpAddress) {
         this.publicIpAddress = publicIpAddress;
     }
 

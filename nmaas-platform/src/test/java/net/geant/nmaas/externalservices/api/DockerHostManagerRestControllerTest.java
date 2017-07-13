@@ -3,7 +3,6 @@ package net.geant.nmaas.externalservices.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.model.DockerHostDetails;
-import net.geant.nmaas.externalservices.api.model.DockerHostMapper;
 import net.geant.nmaas.externalservices.api.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
@@ -12,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -24,7 +24,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,12 +46,15 @@ public class DockerHostManagerRestControllerTest {
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     private MockMvc mvc;
 
     @Before
     public void init() {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
-        mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerRestController(dockerHostRepositoryManager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerRestController(dockerHostRepositoryManager, modelMapper)).build();
     }
 
     @After
@@ -62,7 +67,7 @@ public class DockerHostManagerRestControllerTest {
         int sizeBefore = dockerHostRepositoryManager.loadAll().size();
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(NEW_DOCKER_HOST_NAME))))
+                .content(new ObjectMapper().writeValueAsString(modelMapper.map(initNewDockerHost(NEW_DOCKER_HOST_NAME), DockerHostDetails.class)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         assertEquals(sizeBefore + 1, dockerHostRepositoryManager.loadAll().size());
@@ -75,7 +80,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldNotAddExistingDockerHost() throws Exception {
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(FOURTH_HOST_NAME))))
+                .content(new ObjectMapper().writeValueAsString(modelMapper.map(initNewDockerHost(FOURTH_HOST_NAME), DockerHostDetails.class)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
     }
@@ -91,7 +96,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldUpdateDockerHost() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", THIRD_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(THIRD_HOST_NAME))))
+                .content(new ObjectMapper().writeValueAsString(modelMapper.map(initNewDockerHost(THIRD_HOST_NAME), DockerHostDetails.class)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -100,7 +105,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldNotUpdateNotExistingDockerHost() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", WRONG_DOCKER_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(WRONG_DOCKER_HOST_NAME))))
+                .content(new ObjectMapper().writeValueAsString(modelMapper.map(initNewDockerHost(WRONG_DOCKER_HOST_NAME), DockerHostDetails.class)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -109,7 +114,7 @@ public class DockerHostManagerRestControllerTest {
     public void shouldNotUpdateDockerHostWithWrongName() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{name}", THIRD_HOST_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(DockerHostMapper.toDetails(initNewDockerHost(WRONG_DOCKER_HOST_NAME))))
+                .content(new ObjectMapper().writeValueAsString(modelMapper.map(initNewDockerHost(WRONG_DOCKER_HOST_NAME), DockerHostDetails.class)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());
     }
@@ -155,6 +160,58 @@ public class DockerHostManagerRestControllerTest {
                 ((DockerHostDetails) new ObjectMapper().readValue(
                         result.getResponse().getContentAsString(),
                         new TypeReference<DockerHostDetails>() {})).getName());
+    }
+
+    @Test
+    public void shouldMapDockerHostToDockerHostDetails() throws UnknownHostException {
+        DockerHost source = initNewDockerHost("DH1");
+        DockerHostDetails output = modelMapper.map(source, DockerHostDetails.class);
+        assertThat(output.getName(), equalTo(source.getName()));
+        assertThat(output.getPublicIpAddress(), equalTo(source.getPublicIpAddress().getHostAddress()));
+        assertThat(output.getAccessInterfaceName(), equalTo(source.getAccessInterfaceName()));
+        assertThat(output.getDataInterfaceName(), equalTo(source.getDataInterfaceName()));
+        assertThat(output.getApiIpAddress(), equalTo(source.getApiIpAddress().getHostAddress()));
+        assertThat(output.getApiPort(), equalTo(source.getApiPort()));
+        assertThat(output.getBaseDataNetworkAddress(), equalTo(source.getBaseDataNetworkAddress().getHostAddress()));
+        assertThat(output.getVolumesPath(), equalTo(source.getVolumesPath()));
+        assertThat(output.getWorkingPath(), equalTo(source.getWorkingPath()));
+        assertThat(output.isPreferred(), equalTo(source.isPreferred()));
+    }
+
+    @Test
+    public void shouldMapDockerHostDetailsToDockerHost() throws UnknownHostException {
+        DockerHostDetails source = new DockerHostDetails(
+                "DH1",
+                "192.168.0.1",
+                9999,
+                "192.168.0.1",
+                "eth0",
+                "eth1",
+                "192.168.1.1",
+                "/home/mgmt/scripts",
+                "/home/mgmt/volumes",
+                false);
+        DockerHost output = modelMapper.map(source, DockerHost.class);
+        assertThat(output.getName(), equalTo(source.getName()));
+        assertThat(output.getPublicIpAddress(), equalTo(InetAddress.getByName(source.getPublicIpAddress())));
+        assertThat(output.getAccessInterfaceName(), equalTo(source.getAccessInterfaceName()));
+        assertThat(output.getDataInterfaceName(), equalTo(source.getDataInterfaceName()));
+        assertThat(output.getApiIpAddress(), equalTo(InetAddress.getByName(source.getApiIpAddress())));
+        assertThat(output.getApiPort(), equalTo(source.getApiPort()));
+        assertThat(output.getBaseDataNetworkAddress(), equalTo(InetAddress.getByName(source.getBaseDataNetworkAddress())));
+        assertThat(output.getVolumesPath(), equalTo(source.getVolumesPath()));
+        assertThat(output.getWorkingPath(), equalTo(source.getWorkingPath()));
+        assertThat(output.isPreferred(), equalTo(source.isPreferred()));
+    }
+
+    @Test
+    public void shouldMapDockerHostToDockerHostView() throws UnknownHostException {
+        DockerHost source = initNewDockerHost("DH1");
+        DockerHostView output = modelMapper.map(source, DockerHostView.class);
+        assertThat(output.getName(), equalTo(source.getName()));
+        assertThat(output.getPublicIpAddress(), equalTo(source.getPublicIpAddress().getHostAddress()));
+        assertThat(output.getApiIpAddress(), equalTo(source.getApiIpAddress().getHostAddress()));
+        assertThat(output.getApiPort(), equalTo(source.getApiPort()));
     }
 
     private DockerHost initNewDockerHost(String dockerHostName) throws UnknownHostException {

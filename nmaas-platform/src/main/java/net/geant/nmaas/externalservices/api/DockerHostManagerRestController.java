@@ -1,13 +1,13 @@
 package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.api.model.DockerHostDetails;
-import net.geant.nmaas.externalservices.api.model.DockerHostMapper;
 import net.geant.nmaas.externalservices.api.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,9 +28,12 @@ public class DockerHostManagerRestController {
 
     private DockerHostRepositoryManager dockerHostRepositoryManager;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public DockerHostManagerRestController(DockerHostRepositoryManager dockerHostRepositoryManager) {
+    public DockerHostManagerRestController(DockerHostRepositoryManager dockerHostRepositoryManager, ModelMapper modelMapper) {
         this.dockerHostRepositoryManager = dockerHostRepositoryManager;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -43,7 +46,7 @@ public class DockerHostManagerRestController {
             method = RequestMethod.GET)
     public List<DockerHostView> listAllDockerHosts() {
         return dockerHostRepositoryManager.loadAll().stream()
-                .map(dockerHost -> DockerHostMapper.toView(dockerHost))
+                .map(dockerHost -> modelMapper.map(dockerHost, DockerHostView.class))
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +55,6 @@ public class DockerHostManagerRestController {
      * @param name Unique {@link DockerHost} name
      * @return {@link DockerHostDetails} instance
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
-     * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(
@@ -60,8 +62,8 @@ public class DockerHostManagerRestController {
             method = RequestMethod.GET)
     public DockerHostDetails getDockerHost(
             @PathVariable("name") String name)
-            throws DockerHostNotFoundException, DockerHostInvalidException {
-        return DockerHostMapper.toDetails(dockerHostRepositoryManager.loadByName(name));
+            throws DockerHostNotFoundException {
+        return modelMapper.map(dockerHostRepositoryManager.loadByName(name), DockerHostDetails.class);
     }
 
     /**
@@ -75,7 +77,7 @@ public class DockerHostManagerRestController {
             method = RequestMethod.GET)
     public DockerHostDetails getPreferredDockerHost()
             throws DockerHostNotFoundException {
-        return DockerHostMapper.toDetails(dockerHostRepositoryManager.loadPreferredDockerHost());
+        return modelMapper.map(dockerHostRepositoryManager.loadPreferredDockerHost(), DockerHostDetails.class);
     }
 
     /**
@@ -83,7 +85,6 @@ public class DockerHostManagerRestController {
      * @param newDockerHost new {@link DockerHostDetails} data
      * @throws DockerHostAlreadyExistsException when Docker host exists (HttpStatus.CONFLICT)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
-     * @throws DockerHostMapper.MapperException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(
@@ -92,8 +93,8 @@ public class DockerHostManagerRestController {
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addDockerHost(
-            @RequestBody DockerHostDetails newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostMapper.MapperException {
-        dockerHostRepositoryManager.addDockerHost(DockerHostMapper.fromDetails(newDockerHost));
+            @RequestBody DockerHostDetails newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException {
+        dockerHostRepositoryManager.addDockerHost(modelMapper.map(newDockerHost, DockerHost.class));
     }
 
     /**
@@ -102,7 +103,6 @@ public class DockerHostManagerRestController {
      * @param dockerHost {@link DockerHost} instance pass to update
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
-     * @throws DockerHostMapper.MapperException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(
@@ -113,8 +113,8 @@ public class DockerHostManagerRestController {
     public void updateDockerHost(
             @PathVariable("name") String name,
             @RequestBody DockerHostDetails dockerHost)
-            throws DockerHostNotFoundException, DockerHostInvalidException, DockerHostMapper.MapperException {
-        dockerHostRepositoryManager.updateDockerHost(name, DockerHostMapper.fromDetails(dockerHost));
+            throws DockerHostNotFoundException, DockerHostInvalidException {
+        dockerHostRepositoryManager.updateDockerHost(name, modelMapper.map(dockerHost, DockerHost.class));
     }
 
     /**
@@ -143,12 +143,6 @@ public class DockerHostManagerRestController {
     @ExceptionHandler(DockerHostInvalidException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public String handleDockerHostInvalidException(DockerHostInvalidException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(DockerHostMapper.MapperException.class)
-    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public String handleDockerHostMapperException(DockerHostMapper.MapperException ex) {
         return ex.getMessage();
     }
 
