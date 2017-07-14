@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import freemarker.template.Template;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;

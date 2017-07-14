@@ -12,7 +12,7 @@ import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
 import net.geant.nmaas.helpers.NetworkAttachPointsInit;
 import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;

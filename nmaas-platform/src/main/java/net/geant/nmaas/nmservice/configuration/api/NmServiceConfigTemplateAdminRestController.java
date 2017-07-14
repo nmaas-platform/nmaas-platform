@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

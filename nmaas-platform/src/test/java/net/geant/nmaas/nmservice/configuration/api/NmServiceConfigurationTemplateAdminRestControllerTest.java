@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.After;

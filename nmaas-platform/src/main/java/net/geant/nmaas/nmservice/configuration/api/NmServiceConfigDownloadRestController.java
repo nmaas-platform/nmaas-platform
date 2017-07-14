@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigurationNotFoundException;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationRepository;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
