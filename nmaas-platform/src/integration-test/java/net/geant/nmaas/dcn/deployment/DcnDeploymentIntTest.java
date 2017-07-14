@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import com.spotify.docker.client.exceptions.DockerException;
-import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;

@@ -1,10 +1,14 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
@@ -16,17 +20,15 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName;
-import static net.geant.nmaas.nmservice.configuration.SimpleNmServiceConfigurationHelper.generateConfigId;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -46,27 +48,54 @@ class NmServiceConfigurationsPreparer {
     @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
 
-    List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
-            throws ConfigTemplateHandlingException, IOException, InvalidDeploymentIdException {
-        final Map<String, Object> appConfigurationModel = getModelFromJson(appConfiguration);
-        updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
-        List<String> configurationsIdentifiers = new ArrayList<>();
-        for (Template template : loadConfigTemplatesForApplication(applicationId)) {
-            String configId = generateConfigId(configurations);
-            storeConfigurationInRepository(configId, buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel));
-            configurationsIdentifiers.add(configId);
-        }
-        return configurationsIdentifiers;
-    }
-
     @Loggable(LogLevel.DEBUG)
-    Map<String, Object> getModelFromJson(AppConfiguration appConfiguration) throws IOException {
-        return new ObjectMapper().readValue(appConfiguration.getJsonInput(), Map.class);
+    List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
+            throws ConfigTemplateHandlingException, UserConfigHandlingException, InvalidDeploymentIdException {
+        final Map<String, Object> appConfigurationModel = createModelFromJson(appConfiguration);
+        updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
+        List<String> configIds = new ArrayList<>();
+        for (NmServiceConfigurationTemplate nmServiceConfigurationTemplate : loadConfigTemplatesForApplication(applicationId)) {
+            final String configId = generateNewConfigId(configurations);
+            final Template template = convertToTemplate(nmServiceConfigurationTemplate);
+            final NmServiceConfiguration config = buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel);
+            storeConfigurationInRepository(config);
+            configIds.add(configId);
+        }
+        return configIds;
     }
 
-    private List<Template> loadConfigTemplatesForApplication(Identifier applicationId)
+    private String generateNewConfigId(NmServiceConfigurationRepository configurations) {
+        String generatedConfigId;
+        do {
+            generatedConfigId = UUID.randomUUID().toString();
+        } while(configurations.findByConfigId(generatedConfigId).isPresent());
+        return generatedConfigId;
+    }
+
+    Template convertToTemplate(NmServiceConfigurationTemplate nmServiceConfigurationTemplate) throws ConfigTemplateHandlingException {
+        try {
+            return new Template(nmServiceConfigurationTemplate.getConfigFileName(),
+                            new StringReader(nmServiceConfigurationTemplate.getConfigFileTemplateContent()),
+                            new Configuration());
+        } catch (IOException e) {
+            throw new ConfigTemplateHandlingException(e.getMessage());
+        }
+    }
+
+    Map<String, Object> createModelFromJson(AppConfiguration appConfiguration) throws UserConfigHandlingException {
+        try {
+            return new ObjectMapper().readValue(appConfiguration.getJsonInput(), new TypeReference<Map<String, Object>>() {});
+        } catch (IOException e) {
+            throw new UserConfigHandlingException(e.getMessage());
+        }
+    }
+
+    private List<NmServiceConfigurationTemplate> loadConfigTemplatesForApplication(Identifier applicationId)
             throws ConfigTemplateHandlingException {
-        return templates.loadTemplates(applicationId);
+        List<NmServiceConfigurationTemplate> selectedTemplates = templates.findAllByApplicationId(applicationId.longValue());
+        if (selectedTemplates.isEmpty())
+            throw new ConfigTemplateHandlingException("No configuration templates found in repository for application with id " + applicationId);
+        return selectedTemplates;
     }
 
     @Loggable(LogLevel.DEBUG)
@@ -79,19 +108,17 @@ class NmServiceConfigurationsPreparer {
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }
 
-    void storeConfigurationInRepository(String configId, NmServiceConfiguration configuration) {
-        configurations.storeConfig(configId, configuration);
+    private void storeConfigurationInRepository(NmServiceConfiguration configuration) {
+        configurations.save(configuration);
     }
 
     NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model)
             throws ConfigTemplateHandlingException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Writer osWriter = new OutputStreamWriter(os);
+        Writer stringWriter = new StringWriter();
         NmServiceConfiguration configuration = null;
         try {
-            template.process(model, osWriter);
-            osWriter.flush();
-            configuration = new NmServiceConfiguration(configId, configFileNameFromTemplateName(template.getName()), os.toByteArray());
+            template.process(model, stringWriter);
+            configuration = new NmServiceConfiguration(configId, template.getName(), stringWriter.toString());
         } catch (TemplateException e) {
             throw new ConfigTemplateHandlingException("Propagating TemplateException");
         } catch (IOException e) {

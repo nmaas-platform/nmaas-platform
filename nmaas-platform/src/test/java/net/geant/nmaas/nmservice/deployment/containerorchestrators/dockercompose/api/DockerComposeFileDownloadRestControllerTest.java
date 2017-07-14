@@ -57,6 +57,13 @@ public class DockerComposeFileDownloadRestControllerTest {
     }
 
     @Test
+    public void shouldForbidDownload() throws Exception {
+        mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
+                .with(httpBasic("testClient", "testPassword")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void shouldReturnNotFoundOnMissingComposeFileWithProvidedDeploymentId() throws Exception {
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value() + "invalid-string")
                 .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))

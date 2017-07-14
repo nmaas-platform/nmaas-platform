@@ -1,12 +1,13 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Declares a method to retrieve the current state of application being deployed using {@link AppLifecycleManager} API
@@ -28,9 +29,9 @@ public interface AppDeploymentMonitor {
     /**
      * Retrieves information on all deployments in the system.
      *
-     * @return identifiers of all deployments with corresponding current status
+     * @return identifiers of all deployments
      */
-    Map<Identifier, AppLifecycleState> allDeployments();
+    List<AppDeployment> allDeployments();
 
     /**
      * Retrieves user access details to deployed application. This information becomes available once the application

@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -56,17 +56,17 @@ public class UpdateNmServiceInfoWithDevicesTest {
     }
 
     @Test
-    public void shouldUpdateNmServiceInfoWithDevicesFromOxidizedConfig() throws InvalidDeploymentIdException, IOException {
+    public void shouldUpdateNmServiceInfoWithDevicesFromOxidizedConfig() throws InvalidDeploymentIdException, UserConfigHandlingException {
         AppConfiguration appConfiguration = new AppConfiguration(AppConfigurationJsonToMapTest.EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT);
-        final Map<String, Object> modelFromJson = configurationsPreparer.getModelFromJson(appConfiguration);
+        final Map<String, Object> modelFromJson = configurationsPreparer.createModelFromJson(appConfiguration);
         configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId1, modelFromJson);
         assertThat(nmServiceRepositoryManager.loadService(deploymentId1).getManagedDevicesIpAddresses(), Matchers.contains("1.1.1.1", "2.2.2.2"));
     }
 
     @Test
-    public void shouldUpdateNmServiceInfoWithDevicesFromLibreNmsConfig() throws InvalidDeploymentIdException, IOException {
+    public void shouldUpdateNmServiceInfoWithDevicesFromLibreNmsConfig() throws InvalidDeploymentIdException, UserConfigHandlingException {
         AppConfiguration appConfiguration = new AppConfiguration(AppConfigurationJsonToMapTest.EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT);
-        final Map<String, Object> modelFromJson = configurationsPreparer.getModelFromJson(appConfiguration);
+        final Map<String, Object> modelFromJson = configurationsPreparer.createModelFromJson(appConfiguration);
         configurationsPreparer.updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId2, modelFromJson);
         assertThat(nmServiceRepositoryManager.loadService(deploymentId2).getManagedDevicesIpAddresses(), Matchers.contains("192.168.1.1", "10.10.3.2"));
     }

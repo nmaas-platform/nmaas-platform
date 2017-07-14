@@ -1,0 +1,5 @@
+{
+  "applicationId":2,
+  "configFileName":"router.db",
+  "configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}:junos\n</#list>"
+}

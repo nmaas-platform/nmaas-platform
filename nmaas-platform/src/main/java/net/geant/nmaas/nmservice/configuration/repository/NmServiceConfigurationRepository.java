@@ -1,40 +1,22 @@
 package net.geant.nmaas.nmservice.configuration.repository;
 
-import org.springframework.stereotype.Component;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@Component
-public class NmServiceConfigurationRepository {
+@Repository
+public interface NmServiceConfigurationRepository extends JpaRepository<NmServiceConfiguration, Long> {
 
-    private Map<String, NmServiceConfiguration> configurations = new HashMap<>();
+    Optional<NmServiceConfiguration> findByConfigId(String configId);
 
-    public void storeConfig(String configId, NmServiceConfiguration config) {
-        if(configId != null && config != null)
-            configurations.put(configId, config);
-    }
+    @Query("SELECT n.configFileName FROM NmServiceConfiguration n WHERE n.configId = :configId")
+    Optional<String> getConfigFileNameByConfigId(@Param("configId") String configId);
 
-    public NmServiceConfiguration loadConfig(String configId) throws ConfigurationNotFoundException {
-        NmServiceConfiguration requestedConfig = configurations.get(configId);
-        if (requestedConfig != null)
-            return requestedConfig;
-        else
-            throw new ConfigurationNotFoundException("Configuration " + configId + " not found in the repository.");
-    }
-
-    public boolean isConfigStored(String generatedConfigId) {
-        return configurations.containsKey(generatedConfigId);
-    }
-
-    public class ConfigurationNotFoundException extends Exception {
-
-        public ConfigurationNotFoundException(String message) {
-            super(message);
-        }
-
-    }
 }

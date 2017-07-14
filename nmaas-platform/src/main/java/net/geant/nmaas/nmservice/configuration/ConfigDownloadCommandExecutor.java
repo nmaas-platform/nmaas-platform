@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -29,7 +30,7 @@ public class ConfigDownloadCommandExecutor {
             final String authorizationHash = generateHash(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password"));
             final String sourceUrl = env.getProperty("app.config.download.url");
             final String targetDirectoryFullPath = constructTargetDirectoryFullPath(host, targetDirectoryName);
-            final String configurationFileName = configurations.loadConfig(configId).getConfigFileName();
+            final String configurationFileName = configurations.getConfigFileNameByConfigId(configId).orElseThrow(() -> new ConfigurationNotFoundException(configId));
             ConfigDownloadCommand command =  ConfigDownloadCommand.command(
                     authorizationHash,
                     sourceUrl,
@@ -39,7 +40,7 @@ public class ConfigDownloadCommandExecutor {
             SingleCommandExecutor.getExecutor(
                     host.getPublicIpAddress().getHostAddress(),
                     env.getProperty("app.config.ssh.username")).executeSingleCommand(command);
-        } catch (NmServiceConfigurationRepository.ConfigurationNotFoundException
+        } catch (ConfigurationNotFoundException
                 | SshConnectionException
                 | CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute configuration download command -> " + e.getMessage());

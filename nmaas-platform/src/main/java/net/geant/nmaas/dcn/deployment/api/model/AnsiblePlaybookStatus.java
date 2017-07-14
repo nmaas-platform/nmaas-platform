@@ -1,4 +1,4 @@
-package net.geant.nmaas.dcn.deployment.api;
+package net.geant.nmaas.dcn.deployment.api.model;
 
 import java.util.Arrays;
 
