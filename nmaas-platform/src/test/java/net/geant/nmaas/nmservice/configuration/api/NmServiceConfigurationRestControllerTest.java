@@ -46,16 +46,16 @@ public class NmServiceConfigurationRestControllerTest {
 
     @Test
     public void shouldReturnSimpleFile() throws Exception {
-        byte[] configFileBytes = new byte[]{1,2,3,4,5};
+        String configFileContent = "simple content";
         NmServiceConfiguration configuration
-                = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileBytes);
+                = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileContent);
         configurations.save(configuration);
         mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
                 .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + TEST_OXIDIZED_CONFIG_FIRST_FILENAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
-                .andExpect(content().bytes(configFileBytes));
+                .andExpect(content().string(configFileContent));
     }
 
     @Test

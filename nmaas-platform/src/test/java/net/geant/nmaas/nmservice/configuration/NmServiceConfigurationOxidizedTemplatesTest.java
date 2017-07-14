@@ -16,10 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -74,7 +74,7 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
                         template,
                         testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
-        assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("user123"), containsString("pass123")));
         nmServiceConfigurationTemplate =
                 nmServiceConfigurationTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_TEMPLATE_NAME_2)).findFirst();
@@ -85,7 +85,7 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
                         template,
                         testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
-        assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
     }
 

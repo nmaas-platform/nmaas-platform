@@ -20,7 +20,10 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -111,13 +114,11 @@ class NmServiceConfigurationsPreparer {
 
     NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model)
             throws ConfigTemplateHandlingException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Writer osWriter = new OutputStreamWriter(os);
+        Writer stringWriter = new StringWriter();
         NmServiceConfiguration configuration = null;
         try {
-            template.process(model, osWriter);
-            osWriter.flush();
-            configuration = new NmServiceConfiguration(configId, template.getName(), os.toByteArray());
+            template.process(model, stringWriter);
+            configuration = new NmServiceConfiguration(configId, template.getName(), stringWriter.toString());
         } catch (TemplateException e) {
             throw new ConfigTemplateHandlingException("Propagating TemplateException");
         } catch (IOException e) {

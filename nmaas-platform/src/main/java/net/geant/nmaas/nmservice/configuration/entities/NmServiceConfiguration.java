@@ -23,11 +23,11 @@ public class NmServiceConfiguration {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
-    private byte[] configFileContent;
+    private String configFileContent;
 
     public NmServiceConfiguration() { }
 
-    public NmServiceConfiguration(String configId, String configFileName, byte[] configFileContent) {
+    public NmServiceConfiguration(String configId, String configFileName, String configFileContent) {
         this.configId = configId;
         this.configFileName = configFileName;
         this.configFileContent = configFileContent;
@@ -57,11 +57,11 @@ public class NmServiceConfiguration {
         this.configFileName = configFileName;
     }
 
-    public byte[] getConfigFileContent() {
+    public String getConfigFileContent() {
         return configFileContent;
     }
 
-    public void setConfigFileContent(byte[] configFileContent) {
+    public void setConfigFileContent(String configFileContent) {
         this.configFileContent = configFileContent;
     }
 }

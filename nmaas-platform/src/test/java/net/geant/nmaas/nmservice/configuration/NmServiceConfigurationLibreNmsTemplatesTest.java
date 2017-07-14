@@ -74,7 +74,7 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
                         template,
                         testLibreNmsDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("addhosts.cfg"));
-        assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
     }
 

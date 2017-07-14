@@ -3,7 +3,6 @@ package net.geant.nmaas.nmservice.configuration.api;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -35,7 +34,7 @@ public class NmServiceConfigDownloadRestController {
         response.setCharacterEncoding("UTF-8");
         response.addHeader("Content-disposition", "attachment;filename=" + configuration.getConfigFileName());
         response.setContentType("application/octet-stream");
-        IOUtils.copy(new ByteArrayInputStream(configuration.getConfigFileContent()), response.getOutputStream());
+        response.getOutputStream().write(configuration.getConfigFileContent().getBytes(Charset.forName("UTF-8")));
         response.flushBuffer();
     }
 
