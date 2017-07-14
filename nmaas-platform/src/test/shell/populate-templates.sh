@@ -21,9 +21,16 @@ API_URL=http://localhost:9000/platform/api
 echo $API_URL
 
 echo
-echo Adding default Docker Hosts
-curl -X POST $API_URL/management/configs --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configs\app1-template1.json
-curl -X POST $API_URL/management/configs --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configs\app2-template1.json
-curl -X POST $API_URL/management/configs --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configs\app2-template2.json
+echo Adding default configuration file templates
+curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app1-template1.json
+curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app2-template1.json
+curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app2-template2.json
 echo
-curl -X GET $API_URL/management/configs --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN"
+
+echo
+echo Adding default docker compose file templates
+curl -X POST $API_URL/management/dockercompose/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\dockercompose\app1-template1.json
+curl -X POST $API_URL/management/dockercompose/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\dockercompose\app2-template1.json
+echo
+curl -X GET $API_URL/management/dockercompose/templates --header "Authorization: Bearer $TOKEN"
