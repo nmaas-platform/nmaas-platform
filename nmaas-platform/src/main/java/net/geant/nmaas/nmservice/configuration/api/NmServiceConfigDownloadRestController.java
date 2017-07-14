@@ -25,7 +25,7 @@ public class NmServiceConfigDownloadRestController {
     @Autowired
     private NmServiceConfigurationRepository configurations;
 
-    @RequestMapping(value = "/{configId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{configId}")
     public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)
             throws ConfigurationNotFoundException, IOException {
         log.info("Received configuration download request (configId -> " + configId + ")");

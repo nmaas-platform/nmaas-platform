@@ -13,7 +13,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/configs")
+@RequestMapping(value = "/platform/api/management/configurations/templates")
 public class NmServiceConfigTemplateAdminRestController {
 
     @Autowired
@@ -24,22 +24,17 @@ public class NmServiceConfigTemplateAdminRestController {
      * @return list of {@link NmServiceConfigurationTemplate} objects
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
-    @RequestMapping(
-            value = "",
-            method = RequestMethod.GET)
+    @GetMapping(value = "")
     public List<NmServiceConfigurationTemplate> listAllConfigurationTemplates() {
         return templates.findAll();
     }
 
     /**
      * Stores new {@link NmServiceConfigurationTemplate} in repository.
-     * @param configurationTemplate template to be stored
+     * @param configurationTemplate configuration template to be stored
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
-    @RequestMapping(
-            value = "",
-            method = RequestMethod.POST,
-            consumes = "application/json")
+    @PostMapping(value = "", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addConfigurationTemplate(
             @RequestBody NmServiceConfigurationTemplate configurationTemplate) {
