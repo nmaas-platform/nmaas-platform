@@ -1,12 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeTemplateHandlingException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
@@ -122,15 +122,12 @@ public class DockerComposeManager implements ContainerOrchestrator {
         } catch (CouldNotCreateContainerNetworkException couldNotCreateContainerNetworkException) {
             throw new CouldNotPrepareEnvironmentException(
                     "Failed to create network -> " + couldNotCreateContainerNetworkException.getMessage());
-        } catch (DockerComposeTemplateHandlingException dockerComposeTemplateHandlingException) {
+        } catch (DockerComposeFileTemplateHandlingException dockerComposeFileTemplateHandlingException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Problem occurred during Docker Compose file preparation -> " + dockerComposeTemplateHandlingException.getMessage());
-        } catch (DockerHostInvalidException dockerHostInvalidException) {
+                    "Problem occurred during Docker Compose file preparation -> " + dockerComposeFileTemplateHandlingException.getMessage());
+        } catch (DockerComposeFileTemplateNotFoundException dockerComposeFileTemplateNotFoundException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Selected Docker Host can't be used for deployment -> " + dockerHostInvalidException.getMessage());
-        } catch (DockerHostNotFoundException dockerHostNotFoundException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Did not find any suitable Docker Host for deployment -> " + dockerHostNotFoundException.getMessage());
+                    "Problem occurred while loading Docker Compose template file -> " + dockerComposeFileTemplateNotFoundException.getMessage());
         }
     }
 
@@ -155,7 +152,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     }
 
     private void buildAndStoreComposeFile(NmServiceInfo service, String dockerNetworkName, DockerContainerNetDetails containerNetDetails)
-            throws DockerComposeTemplateHandlingException, InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException, ContainerOrchestratorInternalErrorException {
+            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InvalidDeploymentIdException {
         String assignedHostVolume = service.getDockerContainer().getVolumesDetails().getAttachedVolumeName();
         final DockerComposeFileInput dockerComposeFileInput = new DockerComposeFileInput(containerNetDetails.getPublicPort(), assignedHostVolume);
         dockerComposeFileInput.setContainerName(service.getDeploymentId().value());

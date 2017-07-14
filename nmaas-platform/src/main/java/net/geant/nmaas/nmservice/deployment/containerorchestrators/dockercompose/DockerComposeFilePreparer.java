@@ -1,23 +1,22 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
+import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFile;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplateVariable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileTemplateRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeTemplateHandlingException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFile.TemplateVariable;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -32,42 +31,53 @@ public class DockerComposeFilePreparer {
     private DockerComposeFileTemplateRepository fileTemplateRepository;
 
     void buildAndStoreComposeFile(Identifier deploymentId, Identifier applicationId, DockerComposeFileInput input)
-            throws DockerComposeTemplateHandlingException {
+            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException {
         final Map<String, Object> model = buildModel(input);
-        Template composeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
-        DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(composeFileTemplate, model);
-        fileRepository.storeFileContent(deploymentId, composeFile);
+        DockerComposeFileTemplate dockerComposeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
+        Template template = convertToTemplate(dockerComposeFileTemplate);
+        DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
+        fileRepository.save(composeFile);
     }
 
     private Map<String, Object> buildModel(DockerComposeFileInput input) {
         Map<String, Object> model = new HashMap<>();
-        model.put(TemplateVariable.CONTAINER_NAME.value(), input.getContainerName());
-        model.put(TemplateVariable.PORT.value(), String.valueOf(input.getPort()));
-        model.put(TemplateVariable.VOLUME.value(), input.getVolume());
-        model.put(TemplateVariable.CONTAINER_IP_ADDRESS.value(), input.getContainerIpAddress());
-        model.put(TemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), input.getExternalAccessNetworkName());
-        model.put(TemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), input.getDcnNetworkName());
+        model.put(DockerComposeFileTemplateVariable.CONTAINER_NAME.value(), input.getContainerName());
+        model.put(DockerComposeFileTemplateVariable.PORT.value(), String.valueOf(input.getPort()));
+        model.put(DockerComposeFileTemplateVariable.VOLUME.value(), input.getVolume());
+        model.put(DockerComposeFileTemplateVariable.CONTAINER_IP_ADDRESS.value(), input.getContainerIpAddress());
+        model.put(DockerComposeFileTemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), input.getExternalAccessNetworkName());
+        model.put(DockerComposeFileTemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), input.getDcnNetworkName());
         return model;
     }
 
-    private Template loadDockerComposeFileTemplateForApplication(Identifier applicationId)
-            throws DockerComposeTemplateHandlingException {
-        return fileTemplateRepository.loadTemplate(applicationId);
+    private DockerComposeFileTemplate loadDockerComposeFileTemplateForApplication(Identifier applicationId)
+            throws DockerComposeFileTemplateNotFoundException {
+        return fileTemplateRepository.findByApplicationId(applicationId.longValue()).orElseThrow(() -> new DockerComposeFileTemplateNotFoundException(applicationId.value()));
     }
 
-    private DockerComposeFile buildComposeFileFromTemplateAndModel(Template template, Object model)
-            throws DockerComposeTemplateHandlingException {
+    private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate)
+            throws DockerComposeFileTemplateHandlingException {
+        try {
+            return new Template(DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME,
+                    new StringReader(dockerComposeFileTemplate.getComposeFileTemplateContent()),
+                    new Configuration());
+        } catch (IOException e) {
+            throw new DockerComposeFileTemplateHandlingException(e.getMessage());
+        }
+    }
+
+    private DockerComposeFile buildComposeFileFromTemplateAndModel(Identifier deploymentId, Template template, Object model)
+            throws DockerComposeFileTemplateHandlingException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Writer osWriter = new OutputStreamWriter(os);
+        Writer stringWriter = new StringWriter();
         DockerComposeFile composeFile = null;
         try {
-            template.process(model, osWriter);
-            osWriter.flush();
-            composeFile = new DockerComposeFile(os.toByteArray());
+            template.process(model, stringWriter);
+            composeFile = new DockerComposeFile(deploymentId, stringWriter.toString());
         } catch (TemplateException e) {
-            throw new DockerComposeTemplateHandlingException("Propagating TemplateException", e);
+            throw new DockerComposeFileTemplateHandlingException("Propagating TemplateException", e);
         } catch (IOException e) {
-            throw new DockerComposeTemplateHandlingException("Propagating IOException", e);
+            throw new DockerComposeFileTemplateHandlingException("Propagating IOException", e);
         }
         return composeFile;
     }
