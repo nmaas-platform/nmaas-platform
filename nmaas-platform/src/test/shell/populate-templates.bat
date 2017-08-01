@@ -52,7 +52,8 @@ curl -X GET %API_URL%/management/configurations/templates --header "Authorizatio
 
 echo.
 echo Adding default docker compose templates for app 1 and app 2
-curl -X POST %API_URL%/management/dockercompose/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\dockercompose\app1-template1.json
-curl -X POST %API_URL%/management/dockercompose/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\dockercompose\app2-template1.json
+curl -X POST %API_URL%/management/apps/1/dockercompose/template --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\dockercompose\app1-template1.json
+curl -X POST %API_URL%/management/apps/2/dockercompose/template --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\dockercompose\app2-template1.json
 echo
-curl -X GET %API_URL%/management/dockercompose/templates --header "Authorization: Bearer %token%"
+curl -X GET %API_URL%/management/apps/1/dockercompose/template --header "Authorization: Bearer %token%"
+curl -X GET %API_URL%/management/apps/2/dockercompose/template --header "Authorization: Bearer %token%"

@@ -8,13 +8,20 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplateVariable;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileTemplateRepository;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,10 +35,11 @@ public class DockerComposeFilePreparer {
     private DockerComposeFileRepository fileRepository;
 
     @Autowired
-    private DockerComposeFileTemplateRepository fileTemplateRepository;
+    private ApplicationRepository applicationRepository;
 
-    void buildAndStoreComposeFile(Identifier deploymentId, Identifier applicationId, DockerComposeFileInput input)
-            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException {
+    @Transactional
+    public void buildAndStoreComposeFile(Identifier deploymentId, Identifier applicationId, DockerComposeFileInput input)
+            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
         final Map<String, Object> model = buildModel(input);
         DockerComposeFileTemplate dockerComposeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
         Template template = convertToTemplate(dockerComposeFileTemplate);
@@ -51,8 +59,17 @@ public class DockerComposeFilePreparer {
     }
 
     private DockerComposeFileTemplate loadDockerComposeFileTemplateForApplication(Identifier applicationId)
-            throws DockerComposeFileTemplateNotFoundException {
-        return fileTemplateRepository.findByApplicationId(applicationId.longValue()).orElseThrow(() -> new DockerComposeFileTemplateNotFoundException(applicationId.value()));
+            throws DockerComposeFileTemplateNotFoundException, InternalErrorException {
+        Application application = applicationRepository.getOne(applicationId.longValue());
+        if (application == null)
+            throw new InternalErrorException("Application with id " + applicationId + " not found in repository");
+        AppDeploymentSpec appDeploymentSpec = application.getAppDeploymentSpec();
+        if (appDeploymentSpec == null)
+            throw new InternalErrorException("Application deployment spec for application with id " + applicationId + " is not set");
+        DockerComposeFileTemplate template = appDeploymentSpec.getDockerComposeFileTemplate();
+        if (template == null)
+            throw new DockerComposeFileTemplateNotFoundException(applicationId.value());
+        return template;
     }
 
     private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate)
@@ -68,7 +85,6 @@ public class DockerComposeFilePreparer {
 
     private DockerComposeFile buildComposeFileFromTemplateAndModel(Identifier deploymentId, Template template, Object model)
             throws DockerComposeFileTemplateHandlingException {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
         Writer stringWriter = new StringWriter();
         DockerComposeFile composeFile = null;
         try {

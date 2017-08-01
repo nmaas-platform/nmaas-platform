@@ -7,6 +7,7 @@ import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
@@ -125,9 +126,10 @@ public class DockerComposeManager implements ContainerOrchestrator {
         } catch (DockerComposeFileTemplateHandlingException dockerComposeFileTemplateHandlingException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Problem occurred during Docker Compose file preparation -> " + dockerComposeFileTemplateHandlingException.getMessage());
-        } catch (DockerComposeFileTemplateNotFoundException dockerComposeFileTemplateNotFoundException) {
+        } catch (DockerComposeFileTemplateNotFoundException
+                | InternalErrorException exception) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Problem occurred while loading Docker Compose template file -> " + dockerComposeFileTemplateNotFoundException.getMessage());
+                    "Problem occurred while loading Docker Compose template file -> " + exception.getMessage());
         }
     }
 
@@ -152,7 +154,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     }
 
     private void buildAndStoreComposeFile(NmServiceInfo service, String dockerNetworkName, DockerContainerNetDetails containerNetDetails)
-            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InvalidDeploymentIdException {
+            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InvalidDeploymentIdException, InternalErrorException {
         String assignedHostVolume = service.getDockerContainer().getVolumesDetails().getAttachedVolumeName();
         final DockerComposeFileInput dockerComposeFileInput = new DockerComposeFileInput(containerNetDetails.getPublicPort(), assignedHostVolume);
         dockerComposeFileInput.setContainerName(service.getDeploymentId().value());

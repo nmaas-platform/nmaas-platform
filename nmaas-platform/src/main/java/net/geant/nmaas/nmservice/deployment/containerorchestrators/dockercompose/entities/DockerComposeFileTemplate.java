@@ -14,9 +14,6 @@ public class DockerComposeFileTemplate {
     @Column(name="id")
     private Long id;
 
-    @Column(nullable = false)
-    private Long applicationId;
-
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
@@ -25,8 +22,7 @@ public class DockerComposeFileTemplate {
     public DockerComposeFileTemplate() {
     }
 
-    public DockerComposeFileTemplate(Long applicationId, String composeFileTemplateContent) {
-        this.applicationId = applicationId;
+    public DockerComposeFileTemplate(String composeFileTemplateContent) {
         this.composeFileTemplateContent = composeFileTemplateContent;
     }
 
@@ -36,14 +32,6 @@ public class DockerComposeFileTemplate {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
     }
 
     public String getComposeFileTemplateContent() {

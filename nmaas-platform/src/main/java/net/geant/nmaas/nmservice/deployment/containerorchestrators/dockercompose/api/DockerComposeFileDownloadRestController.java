@@ -40,7 +40,7 @@ public class DockerComposeFileDownloadRestController {
 
     @ExceptionHandler(DockerComposeFileNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleConfigurationNotFoundException(DockerComposeFileNotFoundException ex) {
+    public String handleComposeFileNotFoundException(DockerComposeFileNotFoundException ex) {
         log.warn("Requested compose file not found -> " + ex.getMessage());
         return ex.getMessage();
     }

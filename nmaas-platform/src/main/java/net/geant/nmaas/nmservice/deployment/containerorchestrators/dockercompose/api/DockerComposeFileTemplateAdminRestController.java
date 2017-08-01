@@ -1,32 +1,43 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.api;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileTemplateRepository;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/dockercompose/templates")
+@RequestMapping(value = "/platform/api/management/apps/{appId}/dockercompose/template")
 public class DockerComposeFileTemplateAdminRestController {
 
     @Autowired
-    private DockerComposeFileTemplateRepository templates;
+    private ApplicationRepository applications;
 
-    /**
-     * Lists all {@link DockerComposeFileTemplate} stored in repository.
-     * @return list of {@link DockerComposeFileTemplate} objects
-     */
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
     @GetMapping(value = "")
-    public List<DockerComposeFileTemplate> listAllDockerComposeFileTemplates() {
-        return templates.findAll();
+    @Transactional
+    public DockerComposeFileTemplate getDockerComposeFileTemplate(@PathVariable(value = "appId") Long appId)
+            throws MissingElementException, InternalErrorException, DockerComposeFileTemplateNotFoundException {
+        Application app = applications.findOne(appId);
+        if(app == null)
+            throw new MissingElementException("Application with id " + appId + " not found.");
+        AppDeploymentSpec appDeploymentSpec = app.getAppDeploymentSpec();
+        if (appDeploymentSpec == null)
+            throw new InternalErrorException("Application deployment spec for application with id " + appId + " is not set.");
+        DockerComposeFileTemplate template = appDeploymentSpec.getDockerComposeFileTemplate();
+        if (template == null)
+            throw new DockerComposeFileTemplateNotFoundException("Compose file for application with id " + appId + " is missing.");
+        return template;
     }
 
     /**
@@ -35,10 +46,25 @@ public class DockerComposeFileTemplateAdminRestController {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
     @PostMapping(value = "", consumes = "application/json")
+    @Transactional
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addDockerComposeFileTemplate(
-            @RequestBody DockerComposeFileTemplate dockerComposeFileTemplate) {
-        templates.save(dockerComposeFileTemplate);
+    public void setDockerComposeFileTemplate(@PathVariable(value = "appId") Long appId,
+            @RequestBody DockerComposeFileTemplate dockerComposeFileTemplate)
+            throws MissingElementException, InternalErrorException {
+        Application app = applications.findOne(appId);
+        if(app == null)
+            throw new MissingElementException("Application with id " + appId + " not found.");
+        AppDeploymentSpec appDeploymentSpec = app.getAppDeploymentSpec();
+        if (appDeploymentSpec == null)
+            throw new InternalErrorException("Application deployment spec for application with id " + appId + " is not set.");
+        appDeploymentSpec.setDockerComposeFileTemplate(dockerComposeFileTemplate);
+        applications.save(app);
+    }
+
+    @ExceptionHandler(DockerComposeFileTemplateNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleComposeFileTemplateNotFoundException(DockerComposeFileTemplateNotFoundException ex) {
+        return ex.getMessage();
     }
 
 }
