@@ -2,8 +2,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,17 @@ public class DockerComposeFileDownloadRestController {
     private final static Logger log = LogManager.getLogger(DockerComposeFileDownloadRestController.class);
 
     @Autowired
-    private DockerComposeFileRepository composeFiles;
+    private AppDeploymentRepository deployments;
 
-    @RequestMapping(value = "/{deploymentId}", method = RequestMethod.GET)
-    public void downloadComposeFile(@PathVariable String deploymentId, HttpServletResponse response)
-            throws DockerComposeFileNotFoundException, IOException {
+    @GetMapping(value = "/{deploymentId}")
+    public void downloadComposeFile(@PathVariable(value = "deploymentId") String deploymentId, HttpServletResponse response)
+            throws MissingElementException, DockerComposeFileNotFoundException, IOException {
         log.info("Received compose file download request (deploymentId -> " + deploymentId + ")");
-        final DockerComposeFile composeFile = composeFiles.findByDeploymentId(Identifier.newInstance(deploymentId)).orElseThrow(() -> new DockerComposeFileNotFoundException(deploymentId));
+        AppDeployment deployment = deployments.findByDeploymentId(Identifier.newInstance(deploymentId))
+                .orElseThrow(() -> new MissingElementException("Application deployment with id " + deploymentId + " not found."));
+        DockerComposeFile composeFile = deployment.getDockerComposeFile();
+        if (composeFile == null)
+            throw new DockerComposeFileNotFoundException("Docker Compose file for application deployment with id " + deploymentId + " is missing.");
         response.setCharacterEncoding("UTF-8");
         response.addHeader("Content-disposition", "attachment;filename=" + DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME);
         response.setContentType("application/octet-stream");

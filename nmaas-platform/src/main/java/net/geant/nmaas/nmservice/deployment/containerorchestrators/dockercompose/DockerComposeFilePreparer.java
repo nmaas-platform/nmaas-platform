@@ -9,9 +9,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ import java.util.Map;
 public class DockerComposeFilePreparer {
 
     @Autowired
-    private DockerComposeFileRepository fileRepository;
+    private AppDeploymentRepository deploymentRepository;
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -44,7 +45,10 @@ public class DockerComposeFilePreparer {
         DockerComposeFileTemplate dockerComposeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
         Template template = convertToTemplate(dockerComposeFileTemplate);
         DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
-        fileRepository.save(composeFile);
+        AppDeployment deployment = deploymentRepository.findByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InternalErrorException("Application deployment with id " + deploymentId + " not found"));
+        deployment.setDockerComposeFile(composeFile);
+        deploymentRepository.save(deployment);
     }
 
     private Map<String, Object> buildModel(DockerComposeFileInput input) {
@@ -89,7 +93,7 @@ public class DockerComposeFilePreparer {
         DockerComposeFile composeFile = null;
         try {
             template.process(model, stringWriter);
-            composeFile = new DockerComposeFile(deploymentId, stringWriter.toString());
+            composeFile = new DockerComposeFile(stringWriter.toString());
         } catch (TemplateException e) {
             throw new DockerComposeFileTemplateHandlingException("Propagating TemplateException", e);
         } catch (IOException e) {

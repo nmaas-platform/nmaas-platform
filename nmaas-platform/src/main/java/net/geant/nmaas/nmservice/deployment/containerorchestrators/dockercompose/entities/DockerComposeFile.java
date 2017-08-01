@@ -1,7 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
-
 import javax.persistence.*;
 
 /**
@@ -18,9 +16,6 @@ public class DockerComposeFile {
     @Column(name="id")
     private Long id;
 
-    @Column(nullable = false)
-    private Identifier deploymentId;
-
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
@@ -29,8 +24,7 @@ public class DockerComposeFile {
     public DockerComposeFile() {
     }
 
-    public DockerComposeFile(Identifier deploymentId, String composeFileContent) {
-        this.deploymentId = deploymentId;
+    public DockerComposeFile(String composeFileContent) {
         this.composeFileContent = composeFileContent;
     }
 
@@ -40,14 +34,6 @@ public class DockerComposeFile {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Identifier getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(Identifier deploymentId) {
-        this.deploymentId = deploymentId;
     }
 
     public String getComposeFileContent() {
