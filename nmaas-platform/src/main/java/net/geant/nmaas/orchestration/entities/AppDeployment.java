@@ -1,8 +1,12 @@
 package net.geant.nmaas.orchestration.entities;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
+
 import javax.persistence.*;
 
 /**
+ * Details of single application deployment in the system.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
@@ -14,20 +18,41 @@ public class AppDeployment {
     @Column(name="id")
     private Long id;
 
+    /**
+     * Unique identifier of this deployment.
+     */
     @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
+    /**
+     * Identifier of the user/client requesting this deployment.
+     */
     @Column(nullable = false)
     private Identifier clientId;
 
+    /**
+     * Identifier of the application being deployed.
+     */
     @Column(nullable = false)
     private Identifier applicationId;
 
+    /**
+     * Current deployment state.
+     */
     @Column(nullable = false)
     private AppDeploymentState state = AppDeploymentState.REQUESTED;
 
+    /**
+     * Initial application configuration provided by the user/client.
+     */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
+
+    /**
+     * Complete Docker Compose file used for this deployment.
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DockerComposeFile dockerComposeFile;
 
     public AppDeployment() { }
 
@@ -83,5 +108,13 @@ public class AppDeployment {
 
     public void setConfiguration(AppConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    public DockerComposeFile getDockerComposeFile() {
+        return dockerComposeFile;
+    }
+
+    public void setDockerComposeFile(DockerComposeFile dockerComposeFile) {
+        this.dockerComposeFile = dockerComposeFile;
     }
 }

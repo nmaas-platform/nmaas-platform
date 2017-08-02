@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -25,8 +27,6 @@ public class DcnRepositoryManager {
     @EventListener
     public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidClientIdException {
         updateDcnState(event.getClientId(), event.getState());
-        if (DcnDeploymentState.REMOVED.equals(loadCurrentState(event.getClientId())))
-            removeDcnInfo(event.getClientId());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -40,7 +40,7 @@ public class DcnRepositoryManager {
     public void updateAnsiblePlaybookForClientSideRouter(Identifier clientId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
             throws InvalidClientIdException {
         DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
-        dcnInfo.setAnsiblePlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
+        dcnInfo.setPlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
@@ -48,7 +48,7 @@ public class DcnRepositoryManager {
     public void updateAnsiblePlaybookForCloudSideRouter(Identifier clientId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
             throws InvalidClientIdException {
         DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
-        dcnInfo.setAnsiblePlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
+        dcnInfo.setPlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
@@ -61,7 +61,9 @@ public class DcnRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void storeDcnInfo(DcnInfo dcnInfo) {
+    public void storeDcnInfo(DcnInfo dcnInfo) throws InvalidClientIdException {
+        if (exists(dcnInfo.getClientId()))
+            throw new InvalidClientIdException("DCN information for client " + dcnInfo.getClientId() + " already stored in database");
         dcnInfoRepository.save(dcnInfo);
     }
 
@@ -75,8 +77,16 @@ public class DcnRepositoryManager {
         return dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
     }
 
+    public List<DcnInfo> loadAllNetworks() {
+        return dcnInfoRepository.findAll();
+    }
+
     public DcnDeploymentState loadCurrentState(Identifier clientId) throws InvalidClientIdException {
         return dcnInfoRepository.getStateByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    }
+
+    public boolean exists(Identifier clientId) {
+        return dcnInfoRepository.findByClientId(clientId).isPresent();
     }
 
 }

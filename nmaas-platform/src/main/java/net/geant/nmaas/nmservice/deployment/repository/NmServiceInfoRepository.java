@@ -6,12 +6,14 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Repository
 public interface NmServiceInfoRepository extends JpaRepository<NmServiceInfo, Long>  {
 
     Optional<NmServiceInfo> findByDeploymentId(Identifier deploymentId);

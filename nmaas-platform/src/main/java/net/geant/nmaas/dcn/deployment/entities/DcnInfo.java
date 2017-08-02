@@ -29,10 +29,10 @@ public class DcnInfo {
     private DcnCloudEndpointDetails cloudEndpointDetails;
 
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-    private AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter;
+    private AnsiblePlaybookVpnConfig playbookForClientSideRouter;
 
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
-    private AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter;
+    private AnsiblePlaybookVpnConfig playbookForCloudSideRouter;
 
     public DcnInfo() { }
 
@@ -81,19 +81,19 @@ public class DcnInfo {
         return state;
     }
 
-    public AnsiblePlaybookVpnConfig getAnsiblePlaybookForClientSideRouter() {
-        return ansiblePlaybookForClientSideRouter;
+    public AnsiblePlaybookVpnConfig getPlaybookForClientSideRouter() {
+        return playbookForClientSideRouter;
     }
 
-    public void setAnsiblePlaybookForClientSideRouter(AnsiblePlaybookVpnConfig ansiblePlaybookForClientSideRouter) {
-        this.ansiblePlaybookForClientSideRouter = ansiblePlaybookForClientSideRouter;
+    public void setPlaybookForClientSideRouter(AnsiblePlaybookVpnConfig playbookForClientSideRouter) {
+        this.playbookForClientSideRouter = playbookForClientSideRouter;
     }
 
-    public AnsiblePlaybookVpnConfig getAnsiblePlaybookForCloudSideRouter() {
-        return ansiblePlaybookForCloudSideRouter;
+    public AnsiblePlaybookVpnConfig getPlaybookForCloudSideRouter() {
+        return playbookForCloudSideRouter;
     }
 
-    public void setAnsiblePlaybookForCloudSideRouter(AnsiblePlaybookVpnConfig ansiblePlaybookForCloudSideRouter) {
-        this.ansiblePlaybookForCloudSideRouter = ansiblePlaybookForCloudSideRouter;
+    public void setPlaybookForCloudSideRouter(AnsiblePlaybookVpnConfig playbookForCloudSideRouter) {
+        this.playbookForCloudSideRouter = playbookForCloudSideRouter;
     }
 }

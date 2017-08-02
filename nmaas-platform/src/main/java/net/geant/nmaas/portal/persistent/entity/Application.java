@@ -34,7 +34,7 @@ public class Application implements Serializable {
 	@Lob
 	private String fullDescription;
 	
-	@OneToOne(cascade=CascadeType.ALL, optional=true, orphanRemoval=true, fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
 	private ConfigTemplate configTemplate;
 	
 	@ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)

@@ -38,7 +38,7 @@ import javax.servlet.Filter;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	private final static String SSL_ENABLED="server.ssl.enabled";
+	private final static String SSL_ENABLED = "server.ssl.enabled";
 	
 	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
 	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/signup";
@@ -48,36 +48,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
     private static final String ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME = "api.client.ansible.username";
     private static final String ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.ansible.password";
-    private static final String NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME = "api.client.nmaas.test.username";
-    private static final String NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.nmaas.test.password";
 	private static final String NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "api.client.config.download.username";
 	private static final String NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "api.client.config.download.password";
 
-    public static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
-    public static final String AUTH_ROLE_NMAAS_TEST_CLIENT = "NMAAS_TEST_CLIENT";
-	public static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
-
-//	@Autowired
-//	AuthenticationManager authenticationManager;
+	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
+	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
 
 	@Autowired
-	TokenAuthenticationService tokenAuthenticationService;
+	private TokenAuthenticationService tokenAuthenticationService;
 	
 	@Autowired
 	private Environment env;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//		auth.inMemoryAuthentication().withUser("user1").password("user1Pass").authorities("ROLE_USER");
-
 		auth.inMemoryAuthentication()
 				.withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT)
-				.and()
-				.withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.and()
 				.withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
@@ -86,12 +74,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
 		boolean sslEnabled = Boolean.parseBoolean(env.getProperty(SSL_ENABLED, "false"));
-		
 		if (sslEnabled)
 			http.requiresChannel().anyRequest().requiresSecure();
-		
 		http
 			.csrf().disable()
 			.exceptionHandling()
@@ -102,12 +87,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.authorizeRequests()
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
-	            .antMatchers("/platform/api/dcns/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
-	            .antMatchers("/platform/api/services/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
-				.antMatchers("/platform/api/orchestration/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
 				.antMatchers("/platform/api/dockercompose/files/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-				.antMatchers("/platform/api/management/**").hasRole(AUTH_ROLE_NMAAS_TEST_CLIENT)
 	            .and().httpBasic()
 			.and()
 				.authorizeRequests()
@@ -117,57 +98,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/deployments/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/deployments/**/state").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/deployments/**/access").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/platform/api/management/**").permitAll()
 				.antMatchers("/portal/api/**").authenticated()
+				.antMatchers("/platform/api/orchestration/deployments/**").authenticated()
+				.antMatchers("/platform/api/orchestration/deployments/**/state").authenticated()
+				.antMatchers("/platform/api/orchestration/deployments/**/access").authenticated()
+				.antMatchers("/platform/api/management/**").authenticated()
 			.and()
-//				.addFilterBefore(statelessLoginFilter("/platform/**",	inMemoryUserDetailsService()), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(
 								new AntPathRequestMatcher[] { 
-										new AntPathRequestMatcher(AUTH_BASIC_LOGIN), 
-										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP), 
+										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
+										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
-										new AntPathRequestMatcher("/platform/**")
-								}), 
+										new AntPathRequestMatcher("/platform/api/dcns/notifications/**/status"),
+										new AntPathRequestMatcher("/platform/api/configs/**"),
+										new AntPathRequestMatcher("/platform/api/dockercompose/files/**")
+								}),
 								null,//failureHandler, 
-								tokenAuthenticationService), 
-						UsernamePasswordAuthenticationFilter.class);		
+								tokenAuthenticationService),
+						UsernamePasswordAuthenticationFilter.class);
 	}
 
-//	private InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryConfigurer() {
-//		return new InMemoryUserDetailsManagerConfigurer<>();
-//	}
-//
-//	private UserDetailsService inMemoryUserDetailsService() {
-//		return inMemoryConfigurer().withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
-//					      .password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
-//					      .roles(AUTH_ROLE_ANSIBLE_CLIENT)
-//					      .and()
-//					      .withUser(env.getProperty(NMAAS_TEST_CLIENT_USERNAME_PROPERTY_NAME))
-//					      .password(env.getProperty(NMAAS_TEST_CLIENT_PASSWORD_PROPERTY_NAME))
-//					      .roles(AUTH_ROLE_NMAAS_TEST_CLIENT)
-//						  .and()
-//						  .withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-//						  .password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-//						  .roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-//					      .and()
-//					      .getUserDetailsService();
-//	}
-	
 	private Filter statelessAuthFilter(RequestMatcher skipPaths, AuthenticationFailureHandler failureHandler, TokenAuthenticationService tokenService) {
 		StatelessAuthenticationFilter filter = new StatelessAuthenticationFilter(skipPaths, tokenService);
 		if(failureHandler != null)
 			filter.setAuthenticationFailureHandler(failureHandler);
-//		filter.setAuthenticationManager(authenticationManager);
 		return filter;
 	}
-
-//	private Filter statelessLoginFilter(String processUrl, UserDetailsService userDetailsService) {
-//		StatelessLoginFilter filter = new StatelessLoginFilter(processUrl, userDetailsService);
-//		filter.setAuthenticationManager(authenticationManager);
-//		return filter;
-//	}
 
 	@Bean
 	public FilterRegistrationBean corsFilter() {
@@ -175,7 +138,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		CorsConfiguration corsConfig = new CorsConfiguration();
 		
 		//TODO: customize CORS through properties. Currently CORS is enabled for /api
-		
 		corsConfig.addAllowedOrigin("*");
 		corsConfig.addAllowedHeader("*");
 		corsConfig.addAllowedMethod("*");

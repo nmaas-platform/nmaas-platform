@@ -3,6 +3,8 @@ package net.geant.nmaas.orchestration.entities;
 import javax.persistence.*;
 
 /**
+ * Application configuration in Json format provided by the user/client.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
@@ -14,6 +16,8 @@ public class AppConfiguration {
     @Column(name="id")
     private Long id;
 
+    @Basic(fetch=FetchType.EAGER)
+    @Lob
     @Column(nullable = false)
     private String jsonInput;
 

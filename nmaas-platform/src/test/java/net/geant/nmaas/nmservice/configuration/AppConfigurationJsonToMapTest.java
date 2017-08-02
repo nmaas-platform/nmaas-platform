@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -55,17 +55,17 @@ public class AppConfigurationJsonToMapTest {
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Test
-    public void shouldMapOxidizedJsonToMap() throws IOException {
+    public void shouldMapOxidizedJsonToMap() throws UserConfigHandlingException {
         AppConfiguration appConfiguration = new AppConfiguration(EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT);
-        List<Map> list = (List<Map>) configurationsPreparer.getModelFromJson(appConfiguration).get("targets");
+        List<Map> list = (List<Map>) configurationsPreparer.createModelFromJson(appConfiguration).get("targets");
         assertThat(list.size(), equalTo(2));
         assertThat(list.stream().map(entry -> entry.get("ipAddress")).collect(Collectors.toList()), Matchers.contains("1.1.1.1", "2.2.2.2"));
     }
 
     @Test
-    public void shouldMapLibreNmsJsonToMap() throws IOException {
+    public void shouldMapLibreNmsJsonToMap() throws UserConfigHandlingException {
         AppConfiguration appConfiguration = new AppConfiguration(EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT);
-        List<Map> list = (List<Map>) configurationsPreparer.getModelFromJson(appConfiguration).get("targets");
+        List<Map> list = (List<Map>) configurationsPreparer.createModelFromJson(appConfiguration).get("targets");
         assertThat(list.size(), equalTo(2));
         assertThat(list.stream().map(entry -> entry.get("ipAddress")).collect(Collectors.toList()), Matchers.contains("192.168.1.1", "10.10.3.2"));
     }

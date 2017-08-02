@@ -3,7 +3,7 @@ apply plugin: 'idea'
 apply plugin: "jacoco"
 apply plugin: 'eclipse'
 
-version = '0.0.1-SNAPSHOT'
+version = '0.2.0-SNAPSHOT'
 group = 'net.geant.nmaas'
 
 sourceCompatibility = 1.8
@@ -16,14 +16,6 @@ repositories {
 dependencies {
 	testCompile('junit:junit:4.12')
 	testCompile('org.mockito:mockito-core:1.10.19')
-}
-
-jacocoTestReport {
-	reports {
-		xml.enabled false
-		csv.enabled false
-		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
-	}
 }
 
 test {

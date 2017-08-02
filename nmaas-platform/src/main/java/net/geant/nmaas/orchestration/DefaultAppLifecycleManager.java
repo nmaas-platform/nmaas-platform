@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 /**
+ * Default {@link AppLifecycleManager} implementation.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service

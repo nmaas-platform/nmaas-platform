@@ -7,6 +7,10 @@ import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ * @author Michal Giertych <mikus@man.poznan.pl>
+ */
 @SpringBootApplication
 public class NmaasPlatform {
 

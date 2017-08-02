@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
 
@@ -59,6 +62,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException {
         try {
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
             orchestrator.prepareDeploymentEnvironment(deploymentId);
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException

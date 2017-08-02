@@ -1,6 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
 /**
+ * NM service deployment states.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public enum NmServiceDeploymentState {
@@ -8,6 +10,7 @@ public enum NmServiceDeploymentState {
     INIT,
     REQUEST_VERIFIED,
     REQUEST_VERIFICATION_FAILED,
+    ENVIRONMENT_PREPARATION_INITIATED,
     ENVIRONMENT_PREPARED,
     ENVIRONMENT_PREPARATION_FAILED,
     READY_FOR_DEPLOYMENT,

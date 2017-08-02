@@ -1,40 +1,31 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
+import net.geant.nmaas.portal.api.domain.ApiError;
+import net.geant.nmaas.portal.api.exception.*;
+import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
+import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
+import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
+import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import net.geant.nmaas.portal.api.domain.ApiError;
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
-import net.geant.nmaas.portal.api.exception.MarketException;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.api.exception.StorageException;
-import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
-import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
-import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
-import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
-
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	final static Logger log = LogManager.getLogger(ApiExceptionHandler.class);
 	
-	@ExceptionHandler(value = { AuthenticationException.class, 
-								BasicAuthenticationException.class,  
-								AuthenticationMethodNotSupportedException.class, 
-								MissingTokenException.class, 
-								TokenAuthenticationException.class})
+	@ExceptionHandler(value = { AuthenticationException.class,
+								BasicAuthenticationException.class,
+								AuthenticationMethodNotSupportedException.class,
+								MissingTokenException.class,
+								TokenAuthenticationException.class,
+			                    AccessDeniedException.class })
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ApiError handleAuthenticationException(WebRequest req, Exception ex) {
 		return createApiError(ex, HttpStatus.UNAUTHORIZED);
