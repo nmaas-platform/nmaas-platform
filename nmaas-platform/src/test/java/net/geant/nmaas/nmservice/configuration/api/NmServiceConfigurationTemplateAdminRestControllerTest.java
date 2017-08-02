@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.After;
@@ -58,12 +58,12 @@ public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseC
     @Test
     public void shouldStoreAndLoadTemplate() throws Exception {
         String token = getValidUserTokenFor(Role.ADMIN);
-        mvc.perform(post("/platform/api/management/configs")
+        mvc.perform(post("/platform/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(templateJson()))
                 .andExpect(status().isCreated());
-        MvcResult result = mvc.perform(get("/platform/api/management/configs")
+        MvcResult result = mvc.perform(get("/platform/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -73,7 +73,7 @@ public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseC
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.USER);
-        mvc.perform(get("/platform/api/management/configs")
+        mvc.perform(get("/platform/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

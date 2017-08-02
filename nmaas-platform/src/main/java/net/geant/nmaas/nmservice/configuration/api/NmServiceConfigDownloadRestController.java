@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigurationNotFoundException;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationRepository;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class NmServiceConfigDownloadRestController {
     @Autowired
     private NmServiceConfigurationRepository configurations;
 
-    @RequestMapping(value = "/{configId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{configId}")
     public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)
             throws ConfigurationNotFoundException, IOException {
         log.info("Received configuration download request (configId -> " + configId + ")");

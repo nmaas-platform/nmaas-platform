@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.configuration.repository;
+package net.geant.nmaas.nmservice.configuration.repositories;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;

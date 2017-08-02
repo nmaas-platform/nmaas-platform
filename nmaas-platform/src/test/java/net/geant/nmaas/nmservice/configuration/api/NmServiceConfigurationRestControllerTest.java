@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

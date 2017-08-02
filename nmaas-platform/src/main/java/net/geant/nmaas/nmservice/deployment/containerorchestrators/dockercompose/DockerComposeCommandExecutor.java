@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFile;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
