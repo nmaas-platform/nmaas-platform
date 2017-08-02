@@ -64,7 +64,7 @@ public class DockerComposeFilePreparer {
 
     private DockerComposeFileTemplate loadDockerComposeFileTemplateForApplication(Identifier applicationId)
             throws DockerComposeFileTemplateNotFoundException, InternalErrorException {
-        Application application = applicationRepository.getOne(applicationId.longValue());
+        Application application = applicationRepository.findOne(applicationId.longValue());
         if (application == null)
             throw new InternalErrorException("Application with id " + applicationId + " not found in repository");
         AppDeploymentSpec appDeploymentSpec = application.getAppDeploymentSpec();
