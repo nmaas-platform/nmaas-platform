@@ -51,7 +51,7 @@ public class NmServiceConfigurationRestControllerTest {
                 = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileContent);
         configurations.save(configuration);
         mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
-                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
+                .with(httpBasic(context.getEnvironment().getProperty("app.config.download.client.username"), context.getEnvironment().getProperty("app.config.download.client.password"))))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + TEST_OXIDIZED_CONFIG_FIRST_FILENAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
@@ -68,7 +68,7 @@ public class NmServiceConfigurationRestControllerTest {
     @Test
     public void shouldReturnNotFoundOnMissingConfigurationWithProvidedId() throws Exception {
         mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID + "invalid-string")
-                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
+                .with(httpBasic(context.getEnvironment().getProperty("app.config.download.client.username"), context.getEnvironment().getProperty("app.config.download.client.password"))))
                 .andExpect(status().isNotFound());
     }
 

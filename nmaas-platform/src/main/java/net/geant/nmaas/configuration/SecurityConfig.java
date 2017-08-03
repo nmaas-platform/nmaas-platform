@@ -46,13 +46,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String APP_LOGO = "/portal/api/apps/{appId:[\\d+]}/logo";
 	private final static String APP_SCREENSHOTS = "/portal/api/apps/{appId:[\\d+]}/screenshots/**";
 	
-    private static final String ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME = "api.client.ansible.username";
-    private static final String ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME = "api.client.ansible.password";
-	private static final String NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "api.client.config.download.username";
-	private static final String NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "api.client.config.download.password";
+    private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
+    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME = "ansible.notification.client.password";
+	private static final String APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.config.download.client.username";
+	private static final String APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.config.download.client.password";
+	private static final String APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.compose.download.client.username";
+	private static final String APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.compose.download.client.password";
 
 	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
 	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
+	private static final String AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT = "COMPOSE_DOWNLOAD_CLIENT";
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
@@ -63,13 +66,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
-				.withUser(env.getProperty(ANSIBLE_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(ANSIBLE_CLIENT_PASSWORD_PROPERTY_NAME))
+				.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
+					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT)
-				.and()
-				.withUser(env.getProperty(NMAAS_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(NMAAS_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
+				.and().withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
+				.and().withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 	}
 	
 	@Override
@@ -88,7 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
 				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-				.antMatchers("/platform/api/dockercompose/files/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
+				.antMatchers("/platform/api/dockercompose/files/**").hasRole(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT)
 	            .and().httpBasic()
 			.and()
 				.authorizeRequests()

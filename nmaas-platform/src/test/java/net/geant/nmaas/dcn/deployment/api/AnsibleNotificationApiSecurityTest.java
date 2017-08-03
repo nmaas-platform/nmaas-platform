@@ -47,7 +47,7 @@ public class AnsibleNotificationApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldAuthAndCallNotificationPost() throws Exception {
         mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter("testDcn"))
-                .with(httpBasic(context.getEnvironment().getProperty("api.client.ansible.username"), context.getEnvironment().getProperty("api.client.ansible.password")))
+                .with(httpBasic(context.getEnvironment().getProperty("ansible.notification.client.username"), context.getEnvironment().getProperty("ansible.notification.client.password")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success")))
                 .accept(MediaType.APPLICATION_JSON))

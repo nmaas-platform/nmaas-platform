@@ -57,7 +57,7 @@ public class DockerComposeFileDownloadRestControllerTest {
     @Test
     public void shouldReturnSimpleComposeFile() throws Exception {
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
-                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
+                .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
@@ -74,13 +74,13 @@ public class DockerComposeFileDownloadRestControllerTest {
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentAndMissingComposeFileWithProvidedDeploymentId() throws Exception {
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value() + "invalid-string")
-                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
+                .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
-        Identifier deploymentId = Identifier.newInstance("newDeploymenId");
+        Identifier deploymentId = Identifier.newInstance("newDeploymentId");
         AppDeployment deployment = new AppDeployment(deploymentId, clientId, applicationId);
         appDeploymentRepository.save(deployment);
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
-                .with(httpBasic(context.getEnvironment().getProperty("api.client.config.download.username"), context.getEnvironment().getProperty("api.client.config.download.password"))))
+                .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
     }
 
