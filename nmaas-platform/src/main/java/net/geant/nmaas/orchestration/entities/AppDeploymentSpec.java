@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.entities;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,7 +10,8 @@ import java.util.List;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
- * {@link AppDeploymentEnv} and the {@link DockerContainerTemplate} if deployment using plain Docker Engine is supported.
+ * {@link AppDeploymentEnv} and all required templates ({@link DockerContainerTemplate}, {@link DockerComposeFileTemplate}
+ * and/or {@link KubernetesTemplate}) according to the supported deployment environments.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -29,6 +31,9 @@ public class AppDeploymentSpec implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DockerComposeFileTemplate dockerComposeFileTemplate;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private KubernetesTemplate kubernetesTemplate;
 
     public Long getId() {
         return id;
@@ -60,5 +65,13 @@ public class AppDeploymentSpec implements Serializable {
 
     public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
         this.dockerComposeFileTemplate = dockerComposeFileTemplate;
+    }
+
+    public KubernetesTemplate getKubernetesTemplate() {
+        return kubernetesTemplate;
+    }
+
+    public void setKubernetesTemplate(KubernetesTemplate kubernetesTemplate) {
+        this.kubernetesTemplate = kubernetesTemplate;
     }
 }

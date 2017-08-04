@@ -11,7 +11,8 @@
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"DOCKER_ENGINE",
-			"DOCKER_COMPOSE"
+			"DOCKER_COMPOSE",
+			"KUBERNETES"
 		],
 		"dockerContainerTemplate": {
 			"image": "oxidized/oxidized:latest",
@@ -25,6 +26,9 @@
 			"containerVolumes": [
 				"/root/.config/oxidized"
 			]
+		},
+		"kubernetesTemplate": {
+			"archive": "oxidized-0.1.1.tgz"
 		}
 	},
 	"configTemplate": {

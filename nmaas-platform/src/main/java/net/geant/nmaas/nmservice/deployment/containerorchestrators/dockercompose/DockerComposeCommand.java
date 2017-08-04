@@ -4,6 +4,9 @@ import net.geant.nmaas.utils.ssh.Command;
 
 import java.util.function.Predicate;
 
+/**
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 public class DockerComposeCommand implements Command {
 
 	private static final String CD = "cd";
