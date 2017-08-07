@@ -36,8 +36,9 @@ public class HelmInstallCommand implements Command {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(INSTALL).append(SPACE)
                 .append(OPTION_NAME).append(SPACE).append(releaseName).append(SPACE)
-                .append(OPTION_NAMESPACE).append(SPACE).append(namespace).append(SPACE)
-                .append(OPTION_SET).append(SPACE).append(commaSeparatedValuesString(values)).append(SPACE);
+                .append(OPTION_NAMESPACE).append(SPACE).append(namespace).append(SPACE);
+        if (values != null && !values.isEmpty())
+            sb.append(OPTION_SET).append(SPACE).append(commaSeparatedValuesString(values)).append(SPACE);
         sb.append(chartArchive);
         return new HelmInstallCommand(sb.toString());
     }
