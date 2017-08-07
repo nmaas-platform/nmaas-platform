@@ -13,13 +13,10 @@
 
 #### Prerequisites
 ---
- + Install npm (from NodeJS 6.9.5+)
-   - [https://nodejs.org](https://nodejs.org)
- + Install angular-cli (1.0.0-beta.28.3)
-   - [http://cli.angular.io](http://cli.angular.io)
-   - npm install -g angular-cli
- + Install git
-   - [https://git-scm.com/](https://git-scm.com/)
+ + Install npm (from NodeJS 6.11.0+) ([https://nodejs.org](https://nodejs.org))
+ + Install angular-cli (version 1.1.3+) ([http://cli.angular.io](http://cli.angular.io))
+   - npm install -g @angular/cli@latest
+ + Install git ([https://git-scm.com/](https://git-scm.com/))
 
 #### Defaults
 ---

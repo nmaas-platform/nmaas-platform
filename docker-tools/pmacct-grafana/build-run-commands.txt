@@ -1,8 +1,0 @@
-#example build command
-docker build --no-cache -t llopat/pmacct .
-
-#example run command
-docker run -d --name demo-pmacct-1 -p 5001:3000 -p 3055:3055/udp -v /home/mgmt/docker/data-pmacct-1:/data llopat/pmacct "$@"
-
-#example exec command
-docker exec -ti demo-pmacct-1 /bin/bash
