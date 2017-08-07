@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import com.spotify.docker.client.messages.ContainerConfig;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.container.ContainerConfigBuilder;
@@ -134,18 +134,21 @@ public class DockerEngineManager implements ContainerOrchestrator {
         }
     }
 
-    private DockerContainerNetDetails obtainNetworkDetailsFoNewContainerAndStoreInRepository(Identifier deploymentId) throws InvalidDeploymentIdException, ContainerOrchestratorInternalErrorException {
+    private DockerContainerNetDetails obtainNetworkDetailsFoNewContainerAndStoreInRepository(Identifier deploymentId)
+            throws InvalidDeploymentIdException, ContainerOrchestratorInternalErrorException {
         final Identifier clientId = repositoryManager.loadClientId(deploymentId);
-        final DockerContainerNetDetails netDetails = obtainNetworkDetailsForContainer(clientId);
+        final DockerContainerNetDetails netDetails = obtainNetworkDetailsForContainer(clientId, deploymentId);
         repositoryManager.updateDockerContainerNetworkDetails(deploymentId, netDetails);
         return netDetails;
     }
 
-    private DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
-        return dockerNetworkManager.obtainNetworkDetailsForContainer(clientId);
+    private DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId, Identifier deploymentId)
+            throws ContainerOrchestratorInternalErrorException {
+        return dockerNetworkManager.obtainNetworkDetailsForContainer(clientId, deploymentId);
     }
 
-    private String createContainerAndStoreIdInRepository(NmServiceInfo service) throws NmServiceRequestVerificationException, CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, InvalidDeploymentIdException {
+    private String createContainerAndStoreIdInRepository(NmServiceInfo service)
+            throws NmServiceRequestVerificationException, CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, InvalidDeploymentIdException {
         ContainerConfigBuilder.verifyFinalInput(service);
         final String containerId = createContainer(service);
         repositoryManager.updateDockerContainerDeploymentId(service.getDeploymentId(), containerId);

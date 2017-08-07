@@ -16,6 +16,8 @@ public class AppConfiguration {
     @Column(name="id")
     private Long id;
 
+    @Basic(fetch=FetchType.EAGER)
+    @Lob
     @Column(nullable = false)
     private String jsonInput;
 

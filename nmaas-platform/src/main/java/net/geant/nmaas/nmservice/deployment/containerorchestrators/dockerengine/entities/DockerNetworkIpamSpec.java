@@ -2,8 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 
 import javax.persistence.*;
 
-import static net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostState.ADDRESS_POOL_DEFAULT_MASK_LENGTH;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -12,6 +10,7 @@ import static net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostS
 public class DockerNetworkIpamSpec {
 
     private static final String DEFAULT_CONTAINER_IP_ADDRESS_LAST_OCTET = "1";
+    private static final String ADDRESS_POOL_DEFAULT_MASK_LENGTH = "24";
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)

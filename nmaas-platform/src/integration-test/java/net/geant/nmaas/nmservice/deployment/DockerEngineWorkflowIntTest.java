@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import com.spotify.docker.client.exceptions.DockerException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
@@ -45,15 +45,17 @@ public class DockerEngineWorkflowIntTest {
 	private Identifier clientId = Identifier.newInstance("clientId");
 
 	@Before
-	public void setup() throws DockerHostNotFoundException, DockerException, InterruptedException {
+	public void setup() throws DockerException, InterruptedException {
 		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplatesInit.alpineTomcatTemplate());
 		nmServiceRepositoryManager.storeService(service);
 		DockerApiClientMockInit.mockMethods(dockerApiClient);
+		DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
 	}
 
 	@After
 	public void clear() throws InvalidDeploymentIdException, InvalidClientIdException {
 		nmServiceRepositoryManager.removeService(deploymentId);
+		DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
 	}
 
 	@Test

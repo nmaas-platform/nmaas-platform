@@ -7,15 +7,15 @@ import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigExistsException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigInvalidException;
-import net.geant.nmaas.externalservices.inventory.vpnconfigs.AnsiblePlaybookVpnConfigRepository;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
+import net.geant.nmaas.helpers.NetworkAttachPointsInit;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.repositories.DockerNetworkRepository;
-import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.DcnDeploymentStateChangeManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -44,10 +44,14 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class DcnDeploymentIntTest {
 
+    private static final long CUSTOMER_ID = 1L;
+
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
-    private AnsiblePlaybookVpnConfigRepository vpnConfigRepository;
+    private DockerHostAttachPointRepository dockerHostAttachPointRepository;
+    @Autowired
+    private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
     @Autowired
@@ -59,29 +63,33 @@ public class DcnDeploymentIntTest {
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
-    @Autowired
-    private AnsiblePlaybookVpnConfigRepositoryInit ansiblePlaybookVpnConfigRepositoryInit;
     @MockBean
     private DcnDeploymentStateChangeManager dcnDeploymentStateChangeManager;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance(String.valueOf(AnsiblePlaybookVpnConfigRepositoryInit.TEST_CUSTOMER_ID));
+    private Identifier clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
     private Identifier applicationId = Identifier.newInstance("applicationId");
 
     private DcnDeploymentCoordinator dcnDeployment;
 
     @Before
-    public void setup() throws DockerHostNotFoundException,
-            AnsiblePlaybookVpnConfigInvalidException,
-            AnsiblePlaybookVpnConfigExistsException,
-            DockerException,
-            InterruptedException {
-        ansiblePlaybookVpnConfigRepositoryInit.initWithDefaults();
-        appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, applicationId));
-        dockerNetworkRepository.save(new DockerNetwork(clientId, dockerHost(), 505, "10.10.10.0/24", "10.10.10.254"));
+    public void setup() throws DockerException, InterruptedException, DockerHostNotFoundException {
+        DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
+        NetworkAttachPointsInit.initDockerHostAttachPoints(dockerHostAttachPointRepository);
+        NetworkAttachPointsInit.initBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, clientId, applicationId);
+        appDeploymentRepository.save(appDeployment);
+        DockerNetwork dockerNetwork = new DockerNetwork(
+                clientId,
+                dockerHostRepositoryManager.loadPreferredDockerHost(),
+                505,
+                "10.10.10.0/24",
+                "10.10.10.254");
+        dockerNetworkRepository.save(dockerNetwork);
         dcnDeployment = new DcnDeploymentCoordinator(
                 dcnRepositoryManager,
-                vpnConfigRepository,
+                dockerHostAttachPointRepository,
+                basicCustomerNetworkAttachPointRepository,
                 applicationEventPublisher,
                 dockerNetworkRepository,
                 dockerApiClient);
@@ -90,6 +98,9 @@ public class DcnDeploymentIntTest {
 
     @After
     public void clear() {
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
+        NetworkAttachPointsInit.cleanDockerHostAttachPoints(dockerHostAttachPointRepository);
+        NetworkAttachPointsInit.cleanBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
         dockerNetworkRepository.deleteAll();
     }
 
@@ -119,10 +130,6 @@ public class DcnDeploymentIntTest {
         dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(clientId.value()), AnsiblePlaybookStatus.Status.SUCCESS);
         Thread.sleep(500);
         assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REMOVED));
-    }
-
-    private DockerHost dockerHost() throws DockerHostNotFoundException {
-        return dockerHostRepositoryManager.loadPreferredDockerHost();
     }
 
 }
