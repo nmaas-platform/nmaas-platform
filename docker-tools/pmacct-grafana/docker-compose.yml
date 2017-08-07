@@ -1,8 +1,0 @@
-pmacct-by-llopat:
-  restart: always
-  image: llopat/pmacct
-  ports:
-    - 5001:3000/tcp
-    - 3055:3055/udp
-  volumes:
-    - /home/mgmt/docker/data-pmacct-1:/data
