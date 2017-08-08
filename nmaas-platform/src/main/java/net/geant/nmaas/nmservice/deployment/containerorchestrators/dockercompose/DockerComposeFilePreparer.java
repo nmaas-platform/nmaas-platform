@@ -9,10 +9,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class DockerComposeFilePreparer {
 
     @Autowired
-    private AppDeploymentRepository deploymentRepository;
+    private NmServiceInfoRepository nmServiceInfoRepository;
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -45,10 +45,10 @@ public class DockerComposeFilePreparer {
         DockerComposeFileTemplate dockerComposeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
         Template template = convertToTemplate(dockerComposeFileTemplate);
         DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
-        AppDeployment deployment = deploymentRepository.findByDeploymentId(deploymentId)
-                .orElseThrow(() -> new InternalErrorException("Application deployment with id " + deploymentId + " not found"));
-        deployment.setDockerComposeFile(composeFile);
-        deploymentRepository.save(deployment);
+        NmServiceInfo nmServiceInfo = nmServiceInfoRepository.findByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found"));
+        nmServiceInfo.setDockerComposeFile(composeFile);
+        nmServiceInfoRepository.save(nmServiceInfo);
     }
 
     private Map<String, Object> buildModel(DockerComposeFileInput input) {

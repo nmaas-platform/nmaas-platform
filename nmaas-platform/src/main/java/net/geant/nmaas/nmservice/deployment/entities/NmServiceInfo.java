@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
+ * Network Management Service deployment information.
  * Contains all data required by {@link net.geant.nmaas.nmservice.deployment.ContainerOrchestrator} to carry out
  * NM service deployment.
  *
@@ -67,6 +69,12 @@ public class NmServiceInfo {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DockerComposeFileTemplate dockerComposeFileTemplate;
+
+    /**
+     * Complete Docker Compose file used for this service deployment.
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DockerComposeFile dockerComposeFile;
 
     /**
      * Kubernetes template for this service (set in case of deployment on kubernetes cluster using helm)
@@ -166,6 +174,14 @@ public class NmServiceInfo {
 
     public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
         this.dockerComposeFileTemplate = dockerComposeFileTemplate;
+    }
+
+    public DockerComposeFile getDockerComposeFile() {
+        return dockerComposeFile;
+    }
+
+    public void setDockerComposeFile(DockerComposeFile dockerComposeFile) {
+        this.dockerComposeFile = dockerComposeFile;
     }
 
     public KubernetesTemplate getKubernetesTemplate() {

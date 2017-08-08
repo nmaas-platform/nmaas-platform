@@ -2,10 +2,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.After;
@@ -29,7 +29,7 @@ public class DockerComposeFilePreparerTest {
     @Autowired
     private DockerComposeFilePreparer composeFilePreparer;
     @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
+    private NmServiceInfoRepository nmServiceInfoRepository;
     @Autowired
     private ApplicationRepository applicationRepository;
     @Autowired
@@ -49,14 +49,14 @@ public class DockerComposeFilePreparerTest {
         appDeploymentSpec.setDockerComposeFileTemplate(template);
         application.setAppDeploymentSpec(appDeploymentSpec);
         appId = applicationRepository.save(application).getId();
-        AppDeployment deployment = new AppDeployment(deploymentId, clientId, applicationId);
-        appDeploymentRepository.save(deployment);
+        NmServiceInfo nmServiceInfo = new NmServiceInfo(deploymentId, clientId, applicationId);
+        nmServiceInfoRepository.save(nmServiceInfo);
     }
 
     @After
     public void clean() {
         applicationRepository.deleteAll();
-        appDeploymentRepository.deleteAll();
+        nmServiceInfoRepository.deleteAll();
     }
 
     @Test
@@ -67,10 +67,10 @@ public class DockerComposeFilePreparerTest {
         input.setExternalAccessNetworkName("");
         input.setDcnNetworkName("");
         composeFilePreparer.buildAndStoreComposeFile(deploymentId, Identifier.newInstance(String.valueOf(appId)), input);
-        assertThat(appDeploymentRepository.findByDeploymentId(deploymentId).get().getDockerComposeFile().getComposeFileContent(),
+        assertThat(nmServiceInfoRepository.findByDeploymentId(deploymentId).get().getDockerComposeFile().getComposeFileContent(),
                 allOf(containsString("5000:"), containsString("/home/dir:")));
         assertThat(composeFileRepository.count(), equalTo(1L));
-        appDeploymentRepository.deleteAll();
+        nmServiceInfoRepository.deleteAll();
         assertThat(composeFileRepository.count(), equalTo(0L));
     }
 

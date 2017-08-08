@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.api;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class DockerComposeFileDownloadRestControllerTest {
     @Autowired
     private Filter springSecurityFilterChain;
     @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
+    private NmServiceInfoRepository nmServiceInfoRepository;
 
     private MockMvc mvc;
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
@@ -44,14 +44,14 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
-        AppDeployment deployment = new AppDeployment(deploymentId, clientId, applicationId);
-        deployment.setDockerComposeFile(new DockerComposeFile(composeFileContent));
-        appDeploymentRepository.save(deployment);
+        NmServiceInfo nmServiceInfo = new NmServiceInfo(deploymentId, clientId, applicationId);
+        nmServiceInfo.setDockerComposeFile(new DockerComposeFile(composeFileContent));
+        nmServiceInfoRepository.save(nmServiceInfo);
     }
 
     @After
     public void clean() {
-        appDeploymentRepository.deleteAll();
+        nmServiceInfoRepository.deleteAll();
     }
 
     @Test
@@ -77,8 +77,8 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
         Identifier deploymentId = Identifier.newInstance("newDeploymentId");
-        AppDeployment deployment = new AppDeployment(deploymentId, clientId, applicationId);
-        appDeploymentRepository.save(deployment);
+        NmServiceInfo nmServiceInfo = new NmServiceInfo(deploymentId, clientId, applicationId);
+        nmServiceInfoRepository.save(nmServiceInfo);
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
