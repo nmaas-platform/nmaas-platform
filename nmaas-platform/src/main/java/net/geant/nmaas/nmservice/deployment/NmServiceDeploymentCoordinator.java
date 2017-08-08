@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
@@ -42,7 +43,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.verifyDeploymentEnvironmentSupport(deploymentSpec.getSupportedDeploymentEnvironments());
             final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
             if (deploymentSpec.getDockerContainerTemplate() != null)
-                serviceInfo.setTemplate(DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
+                serviceInfo.setDockerContainerTemplate(DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
+            if (deploymentSpec.getKubernetesTemplate() != null)
+                serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(deploymentSpec.getKubernetesTemplate()));
             repositoryManager.storeService(serviceInfo);
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);

@@ -12,7 +12,7 @@ import java.util.List;
 public class ContainerConfigInput {
 
     static ContainerConfigInput fromSpec(NmServiceInfo serviceInfo) {
-        DockerContainerTemplate template = serviceInfo.getTemplate();
+        DockerContainerTemplate template = serviceInfo.getDockerContainerTemplate();
         ContainerConfigInput input = new ContainerConfigInput();
         input.setImage(template.getImage());
         input.setCommand(compileCommands(template));

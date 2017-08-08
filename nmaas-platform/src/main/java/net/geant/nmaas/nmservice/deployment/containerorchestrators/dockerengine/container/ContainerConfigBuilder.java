@@ -82,7 +82,7 @@ public class ContainerConfigBuilder {
     }
 
     public static void verifyInitInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
-        if (service.getTemplate() == null)
+        if (service.getDockerContainerTemplate() == null)
             throw new NmServiceRequestVerificationException("Service template not set");
         if (service.getHost() == null)
             throw new NmServiceRequestVerificationException("Docker host not set");

@@ -46,7 +46,8 @@ public class DockerEngineWorkflowIntTest {
 
 	@Before
 	public void setup() throws DockerException, InterruptedException {
-		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplatesInit.alpineTomcatTemplate());
+		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId);
+		service.setDockerContainerTemplate(DockerContainerTemplatesInit.alpineTomcatTemplate());
 		nmServiceRepositoryManager.storeService(service);
 		DockerApiClientMockInit.mockMethods(dockerApiClient);
 		DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);

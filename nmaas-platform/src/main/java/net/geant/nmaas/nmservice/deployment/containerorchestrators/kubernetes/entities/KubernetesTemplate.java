@@ -33,4 +33,11 @@ public class KubernetesTemplate {
     public void setArchive(String archive) {
         this.archive = archive;
     }
+
+    public static KubernetesTemplate copy(KubernetesTemplate toCopy) {
+        KubernetesTemplate template = new KubernetesTemplate();
+        template.setArchive(toCopy.getArchive());
+        return template;
+    }
+
 }

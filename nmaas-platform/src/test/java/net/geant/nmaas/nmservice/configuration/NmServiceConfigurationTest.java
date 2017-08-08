@@ -23,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -72,7 +71,9 @@ public class NmServiceConfigurationTest {
 
     @Before
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
-        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate()));
+        NmServiceInfo nmServiceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
+        nmServiceInfo.setDockerContainerTemplate(oxidizedTemplate());
+        nmServiceRepositoryManager.storeService(nmServiceInfo);
         configuration = new AppConfiguration("");
         appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);

@@ -103,7 +103,7 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     private void downloadContainerImageOnDockerHost(NmServiceInfo service)
             throws ContainerOrchestratorInternalErrorException {
-        dockerContainerManager.pullImage(service.getTemplate().getImage(), service.getHost());
+        dockerContainerManager.pullImage(service.getDockerContainerTemplate().getImage(), service.getHost());
     }
 
     @Override

@@ -43,7 +43,8 @@ public class UpdateNmServiceInfoWithDevicesTest {
 
     @Before
     public void setup() {
-        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId1, applicationId1, clientId, oxidizedTemplate());
+        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId1, applicationId1, clientId);
+        serviceInfo.setDockerContainerTemplate(oxidizedTemplate());
         nmServiceRepositoryManager.storeService(serviceInfo);
         serviceInfo = new NmServiceInfo(deploymentId2, applicationId2, clientId);
         nmServiceRepositoryManager.storeService(serviceInfo);

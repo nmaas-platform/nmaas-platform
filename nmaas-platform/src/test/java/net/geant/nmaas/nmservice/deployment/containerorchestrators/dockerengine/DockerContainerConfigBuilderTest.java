@@ -47,7 +47,8 @@ public class DockerContainerConfigBuilderTest {
                 "/data/scripts",
                 "/data/volumes",
                 true);
-        serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId, testTemplate1);
+        serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
+        serviceInfo.setDockerContainerTemplate(testTemplate1);
         serviceInfo.setHost(testDockerHost1);
         serviceInfo.setManagedDevicesIpAddresses(Arrays.asList("1.1.1.1", "2.2.2.2", "3.3.3.3"));
         DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec("1.1.0.0/24", "1.1.1.254");

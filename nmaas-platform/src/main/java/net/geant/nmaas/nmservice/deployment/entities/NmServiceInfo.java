@@ -1,7 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -10,6 +12,9 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
+ * Contains all data required by {@link net.geant.nmaas.nmservice.deployment.ContainerOrchestrator} to carry out
+ * NM service deployment.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
@@ -52,10 +57,22 @@ public class NmServiceInfo {
     private Identifier clientId;
 
     /**
-     * Container template for this service
+     * Docker container template for this service (set in case of deployment using plain docker-engine api)
      */
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
-    private DockerContainerTemplate template;
+    private DockerContainerTemplate dockerContainerTemplate;
+
+    /**
+     * Docker compose file template for this service (set in case of deployment using docker-compose api)
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private DockerComposeFileTemplate dockerComposeFileTemplate;
+
+    /**
+     * Kubernetes template for this service (set in case of deployment on kubernetes cluster using helm)
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private KubernetesTemplate kubernetesTemplate;
 
     /**
      * Target deployment Docker Host on which this service will be or was deployed.
@@ -85,14 +102,6 @@ public class NmServiceInfo {
         this.deploymentId = deploymentId;
         this.applicationId = applicationId;
         this.clientId = clientId;
-    }
-
-    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, DockerContainerTemplate template) {
-        this.name = deploymentId.value();
-        this.deploymentId = deploymentId;
-        this.applicationId = applicationId;
-        this.clientId = clientId;
-        this.template = template;
     }
 
     public Long getId() {
@@ -143,12 +152,28 @@ public class NmServiceInfo {
         this.clientId = clientId;
     }
 
-    public DockerContainerTemplate getTemplate() {
-        return template;
+    public DockerContainerTemplate getDockerContainerTemplate() {
+        return dockerContainerTemplate;
     }
 
-    public void setTemplate(DockerContainerTemplate template) {
-        this.template = template;
+    public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
+        this.dockerContainerTemplate = dockerContainerTemplate;
+    }
+
+    public DockerComposeFileTemplate getDockerComposeFileTemplate() {
+        return dockerComposeFileTemplate;
+    }
+
+    public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
+        this.dockerComposeFileTemplate = dockerComposeFileTemplate;
+    }
+
+    public KubernetesTemplate getKubernetesTemplate() {
+        return kubernetesTemplate;
+    }
+
+    public void setKubernetesTemplate(KubernetesTemplate kubernetesTemplate) {
+        this.kubernetesTemplate = kubernetesTemplate;
     }
 
     public DockerHost getHost() {
@@ -174,4 +199,5 @@ public class NmServiceInfo {
     public void setManagedDevicesIpAddresses(List<String> managedDevicesIpAddresses) {
         this.managedDevicesIpAddresses = managedDevicesIpAddresses;
     }
+
 }
