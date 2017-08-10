@@ -142,7 +142,8 @@ public class DockerContainerTemplate {
         template.setCommand(toCopy.getCommand());
         template.setContainerVolumes(new ArrayList<>(toCopy.getContainerVolumes()));
         template.setEnvVariables(new ArrayList<>(toCopy.getEnvVariables()));
-        template.setExposedPort(DockerContainerPortForwarding.copy(toCopy.getExposedPort()));
+        if(toCopy.getExposedPort() != null)
+            template.setExposedPort(DockerContainerPortForwarding.copy(toCopy.getExposedPort()));
         return template;
     }
 }

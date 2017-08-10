@@ -46,7 +46,7 @@ class NmServiceConfigurationsPreparer {
     private NmServiceConfigurationTemplatesRepository templates;
 
     @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
+    private NmServiceRepositoryManager serviceRepositoryManager;
 
     @Loggable(LogLevel.DEBUG)
     List<String> generateAndStoreConfigurations(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
@@ -105,7 +105,7 @@ class NmServiceConfigurationsPreparer {
         List<String> ipAddresses = devices.stream()
                 .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
                 .collect(Collectors.toList());
-        nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
+        serviceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }
 
     private void storeConfigurationInRepository(NmServiceConfiguration configuration) {

@@ -2,8 +2,6 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -30,17 +28,13 @@ public class AppConfigurationTask {
 
     private NmServiceConfigurationProvider serviceConfiguration;
 
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
-
     private AppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
     public AppConfigurationTask(
             NmServiceConfigurationProvider serviceConfiguration,
-            NmServiceRepositoryManager nmServiceRepositoryManager,
             AppDeploymentRepositoryManager repositoryManager) {
         this.serviceConfiguration = serviceConfiguration;
-        this.nmServiceRepositoryManager = nmServiceRepositoryManager;
         this.repositoryManager = repositoryManager;
     }
 
@@ -49,14 +43,11 @@ public class AppConfigurationTask {
     public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
         final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         try {
             serviceConfiguration.configureNmService(
                     deploymentId,
                     appDeployment.getApplicationId(),
-                    appDeployment.getConfiguration(),
-                    service.getHost(),
-                    service.getDockerContainer().getVolumesDetails());
+                    appDeployment.getConfiguration());
         } catch (NmServiceConfigurationFailedException configurationFailedException) {
             log.warn("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
         }

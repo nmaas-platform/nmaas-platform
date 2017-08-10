@@ -1,12 +1,10 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -30,9 +28,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     private ContainerOrchestrator orchestrator;
 
     @Autowired
-    private NmServiceRepositoryManager repositoryManager;
-
-    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
@@ -40,13 +35,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     public void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec deploymentSpec)
             throws NmServiceRequestVerificationException {
         try {
-            orchestrator.verifyDeploymentEnvironmentSupport(deploymentSpec.getSupportedDeploymentEnvironments());
-            final NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
-            if (deploymentSpec.getDockerContainerTemplate() != null)
-                serviceInfo.setDockerContainerTemplate(DockerContainerTemplate.copy(deploymentSpec.getDockerContainerTemplate()));
-            if (deploymentSpec.getKubernetesTemplate() != null)
-                serviceInfo.setKubernetesTemplate(KubernetesTemplate.copy(deploymentSpec.getKubernetesTemplate()));
-            repositoryManager.storeService(serviceInfo);
+            orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, applicationId, clientId, deploymentSpec);
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (NmServiceRequestVerificationException
@@ -103,6 +92,16 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             log.error("NM Service deployment verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED);
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws CouldNotRetrieveNmServiceAccessDetailsException {
+        try {
+            return orchestrator.serviceAccessDetails(deploymentId);
+        } catch (ContainerOrchestratorInternalErrorException e) {
+            throw new CouldNotRetrieveNmServiceAccessDetailsException("Exception thrown during access details retrieval -> " + e.getMessage());
         }
     }
 

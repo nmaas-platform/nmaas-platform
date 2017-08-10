@@ -1,8 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -10,8 +13,6 @@ import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
@@ -23,15 +24,19 @@ import java.util.List;
 public class KubernetesManager implements ContainerOrchestrator {
 
     @Autowired
+    private KubernetesNmServiceRepositoryManager repositoryManager;
+
+    @Autowired
     private HelmCommandExecutor helmCommandExecutor;
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupport(List<AppDeploymentEnv> supportedDeploymentEnvironments)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
-        if(!supportedDeploymentEnvironments.contains(AppDeploymentEnv.KUBERNETES))
+        if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
+        repositoryManager.storeService(new KubernetesNmServiceInfo());
     }
 
     @Override
@@ -82,4 +87,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         return "Kubernetes Container Orchestrator";
     }
 
+    @Override
+    public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
+        return null;
+    }
 }

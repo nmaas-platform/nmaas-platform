@@ -1,11 +1,14 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesNmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,6 +27,9 @@ public class ServiceDeploymentWithKubernetesTest {
 	@Autowired
 	private ContainerOrchestrator orchestrator;
 
+	@MockBean
+	private KubernetesNmServiceRepositoryManager kubernetesNmServiceRepositoryManager;
+
 	@Test
 	public void shouldInjectKubernetesManager() {
 		assertThat(orchestrator, is(notNullValue()));
@@ -32,12 +38,16 @@ public class ServiceDeploymentWithKubernetesTest {
 
 	@Test
 	public void shouldConfirmSupportForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
-		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
+		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
-		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE, AppDeploymentEnv.DOCKER_ENGINE));
+		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE, AppDeploymentEnv.DOCKER_ENGINE));
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
 	}
 
 }

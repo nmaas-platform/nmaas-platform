@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
@@ -7,7 +7,6 @@ import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.After;
@@ -27,10 +26,10 @@ import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class NmServiceRepositoryManagerTest {
+public class DockerEngineServiceRepositoryManagerTest {
 
     @Autowired
-    private NmServiceRepositoryManager repositoryManager;
+    private DockerEngineServiceRepositoryManager repositoryManager;
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
@@ -45,8 +44,7 @@ public class NmServiceRepositoryManagerTest {
 
     @Before
     public void setup() throws Exception {
-        NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId);
-        service.setDockerContainerTemplate(oxidizedTemplate());
+        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
         repositoryManager.storeService(service);
         dockerHostRepositoryManager.addDockerHost(dockerHost("dh"));
     }
@@ -59,8 +57,7 @@ public class NmServiceRepositoryManagerTest {
 
     @Test
     public void shouldStoreUpdateAndRemoveServiceInfo() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
-        NmServiceInfo service = new NmServiceInfo(deploymentId2, applicationId, clientId);
-        service.setDockerContainerTemplate(oxidizedTemplate());
+        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId2, applicationId, clientId, oxidizedTemplate());
         repositoryManager.storeService(service);
         assertThat(repositoryManager.loadService(deploymentId), is(notNullValue()));
         assertThat(repositoryManager.loadClientId(deploymentId), equalTo(clientId));
@@ -79,8 +76,7 @@ public class NmServiceRepositoryManagerTest {
 
     @Test(expected = Exception.class)
     public void shouldNotAllowForTwoServicesWithTheSameDeploymentId() throws InvalidDeploymentIdException {
-        NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId);
-        service.setDockerContainerTemplate(oxidizedTemplate());
+        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
         repositoryManager.storeService(service);
     }
 

@@ -1,10 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -13,15 +8,14 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * Network Management Service deployment information.
- * Contains all data required by {@link net.geant.nmaas.nmservice.deployment.ContainerOrchestrator} to carry out
- * NM service deployment.
+ * Abstract Network Management Service deployment information.
+ * Extended by each {@link net.geant.nmaas.nmservice.deployment.ContainerOrchestrator}.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="nm_service_info")
-public class NmServiceInfo {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class NmServiceInfo {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -57,42 +51,6 @@ public class NmServiceInfo {
      */
     @Column(nullable=false)
     private Identifier clientId;
-
-    /**
-     * Docker container template for this service (set in case of deployment using plain docker-engine api)
-     */
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
-    private DockerContainerTemplate dockerContainerTemplate;
-
-    /**
-     * Docker compose file template for this service (set in case of deployment using docker-compose api)
-     */
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DockerComposeFileTemplate dockerComposeFileTemplate;
-
-    /**
-     * Complete Docker Compose file used for this service deployment.
-     */
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DockerComposeFile dockerComposeFile;
-
-    /**
-     * Kubernetes template for this service (set in case of deployment on kubernetes cluster using helm)
-     */
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private KubernetesTemplate kubernetesTemplate;
-
-    /**
-     * Target deployment Docker Host on which this service will be or was deployed.
-     */
-    @ManyToOne(fetch=FetchType.EAGER)
-    private DockerHost host;
-
-    /**
-     * Docker container deployed for this service.
-     */
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    private DockerContainer dockerContainer;
 
     /**
      * The list of IP addresses of devices to be managed/monitored by the deployed service.
@@ -158,54 +116,6 @@ public class NmServiceInfo {
 
     public void setClientId(Identifier clientId) {
         this.clientId = clientId;
-    }
-
-    public DockerContainerTemplate getDockerContainerTemplate() {
-        return dockerContainerTemplate;
-    }
-
-    public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
-        this.dockerContainerTemplate = dockerContainerTemplate;
-    }
-
-    public DockerComposeFileTemplate getDockerComposeFileTemplate() {
-        return dockerComposeFileTemplate;
-    }
-
-    public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
-        this.dockerComposeFileTemplate = dockerComposeFileTemplate;
-    }
-
-    public DockerComposeFile getDockerComposeFile() {
-        return dockerComposeFile;
-    }
-
-    public void setDockerComposeFile(DockerComposeFile dockerComposeFile) {
-        this.dockerComposeFile = dockerComposeFile;
-    }
-
-    public KubernetesTemplate getKubernetesTemplate() {
-        return kubernetesTemplate;
-    }
-
-    public void setKubernetesTemplate(KubernetesTemplate kubernetesTemplate) {
-        this.kubernetesTemplate = kubernetesTemplate;
-    }
-
-    public DockerHost getHost() {
-        return host;
-    }
-
-    public void setHost(DockerHost host) {
-        this.host = host;
-    }
-
-    public DockerContainer getDockerContainer() {
-        return dockerContainer;
-    }
-
-    public void setDockerContainer(DockerContainer dockerContainer) {
-        this.dockerContainer = dockerContainer;
     }
 
     public List<String> getManagedDevicesIpAddresses() {

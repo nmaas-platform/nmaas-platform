@@ -5,7 +5,7 @@ import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerEngineNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ContainerConfigBuilder {
 
-    public static ContainerConfig build(NmServiceInfo service) {
+    public static ContainerConfig build(DockerEngineNmServiceInfo service) {
         final DockerContainerNetDetails networkDetails = service.getDockerContainer().getNetworkDetails();
         final ContainerConfigInput configInput = ContainerConfigInput.fromSpec(service);
         final ContainerConfig.Builder containerBuilder = ContainerConfig.builder();
@@ -81,7 +81,7 @@ public class ContainerConfigBuilder {
         return hostVolumeName + "-" + counter;
     }
 
-    public static void verifyInitInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
+    public static void verifyInitInput(DockerEngineNmServiceInfo service) throws NmServiceRequestVerificationException {
         if (service.getDockerContainerTemplate() == null)
             throw new NmServiceRequestVerificationException("Service template not set");
         if (service.getHost() == null)
@@ -90,7 +90,7 @@ public class ContainerConfigBuilder {
             throw new NmServiceRequestVerificationException("Docker container initial details are missing");
     }
 
-    public static void verifyFinalInput(NmServiceInfo service) throws NmServiceRequestVerificationException {
+    public static void verifyFinalInput(DockerEngineNmServiceInfo service) throws NmServiceRequestVerificationException {
         verifyInitInput(service);
         if (service.getDockerContainer().getNetworkDetails() == null)
             throw new NmServiceRequestVerificationException("Docker container network details not set");

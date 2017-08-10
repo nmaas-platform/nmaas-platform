@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -22,9 +21,6 @@ public class DockerComposeCommandExecutor {
 
     @Autowired
     private Environment env;
-
-    @Autowired
-    private DockerComposeFileRepository composeFiles;
 
     void executeComposeFileDownloadCommand(Identifier deploymentId, DockerHost host) throws CommandExecutionException {
         try {

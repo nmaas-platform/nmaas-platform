@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.api;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("docker-compose")
 public class DockerComposeFileDownloadRestControllerTest {
 
     @Autowired
@@ -30,7 +32,7 @@ public class DockerComposeFileDownloadRestControllerTest {
     @Autowired
     private Filter springSecurityFilterChain;
     @Autowired
-    private NmServiceInfoRepository nmServiceInfoRepository;
+    private DockerComposeServiceRepositoryManager repositoryManager;
 
     private MockMvc mvc;
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
@@ -44,14 +46,14 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
-        NmServiceInfo nmServiceInfo = new NmServiceInfo(deploymentId, clientId, applicationId);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
         nmServiceInfo.setDockerComposeFile(new DockerComposeFile(composeFileContent));
-        nmServiceInfoRepository.save(nmServiceInfo);
+        repositoryManager.storeService(nmServiceInfo);
     }
 
     @After
     public void clean() {
-        nmServiceInfoRepository.deleteAll();
+        repositoryManager.removeAllServices();
     }
 
     @Test
@@ -77,8 +79,8 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
         Identifier deploymentId = Identifier.newInstance("newDeploymentId");
-        NmServiceInfo nmServiceInfo = new NmServiceInfo(deploymentId, clientId, applicationId);
-        nmServiceInfoRepository.save(nmServiceInfo);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, clientId, applicationId, null);
+        repositoryManager.storeService(nmServiceInfo);
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());

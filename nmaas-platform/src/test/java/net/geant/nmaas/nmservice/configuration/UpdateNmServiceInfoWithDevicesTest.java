@@ -1,10 +1,10 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerEngineNmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -33,7 +33,7 @@ public class UpdateNmServiceInfoWithDevicesTest {
     private NmServiceConfigurationsPreparer configurationsPreparer;
 
     @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
+    private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
 
     private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
     private Identifier applicationId1 = Identifier.newInstance("applicationId1");
@@ -43,10 +43,9 @@ public class UpdateNmServiceInfoWithDevicesTest {
 
     @Before
     public void setup() {
-        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId1, applicationId1, clientId);
-        serviceInfo.setDockerContainerTemplate(oxidizedTemplate());
+        DockerEngineNmServiceInfo serviceInfo = new DockerEngineNmServiceInfo(deploymentId1, applicationId1, clientId, oxidizedTemplate());
         nmServiceRepositoryManager.storeService(serviceInfo);
-        serviceInfo = new NmServiceInfo(deploymentId2, applicationId2, clientId);
+        serviceInfo = new DockerEngineNmServiceInfo(deploymentId2, applicationId2, clientId, null);
         nmServiceRepositoryManager.storeService(serviceInfo);
     }
 

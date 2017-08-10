@@ -6,18 +6,15 @@ import freemarker.template.TemplateException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplateVariable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,25 +27,28 @@ import java.util.Map;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Profile("docker-compose")
 public class DockerComposeFilePreparer {
 
     @Autowired
-    private NmServiceInfoRepository nmServiceInfoRepository;
+    private DockerComposeServiceRepositoryManager repositoryManager;
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
-
-    @Transactional
-    public void buildAndStoreComposeFile(Identifier deploymentId, Identifier applicationId, DockerComposeFileInput input)
+    public void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeFileInput input)
             throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
         final Map<String, Object> model = buildModel(input);
-        DockerComposeFileTemplate dockerComposeFileTemplate = loadDockerComposeFileTemplateForApplication(applicationId);
+        DockerComposeNmServiceInfo nmServiceInfo = null;
+        try {
+            nmServiceInfo = repositoryManager.loadService(deploymentId);
+        } catch (InvalidDeploymentIdException e) {
+            throw new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found");
+        }
+        DockerComposeFileTemplate dockerComposeFileTemplate = nmServiceInfo.getDockerComposeFileTemplate();
+        if (dockerComposeFileTemplate == null)
+            throw new DockerComposeFileTemplateNotFoundException("NM service info for deployment with id " + deploymentId + " is missing docker compose file template");
         Template template = convertToTemplate(dockerComposeFileTemplate);
         DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
-        NmServiceInfo nmServiceInfo = nmServiceInfoRepository.findByDeploymentId(deploymentId)
-                .orElseThrow(() -> new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found"));
         nmServiceInfo.setDockerComposeFile(composeFile);
-        nmServiceInfoRepository.save(nmServiceInfo);
+        repositoryManager.storeService(nmServiceInfo);
     }
 
     private Map<String, Object> buildModel(DockerComposeFileInput input) {
@@ -60,20 +60,6 @@ public class DockerComposeFilePreparer {
         model.put(DockerComposeFileTemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), input.getExternalAccessNetworkName());
         model.put(DockerComposeFileTemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), input.getDcnNetworkName());
         return model;
-    }
-
-    private DockerComposeFileTemplate loadDockerComposeFileTemplateForApplication(Identifier applicationId)
-            throws DockerComposeFileTemplateNotFoundException, InternalErrorException {
-        Application application = applicationRepository.findOne(applicationId.longValue());
-        if (application == null)
-            throw new InternalErrorException("Application with id " + applicationId + " not found in repository");
-        AppDeploymentSpec appDeploymentSpec = application.getAppDeploymentSpec();
-        if (appDeploymentSpec == null)
-            throw new InternalErrorException("Application deployment spec for application with id " + applicationId + " is not set");
-        DockerComposeFileTemplate template = appDeploymentSpec.getDockerComposeFileTemplate();
-        if (template == null)
-            throw new DockerComposeFileTemplateNotFoundException(applicationId.value());
-        return template;
     }
 
     private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate)

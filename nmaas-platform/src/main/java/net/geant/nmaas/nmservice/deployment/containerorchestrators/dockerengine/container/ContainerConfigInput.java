@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerEngineNmServiceInfo;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class ContainerConfigInput {
 
-    static ContainerConfigInput fromSpec(NmServiceInfo serviceInfo) {
+    static ContainerConfigInput fromSpec(DockerEngineNmServiceInfo serviceInfo) {
         DockerContainerTemplate template = serviceInfo.getDockerContainerTemplate();
         ContainerConfigInput input = new ContainerConfigInput();
         input.setImage(template.getImage());

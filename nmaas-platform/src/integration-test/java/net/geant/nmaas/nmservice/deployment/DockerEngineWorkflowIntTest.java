@@ -6,7 +6,8 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostReposito
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerEngineNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -29,12 +30,10 @@ public class DockerEngineWorkflowIntTest {
 
 	@Autowired
 	private ContainerOrchestrator orchestrator;
-
 	@Autowired
-	private NmServiceRepositoryManager nmServiceRepositoryManager;
+	private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
 	@Autowired
 	private DockerHostRepositoryManager dockerHostRepositoryManager;
-
 	@MockBean
 	private ApplicationEventPublisher applicationEventPublisher;
 	@MockBean
@@ -46,8 +45,7 @@ public class DockerEngineWorkflowIntTest {
 
 	@Before
 	public void setup() throws DockerException, InterruptedException {
-		final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId);
-		service.setDockerContainerTemplate(DockerContainerTemplatesInit.alpineTomcatTemplate());
+		final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplatesInit.alpineTomcatTemplate());
 		nmServiceRepositoryManager.storeService(service);
 		DockerApiClientMockInit.mockMethods(dockerApiClient);
 		DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);

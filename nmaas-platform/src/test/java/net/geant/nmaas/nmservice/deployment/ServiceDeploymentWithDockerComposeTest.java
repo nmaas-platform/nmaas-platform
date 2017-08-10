@@ -1,11 +1,16 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -24,6 +29,9 @@ public class ServiceDeploymentWithDockerComposeTest {
 	@Autowired
 	private ContainerOrchestrator orchestrator;
 
+	@MockBean
+	private DockerComposeServiceRepositoryManager dockerComposeServiceRepositoryManager;
+
 	@Test
 	public void shouldInjectDockerComposeManager() {
 		assertThat(orchestrator, is(notNullValue()));
@@ -32,12 +40,17 @@ public class ServiceDeploymentWithDockerComposeTest {
 
 	@Test
 	public void shouldConfirmSupportForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
-		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE, AppDeploymentEnv.DOCKER_COMPOSE));
+		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE, AppDeploymentEnv.DOCKER_COMPOSE));
+		appDeploymentSpec.setDockerComposeFileTemplate(new DockerComposeFileTemplate());
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("did"), null, null, appDeploymentSpec);
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
-		orchestrator.verifyDeploymentEnvironmentSupport(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE, AppDeploymentEnv.KUBERNETES));
+		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE, AppDeploymentEnv.KUBERNETES));
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
 	}
 
 }
