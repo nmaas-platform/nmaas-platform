@@ -24,7 +24,7 @@ public class DockerComposeCommandExecutor {
 
     void executeComposeFileDownloadCommand(Identifier deploymentId, DockerHost host) throws CommandExecutionException {
         try {
-            final String authorizationHash = generateHash(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password"));
+            final String authorizationHash = generateHash(env.getProperty("app.compose.download.client.username"), env.getProperty("app.compose.download.client.password"));
             final String sourceUrl = env.getProperty("app.compose.download.url");
             final String targetDirectoryFullPath = host.getWorkingPath() + "/" + deploymentId.value();
             final String composeFileName = DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME;

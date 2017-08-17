@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
-import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,7 @@ public class NmServiceConfigurationRestControllerTest {
     private Filter springSecurityFilterChain;
 
     @Autowired
-    private NmServiceConfigurationRepository configurations;
+    private NmServiceConfigFileRepository configurations;
 
     private MockMvc mvc;
 

@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class NmServiceConfigurationTemplatesRepositoryTest {
 
     @Autowired
-    private NmServiceConfigurationTemplatesRepository templatesRepository;
+    private NmServiceConfigFileTemplatesRepository templatesRepository;
 
     @Autowired
     private ApplicationRepository applicationRepository;

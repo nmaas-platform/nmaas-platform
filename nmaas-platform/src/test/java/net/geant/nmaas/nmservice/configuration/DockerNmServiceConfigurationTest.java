@@ -47,7 +47,7 @@ public class DockerNmServiceConfigurationTest {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
     @MockBean
-    private NmServiceConfigurationsPreparer configurationsPreparer;
+    private NmServiceConfigurationFilePreparer configurationsPreparer;
     @MockBean
     private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
     @MockBean
@@ -75,7 +75,7 @@ public class DockerNmServiceConfigurationTest {
 
     @Test
     public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException, UserConfigHandlingException, ConfigTemplateHandlingException {
-        when(configurationsPreparer.generateAndStoreConfigurations(any(), any(), any())).thenAnswer((invocationOnMock) -> {Thread.sleep(500); return new ArrayList<String>();});
+        when(configurationsPreparer.generateAndStoreConfigFiles(any(), any(), any())).thenAnswer((invocationOnMock) -> {Thread.sleep(500); return new ArrayList<String>();});
         configurationProvider.configureNmService(deploymentId, applicationId, configuration);
         Thread.sleep(200);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));

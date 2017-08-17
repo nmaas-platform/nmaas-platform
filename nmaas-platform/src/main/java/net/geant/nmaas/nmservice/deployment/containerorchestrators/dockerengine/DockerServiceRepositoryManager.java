@@ -53,6 +53,9 @@ public abstract class DockerServiceRepositoryManager<T extends DockerNmServiceIn
 
     @Override
     public DockerContainerVolumesDetails loadDockerContainerVolumesDetails(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId)).getDockerContainer().getVolumesDetails();
+        DockerContainer dockerContainer = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId)).getDockerContainer();
+        if (dockerContainer == null)
+            throw new InvalidDeploymentIdException("Docker container is missing for deployment with id " + deploymentId);
+        return dockerContainer.getVolumesDetails();
     }
 }

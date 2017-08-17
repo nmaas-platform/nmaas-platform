@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
-import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +17,7 @@ import java.util.List;
 public class NmServiceConfigTemplateAdminRestController {
 
     @Autowired
-    private NmServiceConfigurationTemplatesRepository templates;
+    private NmServiceConfigFileTemplatesRepository templates;
 
     /**
      * Lists all {@link NmServiceConfigurationTemplate} stored in repository.

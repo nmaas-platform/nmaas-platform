@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class UpdateNmServiceInfoWithDevicesTest {
 
     @Autowired
-    private NmServiceConfigurationsPreparer configurationsPreparer;
+    private NmServiceConfigurationFilePreparer configurationsPreparer;
 
     @Autowired
     private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;

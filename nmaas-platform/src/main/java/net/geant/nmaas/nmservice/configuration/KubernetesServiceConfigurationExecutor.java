@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("kubernetes")
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class KubernetesNmServiceConfigurationExecutor implements NmServiceConfigurationProvider {
+public class KubernetesServiceConfigurationExecutor implements NmServiceConfigurationProvider {
 
     @Override
     public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration configuration) throws NmServiceConfigurationFailedException {
