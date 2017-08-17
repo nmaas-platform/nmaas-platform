@@ -20,16 +20,28 @@ public class SingleCommandExecutor {
 
 	private SshConnector connector = null;
 
+	private static SingleCommandExecutor defaultExecutor;
+
     public static SingleCommandExecutor getExecutor(String hostname, String username) {
+        if (defaultExecutor != null)
+            return defaultExecutor;
         return new SingleCommandExecutor(hostname, 22, new BasicCredentials(username, null));
     }
 
 	public static SingleCommandExecutor getExecutor(String hostname, BasicCredentials credentials) {
+        if (defaultExecutor != null)
+            return defaultExecutor;
 		return new SingleCommandExecutor(hostname, 22, credentials);
 	}
 
     public static SingleCommandExecutor getExecutor(String hostname, int port, BasicCredentials credentials) {
+        if (defaultExecutor != null)
+            return defaultExecutor;
         return new SingleCommandExecutor(hostname, port, credentials);
+    }
+
+    public static void setDefaultExecutor(SingleCommandExecutor executor) {
+        defaultExecutor = executor;
     }
 
 	private SingleCommandExecutor(String hostname, int port, BasicCredentials credentials) {
