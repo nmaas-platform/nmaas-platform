@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.MediaType;
 
@@ -90,6 +91,7 @@ public class CustomerNetworkAttachPointManagerRestControllerTest {
                 equalTo(FIRST_CUSTOMER_ID));
     }
 
+    @Transactional
     @Test
     public void shouldAddNewCustomerNetworkAttachPointFromJson() throws Exception {
         mvc.perform(post(URL_PREFIX + "/customernetworks")

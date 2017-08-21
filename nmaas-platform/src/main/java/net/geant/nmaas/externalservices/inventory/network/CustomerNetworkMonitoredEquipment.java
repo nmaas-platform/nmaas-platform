@@ -1,8 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.network;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +16,10 @@ public class CustomerNetworkMonitoredEquipment {
     @Column(name="id")
     private Long id;
 
-    @ElementCollection(fetch=FetchType.EAGER)
-    @Fetch(FetchMode.SELECT)
+    @ElementCollection
     private List<String> addresses = new ArrayList<>();
 
-    @ElementCollection(fetch=FetchType.EAGER)
-    @Fetch(FetchMode.SELECT)
+    @ElementCollection
     private List<String> networks = new ArrayList<>();
 
     public Long getId() {

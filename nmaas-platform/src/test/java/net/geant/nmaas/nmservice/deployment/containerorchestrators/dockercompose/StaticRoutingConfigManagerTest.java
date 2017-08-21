@@ -8,11 +8,11 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,12 +20,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -36,7 +36,7 @@ public class StaticRoutingConfigManagerTest {
 
     @Autowired
     private StaticRoutingConfigManager manager;
-    @MockBean
+    @Autowired
     private BasicCustomerNetworkAttachPointRepository customerNetworks;
     @MockBean
     private DockerComposeCommandExecutor composeCommandExecutor;
@@ -54,13 +54,27 @@ public class StaticRoutingConfigManagerTest {
         DockerContainerNetDetails containerNetworkDetails = new DockerContainerNetDetails(1, new DockerNetworkIpamSpec("", "1.1.1.1"));
         dockerContainer.setNetworkDetails(containerNetworkDetails);
         service.setDockerContainer(dockerContainer);
+        customerNetwork.setCustomerId(customerId.longValue());
+        customerNetwork.setAsNumber("");
+        customerNetwork.setRouterId("");
+        customerNetwork.setRouterName("");
+        customerNetwork.setRouterInterfaceVlan("");
+        customerNetwork.setRouterInterfaceName("");
+        customerNetwork.setRouterInterfaceUnit("");
+        customerNetwork.setBgpNeighborIp("");
+        customerNetwork.setBgpLocalIp("");
+    }
+
+    @After
+    public void cleanup() {
+        customerNetworks.deleteAll();
     }
 
     @Test
     public void shouldAddRoutesForCustomerNetworkDevices() throws Exception {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
-        when(customerNetworks.findByCustomerId(Matchers.eq(1L))).thenReturn(Optional.of(customerNetwork));
+        customerNetworks.save(customerNetwork);
         manager.configure(service);
         verify(composeCommandExecutor, times(3)).executeComposeExecCommand(any(), any(), any());
     }
@@ -69,7 +83,7 @@ public class StaticRoutingConfigManagerTest {
     public void shouldAddRoutesForCustomerNetworkDevicesAndUserProvidedDevices() throws Exception {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
-        when(customerNetworks.findByCustomerId(Matchers.eq(1L))).thenReturn(Optional.of(customerNetwork));
+        customerNetworks.save(customerNetwork);
         service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("10.10.3.3", "10.10.4.4", "10.10.5.5")));
         manager.configure(service);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
@@ -82,7 +96,7 @@ public class StaticRoutingConfigManagerTest {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         equipment.setNetworks(new ArrayList<>(Arrays.asList("10.11.0.0/24", "10.11.1.0/24")));
         customerNetwork.setMonitoredEquipment(equipment);
-        when(customerNetworks.findByCustomerId(Matchers.eq(1L))).thenReturn(Optional.of(customerNetwork));
+        customerNetworks.save(customerNetwork);
         service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("10.10.3.3", "10.10.4.4", "10.10.5.5")));
         manager.configure(service);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);

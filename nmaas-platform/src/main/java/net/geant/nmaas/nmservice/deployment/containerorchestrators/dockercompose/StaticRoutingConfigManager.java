@@ -7,6 +7,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInte
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class StaticRoutingConfigManager {
     @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
 
+    @Transactional
     public void configure(NmServiceInfo service) throws ContainerOrchestratorInternalErrorException, CommandExecutionException {
         BasicCustomerNetworkAttachPoint customerNetwork = customerNetworks.findByCustomerId(service.getClientId().longValue())
                 .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for customer with id " + service.getClientId()));
