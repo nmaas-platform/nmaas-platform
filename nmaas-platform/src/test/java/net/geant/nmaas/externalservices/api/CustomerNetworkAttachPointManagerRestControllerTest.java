@@ -3,6 +3,7 @@ package net.geant.nmaas.externalservices.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -14,12 +15,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.MediaType;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +48,17 @@ public class CustomerNetworkAttachPointManagerRestControllerTest {
                 "\"routerInterfaceVlan\":\"8\"," +
                 "\"bgpLocalIp\":\"192.168.144.4\"," +
                 "\"bgpNeighborIp\":\"192.168.144.14\"," +
-                "\"asNumber\":\"64522\"" +
+                "\"asNumber\":\"64522\"," +
+                "\"monitoredEquipment\": {" +
+                    "\"addresses\": [" +
+                        "\"11.11.11.11\"," +
+                        "\"22.22.22.22\"," +
+                        "\"33.33.33.33\"," +
+                        "\"44.44.44.44\"," +
+                        "\"55.55.55.55\"" +
+                    "]," +
+                    "\"networks\": []" +
+                "}" +
             "}";
 
     @Autowired
@@ -78,6 +91,7 @@ public class CustomerNetworkAttachPointManagerRestControllerTest {
                 equalTo(FIRST_CUSTOMER_ID));
     }
 
+    @Transactional
     @Test
     public void shouldAddNewCustomerNetworkAttachPointFromJson() throws Exception {
         mvc.perform(post(URL_PREFIX + "/customernetworks")
@@ -95,6 +109,10 @@ public class CustomerNetworkAttachPointManagerRestControllerTest {
         assertThat(
                 basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).get().getAsNumber(),
                 equalTo("64522"));
+        CustomerNetworkMonitoredEquipment monitoredEquipment = basicCustomerNetworkAttachPointRepository.findByCustomerId(FIRST_CUSTOMER_ID).get().getMonitoredEquipment();
+        assertThat(monitoredEquipment, is(notNullValue()));
+        assertThat(monitoredEquipment.getNetworks(), emptyCollectionOf(String.class));
+        assertThat(monitoredEquipment.getAddresses(), contains("11.11.11.11", "22.22.22.22", "33.33.33.33", "44.44.44.44", "55.55.55.55"));
     }
 
     @Test
