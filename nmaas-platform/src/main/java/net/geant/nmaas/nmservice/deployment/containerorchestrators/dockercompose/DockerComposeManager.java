@@ -53,6 +53,9 @@ public class DockerComposeManager implements ContainerOrchestrator {
     @Autowired
     private DockerNetworkManager dockerNetworkManager;
 
+    @Autowired
+    private StaticRoutingConfigManager routingConfigManager;
+
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyDeploymentEnvironmentSupport(List<AppDeploymentEnv> supportedDeploymentEnvironments)
@@ -194,30 +197,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     private void configureRoutingOnStartedContainer(NmServiceInfo service)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, CommandExecutionException {
-        for (String managedDeviceIpAddress : service.getManagedDevicesIpAddresses()) {
-            addStaticRouteOnContainer(
-                    service,
-                    addIpRouteCommand(managedDeviceIpAddress, service.getDockerContainer().getNetworkDetails().getIpAddresses().getGateway()));
-        }
-    }
-
-    private void addStaticRouteOnContainer(NmServiceInfo service, String command) throws CommandExecutionException {
-        composeCommandExecutor.executeComposeExecCommand(service.getDeploymentId(), service.getHost(), commandBodyWithPrecedingContainerName(service, command));
-    }
-
-    private String commandBodyWithPrecedingContainerName(NmServiceInfo service, String command) {
-        return service.getDeploymentId() + " " + command;
-    }
-
-    private String addIpRouteCommand(String deviceAddress, String gatewayAddress) {
-        StringBuilder command = new StringBuilder();
-        command.append("ip").append(" ")
-                .append("route").append(" ")
-                .append("add").append(" ")
-                .append(deviceAddress + "/32").append(" ")
-                .append("via").append(" ")
-                .append(gatewayAddress);
-        return command.toString();
+        routingConfigManager.configure(service);
     }
 
     @Override

@@ -41,6 +41,9 @@ public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoi
     @Column(nullable=false)
     private String bgpNeighborIp;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private CustomerNetworkMonitoredEquipment monitoredEquipment;
+
     public Long getId() {
         return id;
     }
@@ -127,5 +130,13 @@ public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoi
 
     public void setBgpNeighborIp(String bgpNeighborIp) {
         this.bgpNeighborIp = bgpNeighborIp;
+    }
+
+    public CustomerNetworkMonitoredEquipment getMonitoredEquipment() {
+        return monitoredEquipment;
+    }
+
+    public void setMonitoredEquipment(CustomerNetworkMonitoredEquipment monitoredEquipment) {
+        this.monitoredEquipment = monitoredEquipment;
     }
 }
