@@ -24,6 +24,7 @@ import java.util.Arrays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -75,6 +76,18 @@ public class StaticRoutingConfigManagerTest {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
+        manager.configure(service);
+        verify(composeCommandExecutor, times(3)).executeComposeExecCommand(any(), any(), any());
+    }
+
+    @Test
+    public void shouldAddRoutesForCustomerNetworkDevicesTwice() throws Exception {
+        equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
+        customerNetwork.setMonitoredEquipment(equipment);
+        customerNetworks.save(customerNetwork);
+        manager.configure(service);
+        verify(composeCommandExecutor, times(3)).executeComposeExecCommand(any(), any(), any());
+        reset(composeCommandExecutor);
         manager.configure(service);
         verify(composeCommandExecutor, times(3)).executeComposeExecCommand(any(), any(), any());
     }

@@ -4,11 +4,14 @@ import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAt
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ public class StaticRoutingConfigManager {
     @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
 
+    @Loggable(LogLevel.INFO)
     @Transactional
     public void configure(NmServiceInfo service) throws ContainerOrchestratorInternalErrorException, CommandExecutionException {
         BasicCustomerNetworkAttachPoint customerNetwork = customerNetworks.findByCustomerId(service.getClientId().longValue())
@@ -46,7 +50,7 @@ public class StaticRoutingConfigManager {
     }
 
     private List<String> obtainListOfCustomerNetworks(BasicCustomerNetworkAttachPoint customerNetwork) {
-        return customerNetwork.getMonitoredEquipment().getNetworks();
+        return new ArrayList<>(customerNetwork.getMonitoredEquipment().getNetworks());
     }
 
     private void addStaticRouteOnContainer(NmServiceInfo service, String command) throws CommandExecutionException {
