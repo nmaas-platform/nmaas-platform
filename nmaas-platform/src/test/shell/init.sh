@@ -22,7 +22,7 @@ echo App1
 curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app1-librenms.json
 echo
 echo App1 logo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/librenms.png;type=image/png" $API_URL/apps/1/logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/librenms.svg;type=image/png" $API_URL/apps/1/logo
 echo
 echo App1 screenshots
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/librenms/librenms1.png;type=image/png" $API_URL/apps/1/screenshots
@@ -60,6 +60,20 @@ echo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/nav/nav4.png;type=image/png" $API_URL/apps/3/screenshots
 echo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/nav/nav5.png;type=image/png" $API_URL/apps/3/screenshots
+
+echo
+echo App4
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app4-opennti.json
+echo
+echo App4 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/juniper.svg;type=image/svg+xml" $API_URL/apps/4/logo
+echo
+echo App4 screenshots
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/opennti/opennti1.png;type=image/png" $API_URL/apps/4/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/opennti/opennti2.png;type=image/png" $API_URL/apps/4/screenshots
+echo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/opennti/opennti3.png;type=image/png" $API_URL/apps/4/screenshots
 
 # echo
 # echo App5
@@ -122,6 +136,9 @@ echo
 echo Rate App3
 curl -X POST $API_URL/apps/3/rate/my/5 --header "Authorization: Bearer $TOKEN"
 
+echo
+echo Rate App4
+curl -X POST $API_URL/apps/4/rate/my/4 --header "Authorization: Bearer $TOKEN"
 
 echo 
 echo ---------------------

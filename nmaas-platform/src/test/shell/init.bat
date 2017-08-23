@@ -81,6 +81,20 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\nav\nav5.png;type=image/png" %API_URL%/apps/3/screenshots
 
+echo.
+echo App4
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app4-opennti.json
+echo.
+echo App4 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\juniper.svg;type=image/svg+xml" %API_URL%/apps/4/logo
+echo.
+echo App4 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\opennti\opennti1.png;type=image/jpg" %API_URL%/apps/4/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\opennti\opennti2.png;type=image/png" %API_URL%/apps/4/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\opennti\opennti3.png;type=image/png" %API_URL%/apps/4/screenshots
+
 rem echo.
 rem echo App5
 rem curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app5-pmacct.json
@@ -138,6 +152,10 @@ curl -X POST %API_URL%/apps/2/rate/my/4 --header "Authorization: Bearer %token%"
 echo.
 echo Rate App3
 curl -X POST %API_URL%/apps/3/rate/my/5 --header "Authorization: Bearer %token%"
+
+echo.
+echo Rate App4
+curl -X POST %API_URL%/apps/4/rate/my/4 --header "Authorization: Bearer %token%"
 
 rem echo.
 rem echo Rate App5
