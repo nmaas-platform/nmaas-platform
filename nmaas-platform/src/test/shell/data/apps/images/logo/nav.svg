@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="841.88975pt"
-   height="595.27559pt"
+   width="899.09387pt"
+   height="309.97159pt"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.45"
-   sodipodi:docbase="/home/ica/jodal/Desktop"
+   inkscape:version="0.92.1 r15371"
    sodipodi:docname="navlogo.svg"
    inkscape:export-filename="C:\Documents and Settings\Morten\Desktop\navlogo-raster2.png"
    inkscape:export-xdpi="178.09663"
    inkscape:export-ydpi="178.09663"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   sodipodi:modified="true">
+   sodipodi:modified="true"
+   version="1.1">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -29,16 +30,21 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.87892064"
-     inkscape:cx="526.18109"
-     inkscape:cy="372.04724"
+     inkscape:zoom="0.31074537"
+     inkscape:cx="207.36214"
+     inkscape:cy="-750.36914"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="1129"
-     inkscape:window-x="0"
-     inkscape:window-y="25" />
+     inkscape:window-width="956"
+     inkscape:window-height="1161"
+     inkscape:window-x="2880"
+     inkscape:window-y="18"
+     fit-margin-top="10"
+     fit-margin-left="70"
+     fit-margin-right="70"
+     fit-margin-bottom="30"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -47,44 +53,52 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(75.298302,-5.0576117)">
     <path
        sodipodi:nodetypes="cccc"
        id="path2105"
-       d="M 168.12764,237.60189 L 18.050398,18.390945 L 168.11294,18.445244 L 168.12764,237.60189 z "
-       style="fill:#567899;fill-opacity:1" />
+       d="M 168.12764,237.60189 18.050398,18.390945 l 150.062542,0.0543 z"
+       style="fill:#567899;fill-opacity:1"
+       inkscape:connector-curvature="0" />
     <path
        sodipodi:nodetypes="cccc"
        id="path2127"
-       d="M 18.035031,203.08316 L 140.04704,378.34983 L 18.142064,378.29554 L 18.035031,203.08316 z "
-       style="fill:#2d5a86;fill-opacity:1" />
+       d="M 18.035031,203.08316 140.04704,378.34983 18.142064,378.29554 Z"
+       style="fill:#2d5a86;fill-opacity:1"
+       inkscape:connector-curvature="0" />
     <path
        style="fill:#567899;fill-opacity:1"
-       d="M 284.13097,18.408846 L 468.68636,18.405654 L 337.20329,378.34983 L 284.00000,378.34983 L 284.13097,18.408846 z "
+       d="M 284.13097,18.408846 468.68636,18.405654 337.20329,378.34983 H 284 Z"
        id="rect2129"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:connector-curvature="0" />
     <path
        style="fill:#2d5a86;fill-opacity:1"
-       d="M 534.31340,124.83764 L 490.89013,265.66987 L 577.83448,265.66987 L 534.31340,124.83764 z M 463.89728,353.29881 L 456.17108,378.33566 L 612.55354,378.23786 L 604.82733,353.29881 L 463.89728,353.29881 z "
+       d="m 534.3134,124.83764 -43.42327,140.83223 h 86.94435 z m -70.41612,228.46117 -7.7262,25.03685 156.38246,-0.0978 -7.72621,-24.93905 z"
        id="path2159"
        inkscape:export-filename="C:\Documents and Settings\Morten\Desktop\navlogo-raster.png"
        inkscape:export-xdpi="581.76361"
-       inkscape:export-ydpi="581.76361" />
+       inkscape:export-ydpi="581.76361"
+       inkscape:connector-curvature="0" />
     <path
        style="fill:#567899;fill-opacity:1"
-       d="M 603.24245,18.445244 L 722.16945,18.505552 L 859.87700,378.24943 L 734.69123,378.35306 L 603.24245,18.445244 z "
+       d="m 603.24245,18.445244 118.927,0.06031 137.70755,359.743876 -125.18577,0.10363 z"
        id="rect2138"
-       sodipodi:nodetypes="ccccc" />
+       sodipodi:nodetypes="ccccc"
+       inkscape:connector-curvature="0" />
     <path
        sodipodi:nodetypes="cccc"
        id="path2141"
-       d="M 1030.1602,18.423367 L 851.93329,18.488588 L 941.17016,303.20322 L 1030.1602,18.423367 z "
-       style="fill:#2d5a86;fill-opacity:1" />
+       d="m 1030.1602,18.423367 -178.22691,0.06522 89.23687,284.714633 z"
+       style="fill:#2d5a86;fill-opacity:1"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>
