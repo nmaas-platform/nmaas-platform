@@ -53,8 +53,9 @@ class NmServiceConfigurationsPreparer {
             throws ConfigTemplateHandlingException, UserConfigHandlingException, InvalidDeploymentIdException {
         final Map<String, Object> appConfigurationModel = createModelFromJson(appConfiguration);
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
+        List<NmServiceConfigurationTemplate> serviceConfigurationTemplates = loadConfigTemplatesForApplication(applicationId);
         List<String> configIds = new ArrayList<>();
-        for (NmServiceConfigurationTemplate nmServiceConfigurationTemplate : loadConfigTemplatesForApplication(applicationId)) {
+        for (NmServiceConfigurationTemplate nmServiceConfigurationTemplate : serviceConfigurationTemplates) {
             final String configId = generateNewConfigId(configurations);
             final Template template = convertToTemplate(nmServiceConfigurationTemplate);
             final NmServiceConfiguration config = buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel);
@@ -62,6 +63,10 @@ class NmServiceConfigurationsPreparer {
             configIds.add(configId);
         }
         return configIds;
+    }
+
+    private List<NmServiceConfigurationTemplate> loadConfigTemplatesForApplication(Identifier applicationId) {
+        return templates.findAllByApplicationId(applicationId.longValue());
     }
 
     private String generateNewConfigId(NmServiceConfigurationRepository configurations) {
@@ -90,26 +95,19 @@ class NmServiceConfigurationsPreparer {
         }
     }
 
-    private List<NmServiceConfigurationTemplate> loadConfigTemplatesForApplication(Identifier applicationId)
-            throws ConfigTemplateHandlingException {
-        List<NmServiceConfigurationTemplate> selectedTemplates = templates.findAllByApplicationId(applicationId.longValue());
-        if (selectedTemplates.isEmpty())
-            throw new ConfigTemplateHandlingException("No configuration templates found in repository for application with id " + applicationId);
-        return selectedTemplates;
+    private void storeConfigurationInRepository(NmServiceConfiguration configuration) {
+        configurations.save(configuration);
     }
 
-    @Loggable(LogLevel.DEBUG)
     void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel)
             throws InvalidDeploymentIdException {
         List<Object> devices = (List<Object>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY);
+        if (devices == null)
+            return;
         List<String> ipAddresses = devices.stream()
                 .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
                 .collect(Collectors.toList());
         nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
-    }
-
-    private void storeConfigurationInRepository(NmServiceConfiguration configuration) {
-        configurations.save(configuration);
     }
 
     NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model)

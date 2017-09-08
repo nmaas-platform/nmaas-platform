@@ -1,0 +1,32 @@
+{
+	"name":"NAV",
+	"version":"4.7+master",
+	"license":"GPLv2",
+	"briefDescription":"Network Administration Visualized, a free network management system",
+	"tags": [ "management", "monitoring"],
+	"fullDescription" : "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles.",
+	"wwwUrl" : "https://nav.uninett.no/",
+	"sourceUrl" : "https:://github.com/UNINETT/nav",
+	"issuesUrl": "",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"DOCKER_COMPOSE"
+		]
+	},
+	"configTemplate": {
+		"template": {
+			"schema": {
+				"type": "object",
+				"title": "All required configuration should be applied using NAV graphical interface",
+				"properties": {	}
+			},
+			"form": [
+				"*",
+				{
+					"type": "submit",
+					"title": "Proceed"
+				}
+			]
+		}
+	}
+}
