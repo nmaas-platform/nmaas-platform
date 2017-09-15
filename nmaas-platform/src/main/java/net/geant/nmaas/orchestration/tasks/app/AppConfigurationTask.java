@@ -46,11 +46,11 @@ public class AppConfigurationTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
+    public void applyConfiguration(AppApplyConfigurationActionEvent event) {
         final Identifier deploymentId = event.getDeploymentId();
-        final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         try {
+            final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
             serviceConfiguration.configureNmService(
                     deploymentId,
                     appDeployment.getApplicationId(),
@@ -58,7 +58,9 @@ public class AppConfigurationTask {
                     service.getHost(),
                     service.getDockerContainer().getVolumesDetails());
         } catch (NmServiceConfigurationFailedException configurationFailedException) {
-            log.warn("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
+            log.error("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            log.error("Service configuration failed since invalid deployment id: " + deploymentId.value() + " was provided");
         }
     }
 
