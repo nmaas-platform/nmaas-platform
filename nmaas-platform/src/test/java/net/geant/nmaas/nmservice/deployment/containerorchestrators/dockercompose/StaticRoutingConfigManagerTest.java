@@ -5,7 +5,7 @@ import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkMonitor
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
@@ -52,7 +52,7 @@ public class StaticRoutingConfigManagerTest {
         service = new NmServiceInfo();
         service.setClientId(customerId);
         DockerContainer dockerContainer = new DockerContainer();
-        DockerContainerNetDetails containerNetworkDetails = new DockerContainerNetDetails(1, new DockerNetworkIpamSpec("", "1.1.1.1"));
+        DockerContainerNetDetails containerNetworkDetails = new DockerContainerNetDetails(1, new DockerNetworkIpam("", "1.1.1.1"));
         dockerContainer.setNetworkDetails(containerNetworkDetails);
         service.setDockerContainer(dockerContainer);
         customerNetwork.setCustomerId(customerId.longValue());

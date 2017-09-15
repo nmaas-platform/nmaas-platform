@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
@@ -24,14 +24,14 @@ public class AppDcnRemovalIfRequiredTask {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
-    private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
+    private DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager;
 
     @Autowired
     public AppDcnRemovalIfRequiredTask(
             AppDeploymentRepositoryManager appDeploymentRepositoryManager,
-            DockerNetworkRepositoryManager dockerNetworkRepositoryManager) {
+            DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager) {
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
-        this.dockerNetworkRepositoryManager = dockerNetworkRepositoryManager;
+        this.dockerHostNetworkRepositoryManager = dockerHostNetworkRepositoryManager;
     }
 
     @EventListener
@@ -39,7 +39,7 @@ public class AppDcnRemovalIfRequiredTask {
     public ApplicationEvent removeDcnIfRequired(AppRemoveDcnIfRequiredEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getDeploymentId();
         final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
-        return dockerNetworkRepositoryManager.checkNetwork(clientId) ? null : new DcnRemoveActionEvent(this, clientId);
+        return dockerHostNetworkRepositoryManager.checkNetwork(clientId) ? null : new DcnRemoveActionEvent(this, clientId);
     }
 
 }

@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 
 import javax.persistence.*;
 
@@ -32,10 +32,10 @@ public class DcnCloudEndpointDetails {
         this.gateway = gateway;
     }
 
-    public DcnCloudEndpointDetails(DockerNetwork dockerNetwork) {
-        this(dockerNetwork.getVlanNumber(),
-                dockerNetwork.getSubnet(),
-                dockerNetwork.getGateway());
+    public DcnCloudEndpointDetails(DockerHostNetwork dockerHostNetwork) {
+        this(dockerHostNetwork.getVlanNumber(),
+                dockerHostNetwork.getSubnet(),
+                dockerHostNetwork.getGateway());
     }
 
     public Long getId() {

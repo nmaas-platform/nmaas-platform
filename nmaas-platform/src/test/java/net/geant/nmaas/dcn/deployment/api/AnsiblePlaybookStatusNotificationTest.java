@@ -7,7 +7,7 @@ import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.repositories.DockerNetworkRepository;
+import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -46,7 +46,7 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
-    private DockerNetworkRepository dockerNetworkRepository;
+    private DockerHostNetworkRepository dockerHostNetworkRepository;
 
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
     private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
@@ -61,7 +61,7 @@ public class AnsiblePlaybookStatusNotificationTest {
         DcnSpec spec = new DcnSpec(dcnName, clientId);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dcnRepositoryManager, null, null, applicationEventPublisher, dockerNetworkRepository, null);
+        AnsiblePlaybookExecutionStateListener coordinator = new DcnDeploymentCoordinator(dcnRepositoryManager, null, null, applicationEventPublisher, dockerHostNetworkRepository, null);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }

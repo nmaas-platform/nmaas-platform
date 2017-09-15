@@ -38,7 +38,7 @@ public class StaticRoutingConfigManager {
         for (String network : networks) {
             addStaticRouteOnContainer(
                     service,
-                    addIpRouteCommand(network, service.getDockerContainer().getNetworkDetails().getIpAddresses().getGateway()));
+                    addIpRouteCommand(network, service.getDockerContainer().getNetworkDetails().getIpam().getGateway()));
         }
     }
 

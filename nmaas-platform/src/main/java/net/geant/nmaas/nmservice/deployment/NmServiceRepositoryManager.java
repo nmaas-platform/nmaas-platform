@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerNetDetails;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -67,6 +69,13 @@ public class NmServiceRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDockerComposeService(Identifier deploymentId, DockerComposeService dockerComposeService) throws InvalidDeploymentIdException {
+        NmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        nmServiceInfo.setDockerComposeService(dockerComposeService);
+        repository.save(nmServiceInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateManagedDevices(Identifier deploymentId, List<String> ipAddresses) throws InvalidDeploymentIdException {
         NmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setManagedDevicesIpAddresses(ipAddresses);
@@ -86,6 +95,10 @@ public class NmServiceRepositoryManager {
 
     public NmServiceInfo loadService(Identifier deploymentId) throws InvalidDeploymentIdException {
         return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    }
+
+    public List<NmServiceInfo> loadAllRunningClientServices(Identifier clientId) {
+        return repository.findAllByClientId(clientId).stream().filter(service -> service.getState().isRunning()).collect(Collectors.toList());
     }
 
     public NmServiceDeploymentState loadCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {

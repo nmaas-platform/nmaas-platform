@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkDetailsVerificationException;
@@ -18,7 +18,7 @@ public class DockerContainerNetworkConfigBuildingTest {
 
     private Identifier clientId = Identifier.newInstance("testClientId");
     private DockerHost testDockerHost1;
-    private DockerNetwork testDockerNetwork1;
+    private DockerHostNetwork testDockerHostNetwork1;
 
     @Before
     public void setup() throws UnknownHostException {
@@ -33,36 +33,36 @@ public class DockerContainerNetworkConfigBuildingTest {
                 "/data/scripts",
                 "/data/volumes",
                 true);
-        testDockerNetwork1 = new DockerNetwork(clientId, testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
+        testDockerHostNetwork1 = new DockerHostNetwork(clientId, testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
     }
 
     @Test(expected = DockerNetworkDetailsVerificationException.class)
     public void shouldThrowExceptionOnMissingDockerHost() throws DockerNetworkDetailsVerificationException {
-        testDockerNetwork1.setDockerHost(null);
-        DockerNetworkConfigBuilder.build(testDockerNetwork1);
+        testDockerHostNetwork1.setHost(null);
+        DockerNetworkConfigBuilder.build(testDockerHostNetwork1);
     }
 
     @Test(expected = DockerNetworkDetailsVerificationException.class)
     public void shouldThrowExceptionOnMissingVLAN() throws DockerNetworkDetailsVerificationException {
-        testDockerNetwork1.setVlanNumber(0);
-        DockerNetworkConfigBuilder.build(testDockerNetwork1);
+        testDockerHostNetwork1.setVlanNumber(0);
+        DockerNetworkConfigBuilder.build(testDockerHostNetwork1);
     }
 
     @Test(expected = DockerNetworkDetailsVerificationException.class)
     public void shouldThrowExceptionOnMissingSubnet() throws DockerNetworkDetailsVerificationException {
-        testDockerNetwork1.setSubnet(null);
-        DockerNetworkConfigBuilder.build(testDockerNetwork1);
+        testDockerHostNetwork1.setSubnet(null);
+        DockerNetworkConfigBuilder.build(testDockerHostNetwork1);
     }
 
     @Test(expected = DockerNetworkDetailsVerificationException.class)
     public void shouldThrowExceptionOnMissingGateway() throws DockerNetworkDetailsVerificationException {
-        testDockerNetwork1.setGateway(null);
-        DockerNetworkConfigBuilder.build(testDockerNetwork1);
+        testDockerHostNetwork1.setGateway(null);
+        DockerNetworkConfigBuilder.build(testDockerHostNetwork1);
     }
 
     @Test
     public void shouldBuildCorrectNetworkConfig() throws DockerNetworkDetailsVerificationException {
-        DockerNetworkConfigBuilder.build(testDockerNetwork1);
+        DockerNetworkConfigBuilder.build(testDockerHostNetwork1);
     }
 
 }
