@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -56,12 +57,19 @@ public class AppConfigurationTask {
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
                     service.getHost(),
-                    service.getDockerContainer().getVolumesDetails());
+                    obtainVolumeInformation(service));
         } catch (NmServiceConfigurationFailedException configurationFailedException) {
             log.error("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             log.error("Service configuration failed since invalid deployment id: " + deploymentId.value() + " was provided");
         }
+    }
+
+    private DockerContainerVolumesDetails obtainVolumeInformation(NmServiceInfo service) {
+        if (service.getDockerContainer() != null)
+            return service.getDockerContainer().getVolumesDetails();
+        else
+            return new DockerContainerVolumesDetails(service.getDockerComposeService().getAttachedVolumeName());
     }
 
 }
