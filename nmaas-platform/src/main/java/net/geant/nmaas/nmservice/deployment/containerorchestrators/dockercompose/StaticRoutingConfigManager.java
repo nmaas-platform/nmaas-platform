@@ -44,22 +44,19 @@ public class StaticRoutingConfigManager {
         BasicCustomerNetworkAttachPoint customerNetwork = customerNetworks.findByCustomerId(service.getClientId().longValue())
                 .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for customer with id " + service.getClientId()));
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
-        List<String> devices = obtainListOfCustomerDevices(customerNetwork, service.getManagedDevicesIpAddresses());
+        List<String> devices = obtainListOfCustomerDevices(customerNetwork);
         networks.addAll(devices.stream().map(d -> d + "/32").collect(Collectors.toList()));
         for (DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents()) {
             addRoutesForEachCustomerNetworkAddress(service, networks, component);
         }
     }
 
-    private List<String> obtainListOfCustomerDevices(BasicCustomerNetworkAttachPoint customerNetwork, List<String> monitoredDevices) {
-        List<String> devices = new ArrayList<>(customerNetwork.getMonitoredEquipment().getAddresses());
-        if (monitoredDevices != null)
-            monitoredDevices.stream().filter(d -> !devices.contains(d)).forEach(d -> devices.add(d));
-        return devices;
-    }
-
     private List<String> obtainListOfCustomerNetworks(BasicCustomerNetworkAttachPoint customerNetwork) {
         return new ArrayList<>(customerNetwork.getMonitoredEquipment().getNetworks());
+    }
+
+    private List<String> obtainListOfCustomerDevices(BasicCustomerNetworkAttachPoint customerNetwork) {
+        return new ArrayList<>(customerNetwork.getMonitoredEquipment().getAddresses());
     }
 
     private void addRoutesForEachCustomerNetworkAddress(NmServiceInfo service, List<String> networks, DockerComposeServiceComponent component) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
