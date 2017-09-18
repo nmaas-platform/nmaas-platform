@@ -3,12 +3,14 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,14 +44,17 @@ public class StaticRoutingConfigManagerTest {
     private DockerComposeCommandExecutor composeCommandExecutor;
     @MockBean
     private DockerNetworkResourceManager dockerNetworkResourceManager;
+    @MockBean
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     private Identifier customerId = Identifier.newInstance("1");
+    private Identifier deploymentId = Identifier.newInstance("did");
     private BasicCustomerNetworkAttachPoint customerNetwork = new BasicCustomerNetworkAttachPoint();
     private CustomerNetworkMonitoredEquipment equipment = new CustomerNetworkMonitoredEquipment();
     private NmServiceInfo service;
 
     @Before
-    public void setup() throws ContainerOrchestratorInternalErrorException {
+    public void setup() throws ContainerOrchestratorInternalErrorException, InvalidDeploymentIdException {
         service = new NmServiceInfo();
         service.setClientId(customerId);
         DockerComposeServiceComponent component1 = new DockerComposeServiceComponent();
@@ -69,6 +74,7 @@ public class StaticRoutingConfigManagerTest {
         customerNetwork.setBgpNeighborIp("");
         customerNetwork.setBgpLocalIp("");
         when(dockerNetworkResourceManager.obtainGatewayFromClientNetwork(any())).thenReturn("172.16.1.254");
+        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
     }
 
     @After
@@ -81,7 +87,7 @@ public class StaticRoutingConfigManagerTest {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
-        manager.configure(service);
+        manager.configure(deploymentId);
         verify(composeCommandExecutor, times(6)).executeComposeExecCommand(any(), any(), any());
     }
 
@@ -90,10 +96,10 @@ public class StaticRoutingConfigManagerTest {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
-        manager.configure(service);
+        manager.configure(deploymentId);
         verify(composeCommandExecutor, times(6)).executeComposeExecCommand(any(), any(), any());
         reset(composeCommandExecutor);
-        manager.configure(service);
+        manager.configure(deploymentId);
         verify(composeCommandExecutor, times(6)).executeComposeExecCommand(any(), any(), any());
     }
 
@@ -103,7 +109,7 @@ public class StaticRoutingConfigManagerTest {
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
         service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("10.10.3.3", "10.10.4.4", "10.10.5.5")));
-        manager.configure(service);
+        manager.configure(deploymentId);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
         verify(composeCommandExecutor, times(10)).executeComposeExecCommand(any(), any(), commandBody.capture());
         assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(10L));
@@ -116,7 +122,7 @@ public class StaticRoutingConfigManagerTest {
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
         service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("10.10.3.3", "10.10.4.4", "10.10.5.5")));
-        manager.configure(service);
+        manager.configure(deploymentId);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
         verify(composeCommandExecutor, times(14)).executeComposeExecCommand(any(), any(), commandBody.capture());
         assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(10L));

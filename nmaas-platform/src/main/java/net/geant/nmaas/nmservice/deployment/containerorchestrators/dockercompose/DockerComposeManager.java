@@ -201,8 +201,8 @@ public class DockerComposeManager implements ContainerOrchestrator {
     }
 
     private void configureRoutingOnStartedContainer(NmServiceInfo service)
-            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, CommandExecutionException {
-        routingConfigManager.configure(service);
+            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
+        routingConfigManager.configure(service.getDeploymentId());
     }
 
     @Override

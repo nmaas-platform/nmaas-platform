@@ -2,12 +2,14 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -29,13 +31,16 @@ public class StaticRoutingConfigManager {
     private BasicCustomerNetworkAttachPointRepository customerNetworks;
     @Autowired
     private DockerNetworkResourceManager dockerNetworkResourceManager;
+    @Autowired
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
 
     @Loggable(LogLevel.INFO)
     @Transactional
-    public void configure(NmServiceInfo service) throws ContainerOrchestratorInternalErrorException, CommandExecutionException {
+    public void configure(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
+        NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         BasicCustomerNetworkAttachPoint customerNetwork = customerNetworks.findByCustomerId(service.getClientId().longValue())
                 .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for customer with id " + service.getClientId()));
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
