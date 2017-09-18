@@ -2,8 +2,12 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -23,6 +27,8 @@ public class StaticRoutingConfigManager {
 
     @Autowired
     private BasicCustomerNetworkAttachPointRepository customerNetworks;
+    @Autowired
+    private DockerNetworkResourceManager dockerNetworkResourceManager;
 
     @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
@@ -35,10 +41,8 @@ public class StaticRoutingConfigManager {
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
         List<String> devices = obtainListOfCustomerDevices(customerNetwork, service.getManagedDevicesIpAddresses());
         networks.addAll(devices.stream().map(d -> d + "/32").collect(Collectors.toList()));
-        for (String network : networks) {
-            addStaticRouteOnContainer(
-                    service,
-                    addIpRouteCommand(network, service.getDockerContainer().getNetworkDetails().getIpam().getGateway()));
+        for (DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents()) {
+            addRoutesForEachCustomerNetworkAddress(service, networks, component);
         }
     }
 
@@ -53,12 +57,22 @@ public class StaticRoutingConfigManager {
         return new ArrayList<>(customerNetwork.getMonitoredEquipment().getNetworks());
     }
 
-    private void addStaticRouteOnContainer(NmServiceInfo service, String command) throws CommandExecutionException {
-        composeCommandExecutor.executeComposeExecCommand(service.getDeploymentId(), service.getHost(), commandBodyWithPrecedingContainerName(service, command));
+    private void addRoutesForEachCustomerNetworkAddress(NmServiceInfo service, List<String> networks, DockerComposeServiceComponent component) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
+        for (String network : networks) {
+            addStaticRouteOnContainer(
+                    service.getDeploymentId(),
+                    component.getDeploymentName(),
+                    service.getHost(),
+                    addIpRouteCommand(network, dockerNetworkResourceManager.obtainGatewayFromClientNetwork(service.getClientId())));
+        }
     }
 
-    private String commandBodyWithPrecedingContainerName(NmServiceInfo service, String command) {
-        return service.getDeploymentId() + " " + command;
+    private void addStaticRouteOnContainer(Identifier deploymentId, String containerDeploymentName, DockerHost dockerHost, String command) throws CommandExecutionException {
+        composeCommandExecutor.executeComposeExecCommand(deploymentId, dockerHost, commandBodyWithPrecedingContainerName(containerDeploymentName, command));
+    }
+
+    private String commandBodyWithPrecedingContainerName(String containerDeploymentName, String command) {
+        return containerDeploymentName + " " + command;
     }
 
     private String addIpRouteCommand(String networkAddress, String gatewayAddress) {
