@@ -52,7 +52,7 @@ public class StaticRoutingConfigManager {
     }
 
     private List<String> obtainListOfCustomerDevices(BasicCustomerNetworkAttachPoint customerNetwork, List<String> monitoredDevices) {
-        List<String> devices = customerNetwork.getMonitoredEquipment().getAddresses();
+        List<String> devices = new ArrayList<>(customerNetwork.getMonitoredEquipment().getAddresses());
         if (monitoredDevices != null)
             monitoredDevices.stream().filter(d -> !devices.contains(d)).forEach(d -> devices.add(d));
         return devices;

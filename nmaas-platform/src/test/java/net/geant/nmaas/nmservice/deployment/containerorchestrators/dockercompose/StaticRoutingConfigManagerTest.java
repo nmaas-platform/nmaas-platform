@@ -116,6 +116,18 @@ public class StaticRoutingConfigManagerTest {
     }
 
     @Test
+    public void shouldAddRoutesForCustomerNetworkDevicesAndUserProvidedDevicesWhichOverlap() throws Exception {
+        equipment.setAddresses(new ArrayList<>(Arrays.asList("11.11.11.11", "22.22.22.22", "33.33.33.33", "44.44.44.44", "55.55.55.55")));
+        customerNetwork.setMonitoredEquipment(equipment);
+        customerNetworks.save(customerNetwork);
+        service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("11.11.11.11")));
+        manager.configure(deploymentId);
+        ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
+        verify(composeCommandExecutor, times(10)).executeComposeExecCommand(any(), any(), commandBody.capture());
+        assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(10L));
+    }
+
+    @Test
     public void shouldAddRoutesForCustomerNetworkDevicesAndSubnetsAndUserProvidedDevices() throws Exception {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         equipment.setNetworks(new ArrayList<>(Arrays.asList("10.11.0.0/24", "10.11.1.0/24")));
