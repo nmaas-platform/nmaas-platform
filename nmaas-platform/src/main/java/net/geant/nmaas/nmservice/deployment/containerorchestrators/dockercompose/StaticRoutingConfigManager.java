@@ -50,8 +50,9 @@ public class StaticRoutingConfigManager {
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
         List<String> devices = obtainListOfCustomerDevices(customerNetwork);
         networks.addAll(devices.stream().map(d -> d + "/32").collect(Collectors.toList()));
-        log.debug("Setting routing entries for " + networks.size() + " networks");
-        for (DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents()) {
+        List<DockerComposeServiceComponent> components = service.getDockerComposeService().getServiceComponents();
+        log.debug("Setting routing entries for " + components.size() + " components and " + networks.size() + " networks");
+        for (DockerComposeServiceComponent component : components) {
             log.debug("Executing commands for component " + component.getName());
             addRoutesForEachCustomerNetworkAddress(service, networks, component);
         }

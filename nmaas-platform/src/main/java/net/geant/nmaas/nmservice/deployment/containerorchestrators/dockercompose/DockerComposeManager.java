@@ -120,7 +120,6 @@ public class DockerComposeManager implements ContainerOrchestrator {
                 component.setIpAddressOfContainer(dockerNetworkResourceManager.assignNewIpAddressForContainer(service.getClientId()));
                 service.getDockerComposeService().getServiceComponents().add(component);
             }
-            repositoryManager.updateDockerComposeService(deploymentId, service.getDockerComposeService());
             buildAndStoreComposeFile(service.getDeploymentId(), service.getDockerComposeService(), dockerComposeFileTemplate);
             downloadComposeFileOnDockerHost(service);
             downloadContainerImageOnDockerHost(service);
