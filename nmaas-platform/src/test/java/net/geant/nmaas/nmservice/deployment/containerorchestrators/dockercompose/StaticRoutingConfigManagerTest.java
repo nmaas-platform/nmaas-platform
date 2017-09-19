@@ -74,7 +74,6 @@ public class StaticRoutingConfigManagerTest {
         customerNetwork.setBgpNeighborIp("");
         customerNetwork.setBgpLocalIp("");
         when(dockerNetworkResourceManager.obtainGatewayFromClientNetwork(any())).thenReturn("172.16.1.254");
-        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
     }
 
     @After
@@ -87,6 +86,7 @@ public class StaticRoutingConfigManagerTest {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
+        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
         manager.configure(deploymentId);
         verify(composeCommandExecutor, times(6)).executeComposeExecCommand(any(), any(), any());
     }
@@ -96,6 +96,7 @@ public class StaticRoutingConfigManagerTest {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
+        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
         manager.configure(deploymentId);
         verify(composeCommandExecutor, times(6)).executeComposeExecCommand(any(), any(), any());
         reset(composeCommandExecutor);
@@ -109,10 +110,11 @@ public class StaticRoutingConfigManagerTest {
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
         service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("10.10.3.3", "10.10.4.4", "10.10.5.5")));
+        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
         manager.configure(deploymentId);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
-        verify(composeCommandExecutor, times(10)).executeComposeExecCommand(any(), any(), commandBody.capture());
-        assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(10L));
+        verify(composeCommandExecutor, times(6)).executeComposeExecCommand(any(), any(), commandBody.capture());
+        assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(6L));
     }
 
     @Test
@@ -121,6 +123,7 @@ public class StaticRoutingConfigManagerTest {
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
         service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("11.11.11.11")));
+        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
         manager.configure(deploymentId);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
         verify(composeCommandExecutor, times(10)).executeComposeExecCommand(any(), any(), commandBody.capture());
@@ -128,16 +131,16 @@ public class StaticRoutingConfigManagerTest {
     }
 
     @Test
-    public void shouldAddRoutesForCustomerNetworkDevicesAndSubnetsAndUserProvidedDevices() throws Exception {
+    public void shouldAddRoutesForCustomerNetworkDevicesAndSubnets() throws Exception {
         equipment.setAddresses(new ArrayList<>(Arrays.asList("10.10.1.1", "10.10.2.2", "10.10.3.3")));
         equipment.setNetworks(new ArrayList<>(Arrays.asList("10.11.0.0/24", "10.11.1.0/24")));
         customerNetwork.setMonitoredEquipment(equipment);
         customerNetworks.save(customerNetwork);
-        service.setManagedDevicesIpAddresses(new ArrayList<>(Arrays.asList("10.10.3.3", "10.10.4.4", "10.10.5.5")));
+        when(nmServiceRepositoryManager.loadService(any())).thenReturn(service);
         manager.configure(deploymentId);
         ArgumentCaptor<String> commandBody = ArgumentCaptor.forClass(String.class);
-        verify(composeCommandExecutor, times(14)).executeComposeExecCommand(any(), any(), commandBody.capture());
-        assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(10L));
+        verify(composeCommandExecutor, times(10)).executeComposeExecCommand(any(), any(), commandBody.capture());
+        assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/32")).count(), equalTo(6L));
         assertThat(commandBody.getAllValues().stream().filter(c -> c.contains("/24")).count(), equalTo(4L));
     }
 }
