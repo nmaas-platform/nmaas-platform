@@ -74,10 +74,11 @@ public class DockerNetworkResourceManager {
         return addressesAlreadyAssigned.contains(checkedAddress);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeAddressAssignment(Identifier clientId, String previouslyAssignedAddress)
             throws ContainerOrchestratorInternalErrorException {
         try {
-            List<String> assignedAddresses = repositoryManager.loadNetwork(clientId).getAssignedAddresses();
+            List<String> assignedAddresses = new ArrayList<>(repositoryManager.loadNetwork(clientId).getAssignedAddresses());
             assignedAddresses.remove(previouslyAssignedAddress);
             repositoryManager.updateAssignedAddresses(clientId, assignedAddresses);
         } catch (InvalidClientIdException invalidClientIdException) {
