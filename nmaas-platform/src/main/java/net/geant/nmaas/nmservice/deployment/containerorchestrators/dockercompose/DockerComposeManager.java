@@ -219,7 +219,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
         try {
             final NmServiceInfo service = loadService(deploymentId);
             stopAndRemoveContainers(service);
-            removeNetworkIfNoContainerAttached(service.getClientId());
+            removeNetworkIfNoContainerAttached(service);
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new CouldNotRemoveNmServiceException(
                     "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
@@ -239,10 +239,15 @@ public class DockerComposeManager implements ContainerOrchestrator {
             dockerNetworkResourceManager.removeAddressAssignment(service.getClientId(), component.getIpAddressOfContainer());
     }
 
-    private void removeNetworkIfNoContainerAttached(Identifier clientId)
+    private void removeNetworkIfNoContainerAttached(NmServiceInfo justRemovedService)
             throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
-        if (repositoryManager.loadAllRunningClientServices(clientId).isEmpty())
-            dockerNetworkLifecycleManager.removeNetwork(clientId);
+        List<NmServiceInfo> runningServices = repositoryManager.loadAllRunningClientServices(justRemovedService.getClientId());
+        if (noRunningClientServices(justRemovedService, runningServices))
+            dockerNetworkLifecycleManager.removeNetwork(justRemovedService.getClientId());
+    }
+
+    private boolean noRunningClientServices(NmServiceInfo justRemovedService, List<NmServiceInfo> runningServices) {
+        return runningServices.size() == 1 && runningServices.get(0).getDeploymentId().equals(justRemovedService.getDeploymentId());
     }
 
     @Override

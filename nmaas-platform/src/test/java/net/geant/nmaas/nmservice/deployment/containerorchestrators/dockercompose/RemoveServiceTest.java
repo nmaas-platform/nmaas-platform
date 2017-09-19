@@ -6,6 +6,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerH
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -21,6 +22,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.InetAddress;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -40,6 +45,8 @@ public class RemoveServiceTest {
 
     @MockBean
     private DockerComposeCommandExecutor composeCommandExecutor;
+    @MockBean
+    private DockerNetworkLifecycleManager dockerNetworkLifecycleManager;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private Identifier clientId = Identifier.newInstance("10");
@@ -59,8 +66,9 @@ public class RemoveServiceTest {
     }
 
     @Test
-    public void shouldBuildAndStoreComposeFileFromOpenNtiComposeTemplateXml() throws Exception {
+    public void shouldRemoveService() throws Exception {
         manager.removeNmService(deploymentId);
+        verify(dockerNetworkLifecycleManager, times(1)).removeNetwork(any());
     }
 
     private void storeNmServiceInfo(DockerHost dockerHost) {
