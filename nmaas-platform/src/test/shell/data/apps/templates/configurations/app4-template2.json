@@ -1,0 +1,5 @@
+{
+  "applicationId":4,
+  "configFileName":"credentials.yaml",
+  "configFileTemplateContent":"lab_credentials:\n    username: ${openntiUsername}\n    password: ${openntiPassword}\n    tags: generic"
+}

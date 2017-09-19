@@ -13,6 +13,8 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
  */
 @Component
 public class StaticRoutingConfigManager {
+
+    private final static Logger log = LogManager.getLogger(StaticRoutingConfigManager.class);
 
     @Autowired
     private BasicCustomerNetworkAttachPointRepository customerNetworks;
@@ -46,7 +50,9 @@ public class StaticRoutingConfigManager {
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
         List<String> devices = obtainListOfCustomerDevices(customerNetwork);
         networks.addAll(devices.stream().map(d -> d + "/32").collect(Collectors.toList()));
+        log.debug("Setting routing entries for " + networks.size() + " networks");
         for (DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents()) {
+            log.debug("Executing commands for component " + component.getName());
             addRoutesForEachCustomerNetworkAddress(service, networks, component);
         }
     }

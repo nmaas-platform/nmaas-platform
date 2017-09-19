@@ -17,14 +17,39 @@
 		"template": {
 			"schema": {
 				"type": "object",
-				"title": "All required configuration should be applied using OpenNTI graphical interface",
-				"properties": {	}
+				"properties": {
+					"openntiUsername": {
+						"type": "string",
+						"title": "Username"
+					},
+					"openntiPassword": {
+						"type": "string",
+						"title": "Password"
+					},
+					"targets": {
+						"title": "Routers",
+						"type": "array",
+						"minItems": 1,
+						"items": {
+							"type": "object",
+							"properties": {
+								"ipAddress": {
+									"title": "IP address",
+									"type": "string"
+								}
+							}
+						}
+					}
+				},
+				"required": [
+					"openntiUsername", "openntiPassword", "targets"
+				]
 			},
 			"form": [
 				"*",
 				{
 					"type": "submit",
-					"title": "Proceed"
+					"title": "Apply configuration"
 				}
 			]
 		}
