@@ -13,11 +13,11 @@
 						   </thead>
 						   
 						   <tbody>
-						      <template ngFor let-appInstance [ngForOf]="appInstances">		
+						      <template ngFor let-appInstance [ngForOf]="appInstances">
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
-								 <td>{{appInstance?.createdAt | date:short}}</td>
+								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
 								 <td>{{appInstance?.applicationId}}</td>
 								 <td>{{appInstance?.state}}</td>
 								<td>
