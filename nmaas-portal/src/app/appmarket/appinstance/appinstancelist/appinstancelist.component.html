@@ -5,7 +5,7 @@
 							  <tr>
 								 <th>Name</th>
 								 <th>Owner</th>
-								 <th>Created At</th>
+								 <th>Deployed at</th>
 								 <th>Application</th>
 								 <th>State</th>
 								 <th>&nbsp;</th>
@@ -17,7 +17,7 @@
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
-								 <td>{{appInstance?.createdAt | date}}</td>
+								 <td>{{appInstance?.createdAt | date:short}}</td>
 								 <td>{{appInstance?.applicationId}}</td>
 								 <td>{{appInstance?.state}}</td>
 								<td>
