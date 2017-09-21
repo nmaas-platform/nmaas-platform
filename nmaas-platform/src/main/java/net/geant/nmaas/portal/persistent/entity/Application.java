@@ -21,6 +21,10 @@ public class Application implements Serializable {
 	private String name;
 	private String version;
 	private String license;
+
+	private String wwwUrl;
+	private String sourceUrl;
+	private String issuesUrl;
 	
 	@OneToOne(orphanRemoval=true, cascade=CascadeType.ALL)
 	private FileInfo logo;
@@ -132,6 +136,30 @@ public class Application implements Serializable {
 
 	public void setLicense(String license) {
 		this.license = license;
+	}
+
+	public String getWwwUrl() {
+		return wwwUrl;
+	}
+
+	public void setWwwUrl(String wwwUrl) {
+		this.wwwUrl = wwwUrl;
+	}
+
+	public String getSourceUrl() {
+		return sourceUrl;
+	}
+
+	public void setSourceUrl(String sourceUrl) {
+		this.sourceUrl = sourceUrl;
+	}
+
+	public String getIssuesUrl() {
+		return issuesUrl;
+	}
+
+	public void setIssuesUrl(String issuesUrl) {
+		this.issuesUrl = issuesUrl;
 	}
 
 	public AppDeploymentSpec getAppDeploymentSpec() {
