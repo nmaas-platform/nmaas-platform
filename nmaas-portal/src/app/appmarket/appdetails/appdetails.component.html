@@ -13,23 +13,22 @@
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<div class="btn-group pull-right">
-						<button type="button" href="{{app?.wwwUrl}}" class="btn btn-default">WWW</button>
-						<button type="button" href="{{app?.sourceUrl}}" class="btn btn-default">Source</button>
-						<button type="button" href="{{app?.issuesUrl}}" class="btn btn-default">Issues</button>
+						<a role="button" href="{{app?.wwwUrl}}" class="btn btn-default">WWW</a>
+						<a role="button" href="{{app?.sourceUrl}}" class="btn btn-default">Source</a>
+						<a role="button" href="{{app?.issuesUrl}}" class="btn btn-default">Issues</a>
 					</div>
 				</div>
 			</div>
 
 			<hr>
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Version:
-					{{app?.version}}</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">License:
-					{{app?.license}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Version: {{app?.version}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">License: {{app?.license}}</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-					Tags: {{app?.tags.join(", ")}}</div>
+					Tags: {{app?.tags.join(", ")}}
+				</div>
 			</div>
 			<hr>
 			<div class="row">
