@@ -77,8 +77,8 @@ public class DefaultAppDeploymentMonitorTest {
     @Before
     public void setup() throws InvalidDeploymentIdException, UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
-        DockerNetworkIpamSpec dockerNetworkIpamSpec = new DockerNetworkIpamSpec("10.10.0.0/24", "10.10.0.254");
-        DockerContainerNetDetails dockerContainerNetDetails = new DockerContainerNetDetails(8080, dockerNetworkIpamSpec);
+        DockerNetworkIpam dockerNetworkIpam = new DockerNetworkIpam("10.10.0.0/24", "10.10.0.254");
+        DockerContainerNetDetails dockerContainerNetDetails = new DockerContainerNetDetails(8080, dockerNetworkIpam);
         DockerContainerVolumesDetails dockerContainerVolumesDetails = new DockerContainerVolumesDetails("/home/directory");
         DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(dockerContainerNetDetails);

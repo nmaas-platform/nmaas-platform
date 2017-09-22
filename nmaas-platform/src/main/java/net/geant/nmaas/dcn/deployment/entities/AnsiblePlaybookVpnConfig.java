@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
 
 import javax.persistence.*;
 import java.net.InetAddress;
@@ -310,7 +310,7 @@ public class AnsiblePlaybookVpnConfig {
         this.interfaceUnit = String.valueOf(dcnCloudEndpointDetails.getVlanNumber());
         this.interfaceVlan = String.valueOf(dcnCloudEndpointDetails.getVlanNumber());
         this.bgpLocalIp = dcnCloudEndpointDetails.getGateway();
-        this.bgpNeighborIp = DockerNetworkIpamSpec.obtainFirstIpAddressFromNetwork(dcnCloudEndpointDetails.getSubnet());
+        this.bgpNeighborIp = DockerNetworkIpam.obtainFirstIpAddressFromNetwork(dcnCloudEndpointDetails.getSubnet());
         this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
     }
 

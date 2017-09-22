@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -46,20 +47,29 @@ public class AppConfigurationTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
+    public void applyConfiguration(AppApplyConfigurationActionEvent event) {
         final Identifier deploymentId = event.getDeploymentId();
-        final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         try {
+            final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+            final NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
             serviceConfiguration.configureNmService(
                     deploymentId,
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
                     service.getHost(),
-                    service.getDockerContainer().getVolumesDetails());
+                    obtainVolumeInformation(service));
         } catch (NmServiceConfigurationFailedException configurationFailedException) {
-            log.warn("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
+            log.error("Service configuration failed for deployment " + deploymentId.value() + " -> " + configurationFailedException.getMessage());
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            log.error("Service configuration failed since invalid deployment id: " + deploymentId.value() + " was provided");
         }
+    }
+
+    private DockerContainerVolumesDetails obtainVolumeInformation(NmServiceInfo service) {
+        if (service.getDockerContainer() != null)
+            return service.getDockerContainer().getVolumesDetails();
+        else
+            return new DockerContainerVolumesDetails(service.getDockerComposeService().getAttachedVolumeName());
     }
 
 }

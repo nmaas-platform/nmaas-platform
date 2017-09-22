@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -66,8 +67,14 @@ public class NmServiceInfo {
     /**
      * Docker container deployed for this service.
      */
-    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private DockerContainer dockerContainer;
+
+    /**
+     * Docker Compose Service (composed of one or several containers) deployes for this service.
+     */
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private DockerComposeService dockerComposeService;
 
     /**
      * The list of IP addresses of devices to be managed/monitored by the deployed service.
@@ -165,6 +172,14 @@ public class NmServiceInfo {
 
     public void setDockerContainer(DockerContainer dockerContainer) {
         this.dockerContainer = dockerContainer;
+    }
+
+    public DockerComposeService getDockerComposeService() {
+        return dockerComposeService;
+    }
+
+    public void setDockerComposeService(DockerComposeService dockerComposeService) {
+        this.dockerComposeService = dockerComposeService;
     }
 
     public List<String> getManagedDevicesIpAddresses() {

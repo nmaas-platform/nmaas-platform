@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,6 +18,8 @@ import java.util.Optional;
 public interface NmServiceInfoRepository extends JpaRepository<NmServiceInfo, Long>  {
 
     Optional<NmServiceInfo> findByDeploymentId(Identifier deploymentId);
+
+    List<NmServiceInfo> findAllByClientId(Identifier clientId);
 
     @Query("SELECT n.state FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
     Optional<NmServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);

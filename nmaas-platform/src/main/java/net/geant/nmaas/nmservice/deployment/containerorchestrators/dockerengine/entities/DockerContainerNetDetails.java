@@ -26,13 +26,13 @@ public class DockerContainerNetDetails {
      * Set of IP addresses assigned for container.
      */
     @OneToOne(cascade = CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, optional=false)
-    private DockerNetworkIpamSpec ipAddresses;
+    private DockerNetworkIpam ipam;
 
     public DockerContainerNetDetails() { }
 
-    public DockerContainerNetDetails(int publicPort, DockerNetworkIpamSpec ipAddresses) {
+    public DockerContainerNetDetails(int publicPort, DockerNetworkIpam ipam) {
         this.publicPort = publicPort;
-        this.ipAddresses = ipAddresses;
+        this.ipam = ipam;
     }
 
     public Long getId() {
@@ -51,11 +51,11 @@ public class DockerContainerNetDetails {
         this.publicPort = publicPort;
     }
 
-    public DockerNetworkIpamSpec getIpAddresses() {
-        return ipAddresses;
+    public DockerNetworkIpam getIpam() {
+        return ipam;
     }
 
-    public void setIpAddresses(DockerNetworkIpamSpec ipAddresses) {
-        this.ipAddresses = ipAddresses;
+    public void setIpam(DockerNetworkIpam ipam) {
+        this.ipam = ipam;
     }
 }

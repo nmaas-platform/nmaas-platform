@@ -5,7 +5,7 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.entities.NumberAss
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostStateNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.repositories.DockerHostStateRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -209,18 +209,18 @@ public class DockerHostStateKeeper {
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public DockerNetworkIpamSpec assignAddressPoolForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
+    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
         addStateForDockerHostIfAbsent(dockerHostName);
         return assignAddresses(stateForDockerHost(dockerHostName), clientId);
     }
 
-    private DockerNetworkIpamSpec assignAddresses(DockerHostState state, Identifier clientId) {
+    private DockerNetworkIpam assignAddresses(DockerHostState state, Identifier clientId) {
         Integer address = ADDRESS_POOL_MIN_ASSIGNABLE_ADDRESS;
         while(addressAlreadyAssigned(state.getAddressAssignments(), address))
             address++;
         state.getAddressAssignments().add(new NumberAssignment(address, clientId));
         stateRepository.save(state);
-        return DockerNetworkIpamSpec.fromParameters(
+        return DockerNetworkIpam.fromParameters(
                 state.getDockerHostAddressPoolBase(),
                 address,
                 ADDRESS_POOL_DEFAULT_GATEWAY,
@@ -264,16 +264,16 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public DockerNetworkIpamSpec getAssignedAddressPool(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+    public DockerNetworkIpam getAssignedAddressPool(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
         if (stateForDockerHostNotExists(dockerHostName))
             throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
         return getAssignedAddressPool(stateForDockerHost(dockerHostName), clientId);
     }
 
-    private DockerNetworkIpamSpec getAssignedAddressPool(DockerHostState state, Identifier clientId) {
+    private DockerNetworkIpam getAssignedAddressPool(DockerHostState state, Identifier clientId) {
         return state.getAddressAssignments().stream()
                 .filter(a -> a.getOwnerId().equals(clientId))
-                .map(a -> DockerNetworkIpamSpec.fromParameters(
+                .map(a -> DockerNetworkIpam.fromParameters(
                                 state.getDockerHostAddressPoolBase(),
                                 a.getNumber(),
                                 ADDRESS_POOL_DEFAULT_GATEWAY,

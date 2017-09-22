@@ -64,8 +64,15 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) {
         final String accessAddress = serviceInfo.getHost().getPublicIpAddress().getHostAddress();
-        final Integer accessPort = serviceInfo.getDockerContainer().getNetworkDetails().getPublicPort();
+        final Integer accessPort = obtainAccessPort(serviceInfo);
         return new AppUiAccessDetails(new StringBuilder().append("http://").append(accessAddress).append(":").append(accessPort).toString());
+    }
+
+    private Integer obtainAccessPort(NmServiceInfo service) {
+        if (service.getDockerContainer() != null)
+            return service.getDockerContainer().getNetworkDetails().getPublicPort();
+        else
+            return service.getDockerComposeService().getPublicPort();
     }
 
 }

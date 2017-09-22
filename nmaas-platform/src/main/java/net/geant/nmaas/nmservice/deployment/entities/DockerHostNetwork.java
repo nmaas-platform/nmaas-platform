@@ -1,6 +1,5 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
+package net.geant.nmaas.nmservice.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 import javax.persistence.*;
@@ -11,8 +10,8 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="docker_network")
-public class DockerNetwork {
+@Table(name="docker_host_network")
+public class DockerHostNetwork {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -21,8 +20,9 @@ public class DockerNetwork {
     /**
      * Docker Host on which this network was created
      */
-    @ManyToOne(fetch=FetchType.EAGER, optional=false)
-    private DockerHost dockerHost;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "host_id")
+    private DockerHost host;
 
     /**
      * Identifier of the client requesting application deployment
@@ -46,10 +46,10 @@ public class DockerNetwork {
     private String gateway;
 
     /**
-     * List of containers attached to this network
+     * List of entities for which an IP address was assigned from this Docker Host network subnet.
      */
-    @OneToMany(fetch=FetchType.EAGER)
-    private List<DockerContainer> dockerContainers = new ArrayList<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> assignedAddresses = new ArrayList<>();
 
     /**
      * Identifier assigned by Docker Engine during network deployment
@@ -61,16 +61,16 @@ public class DockerNetwork {
      */
     private String deploymentName;
 
-    public DockerNetwork() { }
+    public DockerHostNetwork() { }
 
-    public DockerNetwork(Identifier clientId, DockerHost dockerHost) {
+    public DockerHostNetwork(Identifier clientId, DockerHost dockerHost) {
         this.clientId = clientId;
-        this.dockerHost = dockerHost;
+        this.host = dockerHost;
     }
 
-    public DockerNetwork(Identifier clientId, DockerHost dockerHost, int vlanNumber, String subnet, String gateway) {
+    public DockerHostNetwork(Identifier clientId, DockerHost dockerHost, int vlanNumber, String subnet, String gateway) {
         this.clientId = clientId;
-        this.dockerHost = dockerHost;
+        this.host = dockerHost;
         this.vlanNumber = vlanNumber;
         this.subnet = subnet;
         this.gateway = gateway;
@@ -84,12 +84,12 @@ public class DockerNetwork {
         this.id = id;
     }
 
-    public DockerHost getDockerHost() {
-        return dockerHost;
+    public DockerHost getHost() {
+        return host;
     }
 
-    public void setDockerHost(DockerHost dockerHost) {
-        this.dockerHost = dockerHost;
+    public void setHost(DockerHost host) {
+        this.host = host;
     }
 
     public Identifier getClientId() {
@@ -124,12 +124,12 @@ public class DockerNetwork {
         this.gateway = gateway;
     }
 
-    public List<DockerContainer> getDockerContainers() {
-        return dockerContainers;
+    public List<String> getAssignedAddresses() {
+        return assignedAddresses;
     }
 
-    public void setDockerContainers(List<DockerContainer> dockerContainers) {
-        this.dockerContainers = dockerContainers;
+    public void setAssignedAddresses(List<String> assignedAddresses) {
+        this.assignedAddresses = assignedAddresses;
     }
 
     public String getDeploymentId() {

@@ -14,7 +14,7 @@ import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
@@ -65,7 +65,7 @@ public class OxidizedAppDeploymentIntTest {
     @MockBean
     private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
     @Autowired
-    private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
+    private DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager;
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
     @Autowired
@@ -89,7 +89,7 @@ public class OxidizedAppDeploymentIntTest {
 
     @After
     public void clear() throws InvalidClientIdException {
-        dockerNetworkRepositoryManager.removeNetwork(clientId);
+        dockerHostNetworkRepositoryManager.removeNetwork(clientId);
         DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
         NetworkAttachPointsInit.cleanDockerHostAttachPoints(dockerHostAttachPointRepository);
         NetworkAttachPointsInit.cleanBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);

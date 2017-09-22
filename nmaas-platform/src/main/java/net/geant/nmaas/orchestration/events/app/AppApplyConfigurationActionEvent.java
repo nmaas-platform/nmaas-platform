@@ -18,4 +18,9 @@ public class AppApplyConfigurationActionEvent extends ApplicationEvent {
     public Identifier getDeploymentId() {
         return deploymentId;
     }
+
+    @Override
+    public String toString() {
+        return "AppApplyConfigurationActionEvent{" + "deploymentId=" + deploymentId +", source=" + source + "}";
+    }
 }
