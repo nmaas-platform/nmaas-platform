@@ -19,6 +19,7 @@ export class AppListComponent implements OnInit {
     private tags : string[];
     
     private selectedTag: string;
+    private filteredApps: Application[];
     
     private listType = ListType;
     private selectedListType: ListType;
@@ -28,11 +29,20 @@ export class AppListComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.appsService.getApps().subscribe(applications => this.apps = applications);
+        this.appsService.getApps().subscribe(applications => {this.apps = applications; this.filteredApps = this.apps;});
         this.tagService.getTags().subscribe(tags => this.tags = tags);
         
         if(! this.selectedListType)
             this.selectedListType = ListType.GRID;
+    }
+
+    filterAppsByTag() {
+        var selectedTag: string = this.selectedTag;
+        if (selectedTag === 'all' || selectedTag === 'undefined') {
+            this.filteredApps = this.apps.filter(app => true);
+        }
+        else
+            this.filteredApps = this.apps.filter(app => app.tags.some(tag => tag === selectedTag));
     }
     
 }

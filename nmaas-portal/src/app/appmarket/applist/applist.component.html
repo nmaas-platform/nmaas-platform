@@ -12,8 +12,7 @@
 					<form class = "form-inline" role = "form">
 						<div class="form-group">
 							<label for = "tag">Tags</label>
-      
-							<select class="form-control" id="tag">
+							<select class="form-control" id="tag" [(ngModel)]="selectedTag" [ngModelOptions]="{standalone: true}" (ngModelChange)="filterAppsByTag()" >
 								<option [value]="all">all</option>
 								<option *ngFor="let tag of tags" [value]="tag">{{tag}}</option>
 							</select>
@@ -35,7 +34,7 @@
 				<div class="tab-pane fade in active" id="tab-grid">
 				
 					<div class = "row auto-clear">
-					   <nmaas-applist-element *ngFor="let app of apps" [app]="app"></nmaas-applist-element>					   
+					   <nmaas-applist-element *ngFor="let app of filteredApps" [app]="app"></nmaas-applist-element>					   
 					</div>
 				
 				</div>
@@ -53,7 +52,7 @@
 							</thead>
 						   
 						   <tbody>
-								<template ngFor let-app [ngForOf]="apps">		
+								<template ngFor let-app [ngForOf]="filteredApps">		
 									<tr>
 										<td>{{app?.name}}</td>
 										<td>{{app?.briefDescription}}</td>
