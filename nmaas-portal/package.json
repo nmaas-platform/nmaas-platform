@@ -29,10 +29,10 @@
     "angular2-json-schema-form": "0.3.0-alpha.26"
   },
   "devDependencies": {
-    "@angular/cli": "^1.4.2",
     "@angular/compiler-cli": "^2.3.1",
     "@types/jasmine": "2.5.38",
     "@types/node": "^6.0.42",
+    "angular-cli": "1.0.0-beta.28.3",
     "angular-ide": "^0.9.17",
     "codelyzer": "~2.0.0-beta.1",
     "jasmine-core": "2.5.2",
