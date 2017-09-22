@@ -18,6 +18,7 @@ export class AppListComponent implements OnInit {
     private apps : Application[];
     private tags : string[];
     
+    private searchedAppName: string;
     private selectedTag: string;
     private filteredApps: Application[];
     
@@ -34,6 +35,14 @@ export class AppListComponent implements OnInit {
         
         if(! this.selectedListType)
             this.selectedListType = ListType.GRID;
+    }
+
+    filterAppsByName() {
+        var searchedAppName: string = this.searchedAppName;
+        if (searchedAppName.length > 0)
+            this.filteredApps = this.apps.filter(app => app.name.toLocaleLowerCase().indexOf(searchedAppName) > -1);
+        else
+            this.filteredApps = this.apps.filter(app => true);
     }
 
     filterAppsByTag() {
