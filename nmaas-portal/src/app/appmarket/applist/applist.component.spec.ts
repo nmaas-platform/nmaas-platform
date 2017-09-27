@@ -6,18 +6,18 @@ import { DebugElement } from '@angular/core';
 import { AppListComponent } from './applist.component';
 
 describe('ApplistComponent', () => {
-  let component: ApplistComponent;
-  let fixture: ComponentFixture<ApplistComponent>;
+  let component: AppListComponent;
+  let fixture: ComponentFixture<AppListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplistComponent ]
+      declarations: [ AppListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApplistComponent);
+    fixture = TestBed.createComponent(AppListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

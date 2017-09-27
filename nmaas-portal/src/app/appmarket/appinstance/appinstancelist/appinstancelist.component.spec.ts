@@ -5,9 +5,9 @@ import { DebugElement } from '@angular/core';
 
 import { AppInstanceListComponent } from './appinstancelist.component';
 
-describe('AppinstancelistcomponentComponent', () => {
+describe('AppInstanceListComponent', () => {
   let component: AppInstanceListComponent;
-  let fixture: ComponentFixture<AppinstancelistcomponentComponent>;
+  let fixture: ComponentFixture<AppInstanceListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
