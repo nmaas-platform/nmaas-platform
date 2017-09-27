@@ -6,11 +6,12 @@ import java.util.List;
 
 public class Comment {
 
-	Long id;
-	Long parentId;
-	User owner;
-	Date createdAt;
-	String comment;
+	private Long id;
+	private Long parentId;
+	private User owner;
+	private Date createdAt;
+	private String comment;
+	private boolean deleted;
 	
 	List<Comment> subComments = new ArrayList<Comment>();
 	
@@ -55,6 +56,16 @@ public class Comment {
 
 	public void setParentId(Long parentId) {
 		this.parentId = parentId;
+	}
+
+	
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public List<Comment> getSubComments() {

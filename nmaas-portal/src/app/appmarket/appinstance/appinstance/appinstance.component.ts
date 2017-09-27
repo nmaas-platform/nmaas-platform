@@ -8,6 +8,7 @@ import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { AppsService, AppInstanceService, AppImagesService } from '../../../service/index';
 
 import { AppInstanceProgressComponent } from '../appinstanceprogress/appinstanceprogress.component';
+import { RateComponent } from '../../../shared/rate/rate.component';
 
 import { Application, AppInstance, AppInstanceState, AppInstanceStateAware, AppInstanceStatus, AppInstanceProgressStage } from '../../../model/index';
 
