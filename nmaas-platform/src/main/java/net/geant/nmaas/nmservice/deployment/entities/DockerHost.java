@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents Docker Host which runs Docker Engine daemon, exposes an Docker Remote API and is available for container deployment.
@@ -70,6 +72,9 @@ public class DockerHost {
      * Helper flag indicating whether this Docker host should be always preferred in selection for new container deployment.
      */
     private boolean preferred;
+
+    @OneToMany(mappedBy = "host", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<DockerHostNetwork> networks = new ArrayList<>();
 
     public DockerHost() {}
 
@@ -194,6 +199,14 @@ public class DockerHost {
 
     public void setPreferred(boolean preferred) {
         this.preferred = preferred;
+    }
+
+    public List<DockerHostNetwork> getNetworks() {
+        return networks;
+    }
+
+    public void setNetworks(List<DockerHostNetwork> networks) {
+        this.networks = networks;
     }
 
     @Override

@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostStateNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpamSpec;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
 import org.junit.Before;
@@ -100,7 +100,7 @@ public class DockerHostStateKeeperTest {
 
     @Test
     public void shouldAssignAddressPools() throws DockerHostNotFoundException, DockerHostStateNotFoundException {
-        DockerNetworkIpamSpec addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_1);
+        DockerNetworkIpam addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_1);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.11.1.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.11.1.254"));

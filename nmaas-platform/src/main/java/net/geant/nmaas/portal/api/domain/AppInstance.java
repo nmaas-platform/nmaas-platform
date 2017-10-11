@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.api.domain;
 
-import java.util.Date;
-
 public class AppInstance {
 
 	private Long id;
 	
 	private Long applicationId;
-	
+
+	private String applicationName;
+
 	private String name;
 	
 	private Long createdAt;
@@ -37,6 +37,14 @@ public class AppInstance {
 
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+
+	public String getApplicationName() {
+		return applicationName;
+	}
+
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
 	}
 
 	public String getName() {
@@ -87,7 +95,4 @@ public class AppInstance {
 		this.url = url;
 	}
 
-
-	
-	
 }

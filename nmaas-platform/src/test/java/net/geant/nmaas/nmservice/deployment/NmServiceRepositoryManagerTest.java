@@ -71,7 +71,7 @@ public class NmServiceRepositoryManagerTest {
         repositoryManager.updateDockerContainerDeploymentId(deploymentId, "containerId");
         assertThat(repositoryManager.loadService(deploymentId).getDockerContainer().getDeploymentId(), equalTo("containerId"));
         repositoryManager.updateDockerContainerNetworkDetails(deploymentId,
-                new DockerContainerNetDetails(9090, new DockerNetworkIpamSpec("192.168.0.0/24", "192.168.0.254")));
+                new DockerContainerNetDetails(9090, new DockerNetworkIpam("192.168.0.0/24", "192.168.0.254")));
         repositoryManager.removeService(deploymentId2);
     }
 

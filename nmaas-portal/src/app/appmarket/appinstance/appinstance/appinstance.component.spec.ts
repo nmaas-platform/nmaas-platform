@@ -1,11 +1,12 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async } from '@angular/core/testing';
-import { AppInstanceComponent } from './appinstall.component';
+import { AppInstanceComponent } from './appinstance.component';
 
-describe('Component: Appinstall', () => {
+describe('Component: AppInstance', () => {
+  let component: AppInstanceComponent;
+  
   it('should create an instance', () => {
-    let component = new AppInstanceComponent();
     expect(component).toBeTruthy();
   });
 });

@@ -4,7 +4,7 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
-import net.geant.nmaas.dcn.deployment.api.AnsiblePlaybookStatus;
+import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.*;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
@@ -12,12 +12,12 @@ import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.expceptions.AttachPointNotFoundException;
+import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetwork;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.repositories.DockerNetworkRepository;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
+import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -57,7 +57,7 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
 
     private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
 
-    private DockerNetworkRepository dockerNetworkRepository;
+    private DockerHostNetworkRepository dockerHostNetworkRepository;
 
     private DockerApiClient dockerApiClient;
 
@@ -69,13 +69,13 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                                     DockerHostAttachPointRepository dockerHostAttachPointRepository,
                                     BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
                                     ApplicationEventPublisher applicationEventPublisher,
-                                    DockerNetworkRepository dockerNetworkRepository,
+                                    DockerHostNetworkRepository dockerHostNetworkRepository,
                                     DockerApiClient dockerApiClient) {
         this.dcnRepositoryManager = dcnRepositoryManager;
         this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
         this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.dockerNetworkRepository = dockerNetworkRepository;
+        this.dockerHostNetworkRepository = dockerHostNetworkRepository;
         this.dockerApiClient = dockerApiClient;
     }
 
@@ -95,10 +95,10 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         try {
             storeDcnInfoIfNotExists(clientId, dcnSpec);
             notifyStateChangeListeners(clientId, DcnDeploymentState.REQUESTED);
-            final DockerNetwork dockerNetwork = dockerNetworkRepository
+            final DockerHostNetwork dockerHostNetwork = dockerHostNetworkRepository
                     .findByClientId(dcnSpec.getClientId())
                     .orElseThrow(() -> new InvalidClientIdException("No Docker network found for client " + clientId));
-            final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerNetwork);
+            final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerHostNetwork);
             dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, dcnCloudEndpointDetails);
             CustomerNetworkAttachPoint customerNetworkAttachPoint = basicCustomerNetworkAttachPointRepository
                    .findByCustomerId(clientId.longValue())
@@ -109,8 +109,8 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
                     clientId,
                     customerSideRouterVpnConfig);
             CloudAttachPoint cloudAttachPoint = dockerHostAttachPointRepository
-                    .findByDockerHostName(dockerNetwork.getDockerHost().getName())
-                    .orElseThrow(() -> new AttachPointNotFoundException(dockerNetwork.getDockerHost().getName()));
+                    .findByDockerHostName(dockerHostNetwork.getHost().getName())
+                    .orElseThrow(() -> new AttachPointNotFoundException(dockerHostNetwork.getHost().getName()));
             AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig =
                     AnsiblePlaybookVpnConfigBuilder.fromCloudAttachPoint(customerSideRouterVpnConfig, cloudAttachPoint);
             cloudSideRouterVpnConfig.merge(dcnCloudEndpointDetails);

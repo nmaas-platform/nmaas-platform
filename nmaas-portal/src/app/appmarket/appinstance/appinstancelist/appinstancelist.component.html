@@ -5,7 +5,7 @@
 							  <tr>
 								 <th>Name</th>
 								 <th>Owner</th>
-								 <th>Created At</th>
+								 <th>Deployed at</th>
 								 <th>Application</th>
 								 <th>State</th>
 								 <th>&nbsp;</th>
@@ -13,12 +13,12 @@
 						   </thead>
 						   
 						   <tbody>
-						      <template ngFor let-appInstance [ngForOf]="appInstances">		
+						      <template ngFor let-appInstance [ngForOf]="appInstances">
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
-								 <td>{{appInstance?.createdAt | date}}</td>
-								 <td>{{appInstance?.applicationId}}</td>
+								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
+								 <td>{{appInstance?.applicationName}}</td>
 								 <td>{{appInstance?.state}}</td>
 								<td>
 									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button">

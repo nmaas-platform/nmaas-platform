@@ -1,0 +1,6 @@
+{
+  "dcnAttachedContainers": [
+    {"name": "oxidized", "description": "oxidized"}
+  ],
+  "composeFileTemplateContent":"version: \"2\"\n\nservices:\n  ${oxidized.container_name}:\n    restart: always\n    image: oxidized/oxidized:latest\n    ports:\n      - ${port}:8888/tcp\n    environment:\n      CONFIG_RELOAD_INTERVAL: 600\n    volumes:\n      - ${volume}:/root/.config/oxidized\n    networks:\n      nmaas-ext-access:\n      nmaas-dcn:\n        ipv4_address: ${oxidized.container_ip_address}\n    privileged: true\n\nnetworks:\n  nmaas-ext-access:\n    external:\n      name: ${nmaas_ext_access_network}\n  nmaas-dcn:\n    external:\n      name: ${nmaas_dcn_network}"
+}

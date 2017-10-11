@@ -1,0 +1,5 @@
+{
+  "applicationId":1,
+  "configFileName":"addhosts.cfg",
+  "configFileTemplateContent":"<#list targets as target>\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\n</#list>"
+}

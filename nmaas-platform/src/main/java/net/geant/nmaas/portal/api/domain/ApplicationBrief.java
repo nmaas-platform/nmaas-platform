@@ -10,6 +10,10 @@ public class ApplicationBrief {
 	String version;
 	
 	String license;
+
+	String wwwUrl;
+	String sourceUrl;
+	String issuesUrl;
 	
 	String briefDescription;
 	
@@ -47,7 +51,31 @@ public class ApplicationBrief {
 		this.name = name;
 	}
 
-	public String getBriefDescription() {
+    public String getWwwUrl() {
+        return wwwUrl;
+    }
+
+    public void setWwwUrl(String wwwUrl) {
+        this.wwwUrl = wwwUrl;
+    }
+
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
+    public String getIssuesUrl() {
+        return issuesUrl;
+    }
+
+    public void setIssuesUrl(String issuesUrl) {
+        this.issuesUrl = issuesUrl;
+    }
+
+    public String getBriefDescription() {
 		return briefDescription;
 	}
 
@@ -63,5 +91,4 @@ public class ApplicationBrief {
 		this.tags = tags;
 	}
 
-	
 }

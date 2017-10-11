@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfiguration;
-import net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
@@ -17,9 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
-import static net.geant.nmaas.nmservice.configuration.repository.NmServiceConfigurationTemplatesRepository.DEFAULT_TEMPLATE_FILE_NAME_SUFFIX;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -30,10 +30,8 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
 
     private static final String TEST_CONFIG_ID_1 = "1";
     private static final String TEST_CONFIG_ID_2 = "2";
-    private static final String TEST_TEMPLATE_NAME_1 = "config-template";
-    private static final String TEST_TEMPLATE_NAME_2 = "router.db-template";
-    private static final String OXIDIZED_APP_NAME = "Oxidized";
-    private static final String OXIDIZED_APP_VERSION = "0.19.0";
+    private static final String TEST_TEMPLATE_NAME_1 = "config";
+    private static final String TEST_TEMPLATE_NAME_2 = "router.db";
 
     @Autowired
     private NmServiceConfigurationTemplatesRepository templatesRepository;
@@ -44,52 +42,57 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
     @Autowired
     private ApplicationRepository applicationRepository;
 
-    private Long testAppId;
+    private Long oxidizedAppId;
 
     @Before
     public void setup() {
-        Application app = new Application(OXIDIZED_APP_NAME);
-        app.setVersion(OXIDIZED_APP_VERSION);
-        testAppId = applicationRepository.save(app).getId();
-    }
-
-    @Test
-    public void shouldPopulateAndPrintConfigurationFile() throws Exception {
-        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(OXIDIZED_APP_NAME).get(0).getId()));
-        List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
-        assertThat(templates.size(), equalTo(2));
-        assertThat(templates.get(0).getName(), endsWith(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX));
-        assertThat(SimpleNmServiceConfigurationHelper.configFileNameFromTemplateName(templates.get(0).getName()),
-                not(containsString(DEFAULT_TEMPLATE_FILE_NAME_SUFFIX)));
+        Application app = new Application("oxidizedAppName");
+        app.setVersion("oxidizedAppVersion");
+        oxidizedAppId = applicationRepository.save(app).getId();
+        NmServiceConfigurationTemplate oxidizedConfigTemplate1 = new NmServiceConfigurationTemplate();
+        oxidizedConfigTemplate1.setApplicationId(oxidizedAppId);
+        oxidizedConfigTemplate1.setConfigFileName("config");
+        oxidizedConfigTemplate1.setConfigFileTemplateContent("---\\nusername: ${oxidizedUsername}\\npassword: ${oxidizedPassword}\\nmodel: junos\\ninterval: 600\\nuse_syslog: false\\ndebug: false\\nthreads: 30\\ntimeout: 20\\nretries: 3\\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\\nrest: 0.0.0.0:8888\\nvars: {}\\ngroups: {}\\npid: \\\"/root/.config/oxidized/pid\\\"\\ninput:\\n  default: ssh, telnet\\n  debug: false\\n  ssh:\\n    secure: false\\noutput:\\n  default: git\\n  file:\\n    directory: \\\"/root/.config/oxidized/configs\\\"\\n  git:\\n    user: oxidized\\n    email: oxidized@man.poznan.pl\\n    repo: \\\"/root/.config/oxidized/oxidized.git\\\"\\nsource:\\n  default: csv\\n  csv:\\n    file: \\\"/root/.config/oxidized/router.db\\\"\\n    delimiter: !ruby/regexp /:/\\n    map:\\n      name: 0\\n      model: 1\\nmodel_map:\\n  cisco: ios\\n  juniper: junos");
+        templatesRepository.save(oxidizedConfigTemplate1);
+        NmServiceConfigurationTemplate oxidizedConfigTemplate2 = new NmServiceConfigurationTemplate();
+        oxidizedConfigTemplate2.setApplicationId(oxidizedAppId);
+        oxidizedConfigTemplate2.setConfigFileName("router.db");
+        oxidizedConfigTemplate2.setConfigFileTemplateContent("<#list targets as target>\\n${target.ipAddress}:junos\\n</#list>");
+        templatesRepository.save(oxidizedConfigTemplate2);
     }
 
     @Test
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
-        Identifier oxidizedIdentifier = Identifier.newInstance(String.valueOf(applicationRepository.findByName(OXIDIZED_APP_NAME).get(0).getId()));
-        List<Template> templates = templatesRepository.loadTemplates(oxidizedIdentifier);
-        Optional<Template> tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME_1)).findFirst();
+        List<NmServiceConfigurationTemplate> nmServiceConfigurationTemplates =
+                templatesRepository.findAllByApplicationId(oxidizedAppId);
+        Optional<NmServiceConfigurationTemplate> nmServiceConfigurationTemplate =
+                nmServiceConfigurationTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_TEMPLATE_NAME_1)).findFirst();
+        Template template = configurationsPreparer.convertToTemplate(nmServiceConfigurationTemplate.orElseThrow(() -> new Exception()));
         NmServiceConfiguration nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
                         TEST_CONFIG_ID_1,
-                        tut.orElseThrow(() -> new Exception()),
+                        template,
                         testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("config"));
-        assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("user123"), containsString("pass123")));
-        tut = templates.stream().filter(t -> t.getName().endsWith(TEST_TEMPLATE_NAME_2)).findFirst();
+        nmServiceConfigurationTemplate =
+                nmServiceConfigurationTemplates.stream().filter(t -> t.getConfigFileName().endsWith(TEST_TEMPLATE_NAME_2)).findFirst();
+        template = configurationsPreparer.convertToTemplate(nmServiceConfigurationTemplate.orElseThrow(() -> new Exception()));
         nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
                         TEST_CONFIG_ID_2,
-                        tut.orElseThrow(() -> new Exception()),
+                        template,
                         testOxidizedDefaultConfigurationInputModel());
         assertThat(nmServiceConfiguration.getConfigFileName(), equalTo("router.db"));
-        assertThat(new String(nmServiceConfiguration.getConfigFileContent(), "UTF-8"),
+        assertThat(nmServiceConfiguration.getConfigFileContent(),
                 Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
     }
 
     @After
     public void removeTestAppFromDatabase() {
-        applicationRepository.delete(testAppId);
+        applicationRepository.deleteAll();
+        templatesRepository.deleteAll();
     }
 
     private Map<String, Object> testOxidizedDefaultConfigurationInputModel() {

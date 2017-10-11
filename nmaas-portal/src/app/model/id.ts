@@ -1,3 +1,5 @@
-export class Id {
-   public id: Number; 
+export class Id { 
+   constructor(public id: Number) {
+   		this.id = id;
+   }
 }

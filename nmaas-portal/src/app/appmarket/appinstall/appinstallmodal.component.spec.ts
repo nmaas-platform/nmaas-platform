@@ -5,9 +5,9 @@ import { DebugElement } from '@angular/core';
 
 import { AppInstallModalComponent } from './appinstallmodal.component';
 
-describe('AppinstallmodalComponent', () => {
+describe('AppInstallmodalComponent', () => {
   let component: AppInstallModalComponent;
-  let fixture: ComponentFixture<AppinstallmodalComponent>;
+  let fixture: ComponentFixture<AppInstallModalComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

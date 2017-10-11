@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Default {@link AppDeploymentMonitor} implementation.
@@ -40,15 +40,8 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
-    public Map<Identifier, AppLifecycleState> allDeployments() {
-        return loadViewOfAllDeployments();
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Map<Identifier, AppLifecycleState> loadViewOfAllDeployments() {
-        Map<Identifier, AppLifecycleState> view = new HashMap<>();
-        appDeploymentRepositoryManager.loadAll().forEach(item -> view.put(item.getDeploymentId(), item.getState().lifecycleState()));
-        return view;
+    public List<AppDeployment> allDeployments() {
+        return appDeploymentRepositoryManager.loadAll();
     }
 
     @Override
@@ -71,8 +64,15 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     AppUiAccessDetails accessDetails(NmServiceInfo serviceInfo) {
         final String accessAddress = serviceInfo.getHost().getPublicIpAddress().getHostAddress();
-        final Integer accessPort = serviceInfo.getDockerContainer().getNetworkDetails().getPublicPort();
+        final Integer accessPort = obtainAccessPort(serviceInfo);
         return new AppUiAccessDetails(new StringBuilder().append("http://").append(accessAddress).append(":").append(accessPort).toString());
+    }
+
+    private Integer obtainAccessPort(NmServiceInfo service) {
+        if (service.getDockerContainer() != null)
+            return service.getDockerContainer().getNetworkDetails().getPublicPort();
+        else
+            return service.getDockerComposeService().getPublicPort();
     }
 
 }

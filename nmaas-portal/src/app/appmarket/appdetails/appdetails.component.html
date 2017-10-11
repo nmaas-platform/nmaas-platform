@@ -13,37 +13,35 @@
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<div class="btn-group pull-right">
-						<button type="button" class="btn btn-default">WWW</button>
-						<button type="button" class="btn btn-default">Source</button>
-						<button type="button" class="btn btn-default">Issues</button>
+						<a role="button" href="{{app?.wwwUrl}}" class="btn btn-default">WWW</a>
+						<a role="button" href="{{app?.sourceUrl}}" class="btn btn-default">Source</a>
+						<a role="button" href="{{app?.issuesUrl}}" class="btn btn-default">Issues</a>
 					</div>
-
 				</div>
 			</div>
 
 			<hr>
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Version:
-					{{app?.version}}</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">License:
-					{{app?.license}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Version: {{app?.version}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">License: {{app?.license}}</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-					{{app?.tags}}</div>
+					Tags: {{app?.tags.join(", ")}}
+				</div>
 			</div>
 			<hr>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<p>
 						<span>Rating:</span>
-						<rate [pathUrl]="'/apps/' + id + '/rate'"></rate>
+						<rate name="appRate" [pathUrl]="'/apps/' + id + '/rate'"></rate>
 					</p>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<p>
 						<span>My rating:</span>
-						<rate [pathUrl]="'/apps/' + id + '/rate/my'"></rate>
+						<rate name="myAppRate" [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + id + '/rate/my'"></rate>
 					</p>
 				</div>
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -68,22 +66,9 @@
 		{{app?.fullDescription}}
 	</div>
 	<hr>
-	<div class="row">
-		<h3>Your comment:</h3>
-		<div>
-			<form role="form" action="#" method="post">
-				<div class="form-group">
-					<label class="sr-only" for="name">Your comment:</label>
-					<textarea name="comment" placeholder="Add some comment here..."
-						class="form-control" rows="5"></textarea>
-					<button type="submit" class="btn btn-default">Add</button>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="row">
-		<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
-	</div>
+
+	<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
+
 
 	<nmaas-appInstallModal [app]="app">
 	</nmaas-appInstallModal>

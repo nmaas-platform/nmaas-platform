@@ -1,3 +1,0 @@
-<#list targets as target>
--f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}
-</#list>
