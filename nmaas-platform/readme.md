@@ -22,10 +22,12 @@
 #### Build and run
 ---
   + Build the Platform with *gradlew clean build* in reactor directory.
-  + The output executable *nmaas-platform-0.2.0.jar* file is created in *nmaas-platform/build/libs* directory.
-  + Run the Platform with *java -jar nmaas-platform-0.2.jar*.
+  + The output executable *nmaas-platform-0.3.0.jar* file is created in *nmaas-platform/build/libs* directory.
+  + Run the Platform with *java -jar nmaas-platform-0.3.0.jar*.
   + It is advised to run the Platform with additional argument *--spring.config.name* specifying the name of the properties file (located in the same directory as the jar file) to be loaded instead of the built in one.
-  + Initial Platform data/configuration may be applied by running *nmaas-platform/src/test/shell/populate-inventory.sh* script that will load Docker Host and customer network definitions included in the *nmaas-platform/src/test/shell/data/inventory* directory.
+  + To add pre-defined set of applications to the Platform run *nmaas-platform/src/test/shell/init.sh* script that will load NMaaS-compatible application definitions included in the *nmaas-platform/src/test/shell/data/apps* directory.
+  + After running the initialisation script in the previous step, the *nmaas-platform/src/test/shell/populate-templates.sh* should be run to add configuration file and Docker Compose file templates for previously added applications.
+  + Initial deployment environment data/configuration may be applied by running *nmaas-platform/src/test/shell/populate-inventory.sh* script that will load Docker Host and customer network definitions included in the *nmaas-platform/src/test/shell/data/inventory* directory.
 
 ### Complete deployment environment setup
 ---
@@ -36,6 +38,6 @@
 
 #### Notes
 ---
-  * It is assumed that the SSH communication between the machine on which the NMaaS software is running and the Docker Hosts is configured to use pre-exchanged SSH keys and no password is required.
-  * For DCN/VPN configuration it is assumed that there is a set of Docker container images available on one of the Docker Hosts that trigger Ansible playbooks responsible for core routers configuration.
-  * In order to speed up random value generation process which is used by the SSH library it is advised to set the following line *securerandom.source=file:/dev/urandom* in *$JAVA_HOME/jre/lib/security/java.security* file.
+  + It is assumed that the SSH communication between the machine on which the NMaaS software is running and the Docker Hosts is configured to use pre-exchanged SSH keys and no password is required.
+  + For DCN/VPN configuration it is assumed that there is a set of Docker container images available on one of the Docker Hosts that trigger Ansible playbooks responsible for core routers configuration.
+  + In order to speed up random value generation process which is used by the SSH library (on the machine hosting the NMaaS software) it is advised to set the following line *securerandom.source=file:/dev/urandom* in *$JAVA_HOME/jre/lib/security/java.security* file.

@@ -17,6 +17,15 @@
  + Install angular-cli (version 1.1.3+) ([http://cli.angular.io](http://cli.angular.io))
    - npm install -g @angular/cli@latest
  + Install git ([https://git-scm.com/](https://git-scm.com/))
+ + (run) Install http server 
+   - npm install -g angular-http-server
+
+#### Build and run
+---
+  + Build the Portal with *gradlew clean build* in reactor directory.
+  + The output archive *nmaas-portal-0.3.0.zip* file is created in *nmaas-portal/build* directory.
+  + Unzip the archive and run the http server in the same directory
+    - nohup angular-http-server -p 9009 -s --cors > nmaas-portal.log 2> Error.err < /dev/null &
 
 #### Defaults
 ---

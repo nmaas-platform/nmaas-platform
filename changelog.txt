@@ -1,3 +1,20 @@
+0.3.0 (2017/10/06)
+
+	* Support for NAV application.
+	[New Feature] [NMAAS-195] [nmaas-platform]
+	
+	Implemented support for complete NAV application deployment workflow using Docker Compose.
+
+	* Support for OpenNTI application.
+	[New Feature] [NMAAS-200] [nmaas-platform]
+	
+	Implemented support for complete OpenNTI application deployment workflow using Docker Compose.
+	
+	* NMaaS Portal improvements.
+	[Improvement] [NMAAS-203, NMAAS-204, NMAAS-205] [nmaas-portal]
+	
+	Added support for application comments and ratings. Implemented minor layout improvements.
+
 0.2.0 (2017/07/11)
 
 	* Containerized application deployment using Docker Compose.
