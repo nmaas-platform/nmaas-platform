@@ -6,15 +6,18 @@ import freemarker.template.TemplateException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplateVariable;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -51,14 +54,19 @@ public class DockerComposeFilePreparer {
         repositoryManager.storeService(nmServiceInfo);
     }
 
-    private Map<String, Object> buildModel(DockerComposeFileInput input) {
+    private Map<String, Object> buildModel(DockerComposeService input, DockerComposeFileTemplate template) {
         Map<String, Object> model = new HashMap<>();
-        model.put(DockerComposeFileTemplateVariable.CONTAINER_NAME.value(), input.getContainerName());
-        model.put(DockerComposeFileTemplateVariable.PORT.value(), String.valueOf(input.getPort()));
-        model.put(DockerComposeFileTemplateVariable.VOLUME.value(), input.getVolume());
-        model.put(DockerComposeFileTemplateVariable.CONTAINER_IP_ADDRESS.value(), input.getContainerIpAddress());
+        model.put(DockerComposeFileTemplateVariable.PORT.value(), String.valueOf(input.getPublicPort()));
+        model.put(DockerComposeFileTemplateVariable.VOLUME.value(), input.getAttachedVolumeName());
         model.put(DockerComposeFileTemplateVariable.ACCESS_DOCKER_NETWORK_NAME.value(), input.getExternalAccessNetworkName());
         model.put(DockerComposeFileTemplateVariable.DCN_DOCKER_NETWORK_NAME.value(), input.getDcnNetworkName());
+        for(DockerComposeServiceComponent component : input.getServiceComponents()) {
+            Map<String, Object> container = new HashMap<>();
+            container.put(DockerComposeFileTemplateVariable.CONTAINER_NAME.value(), component.getDeploymentName());
+            container.put(DockerComposeFileTemplateVariable.CONTAINER_IP_ADDRESS.value(), component.getIpAddressOfContainer());
+            model.put(component.getName(), container);
+        }
+        System.out.println(model);
         return model;
     }
 

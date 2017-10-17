@@ -1,0 +1,58 @@
+{
+	"name":"OpenNTI",
+	"version":"0.1",
+	"license":"Apache 2.0",
+	"briefDescription":"Open Network Telemetry Collector built with open source tools",
+	"tags": [ "management", "monitoring", "telemetry"],
+	"fullDescription" : "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it",
+	"wwwUrl" : "http://open-nti.readthedocs.io/en/latest",
+	"sourceUrl" : "https://github.com/Juniper/open-nti",
+	"issuesUrl": "https://github.com/Juniper/open-nti/issues",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"DOCKER_COMPOSE"
+		]
+	},
+	"configTemplate": {
+		"template": {
+			"schema": {
+				"type": "object",
+				"properties": {
+					"openntiUsername": {
+						"type": "string",
+						"title": "Username"
+					},
+					"openntiPassword": {
+						"type": "string",
+						"title": "Password"
+					},
+					"targets": {
+						"title": "Routers",
+						"type": "array",
+						"minItems": 1,
+						"items": {
+							"type": "object",
+							"properties": {
+								"ipAddress": {
+									"title": "IP address",
+									"type": "string",
+									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+								}
+							}
+						}
+					}
+				},
+				"required": [
+					"openntiUsername", "openntiPassword", "targets"
+				]
+			},
+			"form": [
+				"*",
+				{
+					"type": "submit",
+					"title": "Apply configuration"
+				}
+			]
+		}
+	}
+}

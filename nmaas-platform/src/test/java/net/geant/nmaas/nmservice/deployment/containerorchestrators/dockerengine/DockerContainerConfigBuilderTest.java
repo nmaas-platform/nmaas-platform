@@ -47,7 +47,7 @@ public class DockerContainerConfigBuilderTest {
         serviceInfo = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, testTemplate1);
         serviceInfo.setHost(testDockerHost1);
         serviceInfo.setManagedDevicesIpAddresses(Arrays.asList("1.1.1.1", "2.2.2.2", "3.3.3.3"));
-        DockerNetworkIpamSpec addresses = new DockerNetworkIpamSpec("1.1.0.0/24", "1.1.1.254");
+        DockerNetworkIpam addresses = new DockerNetworkIpam("1.1.0.0/24", "1.1.1.254");
         dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(new DockerContainerNetDetails(1234, addresses));
     }

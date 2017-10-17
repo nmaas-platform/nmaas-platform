@@ -2,12 +2,12 @@
 	"name":"Oxidized",
 	"version":"0.19.0",
 	"license":"MIT",
-	"briefDescription":"This is Oxidized tool for configuration backup.",
+	"briefDescription":"Oxidized is a network device configuration backup tool",
 	"tags": [ "management", "backup", "configuration"],
 	"fullDescription": "Oxidized is a network device configuration backup tool. It's a RANCID replacement!\n\n>- automatically adds/removes threads to meet configured retrieval interval\n- restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])\n-\n\t- syslog udp+file example to catch config change event (ios/junos) and trigger config fetch\n-\n\t- will signal ios/junos user who made change, which output modules can use (via POST)\n-\n\t- The git output module uses this info - 'git blame' will for each line show who made the change and when\n- restful API to reload list of nodes (GET /reload)\n- restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])\n- restful API to show list of nodes (GET /nodes)\n- restful API to show list of version for a node (/node/version[NODE]) and diffs\n",
-	"wwwUrl": "https:\/\/github.com\/ytti\/oxidized\/wiki\/",
-	"sourceUrl": "https:\/\/github.com\/ytti\/oxidized\/",
-	"issuesUrl": "",
+	"wwwUrl": "https://github.com/ytti/oxidized/wiki",
+	"sourceUrl": "https://github.com/ytti/oxidized",
+	"issuesUrl": "https://github.com/ytti/oxidized/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"DOCKER_ENGINE",
@@ -53,7 +53,8 @@
 							"properties": {
 								"ipAddress": {
 									"title": "IP address",
-									"type": "string"
+									"type": "string",
+									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
 								}
 							}
 						}

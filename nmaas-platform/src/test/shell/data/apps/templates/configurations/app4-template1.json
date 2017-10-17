@@ -1,0 +1,5 @@
+{
+  "applicationId":4,
+  "configFileName":"hosts.yaml",
+  "configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}: generic\n</#list>"
+}

@@ -96,8 +96,8 @@ public class ContainerConfigBuilder {
             throw new NmServiceRequestVerificationException("Docker container network details not set");
         DockerContainerNetDetails networkDetails = service.getDockerContainer().getNetworkDetails();
         if (networkDetails.getPublicPort() == 0
-                || networkDetails.getIpAddresses() == null
-                || !networkDetails.getIpAddresses().verify()) {
+                || networkDetails.getIpam() == null
+                || !networkDetails.getIpam().verify()) {
             throw new NmServiceRequestVerificationException("Network details not valid. Some parameters are be missing.");
         }
     }

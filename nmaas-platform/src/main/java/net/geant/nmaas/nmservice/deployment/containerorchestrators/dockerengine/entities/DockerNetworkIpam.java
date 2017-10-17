@@ -7,7 +7,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="docker_network_ipam_spec")
-public class DockerNetworkIpamSpec {
+public class DockerNetworkIpam {
 
     private static final String DEFAULT_CONTAINER_IP_ADDRESS_LAST_OCTET = "1";
     private static final String ADDRESS_POOL_DEFAULT_MASK_LENGTH = "24";
@@ -28,26 +28,26 @@ public class DockerNetworkIpamSpec {
     @Column(nullable=false)
     private String ipAddressOfContainer;
 
-    public DockerNetworkIpamSpec() { }
+    public DockerNetworkIpam() { }
 
-    public DockerNetworkIpamSpec(String subnetWithMask, String gateway) {
+    public DockerNetworkIpam(String subnetWithMask, String gateway) {
         this.subnetWithMask = subnetWithMask;
         this.ipRangeWithMask = subnetWithMask;
         this.gateway = gateway;
         ipAddressOfContainer = obtainFirstIpAddressFromNetwork(ipRangeWithMask);
     }
 
-    public DockerNetworkIpamSpec(String ipAddressOfContainer, String subnetWithMask, String gateway) {
+    public DockerNetworkIpam(String ipAddressOfContainer, String subnetWithMask, String gateway) {
         this.subnetWithMask = subnetWithMask;
         this.ipRangeWithMask = subnetWithMask;
         this.gateway = gateway;
         this.ipAddressOfContainer = ipAddressOfContainer;
     }
 
-    public static DockerNetworkIpamSpec fromParameters(String addressPoolBase, int network, int addressPoolDefaultGateway, int addressPoolDefaultMaskLength) {
+    public static DockerNetworkIpam fromParameters(String addressPoolBase, int network, int addressPoolDefaultGateway, int addressPoolDefaultMaskLength) {
         String subnetWithMask = addressPoolBase.replace(".0.0", ".") + network + ".0/" + addressPoolDefaultMaskLength;
         String gateway = addressPoolBase.replace(".0.0", ".") + network + "." + addressPoolDefaultGateway;
-        return new DockerNetworkIpamSpec(subnetWithMask, gateway);
+        return new DockerNetworkIpam(subnetWithMask, gateway);
     }
 
     public static String obtainFirstIpAddressFromNetwork(String ipRangeWithMask) {
@@ -113,7 +113,7 @@ public class DockerNetworkIpamSpec {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DockerNetworkIpamSpec that = (DockerNetworkIpamSpec) o;
+        DockerNetworkIpam that = (DockerNetworkIpam) o;
 
         return ipRangeWithMask != null ? ipRangeWithMask.equals(that.ipRangeWithMask) : that.ipRangeWithMask == null;
     }

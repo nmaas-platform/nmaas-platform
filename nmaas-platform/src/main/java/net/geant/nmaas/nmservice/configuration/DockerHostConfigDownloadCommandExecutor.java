@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerNmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -37,7 +37,7 @@ public class ConfigDownloadCommandExecutor implements ConfigurationFileTransferP
     @Autowired
     private Environment env;
     @Autowired
-    private DockerNmServiceRepositoryManager serviceRepositoryManager;
+    private DockerServiceRepositoryManager serviceRepositoryManager;
     @Autowired
     private NmServiceConfigFileRepository configurations;
 
