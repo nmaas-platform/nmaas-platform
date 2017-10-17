@@ -17,9 +17,6 @@
 		"template": {
 			"schema": {
 				"type": "object",
-				"targets": [
-					"routers"
-				],
 				"properties": {
 					"targets": {
 						"title": "Routers",

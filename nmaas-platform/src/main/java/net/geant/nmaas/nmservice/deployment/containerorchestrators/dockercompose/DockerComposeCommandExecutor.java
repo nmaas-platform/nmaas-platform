@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -23,12 +22,9 @@ public class DockerComposeCommandExecutor {
     @Autowired
     private Environment env;
 
-    @Autowired
-    private DockerComposeFileRepository composeFiles;
-
     void executeComposeFileDownloadCommand(Identifier deploymentId, DockerHost host) throws CommandExecutionException {
         try {
-            final String authorizationHash = generateHash(env.getProperty("api.client.config.download.username"), env.getProperty("api.client.config.download.password"));
+            final String authorizationHash = generateHash(env.getProperty("app.compose.download.client.username"), env.getProperty("app.compose.download.client.password"));
             final String sourceUrl = env.getProperty("app.compose.download.url");
             final String targetDirectoryFullPath = host.getWorkingPath() + "/" + deploymentId.value();
             final String composeFileName = DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME;

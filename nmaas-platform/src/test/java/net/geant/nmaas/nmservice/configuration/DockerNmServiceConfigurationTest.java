@@ -3,10 +3,9 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
@@ -16,14 +15,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -37,46 +35,36 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class NmServiceConfigurationTest {
+@ActiveProfiles("docker-engine")
+public class DockerNmServiceConfigurationTest {
 
-    private NmServiceConfigurationProvider configurationExecutor;
-
+    @Autowired
+    private NmServiceConfigurationProvider configurationProvider;
     @Autowired
     private AppDeploymentMonitor appDeploymentMonitor;
-
     @Autowired
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
-
-    @Mock
-    private NmServiceConfigurationsPreparer configurationsPreparer;
-
-    @Mock
-    private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
-
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-
-    @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
-
+    @MockBean
+    private NmServiceConfigurationFilePreparer configurationsPreparer;
+    @MockBean
+    private DockerHostConfigDownloadCommandExecutor dockerHostConfigDownloadCommandExecutor;
+    @MockBean
+    private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
     @MockBean
     private AppServiceDeploymentTask appServiceDeploymentTask;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
     private Identifier clientId = Identifier.newInstance("clientId");
-
     private Identifier applicationId = Identifier.newInstance("appId");
-
     private AppConfiguration configuration;
 
     @Before
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
-        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate()));
         configuration = new AppConfiguration("");
         appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, Identifier.newInstance("clientId"), applicationId));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
-        configurationExecutor = new SimpleNmServiceConfigurationExecutor(configurationsPreparer, configDownloadCommandExecutor, applicationEventPublisher);
     }
 
     @After
@@ -87,8 +75,8 @@ public class NmServiceConfigurationTest {
 
     @Test
     public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException, UserConfigHandlingException, ConfigTemplateHandlingException {
-        when(configurationsPreparer.generateAndStoreConfigurations(any(), any(), any())).thenAnswer((invocationOnMock) -> {Thread.sleep(500); return new ArrayList<String>();});
-        configurationExecutor.configureNmService(deploymentId, applicationId, configuration, null, null);
+        when(configurationsPreparer.generateAndStoreConfigFiles(any(), any(), any())).thenAnswer((invocationOnMock) -> {Thread.sleep(500); return new ArrayList<String>();});
+        configurationProvider.configureNmService(deploymentId, applicationId, configuration);
         Thread.sleep(200);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
     }

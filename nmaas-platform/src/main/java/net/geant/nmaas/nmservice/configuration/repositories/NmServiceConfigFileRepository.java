@@ -12,7 +12,7 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Repository
-public interface NmServiceConfigurationRepository extends JpaRepository<NmServiceConfiguration, Long> {
+public interface NmServiceConfigFileRepository extends JpaRepository<NmServiceConfiguration, Long> {
 
     Optional<NmServiceConfiguration> findByConfigId(String configId);
 

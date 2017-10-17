@@ -3,11 +3,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -19,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("docker-compose")
 public class StaticRoutingConfigManagerTest {
 
     @Autowired
@@ -45,17 +46,17 @@ public class StaticRoutingConfigManagerTest {
     @MockBean
     private DockerNetworkResourceManager dockerNetworkResourceManager;
     @MockBean
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
+    private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
 
     private Identifier customerId = Identifier.newInstance("1");
     private Identifier deploymentId = Identifier.newInstance("did");
     private BasicCustomerNetworkAttachPoint customerNetwork = new BasicCustomerNetworkAttachPoint();
     private CustomerNetworkMonitoredEquipment equipment = new CustomerNetworkMonitoredEquipment();
-    private NmServiceInfo service;
+    private DockerComposeNmServiceInfo service;
 
     @Before
     public void setup() throws ContainerOrchestratorInternalErrorException, InvalidDeploymentIdException {
-        service = new NmServiceInfo();
+        service = new DockerComposeNmServiceInfo();
         service.setClientId(customerId);
         DockerComposeServiceComponent component1 = new DockerComposeServiceComponent();
         component1.setDeploymentName("deployedComponentName1");

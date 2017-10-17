@@ -1,10 +1,9 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
-
-import java.util.List;
 
 /**
  * Defines a set of methods each container orchestrator has to implement in order to support NM service deployment.
@@ -22,12 +21,15 @@ public interface ContainerOrchestrator {
 
     /**
      * Verifies if currently used container orchestrator is on the list of supported deployment environments specified
-     * for NM service being requested.
+     * for NM service being requested and if so creates proper NM service info object.
      *
-     * @param supportedDeploymentEnvironments list of deployment environments supported by an application
-     * @throws NmServiceRequestVerificationException if none of the application's environments is supported
+     * @param deploymentId unique identifier of service deployment
+     * @param applicationId identifier of the application / service
+     * @param clientId identifier of the client requesting the deployment
+     * @param appDeploymentSpec additional information specific to given application deployment
+     * @throws NmServiceRequestVerificationException if current deployment environment is not supported by the application
      */
-    void verifyDeploymentEnvironmentSupport(List<AppDeploymentEnv> supportedDeploymentEnvironments)
+    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException;
 
     /**
@@ -71,6 +73,15 @@ public interface ContainerOrchestrator {
      */
     void checkService(Identifier deploymentId)
             throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException;
+
+    /**
+     * Retrieves deployed service access details to be presented to the client.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return service access details
+     * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
+     */
+    AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException;
 
     /**
      * Triggers all the required actions to remove given NM service from the system.

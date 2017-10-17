@@ -53,4 +53,9 @@ public class DockerComposeFileTemplate {
     public void setComposeFileTemplateContent(String composeFileTemplateContent) {
         this.composeFileTemplateContent = composeFileTemplateContent;
     }
+
+    public static DockerComposeFileTemplate copy(DockerComposeFileTemplate toCopy) {
+        return new DockerComposeFileTemplate(toCopy.getComposeFileTemplateContent());
+    }
+
 }

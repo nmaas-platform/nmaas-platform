@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
-import net.geant.nmaas.nmservice.configuration.exceptions.ConfigurationNotFoundException;
-import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationRepository;
+import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,14 @@ public class NmServiceConfigDownloadRestController {
     private final static Logger log = LogManager.getLogger(NmServiceConfigDownloadRestController.class);
 
     @Autowired
-    private NmServiceConfigurationRepository configurations;
+    private NmServiceConfigFileRepository configurations;
 
     @GetMapping(value = "/{configId}")
     public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)
-            throws ConfigurationNotFoundException, IOException {
+            throws ConfigFileNotFoundException, IOException {
         log.info("Received configuration download request (configId -> " + configId + ")");
         final NmServiceConfiguration configuration
-                = configurations.findByConfigId(configId).orElseThrow(() -> new ConfigurationNotFoundException(configId));
+                = configurations.findByConfigId(configId).orElseThrow(() -> new ConfigFileNotFoundException(configId));
         response.setCharacterEncoding("UTF-8");
         response.addHeader("Content-disposition", "attachment;filename=" + configuration.getConfigFileName());
         response.setContentType("application/octet-stream");
@@ -38,9 +38,9 @@ public class NmServiceConfigDownloadRestController {
         response.flushBuffer();
     }
 
-    @ExceptionHandler(ConfigurationNotFoundException.class)
+    @ExceptionHandler(ConfigFileNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleConfigurationNotFoundException(ConfigurationNotFoundException ex) {
+    public String handleConfigurationNotFoundException(ConfigFileNotFoundException ex) {
         log.warn("Requested configuration file not found -> " + ex.getMessage());
         return ex.getMessage();
     }

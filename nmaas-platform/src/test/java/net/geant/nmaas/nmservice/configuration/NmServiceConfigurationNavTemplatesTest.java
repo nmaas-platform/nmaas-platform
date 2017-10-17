@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -21,10 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class NmServiceConfigurationNavTemplatesTest {
 
     @Autowired
-    private NmServiceConfigurationTemplatesRepository templatesRepository;
-
-    @Autowired
-    private NmServiceConfigurationsPreparer configurationsPreparer;
+    private NmServiceConfigurationFilePreparer configurationsPreparer;
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -40,7 +36,7 @@ public class NmServiceConfigurationNavTemplatesTest {
 
     @Test
     public void shouldProceedNormallyForApplicationWithoutAnyConfigurationFiles() throws Exception {
-        configurationsPreparer.generateAndStoreConfigurations(
+        configurationsPreparer.generateAndStoreConfigFiles(
                 null,
                 Identifier.newInstance(String.valueOf(navAppId)),
                 new AppConfiguration("{}"));

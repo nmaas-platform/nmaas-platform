@@ -5,10 +5,10 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerH
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.After;
@@ -72,7 +72,7 @@ public class RemoveServiceTest {
     }
 
     private void storeNmServiceInfo(DockerHost dockerHost) {
-        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
         nmServiceRepositoryManager.storeService(serviceInfo);

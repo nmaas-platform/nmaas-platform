@@ -1,8 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -11,11 +8,14 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
+ * Abstract Network Management Service deployment information.
+ * Extended by each {@link net.geant.nmaas.nmservice.deployment.ContainerOrchestrator}.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="nm_service_info")
-public class NmServiceInfo {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class NmServiceInfo {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -53,30 +53,6 @@ public class NmServiceInfo {
     private Identifier clientId;
 
     /**
-     * Container template for this service
-     */
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
-    private DockerContainerTemplate template;
-
-    /**
-     * Target deployment Docker Host on which this service will be or was deployed.
-     */
-    @ManyToOne(fetch=FetchType.EAGER)
-    private DockerHost host;
-
-    /**
-     * Docker container deployed for this service.
-     */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private DockerContainer dockerContainer;
-
-    /**
-     * Docker Compose Service (composed of one or several containers) deployes for this service.
-     */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private DockerComposeService dockerComposeService;
-
-    /**
      * The list of IP addresses of devices to be managed/monitored by the deployed service.
      * These addresses are provided by the user during wizard completion.
      * For these addresses specific routing entries needs to be by applied on the container once run.
@@ -92,14 +68,6 @@ public class NmServiceInfo {
         this.deploymentId = deploymentId;
         this.applicationId = applicationId;
         this.clientId = clientId;
-    }
-
-    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, DockerContainerTemplate template) {
-        this.name = deploymentId.value();
-        this.deploymentId = deploymentId;
-        this.applicationId = applicationId;
-        this.clientId = clientId;
-        this.template = template;
     }
 
     public Long getId() {
@@ -150,38 +118,6 @@ public class NmServiceInfo {
         this.clientId = clientId;
     }
 
-    public DockerContainerTemplate getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(DockerContainerTemplate template) {
-        this.template = template;
-    }
-
-    public DockerHost getHost() {
-        return host;
-    }
-
-    public void setHost(DockerHost host) {
-        this.host = host;
-    }
-
-    public DockerContainer getDockerContainer() {
-        return dockerContainer;
-    }
-
-    public void setDockerContainer(DockerContainer dockerContainer) {
-        this.dockerContainer = dockerContainer;
-    }
-
-    public DockerComposeService getDockerComposeService() {
-        return dockerComposeService;
-    }
-
-    public void setDockerComposeService(DockerComposeService dockerComposeService) {
-        this.dockerComposeService = dockerComposeService;
-    }
-
     public List<String> getManagedDevicesIpAddresses() {
         return managedDevicesIpAddresses;
     }
@@ -189,4 +125,5 @@ public class NmServiceInfo {
     public void setManagedDevicesIpAddresses(List<String> managedDevicesIpAddresses) {
         this.managedDevicesIpAddresses = managedDevicesIpAddresses;
     }
+
 }

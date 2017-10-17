@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import freemarker.template.Template;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
-import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigurationTemplatesRepository;
+import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
@@ -34,10 +34,10 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
     private static final String TEST_TEMPLATE_NAME_2 = "router.db";
 
     @Autowired
-    private NmServiceConfigurationTemplatesRepository templatesRepository;
+    private NmServiceConfigFileTemplatesRepository templatesRepository;
 
     @Autowired
-    private NmServiceConfigurationsPreparer configurationsPreparer;
+    private NmServiceConfigurationFilePreparer configurationsPreparer;
 
     @Autowired
     private ApplicationRepository applicationRepository;

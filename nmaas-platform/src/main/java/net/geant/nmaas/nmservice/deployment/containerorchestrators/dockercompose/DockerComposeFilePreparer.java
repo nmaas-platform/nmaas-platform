@@ -7,10 +7,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,24 +26,27 @@ import java.util.Map;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Profile("docker-compose")
 public class DockerComposeFilePreparer {
 
     @Autowired
-    private AppDeploymentRepository deploymentRepository;
+    private DockerComposeServiceRepositoryManager repositoryManager;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate)
             throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
-        final Map<String, Object> model = buildModel(input, dockerComposeFileTemplate);
-        Template template = convertToTemplate(dockerComposeFileTemplate);
-        DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
-        AppDeployment deployment = deploymentRepository.findByDeploymentId(deploymentId)
-                .orElseThrow(() -> new InternalErrorException("Application deployment with id " + deploymentId + " not found"));
-        deployment.setDockerComposeFile(composeFile);
-        deploymentRepository.save(deployment);
+        final Map<String, Object> model = buildModel(input);
+        try {
+            DockerComposeNmServiceInfo nmServiceInfo = repositoryManager.loadService(deploymentId);
+            Template template = convertToTemplate(dockerComposeFileTemplate);
+            DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
+            nmServiceInfo.setDockerComposeFile(composeFile);
+        } catch (InvalidDeploymentIdException e) {
+            throw new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found");
+        }
     }
 
-    private Map<String, Object> buildModel(DockerComposeService input, DockerComposeFileTemplate template) {
+    private Map<String, Object> buildModel(DockerComposeService input) {
         Map<String, Object> model = new HashMap<>();
         model.put(DockerComposeFileTemplateVariable.PORT.value(), String.valueOf(input.getPublicPort()));
         model.put(DockerComposeFileTemplateVariable.VOLUME.value(), input.getAttachedVolumeName());
@@ -55,7 +58,6 @@ public class DockerComposeFilePreparer {
             container.put(DockerComposeFileTemplateVariable.CONTAINER_IP_ADDRESS.value(), component.getIpAddressOfContainer());
             model.put(component.getName(), container);
         }
-        System.out.println(model);
         return model;
     }
 

@@ -6,13 +6,12 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostReposito
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -48,7 +47,7 @@ public class DockerHostNetworkLifecycleManagerTest {
     @Autowired
     private DockerHostNetworkRepository dockerHostNetworkRepository;
     @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
+    private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
     private DockerNetworkLifecycleManager networkManager;
 
@@ -127,7 +126,7 @@ public class DockerHostNetworkLifecycleManagerTest {
         when(dockerApiClient.createNetwork(Mockito.any(), Mockito.any())).thenReturn("testNetworkId");
         when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(1);
         when(dockerApiClient.listNetworks(Mockito.any())).thenReturn(Arrays.asList("testNetworkId", "testNetworkId2"));
-        final NmServiceInfo service = new NmServiceInfo(deploymentId, applicationId, clientId, new DockerContainerTemplate("image"));
+        final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
         final DockerContainer dockerContainer = prepareTestContainer();
         service.setDockerContainer(dockerContainer);

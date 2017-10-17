@@ -52,7 +52,7 @@ public class AppConfigurationJsonToMapTest {
     "}";
 
     @Autowired
-    private NmServiceConfigurationsPreparer configurationsPreparer;
+    private NmServiceConfigurationFilePreparer configurationsPreparer;
 
     @Test
     public void shouldMapOxidizedJsonToMap() throws UserConfigHandlingException {

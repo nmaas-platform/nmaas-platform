@@ -1,20 +1,15 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DcnAttachedContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.*;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import org.junit.After;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -27,6 +22,7 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("docker-compose")
 public class DockerComposeFilePreparerTest {
 
     @Autowired
@@ -34,17 +30,16 @@ public class DockerComposeFilePreparerTest {
     @Autowired
     private DockerComposeFileRepository composeFileRepository;
     @Autowired
-    private AppDeploymentRepository appDeploymentRepository;
+    private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance("clientId");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
+    private Identifier applicationId = Identifier.newInstance("1");
+    private Identifier clientId = Identifier.newInstance("1");
     private DockerComposeFileTemplate template;
 
     @Before
     public void setup() {
         prepareTestComposeFileTemplate();
-        storeTestAppDeployment();
     }
 
     private void prepareTestComposeFileTemplate() {
@@ -52,18 +47,8 @@ public class DockerComposeFilePreparerTest {
         template = new DockerComposeFileTemplate();
         template.setDcnAttachedContainers(Arrays.asList(new DcnAttachedContainer("container", "test container")));
         template.setComposeFileTemplateContent(composeFileTemplateContent);
-    }
-
-    private void storeTestAppDeployment() {
-        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setDockerComposeFileTemplate(template);
-        AppDeployment deployment = new AppDeployment(deploymentId, clientId, applicationId);
-        appDeploymentRepository.save(deployment);
-    }
-
-    @After
-    public void clean() {
-        appDeploymentRepository.deleteAll();
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
+        nmServiceRepositoryManager.storeService(nmServiceInfo);
     }
 
     @Test
@@ -80,19 +65,19 @@ public class DockerComposeFilePreparerTest {
         input.setServiceComponents(Arrays.asList(component));
         composeFilePreparer.buildAndStoreComposeFile(deploymentId, input, template);
         assertThat(contentOfGeneratedComposeFile(), allOf(
-                        containsString("5000:"),
-                        containsString("/home/dir:"),
-                        containsString("containerName1"),
-                        containsString("1.2.3.4"),
-                        containsString("testExtNetwork"),
-                        containsString("testDcnNetwork")));
+                containsString("5000:"),
+                containsString("/home/dir:"),
+                containsString("containerName1"),
+                containsString("1.2.3.4"),
+                containsString("testExtNetwork"),
+                containsString("testDcnNetwork")));
         assertThat(composeFileRepository.count(), equalTo(1L));
-        appDeploymentRepository.deleteAll();
+        nmServiceRepositoryManager.removeService(deploymentId);
         assertThat(composeFileRepository.count(), equalTo(0L));
     }
 
-    private String contentOfGeneratedComposeFile() {
-        return appDeploymentRepository.findByDeploymentId(deploymentId).get().getDockerComposeFile().getComposeFileContent();
+    private String contentOfGeneratedComposeFile() throws InvalidDeploymentIdException {
+        return nmServiceRepositoryManager.loadService(deploymentId).getDockerComposeFile().getComposeFileContent();
     }
 
 }

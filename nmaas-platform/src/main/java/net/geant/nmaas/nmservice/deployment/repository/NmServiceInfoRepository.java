@@ -15,22 +15,21 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Repository
-public interface NmServiceInfoRepository extends JpaRepository<NmServiceInfo, Long>  {
+public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRepository<T, Long>  {
 
-    Optional<NmServiceInfo> findByDeploymentId(Identifier deploymentId);
+    @Query("select t from #{#entityName} t where t.clientId = ?1")
+    List<T> findAllByClientId(Identifier clientId);
 
-    List<NmServiceInfo> findAllByClientId(Identifier clientId);
+    @Query("select t from #{#entityName} t where t.deploymentId = ?1")
+    Optional<T> findByDeploymentId(Identifier deploymentId);
 
-    @Query("SELECT n.state FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
+    @Query("SELECT n.state FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<NmServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
-    @Query("SELECT n.dockerContainer.id FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
-    Optional<String> getContainerIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
-
-    @Query("SELECT n.clientId FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
+    @Query("SELECT n.clientId FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<Identifier> getClientIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
-    @Query("SELECT n.applicationId FROM NmServiceInfo n WHERE n.deploymentId = :deploymentId")
+    @Query("SELECT n.applicationId FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<Identifier> getApplicationIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
 }

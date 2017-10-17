@@ -5,16 +5,13 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostReposito
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -42,9 +39,7 @@ public abstract class BasePrepareDeploymentEnvTest {
     @Autowired
     private DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager;
     @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
-    @Autowired
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
     private ApplicationRepository applicationRepository;
 
@@ -65,7 +60,6 @@ public abstract class BasePrepareDeploymentEnvTest {
         prepareTestComposeFileTemplate(composeFileTemplatePath);
         applicationId = storeTestApplication();
         storeNmServiceInfo(dockerHost);
-        storeTestAppDeployment();
     }
 
     private void prepareTestComposeFileTemplate(String composeFileTemplatePath) throws IOException {
@@ -84,7 +78,7 @@ public abstract class BasePrepareDeploymentEnvTest {
     }
 
     private void storeNmServiceInfo(DockerHost dockerHost) {
-        NmServiceInfo serviceInfo = new NmServiceInfo(deploymentId, applicationId, clientId);
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
         nmServiceRepositoryManager.storeService(serviceInfo);
@@ -97,21 +91,15 @@ public abstract class BasePrepareDeploymentEnvTest {
         return dockerComposeService;
     }
 
-    private void storeTestAppDeployment() {
-        AppDeployment deployment = new AppDeployment(deploymentId, clientId, applicationId);
-        appDeploymentRepositoryManager.store(deployment);
-    }
-
     @After
     public void clean() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
         nmServiceRepositoryManager.removeService(deploymentId);
         dockerHostRepositoryManager.removeDockerHost("dh1");
-        appDeploymentRepositoryManager.removeAll();
         applicationRepository.deleteAll();
     }
 
-    protected String contentOfGeneratedComposeFile() {
-        return appDeploymentRepositoryManager.load(deploymentId).get().getDockerComposeFile().getComposeFileContent();
+    protected String contentOfGeneratedComposeFile() throws InvalidDeploymentIdException {
+        return nmServiceRepositoryManager.loadService(deploymentId).getDockerComposeFile().getComposeFileContent();
     }
 
     private static DockerHost dockerHost() throws Exception {

@@ -1,15 +1,14 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
@@ -60,9 +59,9 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private AppDeploymentRepositoryManager repository;
     @Autowired
-    private DefaultAppDeploymentMonitor monitor;
+    private AppDeploymentMonitor monitor;
     @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
+    private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
     private ApplicationEventPublisher publisher;
     @Autowired
@@ -83,7 +82,8 @@ public class DefaultAppDeploymentMonitorTest {
         DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(dockerContainerNetDetails);
         dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
-        nmServiceRepositoryManager.storeService(new NmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate()));
+        DockerEngineNmServiceInfo nmServiceInfo = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
+        nmServiceRepositoryManager.storeService(nmServiceInfo);
         nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
         nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
         appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));

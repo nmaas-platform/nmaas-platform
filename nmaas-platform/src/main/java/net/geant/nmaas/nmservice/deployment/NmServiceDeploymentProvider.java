@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
@@ -17,10 +18,10 @@ public interface NmServiceDeploymentProvider {
      * @param deploymentId unique identifier of service deployment
      * @param applicationId identifier of the application / service
      * @param clientId identifier of the client requesting the deployment
-     * @param template additional information specific to given application deployment
+     * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if service can't be deployed or some input parameters are missing
      */
-    void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec template) throws NmServiceRequestVerificationException;
+    void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec appDeploymentSpec) throws NmServiceRequestVerificationException;
 
     /**
      * Coordinates deployment environment preparation (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -45,6 +46,15 @@ public interface NmServiceDeploymentProvider {
      * @throws CouldNotVerifyNmServiceException if NM service deployment verification failed
      */
     void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException;
+
+    /**
+     * Retrieves deployed service access details to be presented to the client.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @return service access details
+     * @throws CouldNotRetrieveNmServiceAccessDetailsException if access details are not available for any reason
+     */
+    AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws CouldNotRetrieveNmServiceAccessDetailsException;
 
     /**
      * Coordinates NM service removal (delegates tasks to attached {@link ContainerOrchestrator}).

@@ -1,7 +1,5 @@
 package net.geant.nmaas.orchestration.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
-
 import javax.persistence.*;
 
 /**
@@ -47,12 +45,6 @@ public class AppDeployment {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
-
-    /**
-     * Complete Docker Compose file used for this deployment.
-     */
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DockerComposeFile dockerComposeFile;
 
     public AppDeployment() { }
 
@@ -110,11 +102,4 @@ public class AppDeployment {
         this.configuration = configuration;
     }
 
-    public DockerComposeFile getDockerComposeFile() {
-        return dockerComposeFile;
-    }
-
-    public void setDockerComposeFile(DockerComposeFile dockerComposeFile) {
-        this.dockerComposeFile = dockerComposeFile;
-    }
 }

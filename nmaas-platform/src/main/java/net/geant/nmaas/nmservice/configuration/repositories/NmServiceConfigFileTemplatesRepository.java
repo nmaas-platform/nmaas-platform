@@ -10,7 +10,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Repository
-public interface NmServiceConfigurationTemplatesRepository  extends JpaRepository<NmServiceConfigurationTemplate, Long> {
+public interface NmServiceConfigFileTemplatesRepository extends JpaRepository<NmServiceConfigurationTemplate, Long> {
 
     List<NmServiceConfigurationTemplate> findAllByApplicationId(Long applicationId);
 
