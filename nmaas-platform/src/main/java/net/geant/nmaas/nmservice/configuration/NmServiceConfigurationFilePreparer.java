@@ -44,7 +44,7 @@ class NmServiceConfigurationFilePreparer {
     private NmServiceConfigFileTemplatesRepository templates;
 
     @Autowired
-    private NmServiceRepositoryManager serviceRepositoryManager;
+    private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
             throws ConfigTemplateHandlingException, UserConfigHandlingException, InvalidDeploymentIdException {
@@ -87,21 +87,19 @@ class NmServiceConfigurationFilePreparer {
         }
     }
 
-    private List<NmServiceConfigurationTemplate> loadConfigTemplatesForApplication(Identifier applicationId)
-            throws ConfigTemplateHandlingException {
-        List<NmServiceConfigurationTemplate> selectedTemplates = templates.findAllByApplicationId(applicationId.longValue());
-        if (selectedTemplates.isEmpty())
-            throw new ConfigTemplateHandlingException("No configuration templates found in repository for application with id " + applicationId);
-        return selectedTemplates;
+    private List<NmServiceConfigurationTemplate> loadConfigTemplatesForApplication(Identifier applicationId) {
+        return templates.findAllByApplicationId(applicationId.longValue());
     }
 
     void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel)
             throws InvalidDeploymentIdException {
         List<Object> devices = (List<Object>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY);
+        if (devices == null)
+            return;
         List<String> ipAddresses = devices.stream()
                 .map(device -> (String)((Map)device).get(DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY))
                 .collect(Collectors.toList());
-        serviceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
+        nmServiceRepositoryManager.updateManagedDevices(deploymentId, ipAddresses);
     }
 
     private void storeConfigurationInRepository(NmServiceConfiguration configuration) {

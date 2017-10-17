@@ -2,11 +2,10 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
-import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -16,6 +15,7 @@ import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Profile("docker-compose")
 public class StaticRoutingConfigManager {
 
     private final static Logger log = LogManager.getLogger(StaticRoutingConfigManager.class);
@@ -36,7 +37,7 @@ public class StaticRoutingConfigManager {
     @Autowired
     private DockerNetworkResourceManager dockerNetworkResourceManager;
     @Autowired
-    private NmServiceRepositoryManager nmServiceRepositoryManager;
+    private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
 
     @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
@@ -44,7 +45,7 @@ public class StaticRoutingConfigManager {
     @Loggable(LogLevel.INFO)
     @Transactional
     public void configure(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
-        NmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
+        DockerComposeNmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         BasicCustomerNetworkAttachPoint customerNetwork = customerNetworks.findByCustomerId(service.getClientId().longValue())
                 .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for customer with id " + service.getClientId()));
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
@@ -66,7 +67,7 @@ public class StaticRoutingConfigManager {
         return new ArrayList<>(customerNetwork.getMonitoredEquipment().getAddresses());
     }
 
-    private void addRoutesForEachCustomerNetworkAddress(NmServiceInfo service, List<String> networks, DockerComposeServiceComponent component) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
+    private void addRoutesForEachCustomerNetworkAddress(DockerComposeNmServiceInfo service, List<String> networks, DockerComposeServiceComponent component) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
         for (String network : networks) {
             addStaticRouteOnContainer(
                     service.getDeploymentId(),

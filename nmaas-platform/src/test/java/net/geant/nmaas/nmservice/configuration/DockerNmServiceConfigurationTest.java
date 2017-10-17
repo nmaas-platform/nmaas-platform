@@ -49,7 +49,7 @@ public class DockerNmServiceConfigurationTest {
     @MockBean
     private NmServiceConfigurationFilePreparer configurationsPreparer;
     @MockBean
-    private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
+    private DockerHostConfigDownloadCommandExecutor dockerHostConfigDownloadCommandExecutor;
     @MockBean
     private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
     @MockBean

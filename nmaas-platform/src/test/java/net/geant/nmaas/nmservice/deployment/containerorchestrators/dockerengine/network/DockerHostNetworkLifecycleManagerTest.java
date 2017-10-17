@@ -3,13 +3,17 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 import com.spotify.docker.client.exceptions.DockerException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -17,14 +21,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -35,41 +38,34 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DockerNetworkManagerTest {
+public class DockerHostNetworkLifecycleManagerTest {
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
-
     @Autowired
-    private DockerNetworkRepositoryManager dockerNetworkRepositoryManager;
-
+    private DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager;
     @Autowired
-    private DockerHostStateKeeper dockerHostStateKeeper;
-
+    private DockerHostNetworkRepository dockerHostNetworkRepository;
     @Autowired
     private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
+    @Autowired
+    private DockerNetworkLifecycleManager networkManager;
 
-    @Mock
+    @MockBean
     private DockerApiClient dockerApiClient;
 
     private Identifier deploymentId;
-
     private Identifier applicationId;
-
-    private Identifier clientId;
-
+    private Identifier clientId = Identifier.newInstance("clientId");
+    private Identifier clientId2 = Identifier.newInstance("clientId2");
     private DockerHost dockerHost;
-
-    private DockerNetworkManager networkManager;
 
     @Before
     public void setup() throws DockerHostNotFoundException {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         deploymentId = Identifier.newInstance("deploymentId");
         applicationId = Identifier.newInstance("applicationId");
-        clientId = Identifier.newInstance("clientId");
         dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
-        networkManager = new DockerNetworkManager(dockerNetworkRepositoryManager, dockerHostStateKeeper, dockerApiClient);
     }
 
     @After
@@ -78,19 +74,33 @@ public class DockerNetworkManagerTest {
     }
 
     @Test
-    public void shouldDeclareNewNetworkForClient() throws ContainerOrchestratorInternalErrorException, InvalidClientIdException {
+    public void shouldDeclareNewNetworkForClient() throws ContainerOrchestratorInternalErrorException, InvalidClientIdException, CouldNotRemoveContainerNetworkException {
         assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
         networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
         assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
-        assertThat(networkManager.networkForClient(clientId), is(notNullValue()));
-        DockerNetwork dockerNetwork = networkManager.networkForClient(clientId);
-        assertThat(dockerNetwork.getClientId(), equalTo(clientId));
-        assertThat(dockerNetwork.getDockerHost(), equalTo(dockerHost));
-        assertThat(dockerNetwork.getDockerContainers().isEmpty(), is(true));
-        assertThat(dockerNetwork.getVlanNumber(), is(greaterThan(0)));
-        assertThat(dockerNetwork.getSubnet().length(), is(greaterThan(0)));
-        assertThat(dockerNetwork.getGateway().length(), is(greaterThan(0)));
-        dockerNetworkRepositoryManager.removeNetwork(clientId);
+        DockerHostNetwork dockerHostNetwork = networkManager.networkForClient(clientId);
+        assertThat(dockerHostNetwork, is(notNullValue()));
+        assertThat(dockerHostNetwork.getClientId(), equalTo(clientId));
+        assertThat(dockerHostNetwork.getHost(), equalTo(dockerHost));
+        assertThat(dockerHostNetwork.getAssignedAddresses().isEmpty(), is(true));
+        assertThat(dockerHostNetwork.getVlanNumber(), is(greaterThan(0)));
+        assertThat(dockerHostNetwork.getSubnet().length(), is(greaterThan(0)));
+        assertThat(dockerHostNetwork.getGateway().length(), is(greaterThan(0)));
+        networkManager.removeNetwork(clientId);
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+    }
+
+    @Test
+    public void shouldRemoveAllNetworksWhenHostRemoved() throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException, DockerHostInvalidException {
+        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
+        networkManager.declareNewNetworkForClientOnHost(clientId2, dockerHost);
+        assertThat(dockerHostNetworkRepository.count(), is(2L));
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId2), is(true));
+        dockerHostRepositoryManager.removeDockerHost(dockerHost.getName());
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId2), is(false));
+        assertThat(dockerHostNetworkRepository.count(), is(0L));
     }
 
     @Test
@@ -105,62 +115,45 @@ public class DockerNetworkManagerTest {
         verify(dockerApiClient, times(1)).createNetwork(Mockito.any(), Mockito.any());
         assertThat(networkManager.networkForClient(clientId).getDeploymentId(), equalTo("networkId"));
         networkManager.verifyNetwork(clientId);
-        networkManager.removeIfNoContainersAttached(clientId);
+        networkManager.removeNetwork(clientId);
         verify(dockerApiClient, times(1)).removeNetwork(Mockito.any(), Mockito.any());
         assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        assertThat(dockerHostNetworkRepository.count(), is(0L));
     }
 
     @Test
-    public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException {
+    public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException, CouldNotCreateContainerNetworkException {
+        when(dockerApiClient.createNetwork(Mockito.any(), Mockito.any())).thenReturn("testNetworkId");
+        when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(1);
+        when(dockerApiClient.listNetworks(Mockito.any())).thenReturn(Arrays.asList("testNetworkId", "testNetworkId2"));
         final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
-        final DockerNetworkIpamSpec ipamSpec = new DockerNetworkIpamSpec("10.10.1.0/24", "10.10.1.254");
+        final DockerContainer dockerContainer = prepareTestContainer();
+        service.setDockerContainer(dockerContainer);
+        nmServiceRepositoryManager.storeService(service);
+        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
+        networkManager.deployNetworkForClient(clientId);
+        networkManager.connectContainerToNetwork(clientId, dockerContainer);
+        networkManager.verifyNetwork(clientId);
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
+        assertThat(nmServiceRepositoryManager.loadAllRunningClientServices(clientId).isEmpty(), is(false));
+        networkManager.disconnectContainerFromNetwork(clientId, dockerContainer);
+        nmServiceRepositoryManager.notifyStateChange(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED));
+        assertThat(nmServiceRepositoryManager.loadAllRunningClientServices(clientId).isEmpty(), is(true));
+        networkManager.removeNetwork(clientId);
+        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        nmServiceRepositoryManager.removeService(deploymentId);
+    }
+
+    private DockerContainer prepareTestContainer() {
+        final DockerNetworkIpam ipamSpec = new DockerNetworkIpam("10.10.1.0/24", "10.10.1.254");
         final DockerContainerNetDetails testNetworkDetails1 = new DockerContainerNetDetails(8080, ipamSpec);
         final DockerContainerVolumesDetails testVolumeDetails1 = new DockerContainerVolumesDetails("/home/directory");
         final DockerContainer dockerContainer = new DockerContainer();
         dockerContainer.setNetworkDetails(testNetworkDetails1);
         dockerContainer.setVolumesDetails(testVolumeDetails1);
         dockerContainer.setDeploymentId("container1Deployed");
-        service.setDockerContainer(dockerContainer);
-        nmServiceRepositoryManager.storeService(service);
-        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
-        networkManager.connectContainerToNetwork(clientId, dockerContainer);
-        when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(1);
-        networkManager.verifyNetwork(clientId);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
-        networkManager.removeIfNoContainersAttached(clientId);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
-        networkManager.disconnectContainerFromNetwork(clientId, dockerContainer.getDeploymentId());
-        networkManager.removeIfNoContainersAttached(clientId);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
-        nmServiceRepositoryManager.removeService(deploymentId);
-    }
-
-    @Test
-    public void shouldCheckIfContainerIpAddressAlreadyAssigned() {
-        String containerIpAddress = "192.168.0.1";
-        assertThat(networkManager.addressAlreadyAssigned(containerIpAddress, containers()), is(true));
-        containerIpAddress = "192.168.0.3";
-        assertThat(networkManager.addressAlreadyAssigned(containerIpAddress, containers()), is(false));
-        containerIpAddress = "192.168.0.5";
-        assertThat(networkManager.addressAlreadyAssigned(containerIpAddress, containers()), is(false));
-    }
-
-    @Test
-    public void shouldObtainIpAddressForNewContainer() {
-        DockerNetwork dockerNetwork = new DockerNetwork(null, null, 5, "192.168.0.0/24", "192.168.0.254");
-        dockerNetwork.setDockerContainers(containers());
-        assertThat(networkManager.obtainIpAddressForNewContainer(dockerNetwork), equalTo("192.168.0.3"));
-    }
-
-    private List<DockerContainer> containers() {
-        DockerContainer dockerContainer1 = new DockerContainer();
-        dockerContainer1.setNetworkDetails(new DockerContainerNetDetails(1, new DockerNetworkIpamSpec("192.168.0.1", "", "")));
-        DockerContainer dockerContainer2 = new DockerContainer();
-        dockerContainer2.setNetworkDetails(new DockerContainerNetDetails(1, new DockerNetworkIpamSpec("192.168.0.2", "", "")));
-        DockerContainer dockerContainer3 = new DockerContainer();
-        dockerContainer3.setNetworkDetails(new DockerContainerNetDetails(1, new DockerNetworkIpamSpec("192.168.0.4", "", "")));
-        return Arrays.asList(dockerContainer1, dockerContainer2, dockerContainer3);
+        return dockerContainer;
     }
 
 }

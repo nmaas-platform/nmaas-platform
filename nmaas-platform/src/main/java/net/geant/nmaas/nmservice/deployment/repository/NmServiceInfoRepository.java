@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,6 +16,9 @@ import java.util.Optional;
  */
 @Repository
 public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRepository<T, Long>  {
+
+    @Query("select t from #{#entityName} t where t.clientId = ?1")
+    List<T> findAllByClientId(Identifier clientId);
 
     @Query("select t from #{#entityName} t where t.deploymentId = ?1")
     Optional<T> findByDeploymentId(Identifier deploymentId);

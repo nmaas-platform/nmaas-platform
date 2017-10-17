@@ -10,7 +10,7 @@ import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHos
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
 import net.geant.nmaas.helpers.NetworkAttachPointsInit;
-import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommandExecutor;
+import net.geant.nmaas.nmservice.configuration.DockerHostConfigDownloadCommandExecutor;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
@@ -63,7 +63,7 @@ public class OxidizedAppDeploymentIntTest {
     @MockBean
     private DockerApiClient dockerApiClient;
     @MockBean
-    private ConfigDownloadCommandExecutor configDownloadCommandExecutor;
+    private DockerHostConfigDownloadCommandExecutor dockerHostConfigDownloadCommandExecutor;
     @Autowired
     private DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager;
     @Autowired

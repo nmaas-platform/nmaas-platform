@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@Component
+//@Component
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @Autowired

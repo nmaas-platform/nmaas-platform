@@ -3,8 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerNmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -32,12 +31,12 @@ import java.util.List;
  */
 @Component
 @Profile({"docker-engine", "docker-compose"})
-public class ConfigDownloadCommandExecutor implements ConfigurationFileTransferProvider {
+public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFileTransferProvider {
 
     @Autowired
     private Environment env;
     @Autowired
-    private DockerServiceRepositoryManager serviceRepositoryManager;
+    private DockerNmServiceRepositoryManager serviceRepositoryManager;
     @Autowired
     private NmServiceConfigFileRepository configurations;
 
@@ -52,8 +51,8 @@ public class ConfigDownloadCommandExecutor implements ConfigurationFileTransferP
     public void transferConfigFiles(Identifier deploymentId, List<String> configIds)
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
         DockerHost host = serviceRepositoryManager.loadDockerHost(deploymentId);
-        DockerContainerVolumesDetails containerVolumesDetails = serviceRepositoryManager.loadDockerContainerVolumesDetails(deploymentId);
-        final String targetDirectoryFullPath = constructTargetDirectoryFullPath(host, containerVolumesDetails.getAttachedVolumeName());
+        String attachedVolumeName = serviceRepositoryManager.loadAttachedVolumeName(deploymentId);
+        final String targetDirectoryFullPath = constructTargetDirectoryFullPath(host, attachedVolumeName);
         for (String configFileId : configIds) {
             String configFileName = configurations.getConfigFileNameByConfigId(configFileId)
                     .orElseThrow(() -> new ConfigFileNotFoundException("Configuration file with id " + configFileId + " not found"));

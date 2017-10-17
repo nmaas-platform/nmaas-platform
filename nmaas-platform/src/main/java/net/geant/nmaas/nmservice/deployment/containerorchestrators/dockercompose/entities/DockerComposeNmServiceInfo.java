@@ -5,6 +5,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 
 /**
@@ -22,10 +23,16 @@ public class DockerComposeNmServiceInfo extends DockerNmServiceInfo {
     private DockerComposeFileTemplate dockerComposeFileTemplate;
 
     /**
-     * Complete Docker Compose file used for this service deployment
+     * Complete Docker Compose file used for this service deployment.
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DockerComposeFile dockerComposeFile;
+
+    /**
+     * Docker Compose Service (composed of one or several containers) deployed for this service.
+     */
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private DockerComposeService dockerComposeService;
 
     public DockerComposeNmServiceInfo () {
         super();
@@ -52,4 +59,11 @@ public class DockerComposeNmServiceInfo extends DockerNmServiceInfo {
         this.dockerComposeFile = dockerComposeFile;
     }
 
+    public DockerComposeService getDockerComposeService() {
+        return dockerComposeService;
+    }
+
+    public void setDockerComposeService(DockerComposeService dockerComposeService) {
+        this.dockerComposeService = dockerComposeService;
+    }
 }

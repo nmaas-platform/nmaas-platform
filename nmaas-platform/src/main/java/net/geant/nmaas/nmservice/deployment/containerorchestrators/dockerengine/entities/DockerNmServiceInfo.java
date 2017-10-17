@@ -19,12 +19,6 @@ public abstract class DockerNmServiceInfo extends NmServiceInfo {
     @ManyToOne(fetch = FetchType.EAGER)
     private DockerHost host;
 
-    /**
-     * Docker container deployed for this service.
-     */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private DockerContainer dockerContainer;
-
     public DockerNmServiceInfo() {
         super();
     }
@@ -41,11 +35,4 @@ public abstract class DockerNmServiceInfo extends NmServiceInfo {
         this.host = host;
     }
 
-    public DockerContainer getDockerContainer() {
-        return dockerContainer;
-    }
-
-    public void setDockerContainer(DockerContainer dockerContainer) {
-        this.dockerContainer = dockerContainer;
-    }
 }

@@ -21,6 +21,12 @@ public class DockerEngineNmServiceInfo extends DockerNmServiceInfo {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private DockerContainerTemplate dockerContainerTemplate;
 
+    /**
+     * Docker container deployed for this service.
+     */
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private DockerContainer dockerContainer;
+
     public DockerEngineNmServiceInfo () {
         super();
     }
@@ -36,6 +42,14 @@ public class DockerEngineNmServiceInfo extends DockerNmServiceInfo {
 
     public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
         this.dockerContainerTemplate = dockerContainerTemplate;
+    }
+
+    public DockerContainer getDockerContainer() {
+        return dockerContainer;
+    }
+
+    public void setDockerContainer(DockerContainer dockerContainer) {
+        this.dockerContainer = dockerContainer;
     }
 
 }
