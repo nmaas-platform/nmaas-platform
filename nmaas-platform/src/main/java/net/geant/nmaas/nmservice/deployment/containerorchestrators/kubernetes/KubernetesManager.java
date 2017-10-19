@@ -38,7 +38,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
-        repositoryManager.storeService(new KubernetesNmServiceInfo());
+        repositoryManager.storeService(new KubernetesNmServiceInfo(deploymentId, applicationId, clientId, KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate())));
     }
 
     @Override
@@ -78,7 +78,13 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void checkService(Identifier deploymentId)
             throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
-        // helmCommandExecutor.executeHelmStatusCommand(deploymentId);
+        try {
+            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
+            if (!status.equals(HelmPackageStatus.DEPLOYED))
+                throw new ContainerCheckFailedException("Helm package is not deployed");
+        } catch (CommandExecutionException commandExecutionException) {
+            throw new ContainerCheckFailedException("Helm command execution failed -> " + commandExecutionException.getMessage());
+        }
     }
 
     @Override
