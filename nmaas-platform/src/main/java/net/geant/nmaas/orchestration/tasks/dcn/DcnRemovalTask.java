@@ -40,7 +40,7 @@ public class DcnRemovalTask {
     public void remove(DcnRemoveActionEvent event) {
         final Identifier clientId = event.getClientId();
         try {
-            if (DcnDeploymentMode.AUTO.toString().equals(mode))
+            if (DcnDeploymentMode.AUTO.value().equals(mode))
                 dcnDeployment.removeDcn(clientId);
         } catch (CouldNotRemoveDcnException e) {
             log.warn("DCN removal failed for client " + clientId.value() + " -> " + e.getMessage());

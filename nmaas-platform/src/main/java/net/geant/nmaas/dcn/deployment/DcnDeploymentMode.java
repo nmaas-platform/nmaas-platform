@@ -19,4 +19,8 @@ public enum DcnDeploymentMode {
         this.value = value;
     }
 
+    public String value() {
+        return value;
+    }
+
 }

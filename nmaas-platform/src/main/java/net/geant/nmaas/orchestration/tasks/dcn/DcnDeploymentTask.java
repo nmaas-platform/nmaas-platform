@@ -38,7 +38,7 @@ public class DcnDeploymentTask {
     public void deployDcn(DcnDeployActionEvent event) throws InvalidDeploymentIdException {
         final Identifier clientId = event.getClientId();
         try {
-            if (DcnDeploymentMode.AUTO.toString().equals(mode))
+            if (DcnDeploymentMode.AUTO.value().equals(mode))
                 dcnDeployment.deployDcn(clientId);
         } catch (CouldNotDeployDcnException e) {
             log.warn("DCN deployment failed for client " + clientId.value() + " -> " + e.getMessage());

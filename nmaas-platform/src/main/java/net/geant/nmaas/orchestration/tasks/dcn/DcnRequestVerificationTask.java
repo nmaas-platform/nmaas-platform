@@ -44,7 +44,7 @@ public class DcnRequestVerificationTask {
     public void verifyDcnRequest(DcnVerifyRequestActionEvent event) {
         final Identifier clientId = event.getClientId();
         try {
-            if (DcnDeploymentMode.AUTO.toString().equals(mode) || DcnDeploymentMode.MANUAL.toString().equals(mode))
+            if (DcnDeploymentMode.AUTO.value().equals(mode) || DcnDeploymentMode.MANUAL.value().equals(mode))
                 dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
         } catch (DcnRequestVerificationException e) {
             log.warn("DCN request verification failed for client " + clientId.value() + " -> " + e.getMessage());
