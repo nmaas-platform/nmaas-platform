@@ -232,8 +232,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     }
 
     private void stopAndRemoveContainers(DockerComposeNmServiceInfo service) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
-        composeCommandExecutor.executeComposeStopCommand(service.getDeploymentId(), service.getHost());
-        composeCommandExecutor.executeComposeRemoveCommand(service.getDeploymentId(), service.getHost());
+        composeCommandExecutor.executeComposeDownCommand(service.getDeploymentId(), service.getHost());
         for(DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents())
             dockerNetworkResourceManager.removeAddressAssignment(service.getClientId(), component.getIpAddressOfContainer());
     }
