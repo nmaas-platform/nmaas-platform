@@ -59,7 +59,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service deployment environment preparation failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
             throw new CouldNotPrepareEnvironmentException("NM Service deployment environment preparation failed -> " + e.getMessage());
         }
@@ -74,7 +73,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, DEPLOYED);
         } catch (CouldNotDeployNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service deployment failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED);
             throw new CouldNotDeployNmServiceException("NM Service deployment failed -> " + e.getMessage());
         }
@@ -89,7 +87,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         } catch (ContainerCheckFailedException
                 | DockerNetworkCheckFailedException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service deployment verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED);
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
         }
@@ -113,7 +110,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service removal failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
             throw new CouldNotRemoveNmServiceException("NM Service removal failed -> " + e.getMessage());
         }
