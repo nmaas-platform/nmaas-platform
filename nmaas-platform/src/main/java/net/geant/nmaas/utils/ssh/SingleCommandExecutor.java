@@ -51,11 +51,20 @@ public class SingleCommandExecutor {
 	}
 
 	public void executeSingleCommand(Command command) throws SshConnectionException, CommandExecutionException {
-		connect();
+        executeCommand(command);
+	}
+
+    public String executeSingleCommandAndReturnOutput(Command command) throws SshConnectionException, CommandExecutionException {
+        return executeCommand(command);
+    }
+
+    private String executeCommand(Command command) throws SshConnectionException, CommandExecutionException {
+        connect();
         String output = execute(command);
         validateOutput(output, command.isOutputCorrect());
         disconnect();
-	}
+        return output;
+    }
 
     private void connect() throws SshConnectionException {
         log.debug("Connecting to " + hostname);

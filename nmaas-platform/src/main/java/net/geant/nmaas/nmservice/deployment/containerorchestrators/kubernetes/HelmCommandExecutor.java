@@ -50,6 +50,24 @@ public class HelmCommandExecutor {
         return hostChartsDirectory;
     }
 
+
+    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+        try {
+            HelmStatusCommand command = HelmStatusCommand.command(deploymentId.value());
+            String output = SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommandAndReturnOutput(command);
+            return parseStatus(output);
+        } catch (SshConnectionException
+                | CommandExecutionException e) {
+            throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
+        }
+    }
+
+    private HelmPackageStatus parseStatus(String output) {
+        if(output.contains("STATUS: DEPLOYED"))
+            return HelmPackageStatus.DEPLOYED;
+        else return HelmPackageStatus.UNKNOWN;
+    }
+
     @Value("${kubernetes.helm.host}")
     public void setHostAddress(String hostAddress) {
         this.hostAddress = hostAddress;

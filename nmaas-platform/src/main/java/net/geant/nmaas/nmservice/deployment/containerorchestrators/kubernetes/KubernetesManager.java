@@ -8,6 +8,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -37,8 +38,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
-        repositoryManager.storeService(
-                new KubernetesNmServiceInfo(deploymentId, applicationId, clientId, KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate())));
+        repositoryManager.storeService(new KubernetesNmServiceInfo(deploymentId, applicationId, clientId, KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate())));
     }
 
     @Override
@@ -60,11 +60,15 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void deployNmService(Identifier deploymentId)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
+            KubernetesTemplate template = repositoryManager.loadService(deploymentId).getKubernetesTemplate();
             helmCommandExecutor.executeHelmInstallCommand(
                     deploymentId,
-                    "",
+                    template.getArchive(),
                     null
             );
+        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            throw new CouldNotDeployNmServiceException(
+                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         } catch (CommandExecutionException commandExecutionException) {
             throw new CouldNotDeployNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
         }
@@ -74,7 +78,13 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void checkService(Identifier deploymentId)
             throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
-
+        try {
+            HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
+            if (!status.equals(HelmPackageStatus.DEPLOYED))
+                throw new ContainerCheckFailedException("Helm package is not deployed");
+        } catch (CommandExecutionException commandExecutionException) {
+            throw new ContainerCheckFailedException("Helm command execution failed -> " + commandExecutionException.getMessage());
+        }
     }
 
     @Override

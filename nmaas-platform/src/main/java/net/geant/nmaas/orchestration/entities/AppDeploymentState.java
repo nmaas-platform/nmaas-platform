@@ -92,6 +92,8 @@ public enum AppDeploymentState {
             switch (state) {
                 case CONFIGURATION_INITIATED:
                     return APPLICATION_CONFIGURATION_IN_PROGRESS;
+                case CONFIGURED:
+                    return APPLICATION_CONFIGURED;
                 case CONFIGURATION_FAILED:
                     return APPLICATION_CONFIGURATION_FAILED;
                 default:
