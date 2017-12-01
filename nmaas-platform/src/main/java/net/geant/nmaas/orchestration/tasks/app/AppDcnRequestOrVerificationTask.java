@@ -47,7 +47,7 @@ public class AppDcnRequestOrVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent requestOrVerifyDcn(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
         switch(dcnDeployment.checkState(clientId)) {
             case NONE:

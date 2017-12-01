@@ -68,13 +68,13 @@ public class AppDeploymentStateChangeManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyGenericError(AppDeploymentErrorEvent event) throws InvalidDeploymentIdException {
-        lifecycleStateKeeper.updateState(event.getDeploymentId(), AppDeploymentState.GENERIC_ERROR);
+        lifecycleStateKeeper.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyDcnDeployed(DcnDeployedEvent event) {
-        lifecycleStateKeeper.loadAllWaitingForDcn(event.getClientId())
+        lifecycleStateKeeper.loadAllWaitingForDcn(event.getRelatedTo())
                 .forEach(d -> eventPublisher.publishEvent(
                         new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT)));
     }

@@ -51,7 +51,7 @@ public class AppRequestVerificationTask {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void verifyAppRequest(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         final Application application = appRepository.findOne(Long.valueOf(appDeployment.getApplicationId().getValue()));
         if (application == null)

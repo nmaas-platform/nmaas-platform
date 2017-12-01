@@ -31,7 +31,7 @@ public class DcnDeploymentTask {
 
     @EventListener
     public void deployDcn(DcnDeployActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier clientId = event.getClientId();
+        final Identifier clientId = event.getRelatedTo();
         try {
             dcnDeployment.deployDcn(clientId);
         } catch (CouldNotDeployDcnException e) {

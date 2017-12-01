@@ -41,7 +41,7 @@ public class AppConfigurationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void applyConfiguration(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         try {
             serviceConfiguration.configureNmService(
