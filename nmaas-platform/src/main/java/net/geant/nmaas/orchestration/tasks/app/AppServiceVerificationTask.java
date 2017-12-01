@@ -31,7 +31,7 @@ public class AppServiceVerificationTask {
 
     @EventListener
     public void verifyDeployment(AppVerifyServiceActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         try {
             serviceDeployment.verifyNmService(deploymentId);
         } catch (CouldNotVerifyNmServiceException e) {

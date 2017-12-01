@@ -1,21 +1,15 @@
 package net.geant.nmaas.orchestration.events.dcn;
 
 import net.geant.nmaas.orchestration.entities.Identifier;
-import org.springframework.context.ApplicationEvent;
+import net.geant.nmaas.orchestration.events.BaseEvent;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DcnVerifyActionEvent extends ApplicationEvent {
-
-    private Identifier clientId;
+public class DcnVerifyActionEvent extends BaseEvent {
 
     public DcnVerifyActionEvent(Object source, Identifier clientId) {
-        super(source);
-        this.clientId = clientId;
+        super(source, clientId);
     }
 
-    public Identifier getClientId() {
-        return clientId;
-    }
 }
