@@ -25,7 +25,7 @@ public class DockerComposeFileTemplateAdminRestController {
     @Autowired
     private ApplicationRepository applications;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
     @GetMapping(value = "")
     @Transactional
     public DockerComposeFileTemplate getDockerComposeFileTemplate(@PathVariable(value = "appId") Long appId)
@@ -46,7 +46,7 @@ public class DockerComposeFileTemplateAdminRestController {
      * Stores new {@link DockerComposeFileTemplate} in repository.
      * @param dockerComposeFileTemplate compose file template to be stored
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
     @PostMapping(value = "", consumes = "application/json")
     @Transactional
     @ResponseStatus(code = HttpStatus.CREATED)

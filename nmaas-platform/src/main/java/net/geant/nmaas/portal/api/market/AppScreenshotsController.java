@@ -49,7 +49,7 @@ public class AppScreenshotsController extends AppBaseController {
 	}
 	
 	@RequestMapping(value="/logo", method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
 	public net.geant.nmaas.portal.api.domain.FileInfo uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws MissingElementException, FileNotFoundException, StorageException {
 		Application app = getApp(appId);
@@ -68,7 +68,7 @@ public class AppScreenshotsController extends AppBaseController {
 	}
 	
 	@RequestMapping(value="/logo", method=RequestMethod.DELETE)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
 	public void deleteLogo(@PathVariable("appId") Long appId) throws MissingElementException, FileNotFoundException, StorageException {
 		Application app = getApp(appId);
@@ -91,7 +91,7 @@ public class AppScreenshotsController extends AppBaseController {
 	}	
 	
 	@RequestMapping(value="/screenshots", method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
 	public net.geant.nmaas.portal.api.domain.FileInfo uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws StorageException, MissingElementException {
 		Application app = getApp(appId);
@@ -118,7 +118,7 @@ public class AppScreenshotsController extends AppBaseController {
 	}
 
 	@RequestMapping(value="/screenshots/{screenshotId}", method=RequestMethod.DELETE)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
 	public void deleteScreenshot(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="screenshotId", required=true) Long screenshotId) throws MissingElementException, StorageException {
 		Application app = getApp(appId);

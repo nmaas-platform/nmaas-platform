@@ -40,7 +40,7 @@ public class DockerHostManagerRestController {
      * Lists all {@link DockerHost} instances represented by {@link DockerHostView} objects.
      * @return list of {@link DockerHostView} objects
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "",
             method = RequestMethod.GET)
@@ -56,7 +56,7 @@ public class DockerHostManagerRestController {
      * @return {@link DockerHostDetails} instance
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "/{name}",
             method = RequestMethod.GET)
@@ -71,7 +71,7 @@ public class DockerHostManagerRestController {
      * @return {@link DockerHostDetails} instance
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "/firstpreferred",
             method = RequestMethod.GET)
@@ -86,7 +86,7 @@ public class DockerHostManagerRestController {
      * @throws DockerHostAlreadyExistsException when Docker host exists (HttpStatus.CONFLICT)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "",
             method = RequestMethod.POST,
@@ -104,7 +104,7 @@ public class DockerHostManagerRestController {
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "/{name}",
             method = RequestMethod.PUT,
@@ -123,7 +123,7 @@ public class DockerHostManagerRestController {
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "/{name}",
             method = RequestMethod.DELETE)

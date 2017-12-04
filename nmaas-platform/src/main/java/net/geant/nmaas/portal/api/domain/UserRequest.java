@@ -9,8 +9,8 @@ public class UserRequest extends User {
 		
 	String password;
 	
-	public UserRequest(Long id, String username, String password, List<Role> roles) {
-		super(id, username, roles);
+	public UserRequest(Long id, String username, String password) {
+		super(id, username);
 		this.password = password;
 	}	
 	

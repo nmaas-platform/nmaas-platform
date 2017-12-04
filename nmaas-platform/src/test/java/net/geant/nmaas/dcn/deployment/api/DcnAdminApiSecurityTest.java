@@ -61,7 +61,7 @@ public class DcnAdminApiSecurityTest extends BaseControllerTest {
     public void shouldAuthAndCallSimpleGet() throws Exception {
         when(dcnRepositoryManager.loadAllNetworks())
                 .thenReturn(Arrays.asList(dcnInfo()));
-        String token = getValidUserTokenFor(Role.ADMIN);
+        String token = getValidUserTokenFor(Role.SUPERADMIN);
         MvcResult result = mvc.perform(get("/platform/api/management/dcns")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())

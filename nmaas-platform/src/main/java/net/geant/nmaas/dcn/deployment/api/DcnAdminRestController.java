@@ -25,7 +25,7 @@ public class DcnAdminRestController {
      * Lists all DCN instances represented by {@link DcnView} objects.
      * @return list of {@link DcnView} objects
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @RequestMapping(
             value = "",
             method = RequestMethod.GET)

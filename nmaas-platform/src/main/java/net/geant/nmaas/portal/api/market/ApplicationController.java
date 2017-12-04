@@ -23,7 +23,7 @@ public class ApplicationController extends AppBaseController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) ApplicationComplete appRequest) {
 		net.geant.nmaas.portal.persistent.entity.Application app;
@@ -40,7 +40,7 @@ public class ApplicationController extends AppBaseController {
 	}
 
 	@RequestMapping(value="/{appId}/complete", method=RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER')")
 	@Transactional
 	public ApplicationComplete getApplicationComplete(@PathVariable(value = "appId", required=true) Long id) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Application app = getApp(id); 

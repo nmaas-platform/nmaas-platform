@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
-public class AppInstance {
+public class AppInstance extends DomainAware {
 
 	private Long id;
 	

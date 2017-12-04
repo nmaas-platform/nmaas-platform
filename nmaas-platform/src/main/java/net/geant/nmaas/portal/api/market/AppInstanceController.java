@@ -50,7 +50,7 @@ public class AppInstanceController extends AppBaseController {
 	ModelMapper modelMapper;
 
 	@RequestMapping(method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	public List<AppInstance> getAllInstances(Pageable pageable) {
 		return appInstanceRepo.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
@@ -62,7 +62,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	public List<AppInstance> getUserAllInstances(@PathVariable("username") String username, Pageable pageable)
 			throws MissingElementException {
 		return getUserAppInstances(username, pageable);
@@ -77,7 +77,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 	
 	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
 	public AppInstance getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = appInstanceRepo.findOne(appInstanceId);
@@ -107,7 +107,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.DELETE)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
 	@Transactional
 	public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
@@ -147,7 +147,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(value = "/{appInstanceId}/state", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner') || hasPermission(#appInstance, 'appInstance', 'ROLE_DOMAINADMIN')")
 	public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);

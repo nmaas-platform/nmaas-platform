@@ -27,19 +27,25 @@ import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.DomainService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-//@EnableAutoConfiguration
+@EnableAutoConfiguration
 @Transactional(value=TxType.REQUIRES_NEW)
 @Rollback
 public class UsersControllerTest extends BaseControllerTest {
 
+	final static String DOMAIN = "DOMAIN";
+	
 	@Autowired
 	UserRepository userRepo;
 	
 	@Autowired
 	UsersController userController;
+	
+	@Autowired
+	DomainService domains;
 	
 	User user1 = null;
 	
@@ -47,10 +53,13 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void setUp() throws Exception {
 		mvc = createMVC();
 		
+		domains.createGlobalDomain();
+		domains.createDomain(DOMAIN);
+		
 		//Add extra users, default admin is already there
-		userRepo.save(new User("manager", "manager", Arrays.asList(Role.MANAGER, Role.USER)));
-		user1 = userRepo.save(new User("user1", "user1", Arrays.asList(Role.USER)));
-		userRepo.save(new User("user2", "user2", Arrays.asList(Role.USER)));
+		userRepo.save(new User("manager", "manager", domains.getGlobalDomain(), Arrays.asList(Role.TOOL_MANAGER)));
+		user1 = userRepo.save(new User("user1", "user1", domains.findDomain(DOMAIN), Arrays.asList(Role.USER)));
+		userRepo.save(new User("user2", "user2", domains.findDomain(DOMAIN), Arrays.asList(Role.USER)));
 
 		
 		prepareSecurity();
@@ -68,12 +77,12 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testGetRoles() {
-		assertEquals(3, userController.getRoles().size());
+		assertEquals(5, userController.getRoles().size());
 	}
 
 	@Test
 	public void testAddUser() throws SignupException {
-		Id id = userController.addUser(new UserSignup("tester", "tester"));
+		Id id = userController.addUser(new UserSignup("tester", "tester", null));
 		assertNotNull(id);
 		
 		assertEquals(5, userController.getUsers(null).size());
@@ -91,7 +100,7 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void testSuccessUpdatingWithNonExistingUsername() throws ProcessingException {
 		String oldUsername = user1.getUsername();
 		String newUsername = "newUser1";
-		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null, null));
+		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null));
 		
 		User modUser1 = userRepo.findOne(user1.getId());
 		assertEquals(newUsername, modUser1.getUsername());
@@ -102,7 +111,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		String oldUsername = user1.getUsername();
 		String newUsername = "admin";
 		try {
-			userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null, null));
+			userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null));
 			fail("There should not be two users with the same username.");
 		} catch (ProcessingException e) {
 			
@@ -113,13 +122,13 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void testUpdateUserPasswordAndRole() throws ProcessingException {
 		String newPass = "newPass";
 		String oldPass = user1.getPassword();
-		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass, Arrays.asList(Role.MANAGER)));
+		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass));
 		User modUser1 = userRepo.findOne(user1.getId());
 		
 		assertEquals(user1.getUsername(), modUser1.getUsername());
 		assertNotEquals(oldPass, modUser1.getPassword());
 		assertEquals(1, modUser1.getRoles().size());
-		assertEquals(Role.MANAGER, modUser1.getRoles().get(0).getRole());
+		//assertEquals(Role.TOOL_MANAGER, modUser1.getRoles().get(0).getRole());
 	}
 
 	@Test

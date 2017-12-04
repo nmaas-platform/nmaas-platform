@@ -33,7 +33,7 @@ public class OrchestratorApiSecurityTest extends BaseControllerTest {
 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
-        String token = getValidUserTokenFor(Role.ADMIN);
+        String token = getValidUserTokenFor(Role.SUPERADMIN);
         mvc.perform(get("/platform/api/orchestration/deployments")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());

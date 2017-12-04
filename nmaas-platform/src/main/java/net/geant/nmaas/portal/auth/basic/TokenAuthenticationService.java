@@ -2,9 +2,11 @@ package net.geant.nmaas.portal.auth.basic;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,16 +48,15 @@ public class TokenAuthenticationService {
 		String username = tokenService.getClaims(token).getSubject();
 		Object scopes = tokenService.getClaims(token).get("scopes");
 		
-		List<SimpleGrantedAuthority> authorities = null;
+		Set<SimpleGrantedAuthority> authorities = null;
 		
 		if (scopes != null && scopes instanceof List<?>) {
-			authorities = new ArrayList<SimpleGrantedAuthority>();
+			authorities = new HashSet<SimpleGrantedAuthority>();
 			for(Map<String,String> authority : (List<Map<String,String>>)scopes)
 				for(String role : authority.values())
-					authorities.add(new SimpleGrantedAuthority(role));
+					authorities.add(new SimpleGrantedAuthority(role.substring(role.indexOf(":")+1)));
 		} 
-			
-		
+					
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
 
 		return authentication;

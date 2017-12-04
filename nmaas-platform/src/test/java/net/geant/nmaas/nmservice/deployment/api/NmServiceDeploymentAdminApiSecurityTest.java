@@ -41,7 +41,7 @@ public class NmServiceDeploymentAdminApiSecurityTest extends BaseControllerTest 
 
     @Test
     public void shouldAuthAndCallSimpleGet() throws Exception {
-        String token = getValidUserTokenFor(Role.ADMIN);
+        String token = getValidUserTokenFor(Role.SUPERADMIN);
         mvc.perform(get("/platform/api/management/services")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());

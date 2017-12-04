@@ -105,7 +105,7 @@ public class AppCommentsController extends AppBaseController {
 	}
 	
 	@RequestMapping(value="/{commentId}", method=RequestMethod.DELETE)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER') || hasPermission(#commentId, 'comment', 'owner')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_MANAGER') || hasPermission(#commentId, 'comment', 'owner')")
 	@Transactional
 	public void deleteComment(@PathVariable(value="appId") Long appId, @PathVariable(value="commentId") Long commentId) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Comment comment = getComment(commentId);

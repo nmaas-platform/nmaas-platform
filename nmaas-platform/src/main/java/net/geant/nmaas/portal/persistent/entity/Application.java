@@ -58,6 +58,12 @@ public class Application implements Serializable {
 		this.name = name;
 	}
 
+	protected Application(Long id, String name) {
+		this(name);
+		this.id = id;
+	}
+	
+	
 	public void setId(Long id) {
 		this.id = id;
 	}

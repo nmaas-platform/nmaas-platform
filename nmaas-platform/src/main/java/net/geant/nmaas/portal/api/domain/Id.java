@@ -7,7 +7,6 @@ public class Id {
 	public Id() {
 		super();
 	}
-
 	
 	public Id(Long id) {
 		super();

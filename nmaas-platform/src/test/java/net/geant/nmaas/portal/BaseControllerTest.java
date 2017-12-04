@@ -17,8 +17,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.DomainService;
 
 @ContextConfiguration(classes = {ApiSecurityConfig.class, ConvertersConfig.class, PersistentConfig.class})
 public class BaseControllerTest {
@@ -37,6 +39,9 @@ public class BaseControllerTest {
     @Autowired
 	protected JWTTokenService tokenService;
     
+    @Autowired
+    DomainService domains;
+    
 	public BaseControllerTest() {
 		
 	}
@@ -51,14 +56,14 @@ public class BaseControllerTest {
 	
 	protected void prepareSecurity() {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();		
-		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, Arrays.asList(new SimpleGrantedAuthority(Role.ADMIN.authority()))));
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, Arrays.asList(new SimpleGrantedAuthority(Role.SUPERADMIN.authority()))));
 		SecurityContextHolder.setContext(context);
 	}
 	
     protected String getValidUserTokenFor(Role role) {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);
-		User admin = new User(ADMIN_USERNAME, ADMIN_PASSWORD, roles);
+		User admin = new User(ADMIN_USERNAME, ADMIN_PASSWORD, domains.getGlobalDomain(), roles);
 		
 		String token = tokenService.getToken(admin);
 		
