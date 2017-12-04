@@ -5,25 +5,25 @@ import java.util.function.Predicate;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class HelmStatusCommand extends HelmCommand {
+public class HelmDeleteCommand extends HelmCommand {
 
-    private static final String STATUS = "status";
+    private static final String DELETE = "delete";
 
     /**
-     * Creates {@link HelmStatusCommand} with provided custom input.
+     * Creates {@link HelmDeleteCommand} with provided custom input.
      *
      * @param releaseName release name
      * @return complete command object
      */
-    public static HelmStatusCommand command(String releaseName) {
+    public static HelmDeleteCommand command(String releaseName) {
         if (releaseName == null || releaseName.isEmpty())
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         StringBuilder sb = new StringBuilder();
-        sb.append(HELM).append(SPACE).append(STATUS).append(SPACE).append(releaseName);
-        return new HelmStatusCommand(sb.toString());
+        sb.append(HELM).append(SPACE).append(DELETE).append(SPACE).append(releaseName);
+        return new HelmDeleteCommand(sb.toString());
     }
 
-    private HelmStatusCommand(String command) {
+    private HelmDeleteCommand(String command) {
         this.command = command;
     }
 

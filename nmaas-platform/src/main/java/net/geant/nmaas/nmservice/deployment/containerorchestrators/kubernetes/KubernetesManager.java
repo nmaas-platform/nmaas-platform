@@ -91,7 +91,11 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId)
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
-
+        try {
+            helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+        } catch (CommandExecutionException commandExecutionException) {
+            throw new CouldNotRemoveNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
+        }
     }
 
     @Override
@@ -103,4 +107,5 @@ public class KubernetesManager implements ContainerOrchestrator {
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
         return null;
     }
+
 }
