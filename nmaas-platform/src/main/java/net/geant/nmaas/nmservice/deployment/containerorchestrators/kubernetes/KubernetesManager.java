@@ -13,8 +13,12 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
@@ -25,11 +29,18 @@ import org.springframework.stereotype.Component;
 @Profile("kubernetes")
 public class KubernetesManager implements ContainerOrchestrator {
 
+    private static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
+    private static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
+    private static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
+
     @Autowired
     private KubernetesNmServiceRepositoryManager repositoryManager;
 
     @Autowired
     private HelmCommandExecutor helmCommandExecutor;
+
+    @Value("${kubernetes.persistence.class}")
+    private String kubernetesPersistenceStorageClass;
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -61,6 +72,11 @@ public class KubernetesManager implements ContainerOrchestrator {
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             KubernetesTemplate template = repositoryManager.loadService(deploymentId).getKubernetesTemplate();
+            // TODO finalized this
+            Map<String, String> arguments = new HashMap<>();
+            arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
+            arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
+            arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "");
             helmCommandExecutor.executeHelmInstallCommand(
                     deploymentId,
                     template.getArchive(),
