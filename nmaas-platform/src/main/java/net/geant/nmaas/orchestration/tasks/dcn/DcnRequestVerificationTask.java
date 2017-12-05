@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
@@ -10,6 +11,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
@@ -33,13 +35,17 @@ public class DcnRequestVerificationTask {
         this.dcnDeployment = dcnDeployment;
     }
 
+    @Value("${dcn.deployment.mode}")
+    private String mode;
+
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void verifyDcnRequest(DcnVerifyRequestActionEvent event) {
         final Identifier clientId = event.getRelatedTo();
         try {
-            dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
+            if (DcnDeploymentMode.AUTO.value().equals(mode) || DcnDeploymentMode.MANUAL.value().equals(mode))
+                dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
         } catch (DcnRequestVerificationException e) {
             log.warn("DCN request verification failed for client " + clientId.value() + " -> " + e.getMessage());
         }

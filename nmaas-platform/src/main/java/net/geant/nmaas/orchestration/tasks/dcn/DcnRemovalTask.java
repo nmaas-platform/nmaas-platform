@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -9,6 +10,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
@@ -30,12 +32,16 @@ public class DcnRemovalTask {
         this.dcnDeployment = dcnDeployment;
     }
 
+    @Value("${dcn.deployment.mode}")
+    private String mode;
+
     @EventListener
     @Loggable(LogLevel.INFO)
     public void remove(DcnRemoveActionEvent event) {
         final Identifier clientId = event.getRelatedTo();
         try {
-            dcnDeployment.removeDcn(clientId);
+            if (DcnDeploymentMode.AUTO.value().equals(mode))
+                dcnDeployment.removeDcn(clientId);
         } catch (CouldNotRemoveDcnException e) {
             log.warn("DCN removal failed for client " + clientId.value() + " -> " + e.getMessage());
         }

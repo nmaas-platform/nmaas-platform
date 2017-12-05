@@ -26,9 +26,6 @@
 			"containerVolumes": [
 				"/root/.config/oxidized"
 			]
-		},
-		"kubernetesTemplate": {
-			"archive": "oxidized-0.1.1.tgz"
 		}
 	},
 	"configTemplate": {

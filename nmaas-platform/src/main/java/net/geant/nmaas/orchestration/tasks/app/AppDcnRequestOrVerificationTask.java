@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -11,6 +12,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -36,6 +38,9 @@ public class AppDcnRequestOrVerificationTask {
         this.dcnDeployment = dcnDeployment;
     }
 
+    @Value("${dcn.deployment.mode}")
+    private String mode;
+
     /**
      * Checks current state of DCN for given client and depending on the result requests new DCN deployment
      * (or re-deployment), publishes notification that DCN is already deployed and running or does nothing.
@@ -49,6 +54,8 @@ public class AppDcnRequestOrVerificationTask {
     public ApplicationEvent requestOrVerifyDcn(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getRelatedTo();
         final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
+        if (DcnDeploymentMode.NONE.value().equals(mode))
+            return dcnReadyNotificationEvent(deploymentId);
         switch(dcnDeployment.checkState(clientId)) {
             case NONE:
             case REMOVED:

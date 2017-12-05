@@ -1,9 +1,11 @@
 package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesNmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +42,15 @@ public class ServiceDeploymentWithKubernetesTest {
 	public void shouldConfirmSupportForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
+		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("1"), null, null, appDeploymentSpec);
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE, AppDeploymentEnv.DOCKER_ENGINE));
+		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
 	}
 

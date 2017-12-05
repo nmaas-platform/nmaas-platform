@@ -13,6 +13,8 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import java.util.UUID;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Autowired
@@ -48,8 +51,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         Identifier generatedId;
         do {
             generatedId = new Identifier(UUID.randomUUID().toString());
-        } while(deploymentIdAlreadyInUse(generatedId));
+        } while(deploymentDoesNotStartWithLetter(generatedId) || deploymentIdAlreadyInUse(generatedId));
         return generatedId;
+    }
+
+    private boolean deploymentDoesNotStartWithLetter(Identifier generatedId) {
+        return !generatedId.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?");
     }
 
     boolean deploymentIdAlreadyInUse(Identifier generatedId) {

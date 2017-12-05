@@ -22,7 +22,8 @@ public class HelmCommandExecutor {
     private String hostChartsDirectory;
     private String kubernetesNamespace;
 
-    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments)
+            throws CommandExecutionException {
         try {
             if (!useLocalArchives)
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
@@ -50,6 +51,33 @@ public class HelmCommandExecutor {
         return hostChartsDirectory;
     }
 
+    void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
+        try {
+            HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value());
+            SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommand(command);
+        } catch (SshConnectionException
+                | CommandExecutionException e) {
+            throw new CommandExecutionException("Failed to execute helm delete command -> " + e.getMessage());
+        }
+    }
+
+    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+        try {
+            HelmStatusCommand command = HelmStatusCommand.command(deploymentId.value());
+            String output = SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommandAndReturnOutput(command);
+            return parseStatus(output);
+        } catch (SshConnectionException
+                | CommandExecutionException e) {
+            throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
+        }
+    }
+
+    private HelmPackageStatus parseStatus(String output) {
+        if(output.contains("STATUS: DEPLOYED"))
+            return HelmPackageStatus.DEPLOYED;
+        else return HelmPackageStatus.UNKNOWN;
+    }
+
     @Value("${kubernetes.helm.host}")
     public void setHostAddress(String hostAddress) {
         this.hostAddress = hostAddress;
@@ -74,5 +102,4 @@ public class HelmCommandExecutor {
     public void setKubernetesNamespace(String kubernetesNamespace) {
         this.kubernetesNamespace = kubernetesNamespace;
     }
-
 }

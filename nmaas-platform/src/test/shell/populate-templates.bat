@@ -63,3 +63,9 @@ curl -X GET %API_URL%/management/apps/1/dockercompose/template --header "Authori
 curl -X GET %API_URL%/management/apps/2/dockercompose/template --header "Authorization: Bearer %token%"
 curl -X GET %API_URL%/management/apps/3/dockercompose/template --header "Authorization: Bearer %token%"
 curl -X GET %API_URL%/management/apps/4/dockercompose/template --header "Authorization: Bearer %token%"
+
+echo.
+echo Adding default kubernetes template for app 2
+curl -X POST %API_URL%/management/apps/2/kubernetes/template --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\kubernetes\app2-template1.json
+echo
+curl -X GET %API_URL%/management/apps/2/kubernetes/template --header "Authorization: Bearer %token%"
