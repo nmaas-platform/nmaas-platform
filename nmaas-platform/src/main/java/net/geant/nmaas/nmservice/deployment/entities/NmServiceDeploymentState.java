@@ -85,6 +85,12 @@ public enum NmServiceDeploymentState {
             return false;
         }
     },
+    VERIFICATION_INITIATED {
+        @Override
+        public boolean isRunning() {
+            return false;
+        }
+    },
     VERIFIED {
         @Override
         public boolean isRunning() {

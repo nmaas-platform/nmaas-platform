@@ -38,7 +38,7 @@ public class DcnRemovalTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void remove(DcnRemoveActionEvent event) {
-        final Identifier clientId = event.getClientId();
+        final Identifier clientId = event.getRelatedTo();
         try {
             if (DcnDeploymentMode.AUTO.value().equals(mode))
                 dcnDeployment.removeDcn(clientId);

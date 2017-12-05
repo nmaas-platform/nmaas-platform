@@ -33,7 +33,7 @@ public class AppServiceDeploymentTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void deployNmService(AppDeployServiceActionEvent event) {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         try {
             serviceDeployment.deployNmService(deploymentId);
         } catch (CouldNotDeployNmServiceException e) {

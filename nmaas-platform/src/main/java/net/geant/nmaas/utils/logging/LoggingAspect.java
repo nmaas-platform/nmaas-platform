@@ -22,15 +22,15 @@ import java.text.MessageFormat;
 @Component
 public class LoggingAspect {
 
-	private static String BEFORE_STRING = "ENTERING METHOD {0}";
+	private static String BEFORE_STRING = "ENTERING {0}";
 	
-	private static String BEFORE_WITH_PARAMS_STRING = "ENTERING METHOD {0} WITH PARAMS {1}";
+	private static String BEFORE_WITH_PARAMS_STRING = "ENTERING {0} PARAMS {1}";
 
-	private static String AFTER_THROWING = "EXCEPTION THROWN IN {0} WITH MESSAGE {1} WITH PARAMS {2}";
+	private static String AFTER_THROWING = "EXCEPTION IN {0} WITH MESSAGE {1} PARAMS {2}";
 
-	private static String AFTER_RETURNING = "LEAVING METHOD {0} AND RETURNING {1}";
+	private static String AFTER_RETURNING = "LEAVING {0} AND RETURNING {1}";
 
-	private static String AFTER_RETURNING_VOID = "LEAVING METHOD {0}";
+	private static String AFTER_RETURNING_VOID = "LEAVING {0}";
 	
 	public Level loggableToLevel(Loggable loggable){
 		if (loggable != null)
