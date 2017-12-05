@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 
 /**
  * Implementation of the {@link NmServiceConfigurationProvider} interface tailored for NM service deployments based on
- * pure Docker and Docker Compose.
+ * Kubernetes and in general using a central git repository to store and exchange configuration files.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile({"docker-engine", "docker-compose"})
-public class DockerServiceConfigurationExecutor implements NmServiceConfigurationProvider {
+@Profile("kubernetes")
+public class KubernetesServiceConfigurator implements NmServiceConfigurationProvider {
 
     @Autowired
     private ConfigurationFileTransferProvider fileTransfer;
