@@ -25,10 +25,16 @@ public class GitLabProject {
     private Identifier deploymentId;
 
     /**
-     * Token string to be used for git clone authorization
+     * User to be used for git clone authorization
      */
     @Column(nullable=false)
-    private String accessToken;
+    private String accessUser;
+
+    /**
+     * Password to be used for git clone authorization
+     */
+    @Column(nullable=false)
+    private String accessPassword;
 
     /**
      * Http URL of the git repository to be cloned
@@ -36,13 +42,21 @@ public class GitLabProject {
     @Column(nullable=false)
     private String accessUrl;
 
+    /**
+     * Http URL that can be directly used in "git clone" command (includes user access credentials)
+     */
+    @Column(nullable=false)
+    private String cloneUrl;
+
     public GitLabProject() {
     }
 
-    public GitLabProject(Identifier deploymentId, String accessToken, String accessUrl) {
+    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, String cloneUrl) {
         this.deploymentId = deploymentId;
-        this.accessToken = accessToken;
+        this.accessUser = accessUser;
+        this.accessPassword = accessPassword;
         this.accessUrl = accessUrl;
+        this.cloneUrl = cloneUrl;
     }
 
     public void setId(Long id) {
@@ -57,11 +71,20 @@ public class GitLabProject {
         return deploymentId;
     }
 
-    public String getAccessToken() {
-        return accessToken;
+    public String getAccessUser() {
+        return accessUser;
+    }
+
+    public String getAccessPassword() {
+        return accessPassword;
     }
 
     public String getAccessUrl() {
         return accessUrl;
     }
+
+    public String getCloneUrl() {
+        return cloneUrl;
+    }
+
 }

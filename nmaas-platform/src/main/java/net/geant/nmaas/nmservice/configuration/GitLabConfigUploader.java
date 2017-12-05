@@ -12,7 +12,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.ImpersonationToken;
 import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
@@ -22,8 +21,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,9 +35,8 @@ import java.util.List;
 public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private static final String GROUPS_PATH_PREFIX = "groups";
-    private static final String DEFAULT_CLIENT_TOKEN_NAME = "k8s";
-    private static final int DEFAULT_CLIENT_TOKEN_DURATION_IN_DAYS = 90;
     private static final int DEFAULT_CLIENT_LIMIT_ON_CREATED_PROJECTS = 10;
+    private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
 
@@ -72,32 +68,29 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
         Identifier clientId = serviceRepositoryManager.loadClientId(deploymentId);
         gitlab = new GitLabApi(ApiVersion.V4, gitLabApiUrl, gitLabApiToken);
-        Integer gitLabUserId = getOrCreateUserIfNotExists(clientId);
+        String gitLabPassword = generateRandomPassword();
+        Integer gitLabUserId = createUser(clientId, deploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, clientId);
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
-        GitLabProject project = project(deploymentId, gitLabUserId, gitLabProjectId);
+        GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
         uploadConfigFilesToProject(gitLabProjectId, configIds);
     }
 
-    private Integer getOrCreateUserIfNotExists(Identifier clientId) throws FileTransferException {
+    private Integer createUser(Identifier clientId, Identifier deploymentId, String password) throws FileTransferException {
         try {
-            User user = gitlab.getUserApi().getUser(userName(clientId));
-            if (user != null) {
-                return user.getId();
-            } else {
-                return gitlab.getUserApi().createUser(createStandardUser(clientId), generateRandomPassword(), limitOnProjects()).getId();
-            }
+            return gitlab.getUserApi().createUser(createStandardUser(clientId, deploymentId), password, limitOnProjects()).getId();
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 
-    private User createStandardUser(Identifier clientId) {
+    private User createStandardUser(Identifier clientId, Identifier deploymentId) {
         User user = new User();
-        user.setName(name(clientId));
-        user.setUsername(userName(clientId));
-        user.setEmail(userEmail(clientId));
+        user.setName(name(clientId, deploymentId));
+        String userName = userName(clientId, deploymentId);
+        user.setUsername(userName);
+        user.setEmail(userEmail(userName));
         user.setCanCreateGroup(false);
         return user;
     }
@@ -110,16 +103,16 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return RandomStringUtils.random(10, true, true);
     }
 
-    private String name(Identifier clientId) {
-        return "Client " + clientId;
+    private String name(Identifier clientId, Identifier deploymentId) {
+        return "Client " + clientId + " (" + deploymentId + ")";
     }
 
-    private String userName(Identifier clientId) {
-        return "client-" + clientId;
+    private String userName(Identifier clientId, Identifier deploymentId) {
+        return "client-" + clientId + "-" + deploymentId;
     }
 
-    private String userEmail(Identifier clientId) {
-        return userName(clientId) + "@nmaas.geant.net";
+    private String userEmail(String username) {
+        return username + "@" + DEFAULT_CLIENT_EMAIL_DOMAIN;
     }
 
     private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, Identifier clientId) throws FileTransferException {
@@ -140,12 +133,12 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     private String groupName(Identifier clientId) {
-        return name(clientId);
+        return "client-" + clientId;
     }
 
     // TODO group path should include the name of client's company/organisation
     private String groupPath(Identifier clientId) {
-        return GROUPS_PATH_PREFIX + "-" + userName(clientId);
+        return GROUPS_PATH_PREFIX + "-" + groupName(clientId);
     }
 
     private boolean statusIsDifferentThenNotFound(int httpStatus) {
@@ -170,34 +163,29 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return deploymentId.value();
     }
 
-    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, Integer gitLabProjectId) throws FileTransferException {
-        String gitLabUserToken = getOrCreateUserImpersonationToken(gitLabUserId);
-        String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-        return new GitLabProject(deploymentId, gitLabUserToken, gitLabRepoUrl);
-    }
-
-    private String getOrCreateUserImpersonationToken(Integer gitLabUserId) throws FileTransferException {
+    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId)
+            throws FileTransferException {
         try {
-            return gitlab.getUserApi().createImpersonationToken(gitLabUserId, DEFAULT_CLIENT_TOKEN_NAME, daysFromNow(), standardTokenScopes()).getToken();
+            String gitLabUser = getUser(gitLabUserId);
+            String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
+            String gitCloneUrl = generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
+            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 
-    private Date daysFromNow() {
-        return Date.from(java.time.LocalDateTime.now().plusDays(DEFAULT_CLIENT_TOKEN_DURATION_IN_DAYS).toInstant(ZoneOffset.UTC));
+    private String getUser(Integer gitLabUserId) throws GitLabApiException {
+        return gitlab.getUserApi().getUser(gitLabUserId).getUsername();
     }
 
-    private ImpersonationToken.Scope[] standardTokenScopes() {
-        return new ImpersonationToken.Scope[] {ImpersonationToken.Scope.READ_USER};
+    private String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
+        return gitlab.getProjectApi().getProject(gitLabProjectId).getHttpUrlToRepo();
     }
 
-    private String getHttpUrlToRepo(Integer gitLabProjectId) throws FileTransferException {
-        try {
-            return gitlab.getProjectApi().getProject(gitLabProjectId).getHttpUrlToRepo();
-        } catch (GitLabApiException e) {
-            throw new FileTransferException(e.getClass().getName() + e.getMessage());
-        }
+    private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
+        String[] urlParts = gitLabRepoUrl.split("//");
+        return urlParts[0] + "//" + gitLabUser + ":" + gitLabPassword + "@" + urlParts[1];
     }
 
     private void uploadConfigFilesToProject(Integer gitLabProjectId, List<String> configIds)

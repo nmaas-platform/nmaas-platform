@@ -67,13 +67,15 @@ public class GitLabConfigUploaderTest {
     @Test
     public void shouldUploadConfigFilesToNewRepo() throws FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException {
         Identifier deploymentId = Identifier.newInstance("1928-3413-2934");
-        Identifier clientId = Identifier.newInstance("400");
+        Identifier clientId = Identifier.newInstance("505");
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo(deploymentId, Identifier.newInstance("appId"), clientId, null);
         repositoryManager.storeService(service);
         gitLabUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()));
         KubernetesNmServiceInfo serviceWithGitLabProject = repositoryManager.loadService(deploymentId);
         assertThat(serviceWithGitLabProject.getGitLabProject(), is(notNullValue()));
-        assertThat(serviceWithGitLabProject.getGitLabProject().getAccessToken(), is(notNullValue()));
+        assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUser(), containsString(clientId.value()));
+        assertThat(serviceWithGitLabProject.getGitLabProject().getAccessPassword(), is(notNullValue()));
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUrl(), containsString(deploymentId.value()));
+        assertThat(serviceWithGitLabProject.getGitLabProject().getCloneUrl(), containsString(deploymentId.value()));
     }
 }
