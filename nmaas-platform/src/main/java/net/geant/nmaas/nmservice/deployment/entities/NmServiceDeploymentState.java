@@ -7,127 +7,34 @@ package net.geant.nmaas.nmservice.deployment.entities;
  */
 public enum NmServiceDeploymentState {
 
-    INIT {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    REQUEST_VERIFIED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    REQUEST_VERIFICATION_FAILED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    ENVIRONMENT_PREPARATION_INITIATED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    ENVIRONMENT_PREPARED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    ENVIRONMENT_PREPARATION_FAILED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    READY_FOR_DEPLOYMENT {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    CONFIGURATION_INITIATED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    CONFIGURED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    CONFIGURATION_FAILED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    DEPLOYMENT_INITIATED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    DEPLOYED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    DEPLOYMENT_FAILED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    VERIFICATION_INITIATED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    VERIFIED {
-        @Override
-        public boolean isRunning() {
-            return true;
-        }
-    },
-    VERIFICATION_FAILED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    REMOVED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    REMOVAL_FAILED {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    UNKNOWN {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    },
-    ERROR {
-        @Override
-        public boolean isRunning() {
-            return false;
-        }
-    };
+    INIT(true),
+    REQUEST_VERIFIED(true),
+    REQUEST_VERIFICATION_FAILED(false),
+    ENVIRONMENT_PREPARATION_INITIATED(true),
+    ENVIRONMENT_PREPARED(true),
+    ENVIRONMENT_PREPARATION_FAILED(false),
+    READY_FOR_DEPLOYMENT(true),
+    CONFIGURATION_INITIATED(true),
+    CONFIGURED(true),
+    CONFIGURATION_FAILED(false),
+    DEPLOYMENT_INITIATED(true),
+    DEPLOYED(true),
+    DEPLOYMENT_FAILED(false),
+    VERIFICATION_INITIATED(true),
+    VERIFIED(true),
+    VERIFICATION_FAILED(false),
+    REMOVED(false),
+    REMOVAL_FAILED(false),
+    ERROR(false);
 
-    public abstract boolean isRunning();
+    private boolean isRunning;
+
+    NmServiceDeploymentState(boolean isRunning) {
+        this.isRunning = isRunning;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
 
 }
