@@ -29,9 +29,9 @@ import java.util.Map;
 @Profile("kubernetes")
 public class KubernetesManager implements ContainerOrchestrator {
 
-    private static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
-    private static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
-    private static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
+    static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
+    static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
+    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
 
     @Autowired
     private KubernetesNmServiceRepositoryManager repositoryManager;
@@ -71,16 +71,17 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void deployNmService(Identifier deploymentId)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            KubernetesTemplate template = repositoryManager.loadService(deploymentId).getKubernetesTemplate();
-            // TODO finalized this
+            KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+            KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
+            String repoUrl = serviceInfo.getGitLabProject().getCloneUrl();
             Map<String, String> arguments = new HashMap<>();
             arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
             arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
-            arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "");
+            arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
             helmCommandExecutor.executeHelmInstallCommand(
                     deploymentId,
                     template.getArchive(),
-                    null
+                    arguments
             );
         } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
             throw new CouldNotDeployNmServiceException(

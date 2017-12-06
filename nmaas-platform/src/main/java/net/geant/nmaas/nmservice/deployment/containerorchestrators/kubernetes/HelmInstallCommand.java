@@ -28,10 +28,10 @@ public class HelmInstallCommand extends HelmCommand {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(INSTALL).append(SPACE)
                 .append(OPTION_NAME).append(SPACE).append(releaseName).append(SPACE)
-                .append(OPTION_NAMESPACE).append(SPACE).append(namespace).append(SPACE);
+                .append(OPTION_NAMESPACE).append(SPACE).append(namespace);
         if (values != null && !values.isEmpty())
-            sb.append(OPTION_SET).append(SPACE).append(commaSeparatedValuesString(values)).append(SPACE);
-        sb.append(chartArchive);
+            sb.append(SPACE).append(OPTION_SET).append(SPACE).append(commaSeparatedValuesString(values));
+        sb.append(SPACE).append(chartArchive);
         return new HelmInstallCommand(sb.toString());
     }
 
