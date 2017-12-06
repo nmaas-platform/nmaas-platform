@@ -36,7 +36,7 @@ public class DcnVerificationTask {
 
     @EventListener
     public void verifyDcn(DcnVerifyActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier clientId = event.getClientId();
+        final Identifier clientId = event.getRelatedTo();
         try {
             if (DcnDeploymentMode.AUTO.value().equals(mode) || DcnDeploymentMode.MANUAL.value().equals(mode))
                 dcnDeployment.verifyDcn(clientId);

@@ -33,7 +33,7 @@ public class AppRemovalTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void remove(AppRemoveActionEvent event) {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         try {
             serviceDeployment.removeNmService(deploymentId);
         } catch (CouldNotRemoveNmServiceException e) {

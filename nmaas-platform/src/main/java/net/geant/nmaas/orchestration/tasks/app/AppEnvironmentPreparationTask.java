@@ -32,7 +32,7 @@ public class AppEnvironmentPreparationTask {
 
     @EventListener
     public void prepareEnvironment(AppPrepareEnvironmentActionEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+        final Identifier deploymentId = event.getRelatedTo();
         try {
             serviceDeployment.prepareDeploymentEnvironment(deploymentId);
         } catch (CouldNotPrepareEnvironmentException e) {

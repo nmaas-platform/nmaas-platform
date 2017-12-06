@@ -42,7 +42,7 @@ public class DcnRequestVerificationTask {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void verifyDcnRequest(DcnVerifyRequestActionEvent event) {
-        final Identifier clientId = event.getClientId();
+        final Identifier clientId = event.getRelatedTo();
         try {
             if (DcnDeploymentMode.AUTO.value().equals(mode) || DcnDeploymentMode.MANUAL.value().equals(mode))
                 dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
