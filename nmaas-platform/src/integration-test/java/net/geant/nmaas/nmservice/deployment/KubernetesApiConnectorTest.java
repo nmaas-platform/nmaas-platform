@@ -20,6 +20,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
+/**
+ * Set of integration tests verifying correct communication with real Kubernetes REST API.
+ * Note: All tests must be ignored.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("kubernetes")

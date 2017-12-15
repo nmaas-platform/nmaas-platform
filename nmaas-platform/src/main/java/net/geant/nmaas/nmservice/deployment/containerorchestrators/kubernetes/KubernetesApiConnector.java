@@ -17,6 +17,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Intermediates in the communication between {@link KubernetesManager} and the Kubernetes cluster using its REST API.
+ *
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
+ */
 @Component
 @Profile("kubernetes")
 public class KubernetesApiConnector {
@@ -29,12 +34,21 @@ public class KubernetesApiConnector {
     @Value("${kubernetes.persistence.class}")
     private String kubernetesPersistenceClass;
 
+    /**
+     * Initializes Kubernetes REST API client based on values read from properties.
+     */
     @PostConstruct
     public void initApiClient() {
         ApiClient client = Config.fromUrl(kubernetesApiUrl, false);
         Configuration.setDefaultApiClient(client);
     }
 
+    /**
+     * Checks if defined requirements are met by the Kubernetes cluster.
+     * List of requirements can be easily extended.
+     *
+     * @throws KubernetesClusterCheckException if requirements are not met
+     */
     @Loggable(LogLevel.INFO)
     public void checkClusterStatusAndPrerequisites() throws KubernetesClusterCheckException {
         try {
