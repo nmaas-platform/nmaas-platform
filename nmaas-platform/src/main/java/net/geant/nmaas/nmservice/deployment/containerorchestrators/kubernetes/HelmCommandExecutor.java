@@ -68,14 +68,15 @@ public class HelmCommandExecutor {
             return parseStatus(output);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
-            throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
+            throw new CommandExecutionException("Failed to execute helm status command -> " + e.getMessage());
         }
     }
 
-    private HelmPackageStatus parseStatus(String output) {
+    HelmPackageStatus parseStatus(String output) {
         if(output.contains("STATUS: DEPLOYED"))
             return HelmPackageStatus.DEPLOYED;
-        else return HelmPackageStatus.UNKNOWN;
+        else
+            return HelmPackageStatus.UNKNOWN;
     }
 
     @Value("${kubernetes.helm.host}")

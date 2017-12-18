@@ -48,10 +48,11 @@ public class SshConnector {
 			throw new SshConnectionException("Not authenticated connection to " + ssh.getRemoteAddress());
 		try (Session session = ssh.startSession()){
 			final Session.Command c = session.exec(command);
-			String output = IOUtils.readFully(c.getErrorStream()).toString();
+			String error = IOUtils.readFully(c.getErrorStream()).toString();
+			String output = IOUtils.readFully(c.getInputStream()).toString();
 			c.join(5, TimeUnit.SECONDS);
 			if (exitStatusIndicatesThatSomethingWentWrong(c.getExitStatus()))
-				throw new CommandExecutionException("Command execution failed (exit status: " + c.getExitStatus() + "; details: " + output + ")");
+				throw new CommandExecutionException("Command execution failed (exit status: " + c.getExitStatus() + "; details: " + error + ")");
 			return output;
 		} catch (IOException ex) {
 			throw new SshConnectionException("Unable to read command execution error message -> " + ex.getMessage());
