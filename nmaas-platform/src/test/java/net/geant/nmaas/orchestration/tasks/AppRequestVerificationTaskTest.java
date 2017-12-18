@@ -68,7 +68,7 @@ public class AppRequestVerificationTaskTest {
         try {
             task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
         } catch (NmServiceRequestVerificationException e) {}
-        Thread.sleep(500);
+        Thread.sleep(200);
         assertThat(deployments.loadState(deploymentId), equalTo(AppDeploymentState.REQUEST_VALIDATION_FAILED));
     }
 
