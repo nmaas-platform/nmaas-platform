@@ -65,7 +65,7 @@ public class UsersController {
 	
 	
 	@GetMapping("/users")
-	@PreAuthorize("hasPermission(null, 'domain', 'OWNER')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	public List<User> getUsers(Pageable pageable) {
 		return users.findAll(pageable).getContent().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList());
 	}
@@ -144,13 +144,13 @@ public class UsersController {
 	}
 	
 	@GetMapping("/domains/{domainId}/users")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'owner')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public List<User> getDomainUsers(@PathVariable Long domainId) {
 		return domains.getMembers(domainId).stream().map(domain -> modelMapper.map(domain, User.class)).collect(Collectors.toList());		
 	}
 	
 	@GetMapping("/domains/{domainId}/users/{userId}")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'owner')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public User getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException {
 		Domain domain = domains.findDomain(domainId);
 		if(domain == null)
@@ -164,7 +164,7 @@ public class UsersController {
 	}
 	
 	@DeleteMapping("/domains/{domainId}/users/{userId}")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'owner')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void removeDomainUser(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException {
 		Domain domain = domains.findDomain(domainId);
@@ -179,7 +179,7 @@ public class UsersController {
 	}
 	
 	@GetMapping("/domains/{domainId}/users/{userId}/roles")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'owner')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public Set<Role> getUserRoles(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException {
 		Domain domain = domains.findDomain(domainId);
 		if(domain == null)

@@ -16,6 +16,8 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.DomainService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/portal/api/apps/instances")
+@RequestMapping("/portal/api/domains/{domainId}/apps/instances")
 public class AppInstanceController extends AppBaseController {
 
 	@Autowired
@@ -48,27 +50,40 @@ public class AppInstanceController extends AppBaseController {
 
 	@Autowired
 	ModelMapper modelMapper;
+	
+	@Autowired
+	DomainService domains;
 
 	@RequestMapping(method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public List<AppInstance> getAllInstances(Pageable pageable) {
-		return appInstanceRepo.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	public List<AppInstance> getAllInstances(@PathVariable Long domainId, Pageable pageable) throws MissingElementException {
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId);
+		if(domain == null)
+			throw new MissingElementException("Domain not found");
+
+		return appInstanceRepo.findAllByDomain(domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
 
-	@RequestMapping(value = "my", method = RequestMethod.GET)
-	public List<AppInstance> getMyAllInstances(@NotNull Principal principal, Pageable pageable)
+	@RequestMapping(value = "/my", method = RequestMethod.GET)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
+	public List<AppInstance> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable)
 			throws MissingElementException {
-		return getUserAppInstances(principal.getName(), pageable);
+		return getUserDomainAppInstances(domainId, principal.getName(), pageable);
 	}
 
 	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public List<AppInstance> getUserAllInstances(@PathVariable("username") String username, Pageable pageable)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable)
 			throws MissingElementException {
-		return getUserAppInstances(username, pageable);
+		return getUserDomainAppInstances(domainId, username, pageable);
 	}
 
-	private List<AppInstance> getUserAppInstances(String username, Pageable pageable) throws MissingElementException {
+	private List<AppInstance> getUserDomainAppInstances(Long domainId, String username, Pageable pageable) throws MissingElementException {
+		
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId);
+		if(domain == null)
+			throw new MissingElementException("Domain not found");
+		
 		Optional<User> user = userRepo.findByUsername(username);
 		if (!user.isPresent())
 			throw new MissingElementException("User not found");
@@ -77,7 +92,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 	
 	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	public AppInstance getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = appInstanceRepo.findOne(appInstanceId);
@@ -88,14 +103,20 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
+	@PreAuthorize("hasPermission(null, 'appInstance', 'CREATE')")
 	@Transactional
 	public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
-			@NotNull Principal principal) throws MissingElementException {
+			@NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException {
 		Application app = getApp(appInstanceSubscription.getApplicationId());
 		User user = getUser(principal.getName());
 
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = new net.geant.nmaas.portal.persistent.entity.AppInstance(
 				app, appInstanceSubscription.getName());
+		
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId);
+		if(domain == null)
+			throw new MissingElementException("Domain not found");
+		appInstance.setDomain(domain);
 
 		Identifier internalId = appLifecycleManager.deployApplication(new Identifier(Long.toString(user.getId())),
 				new Identifier(Long.toString(app.getId())));
@@ -107,7 +128,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.DELETE)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner')")
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
 	@Transactional
 	public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
@@ -121,7 +142,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(value = "/{appInstanceId}/configure", method = RequestMethod.POST)
-	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'owner')")
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	@Transactional
 	public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@RequestBody String configuration, @NotNull Principal principal)
@@ -147,7 +168,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(value = "/{appInstanceId}/state", method = RequestMethod.GET)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasPermission(#appInstanceId, 'appInstance', 'owner') || hasPermission(#appInstance, 'appInstance', 'ROLE_DOMAINADMIN')")
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
