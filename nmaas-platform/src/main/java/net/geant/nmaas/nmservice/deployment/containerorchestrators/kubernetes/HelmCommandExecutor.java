@@ -20,17 +20,25 @@ public class HelmCommandExecutor {
 
     private boolean useLocalArchives;
     private String hostChartsDirectory;
-    private String kubernetesNamespace;
+    private String defaultKubernetesNamespace;
 
-    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments)
+    void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeHelmInstallCommand(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
+    }
+
+    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeHelmInstallCommand(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
+    }
+
+    private void executeHelmInstallCommand(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
             if (!useLocalArchives)
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
             String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
             HelmInstallCommand command = HelmInstallCommand.command(
-                    kubernetesNamespace,
-                    deploymentId.value(),
+                    namespace,
+                    releaseName,
                     arguments,
                     completeChartArchivePath
             );
@@ -62,8 +70,12 @@ public class HelmCommandExecutor {
     }
 
     HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+        return executeHelmStatusCommand(deploymentId.value());
+    }
+
+    HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
         try {
-            HelmStatusCommand command = HelmStatusCommand.command(deploymentId.value());
+            HelmStatusCommand command = HelmStatusCommand.command(releaseName);
             String output = SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
         } catch (SshConnectionException
@@ -100,7 +112,7 @@ public class HelmCommandExecutor {
     }
 
     @Value("${kubernetes.namespace}")
-    public void setKubernetesNamespace(String kubernetesNamespace) {
-        this.kubernetesNamespace = kubernetesNamespace;
+    public void setDefaultKubernetesNamespace(String defaultKubernetesNamespace) {
+        this.defaultKubernetesNamespace = defaultKubernetesNamespace;
     }
 }

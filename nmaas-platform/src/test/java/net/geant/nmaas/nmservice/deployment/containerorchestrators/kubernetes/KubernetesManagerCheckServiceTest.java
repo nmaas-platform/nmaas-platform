@@ -30,13 +30,13 @@ public class KubernetesManagerCheckServiceTest {
 
     @Test
     public void shouldVerifyThatServiceIsDeployed() throws Exception {
-        when(commandExecutor.executeHelmStatusCommand(any())).thenReturn(HelmPackageStatus.DEPLOYED);
+        when(commandExecutor.executeHelmStatusCommand(any(Identifier.class))).thenReturn(HelmPackageStatus.DEPLOYED);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 
     @Test(expected = ContainerCheckFailedException.class)
     public void shouldThrowExceptionSinceServiceNotDeployed() throws Exception {
-        when(commandExecutor.executeHelmStatusCommand(any())).thenReturn(HelmPackageStatus.UNKNOWN);
+        when(commandExecutor.executeHelmStatusCommand(any(Identifier.class))).thenReturn(HelmPackageStatus.UNKNOWN);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 
