@@ -1,7 +1,5 @@
 package net.geant.nmaas.externalservices.api.model;
 
-import java.net.InetAddress;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
