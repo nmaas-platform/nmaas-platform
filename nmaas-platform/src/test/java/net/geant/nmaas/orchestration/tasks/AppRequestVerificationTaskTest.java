@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
@@ -64,8 +65,10 @@ public class AppRequestVerificationTaskTest {
 
     @Test
     public void shouldNotifyServiceVerificationProblemSinceDeploymentEnvironmentNotSupported() throws InvalidApplicationIdException, InvalidDeploymentIdException, InterruptedException {
-        task.verifyAppRequest(new AppVerifyRequestActionEvent(this, deploymentId));
-        Thread.sleep(500);
+        try {
+            task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
+        } catch (NmServiceRequestVerificationException e) {}
+        Thread.sleep(200);
         assertThat(deployments.loadState(deploymentId), equalTo(AppDeploymentState.REQUEST_VALIDATION_FAILED));
     }
 

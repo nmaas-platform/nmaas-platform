@@ -83,11 +83,11 @@ public class AppDcnRequestOrVerificationTaskTest {
 
     @Test
     public void shouldGenerateNewDcnDeploymentAction() throws InvalidDeploymentIdException, InvalidClientIdException {
-        ApplicationEvent resultEvent = task.requestOrVerifyDcn(event);
+        ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent instanceof DcnVerifyRequestActionEvent, is(true));
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", clientId)));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REMOVED));
-        resultEvent = task.requestOrVerifyDcn(event);
+        resultEvent = task.trigger(event);
         assertThat(resultEvent instanceof DcnVerifyRequestActionEvent, is(true));
     }
 
@@ -95,14 +95,14 @@ public class AppDcnRequestOrVerificationTaskTest {
     public void shouldNotifyReadyForDeploymentState() throws InvalidDeploymentIdException, InvalidClientIdException {
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", clientId)));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.VERIFIED));
-        ApplicationEvent resultEvent = task.requestOrVerifyDcn(event);
+        ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent instanceof NmServiceDeploymentStateChangeEvent, is(true));
     }
 
     @Test
     public void shouldNotGenerateAnyAction() throws InvalidDeploymentIdException, InvalidClientIdException {
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", clientId)));
-        ApplicationEvent resultEvent = task.requestOrVerifyDcn(event);
+        ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(nullValue()));
     }
 
