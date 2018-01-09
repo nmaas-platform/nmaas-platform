@@ -1,23 +1,23 @@
 {
   "name":"K8S-NAME-1",
-  "helmHostAddress":"192.168.0.1",
-  "helmHostSshUsername":"testuser",
-  "helmHostChartsDirectory":"/home/testuser/charts",
-  "restApiHostAddress":"192.168.0.8",
-  "restApiPort":9999,
+  "helmHostAddress":"10.134.241.6",
+  "helmHostSshUsername":"nmaas",
+  "helmHostChartsDirectory":"/home/nmaas/charts",
+  "restApiHostAddress":"10.134.241.6",
+  "restApiPort":8080,
   "attachPoint": {
-    "routerName":"R1",
-    "routerId":"172.0.0.1",
-    "routerInterfaceName":"ge-0/0/1"
+    "routerName":"R3",
+    "routerId":"172.16.3.3",
+    "routerInterfaceName":"ge-0/0/5"
   },
   "externalNetworks": [{
-      "externalIp":"10.0.0.1",
-      "externalNetwork":"10.0.0.0",
+      "externalIp":"169.10.10.10",
+      "externalNetwork":"169.10.10.0",
       "externalNetworkMaskLength":24,
       "assigned":false
     }, {
-      "externalIp":"10.0.1.1",
-      "externalNetwork":"10.0.1.0",
+      "externalIp":"169.10.20.20",
+      "externalNetwork":"169.10.20.0",
       "externalNetworkMaskLength":24,
       "assigned":false
     }
