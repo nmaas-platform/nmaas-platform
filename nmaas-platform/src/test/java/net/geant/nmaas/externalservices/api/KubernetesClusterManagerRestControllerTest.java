@@ -9,7 +9,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.Kubernetes
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
@@ -26,6 +25,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
+ * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -108,6 +108,10 @@ public class KubernetesClusterManagerRestControllerTest {
                 .content(new ObjectMapper().writeValueAsString(updated))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
+        MvcResult result = mvc.perform(get(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertThat(result.getResponse().getContentAsString(), containsString("350"));
     }
 
     @Test
@@ -129,8 +133,6 @@ public class KubernetesClusterManagerRestControllerTest {
                 ((List<KubernetesCluster>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<KubernetesCluster>>() {})).size());
     }
 
-    // TODO fix this test
-    @Ignore
     @Test
     public void shouldFetchKubernetesClusterByName() throws Exception {
         mvc.perform(post(URL_PREFIX)

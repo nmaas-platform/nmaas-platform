@@ -64,7 +64,7 @@ public class KubernetesCluster {
     /**
      * All public networks made available for the cluster. Each customer is assigned with a dedicated network.
      */
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ExternalNetworkSpec> externalNetworks = new ArrayList<>();
 
     public Long getId() {

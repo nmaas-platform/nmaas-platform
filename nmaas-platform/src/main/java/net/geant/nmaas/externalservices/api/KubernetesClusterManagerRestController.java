@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundExceptionException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.modelmapper.ModelMapper;
@@ -36,7 +36,7 @@ public class KubernetesClusterManagerRestController {
     }
 
     /**
-     * Lists all {@link KubernetesCluster} stored in repository
+     * List all {@link KubernetesCluster} stored in repository
      * @return list of {@link KubernetesClusterView} objects
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -51,15 +51,15 @@ public class KubernetesClusterManagerRestController {
      * Fetch {@link KubernetesCluster} instance by name
      * @param name Unique {@link KubernetesCluster} name
      * @return {@link KubernetesCluster} instance
-     * @throws KubernetesClusterNotFoundExceptionException when trying to add new cluster while one already exists
+     * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{name}")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public KubernetesCluster getKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundExceptionException {
+    public KubernetesCluster getKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
         return modelMapper.map(
                 repository.findByName(name)
-                        .orElseThrow(() -> new KubernetesClusterNotFoundExceptionException("Kubernetes cluster with name " + name + " not found in repository."))
+                        .orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository."))
                 , KubernetesCluster.class);
     }
 
@@ -67,12 +67,12 @@ public class KubernetesClusterManagerRestController {
      * Store new {@link KubernetesCluster} instance. In current implementation only a single Kubernetes cluster in
      * the system is supported.
      * @param newKubernetesCluster new {@link KubernetesCluster} data
-     * @throws OnlyOneKubernetesClusterSupportedException when trying to add new cluster while one already exists
+     * @throws OnlyOneKubernetesClusterSupportedException when trying to add new cluster while one already exists (HttpStatus.NOT_ACCEPTABLE)
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addKubernetesCluster(@RequestBody KubernetesCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
         if(repository.count() > 0)
             throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
@@ -83,18 +83,19 @@ public class KubernetesClusterManagerRestController {
      * Update {@link KubernetesCluster} instance
      * @param name Unique {@link KubernetesCluster} name
      * @param updatedKubernetesCluster {@link KubernetesCluster} instance pass to update
-     * @throws KubernetesClusterNotFoundExceptionException when Kubernetes cluster does not exists (HttpStatus.NOT_FOUND)
+     * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(
             value = "/{name}",
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateKubernetesCluster(@PathVariable("name") String name,@RequestBody KubernetesCluster updatedKubernetesCluster)
-            throws KubernetesClusterNotFoundExceptionException {
+            throws KubernetesClusterNotFoundException {
         Optional<KubernetesCluster> existingKubernetesCluster = repository.findByName(name);
         if (!existingKubernetesCluster.isPresent())
-            throw new KubernetesClusterNotFoundExceptionException("Kubernetes cluster with name " + name + " not found in repository.");
+            throw new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository.");
         else {
             updatedKubernetesCluster.setId(existingKubernetesCluster.get().getId());
             repository.save(updatedKubernetesCluster);
@@ -102,22 +103,22 @@ public class KubernetesClusterManagerRestController {
     }
 
     /**
-     * Removes {@link KubernetesCluster} instance
+     * Remove {@link KubernetesCluster} instance
      * @param name Unique {@link KubernetesCluster} name
-     * @throws KubernetesClusterNotFoundExceptionException when Kubernetes cluster does not exists (HttpStatus.NOT_FOUND)
+     * @throws KubernetesClusterNotFoundException when Kubernetes cluster does not exists (HttpStatus.NOT_FOUND)
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{name}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundExceptionException {
+    public void removeKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
         KubernetesCluster cluster = repository.findByName(name).
-                orElseThrow(() -> new KubernetesClusterNotFoundExceptionException("Kubernetes cluster with name " + name + " not found in repository."));
+                orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository."));
         repository.delete(cluster.getId());
     }
 
-    @ExceptionHandler(KubernetesClusterNotFoundExceptionException.class)
+    @ExceptionHandler(KubernetesClusterNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleKubernetesClusterNotFoundExceptionException(KubernetesClusterNotFoundExceptionException ex) {
+    public String handleKubernetesClusterNotFoundExceptionException(KubernetesClusterNotFoundException ex) {
         return ex.getMessage();
     }
 
