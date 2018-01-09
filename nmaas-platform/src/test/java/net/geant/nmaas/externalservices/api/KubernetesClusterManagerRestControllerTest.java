@@ -43,6 +43,35 @@ public class KubernetesClusterManagerRestControllerTest {
     private final static String DIFFERENT_KUBERNETES_CLUSTER_NAME = "DIFFERENT-K8S-NAME-1";
     private final static String URL_PREFIX = "/platform/api/management/kubernetes";
 
+    private final static String KUBERNETES_CLUSTER_JSON =
+            "{" +
+                    "\"name\":\"K8S-NAME-1\"," +
+                    "\"helmHostAddress\":\"192.168.0.1\"," +
+                    "\"helmHostSshUsername\":\"testuser\"," +
+                    "\"helmHostChartsDirectory\":\"/home/testuser/charts\"," +
+                    "\"restApiHostAddress\":\"192.168.0.8\"," +
+                    "\"restApiPort\":9999," +
+                    "\"attachPoint\":{" +
+                        "\"routerName\":\"R1\"," +
+                        "\"routerId\":\"172.0.0.1\"," +
+                        "\"routerInterfaceName\":\"ge-0/0/1\"" +
+                    "}," +
+                    "\"externalNetworks\":" +
+                        "[{" +
+                        "\"externalIp\":\"10.0.0.1\"," +
+                        "\"externalNetwork\":\"10.0.0.0\"," +
+                        "\"externalNetworkMaskLength\":24," +
+                        "\"assigned\":false" +
+                        "}," +
+                        "{" +
+                        "\"externalIp\":\"10.0.1.1\"," +
+                        "\"externalNetwork\":\"10.0.1.0\"," +
+                        "\"externalNetworkMaskLength\":24," +
+                        "\"assigned\":false" +
+                        "}" +
+                    "]" +
+                "}";
+
     @Autowired
     private KubernetesClusterRepository repository;
     @Autowired
@@ -71,6 +100,18 @@ public class KubernetesClusterManagerRestControllerTest {
         mvc.perform(delete(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME))
                 .andExpect(status().isNoContent());
         assertEquals(sizeBefore, repository.count());
+    }
+
+
+    @Test
+    public void shouldAddNewKubernetesClusterFromJson() throws Exception {
+        long sizeBefore = repository.count();
+        mvc.perform(post(URL_PREFIX)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(KUBERNETES_CLUSTER_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        assertEquals(sizeBefore + 1, repository.count());
     }
 
     @Test
@@ -188,4 +229,5 @@ public class KubernetesClusterManagerRestControllerTest {
         cluster.setExternalNetworks(Arrays.asList(externalNetwork1, externalNetwork2));
         return cluster;
     }
+
 }
