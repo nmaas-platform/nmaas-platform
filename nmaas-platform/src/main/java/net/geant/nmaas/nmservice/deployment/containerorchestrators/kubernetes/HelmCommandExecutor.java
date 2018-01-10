@@ -91,24 +91,9 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.UNKNOWN;
     }
 
-    @Value("${kubernetes.helm.host}")
-    public void setHostAddress(String hostAddress) {
-        this.hostAddress = hostAddress;
-    }
-
-    @Value("${kubernetes.helm.ssh.username}")
-    public void setHostSshUsername(String hostSshUsername) {
-        this.hostSshUsername = hostSshUsername;
-    }
-
     @Value("${kubernetes.helm.charts.use.local.archives}")
     public void setUseLocalArchives(boolean useLocalArchives) {
         this.useLocalArchives = useLocalArchives;
-    }
-
-    @Value("${kubernetes.helm.charts.directory}")
-    public void setHostChartsDirectory(String hostChartsDirectory) {
-        this.hostChartsDirectory = hostChartsDirectory;
     }
 
     @Value("${kubernetes.namespace}")

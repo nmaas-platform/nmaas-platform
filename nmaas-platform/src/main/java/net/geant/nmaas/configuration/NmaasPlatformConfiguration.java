@@ -9,7 +9,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 @EnableAspectJAutoProxy
 @PropertySource("classpath:application.properties")
-@PropertySource("classpath:kubernetes.properties")
 public class NmaasPlatformConfiguration {
 
     @Bean
