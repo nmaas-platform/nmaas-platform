@@ -1,9 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +17,10 @@ import java.util.Map;
 @Component
 public class HelmCommandExecutor {
 
-    private String hostAddress;
-    private String hostSshUsername;
+    @Autowired
+    private KubernetesClusterManager cluster;
 
     private boolean useLocalArchives;
-    private String hostChartsDirectory;
     private String defaultKubernetesNamespace;
 
     void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
@@ -42,7 +43,7 @@ public class HelmCommandExecutor {
                     arguments,
                     completeChartArchivePath
             );
-            SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommand(command);
+            singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
@@ -54,6 +55,7 @@ public class HelmCommandExecutor {
     }
 
     private String baseChartArchivePath() {
+        String hostChartsDirectory = cluster.getHelmHostChartsDirectory();
         if (!hostChartsDirectory.endsWith("/"))
             return hostChartsDirectory.concat("/");
         return hostChartsDirectory;
@@ -62,7 +64,7 @@ public class HelmCommandExecutor {
     void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
         try {
             HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value());
-            SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommand(command);
+            singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm delete command -> " + e.getMessage());
@@ -76,7 +78,7 @@ public class HelmCommandExecutor {
     HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(releaseName);
-            String output = SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommandAndReturnOutput(command);
+            String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
@@ -91,6 +93,10 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.UNKNOWN;
     }
 
+    private SingleCommandExecutor singleCommandExecutor() {
+        return SingleCommandExecutor.getExecutor(cluster.getHelmHostAddress(), cluster.getHelmHostSshUsername());
+    }
+
     @Value("${kubernetes.helm.charts.use.local.archives}")
     public void setUseLocalArchives(boolean useLocalArchives) {
         this.useLocalArchives = useLocalArchives;
@@ -100,4 +106,5 @@ public class HelmCommandExecutor {
     public void setDefaultKubernetesNamespace(String defaultKubernetesNamespace) {
         this.defaultKubernetesNamespace = defaultKubernetesNamespace;
     }
+
 }

@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api;
 
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.KubernetesTemplateRepository;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.BaseControllerTest;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -46,6 +48,8 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
     private ApplicationRepository applicationRepository;
     @Autowired
     private KubernetesTemplateRepository templateRepository;
+    @MockBean
+    private KubernetesApiConnector kubernetesApiConnector;
 
     private MockMvc mvc;
     private Long appId;

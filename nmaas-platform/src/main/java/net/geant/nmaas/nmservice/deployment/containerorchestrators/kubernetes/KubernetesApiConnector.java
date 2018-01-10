@@ -7,9 +7,11 @@ import io.kubernetes.client.apis.CoreV1Api;
 import io.kubernetes.client.apis.StorageV1beta1Api;
 import io.kubernetes.client.models.V1Node;
 import io.kubernetes.client.util.Config;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -28,8 +30,8 @@ public class KubernetesApiConnector {
 
     private static final int MIN_NUMBER_OF_WORKERS_IN_CLUSTER = 3;
 
-    @Value("${kubernetes.api.url}")
-    private String kubernetesApiUrl;
+    @Autowired
+    private KubernetesClusterManager kubernetesClusterManager;
 
     @Value("${kubernetes.persistence.class}")
     private String kubernetesPersistenceClass;
@@ -39,6 +41,7 @@ public class KubernetesApiConnector {
      */
     @PostConstruct
     public void initApiClient() {
+        String kubernetesApiUrl = kubernetesClusterManager.getKubernetesApiUrl();
         ApiClient client = Config.fromUrl(kubernetesApiUrl, false);
         Configuration.setDefaultApiClient(client);
     }
