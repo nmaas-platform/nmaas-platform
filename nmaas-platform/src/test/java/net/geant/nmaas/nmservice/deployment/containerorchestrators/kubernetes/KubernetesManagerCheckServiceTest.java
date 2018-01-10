@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
@@ -18,10 +19,11 @@ public class KubernetesManagerCheckServiceTest {
     private KubernetesNmServiceRepositoryManager repositoryManager = mock(KubernetesNmServiceRepositoryManager.class);
     private HelmCommandExecutor helmCommandExecutor = mock(HelmCommandExecutor.class);
     private KubernetesApiConnector kubernetesApiConnector = mock(KubernetesApiConnector.class);
+    private KubernetesClusterManager kubernetesClusterManager = mock(KubernetesClusterManager.class);
 
     @Before
     public void setup() {
-        manager = new KubernetesManager(repositoryManager, helmCommandExecutor, kubernetesApiConnector);
+        manager = new KubernetesManager(repositoryManager, helmCommandExecutor, kubernetesApiConnector, kubernetesClusterManager);
     }
 
     @Test

@@ -1,5 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -42,15 +45,20 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KubernetesNmServiceRepositoryManager repositoryManager;
     private HelmCommandExecutor helmCommandExecutor;
     private KubernetesApiConnector kubernetesApiConnector;
+    private KubernetesClusterManager kubernetesClusterManager;
 
     private String kubernetesPersistenceStorageClass;
     private String kubernetesIngressControllerChart;
 
     @Autowired
-    public KubernetesManager(KubernetesNmServiceRepositoryManager repositoryManager, HelmCommandExecutor helmCommandExecutor, KubernetesApiConnector kubernetesApiConnector) {
+    public KubernetesManager(KubernetesNmServiceRepositoryManager repositoryManager,
+                             HelmCommandExecutor helmCommandExecutor,
+                             KubernetesApiConnector kubernetesApiConnector,
+                             KubernetesClusterManager kubernetesClusterManager) {
         this.repositoryManager = repositoryManager;
         this.helmCommandExecutor = helmCommandExecutor;
         this.kubernetesApiConnector = kubernetesApiConnector;
+        this.kubernetesClusterManager = kubernetesClusterManager;
     }
 
     @Override
@@ -85,17 +93,19 @@ public class KubernetesManager implements ContainerOrchestrator {
                 String externalIpAddress = obtainExternalIpAddressForClient(clientId);
                 installIngressControllerHelmChart(ingressControllerName, ingressClassName(clientId), externalIpAddress);
             }
-        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+        } catch (ExternalNetworkNotFoundException ennfe) {
+            throw new ContainerOrchestratorInternalErrorException(ennfe.getMessage());
+        } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
         } catch (CommandExecutionException commandExecutionException) {
             throw new CouldNotPrepareEnvironmentException("Helm command execution failed -> " + commandExecutionException.getMessage());
         }
     }
 
-    private String obtainExternalIpAddressForClient(Identifier clientId) {
-        // TODO
-        return null;
+    private String obtainExternalIpAddressForClient(Identifier clientId) throws ExternalNetworkNotFoundException {
+        ExternalNetworkView externalNetwork = kubernetesClusterManager.reserveExternalNetwork(clientId);
+        return externalNetwork.getExternalIp().getHostAddress();
     }
 
     private String ingressControllerName(String clientId) {

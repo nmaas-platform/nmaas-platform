@@ -58,13 +58,13 @@ public class KubernetesCluster {
      * Detailed information on how the cluster is connected to the network. This information is required to feed VPN
      * configuration process done with Ansible.
      */
-    @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesClusterAttachPoint attachPoint;
 
     /**
      * All public networks made available for the cluster. Each customer is assigned with a dedicated network.
      */
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExternalNetworkSpec> externalNetworks = new ArrayList<>();
 
     public Long getId() {
