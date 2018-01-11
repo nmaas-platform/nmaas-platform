@@ -6,6 +6,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
@@ -36,11 +37,13 @@ public class KubernetesManager implements ContainerOrchestrator {
     static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
     static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
-    static final String HELM_INSTALL_OPTION_INGRESS_CLASS = "controller.ingressClass";
-    static final String HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS = "controller.service.externalIPs";
-    static final String NMAAS_INGRESS_CONTROLLER_NAME_PREFIX = "nmaas-icrtl-client-";
-    static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
-    static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-client-";
+    private static final String HELM_INSTALL_OPTION_INGRESS_CLASS = "controller.ingressClass";
+    private static final String HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS = "controller.service.externalIPs";
+    private static final String NMAAS_INGRESS_CONTROLLER_NAME_PREFIX = "nmaas-icrtl-client-";
+    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
+    private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-client-";
+    private static final String NMAAS_DOMAIN_SUFFIX = ".nmaas.geant.net";
+    private static final int DEFAULT_SERVICE_PORT = 80;
 
     private KubernetesNmServiceRepositoryManager repositoryManager;
     private HelmCommandExecutor helmCommandExecutor;
@@ -139,12 +142,14 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
             installHelmChart(deploymentId, serviceInfo);
-            updateIngressObject();
-        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
+            updateIngressObject(deploymentId, serviceInfo.getClientId());
+        } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
-        } catch (CommandExecutionException commandExecutionException) {
-            throw new CouldNotDeployNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
+        } catch (CommandExecutionException cee) {
+            throw new CouldNotDeployNmServiceException("Helm command execution failed -> " + cee.getMessage());
+        } catch (InternalErrorException iee) {
+            throw new CouldNotDeployNmServiceException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }
     }
 
@@ -162,8 +167,20 @@ public class KubernetesManager implements ContainerOrchestrator {
         );
     }
 
-    // TODO implement
-    private void updateIngressObject() {
+    private void updateIngressObject(Identifier deploymentId, Identifier clientId) throws InternalErrorException {
+        kubernetesApiConnector.createOrUpdateIngressObject(
+                ingressResourceName(clientId.value()),
+                externalUrl(deploymentId.value(), clientId.value()),
+                deploymentId.value(),
+                DEFAULT_SERVICE_PORT);
+    }
+
+    private String ingressResourceName(String clientId) {
+        return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + clientId;
+    }
+
+    private String externalUrl(String deploymentId, String clientId) {
+        return deploymentId + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
 
     @Override

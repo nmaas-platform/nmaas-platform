@@ -4,10 +4,12 @@ import io.kubernetes.client.ApiClient;
 import io.kubernetes.client.ApiException;
 import io.kubernetes.client.Configuration;
 import io.kubernetes.client.apis.CoreV1Api;
+import io.kubernetes.client.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.apis.StorageV1beta1Api;
-import io.kubernetes.client.models.V1Node;
+import io.kubernetes.client.models.*;
 import io.kubernetes.client.util.Config;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -29,21 +30,17 @@ import java.util.List;
 public class KubernetesApiConnector {
 
     private static final int MIN_NUMBER_OF_WORKERS_IN_CLUSTER = 3;
+    private static final String DEFAULT_SERVICE_PATH = "/";
+    private static boolean initialized = false;
 
-    @Autowired
     private KubernetesClusterManager kubernetesClusterManager;
 
-    @Value("${kubernetes.persistence.class}")
     private String kubernetesPersistenceClass;
+    private String kubernetesDefaultNamespace;
 
-    /**
-     * Initializes Kubernetes REST API client based on values read from properties.
-     */
-    @PostConstruct
-    public void initApiClient() {
-        String kubernetesApiUrl = kubernetesClusterManager.getKubernetesApiUrl();
-        ApiClient client = Config.fromUrl(kubernetesApiUrl, false);
-        Configuration.setDefaultApiClient(client);
+    @Autowired
+    public KubernetesApiConnector(KubernetesClusterManager kubernetesClusterManager) {
+        this.kubernetesClusterManager = kubernetesClusterManager;
     }
 
     /**
@@ -54,6 +51,7 @@ public class KubernetesApiConnector {
      */
     @Loggable(LogLevel.INFO)
     public void checkClusterStatusAndPrerequisites() throws KubernetesClusterCheckException {
+        initApiClient();
         try {
             atLeastGivenNumberOfWorkers(MIN_NUMBER_OF_WORKERS_IN_CLUSTER);
             isStorageClassDeployed();
@@ -77,6 +75,54 @@ public class KubernetesApiConnector {
                 .filter(sc -> sc.getMetadata().getName().equals(kubernetesPersistenceClass))
                 .findAny()
                 .orElseThrow(() -> new KubernetesClusterCheckException("Storage class configured in properties is missing in the cluster"));
+    }
+
+    @Loggable(LogLevel.INFO)
+    public void createOrUpdateIngressObject(String ingressObjectName, String externalUrl, String serviceName, int servicePort)
+            throws InternalErrorException {
+            initApiClient();
+        try {
+            ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
+            V1beta1Ingress ingress = api.listNamespacedIngress(kubernetesDefaultNamespace, null, null, null, null, 3, false)
+                    .getItems().stream()
+                    .filter(io -> io.getMetadata().getName().equals(ingressObjectName))
+                    .findAny()
+                    .orElseGet(() -> new V1beta1Ingress());
+            V1beta1IngressBackend backend = new V1beta1IngressBackend();
+            backend.serviceName(serviceName).servicePort(String.valueOf(servicePort));
+            V1beta1HTTPIngressPath path = new V1beta1HTTPIngressPath();
+            path.backend(backend).path(DEFAULT_SERVICE_PATH);
+            V1beta1HTTPIngressRuleValue http = new V1beta1HTTPIngressRuleValue();
+            http.addPathsItem(path);
+            V1beta1IngressRule rule = new V1beta1IngressRule();
+            rule.host(externalUrl).http(http);
+            ingress.getSpec().addRulesItem(rule);
+            api.replaceNamespacedIngress(ingressObjectName, kubernetesDefaultNamespace, ingress, null);
+        } catch (ApiException e) {
+            throw new InternalErrorException(e.getMessage());
+        }
+    }
+
+    /**
+     * Initializes Kubernetes REST API client based on values read from properties.
+     */
+    public void initApiClient() {
+        if (initialized == false) {
+            String kubernetesApiUrl = kubernetesClusterManager.getKubernetesApiUrl();
+            ApiClient client = Config.fromUrl(kubernetesApiUrl, false);
+            Configuration.setDefaultApiClient(client);
+            initialized = true;
+        }
+    }
+
+    @Value("${kubernetes.persistence.class}")
+    public void setKubernetesPersistenceClass(String kubernetesPersistenceClass) {
+        this.kubernetesPersistenceClass = kubernetesPersistenceClass;
+    }
+
+    @Value("${kubernetes.namespace}")
+    public void setKubernetesDefaultNamespace(String kubernetesDefaultNamespace) {
+        this.kubernetesDefaultNamespace = kubernetesDefaultNamespace;
     }
 
 }
