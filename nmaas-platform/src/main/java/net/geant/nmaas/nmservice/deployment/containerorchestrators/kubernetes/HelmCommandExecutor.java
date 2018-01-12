@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,6 +93,17 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.DEPLOYED;
         else
             return HelmPackageStatus.UNKNOWN;
+    }
+
+    List<String> executeHelmListCommand() throws CommandExecutionException {
+        try {
+            HelmListCommand command = HelmListCommand.command();
+            String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
+            return Arrays.asList(output.split("\n"));
+        } catch (SshConnectionException
+                | CommandExecutionException e) {
+            throw new CommandExecutionException("Failed to execute helm list command -> " + e.getMessage());
+        }
     }
 
     private SingleCommandExecutor singleCommandExecutor() {

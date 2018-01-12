@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,8 +117,8 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) throws CommandExecutionException {
-        HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(ingressControllerName);
-        return !status.equals(HelmPackageStatus.DEPLOYED);
+        List<String> currentReleases = helmCommandExecutor.executeHelmListCommand();
+        return !currentReleases.contains(ingressControllerName);
     }
 
     private String ingressClassName(Identifier clientId) {
@@ -202,6 +203,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+            // TODO update Ingress
         } catch (CommandExecutionException commandExecutionException) {
             throw new CouldNotRemoveNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
         }
