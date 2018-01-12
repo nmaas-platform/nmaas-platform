@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  */
 public class HelmListCommand extends HelmCommand {
 
-    private static final String LIST = "status";
+    private static final String LIST = "list";
     private static final String LIST_OPTION = "--short";
 
     /**
