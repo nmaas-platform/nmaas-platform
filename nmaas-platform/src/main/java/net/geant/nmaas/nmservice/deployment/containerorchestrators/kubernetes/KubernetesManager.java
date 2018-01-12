@@ -128,7 +128,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private void installIngressControllerHelmChart(String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_INGRESS_CLASS, ingressClass);
-        arguments.put(HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS, externalIpAddress);
+        arguments.put(HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS, "{" + externalIpAddress + "}");
         helmCommandExecutor.executeHelmInstallCommand(
                 releaseName,
                 kubernetesIngressControllerChart,
