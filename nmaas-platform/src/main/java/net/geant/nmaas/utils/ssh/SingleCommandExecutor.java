@@ -67,12 +67,12 @@ public class SingleCommandExecutor {
     }
 
     private void connect() throws SshConnectionException {
-        log.debug("Connecting to " + hostname);
+        log.info("Connecting to " + hostname);
         connector = new SshConnector(hostname, port, credentials);
 	}
 
     private String execute(Command command) throws SshConnectionException, CommandExecutionException {
-        log.debug("Executing command: " + command.asString());
+        log.info("Executing command: " + command.asString());
         return connector.executeSingleCommand(command.asString());
     }
 
