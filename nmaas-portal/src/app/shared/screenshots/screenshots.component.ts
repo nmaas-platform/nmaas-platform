@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewEncapsulation, ViewChild } from '@angular/core';
 
-import { ModalComponent } from '../index';
+import { ModalComponent } from '../modal/index';
 
 import { AppsService, AppImagesService } from '../../service/index';
 import { FileInfo } from '../../model/fileinfo';
@@ -18,12 +18,12 @@ export class ScreenshotsComponent implements OnInit {
 
     @ViewChild(ModalComponent)
     public readonly modal: ModalComponent;
-    
+
     @Input()
     private pathUrl: string;
 
     imagesFileInfo: FileInfo[];
-    
+
     private selectedImg: string;
 
     constructor(private appsService: AppsService) { }
@@ -36,5 +36,5 @@ export class ScreenshotsComponent implements OnInit {
         this.selectedImg = url;
         this.modal.show();
     }
-    
+
 }

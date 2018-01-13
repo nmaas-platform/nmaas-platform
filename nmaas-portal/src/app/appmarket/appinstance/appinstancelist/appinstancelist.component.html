@@ -13,7 +13,7 @@
 						   </thead>
 						   
 						   <tbody>
-						      <template ngFor let-appInstance [ngForOf]="appInstances">
+						      <ng-template ngFor let-appInstance [ngForOf]="appInstances">
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
@@ -27,7 +27,7 @@
 									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">Go to app</a>							
 								</td>
 							  </tr>
-							  </template>
+							  </ng-template>
 						
 						   </tbody>
 						</table>

@@ -51,7 +51,7 @@
 							</thead>
 						   
 						   <tbody>
-								<template ngFor let-app [ngForOf]="filteredApps">		
+								<ng-template ngFor let-app [ngForOf]="filteredApps">		
 									<tr>
 										<td>{{app?.name}}</td>
 										<td>{{app?.briefDescription}}</td>
@@ -65,7 +65,7 @@
 											</a>							
 										</td>
 									</tr>
-							  </template>
+							  </ng-template>
 						   </tbody>
 						</table>
 						
