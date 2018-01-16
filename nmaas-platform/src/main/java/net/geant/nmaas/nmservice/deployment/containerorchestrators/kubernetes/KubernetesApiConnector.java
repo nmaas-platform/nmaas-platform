@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Intermediates in the communication between {@link KubernetesManager} and the Kubernetes cluster using its REST API.
@@ -83,24 +84,37 @@ public class KubernetesApiConnector {
             initApiClient();
         try {
             ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-            V1beta1Ingress ingress = api.listNamespacedIngress(kubernetesDefaultNamespace, null, null, null, null, 3, false)
+            Optional<V1beta1Ingress> existingIngress = api.listNamespacedIngress(kubernetesDefaultNamespace, null, null, null, null, 3, false)
                     .getItems().stream()
                     .filter(io -> io.getMetadata().getName().equals(ingressObjectName))
-                    .findAny()
-                    .orElseGet(() -> new V1beta1Ingress());
-            V1beta1IngressBackend backend = new V1beta1IngressBackend();
-            backend.serviceName(serviceName).servicePort(String.valueOf(servicePort));
-            V1beta1HTTPIngressPath path = new V1beta1HTTPIngressPath();
-            path.backend(backend).path(DEFAULT_SERVICE_PATH);
-            V1beta1HTTPIngressRuleValue http = new V1beta1HTTPIngressRuleValue();
-            http.addPathsItem(path);
-            V1beta1IngressRule rule = new V1beta1IngressRule();
-            rule.host(externalUrl).http(http);
-            ingress.getSpec().addRulesItem(rule);
-            api.replaceNamespacedIngress(ingressObjectName, kubernetesDefaultNamespace, ingress, null);
+                    .findAny();
+            V1beta1IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
+            V1beta1Ingress ingress;
+            if (existingIngress.isPresent()) {
+                ingress = existingIngress.get();
+                ingress.getSpec().addRulesItem(rule);
+                api.replaceNamespacedIngress(ingressObjectName, kubernetesDefaultNamespace, ingress, null);
+            } else {
+                ingress = new V1beta1Ingress();
+                ingress.setMetadata(new V1ObjectMeta().name(ingressObjectName));
+                ingress.setSpec(new V1beta1IngressSpec().addRulesItem(rule));
+                api.createNamespacedIngress(kubernetesDefaultNamespace, ingress, null);
+            }
         } catch (ApiException e) {
             throw new InternalErrorException(e.getMessage());
         }
+    }
+
+    private V1beta1IngressRule prepareNewRule(String externalUrl, String serviceName, int servicePort) {
+        V1beta1IngressBackend backend = new V1beta1IngressBackend();
+        backend.serviceName(serviceName).servicePort(String.valueOf(servicePort));
+        V1beta1HTTPIngressPath path = new V1beta1HTTPIngressPath();
+        path.backend(backend).path(DEFAULT_SERVICE_PATH);
+        V1beta1HTTPIngressRuleValue http = new V1beta1HTTPIngressRuleValue();
+        http.addPathsItem(path);
+        V1beta1IngressRule rule = new V1beta1IngressRule();
+        rule.host(externalUrl).http(http);
+        return rule;
     }
 
     /**

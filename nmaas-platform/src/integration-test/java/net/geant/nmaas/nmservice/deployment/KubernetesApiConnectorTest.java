@@ -12,6 +12,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.Kubernetes
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import org.junit.After;
 import org.junit.Before;
@@ -68,6 +69,16 @@ public class KubernetesApiConnectorTest {
     @Test
     public void shouldCheckCluster() throws KubernetesClusterCheckException {
         connector.checkClusterStatusAndPrerequisites();
+    }
+
+    @Ignore
+    @Test
+    public void createOrUpdateIngressObject() throws InternalErrorException {
+        connector.createOrUpdateIngressObject(
+                "ingress-test-name",
+                "service.nmaas.geant.org",
+                "service-Nname",
+                80);
     }
 
     @Ignore
