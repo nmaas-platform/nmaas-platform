@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewEncapsulation, ViewChild } from '@angular/core';
 
-import { ModalComponent } from '../index';
+import { ModalComponent } from '../modal/index';
 
 import { AppsService, AppImagesService } from '../../service/index';
 import { FileInfo } from '../../model/fileinfo';

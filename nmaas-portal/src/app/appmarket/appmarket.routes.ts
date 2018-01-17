@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { AppMarketComponent } from './index';
+import { AppMarketComponent } from './appmarket.component';
 import { AppListComponent } from './applist/index';
 import { AppDetailsComponent } from './appdetails/index';
 
