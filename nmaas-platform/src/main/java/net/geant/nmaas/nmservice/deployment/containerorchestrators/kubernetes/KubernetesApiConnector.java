@@ -1,25 +1,16 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
-import io.kubernetes.client.Configuration;
-import io.kubernetes.client.apis.CoreV1Api;
-import io.kubernetes.client.apis.ExtensionsV1beta1Api;
-import io.kubernetes.client.apis.StorageV1beta1Api;
-import io.kubernetes.client.models.*;
-import io.kubernetes.client.util.Config;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
+import io.fabric8.kubernetes.api.model.Node;
+import io.fabric8.kubernetes.client.*;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Intermediates in the communication between {@link KubernetesManager} and the Kubernetes cluster using its REST API.
@@ -32,17 +23,24 @@ public class KubernetesApiConnector {
 
     private static final int MIN_NUMBER_OF_WORKERS_IN_CLUSTER = 3;
     private static final String DEFAULT_SERVICE_PATH = "/";
-    private static boolean initialized = false;
 
     private KubernetesClusterManager kubernetesClusterManager;
 
     private String kubernetesPersistenceClass;
     private String kubernetesDefaultNamespace;
+    private KubernetesClient client;
 
     @Autowired
     public KubernetesApiConnector(KubernetesClusterManager kubernetesClusterManager) {
         this.kubernetesClusterManager = kubernetesClusterManager;
     }
+
+    /**
+     * Initializes Kubernetes REST API client based on values read from properties.
+     */
+    public void initApiClient() {
+        Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
+        client = new DefaultKubernetesClient(config);
 
     /**
      * Checks if defined requirements are met by the Kubernetes cluster.
@@ -121,11 +119,10 @@ public class KubernetesApiConnector {
      * Initializes Kubernetes REST API client based on values read from properties.
      */
     public void initApiClient() {
-        if (initialized == false) {
+        if (client == null) {
             String kubernetesApiUrl = kubernetesClusterManager.getKubernetesApiUrl();
-            ApiClient client = Config.fromUrl(kubernetesApiUrl, false);
-            Configuration.setDefaultApiClient(client);
-            initialized = true;
+            Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
+            client = new DefaultKubernetesClient(config);
         }
     }
 
