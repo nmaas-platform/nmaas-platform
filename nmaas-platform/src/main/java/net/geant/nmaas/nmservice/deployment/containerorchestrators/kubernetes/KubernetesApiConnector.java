@@ -2,14 +2,16 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.client.*;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -36,13 +38,6 @@ public class KubernetesApiConnector {
     }
 
     /**
-     * Initializes Kubernetes REST API client based on values read from properties.
-     */
-    public void initApiClient() {
-        Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
-        client = new DefaultKubernetesClient(config);
-
-    /**
      * Checks if defined requirements are met by the Kubernetes cluster.
      * List of requirements can be easily extended.
      *
@@ -54,26 +49,22 @@ public class KubernetesApiConnector {
         try {
             atLeastGivenNumberOfWorkers(MIN_NUMBER_OF_WORKERS_IN_CLUSTER);
             isStorageClassDeployed();
-        } catch (ApiException e) {
-            throw new KubernetesClusterCheckException(e.getMessage());
+        } catch (KubernetesClientException e) {
+            throw new KubernetesClusterCheckException("KubernetesClientException " + e.getMessage());
         }
     }
 
-    private void atLeastGivenNumberOfWorkers(int expectedNumber) throws ApiException, KubernetesClusterCheckException {
+    private void atLeastGivenNumberOfWorkers(int expectedNumber) throws KubernetesClusterCheckException, KubernetesClientException {
         if (getClusterNodes().size() < expectedNumber)
             throw new KubernetesClusterCheckException("Not enough worker nodes in the cluster (" + getClusterNodes().size() + ")");
     }
 
-    private List<V1Node> getClusterNodes() throws ApiException {
-        return new CoreV1Api().listNode(null, null, null, null, 3, false).getItems();
+    private List<Node> getClusterNodes() throws KubernetesClientException {
+        return client.nodes().list().getItems();
     }
 
-    private void isStorageClassDeployed() throws ApiException, KubernetesClusterCheckException {
-        new StorageV1beta1Api().listStorageClass(null, null, null, null, 3, false)
-                .getItems().stream()
-                .filter(sc -> sc.getMetadata().getName().equals(kubernetesPersistenceClass))
-                .findAny()
-                .orElseThrow(() -> new KubernetesClusterCheckException("Storage class configured in properties is missing in the cluster"));
+    private void isStorageClassDeployed() throws KubernetesClusterCheckException {
+        // TODO waiting for new library release with storageClass support
     }
 
     @Loggable(LogLevel.INFO)
@@ -81,38 +72,10 @@ public class KubernetesApiConnector {
             throws InternalErrorException {
             initApiClient();
         try {
-            ExtensionsV1beta1Api api = new ExtensionsV1beta1Api();
-            Optional<V1beta1Ingress> existingIngress = api.listNamespacedIngress(kubernetesDefaultNamespace, null, null, null, null, 3, false)
-                    .getItems().stream()
-                    .filter(io -> io.getMetadata().getName().equals(ingressObjectName))
-                    .findAny();
-            V1beta1IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
-            V1beta1Ingress ingress;
-            if (existingIngress.isPresent()) {
-                ingress = existingIngress.get();
-                ingress.getSpec().addRulesItem(rule);
-                api.replaceNamespacedIngress(ingressObjectName, kubernetesDefaultNamespace, ingress, null);
-            } else {
-                ingress = new V1beta1Ingress();
-                ingress.setMetadata(new V1ObjectMeta().name(ingressObjectName));
-                ingress.setSpec(new V1beta1IngressSpec().addRulesItem(rule));
-                api.createNamespacedIngress(kubernetesDefaultNamespace, ingress, null);
-            }
-        } catch (ApiException e) {
+
+        } catch (KubernetesClientException e) {
             throw new InternalErrorException(e.getMessage());
         }
-    }
-
-    private V1beta1IngressRule prepareNewRule(String externalUrl, String serviceName, int servicePort) {
-        V1beta1IngressBackend backend = new V1beta1IngressBackend();
-        backend.serviceName(serviceName).servicePort(String.valueOf(servicePort));
-        V1beta1HTTPIngressPath path = new V1beta1HTTPIngressPath();
-        path.backend(backend).path(DEFAULT_SERVICE_PATH);
-        V1beta1HTTPIngressRuleValue http = new V1beta1HTTPIngressRuleValue();
-        http.addPathsItem(path);
-        V1beta1IngressRule rule = new V1beta1IngressRule();
-        rule.host(externalUrl).http(http);
-        return rule;
     }
 
     /**

@@ -1,7 +1,15 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 /**
  * Set of integration tests verifying correct communication with real Kubernetes REST API.
@@ -56,7 +68,7 @@ public class KubernetesApiConnectorTest {
         connector.createOrUpdateIngressObject(
                 "ingress-test-name",
                 "service.nmaas.geant.org",
-                "service-Nname",
+                "service-name",
                 80);
     }
 
