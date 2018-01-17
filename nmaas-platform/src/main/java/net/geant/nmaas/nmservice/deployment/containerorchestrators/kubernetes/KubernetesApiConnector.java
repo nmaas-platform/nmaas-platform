@@ -1,12 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import io.kubernetes.client.ApiClient;
-import io.kubernetes.client.ApiException;
-import io.kubernetes.client.Configuration;
-import io.kubernetes.client.apis.CoreV1Api;
-import io.kubernetes.client.apis.StorageV1beta1Api;
-import io.kubernetes.client.models.V1Node;
-import io.kubernetes.client.util.Config;
+import io.fabric8.kubernetes.api.model.Node;
+import io.fabric8.kubernetes.client.*;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -28,19 +23,17 @@ public class KubernetesApiConnector {
 
     private static final int MIN_NUMBER_OF_WORKERS_IN_CLUSTER = 3;
 
-    @Value("${kubernetes.api.url}")
     private String kubernetesApiUrl;
-
-    @Value("${kubernetes.persistence.class}")
     private String kubernetesPersistenceClass;
+    private KubernetesClient client;
 
     /**
      * Initializes Kubernetes REST API client based on values read from properties.
      */
     @PostConstruct
     public void initApiClient() {
-        ApiClient client = Config.fromUrl(kubernetesApiUrl, false);
-        Configuration.setDefaultApiClient(client);
+        Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
+        client = new DefaultKubernetesClient(config);
     }
 
     /**
@@ -54,26 +47,31 @@ public class KubernetesApiConnector {
         try {
             atLeastGivenNumberOfWorkers(MIN_NUMBER_OF_WORKERS_IN_CLUSTER);
             isStorageClassDeployed();
-        } catch (ApiException e) {
-            throw new KubernetesClusterCheckException(e.getMessage());
+        } catch (KubernetesClientException e) {
+            throw new KubernetesClusterCheckException("KubernetesClientException " + e.getMessage());
         }
     }
 
-    private void atLeastGivenNumberOfWorkers(int expectedNumber) throws ApiException, KubernetesClusterCheckException {
+    private void atLeastGivenNumberOfWorkers(int expectedNumber) throws KubernetesClusterCheckException, KubernetesClientException {
         if (getClusterNodes().size() < expectedNumber)
             throw new KubernetesClusterCheckException("Not enough worker nodes in the cluster (" + getClusterNodes().size() + ")");
     }
 
-    private List<V1Node> getClusterNodes() throws ApiException {
-        return new CoreV1Api().listNode(null, null, null, null, 3, false).getItems();
+    private List<Node> getClusterNodes() throws KubernetesClientException {
+        return client.nodes().list().getItems();
     }
 
-    private void isStorageClassDeployed() throws ApiException, KubernetesClusterCheckException {
-        new StorageV1beta1Api().listStorageClass(null, null, null, null, 3, false)
-                .getItems().stream()
-                .filter(sc -> sc.getMetadata().getName().equals(kubernetesPersistenceClass))
-                .findAny()
-                .orElseThrow(() -> new KubernetesClusterCheckException("Storage class configured in properties is missing in the cluster"));
+    private void isStorageClassDeployed() throws KubernetesClusterCheckException {
+        // TODO waiting for new library release with storageClass support
     }
 
+    @Value("${kubernetes.api.url}")
+    public void setKubernetesApiUrl(String kubernetesApiUrl) {
+        this.kubernetesApiUrl = kubernetesApiUrl;
+    }
+
+    @Value("${kubernetes.persistence.class}")
+    public void setKubernetesPersistenceClass(String kubernetesPersistenceClass) {
+        this.kubernetesPersistenceClass = kubernetesPersistenceClass;
+    }
 }
