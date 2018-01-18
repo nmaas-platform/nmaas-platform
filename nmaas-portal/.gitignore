@@ -25,6 +25,7 @@ npm-debug.log
 testem.log
 /typings
 gradle-app.setting
+package-lock.json
 
 # e2e
 /e2e/*.js
