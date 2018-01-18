@@ -76,23 +76,41 @@ public class KubernetesApiConnector {
             throws InternalErrorException {
             initApiClient();
         try {
-            Ingress existingIngress = client.extensions().ingresses().withName(ingressObjectName).get();
-            Ingress ingress;
-            if(existingIngress == null) {
-                ObjectMeta metadata = new ObjectMeta();
-                metadata.setName(ingressObjectName);
-                IngressBackend backend = new IngressBackend(serviceName, new IntOrString(servicePort));
-                HTTPIngressPath path = new HTTPIngressPath(backend, DEFAULT_SERVICE_PATH);
-                HTTPIngressRuleValue ruleValue = new HTTPIngressRuleValue(Arrays.asList(path));
-                IngressRule rule = new IngressRule(externalUrl, ruleValue);
-                IngressSpec ingressSpec = new IngressSpec(backend, Arrays.asList(rule), null);
-                ingress = new Ingress(null, null, metadata, ingressSpec, null);
+            Ingress ingress = client.extensions().ingresses().list().getItems()
+                    .stream()
+                    .filter(i -> i.getMetadata().getName().equals(ingressObjectName))
+                    .findFirst()
+                    .orElse(null);
+            if(ingress == null) {
+                ingress = prepareNewIngress(ingressObjectName, externalUrl, serviceName, servicePort);
             } else {
-                // TODO
+                ingress.getMetadata().setResourceVersion(null);
+                IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
+                ingress.getSpec().getRules().add(rule);
+                client.extensions().ingresses().delete(ingress);
             }
+            client.extensions().ingresses().create(ingress);
         } catch (KubernetesClientException e) {
             throw new InternalErrorException(e.getMessage());
         }
+    }
+
+    private Ingress prepareNewIngress(String ingressObjectName, String externalUrl, String serviceName, int servicePort) {
+        Ingress ingress;
+        ObjectMeta metadata = new ObjectMeta();
+        metadata.setName(ingressObjectName);
+        metadata.setNamespace(kubernetesDefaultNamespace);
+        IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
+        IngressSpec ingressSpec = new IngressSpec(null, Arrays.asList(rule), null);
+        ingress = new Ingress(null, null, metadata, ingressSpec, null);
+        return ingress;
+    }
+
+    private IngressRule prepareNewRule(String externalUrl, String serviceName, int servicePort) {
+        IngressBackend backend = new IngressBackend(serviceName, new IntOrString(servicePort));
+        HTTPIngressPath path = new HTTPIngressPath(backend, DEFAULT_SERVICE_PATH);
+        HTTPIngressRuleValue ruleValue = new HTTPIngressRuleValue(Arrays.asList(path));
+        return new IngressRule(externalUrl, ruleValue);
     }
 
     /**
