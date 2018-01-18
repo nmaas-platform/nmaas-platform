@@ -72,6 +72,18 @@ public class KubernetesApiConnectorTest {
                 80);
     }
 
+    @Ignore
+    @Test
+    public void deleteIngressRule() throws InternalErrorException {
+        connector.deleteIngressRule("ingress-test-name", "service.nmaas.geant.org");
+    }
+
+    @Ignore
+    @Test
+    public void deleteIngressObject() throws InternalErrorException {
+        connector.deleteIngressObject("ingress-test-name");
+    }
+
     private KubernetesCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
         KubernetesCluster cluster = new KubernetesCluster();
         cluster.setName(clusterName);

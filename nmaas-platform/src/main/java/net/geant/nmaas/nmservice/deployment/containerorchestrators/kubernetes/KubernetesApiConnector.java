@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Intermediates in the communication between {@link KubernetesManager} and the Kubernetes cluster using its REST API.
@@ -71,8 +72,21 @@ public class KubernetesApiConnector {
         // TODO waiting for new library release with storageClass support
     }
 
+    /**
+     * Creates new ingress object if one does not exists or updates the existing one by adding an ingress rule for newly
+     * deployed service.
+     * Note:
+     * The service name to be used in ingress rule definition is most cases is not the same as the helm chart release
+     * name. In such case special lookup algorithm needs to be applied to retrieve the correct service name from the cluster.
+     *
+     * @param ingressObjectName name of the ingress object to be created/updated
+     * @param externalUrl url address to be used to connect to the service from outside of the cluster
+     * @param releaseName name of the helm chart release
+     * @param servicePort port exposed by the service
+     * @throws InternalErrorException if Kubernetes client throws any exception
+     */
     @Loggable(LogLevel.INFO)
-    public void createOrUpdateIngressObject(String ingressObjectName, String externalUrl, String serviceName, int servicePort)
+    public void createOrUpdateIngressObject(String ingressObjectName, String externalUrl, String releaseName, int servicePort)
             throws InternalErrorException {
             initApiClient();
         try {
@@ -82,14 +96,68 @@ public class KubernetesApiConnector {
                     .findFirst()
                     .orElse(null);
             if(ingress == null) {
+                // TODO retrieve appropriate service name from the cluster
+                String serviceName = releaseName;
                 ingress = prepareNewIngress(ingressObjectName, externalUrl, serviceName, servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
-                IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
+                IngressRule rule = prepareNewRule(externalUrl, releaseName, servicePort);
                 ingress.getSpec().getRules().add(rule);
                 client.extensions().ingresses().delete(ingress);
             }
             client.extensions().ingresses().create(ingress);
+        } catch (KubernetesClientException e) {
+            throw new InternalErrorException(e.getMessage());
+        }
+    }
+
+    /**
+     * Removes ingress rule for a given service (identified by externalURL) from an existing ingress object.
+     *
+     * @param ingressObjectName name of the ingress object to be updated
+     * @param externalUrl url address to be used to identify the rule to be removed
+     * @throws InternalErrorException if ingress object with provided name does not exist in the cluster or Kubernetes client throws any exception
+     */
+    @Loggable(LogLevel.INFO)
+    public void deleteIngressRule(String ingressObjectName, String externalUrl) throws InternalErrorException {
+        initApiClient();
+        try {
+            Ingress ingress = client.extensions().ingresses().list().getItems()
+                    .stream()
+                    .filter(i -> i.getMetadata().getName().equals(ingressObjectName))
+                    .findFirst()
+                    .orElseThrow(
+                            () -> new InternalErrorException("Ingress object with name " + ingressObjectName + " does not exist in the cluster"));
+            ingress.getMetadata().setResourceVersion(null);
+            List<IngressRule> filtered = ingress.getSpec().getRules()
+                    .stream()
+                    .filter(r -> !r.getHost().equals(externalUrl))
+                    .collect(Collectors.toList());
+            ingress.getSpec().setRules(filtered);
+            client.extensions().ingresses().delete(ingress);
+            client.extensions().ingresses().create(ingress);
+        } catch (KubernetesClientException e) {
+            throw new InternalErrorException(e.getMessage());
+        }
+    }
+
+    /**
+     * Removes ingress object with given name.
+     *
+     * @param ingressObjectName name of the ingress object to be removed
+     * @throws InternalErrorException if ingress object with provided name does not exist in the cluster or Kubernetes client throws any exception
+     */
+    @Loggable(LogLevel.INFO)
+    public void deleteIngressObject(String ingressObjectName) throws InternalErrorException {
+        initApiClient();
+        try {
+            Ingress ingress = client.extensions().ingresses().list().getItems()
+                    .stream()
+                    .filter(i -> i.getMetadata().getName().equals(ingressObjectName))
+                    .findFirst()
+                    .orElseThrow(
+                            () -> new InternalErrorException("Ingress object with name " + ingressObjectName + " does not exist in the cluster"));
+            client.extensions().ingresses().delete(ingress);
         } catch (KubernetesClientException e) {
             throw new InternalErrorException(e.getMessage());
         }
@@ -116,7 +184,7 @@ public class KubernetesApiConnector {
     /**
      * Initializes Kubernetes REST API client based on values read from properties.
      */
-    public void initApiClient() {
+    private void initApiClient() {
         if (client == null) {
             String kubernetesApiUrl = kubernetesClusterManager.getKubernetesApiUrl();
             Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();

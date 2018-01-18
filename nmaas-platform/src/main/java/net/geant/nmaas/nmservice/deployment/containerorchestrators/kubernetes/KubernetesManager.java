@@ -203,10 +203,21 @@ public class KubernetesManager implements ContainerOrchestrator {
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
-            // TODO update Ingress
+            deleteIngressRule(deploymentId, repositoryManager.loadClientId(deploymentId));
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
         } catch (CommandExecutionException commandExecutionException) {
             throw new CouldNotRemoveNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
+        } catch (InternalErrorException iee) {
+            throw new CouldNotRemoveNmServiceException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }
+    }
+
+    private void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws InternalErrorException {
+        kubernetesApiConnector.deleteIngressRule(
+                ingressResourceName(clientId.value()),
+                externalUrl(deploymentId.value(), clientId.value()));
     }
 
     @Override
