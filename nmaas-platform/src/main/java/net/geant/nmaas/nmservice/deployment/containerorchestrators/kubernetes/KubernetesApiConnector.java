@@ -1,6 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.Node;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.extensions.*;
 import io.fabric8.kubernetes.client.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -72,7 +76,20 @@ public class KubernetesApiConnector {
             throws InternalErrorException {
             initApiClient();
         try {
-
+            Ingress existingIngress = client.extensions().ingresses().withName(ingressObjectName).get();
+            Ingress ingress;
+            if(existingIngress == null) {
+                ObjectMeta metadata = new ObjectMeta();
+                metadata.setName(ingressObjectName);
+                IngressBackend backend = new IngressBackend(serviceName, new IntOrString(servicePort));
+                HTTPIngressPath path = new HTTPIngressPath(backend, DEFAULT_SERVICE_PATH);
+                HTTPIngressRuleValue ruleValue = new HTTPIngressRuleValue(Arrays.asList(path));
+                IngressRule rule = new IngressRule(externalUrl, ruleValue);
+                IngressSpec ingressSpec = new IngressSpec(backend, Arrays.asList(rule), null);
+                ingress = new Ingress(null, null, metadata, ingressSpec, null);
+            } else {
+                // TODO
+            }
         } catch (KubernetesClientException e) {
             throw new InternalErrorException(e.getMessage());
         }
