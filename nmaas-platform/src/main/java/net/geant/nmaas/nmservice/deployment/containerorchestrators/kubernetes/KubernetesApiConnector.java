@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.extensions.*;
 import io.fabric8.kubernetes.client.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
@@ -16,7 +17,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +33,9 @@ public class KubernetesApiConnector {
 
     private static final int MIN_NUMBER_OF_WORKERS_IN_CLUSTER = 3;
     private static final String DEFAULT_SERVICE_PATH = "/";
+    private static final String SERVICE_SELECT_OPTION_RELEASE = "release";
+    private static final String SERVICE_SELECT_OPTION_ACCESS = "access";
+    private static final String SERVICE_SELECT_VALUE_ACCESS_FOR_INGRESS = "external";
 
     private KubernetesClusterManager kubernetesClusterManager;
 
@@ -96,8 +102,7 @@ public class KubernetesApiConnector {
                     .findFirst()
                     .orElse(null);
             if(ingress == null) {
-                // TODO retrieve appropriate service name from the cluster
-                String serviceName = releaseName;
+                String serviceName = retrieveServiceName(releaseName);
                 ingress = prepareNewIngress(ingressObjectName, externalUrl, serviceName, servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
@@ -108,6 +113,19 @@ public class KubernetesApiConnector {
             client.extensions().ingresses().create(ingress);
         } catch (KubernetesClientException e) {
             throw new InternalErrorException(e.getMessage());
+        }
+    }
+
+    private String retrieveServiceName(String releaseName) throws InternalErrorException {
+        Map<String, String> labels = new HashMap<>();
+        labels.put(SERVICE_SELECT_OPTION_RELEASE, releaseName);
+        labels.put(SERVICE_SELECT_OPTION_ACCESS, SERVICE_SELECT_VALUE_ACCESS_FOR_INGRESS);
+        ServiceList matchingServices = client.services().withLabels(labels).list();
+        if (matchingServices.getItems().size() == 1) {
+            return matchingServices.getItems().get(0).getMetadata().getName();
+        } else {
+            throw new InternalErrorException(
+                    "Query for service to be included in Ingress resources returned wrong number of results -> " + matchingServices.getItems().size());
         }
     }
 
