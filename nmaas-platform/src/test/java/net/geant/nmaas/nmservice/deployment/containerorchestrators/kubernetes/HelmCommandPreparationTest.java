@@ -23,7 +23,7 @@ public class HelmCommandPreparationTest {
             "helm install --name " + DEPLOYMENT_ID.value() + " --namespace " + NAMESPACE;
     private static final String CORRECT_HELM_INSTALL_COMMAND =
             CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_ARCHIVE_NAME;
-    private static final String CORRECT_HELM_DELETE_COMMAND = "helm delete " + DEPLOYMENT_ID.value();
+    private static final String CORRECT_HELM_DELETE_COMMAND = "helm delete --purge " + DEPLOYMENT_ID.value();
     private static final String CORRECT_HELM_STATUS_COMMAND = "helm status " + DEPLOYMENT_ID.value();
 
     @Test
