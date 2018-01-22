@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.ProcessingException;
 
@@ -183,6 +184,17 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 			throw new ProcessingException("User is not domain member");
 		
 		return userMember;
+	}
+
+	@Override
+	public Set<Domain> getUserDomains(Long userId) throws MissingElementException {
+		if(userId == null)
+			throw new IllegalArgumentException("user is null");
+		User user = users.findById(userId);
+		if(user == null)
+			throw new MissingElementException("User not found");	
+				
+		return user.getRoles().stream().map(ur -> ur.getDomain()).collect(Collectors.toSet());
 	}
 
 	

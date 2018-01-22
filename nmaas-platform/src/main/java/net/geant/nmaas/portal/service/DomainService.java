@@ -30,5 +30,5 @@ public interface DomainService {
 	User getMember(Long domainId, Long userId) throws MissingElementException;
 	Set<Role> getMemberRoles(Long domainId, Long userId) throws MissingElementException;
 	
-	
+	Set<Domain> getUserDomains(Long userId) throws MissingElementException;
 }

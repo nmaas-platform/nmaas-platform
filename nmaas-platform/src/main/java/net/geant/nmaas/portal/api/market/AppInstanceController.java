@@ -103,7 +103,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	@PreAuthorize("hasPermission(null, 'appInstance', 'CREATE')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
 	@Transactional
 	public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
 			@NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException {

@@ -1,9 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.ProcessingException;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,14 +18,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.portal.api.domain.Domain;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 
 @RestController
 @RequestMapping("/portal/api/domains")
 public class DomainController extends AppBaseController {
 
+	@Autowired
+	UserService userService;
+	
 	@Autowired
 	DomainService domainService;
 	
@@ -34,14 +42,24 @@ public class DomainController extends AppBaseController {
 		return domainService.getDomains().stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
 	}
 	
+	@GetMapping("/my")
+	@Transactional(readOnly = true)
+	public List<Domain> getMyDomains(@NotNull Principal principal) throws ProcessingException, MissingElementException {
+		User user = userService.findByUsername(principal.getName());
+		if(user == null)
+			throw new ProcessingException("User not found.");
+					
+		return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+	}
+	
 	@PostMapping
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public Id createDomain(@RequestBody(required=true) String name) {
-		if(domainService.findDomain(name) != null)
+	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) throws ProcessingException {
+		if(domainService.findDomain(domainRequest.getName()) != null)
 			throw new ProcessingException("Domain already exists.");
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.createDomain(name);
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.createDomain(domainRequest.getName());
 		
 		return new Id(domain.getId());
 	}
