@@ -1,8 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -18,6 +23,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,18 +35,35 @@ import java.util.Map;
 @Profile("kubernetes")
 public class KubernetesManager implements ContainerOrchestrator {
 
-    private static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
-    private static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
-    private static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
+    static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
+    static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
+    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
+    private static final String HELM_INSTALL_OPTION_INGRESS_CLASS = "controller.ingressClass";
+    private static final String HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS = "controller.service.externalIPs";
+    private static final String NMAAS_INGRESS_CONTROLLER_NAME_PREFIX = "nmaas-icrtl-client-";
+    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
+    private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-client-";
+    private static final String NMAAS_DOMAIN_SUFFIX = ".nmaas.geant.net";
+    private static final int DEFAULT_SERVICE_PORT = 80;
 
-    @Autowired
     private KubernetesNmServiceRepositoryManager repositoryManager;
+    private HelmCommandExecutor helmCommandExecutor;
+    private KubernetesApiConnector kubernetesApiConnector;
+    private KubernetesClusterManager kubernetesClusterManager;
+
+    private String kubernetesPersistenceStorageClass;
+    private String kubernetesIngressControllerChart;
 
     @Autowired
-    private HelmCommandExecutor helmCommandExecutor;
-
-    @Value("${kubernetes.persistence.class}")
-    private String kubernetesPersistenceStorageClass;
+    public KubernetesManager(KubernetesNmServiceRepositoryManager repositoryManager,
+                             HelmCommandExecutor helmCommandExecutor,
+                             KubernetesApiConnector kubernetesApiConnector,
+                             KubernetesClusterManager kubernetesClusterManager) {
+        this.repositoryManager = repositoryManager;
+        this.helmCommandExecutor = helmCommandExecutor;
+        this.kubernetesApiConnector = kubernetesApiConnector;
+        this.kubernetesClusterManager = kubernetesClusterManager;
+    }
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -56,14 +79,61 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
-        // nothing to do
+        try {
+            kubernetesApiConnector.checkClusterStatusAndPrerequisites();
+        } catch (KubernetesClusterCheckException e) {
+            throw new ContainerOrchestratorInternalErrorException(e.getMessage());
+        }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(Identifier deploymentId)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
-        // nothing to do
+        try {
+            Identifier clientId = repositoryManager.loadClientId(deploymentId);
+            String ingressControllerName = ingressControllerName(clientId.value());
+            if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
+                String externalIpAddress = obtainExternalIpAddressForClient(clientId);
+                installIngressControllerHelmChart(ingressControllerName, ingressClassName(clientId), externalIpAddress);
+            }
+        } catch (ExternalNetworkNotFoundException ennfe) {
+            throw new ContainerOrchestratorInternalErrorException(ennfe.getMessage());
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
+        } catch (CommandExecutionException commandExecutionException) {
+            throw new CouldNotPrepareEnvironmentException("Helm command execution failed -> " + commandExecutionException.getMessage());
+        }
+    }
+
+    private String obtainExternalIpAddressForClient(Identifier clientId) throws ExternalNetworkNotFoundException {
+        ExternalNetworkView externalNetwork = kubernetesClusterManager.reserveExternalNetwork(clientId);
+        return externalNetwork.getExternalIp().getHostAddress();
+    }
+
+    private String ingressControllerName(String clientId) {
+        return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + clientId;
+    }
+
+    private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) throws CommandExecutionException {
+        List<String> currentReleases = helmCommandExecutor.executeHelmListCommand();
+        return !currentReleases.contains(ingressControllerName);
+    }
+
+    private String ingressClassName(Identifier clientId) {
+        return NMAAS_INGRESS_CLASS_NAME_PREFIX + clientId;
+    }
+
+    private void installIngressControllerHelmChart(String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
+        Map<String, String> arguments = new HashMap<>();
+        arguments.put(HELM_INSTALL_OPTION_INGRESS_CLASS, ingressClass);
+        arguments.put(HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS, "{" + externalIpAddress + "}");
+        helmCommandExecutor.executeHelmInstallCommand(
+                releaseName,
+                kubernetesIngressControllerChart,
+                arguments
+        );
     }
 
     @Override
@@ -71,23 +141,47 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void deployNmService(Identifier deploymentId)
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            KubernetesTemplate template = repositoryManager.loadService(deploymentId).getKubernetesTemplate();
-            // TODO finalized this
-            Map<String, String> arguments = new HashMap<>();
-            arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
-            arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
-            arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "");
-            helmCommandExecutor.executeHelmInstallCommand(
-                    deploymentId,
-                    template.getArchive(),
-                    null
-            );
-        } catch (InvalidDeploymentIdException invalidDeploymentIdException) {
-            throw new CouldNotDeployNmServiceException(
-                    "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
-        } catch (CommandExecutionException commandExecutionException) {
-            throw new CouldNotDeployNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
+            KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+            installHelmChart(deploymentId, serviceInfo);
+            updateIngressObject(deploymentId, serviceInfo.getClientId());
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
+        } catch (CommandExecutionException cee) {
+            throw new CouldNotDeployNmServiceException("Helm command execution failed -> " + cee.getMessage());
+        } catch (InternalErrorException iee) {
+            throw new CouldNotDeployNmServiceException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }
+    }
+
+    private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) throws CommandExecutionException {
+        KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
+        String repoUrl = serviceInfo.getGitLabProject().getCloneUrl();
+        Map<String, String> arguments = new HashMap<>();
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
+        arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
+        helmCommandExecutor.executeHelmInstallCommand(
+                deploymentId,
+                template.getArchive(),
+                arguments
+        );
+    }
+
+    private void updateIngressObject(Identifier deploymentId, Identifier clientId) throws InternalErrorException {
+        kubernetesApiConnector.createOrUpdateIngressObject(
+                ingressResourceName(clientId.value()),
+                externalUrl(deploymentId.value(), clientId.value()),
+                deploymentId.value(),
+                DEFAULT_SERVICE_PORT);
+    }
+
+    private String ingressResourceName(String clientId) {
+        return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + clientId;
+    }
+
+    private String externalUrl(String deploymentId, String clientId) {
+        return deploymentId + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
 
     @Override
@@ -109,9 +203,21 @@ public class KubernetesManager implements ContainerOrchestrator {
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+            deleteIngressRule(deploymentId, repositoryManager.loadClientId(deploymentId));
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
         } catch (CommandExecutionException commandExecutionException) {
             throw new CouldNotRemoveNmServiceException("Helm command execution failed -> " + commandExecutionException.getMessage());
+        } catch (InternalErrorException iee) {
+            throw new CouldNotRemoveNmServiceException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }
+    }
+
+    private void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws InternalErrorException {
+        kubernetesApiConnector.deleteIngressRule(
+                ingressResourceName(clientId.value()),
+                externalUrl(deploymentId.value(), clientId.value()));
     }
 
     @Override
@@ -124,4 +230,13 @@ public class KubernetesManager implements ContainerOrchestrator {
         return null;
     }
 
+    @Value("${kubernetes.persistence.class}")
+    public void setKubernetesPersistenceStorageClass(String kubernetesPersistenceStorageClass) {
+        this.kubernetesPersistenceStorageClass = kubernetesPersistenceStorageClass;
+    }
+
+    @Value("${kubernetes.ingress.chart}")
+    public void setKubernetesIngressControllerChart(String kubernetesIngressControllerChart) {
+        this.kubernetesIngressControllerChart = kubernetesIngressControllerChart;
+    }
 }

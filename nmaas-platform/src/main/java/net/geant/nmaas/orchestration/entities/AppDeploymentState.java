@@ -58,6 +58,8 @@ public enum AppDeploymentState {
             switch (state) {
                 case ENVIRONMENT_PREPARED:
                     return DEPLOYMENT_ENVIRONMENT_PREPARED;
+                case ENVIRONMENT_PREPARATION_FAILED:
+                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
                 default:
                     throw new InvalidAppStateException(message(this, state));
             }

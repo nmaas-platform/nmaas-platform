@@ -1,12 +1,16 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,26 +19,33 @@ import java.util.Map;
 @Component
 public class HelmCommandExecutor {
 
-    private String hostAddress;
-    private String hostSshUsername;
+    @Autowired
+    private KubernetesClusterManager cluster;
 
     private boolean useLocalArchives;
-    private String hostChartsDirectory;
-    private String kubernetesNamespace;
+    private String defaultKubernetesNamespace;
 
-    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments)
+    void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeHelmInstallCommand(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
+    }
+
+    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeHelmInstallCommand(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
+    }
+
+    private void executeHelmInstallCommand(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
             if (!useLocalArchives)
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
             String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
             HelmInstallCommand command = HelmInstallCommand.command(
-                    kubernetesNamespace,
-                    deploymentId.value(),
+                    namespace,
+                    releaseName,
                     arguments,
                     completeChartArchivePath
             );
-            SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommand(command);
+            singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
@@ -46,6 +57,7 @@ public class HelmCommandExecutor {
     }
 
     private String baseChartArchivePath() {
+        String hostChartsDirectory = cluster.getHelmHostChartsDirectory();
         if (!hostChartsDirectory.endsWith("/"))
             return hostChartsDirectory.concat("/");
         return hostChartsDirectory;
@@ -54,7 +66,7 @@ public class HelmCommandExecutor {
     void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
         try {
             HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value());
-            SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommand(command);
+            singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
             throw new CommandExecutionException("Failed to execute helm delete command -> " + e.getMessage());
@@ -62,30 +74,40 @@ public class HelmCommandExecutor {
     }
 
     HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+        return executeHelmStatusCommand(deploymentId.value());
+    }
+
+    HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
         try {
-            HelmStatusCommand command = HelmStatusCommand.command(deploymentId.value());
-            String output = SingleCommandExecutor.getExecutor(hostAddress, hostSshUsername).executeSingleCommandAndReturnOutput(command);
+            HelmStatusCommand command = HelmStatusCommand.command(releaseName);
+            String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
-            throw new CommandExecutionException("Failed to execute helm install command -> " + e.getMessage());
+            throw new CommandExecutionException("Failed to execute helm status command -> " + e.getMessage());
         }
     }
 
-    private HelmPackageStatus parseStatus(String output) {
+    HelmPackageStatus parseStatus(String output) {
         if(output.contains("STATUS: DEPLOYED"))
             return HelmPackageStatus.DEPLOYED;
-        else return HelmPackageStatus.UNKNOWN;
+        else
+            return HelmPackageStatus.UNKNOWN;
     }
 
-    @Value("${kubernetes.helm.host}")
-    public void setHostAddress(String hostAddress) {
-        this.hostAddress = hostAddress;
+    List<String> executeHelmListCommand() throws CommandExecutionException {
+        try {
+            HelmListCommand command = HelmListCommand.command();
+            String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
+            return Arrays.asList(output.split("\n"));
+        } catch (SshConnectionException
+                | CommandExecutionException e) {
+            throw new CommandExecutionException("Failed to execute helm list command -> " + e.getMessage());
+        }
     }
 
-    @Value("${kubernetes.helm.ssh.username}")
-    public void setHostSshUsername(String hostSshUsername) {
-        this.hostSshUsername = hostSshUsername;
+    private SingleCommandExecutor singleCommandExecutor() {
+        return SingleCommandExecutor.getExecutor(cluster.getHelmHostAddress(), cluster.getHelmHostSshUsername());
     }
 
     @Value("${kubernetes.helm.charts.use.local.archives}")
@@ -93,13 +115,9 @@ public class HelmCommandExecutor {
         this.useLocalArchives = useLocalArchives;
     }
 
-    @Value("${kubernetes.helm.charts.directory}")
-    public void setHostChartsDirectory(String hostChartsDirectory) {
-        this.hostChartsDirectory = hostChartsDirectory;
+    @Value("${kubernetes.namespace}")
+    public void setDefaultKubernetesNamespace(String defaultKubernetesNamespace) {
+        this.defaultKubernetesNamespace = defaultKubernetesNamespace;
     }
 
-    @Value("${kubernetes.namespace}")
-    public void setKubernetesNamespace(String kubernetesNamespace) {
-        this.kubernetesNamespace = kubernetesNamespace;
-    }
 }

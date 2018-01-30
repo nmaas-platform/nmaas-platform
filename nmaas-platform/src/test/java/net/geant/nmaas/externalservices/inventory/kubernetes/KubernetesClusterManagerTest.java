@@ -1,54 +1,48 @@
-package net.geant.nmaas.nmservice.deployment;
+package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.InternalErrorException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KubernetesClusterCheckException;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.IsEqual.equalTo;
+
 /**
- * Set of integration tests verifying correct communication with real Kubernetes REST API.
- * Note: All tests must be ignored.
- *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("kubernetes")
-public class KubernetesApiConnectorTest {
+public class KubernetesClusterManagerTest {
 
-    private static final String REST_API_HOST_ADDRESS = "10.134.241.6";
-    private static final int REST_API_PORT = 8080;
+    private static final String REST_API_HOST_ADDRESS = "10.10.1.1";
+    private static final int REST_API_PORT = 9000;
     private static final String HELM_HOST_CHARTS_DIRECTORY = "/home/charts";
     private static final String HELM_HOST_ADDRESS = "10.10.1.2";
     private static final String HELM_HOST_SSH_USERNAME = "test";
 
     @Autowired
-    private KubernetesApiConnector connector;
+    private KubernetesClusterManager manager;
     @Autowired
     private KubernetesClusterRepository repository;
-    @Autowired
-    private KubernetesClusterManager manager;
 
     @Before
-    public void setup() throws UnknownHostException {
-        repository.save(simpleKubernetesCluster("CLUSTER1"));
+    public void setup() {
     }
 
     @After
@@ -56,32 +50,44 @@ public class KubernetesApiConnectorTest {
         repository.deleteAll();
     }
 
-    @Ignore
     @Test
-    public void shouldCheckCluster() throws KubernetesClusterCheckException {
-        connector.checkClusterStatusAndPrerequisites();
+    public void shouldRetrieveClusterDetails() throws UnknownHostException {
+        repository.save(simpleKubernetesCluster("cluster1"));
+        manager = new KubernetesClusterManager(repository);
+        assertThat(manager.getKubernetesApiUrl(), equalTo("http://" + REST_API_HOST_ADDRESS + ":" + REST_API_PORT));
+        assertThat(manager.getHelmHostChartsDirectory(), equalTo(HELM_HOST_CHARTS_DIRECTORY));
+        assertThat(manager.getHelmHostAddress(), equalTo(HELM_HOST_ADDRESS));
+        assertThat(manager.getHelmHostSshUsername(), equalTo(HELM_HOST_SSH_USERNAME));
     }
 
-    @Ignore
-    @Test
-    public void createOrUpdateIngressObject() throws InternalErrorException {
-        connector.createOrUpdateIngressObject(
-                "ingress-test-name",
-                "service.nmaas.geant.org",
-                "service-name",
-                80);
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionOnMissingCluster() {
+        manager.getHelmHostAddress();
     }
 
-    @Ignore
-    @Test
-    public void deleteIngressRule() throws InternalErrorException {
-        connector.deleteIngressRule("ingress-test-name", "service.nmaas.geant.org");
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionOnTooManyClusters() throws UnknownHostException {
+        repository.save(simpleKubernetesCluster("cluster1"));
+        repository.save(simpleKubernetesCluster("cluster2"));
+        manager.getHelmHostAddress();
     }
 
-    @Ignore
     @Test
-    public void deleteIngressObject() throws InternalErrorException {
-        connector.deleteIngressObject("ingress-test-name");
+    public void shouldReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
+        repository.save(simpleKubernetesCluster("cluster1"));
+        Identifier client10 = Identifier.newInstance("10");
+        ExternalNetworkView network10 = manager.reserveExternalNetwork(client10);
+        Identifier client20 = Identifier.newInstance("20");
+        ExternalNetworkView network20 = manager.reserveExternalNetwork(client20);
+        assertThat(network10.getExternalIp().getHostAddress(), not(equalTo(network20.getExternalIp().getHostAddress())));
+    }
+
+    @Test(expected = ExternalNetworkNotFoundException.class)
+    public void shouldFailToReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
+        repository.save(simpleKubernetesCluster("cluster1"));
+        manager.reserveExternalNetwork(Identifier.newInstance("10"));
+        manager.reserveExternalNetwork(Identifier.newInstance("20"));
+        manager.reserveExternalNetwork(Identifier.newInstance("30"));
     }
 
     private KubernetesCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
