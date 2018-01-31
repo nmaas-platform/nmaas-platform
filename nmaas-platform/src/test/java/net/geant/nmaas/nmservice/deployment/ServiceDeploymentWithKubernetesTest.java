@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesNmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressResourceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
@@ -30,9 +30,9 @@ public class ServiceDeploymentWithKubernetesTest {
 	@Autowired
 	private ContainerOrchestrator orchestrator;
 	@MockBean
-	private KubernetesNmServiceRepositoryManager kubernetesNmServiceRepositoryManager;
+	private KubernetesRepositoryManager kubernetesRepositoryManager;
 	@MockBean
-	private KubernetesApiConnector kubernetesApiConnector;
+	private IngressResourceManager ingressResourceManager;
 
 	@Test
 	public void shouldInjectKubernetesManager() {

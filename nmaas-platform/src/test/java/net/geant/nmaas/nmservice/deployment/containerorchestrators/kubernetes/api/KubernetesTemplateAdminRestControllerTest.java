@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.KubernetesTemplateRepository;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.BaseControllerTest;
@@ -49,7 +49,7 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
     @Autowired
     private KubernetesTemplateRepository templateRepository;
     @MockBean
-    private KubernetesApiConnector kubernetesApiConnector;
+    private DefaultIngressResourceManager kubernetesApiConnector;
 
     private MockMvc mvc;
     private Long appId;

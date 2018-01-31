@@ -4,7 +4,7 @@ import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesNmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -38,7 +38,7 @@ public class GitLabConfigUploaderTest {
     @Autowired
     private ConfigurationFileTransferProvider gitLabUploader;
     @Autowired
-    private KubernetesNmServiceRepositoryManager repositoryManager;
+    private KubernetesRepositoryManager repositoryManager;
     @Autowired
     private NmServiceConfigFileRepository configurations;
 

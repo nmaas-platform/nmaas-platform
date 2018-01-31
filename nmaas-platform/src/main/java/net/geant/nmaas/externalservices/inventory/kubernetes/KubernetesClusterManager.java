@@ -1,5 +1,9 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
@@ -24,7 +28,26 @@ public class KubernetesClusterManager {
         this.repository = repository;
     }
 
-    public String getKubernetesApiUrl() {
+    private KubernetesClient client;
+
+    public KubernetesClient getApiClient() {
+        initApiClient();
+        return client;
+    }
+
+    /**
+     * Initializes Kubernetes REST API client based on values read from properties.
+     */
+    private void initApiClient() {
+        // TODO could be done once
+        if (client == null) {
+            String kubernetesApiUrl = getKubernetesApiUrl();
+            Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
+            client = new DefaultKubernetesClient(config);
+        }
+    }
+
+    String getKubernetesApiUrl() {
         KubernetesCluster cluster = loadSingleCluster();
         return "http://" + cluster.getRestApiHostAddress().getHostAddress() + ":" + cluster.getRestApiPort();
     }

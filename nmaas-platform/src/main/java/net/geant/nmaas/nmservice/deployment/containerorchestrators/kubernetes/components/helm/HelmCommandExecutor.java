@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -25,11 +25,11 @@ public class HelmCommandExecutor {
     private boolean useLocalArchives;
     private String defaultKubernetesNamespace;
 
-    void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+    public void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
         executeHelmInstallCommand(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
     }
 
-    void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+    public void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
         executeHelmInstallCommand(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
     }
 
@@ -63,7 +63,7 @@ public class HelmCommandExecutor {
         return hostChartsDirectory;
     }
 
-    void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
+    public void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
         try {
             HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value());
             singleCommandExecutor().executeSingleCommand(command);
@@ -73,7 +73,7 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+    public HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
         return executeHelmStatusCommand(deploymentId.value());
     }
 
@@ -95,7 +95,7 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.UNKNOWN;
     }
 
-    List<String> executeHelmListCommand() throws CommandExecutionException {
+    public List<String> executeHelmListCommand() throws CommandExecutionException {
         try {
             HelmListCommand command = HelmListCommand.command();
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);

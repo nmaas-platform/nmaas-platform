@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Profile("kubernetes")
-public class KubernetesNmServiceRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
+public class KubernetesRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateGitLabProject(Identifier deploymentId, GitLabProject gitLabProject) throws InvalidDeploymentIdException {

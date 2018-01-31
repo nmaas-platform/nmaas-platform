@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import java.util.Map;
 import java.util.function.Predicate;

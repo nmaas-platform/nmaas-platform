@@ -1,6 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressControllerManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
@@ -16,25 +19,30 @@ import static org.mockito.Mockito.when;
 public class KubernetesManagerCheckServiceTest {
 
     private KubernetesManager manager;
-    private KubernetesNmServiceRepositoryManager repositoryManager = mock(KubernetesNmServiceRepositoryManager.class);
-    private HelmCommandExecutor helmCommandExecutor = mock(HelmCommandExecutor.class);
-    private KubernetesApiConnector kubernetesApiConnector = mock(KubernetesApiConnector.class);
-    private KubernetesClusterManager kubernetesClusterManager = mock(KubernetesClusterManager.class);
+    private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
+    private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
+    private KServiceManager serviceManager = mock(HelmKServiceManager.class);
+    private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
+    private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
 
     @Before
     public void setup() {
-        manager = new KubernetesManager(repositoryManager, helmCommandExecutor, kubernetesApiConnector, kubernetesClusterManager);
+        manager = new KubernetesManager(repositoryManager,
+                clusterValidator,
+                serviceManager,
+                ingressControllerManager,
+                ingressResourceManager);
     }
 
     @Test
     public void shouldVerifyThatServiceIsDeployed() throws Exception {
-        when(helmCommandExecutor.executeHelmStatusCommand(any(Identifier.class))).thenReturn(HelmPackageStatus.DEPLOYED);
+        when(serviceManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 
     @Test(expected = ContainerCheckFailedException.class)
     public void shouldThrowExceptionSinceServiceNotDeployed() throws Exception {
-        when(helmCommandExecutor.executeHelmStatusCommand(any(Identifier.class))).thenReturn(HelmPackageStatus.UNKNOWN);
+        when(serviceManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 

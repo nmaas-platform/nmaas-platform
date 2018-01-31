@@ -32,11 +32,8 @@ public class AnsiblePlaybookContainerBuilderTest {
     private AnsiblePlaybookContainerBuilder containerConfigBuilder;
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";
-
     private static final String ENCODED_PLAYBOOK_ID_FOR_CLIENT_SIDE_ROUTER = AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(PLAIN_DCN_NAME);
-
     private static final String ENCODED_PLAYBOOK_ID_FOR_CLOUD_SIDE_ROUTER = AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(PLAIN_DCN_NAME);
-
     private static final String EXAMPLE_COMPLETE_PLAYBOOK_FOR_CLIENT_SIDE_ROUTER_DOCKER_RUN_COMMAND =
             "docker run " +
                     "--name=nmaas-ansible " +
