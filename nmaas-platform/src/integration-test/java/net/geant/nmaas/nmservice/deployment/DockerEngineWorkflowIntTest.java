@@ -25,7 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test-engine.properties")
 public class DockerEngineWorkflowIntTest {
 
 	@Autowired

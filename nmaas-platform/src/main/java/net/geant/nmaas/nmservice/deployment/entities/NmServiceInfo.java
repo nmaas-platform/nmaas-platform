@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -60,6 +61,12 @@ public abstract class NmServiceInfo {
     @ElementCollection(fetch=FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private List<String> managedDevicesIpAddresses;
+
+    /**
+     * GitLab project information created to store configuration files for this service (deployment)
+     */
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private GitLabProject gitLabProject;
 
     public NmServiceInfo() { }
 
@@ -126,4 +133,11 @@ public abstract class NmServiceInfo {
         this.managedDevicesIpAddresses = managedDevicesIpAddresses;
     }
 
+    public GitLabProject getGitLabProject() {
+        return gitLabProject;
+    }
+
+    public void setGitLabProject(GitLabProject gitLabProject) {
+        this.gitLabProject = gitLabProject;
+    }
 }

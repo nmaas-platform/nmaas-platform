@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("docker-compose")
+@Profile("env_docker-compose")
 public class DockerComposeFilePreparer {
 
     @Autowired

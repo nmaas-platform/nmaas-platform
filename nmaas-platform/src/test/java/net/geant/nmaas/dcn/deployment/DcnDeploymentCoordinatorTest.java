@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.equalTo;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test-engine.properties")
 public class DcnDeploymentCoordinatorTest {
 
     @Autowired

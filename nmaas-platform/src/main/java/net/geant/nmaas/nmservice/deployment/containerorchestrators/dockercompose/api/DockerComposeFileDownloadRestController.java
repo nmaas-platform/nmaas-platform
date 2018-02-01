@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@Profile("docker-compose")
+@Profile("env_docker-compose")
 @RequestMapping(value = "/platform/api/dockercompose/files")
 public class DockerComposeFileDownloadRestController {
 

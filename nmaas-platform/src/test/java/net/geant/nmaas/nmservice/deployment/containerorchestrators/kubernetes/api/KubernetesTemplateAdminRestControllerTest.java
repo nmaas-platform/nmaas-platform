@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.repositories.KubernetesTemplateRepository;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.BaseControllerTest;
@@ -14,9 +13,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("kubernetes")
+@TestPropertySource("classpath:application-test-k8s.properties")
 public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTest {
 
     @Autowired
@@ -48,8 +46,6 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
     private ApplicationRepository applicationRepository;
     @Autowired
     private KubernetesTemplateRepository templateRepository;
-    @MockBean
-    private DefaultIngressResourceManager kubernetesApiConnector;
 
     private MockMvc mvc;
     private Long appId;

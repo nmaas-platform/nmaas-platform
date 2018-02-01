@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
@@ -22,12 +21,6 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesTemplate kubernetesTemplate;
 
-    /**
-     * GitLab project information created to store configuration files for this service (deployment)
-     */
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private GitLabProject gitLabProject;
-
     public KubernetesNmServiceInfo () {
         super();
     }
@@ -43,14 +36,6 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
 
     public void setKubernetesTemplate(KubernetesTemplate kubernetesTemplate) {
         this.kubernetesTemplate = kubernetesTemplate;
-    }
-
-    public GitLabProject getGitLabProject() {
-        return gitLabProject;
-    }
-
-    public void setGitLabProject(GitLabProject gitLabProject) {
-        this.gitLabProject = gitLabProject;
     }
 
 }

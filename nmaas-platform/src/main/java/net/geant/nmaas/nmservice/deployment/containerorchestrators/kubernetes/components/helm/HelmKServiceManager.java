@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("kubernetes")
+@Profile("env_kubernetes")
 public class HelmKServiceManager implements KServiceManager {
 
     static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";

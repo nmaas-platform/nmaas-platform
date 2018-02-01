@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@Profile("kubernetes")
+@Profile("env_kubernetes")
 @RequestMapping(value = "/platform/api/management/apps/{appId}/kubernetes/template")
 public class KubernetesTemplateAdminRestController {
 

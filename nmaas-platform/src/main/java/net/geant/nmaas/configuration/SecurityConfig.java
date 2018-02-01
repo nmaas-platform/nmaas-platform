@@ -29,6 +29,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -68,13 +69,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.inMemoryAuthentication()
 				.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_ANSIBLE_CLIENT)
-				.and().withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("conf_download"))) {
+			auth.inMemoryAuthentication()
+					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-				.and().withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
+		}
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("env_docker-compose"))) {
+			auth.inMemoryAuthentication().withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
+		}
 	}
 	
 	@Override
