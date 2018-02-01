@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyActionEvent;
@@ -19,8 +18,7 @@ public class DcnVerificationTask extends BaseDcnTask {
     @Loggable(LogLevel.INFO)
     public void trigger(DcnVerifyActionEvent event) throws CouldNotVerifyDcnException {
         final Identifier clientId = event.getRelatedTo();
-        if (DcnDeploymentMode.AUTO.value().equals(mode) || DcnDeploymentMode.MANUAL.value().equals(mode))
-            dcnDeployment.verifyDcn(clientId);
+        dcnDeployment.verifyDcn(clientId);
     }
 
 }

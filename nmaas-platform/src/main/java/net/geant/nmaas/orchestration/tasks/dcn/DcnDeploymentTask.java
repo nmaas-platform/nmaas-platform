@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
@@ -19,8 +18,7 @@ public class DcnDeploymentTask extends BaseDcnTask {
     @Loggable(LogLevel.INFO)
     public void trigger(DcnDeployActionEvent event) throws CouldNotDeployDcnException {
         final Identifier clientId = event.getRelatedTo();
-        if (DcnDeploymentMode.AUTO.value().equals(mode))
-            dcnDeployment.deployDcn(clientId);
+        dcnDeployment.deployDcn(clientId);
     }
 
 }

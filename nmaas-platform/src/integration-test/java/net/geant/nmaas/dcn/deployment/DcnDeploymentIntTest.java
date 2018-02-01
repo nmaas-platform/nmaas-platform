@@ -73,7 +73,7 @@ public class DcnDeploymentIntTest {
     private Identifier clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
     private Identifier applicationId = Identifier.newInstance("applicationId");
 
-    private DcnDeploymentCoordinator dcnDeployment;
+    private AnsibleDcnDeploymentExecutor dcnDeployment;
 
     @Before
     public void setup() throws DockerException, InterruptedException, DockerHostNotFoundException {
@@ -89,7 +89,7 @@ public class DcnDeploymentIntTest {
                 "10.10.10.0/24",
                 "10.10.10.254");
         dockerHostNetworkRepository.save(dockerHostNetwork);
-        dcnDeployment = new DcnDeploymentCoordinator(
+        dcnDeployment = new AnsibleDcnDeploymentExecutor(
                 dcnRepositoryManager,
                 dockerHostAttachPointRepository,
                 basicCustomerNetworkAttachPointRepository,

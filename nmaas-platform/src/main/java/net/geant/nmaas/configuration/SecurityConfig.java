@@ -66,10 +66,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-				.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("dcn_ansible"))) {
+			auth.inMemoryAuthentication()
+					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
+		}
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("conf_download"))) {
 			auth.inMemoryAuthentication()
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
