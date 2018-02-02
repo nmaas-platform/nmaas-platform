@@ -3,9 +3,11 @@ package net.geant.nmaas.externalservices.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -75,45 +77,47 @@ public class KubernetesClusterManagerRestControllerTest {
                 "}";
 
     @Autowired
-    private KubernetesClusterRepository repository;
+    private KubernetesClusterManager clusterManager;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private KubernetesClusterRepository clusterRepository;
+
     private MockMvc mvc;
 
     @Before
     public void init() {
-        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterManagerRestController(repository, modelMapper)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterManagerRestController(clusterManager)).build();
     }
 
     @After
-    public void clean() {
-        repository.deleteAll();
+    public void clean() throws KubernetesClusterNotFoundException {
+        clusterRepository.deleteAll();
     }
 
     @Test
     public void shouldAddAndRemoveNewKubernetesCluster() throws Exception {
-        long sizeBefore = repository.count();
+        long sizeBefore = clusterManager.getAllClusters().size();
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertEquals(sizeBefore + 1, repository.count());
+        assertEquals(sizeBefore + 1, clusterManager.getAllClusters().size());
         mvc.perform(delete(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME))
                 .andExpect(status().isNoContent());
-        assertEquals(sizeBefore, repository.count());
+        assertEquals(sizeBefore, clusterManager.getAllClusters().size());
     }
-
 
     @Test
     public void shouldAddNewKubernetesClusterFromJson() throws Exception {
-        long sizeBefore = repository.count();
+        long sizeBefore = clusterManager.getAllClusters().size();
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(KUBERNETES_CLUSTER_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertEquals(sizeBefore + 1, repository.count());
+        assertEquals(sizeBefore + 1, clusterManager.getAllClusters().size());
     }
 
     @Test
@@ -172,7 +176,7 @@ public class KubernetesClusterManagerRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
-                repository.count(),
+                clusterManager.getAllClusters().size(),
                 ((List<KubernetesCluster>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<KubernetesCluster>>() {})).size());
     }
 

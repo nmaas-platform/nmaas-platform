@@ -1,11 +1,10 @@
 package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * RESTful API for managing Kubernetes cluster instances.
@@ -26,13 +23,11 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/platform/api/management/kubernetes")
 public class KubernetesClusterManagerRestController {
 
-    private KubernetesClusterRepository repository;
-    private ModelMapper modelMapper;
+    private KubernetesClusterManager clusterManager;
 
     @Autowired
-    public KubernetesClusterManagerRestController(KubernetesClusterRepository repository, ModelMapper modelMapper) {
-        this.repository = repository;
-        this.modelMapper = modelMapper;
+    public KubernetesClusterManagerRestController(KubernetesClusterManager clusterManager) {
+        this.clusterManager = clusterManager;
     }
 
     /**
@@ -42,9 +37,7 @@ public class KubernetesClusterManagerRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public List<KubernetesClusterView> listAllKubernetesClusters() {
-        return repository.findAll().stream()
-                .map(cluster -> modelMapper.map(cluster, KubernetesClusterView.class))
-                .collect(Collectors.toList());
+        return clusterManager.getAllClusters();
     }
 
     /**
@@ -57,10 +50,7 @@ public class KubernetesClusterManagerRestController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{name}")
     public KubernetesCluster getKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
-        return modelMapper.map(
-                repository.findByName(name)
-                        .orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository."))
-                , KubernetesCluster.class);
+        return clusterManager.getClusterByName(name);
     }
 
     /**
@@ -74,9 +64,7 @@ public class KubernetesClusterManagerRestController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addKubernetesCluster(@RequestBody KubernetesCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
-        if(repository.count() > 0)
-            throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
-        repository.save(newKubernetesCluster);
+        clusterManager.addNewCluster(newKubernetesCluster);
     }
 
     /**
@@ -93,13 +81,7 @@ public class KubernetesClusterManagerRestController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateKubernetesCluster(@PathVariable("name") String name,@RequestBody KubernetesCluster updatedKubernetesCluster)
             throws KubernetesClusterNotFoundException {
-        Optional<KubernetesCluster> existingKubernetesCluster = repository.findByName(name);
-        if (!existingKubernetesCluster.isPresent())
-            throw new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository.");
-        else {
-            updatedKubernetesCluster.setId(existingKubernetesCluster.get().getId());
-            repository.save(updatedKubernetesCluster);
-        }
+        clusterManager.updateCluster(name, updatedKubernetesCluster);
     }
 
     /**
@@ -111,9 +93,7 @@ public class KubernetesClusterManagerRestController {
     @DeleteMapping(value = "/{name}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
-        KubernetesCluster cluster = repository.findByName(name).
-                orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository."));
-        repository.delete(cluster.getId());
+        clusterManager.removeCluster(name);
     }
 
     @ExceptionHandler(KubernetesClusterNotFoundException.class)
