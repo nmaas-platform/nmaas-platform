@@ -9,6 +9,8 @@ import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
@@ -33,6 +35,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public DcnState checkState(Identifier clientId) {
         try {
             return DcnState.fromDcnDeploymentState(dcnRepositoryManager.loadCurrentState(clientId));
@@ -42,21 +45,25 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void verifyRequest(Identifier clientId, DcnSpec dcnSpec) throws DcnRequestVerificationException {
         notifyStateChangeListeners(clientId, DcnDeploymentState.REQUEST_VERIFIED);
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void deployDcn(Identifier clientId) throws CouldNotDeployDcnException {
         notifyStateChangeListeners(clientId, DcnDeploymentState.DEPLOYED);
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void verifyDcn(Identifier clientId) throws CouldNotVerifyDcnException {
         notifyStateChangeListeners(clientId, DcnDeploymentState.VERIFIED);
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
     public void removeDcn(Identifier clientId) throws CouldNotRemoveDcnException {
         notifyStateChangeListeners(clientId, DcnDeploymentState.REMOVED);
     }
