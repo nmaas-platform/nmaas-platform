@@ -24,7 +24,7 @@ export class ScreenshotsComponent implements OnInit {
 
     imagesFileInfo: FileInfo[];
 
-    private selectedImg: string;
+    protected selectedImg: string;
 
     constructor(private appsService: AppsService) { }
 

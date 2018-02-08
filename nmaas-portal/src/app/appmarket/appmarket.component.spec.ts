@@ -5,7 +5,7 @@ import { AppMarketComponent } from './appmarket.component';
 
 describe('Component: AppMarket', () => {
   it('should create an instance', () => {
-    let component = new AppMarketComponent();
+    const component = new AppMarketComponent();
     expect(component).toBeTruthy();
   });
 });

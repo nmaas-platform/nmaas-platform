@@ -67,20 +67,22 @@ public class UserService implements net.geant.nmaas.portal.service.UserService {
 
 	@Override
 	public User register(String username) throws ObjectAlreadyExistsException, MissingElementException {
-		return register(username, domains.getGlobalDomain().getName());				
+		return register(username, null, domains.getGlobalDomain().getId());				
 	}
 
 	@Override
-	public User register(String username, String domainName) throws ObjectAlreadyExistsException, MissingElementException {
-		Domain domain = (domainName != null ? domains.findDomain(domainName) : domains.getGlobalDomain());
+	public User register(String username, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException {
+		Domain domain = (domainId != null ? domains.findDomain(domainId) : domains.getGlobalDomain());
 		if(domain == null)
 			throw new MissingElementException("Domain not found");
-		
+				
 		User user = userRepo.findByUsername(username).orElse(null);
 		if(user != null)
 			throw new ObjectAlreadyExistsException("User exists.");
 
-		return userRepo.save(new User(username));				
+		User newUser = new User(username, password, domain, Role.ROLE_GUEST);
+		
+		return userRepo.save(newUser);				
 	}	
 	
 	@Override

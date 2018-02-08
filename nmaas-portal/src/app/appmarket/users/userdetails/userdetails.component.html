@@ -1,0 +1,7 @@
+<div class="row">
+	<h3>User: {{user?.username}} ({{user?.id}})</h3>
+</div>
+<nmaas-userdetails [user]="user"></nmaas-userdetails>
+<nmaas-password (passwordSubmit)="onPasswordChange($password)"></nmaas-password>
+<nmaas-userprivileges [user]="user"></nmaas-userprivileges>
+

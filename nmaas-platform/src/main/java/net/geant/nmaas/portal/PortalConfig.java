@@ -49,7 +49,7 @@ public class PortalConfig {
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent())
-					addUser("admin", "admin", Role.SUPERADMIN);
+					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
 			}
 
 			private void addUser(String username, String password, Role role) {								

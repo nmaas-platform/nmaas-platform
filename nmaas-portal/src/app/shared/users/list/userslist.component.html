@@ -1,0 +1,26 @@
+<div class="row">
+	<table class="table table-hover table-condensed">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Username</th>
+				<th>Domains</th>
+				<th>&nbsp;</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<ng-template ngFor let-user [ngForOf]="users">
+			<tr>
+				<td>{{user.id}}</td>
+				<td>{{user.username}}</td>
+				<td><ng-template ngFor let-domainId [ngForOf]="user.domainIds"><span>{{getDomainName(domainId) | async}}</span><br></ng-template></td>
+				<td class="text-right">
+					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">Details</a>
+					<a *ngIf="isModeAllowed(ComponentMode.DELETE)" (click)="remove(user.id)" class="btn btn-sm btn-danger" role="button">Remove</a>
+				</td>
+			</tr>
+			</ng-template>
+		</tbody>
+	</table>
+</div>

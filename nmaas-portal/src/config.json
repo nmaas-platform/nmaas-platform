@@ -1,4 +1,10 @@
 {
 	"apiUrl": "http://localhost:9000/portal/api",
-	"tokenName": "token"
+	"tokenName": "token",
+	"nmaas": {
+		"globalDomainId": 1
+	},
+	"http": {
+		"timeout": 10000
+	}
 }

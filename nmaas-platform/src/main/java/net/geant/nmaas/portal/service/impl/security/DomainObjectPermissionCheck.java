@@ -31,18 +31,18 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
 	
 	
 	public DomainObjectPermissionCheck() {
-		globalPermMatrix.put(Role.SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
-		globalPermMatrix.put(Role.TOOL_MANAGER, new Permissions[] {Permissions.READ });
-		globalPermMatrix.put(Role.DOMAIN_ADMIN, new Permissions[] {Permissions.READ});
-		globalPermMatrix.put(Role.USER, new Permissions[] {Permissions.READ });
-		globalPermMatrix.put(Role.GUEST, new Permissions[] {});		
+		globalPermMatrix.put(Role.ROLE_SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
+		globalPermMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.READ });
+		globalPermMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.READ});
+		globalPermMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.READ });
+		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});		
 
 		
-		permMatrix.put(Role.SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
-		permMatrix.put(Role.DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
-		permMatrix.put(Role.USER, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE});
-		permMatrix.put(Role.TOOL_MANAGER, new Permissions[] {Permissions.READ});
-		permMatrix.put(Role.GUEST, new Permissions[] {Permissions.READ});		
+		permMatrix.put(Role.ROLE_SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
+		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
+		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE});
+		permMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.READ});
+		permMatrix.put(Role.ROLE_GUEST, new Permissions[] {Permissions.READ});		
 	}
 		
 	@Override

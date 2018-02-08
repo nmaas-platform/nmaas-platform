@@ -8,7 +8,7 @@ public class DomainAware {
 	
 	@OneToOne(fetch=FetchType.LAZY, cascade = {}, optional = false)
 	@Column(nullable = false)
-	Domain domain;
+	protected Domain domain;
 
 	public Domain getDomain() {
 		return domain;

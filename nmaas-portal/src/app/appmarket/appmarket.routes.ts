@@ -7,6 +7,8 @@ import { AuthGuard } from '../auth/auth.guard';
 
 import { AppListRoutes } from './applist/applist.routes';
 import { AppInstanceRoutes } from './appinstance/appinstance.routes';
+import { DomainsRoutes } from './domains/domains.routes';
+import { UsersRoutes } from './users/users.routes';
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -17,6 +19,8 @@ export const AppMarketRoutes: Route[] = [
       children: [
         ...AppListRoutes,
         ...AppInstanceRoutes,
+        ...DomainsRoutes,
+        ...UsersRoutes,
           { path: 'apps/:id', component: AppDetailsComponent },
 
       ]

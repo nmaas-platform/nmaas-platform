@@ -26,7 +26,7 @@ public class BasicAuthControllerTest extends BaseControllerTest {
 	
     @Test
     public void testSuccessAuthPing() throws Exception {
-    	String token = getValidUserTokenFor(Role.USER);
+    	String token = getValidUserTokenFor(Role.ROLE_USER);
     	
     	mvc.perform(get("/portal/api/auth/basic/ping")
     				.header("Authorization", "Bearer " + token))

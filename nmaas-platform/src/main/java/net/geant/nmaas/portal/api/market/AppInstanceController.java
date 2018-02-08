@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/portal/api/domains/{domainId}/apps/instances")
+@RequestMapping("/portal/api")
 public class AppInstanceController extends AppBaseController {
 
 	@Autowired
@@ -54,7 +54,23 @@ public class AppInstanceController extends AppBaseController {
 	@Autowired
 	DomainService domains;
 
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping("/apps/instances")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	public List<AppInstance> getAllInstances(Pageable pageable) throws MissingElementException {				
+		return appInstanceRepo.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+	}
+
+	@GetMapping("/apps/instances/my")
+	public List<AppInstance> getMyAllInstances(@NotNull Principal principal, Pageable pageable) throws MissingElementException {
+		Optional<User> user = userRepo.findByUsername(principal.getName());
+		if (!user.isPresent())
+			throw new MissingElementException("User not found");
+
+		return appInstanceRepo.findAllByOwner(user.get(), pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+	}
+	
+	
+	@GetMapping("/domains/{domainId}/apps/instances")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public List<AppInstance> getAllInstances(@PathVariable Long domainId, Pageable pageable) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId);
@@ -64,14 +80,14 @@ public class AppInstanceController extends AppBaseController {
 		return appInstanceRepo.findAllByDomain(domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
 
-	@RequestMapping(value = "/my", method = RequestMethod.GET)
+	@GetMapping(value = "/domains/{domainId}/apps/instances/my")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
 	public List<AppInstance> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable)
 			throws MissingElementException {
 		return getUserDomainAppInstances(domainId, principal.getName(), pageable);
 	}
 
-	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
+	@GetMapping("/domains/{domainId}/apps/instances/user/{username}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable)
 			throws MissingElementException {
@@ -91,7 +107,7 @@ public class AppInstanceController extends AppBaseController {
 		return appInstanceRepo.findAllByOwner(user.get(), pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
 	
-	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.GET)
+	@GetMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	public AppInstance getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
@@ -102,7 +118,7 @@ public class AppInstanceController extends AppBaseController {
 		return mapAppInstance(appInstance);
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@PostMapping("/domains/{domainId}/apps/instances")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
 	@Transactional
 	public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
@@ -127,7 +143,8 @@ public class AppInstanceController extends AppBaseController {
 		return new Id(appInstance.getId());
 	}
 
-	@RequestMapping(value = "/{appInstanceId}", method = RequestMethod.DELETE)
+	
+	@DeleteMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
 	@Transactional
 	public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -141,7 +158,7 @@ public class AppInstanceController extends AppBaseController {
 		}
 	}
 
-	@RequestMapping(value = "/{appInstanceId}/configure", method = RequestMethod.POST)
+	@PostMapping({"/apps/instances/{appInstanceId}/configure", "/domains/{domainId}/apps/instances/{appInstanceId}/configure"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	@Transactional
 	public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -167,7 +184,7 @@ public class AppInstanceController extends AppBaseController {
 		}
 	}
 
-	@RequestMapping(value = "/{appInstanceId}/state", method = RequestMethod.GET)
+	@GetMapping("/domains/{domainId}/apps/instances/{appInstanceId}/state")
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
@@ -282,9 +299,13 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	private AppInstance mapAppInstance(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) {
+		if(appInstance == null)
+			return null;
+		
 		AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
 		try {
 			ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
+			ai.setDomainId(appInstance.getDomain().getId());
 		} catch (Exception e) {
 			ai.setState(AppInstanceState.UNKNOWN);
 			ai.setUrl(null);

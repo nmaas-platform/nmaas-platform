@@ -69,6 +69,12 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 		return domainRepo.findOne(id);
 	}
 
+	
+	@Override
+	public void updateDomain(Domain domain) {		
+		domainRepo.save(domain);
+	}
+
 	@Override
 	public boolean removeDomain(Long id) {
 		Domain toRemove = findDomain(id);

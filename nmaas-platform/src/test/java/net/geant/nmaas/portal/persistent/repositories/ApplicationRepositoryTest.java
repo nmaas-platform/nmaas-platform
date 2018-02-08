@@ -52,7 +52,7 @@ public class ApplicationRepositoryTest {
 	@Before
 	public void setUp() throws Exception {
 		domains.createGlobalDomain();
-		userRepo.save(new User("admin", "admin", domains.getGlobalDomain(), Role.SUPERADMIN));
+		userRepo.save(new User("admin", "admin", domains.getGlobalDomain(), Role.ROLE_SUPERADMIN));
 	}
 
 	@Test

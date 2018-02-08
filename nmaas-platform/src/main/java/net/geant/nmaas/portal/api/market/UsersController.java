@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.portal.api.auth.UserSignup;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.User;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
@@ -154,7 +156,7 @@ public class UsersController {
 		
 	@DeleteMapping("/users/{userId}/roles")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
 	public void removeUserRole(@PathVariable Long userId, @RequestBody UserRole userRole) throws ProcessingException, MissingElementException {
 		if(userRole.getRole() == null)
@@ -175,9 +177,36 @@ public class UsersController {
 		domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());		
 	}
 
+	@PostMapping("/users/{userId}/auth/basic/password")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@Transactional
+	public void changePassword(@PathVariable Long userId, @RequestBody PasswordChange passwordChange) throws ProcessingException {
+		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
+		try {
+			changePassword(user, passwordChange.getPassword());
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to change password");
+		}
+	}
 	
+	@PostMapping("/users/my/auth/basic/password")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@Transactional
+	public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) throws ProcessingException {
+		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName());
+		try {
+			changePassword(user, passwordChange.getPassword());
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to change password");
+		}
+	}
 	
-	
+	private void changePassword(net.geant.nmaas.portal.persistent.entity.User user, String password) throws net.geant.nmaas.portal.exceptions.ProcessingException {
+		user.setPassword(password);
+		users.update(user);
+	}
+
 	@GetMapping("/domains/{domainId}/users")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public List<User> getDomainUsers(@PathVariable Long domainId) {
@@ -248,10 +277,10 @@ public class UsersController {
 			throw new MissingElementException("Domain not found");
 		
 		if(domain.equals(domains.getGlobalDomain())) {
-			if(!(role == Role.SUPERADMIN || role == Role.TOOL_MANAGER))
+			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_GUEST))
 				throw new ProcessingException("Role cannot be assigned.");			
 		} else {
-			if(!(role == Role.GUEST || role == Role.USER || role == Role.DOMAIN_ADMIN))
+			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
 				throw new ProcessingException("Role cannot be assigned.");
 		}
 			
@@ -279,10 +308,10 @@ public class UsersController {
 			throw new MissingElementException("Domain not found");
 		
 		if(domain.equals(domains.getGlobalDomain())) {
-			if(!(role == Role.SUPERADMIN || role == Role.TOOL_MANAGER))
+			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER))
 				throw new ProcessingException("Illegal role.");			
 		} else {
-			if(!(role == Role.GUEST || role == Role.USER || role == Role.DOMAIN_ADMIN))
+			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
 				throw new ProcessingException("Illegal role.");
 		}
 			

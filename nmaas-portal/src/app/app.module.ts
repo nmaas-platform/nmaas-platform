@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule, Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
 import { AuthHttp, AuthConfig } from 'angular2-jwt';
 
-import { routing }        from './app.routes';
+import { routing } from './app.routes';
 
 import { AppComponent } from './app.component';
 
@@ -20,16 +20,16 @@ import { AuthService } from './auth/auth.service';
 import { LogoutComponent } from './logout/logout.component';
 
 export function appConfigFactory( config: AppConfigService) {
-	return function create() {
-		return config.load();
-	}
+  return function create() {
+    return config.load();
+  }
 }
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig({
         tokenName: 'token',
         tokenGetter: (() => localStorage.getItem('token')),
-        globalHeaders: [{'Content-Type':'application/json', 'Accept': 'application/json'}],
+        globalHeaders: [{'Content-Type': 'application/json', 'Accept': 'application/json'}],
     }), http, options);
 }
 
@@ -51,7 +51,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AuthGuard,
     AuthService,
     AppConfigService,
-    {   
+    {
         provide: APP_INITIALIZER,
         useFactory: appConfigFactory,
         deps: [ AppConfigService ],

@@ -22,7 +22,7 @@ public interface UserService {
 	User findById(Long id);
 	
 	User register(String username) throws ObjectAlreadyExistsException, MissingElementException;
-	User register(String username, String domainName) throws ObjectAlreadyExistsException, MissingElementException;
+	User register(String username, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException;
 	
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);

@@ -10,21 +10,21 @@ public class UsersHelper {
 	public final static Domain DOMAIN2 = new Domain(3l, "domain2");
 
 	
-	public final static User ADMIN = new User(1l, "admin", GLOBAL, Role.SUPERADMIN);
-	public final static User TOOL_MANAGER = new User(2l , "toolman", GLOBAL, Role.TOOL_MANAGER);
+	public final static User ADMIN = new User(1l, "admin", GLOBAL, Role.ROLE_SUPERADMIN);
+	public final static User TOOL_MANAGER = new User(2l , "toolman", GLOBAL, Role.ROLE_TOOL_MANAGER);
 	
-	public final static User DOMAIN1_ADMIN = new User(3l, "domain1_admin", DOMAIN1, Role.DOMAIN_ADMIN);
-	public final static User DOMAIN1_USER1 = new User(4l, "domain1_user1", DOMAIN1, Role.USER);
-	public final static User DOMAIN1_USER2 = new User(5l, "domain1_user2", DOMAIN1, Role.USER);
-	public final static User DOMAIN1_GUEST = new User(6l, "domain1_guest", DOMAIN1, Role.GUEST);
+	public final static User DOMAIN1_ADMIN = new User(3l, "domain1_admin", DOMAIN1, Role.ROLE_DOMAIN_ADMIN);
+	public final static User DOMAIN1_USER1 = new User(4l, "domain1_user1", DOMAIN1, Role.ROLE_USER);
+	public final static User DOMAIN1_USER2 = new User(5l, "domain1_user2", DOMAIN1, Role.ROLE_USER);
+	public final static User DOMAIN1_GUEST = new User(6l, "domain1_guest", DOMAIN1, Role.ROLE_GUEST);
 	
 	
-	public final static User DOMAIN2_ADMIN = new User(7l, "domain2_admin", DOMAIN2, Role.DOMAIN_ADMIN);
-	public final static User DOMAIN2_USER1 = new User(8l, "domain2_user1", DOMAIN2, Role.USER);
-	public final static User DOMAIN2_USER2 = new User(9l, "domain2_user2", DOMAIN2, Role.USER);
-	public final static User DOMAIN2_GUEST = new User(10l, "domain2_guest", DOMAIN2, Role.GUEST);
+	public final static User DOMAIN2_ADMIN = new User(7l, "domain2_admin", DOMAIN2, Role.ROLE_DOMAIN_ADMIN);
+	public final static User DOMAIN2_USER1 = new User(8l, "domain2_user1", DOMAIN2, Role.ROLE_USER);
+	public final static User DOMAIN2_USER2 = new User(9l, "domain2_user2", DOMAIN2, Role.ROLE_USER);
+	public final static User DOMAIN2_GUEST = new User(10l, "domain2_guest", DOMAIN2, Role.ROLE_GUEST);
 	
-	public final static User GLOBAL_GUEST = new User(11l, "unassigned_guest", GLOBAL, Role.GUEST);
+	public final static User GLOBAL_GUEST = new User(11l, "unassigned_guest", GLOBAL, Role.ROLE_GUEST);
 
 	public final static List<User> USERS = Arrays.asList(new User[] { ADMIN, TOOL_MANAGER, DOMAIN1_ADMIN, DOMAIN1_USER1, DOMAIN1_USER2, DOMAIN1_GUEST, DOMAIN2_ADMIN, DOMAIN2_USER1, DOMAIN2_USER2, DOMAIN2_GUEST, GLOBAL_GUEST});
 	public final static List<Domain> DOMAINS = Arrays.asList(new Domain[] { GLOBAL, DOMAIN1, DOMAIN2});

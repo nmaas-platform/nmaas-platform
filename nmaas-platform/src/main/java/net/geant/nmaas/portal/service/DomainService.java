@@ -19,6 +19,7 @@ public interface DomainService {
 	Domain findDomain(String name);
 	Domain findDomain(Long id);
 	
+	void updateDomain(Domain domain);
 	boolean removeDomain(Long id);
 	
 	List<User> getMembers(Long id);

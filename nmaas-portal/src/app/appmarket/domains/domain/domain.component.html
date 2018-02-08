@@ -1,0 +1,27 @@
+<div class="row">
+	<h3>Domain details: </h3>
+	<form *ngIf="domain" (submit)="submit()" class="form-horizontal">
+		<div *ngIf="domain.id" class="form-group">
+			<label class="col-sm-2 control-label">Id:</label>
+			<div class="col-sm-10">
+				<p class="form-control-static">{{domain.id}}</p>
+			</div>
+		</div>
+	
+		<div class="form-group">
+			<label for="name" class="col-sm-2 control-label">Name:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="name" name="name" [(ngModel)]="domain.name">
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="active" class="col-sm-2 control-label">Active:</label>
+			<div class="col-sm-10">
+				<input type="checkbox" class="btn btn-default" id="active" name="active" [(ngModel)]="domain.active">
+			</div>
+		</div>
+		
+		<button type="submit" class="btn btn-default">Submit</button>		
+	</form>
+</div>

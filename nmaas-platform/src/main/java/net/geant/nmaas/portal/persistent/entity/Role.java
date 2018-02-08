@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 public enum Role {
-	SUPERADMIN, DOMAIN_ADMIN, TOOL_MANAGER, USER, GUEST;
+	ROLE_SUPERADMIN, ROLE_DOMAIN_ADMIN, ROLE_TOOL_MANAGER, ROLE_USER, ROLE_GUEST;
 	
 	public String authority() {
-        return "ROLE_" + this.name();
+        return this.name();
 	}
 }

@@ -111,7 +111,7 @@ public class BasicAuthController {
 		try {
 			users.update(newUser);
 			if(userSignup.getDomainId() != null)
-				domains.addMemberRole(userSignup.getDomainId(), newUser.getId(), Role.GUEST);
+				domains.addMemberRole(userSignup.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 		} catch (ProcessingException e) {
 			throw new SignupException("Unable to update newly registered user.");
 		} catch (MissingElementException e) {
