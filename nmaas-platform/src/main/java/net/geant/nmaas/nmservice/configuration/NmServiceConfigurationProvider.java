@@ -5,7 +5,7 @@ import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
- * Defines a method to be used to apply custom configuration NM service being deployed.
+ * Defines a method to be used to apply custom configuration for NM service being deployed.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */

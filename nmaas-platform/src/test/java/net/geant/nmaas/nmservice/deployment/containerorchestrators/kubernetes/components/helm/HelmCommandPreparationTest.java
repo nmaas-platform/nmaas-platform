@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Test;
@@ -35,9 +35,9 @@ public class HelmCommandPreparationTest {
     @Test
     public void shouldConstructInstallCommandWithArguments() {
         Map<String, String> arguments = new HashMap<>();
-        arguments.put(KubernetesManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
-        arguments.put(KubernetesManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
-        arguments.put(KubernetesManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "repoUrl");
+        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
+        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
+        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "repoUrl");
         assertThat(HelmInstallCommand.command(NAMESPACE, DEPLOYMENT_ID.value(), arguments, CHART_ARCHIVE_NAME).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("persistenceName"),

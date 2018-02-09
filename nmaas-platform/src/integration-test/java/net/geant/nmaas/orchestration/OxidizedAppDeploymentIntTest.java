@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test-engine.properties")
 public class OxidizedAppDeploymentIntTest {
 
     private static final String OXIDIZED_APP_NAME = "Oxidized";

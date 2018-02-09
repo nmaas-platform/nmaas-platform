@@ -43,7 +43,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test-engine.properties")
 public class ConfigDownloadCommandExecutionTest {
 
     @Autowired
@@ -60,8 +60,9 @@ public class ConfigDownloadCommandExecutionTest {
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private String configId1 = "id1";
 
+    // for password: testpass
     private static final String CORRECT_CONFIG_DOWNLOAD_COMMAND =
-            "mkdir -p /home/mgmt/volumes/volume/ && wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic dXNlcjE6cGFzcw==\" http://portal.nmaas.gn4.net:-1/platform/api/configs/id1 -O /home/mgmt/volumes/volume/fileName1";
+            "mkdir -p /home/mgmt/volumes/volume/ && wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic Y29uZmlnVGVzdDp0ZXN0cGFzcw==\" http://portal.nmaas.gn4.net:-1/platform/api/configs/id1 -O /home/mgmt/volumes/volume/fileName1";
 
     @Before
     public void setup() throws UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {

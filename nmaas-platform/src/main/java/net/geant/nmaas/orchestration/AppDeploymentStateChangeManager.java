@@ -29,7 +29,7 @@ public class AppDeploymentStateChangeManager {
     private final static Logger log = LogManager.getLogger(AppDeploymentStateChangeManager.class);
 
     @Autowired
-    private AppDeploymentRepositoryManager lifecycleStateKeeper;
+    private AppDeploymentRepositoryManager deploymentRepositoryManager;
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -38,12 +38,12 @@ public class AppDeploymentStateChangeManager {
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
         try {
-            AppDeploymentState newDeploymentState = lifecycleStateKeeper.loadState(event.getDeploymentId()).nextState(event.getState());
-            lifecycleStateKeeper.updateState(event.getDeploymentId(), newDeploymentState);
+            AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
+            deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
-            lifecycleStateKeeper.updateState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
+            deploymentRepositoryManager.updateState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
             return null;
         }
     }
@@ -68,13 +68,13 @@ public class AppDeploymentStateChangeManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyGenericError(AppDeploymentErrorEvent event) throws InvalidDeploymentIdException {
-        lifecycleStateKeeper.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
+        deploymentRepositoryManager.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyDcnDeployed(DcnDeployedEvent event) {
-        lifecycleStateKeeper.loadAllWaitingForDcn(event.getRelatedTo())
+        deploymentRepositoryManager.loadAllWaitingForDcn(event.getRelatedTo())
                 .forEach(d -> eventPublisher.publishEvent(
                         new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT)));
     }

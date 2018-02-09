@@ -11,8 +11,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.InetAddress;
@@ -28,6 +30,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource("classpath:application-test-k8s.properties")
 public class KubernetesClusterManagerTest {
 
     private static final String REST_API_HOST_ADDRESS = "10.10.1.1";
@@ -37,12 +40,15 @@ public class KubernetesClusterManagerTest {
     private static final String HELM_HOST_SSH_USERNAME = "test";
 
     @Autowired
-    private KubernetesClusterManager manager;
-    @Autowired
     private KubernetesClusterRepository repository;
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private KubernetesClusterManager manager;
 
     @Before
     public void setup() {
+        manager = new KubernetesClusterManager(repository, modelMapper);
     }
 
     @After
@@ -53,8 +59,6 @@ public class KubernetesClusterManagerTest {
     @Test
     public void shouldRetrieveClusterDetails() throws UnknownHostException {
         repository.save(simpleKubernetesCluster("cluster1"));
-        manager = new KubernetesClusterManager(repository);
-        assertThat(manager.getKubernetesApiUrl(), equalTo("http://" + REST_API_HOST_ADDRESS + ":" + REST_API_PORT));
         assertThat(manager.getHelmHostChartsDirectory(), equalTo(HELM_HOST_CHARTS_DIRECTORY));
         assertThat(manager.getHelmHostAddress(), equalTo(HELM_HOST_ADDRESS));
         assertThat(manager.getHelmHostSshUsername(), equalTo(HELM_HOST_SSH_USERNAME));

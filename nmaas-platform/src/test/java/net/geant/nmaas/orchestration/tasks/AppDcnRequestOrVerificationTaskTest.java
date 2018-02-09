@@ -38,7 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test-engine.properties")
 public class AppDcnRequestOrVerificationTaskTest {
 
     @Autowired
@@ -62,7 +62,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     @Before
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
+        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE));
         appDeploymentSpec.setDockerContainerTemplate(oxidizedTemplate());
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);

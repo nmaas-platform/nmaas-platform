@@ -3,13 +3,13 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.e
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class KubernetesClusterCheckException extends Exception {
+public class KServiceManipulationException extends Exception {
 
-    public KubernetesClusterCheckException(String message) {
+    public KServiceManipulationException(String message) {
         super(message);
     }
 
-    public KubernetesClusterCheckException(String message, Exception e) {
+    public KServiceManipulationException(String message, Exception e) {
         super(message, e);
     }
 }

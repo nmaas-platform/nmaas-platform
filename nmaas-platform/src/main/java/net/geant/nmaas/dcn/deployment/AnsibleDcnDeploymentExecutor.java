@@ -27,8 +27,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,40 +36,33 @@ import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
 
 /**
- * Default DCN deployment provider implementation.
+ * Executor used when DCN should be configured by Ansible playbooks.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsiblePlaybookExecutionStateListener {
+@Profile("dcn_ansible")
+public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, AnsiblePlaybookExecutionStateListener {
 
-    private final static Logger log = LogManager.getLogger(DcnDeploymentCoordinator.class);
-
+    private static final Logger log = LogManager.getLogger(AnsibleDcnDeploymentExecutor.class);
     private static final String DEFAULT_ANSIBLE_CONTAINER_NAME = "nmaas-ansible-test";
 
     private DcnRepositoryManager dcnRepositoryManager;
-
     private ApplicationEventPublisher applicationEventPublisher;
-
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
-
     private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
-
     private DockerHostNetworkRepository dockerHostNetworkRepository;
-
     private DockerApiClient dockerApiClient;
 
-    @Value("${ansible.docker.api.url}")
     private String ansibleDockerApiUrl;
 
     @Autowired
-    public DcnDeploymentCoordinator(DcnRepositoryManager dcnRepositoryManager,
-                                    DockerHostAttachPointRepository dockerHostAttachPointRepository,
-                                    BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
-                                    ApplicationEventPublisher applicationEventPublisher,
-                                    DockerHostNetworkRepository dockerHostNetworkRepository,
-                                    DockerApiClient dockerApiClient) {
+    public AnsibleDcnDeploymentExecutor(DcnRepositoryManager dcnRepositoryManager,
+                                        DockerHostAttachPointRepository dockerHostAttachPointRepository,
+                                        BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
+                                        ApplicationEventPublisher applicationEventPublisher,
+                                        DockerHostNetworkRepository dockerHostNetworkRepository,
+                                        DockerApiClient dockerApiClient) {
         this.dcnRepositoryManager = dcnRepositoryManager;
         this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
         this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
@@ -118,7 +110,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
             notifyStateChangeListeners(clientId, DcnDeploymentState.REQUEST_VERIFIED);
         } catch ( InvalidClientIdException
                 | AttachPointNotFoundException e) {
-            log.error("Exception during DCN request verification -> " + e.getMessage());
             notifyStateChangeListeners(clientId, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
             throw new DcnRequestVerificationException("Exception during DCN request verification -> " + e.getMessage());
         }
@@ -146,7 +137,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         } catch ( InvalidClientIdException
                 | InterruptedException
                 | DockerException anyException) {
-            log.error("Exception during DCN deployment -> " + anyException.getMessage());
             notifyStateChangeListeners(clientId, DcnDeploymentState.DEPLOYMENT_FAILED);
             throw new CouldNotDeployDcnException("Exception during DCN deployment -> " + anyException.getMessage());
         }
@@ -190,7 +180,6 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         } catch ( InvalidClientIdException
                 | InterruptedException
                 | DockerException e) {
-            log.error("Exception during DCN removal -> " + e.getMessage());
             notifyStateChangeListeners(clientId, DcnDeploymentState.REMOVAL_FAILED);
             throw new CouldNotRemoveDcnException("Exception during DCN removal -> " + e.getMessage());
         }
@@ -289,11 +278,9 @@ public class DcnDeploymentCoordinator implements DcnDeploymentProvider, AnsibleP
         }
     }
 
-    String getAnsibleDockerApiUrl() {
-        return ansibleDockerApiUrl;
-    }
-
-    void setAnsibleDockerApiUrl(String ansibleDockerApiUrl) {
+    @Value("${ansible.docker.api.url}")
+    public void setAnsibleDockerApiUrl(String ansibleDockerApiUrl) {
         this.ansibleDockerApiUrl = ansibleDockerApiUrl;
     }
+
 }

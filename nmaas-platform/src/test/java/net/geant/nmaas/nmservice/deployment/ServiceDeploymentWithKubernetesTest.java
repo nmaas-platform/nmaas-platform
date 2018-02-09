@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesApiConnector;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesNmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressResourceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -24,15 +24,15 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("kubernetes")
+@TestPropertySource("classpath:application-test-k8s.properties")
 public class ServiceDeploymentWithKubernetesTest {
 
 	@Autowired
 	private ContainerOrchestrator orchestrator;
 	@MockBean
-	private KubernetesNmServiceRepositoryManager kubernetesNmServiceRepositoryManager;
+	private KubernetesRepositoryManager kubernetesRepositoryManager;
 	@MockBean
-	private KubernetesApiConnector kubernetesApiConnector;
+	private IngressResourceManager ingressResourceManager;
 
 	@Test
 	public void shouldInjectKubernetesManager() {

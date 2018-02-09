@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -45,7 +44,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource("classpath:application-test-engine.properties")
 public class DcnDeploymentIntTest {
 
     private static final long CUSTOMER_ID = 1L;
@@ -74,7 +73,7 @@ public class DcnDeploymentIntTest {
     private Identifier clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
     private Identifier applicationId = Identifier.newInstance("applicationId");
 
-    private DcnDeploymentCoordinator dcnDeployment;
+    private AnsibleDcnDeploymentExecutor dcnDeployment;
 
     @Before
     public void setup() throws DockerException, InterruptedException, DockerHostNotFoundException {
@@ -90,7 +89,7 @@ public class DcnDeploymentIntTest {
                 "10.10.10.0/24",
                 "10.10.10.254");
         dockerHostNetworkRepository.save(dockerHostNetwork);
-        dcnDeployment = new DcnDeploymentCoordinator(
+        dcnDeployment = new AnsibleDcnDeploymentExecutor(
                 dcnRepositoryManager,
                 dockerHostAttachPointRepository,
                 basicCustomerNetworkAttachPointRepository,

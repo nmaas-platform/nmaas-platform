@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
@@ -19,8 +18,7 @@ public class DcnRemovalTask extends BaseDcnTask {
     @Loggable(LogLevel.INFO)
     public void trigger(DcnRemoveActionEvent event) throws CouldNotRemoveDcnException {
         final Identifier clientId = event.getRelatedTo();
-        if (DcnDeploymentMode.AUTO.value().equals(mode))
-            dcnDeployment.removeDcn(clientId);
+        dcnDeployment.removeDcn(clientId);
     }
 
 }

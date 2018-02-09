@@ -1,6 +1,5 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentMode;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -20,8 +19,7 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void trigger(DcnVerifyRequestActionEvent event) throws DcnRequestVerificationException {
         final Identifier clientId = event.getRelatedTo();
-        if (DcnDeploymentMode.AUTO.value().equals(mode) || DcnDeploymentMode.MANUAL.value().equals(mode))
-            dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
+        dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
     }
 
     public DcnSpec constructDcnSpec(Identifier clientId) {

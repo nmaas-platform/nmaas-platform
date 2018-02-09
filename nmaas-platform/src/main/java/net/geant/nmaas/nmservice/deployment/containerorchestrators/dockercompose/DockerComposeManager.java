@@ -35,7 +35,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("docker-compose")
+@Profile("env_docker-compose")
 public class DockerComposeManager implements ContainerOrchestrator {
 
     @Autowired
