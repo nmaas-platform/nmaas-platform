@@ -48,7 +48,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     /**
-     * Creates new ingress object if one does not exists or updates the existing one by adding an ingress rule for newly
+     * Creates new ingress resource if one does not exists or updates the existing one by adding an ingress rule for newly
      * deployed service.
      * Note:
      * The service name to be used in ingress rule definition is most cases is not the same as the helm chart release
@@ -60,11 +60,12 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
+    public synchronized void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String ingressResourceName = ingressResourceName(clientId.value());
         String externalUrl = externalUrl(deploymentId.value(), clientId.value());
         String releaseName = deploymentId.value();
+        String serviceName = retrieveServiceName(client, releaseName);
         int servicePort = DEFAULT_SERVICE_PORT;
         try {
             Ingress ingress = client.extensions().ingresses().list().getItems()
@@ -73,11 +74,10 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                     .findFirst()
                     .orElse(null);
             if(ingress == null) {
-                String serviceName = retrieveServiceName(client, releaseName);
                 ingress = prepareNewIngress(ingressResourceName, externalUrl, serviceName, servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
-                IngressRule rule = prepareNewRule(externalUrl, releaseName, servicePort);
+                IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
                 ingress.getSpec().getRules().add(rule);
                 client.extensions().ingresses().delete(ingress);
             }
@@ -109,7 +109,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     /**
-     * Removes ingress rule from an existing ingress object.
+     * Removes ingress rule from an existing ingress resource.
      *
      * @param deploymentId unique identifier of service deployment
      * @param clientId identifier of the client requesting the deployment
@@ -117,7 +117,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
+    public synchronized void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String ingressResourceName = ingressResourceName(clientId.value());
         String externalUrl = externalUrl(deploymentId.value(), clientId.value());
