@@ -83,7 +83,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 ingress.getMetadata().setResourceVersion(null);
                 IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
                 ingress.getSpec().getRules().add(rule);
-                client.extensions().ingresses().delete(ingress);
+                deleteIngressResource(client, ingress);
             }
             client.extensions().ingresses().create(ingress);
         } catch (KubernetesClientException iee) {
@@ -121,6 +121,10 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return serviceObject.getSpec().getPorts().get(0).getPort();
     }
 
+    private void deleteIngressResource(KubernetesClient client, Ingress ingress) {
+        client.extensions().ingresses().delete(ingress);
+    }
+
     /**
      * Removes ingress rule from an existing ingress resource.
      *
@@ -141,14 +145,18 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                     .findFirst()
                     .orElseThrow(
                             () -> new IngressResourceManipulationException("Ingress object with name " + ingressResourceName + " does not exist in the cluster"));
-            ingress.getMetadata().setResourceVersion(null);
             List<IngressRule> filtered = ingress.getSpec().getRules()
                     .stream()
                     .filter(r -> !r.getHost().equals(externalUrl))
                     .collect(Collectors.toList());
-            ingress.getSpec().setRules(filtered);
-            client.extensions().ingresses().delete(ingress);
-            client.extensions().ingresses().create(ingress);
+            if (filtered.isEmpty()) {
+                deleteIngressResource(client, ingress);
+            } else {
+                ingress.getMetadata().setResourceVersion(null);
+                ingress.getSpec().setRules(filtered);
+                deleteIngressResource(client, ingress);
+                client.extensions().ingresses().create(ingress);
+            }
         } catch (KubernetesClientException e) {
             throw new IngressResourceManipulationException(e.getMessage());
         }
@@ -172,7 +180,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                     .findFirst()
                     .orElseThrow(
                             () -> new IngressResourceManipulationException("Ingress object with name " + ingressResourceName + " does not exist in the cluster"));
-            client.extensions().ingresses().delete(ingress);
+            deleteIngressResource(client, ingress);
         } catch (KubernetesClientException e) {
             throw new IngressResourceManipulationException(e.getMessage());
         }
