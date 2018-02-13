@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.extensions.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -65,8 +66,9 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         String ingressResourceName = ingressResourceName(clientId.value());
         String externalUrl = externalUrl(deploymentId.value(), clientId.value());
         String releaseName = deploymentId.value();
-        String serviceName = retrieveServiceName(client, releaseName);
-        int servicePort = DEFAULT_SERVICE_PORT;
+        Service serviceObject = retrieveServiceObject(client, releaseName);
+        String serviceName = extractServiceName(serviceObject);
+        int servicePort = extractServicePort(serviceObject);
         try {
             Ingress ingress = client.extensions().ingresses().list().getItems()
                     .stream()
@@ -95,17 +97,26 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return deploymentId + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
 
-    private String retrieveServiceName(KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
+    private Service retrieveServiceObject(KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
         Map<String, String> labels = new HashMap<>();
         labels.put(SERVICE_SELECT_OPTION_RELEASE, releaseName);
         labels.put(SERVICE_SELECT_OPTION_ACCESS, SERVICE_SELECT_VALUE_ACCESS_FOR_INGRESS);
         ServiceList matchingServices = client.services().withLabels(labels).list();
         if (matchingServices.getItems().size() == 1) {
-            return matchingServices.getItems().get(0).getMetadata().getName();
+            return matchingServices.getItems().get(0);
         } else {
             throw new IngressResourceManipulationException(
                     "Query for service to be included in Ingress resources returned wrong number of results -> " + matchingServices.getItems().size());
         }
+    }
+
+    private String extractServiceName(Service serviceObject) {
+        return serviceObject.getMetadata().getName();
+    }
+
+    // it is assumed that only one service port exists
+    private int extractServicePort(Service serviceObject) {
+        return serviceObject.getSpec().getPorts().get(0).getPort();
     }
 
     /**
