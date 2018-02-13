@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 public class DefaultIngressResourceManager implements IngressResourceManager {
 
     private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-client-";
+    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
+    private static final String NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME = "kubernetes.io/ingress.class";
     private static final String NMAAS_DOMAIN_SUFFIX = ".nmaas.geant.net";
     private static final int DEFAULT_SERVICE_PORT = 80;
 
@@ -76,7 +78,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                     .findFirst()
                     .orElse(null);
             if(ingress == null) {
-                ingress = prepareNewIngress(ingressResourceName, externalUrl, serviceName, servicePort);
+                ingress = prepareNewIngress(ingressResourceName, ingressClassName(clientId), externalUrl, serviceName, servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
                 IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
@@ -176,11 +178,12 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         }
     }
 
-    private Ingress prepareNewIngress(String ingressObjectName, String externalUrl, String serviceName, int servicePort) {
+    private Ingress prepareNewIngress(String ingressObjectName, String ingressClassName, String externalUrl, String serviceName, int servicePort) {
         Ingress ingress;
         ObjectMeta metadata = new ObjectMeta();
         metadata.setName(ingressObjectName);
         metadata.setNamespace(kubernetesDefaultNamespace);
+        metadata.setAdditionalProperty(NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME, ingressClassName);
         IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
         IngressSpec ingressSpec = new IngressSpec(null, Arrays.asList(rule), null);
         ingress = new Ingress(null, null, metadata, ingressSpec, null);
@@ -192,6 +195,10 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         HTTPIngressPath path = new HTTPIngressPath(backend, DEFAULT_SERVICE_PATH);
         HTTPIngressRuleValue ruleValue = new HTTPIngressRuleValue(Arrays.asList(path));
         return new IngressRule(externalUrl, ruleValue);
+    }
+
+    private String ingressClassName(Identifier clientId) {
+        return NMAAS_INGRESS_CLASS_NAME_PREFIX + clientId;
     }
 
     @Value("${kubernetes.namespace}")
