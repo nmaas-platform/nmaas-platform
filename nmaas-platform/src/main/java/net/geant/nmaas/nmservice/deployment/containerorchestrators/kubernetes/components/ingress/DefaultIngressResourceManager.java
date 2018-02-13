@@ -191,7 +191,9 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         ObjectMeta metadata = new ObjectMeta();
         metadata.setName(ingressObjectName);
         metadata.setNamespace(kubernetesDefaultNamespace);
-        metadata.setAdditionalProperty(NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME, ingressClassName);
+        Map<String, String> annotations = new HashMap<>();
+        annotations.put(NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME, ingressClassName)
+        metadata.setAnnotations(annotations);
         IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
         IngressSpec ingressSpec = new IngressSpec(null, Arrays.asList(rule), null);
         ingress = new Ingress(null, null, metadata, ingressSpec, null);
