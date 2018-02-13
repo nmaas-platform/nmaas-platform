@@ -85,7 +85,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 ingress.getSpec().getRules().add(rule);
                 deleteIngressResource(client, ingress);
             }
-            client.extensions().ingresses().create(ingress);
+            createIngressResource(client, ingress);
         } catch (KubernetesClientException iee) {
             throw new IngressResourceManipulationException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }
@@ -96,7 +96,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     private String externalUrl(String deploymentId, String clientId) {
-        return deploymentId + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
+        return deploymentId.substring(deploymentId.length() - 12) + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
 
     private Service retrieveServiceObject(KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
@@ -119,6 +119,10 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     // it is assumed that only one service port exists
     private int extractServicePort(Service serviceObject) {
         return serviceObject.getSpec().getPorts().get(0).getPort();
+    }
+
+    private void createIngressResource(KubernetesClient client, Ingress ingress) {
+        client.extensions().ingresses().create(ingress);
     }
 
     private void deleteIngressResource(KubernetesClient client, Ingress ingress) {
@@ -155,7 +159,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 ingress.getMetadata().setResourceVersion(null);
                 ingress.getSpec().setRules(filtered);
                 deleteIngressResource(client, ingress);
-                client.extensions().ingresses().create(ingress);
+                createIngressResource(client, ingress);
             }
         } catch (KubernetesClientException e) {
             throw new IngressResourceManipulationException(e.getMessage());
