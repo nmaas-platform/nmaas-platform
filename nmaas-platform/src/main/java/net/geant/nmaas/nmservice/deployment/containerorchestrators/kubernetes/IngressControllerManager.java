@@ -8,7 +8,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public interface IngressControllerManager {
+public interface IngressControllerManager extends KNamespaceAware {
 
     void deployIngressControllerIfMissing(Identifier clientId) throws IngressControllerManipulationException;
 

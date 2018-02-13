@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -29,15 +28,13 @@ public class HelmKServiceManager implements KServiceManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
 
     private KubernetesRepositoryManager repositoryManager;
-    private KubernetesClusterManager clusterManager;
     private HelmCommandExecutor helmCommandExecutor;
 
     private String kubernetesPersistenceStorageClass;
 
     @Autowired
-    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, KubernetesClusterManager clusterManager, HelmCommandExecutor helmCommandExecutor) {
+    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, HelmCommandExecutor helmCommandExecutor) {
         this.repositoryManager = repositoryManager;
-        this.clusterManager = clusterManager;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
@@ -52,12 +49,14 @@ public class HelmKServiceManager implements KServiceManager {
 
     private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) throws CommandExecutionException {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
+        Identifier clientId = serviceInfo.getClientId();
         String repoUrl = serviceInfo.getGitLabProject().getCloneUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
         helmCommandExecutor.executeHelmInstallCommand(
+                clientNamespace(clientId),
                 deploymentId,
                 template.getArchive(),
                 arguments

@@ -4,7 +4,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ex
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
-public interface KServiceManager {
+public interface KServiceManager extends KNamespaceAware {
 
     void deployService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException;
 

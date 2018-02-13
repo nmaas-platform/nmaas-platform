@@ -43,7 +43,11 @@ public class DefaultIngressControllerManager implements IngressControllerManager
             String ingressControllerName = ingressControllerName(clientId.value());
             if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
                 String externalIpAddress = obtainExternalIpAddressForClient(clientId);
-                installIngressControllerHelmChart(ingressControllerName, ingressClassName(clientId), externalIpAddress);
+                installIngressControllerHelmChart(
+                        clientNamespace(clientId),
+                        ingressControllerName,
+                        ingressClassName(clientId),
+                        externalIpAddress);
             }
         } catch (ExternalNetworkNotFoundException ennfe) {
             throw new IngressControllerManipulationException(ennfe.getMessage());
@@ -70,11 +74,12 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         return NMAAS_INGRESS_CLASS_NAME_PREFIX + clientId;
     }
 
-    private void installIngressControllerHelmChart(String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
+    private void installIngressControllerHelmChart(String namespace, String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_INGRESS_CLASS, ingressClass);
         arguments.put(HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS, "{" + externalIpAddress + "}");
         helmCommandExecutor.executeHelmInstallCommand(
+                namespace,
                 releaseName,
                 kubernetesIngressControllerChart,
                 arguments

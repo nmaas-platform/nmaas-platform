@@ -65,20 +65,27 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Loggable(LogLevel.INFO)
     public synchronized void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
+        String namespace = clientNamespace(clientId);
         String ingressResourceName = ingressResourceName(clientId.value());
         String externalUrl = externalUrl(deploymentId.value(), clientId.value());
         String releaseName = deploymentId.value();
-        Service serviceObject = retrieveServiceObject(client, releaseName);
+        Service serviceObject = retrieveServiceObject(namespace, client, releaseName);
         String serviceName = extractServiceName(serviceObject);
         int servicePort = extractServicePort(serviceObject);
         try {
-            Ingress ingress = client.extensions().ingresses().list().getItems()
+            Ingress ingress = client.extensions().ingresses().inNamespace(namespace).list().getItems()
                     .stream()
                     .filter(i -> i.getMetadata().getName().equals(ingressResourceName))
                     .findFirst()
                     .orElse(null);
             if(ingress == null) {
-                ingress = prepareNewIngress(ingressResourceName, ingressClassName(clientId), externalUrl, serviceName, servicePort);
+                ingress = prepareNewIngress(
+                        namespace,
+                        ingressResourceName,
+                        ingressClassName(clientId),
+                        externalUrl,
+                        serviceName,
+                        servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
                 IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
@@ -99,11 +106,11 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return deploymentId.substring(deploymentId.length() - 12) + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
 
-    private Service retrieveServiceObject(KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
+    private Service retrieveServiceObject(String namespace, KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
         Map<String, String> labels = new HashMap<>();
         labels.put(SERVICE_SELECT_OPTION_RELEASE, releaseName);
         labels.put(SERVICE_SELECT_OPTION_ACCESS, SERVICE_SELECT_VALUE_ACCESS_FOR_INGRESS);
-        ServiceList matchingServices = client.services().withLabels(labels).list();
+        ServiceList matchingServices = client.services().inNamespace(namespace).withLabels(labels).list();
         if (matchingServices.getItems().size() == 1) {
             return matchingServices.getItems().get(0);
         } else {
@@ -140,10 +147,11 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Loggable(LogLevel.INFO)
     public synchronized void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
+        String namespace = clientNamespace(clientId);
         String ingressResourceName = ingressResourceName(clientId.value());
         String externalUrl = externalUrl(deploymentId.value(), clientId.value());
         try {
-            Ingress ingress = client.extensions().ingresses().list().getItems()
+            Ingress ingress = client.extensions().ingresses().inNamespace(namespace).list().getItems()
                     .stream()
                     .filter(i -> i.getMetadata().getName().equals(ingressResourceName))
                     .findFirst()
@@ -190,18 +198,21 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         }
     }
 
-    private Ingress prepareNewIngress(String ingressObjectName, String ingressClassName, String externalUrl, String serviceName, int servicePort) {
-        Ingress ingress;
+    private Ingress prepareNewIngress(String namespace, String ingressObjectName, String ingressClassName, String externalUrl, String serviceName, int servicePort) {
+        ObjectMeta metadata = prepareMetadata(namespace, ingressObjectName, ingressClassName);
+        IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
+        IngressSpec ingressSpec = new IngressSpec(null, Arrays.asList(rule), null);
+        return new Ingress(null, null, metadata, ingressSpec, null);
+    }
+
+    private ObjectMeta prepareMetadata(String namespace, String ingressObjectName, String ingressClassName) {
         ObjectMeta metadata = new ObjectMeta();
         metadata.setName(ingressObjectName);
-        metadata.setNamespace(kubernetesDefaultNamespace);
+        metadata.setNamespace(namespace);
         Map<String, String> annotations = new HashMap<>();
         annotations.put(NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME, ingressClassName);
         metadata.setAnnotations(annotations);
-        IngressRule rule = prepareNewRule(externalUrl, serviceName, servicePort);
-        IngressSpec ingressSpec = new IngressSpec(null, Arrays.asList(rule), null);
-        ingress = new Ingress(null, null, metadata, ingressSpec, null);
-        return ingress;
+        return metadata;
     }
 
     private IngressRule prepareNewRule(String externalUrl, String serviceName, int servicePort) {

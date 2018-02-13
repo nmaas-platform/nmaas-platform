@@ -26,14 +26,22 @@ public class HelmCommandExecutor {
     private String defaultKubernetesNamespace;
 
     public void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeHelmInstallCommand(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
+        executeInstall(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
+    }
+
+    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, releaseName, chartArchiveName, arguments);
     }
 
     public void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeHelmInstallCommand(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
+        executeInstall(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
     }
 
-    private void executeHelmInstallCommand(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
+    public void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
+    }
+
+    private void executeInstall(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
             if (!useLocalArchives)
