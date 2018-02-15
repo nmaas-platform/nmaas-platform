@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
@@ -28,13 +29,15 @@ public class HelmKServiceManager implements KServiceManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
 
     private KubernetesRepositoryManager repositoryManager;
+    private KNamespaceService namespaceService;
     private HelmCommandExecutor helmCommandExecutor;
 
     private String kubernetesPersistenceStorageClass;
 
     @Autowired
-    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, HelmCommandExecutor helmCommandExecutor) {
+    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, KNamespaceService namespaceService, HelmCommandExecutor helmCommandExecutor) {
         this.repositoryManager = repositoryManager;
+        this.namespaceService = namespaceService;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
@@ -56,7 +59,7 @@ public class HelmKServiceManager implements KServiceManager {
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
         helmCommandExecutor.executeHelmInstallCommand(
-                clientNamespace(clientId),
+                namespaceService.namespace(clientId),
                 deploymentId,
                 template.getArchive(),
                 arguments

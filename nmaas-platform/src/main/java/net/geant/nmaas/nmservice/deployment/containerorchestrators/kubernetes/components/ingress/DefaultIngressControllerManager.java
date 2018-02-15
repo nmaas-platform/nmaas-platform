@@ -4,6 +4,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterMa
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -27,13 +28,15 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
 
     private KubernetesClusterManager clusterManager;
+    private KNamespaceService namespaceService;
     private HelmCommandExecutor helmCommandExecutor;
 
     private String kubernetesIngressControllerChart;
 
     @Autowired
-    public DefaultIngressControllerManager(HelmCommandExecutor helmCommandExecutor, KubernetesClusterManager clusterManager) {
+    public DefaultIngressControllerManager(HelmCommandExecutor helmCommandExecutor, KNamespaceService namespaceService, KubernetesClusterManager clusterManager) {
         this.clusterManager = clusterManager;
+        this.namespaceService = namespaceService;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
@@ -44,7 +47,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
             if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
                 String externalIpAddress = obtainExternalIpAddressForClient(clientId);
                 installIngressControllerHelmChart(
-                        clientNamespace(clientId),
+                        namespaceService.namespace(clientId),
                         ingressControllerName,
                         ingressClassName(clientId),
                         externalIpAddress);

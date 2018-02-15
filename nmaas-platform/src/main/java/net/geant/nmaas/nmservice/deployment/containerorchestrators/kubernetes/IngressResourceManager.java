@@ -8,7 +8,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public interface IngressResourceManager extends KNamespaceAware {
+public interface IngressResourceManager {
 
     void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException;
 

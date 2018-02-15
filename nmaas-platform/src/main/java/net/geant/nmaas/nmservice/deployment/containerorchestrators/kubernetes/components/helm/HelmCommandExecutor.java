@@ -23,18 +23,9 @@ public class HelmCommandExecutor {
     private KubernetesClusterManager cluster;
 
     private boolean useLocalArchives;
-    private String defaultKubernetesNamespace;
-
-    public void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeInstall(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
-    }
 
     public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
         executeInstall(kubernetesNamespace, releaseName, chartArchiveName, arguments);
-    }
-
-    public void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeInstall(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
     }
 
     public void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
@@ -121,11 +112,6 @@ public class HelmCommandExecutor {
     @Value("${kubernetes.helm.charts.use.local.archives}")
     public void setUseLocalArchives(boolean useLocalArchives) {
         this.useLocalArchives = useLocalArchives;
-    }
-
-    @Value("${kubernetes.namespace}")
-    public void setDefaultKubernetesNamespace(String defaultKubernetesNamespace) {
-        this.defaultKubernetesNamespace = defaultKubernetesNamespace;
     }
 
 }
