@@ -83,6 +83,11 @@ public class HelmKServiceManager implements KServiceManager {
         }
     }
 
+    @Override
+    public void upgradeService(Identifier deploymentId) throws KServiceManipulationException {
+        // TODO
+    }
+
     @Value("${kubernetes.persistence.class}")
     public void setKubernetesPersistenceStorageClass(String kubernetesPersistenceStorageClass) {
         this.kubernetesPersistenceStorageClass = kubernetesPersistenceStorageClass;

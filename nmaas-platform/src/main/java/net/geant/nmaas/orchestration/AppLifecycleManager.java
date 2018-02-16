@@ -56,4 +56,12 @@ public interface AppLifecycleManager {
      */
     void updateConfiguration(Identifier deploymentId, AppConfiguration configuration);
 
+    /**
+     * Restarts the already running application.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any deployed application
+     */
+    void restartApplication(Identifier deploymentId) throws InvalidDeploymentIdException;
+
 }

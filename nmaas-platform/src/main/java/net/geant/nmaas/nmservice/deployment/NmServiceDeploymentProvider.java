@@ -64,4 +64,12 @@ public interface NmServiceDeploymentProvider {
      */
     void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException;
 
+    /**
+     * Coordinates NM service restart (delegates tasks to attached {@link ContainerOrchestrator}).
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @throws CouldNotRestartNmServiceException if NM service couldn't be restarted for some reason
+     */
+    void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException;
+
 }
