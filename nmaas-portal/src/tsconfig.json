@@ -4,15 +4,21 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
+<<<<<<< HEAD
       "dom",
       "es6"
+=======
+      "es5",
+	  "es2015",
+      "dom"
+>>>>>>> refs/remotes/origin/develop
     ],
     "mapRoot": "./",
     "module": "ES2015",
     "moduleResolution": "node",
     "outDir": "../build",
     "sourceMap": true,
-    "target": "ES6",
+    "target": "ES5",
     "typeRoots": [
       "../node_modules/@types"
     ]

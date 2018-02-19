@@ -35,7 +35,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("docker-compose")
+@Profile("env_docker-compose")
 public class DockerComposeManager implements ContainerOrchestrator {
 
     @Autowired
@@ -232,8 +232,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     }
 
     private void stopAndRemoveContainers(DockerComposeNmServiceInfo service) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
-        composeCommandExecutor.executeComposeStopCommand(service.getDeploymentId(), service.getHost());
-        composeCommandExecutor.executeComposeRemoveCommand(service.getDeploymentId(), service.getHost());
+        composeCommandExecutor.executeComposeDownCommand(service.getDeploymentId(), service.getHost());
         for(DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents())
             dockerNetworkResourceManager.removeAddressAssignment(service.getClientId(), component.getIpAddressOfContainer());
     }

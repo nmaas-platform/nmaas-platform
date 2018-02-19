@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -23,6 +24,7 @@ import static org.hamcrest.Matchers.nullValue;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource("classpath:application-test-engine.properties")
 public class DockerHostStateKeeperTest {
 
     private static final String DOCKER_HOST_NAME_1 = "GN4-DOCKER-1";

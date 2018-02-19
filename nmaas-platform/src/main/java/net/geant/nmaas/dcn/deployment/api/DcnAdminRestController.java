@@ -4,8 +4,8 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.DcnView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,9 +26,7 @@ public class DcnAdminRestController {
      * @return list of {@link DcnView} objects
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "",
-            method = RequestMethod.GET)
+    @GetMapping
     public List<DcnView> listAllDcns() {
         return dcnRepositoryManager.loadAllNetworks().stream()
                 .map(dcn -> new DcnView(dcn))

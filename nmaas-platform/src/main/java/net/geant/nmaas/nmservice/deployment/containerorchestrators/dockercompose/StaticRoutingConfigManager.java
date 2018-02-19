@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("docker-compose")
+@Profile("env_docker-compose")
 public class StaticRoutingConfigManager {
 
     private final static Logger log = LogManager.getLogger(StaticRoutingConfigManager.class);
@@ -38,7 +38,6 @@ public class StaticRoutingConfigManager {
     private DockerNetworkResourceManager dockerNetworkResourceManager;
     @Autowired
     private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
-
     @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
 

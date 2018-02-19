@@ -52,7 +52,7 @@ public class DockerComposeCommand implements Command {
 	}
 
 	public enum CommandType {
-		UP("up -d"), PULL("pull"), STOP("stop"), REMOVE("rm -f"), EXEC("exec");
+		UP("up -d"), DOWN("down"), PULL("pull"), STOP("stop"), REMOVE("rm -f"), EXEC("exec");
 
 		private String value;
 

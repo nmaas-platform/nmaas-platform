@@ -16,7 +16,7 @@ import javax.persistence.OneToOne;
 public class KubernetesNmServiceInfo extends NmServiceInfo {
 
     /**
-     * Kubernetes template for this service.
+     * Kubernetes template for this service
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesTemplate kubernetesTemplate;

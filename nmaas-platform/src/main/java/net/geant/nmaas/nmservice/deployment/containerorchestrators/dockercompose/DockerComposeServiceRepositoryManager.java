@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("docker-compose")
+@Profile("env_docker-compose")
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DockerComposeServiceRepositoryManager extends DockerServiceRepositoryManager<DockerComposeNmServiceInfo> implements DockerNmServiceRepositoryManager {
 

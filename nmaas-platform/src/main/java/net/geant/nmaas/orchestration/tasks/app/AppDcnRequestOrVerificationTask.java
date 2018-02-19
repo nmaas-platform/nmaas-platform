@@ -12,8 +12,6 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AppDcnRequestOrVerificationTask {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
@@ -46,8 +43,8 @@ public class AppDcnRequestOrVerificationTask {
      */
     @EventListener
     @Loggable(LogLevel.INFO)
-    public ApplicationEvent requestOrVerifyDcn(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getDeploymentId();
+    public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
+        final Identifier deploymentId = event.getRelatedTo();
         final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
         switch(dcnDeployment.checkState(clientId)) {
             case NONE:

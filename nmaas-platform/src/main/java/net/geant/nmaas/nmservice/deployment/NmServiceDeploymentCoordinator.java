@@ -8,27 +8,37 @@ import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
 
 /**
+ * Default implementation of the {@link NmServiceDeploymentProvider}. Coordinates NM service deployment workflow and
+ * delegates particular tasks to currently used {@link ContainerOrchestrator}.
+ *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {
 
-    private final static Logger log = LogManager.getLogger(NmServiceDeploymentCoordinator.class);
-
-    @Autowired
     private ContainerOrchestrator orchestrator;
 
-    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Value("${nmaas.service.deployment.check.interval}")
+    int serviceDeploymentCheckInternal;
+
+    @Value("${nmaas.service.deployment.max.duration}")
+    int serviceDeploymentCheckMaxWaitTime;
+
+    @Autowired
+    public NmServiceDeploymentCoordinator(ContainerOrchestrator orchestrator, ApplicationEventPublisher applicationEventPublisher) {
+        this.orchestrator = orchestrator;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -40,11 +50,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (NmServiceRequestVerificationException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service request verification failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
             throw new NmServiceRequestVerificationException(e.getMessage());
         } catch (Exception e) {
-            log.error("NM Service request verification failed -> Unknown exception", e);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
             throw new NmServiceRequestVerificationException(e.getMessage());
         }
@@ -59,7 +67,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service deployment environment preparation failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
             throw new CouldNotPrepareEnvironmentException("NM Service deployment environment preparation failed -> " + e.getMessage());
         }
@@ -74,7 +81,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, DEPLOYED);
         } catch (CouldNotDeployNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service deployment failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED);
             throw new CouldNotDeployNmServiceException("NM Service deployment failed -> " + e.getMessage());
         }
@@ -84,12 +90,23 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException {
         try {
-            orchestrator.checkService(deploymentId);
-            notifyStateChangeListeners(deploymentId, VERIFIED);
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.VERIFICATION_INITIATED);
+            int currentWaitTime = 0;
+            while (currentWaitTime <= serviceDeploymentCheckMaxWaitTime) {
+                try {
+                    orchestrator.checkService(deploymentId);
+                    notifyStateChangeListeners(deploymentId, VERIFIED);
+                    return;
+                } catch(ContainerCheckFailedException e) {
+                    Thread.sleep(serviceDeploymentCheckInternal * 1000);
+                    currentWaitTime += serviceDeploymentCheckInternal;
+                }
+            }
+            throw new ContainerCheckFailedException("Maximum wait time for container deployment exceeded");
         } catch (ContainerCheckFailedException
                 | DockerNetworkCheckFailedException
-                | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service deployment verification failed -> " + e.getMessage());
+                | ContainerOrchestratorInternalErrorException
+                | InterruptedException e) {
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED);
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
         }
@@ -113,7 +130,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            log.error("NM Service removal failed -> " + e.getMessage());
             notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
             throw new CouldNotRemoveNmServiceException("NM Service removal failed -> " + e.getMessage());
         }

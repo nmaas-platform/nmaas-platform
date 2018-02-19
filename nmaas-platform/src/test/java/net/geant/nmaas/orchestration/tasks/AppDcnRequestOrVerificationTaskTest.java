@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestPropertySource("classpath:application-test-engine.properties")
 public class AppDcnRequestOrVerificationTaskTest {
 
     @Autowired
@@ -60,7 +62,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     @Before
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
+        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE));
         appDeploymentSpec.setDockerContainerTemplate(oxidizedTemplate());
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);
@@ -81,11 +83,11 @@ public class AppDcnRequestOrVerificationTaskTest {
 
     @Test
     public void shouldGenerateNewDcnDeploymentAction() throws InvalidDeploymentIdException, InvalidClientIdException {
-        ApplicationEvent resultEvent = task.requestOrVerifyDcn(event);
+        ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent instanceof DcnVerifyRequestActionEvent, is(true));
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", clientId)));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REMOVED));
-        resultEvent = task.requestOrVerifyDcn(event);
+        resultEvent = task.trigger(event);
         assertThat(resultEvent instanceof DcnVerifyRequestActionEvent, is(true));
     }
 
@@ -93,14 +95,14 @@ public class AppDcnRequestOrVerificationTaskTest {
     public void shouldNotifyReadyForDeploymentState() throws InvalidDeploymentIdException, InvalidClientIdException {
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", clientId)));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.VERIFIED));
-        ApplicationEvent resultEvent = task.requestOrVerifyDcn(event);
+        ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent instanceof NmServiceDeploymentStateChangeEvent, is(true));
     }
 
     @Test
     public void shouldNotGenerateAnyAction() throws InvalidDeploymentIdException, InvalidClientIdException {
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", clientId)));
-        ApplicationEvent resultEvent = task.requestOrVerifyDcn(event);
+        ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(nullValue()));
     }
 

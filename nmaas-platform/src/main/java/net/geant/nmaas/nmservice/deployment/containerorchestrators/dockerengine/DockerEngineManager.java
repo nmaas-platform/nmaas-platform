@@ -29,7 +29,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("docker-engine")
+@Profile("env_docker-engine")
 public class DockerEngineManager implements ContainerOrchestrator {
 
     @Autowired
