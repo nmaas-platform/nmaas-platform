@@ -20,18 +20,30 @@ import net.geant.nmaas.portal.api.auth.UserSignup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 
 @RestController
 @RequestMapping("/portal/api/auth/basic")
 public class BasicAuthController {
 
+//	@Autowired
+//	UserRepository users;
+	
 	@Autowired
-	UserRepository users;
+	UserService users;
+	
+	@Autowired
+	DomainService domains;
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
@@ -50,14 +62,14 @@ public class BasicAuthController {
 		if(StringUtils.isEmpty(userLogin.getUsername()) || StringUtils.isEmpty(userLogin.getPassword()))
 			throw new AuthenticationException("Missing credentials.");
 		
-		Optional<User> user = users.findByUsername(userLogin.getUsername());
-		if(! user.isPresent())
+		User user = users.findByUsername(userLogin.getUsername());
+		if(user == null)
 			throw new AuthenticationException("User not found.");
 		
-		if(!passwordEncoder.matches(userLogin.getPassword(), user.get().getPassword()))
+		if(!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
 			throw new AuthenticationException("Invalid password.");
 						
-		return new UserToken(jwtTokenService.getToken(user.get()), jwtTokenService.getRefreshToken(user.get()));
+		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
 	
 	@RequestMapping(value="/token", method=RequestMethod.POST)
@@ -67,9 +79,9 @@ public class BasicAuthController {
 		
 		if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
 			Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
-			Optional<User> user = users.findByUsername(claims.getSubject());
-			if(user.isPresent()) {
-				return new UserToken(jwtTokenService.getToken(user.get()), jwtTokenService.getRefreshToken(user.get()));
+			User user = users.findByUsername(claims.getSubject());
+			if(user != null) {
+				return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 			}
 		}
 				
@@ -82,13 +94,29 @@ public class BasicAuthController {
 	public void signup(@RequestBody final UserSignup userSignup) throws SignupException {
 		if(userSignup == null || StringUtils.isEmpty(userSignup.getUsername()) || StringUtils.isEmpty(userSignup.getPassword()) )
 			throw new SignupException("Invalid credentials.");
-		
-		Optional<User> user = users.findByUsername(userSignup.getUsername());
-		if(user.isPresent())
+							
+		User newUser = null;
+		try {
+			newUser = users.register(userSignup.getUsername());
+			if(newUser == null)
+				throw new SignupException("Unable to register new user");
+		} catch (ObjectAlreadyExistsException e) {
 			throw new SignupException("User already exists.");
+		} catch (MissingElementException e) {
+			throw new SignupException("Domain not found.");
+		}
 		
-		User newUser = new User(userSignup.getUsername(), passwordEncoder.encode(userSignup.getPassword()), Role.USER);
-		users.save(newUser);
+		newUser.setPassword(passwordEncoder.encode(userSignup.getPassword()));		
+		
+		try {
+			users.update(newUser);
+			if(userSignup.getDomainId() != null)
+				domains.addMemberRole(userSignup.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
+		} catch (ProcessingException e) {
+			throw new SignupException("Unable to update newly registered user.");
+		} catch (MissingElementException e) {
+			throw new SignupException("Domain not found."); 
+		}
 	}
 	
 	@RequestMapping(value="/ping", method=RequestMethod.GET)

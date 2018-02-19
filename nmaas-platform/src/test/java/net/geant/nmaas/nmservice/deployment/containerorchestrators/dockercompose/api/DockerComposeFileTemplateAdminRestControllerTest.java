@@ -70,7 +70,7 @@ public class DockerComposeFileTemplateAdminRestControllerTest extends BaseContro
     @Test
     @Transactional
     public void shouldStoreAndLoadTemplate() throws Exception {
-        String token = getValidUserTokenFor(Role.ADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
         assertThat(templateRepository.count(), equalTo(0L));
         mvc.perform(post("/platform/api/management/apps/{appId}/dockercompose/template", appId)
                 .header("Authorization", "Bearer " + token)
@@ -92,7 +92,7 @@ public class DockerComposeFileTemplateAdminRestControllerTest extends BaseContro
     @Test
     @Transactional
     public void shouldReturnProperCodesOnExceptions() throws Exception {
-        String token = getValidUserTokenFor(Role.ADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
         mvc.perform(get("/platform/api/management/apps/{appId}/dockercompose/template", 100)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
@@ -110,7 +110,7 @@ public class DockerComposeFileTemplateAdminRestControllerTest extends BaseContro
 
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
-        String token = getValidUserTokenFor(Role.USER);
+        String token = getValidUserTokenFor(Role.ROLE_USER);
         mvc.perform(get("/platform/api/management/apps/{appId}/dockercompose/template", appId)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());

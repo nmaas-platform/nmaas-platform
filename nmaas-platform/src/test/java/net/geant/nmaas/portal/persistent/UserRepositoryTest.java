@@ -5,6 +5,8 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.DomainService;
+
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,13 @@ import static org.junit.Assert.assertNotNull;
 @Rollback
 public class UserRepositoryTest {
 
+	final static String DOMAIN = "domain";
+	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	DomainService domains;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -41,6 +48,8 @@ public class UserRepositoryTest {
 
 	@Before
 	public void setUp() throws Exception {
+		domains.createGlobalDomain();
+		domains.createDomain(DOMAIN);
 		userRepository.deleteAll();
 	}
 
@@ -50,9 +59,9 @@ public class UserRepositoryTest {
 
 	@Test
 	public void test() {
-		User tester = new User("tester", "test123", Role.USER);
-		User admin = new User("admin", "admin123", Role.ADMIN);
-		admin.getRoles().add(new UserRole(admin, Role.USER));
+		User tester = new User("tester", "test123", domains.findDomain(DOMAIN), Role.ROLE_USER);
+		User admin = new User("admin", "admin123", domains.getGlobalDomain(), Role.ROLE_SUPERADMIN);
+		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);
 		

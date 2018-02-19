@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.service;
+package net.geant.nmaas.portal.service.impl;
 
 import static org.junit.Assert.*;
 
@@ -32,6 +32,7 @@ import net.geant.nmaas.portal.PortalConfig;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.StorageException;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
+import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

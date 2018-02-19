@@ -8,7 +8,7 @@ plugins {
 apply from: '../reactor/build.gradle'
 
 task buildGUI(type: Exec) {
-	println 'Building using angular-cli'
+	println 'Building using Angular CLI'
 
 	if ( OperatingSystem.current().isWindows() ) {
 		commandLine 'cmd', '/c', 'ng', 'build'
@@ -29,7 +29,7 @@ buildGUI.doLast { tasks.dist.execute() }
 build.dependsOn(buildGUI)
 
 task run(type: Exec) {
-	println 'Running app using angular-cli'
+	println 'Running app using Angular CLI'
 	
 	if ( OperatingSystem.current().isWindows() ) {
 		commandLine 'cmd', '/c', 'ng', 'serve'

@@ -5,6 +5,7 @@ import java.security.Principal;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,12 +38,14 @@ public class RatingController extends AppBaseController {
 	}
 	
 	@RequestMapping(value="/my", method=RequestMethod.GET)
+	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRate getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) throws MissingElementException {
 		User user = getUser(principal.getName());
 		return getUserAppRating(appId, user.getId());
 	}
 
 	@RequestMapping(value="/user/{userId}", method=RequestMethod.GET)
+	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRate getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) throws MissingElementException {
 		Application app = getApp(appId);
 		User user = getUser(userId);
@@ -55,6 +58,7 @@ public class RatingController extends AppBaseController {
 
 	
 	@RequestMapping(value="/my/{rate}", method=RequestMethod.POST)
+	@PreAuthorize("hasPermission(#appId, 'application', 'WRITE')")
 	@Transactional
 	public ApiResponse setUserAppRating(@PathVariable("appId") Long appId, @PathVariable("rate") Integer rate, @NotNull Principal principal) throws MissingElementException {
 		Application app = getApp(appId);

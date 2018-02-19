@@ -1,0 +1,10 @@
+<div class="page-header">
+	<h3 *ngIf="isInMode(ComponentMode.VIEW)">User {{user?.username}} ({{user?.id}})</h3>
+	<h3 *ngIf="isInMode(ComponentMode.CREATE)">Create user</h3>
+</div>
+<nmaas-userdetails *ngIf="isInMode(ComponentMode.VIEW)" [user]="user" [mode]="getCurrentMode()" (onSave)="onSave($event)"></nmaas-userdetails>
+<nmaas-userdetails *ngIf="isInMode(ComponentMode.CREATE)" [mode]="getCurrentMode()" (onSave)="onSave($event)"></nmaas-userdetails>
+
+<nmaas-password *ngIf="isInMode(ComponentMode.VIEW)" (passwordSubmit)="onPasswordSubmit($event)"></nmaas-password>
+<nmaas-userprivileges *ngIf="isInMode(ComponentMode.VIEW)" [allowedModes]="[ComponentMode.VIEW, ComponentMode.CREATE]" [user]="user"></nmaas-userprivileges>
+

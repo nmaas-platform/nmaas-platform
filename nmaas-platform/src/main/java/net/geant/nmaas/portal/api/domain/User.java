@@ -1,7 +1,9 @@
 package net.geant.nmaas.portal.api.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,20 +16,21 @@ public class User {
 	@NotNull
 	String username;
 	
-	List<Role> roles = new ArrayList<Role>();
+	Set<UserRole> roles = new HashSet<UserRole>();
 	
 	public User() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public User(Long id, String username, List<Role> roles) {
-		super();
+	public User(Long id, String username) {
 		this.id = id;
-		this.username = username;
+		this.username = username;		
+	}
+	
+	public User(Long id, String username, Set<UserRole> roles) {
+		this(id, username);
 		this.roles = roles;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -45,11 +48,11 @@ public class User {
 		this.username = username;
 	}
 
-	public List<Role> getRoles() {
+	public Set<UserRole> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
 	}
 	

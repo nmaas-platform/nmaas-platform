@@ -25,17 +25,17 @@ export class CommentsComponent implements OnInit {
         this.refresh();
     }
 
-    public refresh() : void {
+    public refresh(): void {
         this.appsService.getAppCommentsByUrl(this.pathUrl).subscribe(comments => this.comments = comments);
     }
-    
+
     public addComment(): void {
         this.appsService.addAppCommentByUrl(this.pathUrl, this.newComment)
-                        .subscribe(id => { 
+                        .subscribe(id => {
                             this.newComment = new Comment();
                             this.refresh();
                             });
-                          
+
     }
 
     public deleteComment(id: Number): void {

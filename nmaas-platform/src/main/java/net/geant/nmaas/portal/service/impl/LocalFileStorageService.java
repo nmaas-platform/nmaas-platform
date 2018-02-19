@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.service;
+package net.geant.nmaas.portal.service.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.StorageException;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.persistent.repositories.FileInfoRepository;
+import net.geant.nmaas.portal.service.FileStorageService;
 
 @Service
 public class LocalFileStorageService implements FileStorageService {

@@ -65,6 +65,21 @@ public class Comment implements Serializable {
 		this.comment = comment;
 	}
 	
+	public Comment(Application application, String comment, User owner) {
+		this(application, comment);
+		this.owner = owner;
+	}
+	
+	protected Comment(Long id, Application application, String comment) {
+		this(application, comment);
+		this.id = id;
+	}
+	
+	protected Comment(Long id, Application application, String comment, User owner) {
+		this(application, comment, owner);
+		this.id = id;
+	}	
+	
 	public Comment(Application application, Comment parent, String comment) {
 		this(application, comment);
 		this.parent = parent;

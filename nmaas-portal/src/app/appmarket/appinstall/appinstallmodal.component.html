@@ -4,6 +4,10 @@
 		<div class="form-group">
 			<label for="name">Instance name</label> 
 			<input type="text" class="form-control" id="name" [(ngModel)]="name">
+			<label for="userDomains">Available domains: </label>
+			<select id="userDomains" class="form-control" [(ngModel)]="domainId">				
+				<option *ngFor="let domain of userDomains" [value]="domain.id">{{domain.name}}</option>
+			</select>	
 		</div>
 	</div>
 	<div class="nmaas-modal-footer">

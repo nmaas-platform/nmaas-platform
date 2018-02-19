@@ -37,6 +37,7 @@ public class AppCommentsController extends AppBaseController {
 	UserRepository userRepo;
 			
 	@RequestMapping(method=RequestMethod.GET)
+	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
 	public List<Comment> getComments(@PathVariable(value="appId", required=true) Long appId, Pageable pageable) throws MissingElementException {
 		Application app = getApp(appId);
 		Page<net.geant.nmaas.portal.persistent.entity.Comment> page = commentRepo.findByApplication(app, pageable);
@@ -57,6 +58,7 @@ public class AppCommentsController extends AppBaseController {
 	
 	
 	@RequestMapping(method=RequestMethod.POST)
+	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
 	@Transactional
 	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) throws MissingElementException, ProcessingException {
 		Application app = getApp(appId);
@@ -99,13 +101,14 @@ public class AppCommentsController extends AppBaseController {
 	}
 
 	@RequestMapping(value="/{commentId}", method=RequestMethod.POST)
+	@PreAuthorize("hasPermission(null, 'comment', 'WRITE')")
 	@Transactional
 	public void editComment(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="commentId", required=true) Long commentId, @RequestBody(required=true) CommentRequest comment, Principal principal) throws MissingElementException, ProcessingException {
 		throw new ProcessingException("Comment editing not supported.");
 	}
 	
 	@RequestMapping(value="/{commentId}", method=RequestMethod.DELETE)
-	@PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER') || hasPermission(#commentId, 'comment', 'owner')")
+	@PreAuthorize("hasPermission(#commentId, 'comment', 'DELETE')")
 	@Transactional
 	public void deleteComment(@PathVariable(value="appId") Long appId, @PathVariable(value="commentId") Long commentId) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Comment comment = getComment(commentId);

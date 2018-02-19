@@ -14,7 +14,7 @@
 	<div class="row">
 				<h3>Comments:</h3>
 				<ul class="media-list">
-					<template ngFor let-comment [ngForOf]="comments">
+					<ng-template ngFor let-comment [ngForOf]="comments">
 					<li *ngIf="!comment.parentId" class="media">
 						<div class="media-left">
 						  <a href="#">
@@ -28,7 +28,7 @@
 						  <hr>															
 																					
 							<ul *ngIf="comment.subComments !== null" class="media-list">
-								<template ngFor let-subcomment [ngForOf]="comment.subComments">
+								<ng-template ngFor let-subcomment [ngForOf]="comment.subComments">
 							
 								<li class="media">
 									<div class="media-left">
@@ -43,7 +43,7 @@
 									  <hr>
 									</div>							
 								</li>
-								</template>
+								</ng-template>
 							</ul>
 						
 						
@@ -51,6 +51,6 @@
 					
 					
 					</li>
-					</template>
+					</ng-template>
 				</ul>
 	</div>

@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.persistent.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -24,27 +25,37 @@ public class User {
 	@NotNull
 	private String username;
 	
-	@NotNull
+	//@NotNull
 	private String password;
 	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
 	private List<UserRole> roles = new ArrayList<UserRole>();
 
 	protected User() {
 	}
 	
-	public User(String username, String password, Role role) {
+	public User(String username) {
 		this.username = username;
+	}
+	
+	public User(String username, String password, Domain domain, Role role) {
+		this(username);
 		this.password = password;
-		this.roles.add(new UserRole(this, role));
+		this.roles.add(new UserRole(this, domain, role));
 	}
 
-	public User(String username, String password, List<Role> roles) {
+	public User(String username, String password, Domain domain, List<Role> roles) {
 		this.username = username;
 		this.password = password;
 		for (Role role : roles) {
-			this.roles.add(new UserRole(this, role));
+			this.roles.add(new UserRole(this, domain, role));
 		}	
+	}
+	
+	protected User(Long id, String username, Domain domain, Role role) {
+		this.id = id;
+		this.username = username;
+		this.getRoles().add(new UserRole(this, domain, role));
 	}
 	
 	protected User(Long id, String username, String password, List<UserRole> roles) {
@@ -68,11 +79,9 @@ public class User {
 		this.password = password;
 	}
 
-	public void setNewRoles(List<Role> roles) {
+	public void setNewRoles(Set<UserRole> roles) {
 		this.roles.clear();
-		for (Role role : roles) {
-			this.roles.add(new UserRole(this, role));
-		}	
+		this.roles.addAll(roles);
 	}
 	
 	public void setRoles(List<UserRole> roles) {

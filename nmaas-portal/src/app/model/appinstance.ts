@@ -3,6 +3,7 @@ import { AppInstanceState } from './appinstancestatus';
 
 export class AppInstance {
     id: Number;
+    domainId: Number;
     applicationId: Number;
     applicationName: string;
     name: string;

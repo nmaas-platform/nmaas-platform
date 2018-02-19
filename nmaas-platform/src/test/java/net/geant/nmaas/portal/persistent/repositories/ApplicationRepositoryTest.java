@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.persistent.repositories;
 
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.service.DomainService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,13 +46,17 @@ public class ApplicationRepositoryTest {
 	@Autowired
 	UserRepository userRepo;
 	
+	@Autowired
+	DomainService domains;
+	
 	@Before
 	public void setUp() throws Exception {
-		userRepo.save(new User("admin", "admin", Role.ADMIN));
+		domains.createGlobalDomain();
+		userRepo.save(new User("admin", "admin", domains.getGlobalDomain(), Role.ROLE_SUPERADMIN));
 	}
 
 	@Test
-	@WithMockUser(username="admin", roles={"ADMIN"})
+	@WithMockUser(username="admin", roles={"SUPERADMIN"})
 	public void testAddApplication() {
 		Application app1 = new Application("zabbix");
 		app1.setTags(new HashSet<Tag>());

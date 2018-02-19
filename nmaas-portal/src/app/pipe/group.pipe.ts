@@ -3,7 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'group', pure: true })
 export class GroupPipe implements PipeTransform {
     public transform(value: Array<any>, by: number): Array<any> {
-        console.debug("Group pipe: " + value + ', by: ' + by);
+        console.debug('Group pipe: ' + value + ', by: ' + by);
         if (!by)
             by = 1;
 

@@ -17,18 +17,25 @@ REM set "LOGIN="
 
 rem echo Output: !LOGIN!
 REM ref: http://stackoverflow.com/questions/36374496/parse-simple-json-string-in-batch
-set LOGIN=!LOGIN:"=!
-rem stage 1 - !LOGIN!
-set "LOGIN=!LOGIN:~2,-2!"
-rem stage 2 - !LOGIN!
-set "LOGIN=!LOGIN: : ==!"
-rem stage 3 - !LOGIN!
-
+set LOGIN=%LOGIN:"=%
+echo stage 1 - %LOGIN%
+echo ---
+set "LOGIN=%LOGIN:~1,-1%"
+echo stage 2 - %LOGIN%
+echo ---
+set "LOGIN=%LOGIN::==%"
+echo stage 3 - !LOGIN!
+echo ---
 
 FOR /F "delims=," %%a in ("!LOGIN!") do (
-rem  echo Found: %%a
+  echo Found: %%a
   set "%%a"
+  echo --
 )
+
+rem echo !LOGIN!
+
+rem set token=%LOGIN%
 
 echo Token: 
 echo ----------------------
@@ -36,6 +43,12 @@ echo %token%
 echo ----------------------
 echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
+
+
+echo
+echo Domain1
+curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
+echo.
 
 echo.
 echo App1
@@ -174,23 +187,23 @@ curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" -
 rem echo.
 rem echo ---------------------
 rem echo Create app2 instance
-rem curl -X POST %API_URL%/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
+rem curl -X POST %API_URL%/domains/2/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
 rem echo.
 rem echo ---------------------
 rem echo Get app instance 1 state
-rem curl -X GET %API_URL%/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
+rem curl -X GET %API_URL%/domains/2/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
 rem echo.
 rem echo ---------------------
 rem echo Get app instance 1
-rem curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+rem curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
 rem echo.
 rem echo ---------------------
 rem echo Send configuration to instance 1
-rem curl -X POST %API_URL%/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
+rem curl -X POST %API_URL%/domains/2/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
 rem echo.
 rem echo ---------------------
 rem echo Get app instance 1
-rem curl -X GET %API_URL%/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+rem curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
 echo.
 echo ---------------------

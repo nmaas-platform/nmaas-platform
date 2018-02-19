@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 
-import { Application } from '../../model/application';
-import { AppsService } from '../../service/apps.service';
-import { TagService } from '../../service/tag.service';
+import {Application} from '../../model/application';
+import {AppsService} from '../../service/apps.service';
+import {TagService} from '../../service/tag.service';
 
 export enum ListType {GRID, LIST}
 
@@ -11,47 +11,49 @@ export enum ListType {GRID, LIST}
   templateUrl: './applist.component.html',
   styleUrls: ['./applist.component.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [ AppsService, TagService ]
+  providers: [AppsService, TagService]
 })
 export class AppListComponent implements OnInit {
 
-    private apps : Application[];
-    private tags : string[];
-    
-    private searchedAppName: string;
-    private selectedTag: string;
-    private filteredApps: Application[];
-    
-    private listType = ListType;
-    private selectedListType: ListType;
-    
-    constructor(private appsService: AppsService, private tagService: TagService) { 
-        this.selectedTag = 'all';
-    }
+  private apps: Application[];
+  private tags: string[];
 
-    ngOnInit() {
-        this.appsService.getApps().subscribe(applications => {this.apps = applications; this.filteredApps = this.apps;});
-        this.tagService.getTags().subscribe(tags => this.tags = tags);
-        
-        if(! this.selectedListType)
-            this.selectedListType = ListType.GRID;
-    }
+  private searchedAppName: string;
+  private selectedTag: string;
+  private filteredApps: Application[];
 
-    filterAppsByName() {
-        var searchedAppName: string = this.searchedAppName;
-        if (searchedAppName.length > 0)
-            this.filteredApps = this.apps.filter(app => app.name.toLocaleLowerCase().indexOf(searchedAppName) > -1);
-        else
-            this.filteredApps = this.apps.filter(app => true);
-    }
+  private listType = ListType;
+  private selectedListType: ListType;
 
-    filterAppsByTag() {
-        var selectedTag: string = this.selectedTag;
-        if (selectedTag === 'all' || selectedTag === 'undefined') {
-            this.filteredApps = this.apps.filter(app => true);
-        }
-        else
-            this.filteredApps = this.apps.filter(app => app.tags.some(tag => tag === selectedTag));
+  constructor(private appsService: AppsService, private tagService: TagService) {
+    this.selectedTag = 'all';
+  }
+
+  ngOnInit() {
+    this.appsService.getApps().subscribe(applications => {this.apps = applications; this.filteredApps = this.apps; });
+    this.tagService.getTags().subscribe(tags => this.tags = tags);
+
+    if (!this.selectedListType) {
+      this.selectedListType = ListType.GRID;
     }
-    
+  }
+
+  filterAppsByName() {
+    const searchedAppName: string = this.searchedAppName;
+    if (searchedAppName.length > 0) {
+      this.filteredApps = this.apps.filter(app => app.name.toLocaleLowerCase().indexOf(searchedAppName) > -1);
+    } else {
+      this.filteredApps = this.apps.filter(app => true);
+    }
+  }
+
+  filterAppsByTag() {
+    const selectedTag: string = this.selectedTag;
+    if (selectedTag === 'all' || selectedTag === 'undefined') {
+      this.filteredApps = this.apps.filter(app => true);
+    } else {
+      this.filteredApps = this.apps.filter(app => app.tags.some(tag => tag === selectedTag));
+    }
+  }
+
 }

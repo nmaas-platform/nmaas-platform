@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 
@@ -33,6 +34,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 @SpringBootTest
 public class JWTTokenServiceTest {
 
+	private static final String DOMAIN = "DOMAIN";
 	@Autowired
 	JWTTokenService tokenService;
 	
@@ -57,9 +59,9 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ADMIN);
-		roles.add(Role.USER);
-		User tester = new User("tester", "test123", roles);
+		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_USER);
+		User tester = new User("tester", "test123", new Domain(DOMAIN), roles);
 		
 		String token = tokenService.getToken(tester);
 		assertNotNull(token);
@@ -77,9 +79,9 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testInvalidToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ADMIN);
-		roles.add(Role.USER);
-		User tester = new User("tester", "test123", roles);
+		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_USER);
+		User tester = new User("tester", "test123", new Domain(DOMAIN), roles);
 		
 		String token = tokenService.getToken(tester);
 		assertNotNull(token);
@@ -95,9 +97,9 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testValidateRefreshToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ADMIN);
-		roles.add(Role.USER);
-		User tester = new User("tester", "test123", roles);
+		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_USER);
+		User tester = new User("tester", "test123", new Domain(DOMAIN), roles);
 
 		String refreshToken = tokenService.getRefreshToken(tester);
 		assertNotNull(refreshToken);

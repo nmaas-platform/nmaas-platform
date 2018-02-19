@@ -18,13 +18,13 @@ export class ScreenshotsComponent implements OnInit {
 
     @ViewChild(ModalComponent)
     public readonly modal: ModalComponent;
-    
+
     @Input()
     private pathUrl: string;
 
     imagesFileInfo: FileInfo[];
-    
-    private selectedImg: string;
+
+    protected selectedImg: string;
 
     constructor(private appsService: AppsService) { }
 
@@ -36,5 +36,5 @@ export class ScreenshotsComponent implements OnInit {
         this.selectedImg = url;
         this.modal.show();
     }
-    
+
 }

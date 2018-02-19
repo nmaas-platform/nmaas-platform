@@ -34,7 +34,7 @@ public class KubernetesTemplateAdminRestController {
      * @throws InternalErrorException if deployment spec is not set for given application
      * @throws KubernetesTemplateNotFoundException if kubernetes template is not set in given deployment spec
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @GetMapping(value = "")
     @Transactional
     public KubernetesTemplate getKubernetesTemplate(@PathVariable(value = "appId") Long appId)
@@ -59,7 +59,7 @@ public class KubernetesTemplateAdminRestController {
      * @throws MissingElementException if application with given identifier is missing
      * @throws InternalErrorException if deployment spec is not set for given application
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @PostMapping(value = "", consumes = "application/json")
     @Transactional
     @ResponseStatus(code = HttpStatus.CREATED)

@@ -1,13 +1,13 @@
-import { Pipe, PipeTransform, OnDestroy, WrappedValue, ChangeDetectorRef, Injectable } from '@angular/core';
+import {Pipe, PipeTransform, OnDestroy, WrappedValue, ChangeDetectorRef, Injectable} from '@angular/core';
 
-import { Http, Headers, Request, Response, RequestOptionsArgs, RequestOptions, ResponseContentType } from '@angular/http';
-import { AuthHttp } from 'angular2-jwt';
+import {Http, Headers, Request, Response, RequestOptionsArgs, RequestOptions, ResponseContentType} from '@angular/http';
+import {AuthHttp} from 'angular2-jwt';
 
-import { Subscription } from 'rxjs/Subscription';
-import { Subscriber } from 'rxjs/Subscriber';
+import {Subscription} from 'rxjs/Subscription';
+import {Subscriber} from 'rxjs/Subscriber';
 
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/timeout';
@@ -15,145 +15,147 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
 
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 
 @Injectable()
 export class AuthHttpWrapper {
-   constructor(private authHttp:AuthHttp) {
-       
-   } 
-    
-    
-    public get(url: string): Observable<any> {
-        console.debug('Secure get url ' + url);
-        if(!url)
-            return Observable.throw('Empty url');
-        
-       let requestOptions: RequestOptions = new RequestOptions( { responseType: ResponseContentType.Blob });
-        
-       return new Observable<any>((observer: Subscriber<any>) => {
-            let objectUrl: string = null;
- 
-            this.authHttp
-                .get(url, requestOptions)
-                .catch((error: Response | any) => {
-                    var errMsg:string = 'Unable to get ' + url;
-                    console.debug(errMsg);
-                    return Observable.throw(errMsg);
-                })
-                .subscribe(m => {
-                    objectUrl = URL.createObjectURL(m.blob());
-                    observer.next(objectUrl);
-                });
- 
-            return () => {
-                if (objectUrl) {
-                    URL.revokeObjectURL(objectUrl);
-                    objectUrl = null;
-                }
-            };
-        }); 
+  constructor(private authHttp: AuthHttp) {
+
+  }
+
+
+  public get(url: string): Observable<any> {
+    console.debug('Secure get url ' + url);
+    if (!url) {
+      return Observable.throw('Empty url');
     }
+    const requestOptions: RequestOptions = new RequestOptions({responseType: ResponseContentType.Blob});
+
+    return new Observable<any>((observer: Subscriber<any>) => {
+      let objectUrl: string = null;
+
+      this.authHttp
+        .get(url, requestOptions)
+        .catch((error: Response | any) => {
+          var errMsg: string = 'Unable to get ' + url;
+          console.debug(errMsg);
+          return Observable.throw(errMsg);
+        })
+        .subscribe(m => {
+          objectUrl = URL.createObjectURL(m.blob());
+          observer.next(objectUrl);
+        });
+
+      return () => {
+        if (objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+          objectUrl = null;
+        }
+      };
+    });
+  }
 }
 
 @Pipe({
-    name: 'secure',
-    pure: false
+  name: 'secure',
+  pure: false
 })
 export class SecurePipe implements PipeTransform, OnDestroy {
-       
-    private latestValue: any = null;
-    private latestReturnedValue: any = null;
-    private subscription: Subscription = null;
-    private obj: Observable<any> = null;
 
-    private previousUrl: string;
-    private resultSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-    private result: Observable<any> = this.resultSubject.asObservable();
-    private internalSubscription: Subscription = null;    
-    
-    constructor(private ref: ChangeDetectorRef, private authHttp: AuthHttpWrapper, private sanitizer: DomSanitizer) { 
+  private latestValue: any = null;
+  private latestReturnedValue: any = null;
+  private subscription: Subscription = null;
+  private obj: Observable<any> = null;
+
+  private previousUrl: string;
+  private resultSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private result: Observable<any> = this.resultSubject.asObservable();
+  private internalSubscription: Subscription = null;
+
+  constructor(private ref: ChangeDetectorRef, private authHttp: AuthHttpWrapper, private sanitizer: DomSanitizer) {
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.dispose();
     }
-    
-    ngOnDestroy(): void {
-        if (this.subscription) {
-            this.dispose();
-        }
-    }
+  }
 
-    transform(url: string): any {
-        let obj = this.internalTransform(url);
-        return this.asyncTrasnform(obj);
-    }
+  transform(url: string): any {
+    const obj = this.internalTransform(url);
+    return this.asyncTrasnform(obj);
+  }
 
-    private internalTransform(url: string): Observable<any> {
-        if (!url) {
-            return this.result;
-        }
-
-        if (this.previousUrl !== url) {
-            this.previousUrl = url;
-            this.internalSubscription = this.authHttp.get(url).subscribe(m => {
-                let sanitized = this.sanitizer.bypassSecurityTrustUrl(m);
-                this.resultSubject.next(sanitized);
-            });
-        }
-
-        return this.result;
+  private internalTransform(url: string): Observable<any> {
+    if (!url) {
+      return this.result;
     }
 
-    private asyncTrasnform(obj: Observable<any>): any {
-        if (!this.obj) {
-            if (obj) {
-                this.subscribe(obj);
-            }
-            this.latestReturnedValue = this.latestValue;
-            return this.latestValue;
-        }
-        if (obj !== this.obj) {
-            this.dispose();
-            return this.asyncTrasnform(obj);
-        }
-        if (this.latestValue === this.latestReturnedValue) {
-            return this.latestReturnedValue;
-        }
-        this.latestReturnedValue = this.latestValue;
-        return WrappedValue.wrap(this.latestValue);
+    if (this.previousUrl !== url) {
+      this.previousUrl = url;
+      this.internalSubscription = this.authHttp.get(url).subscribe(m => {
+        const sanitized = this.sanitizer.bypassSecurityTrustUrl(m);
+        this.resultSubject.next(sanitized);
+      });
     }
 
-    private subscribe(obj: Observable<any>) {
-        var _this = this;
-        this.obj = obj;
-        
-        this.subscription = obj.subscribe({
-            next: function (value) {
-                return _this.updateLatestValue(obj, value);
-            }, error: (e: any) => { throw e; }
-        });
-    }
+    return this.result;
+  }
 
-    private dispose() {
-        
-        if(this.subscription)
-            this.subscription.unsubscribe();
-        this.subscription = null;
-        
-        if(this.internalSubscription)
-            this.internalSubscription.unsubscribe();
-        this.internalSubscription = null;
-       
-        this.latestValue = null;
-        this.latestReturnedValue = null;
-        
-        this.obj = null;
+  private asyncTrasnform(obj: Observable<any>): any {
+    if (!this.obj) {
+      if (obj) {
+        this.subscribe(obj);
+      }
+      this.latestReturnedValue = this.latestValue;
+      return this.latestValue;
     }
+    if (obj !== this.obj) {
+      this.dispose();
+      return this.asyncTrasnform(obj);
+    }
+    if (this.latestValue === this.latestReturnedValue) {
+      return this.latestReturnedValue;
+    }
+    this.latestReturnedValue = this.latestValue;
+    return WrappedValue.wrap(this.latestValue);
+  }
 
-    private updateLatestValue(async: any, value: Object) {
-        if (async === this.obj) {
-            this.latestValue = value;
-            this.ref.markForCheck();
-        }
-    }    
-    
+  private subscribe(obj: Observable<any>) {
+    const _this = this;
+    this.obj = obj;
+
+    this.subscription = obj.subscribe({
+      next: function(value) {
+        return _this.updateLatestValue(obj, value);
+      }, error: (e: any) => {throw e; }
+    });
+  }
+
+  private dispose() {
+
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    this.subscription = null;
+
+    if (this.internalSubscription) {
+      this.internalSubscription.unsubscribe();
+    }
+    this.internalSubscription = null;
+
+    this.latestValue = null;
+    this.latestReturnedValue = null;
+
+    this.obj = null;
+  }
+
+  private updateLatestValue(async: any, value: Object) {
+    if (async === this.obj) {
+      this.latestValue = value;
+      this.ref.markForCheck();
+    }
+  }
+
 }

@@ -21,7 +21,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class AppInstance implements Serializable {
+public class AppInstance extends DomainAware implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -52,11 +52,26 @@ public class AppInstance implements Serializable {
 	}
 	
 	public AppInstance(Application application, String name) {
-		super();
 		this.application = application;
 		this.name = name;
 	}
-
+	
+	protected AppInstance(Long id, Application application, String name) {
+		this(application, name);
+		this.id = id;
+	}
+	
+	public AppInstance(Application application, String name, Domain domain, User owner) {
+		this(application, name);
+		this.domain = domain;
+		this.owner = owner;
+	}
+	
+	protected AppInstance(Long id, Application application, String name, Domain domain, User owner) {
+		this(application, name, domain, owner);
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

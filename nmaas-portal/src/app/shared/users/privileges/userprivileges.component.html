@@ -1,0 +1,64 @@
+<div
+	class="panel panel-default">
+	<div class="panel-heading">Privileges</div>
+	<div class="panel-body">
+		<div *ngIf="isModeAllowed(ComponentMode.CREATE)">
+			<form *ngIf="user" [formGroup]="newPrivilegeForm" (submit)="add()" class="form-inline row">
+				<div *ngIf="user?.id" class="form-group col-lg-2">
+					<label>User:</label>
+					<p class="form-control-static">{{user.username}} ({{user.id}})</p>
+				</div>
+
+				<div class="form-group col-lg-3">
+					<label for="domainId">Domain:</label>
+					<select class="form-control" [formGroup]="newPrivilegeForm"
+						id="domainId" name="domainId" formControlName="domainId">
+						<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
+					</select>
+
+				</div>
+
+				<div class="form-group col-lg-3">
+					<label for="role" >Role:</label>
+					<select
+						class="form-control" [formGroup]="newPrivilegeForm" id="role"
+						name="role" formControlName="role">
+						<option *ngFor="let r of Role | keys" [value]="r.key">{{r.value}}</option>
+					</select>
+				</div>
+				<div class="col-lg-3">
+					<button type="submit" class="btn btn-danger">Add</button>
+				</div>
+			</form>
+			<hr>
+		</div>
+		
+		<div *ngIf="isModeAllowed(ComponentMode.VIEW)">
+			
+			<table class="table table-hover table-condensed">
+				<thead>
+					<tr>
+						<th>Domain</th>
+						<th>Role</th>
+						<th>&nbsp;</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<ng-template ngFor let-userrole [ngForOf]="user.userRoles">
+					<tr>
+						<td>{{userrole.domainId}}</td>
+						<td>{{userrole.role}}</td>
+						<td class="text-right"><button type="button"
+								class="btn btn-danger"
+								(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button></td>
+					</tr>
+					</ng-template>
+				</tbody>
+			</table>
+		</div>
+
+
+
+	</div>
+</div>

@@ -7,7 +7,7 @@ import { AuthGuard } from './auth/auth.guard';
 
 const appRoutes: Routes = [
     ...LoginRoutes,
-    ...AppMarketRoutes,   
+    ...AppMarketRoutes,
     { path: '**', redirectTo: '' }
 ];
 
