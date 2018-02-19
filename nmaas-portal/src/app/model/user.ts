@@ -1,12 +1,20 @@
 import {Role, UserRole} from './userrole';
+import {JsonObject, JsonProperty} from 'json2typescript';
 
+@JsonObject
 export class User {
 
-  constructor(public id: number, public username: string, public userRoles: UserRole[]) {
-  }
+  @JsonProperty('id', Number)
+  public id: number  = undefined;
+  
+  @JsonProperty('username', String)
+  public username: string  = undefined;
 
+  @JsonProperty('roles', [UserRole])
+  public userRoles: UserRole[] = [];
+  
   public getDomainIds(): number[] {
-    return this.userRoles.map(ur => ur.domainId);
+    return Array.from(new Set(this.userRoles.map(ur => ur.domainId)));
   }
 
   public getRoles(): Role[] {

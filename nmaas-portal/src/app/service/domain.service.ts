@@ -7,14 +7,15 @@ import {AppConfigService} from './appconfig.service';
 
 import {Id} from '../model/id';
 import {Domain} from '../model/domain';
-import { User } from '../model/user';
+import {User} from '../model/user';
+import {JsonMapperService} from './jsonmapper.service';
 
 @Injectable()
 export class DomainService extends GenericDataService {
 
   protected url: string;
 
-  constructor(authHttp: AuthHttp, appConfig: AppConfigService) {
+  constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
     super(authHttp, appConfig);
 
     this.url = this.appConfig.getApiUrl() + '/domains/';
@@ -25,19 +26,23 @@ export class DomainService extends GenericDataService {
   }
 
   public getGlobalDomain(): Observable<Domain> {
-    return this.getOne(this.getGlobalDomainId());
+    return this.getOne(this.getGlobalDomainId())
+                .map((domain) => this.jsonModelMapper.deserialize(domain, Domain));
   }
 
   public getAll(): Observable<Domain[]> {
-    return this.get<Domain[]>(this.url);
+    return this.get<Domain[]>(this.url)
+                .map((domains) => this.jsonModelMapper.deserialize(domains, Domain));
   }
 
   public getOne(domainId: number): Observable<Domain> {
-    return this.get<Domain>(this.url + domainId);
+    return this.get<Domain>(this.url + domainId)
+                .map((domain) => this.jsonModelMapper.deserialize(domain, Domain));
   }
 
   public add(domain: Domain): Observable<Id> {
-    return this.post<Domain, Id>(this.url, domain);
+    return this.post<Domain, Id>(this.url, domain)
+                .map((id) => this.jsonModelMapper.deserialize(id, Id));
   }
 
   public update(domain: Domain): Observable<any> {
@@ -51,7 +56,7 @@ export class DomainService extends GenericDataService {
   public getMyDomains(): Observable<Domain[]> {
     return this.get<Domain[]>(this.url + '/my');
   }
-  
+
   public getUsers(domainId: number): Observable<User[]> {
     return this.get<User[]>(this.url + '/users');
   }

@@ -1,17 +1,17 @@
-import {ComponentMode} from '../componentmode';
+import {ComponentMode, ComponentModeAware} from '../componentmode';
 import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'nmaas-base',
   template: ''
 })
+@ComponentModeAware
 export class BaseComponent {
-
-  protected ComponentMode = ComponentMode;
 
   @Input()
   protected mode: ComponentMode = ComponentMode.VIEW;
 
+  @Input()
   protected allowedModes: ComponentMode[] = [ComponentMode.VIEW];
 
   constructor() {}
@@ -26,5 +26,9 @@ export class BaseComponent {
 
   protected isInMode(mode: ComponentMode): boolean {
     return this.mode === mode;
+  }
+
+  protected getCurrentMode(): ComponentMode {
+    return this.mode;
   }
 }

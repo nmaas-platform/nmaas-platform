@@ -1,3 +1,4 @@
+import {JsonObject, JsonConverter, JsonCustomConvert, JsonProperty} from 'json2typescript';
 
 export enum Role {
   ROLE_SUPERADMIN,
@@ -7,6 +8,25 @@ export enum Role {
   ROLE_GUEST
 }
 
+@JsonConverter
+export class RoleConverter implements JsonCustomConvert<Role> {
+  serialize(data: Role): any {
+    console.log('RoleConverter:serialize');
+    return data;
+  }
+  deserialize(data: any): Role {
+    console.log('RoleConverter:deserialize');
+    return Role[Role[data]];
+  }
+}
+
+
+@JsonObject
 export class UserRole {
-  constructor(public domainId: number, public role: Role) {}
+  @JsonProperty('domainId', Number)
+  public domainId: number = undefined;
+
+  @JsonProperty('role', RoleConverter)
+  public role: Role  = undefined;
+  
 }

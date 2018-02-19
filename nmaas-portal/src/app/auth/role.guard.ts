@@ -17,10 +17,13 @@ export class RoleGuard implements CanActivate, CanActivateChild {
     console.debug('Allowed roles: ' + allowedRoles);
 
     for (let i = 0; i < allowedRoles.length; i++) {
-      if (this.authService.hasRole(Role[allowedRoles[i]])) {
+      console.debug('Checking role: ' + allowedRoles[i]);
+      if (this.authService.hasRole(Role[Role[allowedRoles[i]]])) {
+        console.debug('Allowed');
         return true;
       }
     }
+    console.debug('Not allowed');
     return false;
   }
 

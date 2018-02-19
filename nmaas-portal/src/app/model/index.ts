@@ -10,3 +10,4 @@ export * from './id';
 export * from './password';
 export * from './rate';
 export * from './user';
+export * from './usersignup';

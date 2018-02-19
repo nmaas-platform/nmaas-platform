@@ -8,6 +8,6 @@ export const DomainsRoutes: Route[] = [
                         data: {roles: ['ROLE_SUPERADMIN', 'ROLE_DOMAIN_ADMIN']}},
   {path: 'domains/add', component: DomainComponent, canActivate: [AuthGuard, RoleGuard],
                         data: {roles: ['ROLE_SUPERADMIN']}},
-  {path: 'domains/:id', component: DomainComponent, canActivate: [AuthGuard, RoleGuard],
+  {path: 'domains/view/:id', component: DomainComponent, canActivate: [AuthGuard, RoleGuard],
                         data: {roles: ['ROLE_SUPERADMIN']}}
 ];

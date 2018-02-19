@@ -11,7 +11,7 @@ import {ModalComponent} from './modal/index';
 import {PipesModule} from '../pipe/pipes.module';
 import {ServicesModule} from '../service/services.module';
 import {ComponentMode} from './common/componentmode';
-import {PasswordComponent} from './common/password/password.component';
+import {PasswordComponent, PasswordValidator} from './common/password/password.component';
 import {UserDetailsComponent} from './users/details/userdetails.component';
 import {UsersListComponent} from './users/list/userslist.component';
 import { UserPrivilegesComponent } from './users/privileges/userprivileges.component';
@@ -41,6 +41,7 @@ import { RouterModule } from '@angular/router';
     DefaultLogo
   ],
   providers: [
+    PasswordValidator
   ],
   exports: [
     RateComponent,

@@ -11,7 +11,7 @@ import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   @Input()
-  private user: User;
+  private user: User = new User();
 
   @Output()
   private onSave: EventEmitter<User> = new EventEmitter<User>();
@@ -25,6 +25,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   }
 
   public submit(): void {
+    console.log('submit(' + this.user.username + ')');
     this.onSave.emit(this.user);
   }
 

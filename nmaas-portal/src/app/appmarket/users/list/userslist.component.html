@@ -1,9 +1,9 @@
 <div class="row" *ngIf="authService.hasRole('ROLE_SUPERADMIN')">
-	<nmaas-userslist [users]="userService.getAll()"></nmaas-userslist>
+	<nmaas-userslist [users]="allUsers" [allowedModes]="[ComponentMode.VIEW, ComponentMode.DELETE]" (onView)="onUserView($event)" (onDelete)="onUserDelete($event)"></nmaas-userslist>
 </div>	
 <div class="row" *ngIf="authService.hasRole('ROLE_DOMAIN_ADMIN')">
 	<div *ngFor="let domainId of authService.getDomainsWithRole('ROLE_DOMAIN_ADMIN')">
 		<h3>Domain {{(domainService.getOne(domainId) | async)?.name}}</h3>
-		<nmaas-userslist [users]="domainService.getUsers(domainId)"></nmaas-userslist>
+		<nmaas-userslist [users]="domainService.getUsers(domainId) | async"></nmaas-userslist>
 	</div>
 </div>

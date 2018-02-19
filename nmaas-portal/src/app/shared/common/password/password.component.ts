@@ -13,6 +13,10 @@ export class PasswordValidator implements Validator {
       return null
     }
   }
+  
+  static match(ac: AbstractControl) {
+    return new PasswordValidator().validate(ac);
+  }
 }
 /**
  * Example <app-password [password]='changeMe' (passwordChange)='onChange($event)'/>
@@ -38,7 +42,7 @@ export class PasswordComponent implements OnInit {
         confirmPassword: ['', Validators.required]
       },
       {
-        validator: PasswordValidator
+        validator: PasswordValidator.match
       })
   }
 

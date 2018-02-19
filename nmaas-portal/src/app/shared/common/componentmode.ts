@@ -4,3 +4,7 @@ export enum ComponentMode {
   EDIT,
   DELETE
 }
+
+export function ComponentModeAware(constructor: Function) {
+    constructor.prototype.ComponentMode = ComponentMode;
+}

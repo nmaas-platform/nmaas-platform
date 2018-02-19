@@ -32,8 +32,8 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
     super();
     this.newPrivilegeForm = fb.group(
       {
-        userId: [this.user.id, Validators.required],
-        domainId: ['', Validators.required],
+        userId: [null, Validators.required],
+        domainId: [null, Validators.required],
         role: [null, Validators.required]
       });
 

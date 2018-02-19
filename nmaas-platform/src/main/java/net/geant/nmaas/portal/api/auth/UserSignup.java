@@ -15,7 +15,7 @@ public class UserSignup {
 	}
 	
 	@JsonCreator
-	public UserSignup(@JsonProperty(value="username", required=true) String username, @JsonProperty(value = "password", required=true) String password, @JsonProperty(value="domainId", required = false) Long domainId) {
+	public UserSignup(@JsonProperty(value="username", required=true) String username, @JsonProperty(value = "password", required=false) String password, @JsonProperty(value="domainId", required = false) Long domainId) {
 		this.username = username;
 		this.password = password;
 		this.domainId = domainId;

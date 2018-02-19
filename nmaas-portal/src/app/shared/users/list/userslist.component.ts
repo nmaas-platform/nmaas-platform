@@ -7,6 +7,9 @@ import {BaseComponent} from '../../common/basecomponent/base.component';
 import {Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/shareReplay';
+import 'rxjs/add/operator/take';
+import { isUndefined } from 'util';
 
 
 
@@ -19,7 +22,8 @@ import {Observable} from 'rxjs/Observable';
 export class UsersListComponent extends BaseComponent implements OnInit, OnChanges {
 
   @Input()
-  users: User[];
+  users: User[] = [];
+
 
   @Output()
   onDelete: EventEmitter<number> = new EventEmitter<number>();
@@ -39,12 +43,24 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   ngOnChanges(changes: SimpleChanges): void {
     console.log('UsersList:onChanges ' + changes);
   }
-
+  
   protected getDomainName(domainId: number): Observable<string> {
+    console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
+      console.debug('getDomainName(' + domainId + ') from cache');
       return Observable.of(this.domainCache.getData(domainId).name);
     } else {
-      return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name});
+      console.debug('getDomainName(' + domainId + ') from network');
+      return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
+              .shareReplay(1).take(1);
+    }
+  }
+
+  protected getUserDomainIds(user: User): number[] {
+    if (!isUndefined(user)) {
+      return user.getDomainIds();
+    } else {
+      return [];
     }
   }
 
@@ -53,6 +69,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   protected view(userId: number): void {
+    console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
 }

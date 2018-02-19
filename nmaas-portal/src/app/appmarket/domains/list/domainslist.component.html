@@ -19,7 +19,10 @@
 				<td>{{domain?.id}}</td>
 				<td>{{domain?.name}}</td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="domain?.active"></span><span class="glyphicon glyphicon-remove" *ngIf="!(domain?.active)"></span></td>				
-				<td class="text-right"><a [routerLink]="[domain.id]" class="btn btn-sm btn-primary" role="button">Details</a></td>
+				<td class="text-right">
+					<a [routerLink]="['view/', domain.id]" class="btn btn-sm btn-primary" role="button">Details</a>
+					<a (click)="remove(domain.id)" class="btn btn-sm btn-danger" role="button">Remove</a>
+				</td>
 			</tr>
 			</ng-template>
 		</tbody>

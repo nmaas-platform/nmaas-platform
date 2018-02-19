@@ -14,7 +14,9 @@
 			<tr>
 				<td>{{user.id}}</td>
 				<td>{{user.username}}</td>
-				<td><ng-template ngFor let-domainId [ngForOf]="user.domainIds"><span>{{getDomainName(domainId) | async}}</span><br></ng-template></td>
+				<td><span *ngFor="let role of user.userRoles">{{getDomainName(role.domainId) | async}}({{role.domainId}}),</span><br></td>
+<!-- 				<td><span *ngFor="let domainId of getUserDomainIds(user)">{{getDomainName(domainId) | async}}</span><br></td> -->
+<!-- 				 <td><ng-template ngFor let-domainId [ngForOf]="user.getDomainIds()"><span>{{getDomainName(domainId) | async}}</span><br></ng-template></td> -->
 				<td class="text-right">
 					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">Details</a>
 					<a *ngIf="isModeAllowed(ComponentMode.DELETE)" (click)="remove(user.id)" class="btn btn-sm btn-danger" role="button">Remove</a>
