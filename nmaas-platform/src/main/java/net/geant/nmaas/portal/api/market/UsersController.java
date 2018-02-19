@@ -203,7 +203,7 @@ public class UsersController {
 	}
 	
 	private void changePassword(net.geant.nmaas.portal.persistent.entity.User user, String password) throws net.geant.nmaas.portal.exceptions.ProcessingException {
-		user.setPassword(password);
+		user.setPassword(passwordEncoder.encode(password));
 		users.update(user);
 	}
 

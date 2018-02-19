@@ -1,38 +1,41 @@
-<div class="row">
-	<h4>User details:</h4>
-	<form *ngIf="!isInMode(ComponentMode.CREATE)" (submit)="submit()" class="form-horizontal">
-		<div *ngIf="user.id" class="form-group">
-			<label class="col-sm-2 control-label">Id:</label>
-			<div class="col-sm-10">
-				<p class="form-control-static">{{user?.id}}</p>
+<div class="panel panel-default">
+	<div class="panel-heading">Information</div>
+	<div class="panel-body">
+		<form *ngIf="!isInMode(ComponentMode.CREATE)" (submit)="submit()">
+			<div *ngIf="user?.id" class="form-group">
+				<label class="col-sm-2 control-label">Id:</label>
+				<div class="col-sm-10">
+					<p class="form-control-static">{{user?.id}}</p>
+				</div>
 			</div>
-		</div>
 
-		<div class="form-group">
-			<label for="username" class="col-sm-2 control-label">Username:</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="username"
-					name="username" [(ngModel)]="user.username"
-					[disabled]="!isModeAllowed(ComponentMode.EDIT) || !isInMode(ComponentMode.EDIT)">
+			<div class="form-group">
+				<label for="username" class="col-sm-2 control-label">Username:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="username"
+						name="username" [(ngModel)]="user.username"
+						[disabled]="!isModeAllowed(ComponentMode.EDIT) || !isInMode(ComponentMode.EDIT)">
+				</div>
 			</div>
-		</div>
-		<button *ngIf="isInMode(ComponentMode.EDIT)" type="button"
-			class="btn btn-default" (click)="onModeChange()">View</button>
-		<button *ngIf="isInMode(ComponentMode.EDIT)" type="submit"
-			class="btn btn-danger">Submit</button>
-		<button
-			*ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
-			type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
-	</form>
+			<button *ngIf="isInMode(ComponentMode.EDIT)" type="button"
+				class="btn btn-default" (click)="onModeChange()">View</button>
+			<button *ngIf="isInMode(ComponentMode.EDIT)" type="submit"
+				class="btn btn-danger">Submit</button>
+			<button
+				*ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
+				type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
+		</form>
 
-	<form *ngIf="isInMode(ComponentMode.CREATE)" (submit)="submit()" class="form-horizontal">
-		<div class="form-group">
-			<label for="username" class="col-sm-2 control-label">Username:</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="username"
-					name="username" [(ngModel)]="user.username">
+		<form *ngIf="isInMode(ComponentMode.CREATE)" (submit)="submit()"
+			class="form-horizontal">
+			<div class="form-group">
+				<label for="username" class="col-sm-2 control-label">Username:</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="username"
+						name="username" [(ngModel)]="user.username">
+				</div>
 			</div>
-		</div>
-		<button type="submit" class="btn btn-danger">Create</button>
-	</form>
+			<button type="submit" class="btn btn-danger">Create</button>
+		</form>
+	</div>
 </div>

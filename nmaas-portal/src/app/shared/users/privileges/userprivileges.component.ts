@@ -1,7 +1,8 @@
 import {AuthService} from '../../../auth/auth.service';
 import {Domain} from '../../../model/domain';
 import {User} from '../../../model/user';
-import {Role} from '../../../model/userrole';
+import {Role, RoleAware} from '../../../model/userrole';
+import { KeysPipe } from '../../../pipe/keys.pipe';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
 import { BaseComponent } from '../../common/basecomponent/base.component';
@@ -13,6 +14,7 @@ import {FormGroup, FormBuilder, Validators} from '@angular/forms';
   templateUrl: './userprivileges.component.html',
   styleUrls: ['./userprivileges.component.css']
 })
+@RoleAware
 export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
   @Input()
@@ -72,10 +74,13 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   protected add(): void {
     this.userService.addRole(this.user.id,
       Role[<string>(this.newPrivilegeForm.get('role').value)],
-      this.newPrivilegeForm.get('domainId').value);
+      this.newPrivilegeForm.get('domainId').value).subscribe(
+        () => {
+             this.newPrivilegeForm.reset();
+             this.userService.getOne(this.user.id).subscribe((user) => this.user = user);
+        });
 
-    this.newPrivilegeForm.reset();
-    this.userService.getOne(this.user.id).subscribe((user) => this.user = user);
+
 
   }
 

@@ -39,8 +39,7 @@ export class GenericDataService {
   }
 
   protected handleSuccess(res: Response) {
-    const body = res.json();
-    return body || {};
+    return (res.arrayBuffer().byteLength > 0 ? res.json() : {});
   }
 
   protected handleError(error: Response | any) {

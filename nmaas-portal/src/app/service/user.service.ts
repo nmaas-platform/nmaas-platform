@@ -48,15 +48,15 @@ export class UserService extends GenericDataService {
     const url: string = (isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles';
     const targetDomainId: number = (isUndefined(domainId) ? this.appConfig.getNmaasGlobalDomainId() : domainId);
 
-    return this.post<any, UserRole>(url, JSON.stringify({'domainId': targetDomainId, 'role': role}));
+    return this.post<UserRole, UserRole>(url, new UserRole(targetDomainId, role));
   }
 
-  public removeRole(userId: number, role: Role, domainId?: number): Observable<any> {
-    return this.delete<any>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles/' + role);
+  public removeRole(userId: number, role: Role, domainId?: number): Observable<void> {
+    return this.delete<void>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles/' + role);
   }
 
-  public changePassword(userId: number, password: string): Observable<any> {
-    return this.post<Password, any>(this.getUsersUrl() + userId, new Password(password));
+  public changePassword(userId: number, password: string): Observable<void> {
+    return this.post<Password, void>(this.getUsersUrl() + userId + '/auth/basic/password', new Password(password));
   }
 
   protected getUsersUrl(): string {

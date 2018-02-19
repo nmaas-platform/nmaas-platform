@@ -8,6 +8,10 @@ export enum Role {
   ROLE_GUEST
 }
 
+export function RoleAware(constructor: Function) {
+    constructor.prototype.Role = Role;
+}
+
 @JsonConverter
 export class RoleConverter implements JsonCustomConvert<Role> {
   serialize(data: Role): any {
@@ -29,4 +33,8 @@ export class UserRole {
   @JsonProperty('role', RoleConverter)
   public role: Role  = undefined;
   
+  constructor(domainId?: number, role?: Role) {
+    this.domainId = domainId;
+    this.role = role;
+  }
 }

@@ -44,8 +44,9 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   }
 
-  public onPasswordChange($password: string): void {
-    this.userService.changePassword(this.user.id, $password)
+  public onPasswordSubmit($event): void {
+    console.debug("Password submitted");
+    this.userService.changePassword(this.user.id, $event).subscribe(() => {});
   }
 
   public onSave($event) {
