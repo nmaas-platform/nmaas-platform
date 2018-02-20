@@ -105,6 +105,22 @@ public class HelmCommandExecutor {
         }
     }
 
+    public void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
+            throws CommandExecutionException {
+        if (!useLocalArchives)
+            throw new CommandExecutionException("Currently only referencing local chart archive is supported");
+        try {
+            String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
+            HelmUpgradeCommand command = HelmUpgradeCommand.command(
+                    deploymentId.value(),
+                    completeChartArchivePath
+            );
+            singleCommandExecutor().executeSingleCommand(command);
+        } catch (SshConnectionException e) {
+            throw new CommandExecutionException("Failed to execute helm upgrade command -> " + e.getMessage());
+        }
+    }
+
     private SingleCommandExecutor singleCommandExecutor() {
         return SingleCommandExecutor.getExecutor(cluster.getHelmHostAddress(), cluster.getHelmHostSshUsername());
     }

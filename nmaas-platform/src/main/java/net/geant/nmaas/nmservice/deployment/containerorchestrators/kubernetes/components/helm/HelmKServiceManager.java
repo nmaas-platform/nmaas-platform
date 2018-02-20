@@ -86,8 +86,17 @@ public class HelmKServiceManager implements KServiceManager {
     }
 
     @Override
-    public void upgradeService(Identifier deploymentId) throws KServiceManipulationException {
-        // TODO
+    public void upgradeService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
+        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
+        try {
+            helmCommandExecutor.executeHelmUpgradeCommand(
+                    deploymentId,
+                    template.getArchive()
+            );
+        } catch (CommandExecutionException cee) {
+            throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
+        }
     }
 
     @Value("${kubernetes.persistence.class}")

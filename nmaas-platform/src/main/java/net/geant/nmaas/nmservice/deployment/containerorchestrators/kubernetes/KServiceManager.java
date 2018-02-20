@@ -12,6 +12,6 @@ public interface KServiceManager {
 
     void deleteService(Identifier deploymentId) throws KServiceManipulationException;
 
-    void upgradeService(Identifier deploymentId) throws KServiceManipulationException;
+    void upgradeService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException;
 
 }
