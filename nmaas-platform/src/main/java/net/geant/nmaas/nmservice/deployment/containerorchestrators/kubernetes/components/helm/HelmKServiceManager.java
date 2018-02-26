@@ -27,7 +27,7 @@ public class HelmKServiceManager implements KServiceManager {
     static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
     static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION = "nmaas.config.action";
-    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone";
+    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
 
     private KubernetesRepositoryManager repositoryManager;
