@@ -39,11 +39,13 @@ public class HelmCommandPreparationTest {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
+        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, "clone");
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "repoUrl");
         assertThat(HelmInstallCommand.command(NAMESPACE, DEPLOYMENT_ID.value(), arguments, CHART_ARCHIVE_NAME).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("persistenceName"),
                         containsString("storageClass"),
+                        containsString("clone"),
                         containsString("repoUrl")));
     }
 
