@@ -62,7 +62,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
+    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String namespace = namespaceService.namespace(clientId);
         String ingressResourceName = ingressResourceName(clientId.value());
@@ -92,6 +92,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 deleteIngressResource(client, ingress);
             }
             createIngressResource(client, ingress);
+            return externalUrl;
         } catch (KubernetesClientException iee) {
             throw new IngressResourceManipulationException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }

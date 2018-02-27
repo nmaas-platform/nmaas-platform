@@ -10,7 +10,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface IngressResourceManager {
 
-    void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException;
+    String createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException;
 
     void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException;
 

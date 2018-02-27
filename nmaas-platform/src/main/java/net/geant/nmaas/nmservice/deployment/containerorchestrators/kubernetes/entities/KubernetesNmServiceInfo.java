@@ -21,6 +21,11 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesTemplate kubernetesTemplate;
 
+    /**
+     * External URL to be used to access service from outside of the cluster
+     */
+    private String serviceExternalUrl;
+
     public KubernetesNmServiceInfo () {
         super();
     }
@@ -38,4 +43,11 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
         this.kubernetesTemplate = kubernetesTemplate;
     }
 
+    public String getServiceExternalUrl() {
+        return serviceExternalUrl;
+    }
+
+    public void setServiceExternalUrl(String serviceExternalUrl) {
+        this.serviceExternalUrl = serviceExternalUrl;
+    }
 }
