@@ -15,7 +15,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -31,19 +30,20 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     private KubernetesRepositoryManager repositoryManager;
     private KClusterValidator clusterValidator;
-    private KServiceManager serviceManager;
+    private KServiceLifecycleManager serviceLifecycleManager;
+    private KServiceOperationsManager serviceOperationsManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
 
     @Autowired
     public KubernetesManager(KubernetesRepositoryManager repositoryManager,
                              KClusterValidator clusterValidator,
-                             KServiceManager serviceManager,
+                             KServiceLifecycleManager serviceLifecycleManager,
                              IngressControllerManager ingressControllerManager,
                              IngressResourceManager ingressResourceManager) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
-        this.serviceManager = serviceManager;
+        this.serviceLifecycleManager = serviceLifecycleManager;
         this.ingressControllerManager = ingressControllerManager;
         this.ingressResourceManager = ingressResourceManager;
     }
@@ -90,7 +90,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             Identifier clientId = repositoryManager.loadClientId(deploymentId);
-            serviceManager.deployService(deploymentId);
+            serviceLifecycleManager.deployService(deploymentId);
             ingressResourceManager.createOrUpdateIngressResource(deploymentId, clientId);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
@@ -105,7 +105,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void checkService(Identifier deploymentId) throws ContainerCheckFailedException, ContainerOrchestratorInternalErrorException {
         try {
-            if(!serviceManager.checkServiceDeployed(deploymentId))
+            if(!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
         } catch (KServiceManipulationException e) {
             throw new ContainerCheckFailedException(e.getMessage());
@@ -116,7 +116,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
-            serviceManager.deleteService(deploymentId);
+            serviceLifecycleManager.deleteService(deploymentId);
             ingressResourceManager.deleteIngressRule(deploymentId, repositoryManager.loadClientId(deploymentId));
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
@@ -128,6 +128,19 @@ public class KubernetesManager implements ContainerOrchestrator {
     }
 
     @Override
+    @Loggable(LogLevel.INFO)
+    public void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException {
+        try {
+            serviceOperationsManager.restartService(deploymentId);
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
+        } catch (KServiceManipulationException e) {
+            throw new CouldNotRestartNmServiceException(e.getMessage());
+        }
+    }
+
+    @Override
     public String info() {
         return "Kubernetes Container Orchestrator";
     }
@@ -135,12 +148,6 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Override
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
         return null;
-    }
-
-    @Override
-    @Loggable(LogLevel.INFO)
-    public void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException {
-        // TODO add required actions
     }
 
 }

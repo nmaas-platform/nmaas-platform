@@ -21,7 +21,7 @@ public class KubernetesManagerCheckServiceTest {
     private KubernetesManager manager;
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
     private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
-    private KServiceManager serviceManager = mock(HelmKServiceManager.class);
+    private KServiceLifecycleManager serviceManager = mock(HelmKServiceManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
 
