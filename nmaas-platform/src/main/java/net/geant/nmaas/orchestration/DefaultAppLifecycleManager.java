@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -97,4 +98,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         throw new NotImplementedException();
     }
 
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void restartApplication(Identifier deploymentId) throws InvalidDeploymentIdException {
+        eventPublisher.publishEvent(new AppRestartActionEvent(this, deploymentId));
+    }
 }

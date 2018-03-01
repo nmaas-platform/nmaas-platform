@@ -25,6 +25,8 @@ public class HelmCommandPreparationTest {
             CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_ARCHIVE_NAME;
     private static final String CORRECT_HELM_DELETE_COMMAND = "helm delete --purge " + DEPLOYMENT_ID.value();
     private static final String CORRECT_HELM_STATUS_COMMAND = "helm status " + DEPLOYMENT_ID.value();
+    private static final String CORRECT_HELM_UPGRADE_COMMAND =
+            "helm upgrade " + DEPLOYMENT_ID.value() + " " + CHART_ARCHIVE_NAME;
 
     @Test
     public void shouldConstructInstallCommandWithNoArguments() {
@@ -37,11 +39,13 @@ public class HelmCommandPreparationTest {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
+        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, "clone");
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "repoUrl");
         assertThat(HelmInstallCommand.command(NAMESPACE, DEPLOYMENT_ID.value(), arguments, CHART_ARCHIVE_NAME).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("persistenceName"),
                         containsString("storageClass"),
+                        containsString("clone"),
                         containsString("repoUrl")));
     }
 
@@ -53,6 +57,12 @@ public class HelmCommandPreparationTest {
     @Test
     public void shouldConstructStatusCommand() {
         assertThat(HelmStatusCommand.command(DEPLOYMENT_ID.value()).asString(), equalTo(CORRECT_HELM_STATUS_COMMAND));
+    }
+
+    @Test
+    public void shouldConstructUpgradeCommand() {
+        assertThat(HelmUpgradeCommand.command(DEPLOYMENT_ID.value(), CHART_ARCHIVE_NAME).asString(),
+                equalTo(CORRECT_HELM_UPGRADE_COMMAND));
     }
 
 }

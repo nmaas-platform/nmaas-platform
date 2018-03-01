@@ -4,12 +4,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ex
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
-public interface KServiceManager {
+public interface KServiceOperationsManager {
 
-    void deployService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException;
-
-    boolean checkServiceDeployed(Identifier deploymentId) throws KServiceManipulationException;
-
-    void deleteService(Identifier deploymentId) throws KServiceManipulationException;
+    void restartService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException;
 
 }

@@ -23,17 +23,16 @@ public class HelmCommandExecutor {
     private KubernetesClusterManager cluster;
 
     private boolean useLocalArchives;
-    private String defaultKubernetesNamespace;
 
-    public void executeHelmInstallCommand(String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeHelmInstallCommand(defaultKubernetesNamespace, releaseName, chartArchiveName, arguments);
+    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, releaseName, chartArchiveName, arguments);
     }
 
-    public void executeHelmInstallCommand(Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeHelmInstallCommand(defaultKubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
+    public void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
     }
 
-    private void executeHelmInstallCommand(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
+    private void executeInstall(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
             if (!useLocalArchives)
@@ -106,6 +105,22 @@ public class HelmCommandExecutor {
         }
     }
 
+    public void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
+            throws CommandExecutionException {
+        if (!useLocalArchives)
+            throw new CommandExecutionException("Currently only referencing local chart archive is supported");
+        try {
+            String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
+            HelmUpgradeCommand command = HelmUpgradeCommand.command(
+                    deploymentId.value(),
+                    completeChartArchivePath
+            );
+            singleCommandExecutor().executeSingleCommand(command);
+        } catch (SshConnectionException e) {
+            throw new CommandExecutionException("Failed to execute helm upgrade command -> " + e.getMessage());
+        }
+    }
+
     private SingleCommandExecutor singleCommandExecutor() {
         return SingleCommandExecutor.getExecutor(cluster.getHelmHostAddress(), cluster.getHelmHostSshUsername());
     }
@@ -113,11 +128,6 @@ public class HelmCommandExecutor {
     @Value("${kubernetes.helm.charts.use.local.archives}")
     public void setUseLocalArchives(boolean useLocalArchives) {
         this.useLocalArchives = useLocalArchives;
-    }
-
-    @Value("${kubernetes.namespace}")
-    public void setDefaultKubernetesNamespace(String defaultKubernetesNamespace) {
-        this.defaultKubernetesNamespace = defaultKubernetesNamespace;
     }
 
 }

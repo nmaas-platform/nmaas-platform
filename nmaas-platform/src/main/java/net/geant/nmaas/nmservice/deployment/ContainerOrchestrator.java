@@ -93,4 +93,13 @@ public interface ContainerOrchestrator {
     void removeNmService(Identifier deploymentId)
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException;
 
+    /**
+     * Triggers all the required actions to restart given NM service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @throws CouldNotRestartNmServiceException if any of the service restart steps failed
+     * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
+     */
+    void restartNmService(Identifier deploymentId)
+            throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException;
 }

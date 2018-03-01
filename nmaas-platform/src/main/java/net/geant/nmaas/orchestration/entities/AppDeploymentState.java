@@ -236,6 +236,12 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case RESTART_INITIATED:
+                    return APPLICATION_RESTART_IN_PROGRESS;
+                case RESTARTED:
+                    return APPLICATION_DEPLOYED;
+                case RESTART_FAILED:
+                    return APPLICATION_RESTART_FAILED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -248,6 +254,42 @@ public enum AppDeploymentState {
     APPLICATION_DEPLOYMENT_VERIFICATION_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case REMOVED:
+                    return APPLICATION_REMOVED;
+                case REMOVAL_FAILED:
+                    return APPLICATION_REMOVAL_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    APPLICATION_RESTART_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_DEPLOYMENT_IN_PROGRESS;
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case RESTARTED:
+                    return APPLICATION_DEPLOYED;
+                case RESTART_FAILED:
+                    return APPLICATION_RESTART_FAILED;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    APPLICATION_RESTART_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED;
+        }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {

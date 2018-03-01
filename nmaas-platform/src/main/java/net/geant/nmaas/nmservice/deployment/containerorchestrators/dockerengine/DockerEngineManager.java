@@ -19,6 +19,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -264,6 +265,11 @@ public class DockerEngineManager implements ContainerOrchestrator {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + invalidDeploymentIdException.getMessage());
         }
+    }
+
+    @Override
+    public void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException {
+        throw new NotImplementedException();
     }
 
     private AppUiAccessDetails accessDetails(DockerEngineNmServiceInfo serviceInfo) {

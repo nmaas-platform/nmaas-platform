@@ -25,6 +25,9 @@ public enum NmServiceDeploymentState {
     VERIFICATION_FAILED(false),
     REMOVED(false),
     REMOVAL_FAILED(false),
+    RESTART_INITIATED(true),
+    RESTARTED(true),
+    RESTART_FAILED(false),
     ERROR(false);
 
     private boolean isRunning;
