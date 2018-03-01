@@ -102,7 +102,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + clientId;
     }
 
-    // TODO fix or replace this extrenalURL string creation
+    // TODO fix or replace this externalURL string creation
     private String externalUrl(String deploymentId, String clientId) {
         return deploymentId.substring(deploymentId.length() - 12) + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
