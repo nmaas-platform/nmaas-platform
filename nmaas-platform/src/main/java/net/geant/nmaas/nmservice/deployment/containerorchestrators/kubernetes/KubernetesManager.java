@@ -91,7 +91,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             Identifier clientId = repositoryManager.loadClientId(deploymentId);
             serviceLifecycleManager.deployService(deploymentId);
-            ingressResourceManager.createOrUpdateIngressResource(deploymentId, clientId);
+            String serviceExternalUrl = ingressResourceManager.createOrUpdateIngressResource(deploymentId, clientId);
+            repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + idie.getMessage());
@@ -147,7 +148,13 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
-        return null;
+        try {
+            String serviceExternalUrl = repositoryManager.loadService(deploymentId).getServiceExternalUrl();
+            return new AppUiAccessDetails("http://" + serviceExternalUrl);
+        } catch (InvalidDeploymentIdException idie) {
+            throw new ContainerOrchestratorInternalErrorException(
+                    "Service not found in repository -> Invalid deployment id " + idie.getMessage());
+        }
     }
 
 }

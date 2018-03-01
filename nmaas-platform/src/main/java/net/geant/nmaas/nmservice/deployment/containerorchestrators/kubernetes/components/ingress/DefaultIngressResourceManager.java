@@ -62,7 +62,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized void createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
+    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String namespace = namespaceService.namespace(clientId);
         String ingressResourceName = ingressResourceName(clientId.value());
@@ -92,6 +92,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 deleteIngressResource(client, ingress);
             }
             createIngressResource(client, ingress);
+            return externalUrl;
         } catch (KubernetesClientException iee) {
             throw new IngressResourceManipulationException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }
@@ -101,7 +102,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + clientId;
     }
 
-    // TODO fix or replace this extrenalURL string creation
+    // TODO fix or replace this externalURL string creation
     private String externalUrl(String deploymentId, String clientId) {
         return deploymentId.substring(deploymentId.length() - 12) + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
     }
