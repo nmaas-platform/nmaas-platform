@@ -1,4 +1,5 @@
 import { DefaultLogo } from '../directive/defaultlogo.directive';
+import { RolesDirective } from '../directive/roles.directive';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
@@ -38,7 +39,8 @@ import { RouterModule } from '@angular/router';
     PasswordComponent,
     UserPrivilegesComponent,
     BaseComponent,
-    DefaultLogo
+    DefaultLogo,
+    RolesDirective
   ],
   providers: [
     PasswordValidator
@@ -52,7 +54,8 @@ import { RouterModule } from '@angular/router';
     UserDetailsComponent,
     UsersListComponent,
     PasswordComponent,
-    UserPrivilegesComponent
+    UserPrivilegesComponent,
+    RolesDirective
   ]
 })
 export class SharedModule {}
