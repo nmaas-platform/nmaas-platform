@@ -24,7 +24,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 public class AppInstance extends DomainAware implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Long id;
 	
 	String name;

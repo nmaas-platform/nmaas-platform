@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class DockerContainerPortForwarding implements Serializable {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column(name="port_forwarding_id")
     private Long id;
 

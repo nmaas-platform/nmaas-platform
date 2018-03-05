@@ -18,7 +18,7 @@ public class DockerComposeService {
     public static final String DEFAULT_EXTERNAL_ACCESS_NETWORK_NAME = "nmaas-access";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

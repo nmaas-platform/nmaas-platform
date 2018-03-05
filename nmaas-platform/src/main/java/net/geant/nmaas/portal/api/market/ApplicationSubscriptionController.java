@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,12 +21,13 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @RestController
+@RequestMapping("/portal/api/apps/subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 	
 	@Autowired
 	ApplicationSubscriptionService appSubscriptions;
 	
-	@PostMapping("/portal/api/apps/subscribe")
+	@PostMapping
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.CREATED)
@@ -38,7 +40,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 			
 	}
 
-	@PostMapping("/portal/api/apps/subscribe/request")
+	@PostMapping("/request")
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'ANY')")
 	@Transactional
 	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
@@ -50,7 +52,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	}
 	
 	
-	@DeleteMapping({"/portal/api/domains/{domainId}/apps/{appId}", "/portal/api/apps/{appId}/domains/{domainId}"})
+	@DeleteMapping("/{appId}/domains/{domainId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.ACCEPTED)
@@ -62,7 +64,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 		}
 	}
 	
-	@GetMapping("/portal/api/apps/subscriptions")
+	@GetMapping
 	@Transactional(readOnly=true)
 	public List<ApplicationSubscriptionBase> getAllSubscriptions() {
 		return appSubscriptions.getSubscriptions().stream()
@@ -70,14 +72,14 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	}
 	
 	
-	@GetMapping("/portal/api/domains/{domainId}/subscriptions")
+	@GetMapping("/domains/{domainId}")
 	@Transactional(readOnly=true)
 	public List<ApplicationSubscriptionBase> getDomainSubscriptions(@PathVariable Long domainId) {
 		return appSubscriptions.getSubscriptionsBy(domainId, null).stream()
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
 	}
 	
-	@GetMapping("/portal/api/apps/{appId}/subscriptions")
+	@GetMapping("/{appId}")
 	@Transactional(readOnly=true)
 	public List<ApplicationSubscriptionBase> getApplicationSubscriptions(@PathVariable Long appId) {
 		return appSubscriptions.getSubscriptionsBy(null, appId).stream()
