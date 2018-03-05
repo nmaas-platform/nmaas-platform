@@ -51,19 +51,19 @@ public class AppInstance extends DomainAware implements Serializable {
 		
 	}
 	
-	public AppInstance(Application application, String name) {
+	public AppInstance(Application application, Domain domain, String name) {
 		this.application = application;
+		this.domain = domain;
 		this.name = name;
 	}
 	
-	protected AppInstance(Long id, Application application, String name) {
-		this(application, name);
+	protected AppInstance(Long id, Application application, Domain domain, String name) {
+		this(application, domain, name);
 		this.id = id;
 	}
 	
 	public AppInstance(Application application, String name, Domain domain, User owner) {
-		this(application, name);
-		this.domain = domain;
+		this(application, domain, name);		
 		this.owner = owner;
 	}
 	

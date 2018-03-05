@@ -14,6 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
@@ -48,11 +49,12 @@ public class ApplicationRepositoryTest {
 	
 	@Autowired
 	DomainService domains;
-	
+
 	@Before
+	@BeforeTransaction
 	public void setUp() throws Exception {
-		domains.createGlobalDomain();
-		userRepo.save(new User("admin", "admin", domains.getGlobalDomain(), Role.ROLE_SUPERADMIN));
+//		domains.createGlobalDomain();
+//		userRepo.save(new User("admin", "admin", domains.getGlobalDomain().get(), Role.ROLE_SUPERADMIN));
 	}
 
 	@Test

@@ -34,7 +34,7 @@ public class AclService implements net.geant.nmaas.portal.service.AclService {
 	@Override
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions perm) {
 		
-		User user = users.findById(userId);
+		User user = users.findById(userId).get();
 		if(user == null)
 			return false;
 		
@@ -50,7 +50,7 @@ public class AclService implements net.geant.nmaas.portal.service.AclService {
 
 	@Override
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions[] perms) {
-		User user = users.findById(userId);
+		User user = users.findById(userId).get();
 		if(user == null)
 			return false;
 		

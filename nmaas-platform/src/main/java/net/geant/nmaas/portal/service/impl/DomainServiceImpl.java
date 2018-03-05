@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,9 +20,11 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 
 @Service
-public class DomainService implements net.geant.nmaas.portal.service.DomainService {
+public class DomainServiceImpl implements DomainService {
 
 	@Value("${domain.global:GLOBAL}")
 	String GLOBAL_DOMAIN;
@@ -43,30 +46,35 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Domain createGlobalDomain() {
-		Domain globalDomain = getGlobalDomain();
-		if(globalDomain == null)
-			globalDomain = createDomain(GLOBAL_DOMAIN);
-		return globalDomain;
+		return getGlobalDomain().orElseGet(() -> createDomain(GLOBAL_DOMAIN));
 	}
 	
 	@Override
-	public Domain getGlobalDomain() {		
+	public Optional<Domain> getGlobalDomain() {		
 		return domainRepo.findByName(GLOBAL_DOMAIN);
 	}
 	
+	
+	@Override
+	public boolean existsDomain(String name) {
+		if(name == null)
+			throw new IllegalArgumentException("name is null");
+		return domainRepo.existsByName(name);
+	}
+
 	@Override
 	public Domain createDomain(String name) {		
 		return domainRepo.save(new Domain(name));
 	}
 	
 	@Override
-	public Domain findDomain(String name) {
+	public Optional<Domain> findDomain(String name) {
 		return domainRepo.findByName(name);
 	}
 	
 	@Override
-	public Domain findDomain(Long id) {		
-		return domainRepo.findOne(id);
+	public Optional<Domain> findDomain(Long id) {		
+		return Optional.ofNullable(domainRepo.findOne(id));
 	}
 
 	
@@ -77,13 +85,7 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 
 	@Override
 	public boolean removeDomain(Long id) {
-		Domain toRemove = findDomain(id);
-		if (toRemove != null)
-			domainRepo.delete(toRemove);
-		else 
-			return false;
-		
-		return true;
+		return findDomain(id).map(toRemove -> { domainRepo.delete(toRemove); return true;}).orElse(false);		
 	}
 
 	@Override
@@ -92,20 +94,12 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 	}
 
 	public void addMemberRole(Long domainId, Long userId, Role role) throws MissingElementException {
-		if(domainId == null)
-			throw new IllegalArgumentException("domain is null");
-		if(userId == null)
-			throw new IllegalArgumentException("user is null");
-		if(role == null)
-			throw new IllegalArgumentException("role is null");
+		checkParams(domainId, userId);
+		checkParams(role);
 			
-		Domain domain = findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 		
-		User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");	
+		User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 		
 		if(userRoleRepo.findByDomainAndUserAndRole(domain, user, role) == null)
 			userRoleRepo.save(new UserRole(user, domain, role));
@@ -115,38 +109,23 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 	
 	@Override
 	public void removeMemberRole(Long domainId, Long userId, Role role) throws MissingElementException {
-		if(domainId == null)
-			throw new IllegalArgumentException("domain is null");
-		if(userId == null)
-			throw new IllegalArgumentException("user is null");
-		if(role == null)
-			throw new IllegalArgumentException("role is null");
+		checkParams(domainId, userId);
+		checkParams(role);
 			
-		Domain domain = findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 		
-		User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");	
+		User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 		
 		userRoleRepo.deleteBy(user, domain, role);
 	}
 
 	@Override
 	public void removeMember(Long domainId, Long userId) throws MissingElementException {
-		if(domainId == null)
-			throw new IllegalArgumentException("domain is null");
-		if(userId == null)
-			throw new IllegalArgumentException("user is null");
+		checkParams(domainId, userId);
 		 
-		Domain domain = findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 		
-		User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");	
+		User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 		
 		userRoleRepo.deleteBy(user, domain);		
 	}
@@ -154,38 +133,24 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 
 	@Override
 	public Set<Role> getMemberRoles(Long domainId, Long userId) throws MissingElementException {
-		if(domainId == null)
-			throw new IllegalArgumentException("domain is null");
-		if(userId == null)
-			throw new IllegalArgumentException("user is null");
-
-		Domain domain = findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		checkParams(domainId, userId);
 		
-		User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");	
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		
+		User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));;
 		
 		return userRoleRepo.findRolesByDomainAndUser(domain, user);
 	}
 
 	@Override
 	public User getMember(Long domainId, Long userId) throws MissingElementException {
-		if(domainId == null)
-			throw new IllegalArgumentException("domain is null");
-		if(userId == null)
-			throw new IllegalArgumentException("user is null");
+		checkParams(domainId, userId);
 		
-		Domain domain = findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 		
-		User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");	
+		User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));;
 				
-		User userMember = userRoleRepo.findDomainMember(domain, userId);
+		User userMember = userRoleRepo.findDomainMember(domain, user);
 		if(userMember == null)
 			throw new ProcessingException("User is not domain member");
 		
@@ -194,15 +159,28 @@ public class DomainService implements net.geant.nmaas.portal.service.DomainServi
 
 	@Override
 	public Set<Domain> getUserDomains(Long userId) throws MissingElementException {
-		if(userId == null)
-			throw new IllegalArgumentException("user is null");
-		User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");	
+		checkParams(userId);
+
+		User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 				
 		return user.getRoles().stream().map(ur -> ur.getDomain()).collect(Collectors.toSet());
 	}
 
+	protected void checkParams(Long userId) {
+		if(userId == null)
+			throw new IllegalArgumentException("userId is null");
+	}
 	
+	protected void checkParams(Role role) {
+		if(role == null)
+			throw new IllegalArgumentException("role is null");
+	}
+	
+	protected void checkParams(Long domainId, Long userId) {
+		if(domainId == null)
+			throw new IllegalArgumentException("domainId is null");
+		if(userId == null)
+			throw new IllegalArgumentException("userId is null");		
+	}
 	
 }

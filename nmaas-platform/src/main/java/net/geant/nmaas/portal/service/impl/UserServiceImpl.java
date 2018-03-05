@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,12 +17,13 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.DomainService;
 
 @Service
-public class UserService implements net.geant.nmaas.portal.service.UserService {
+public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
 
 	@Autowired
-	net.geant.nmaas.portal.service.DomainService domains;
+	DomainService domains;
 	
 	@Autowired
 	UserRepository userRepo;
@@ -52,33 +54,43 @@ public class UserService implements net.geant.nmaas.portal.service.UserService {
 
 
 	@Override
-	public User findByUsername(String username) {
-		if(username == null)
-			return null;
-		return userRepo.findByUsername(username).orElse(null);
+	public Optional<User> findByUsername(String username) {
+		return (username != null ? userRepo.findByUsername(username) : Optional.empty());
 	}
 	
 	@Override
-	public User findById(Long id) {
-		if(id == null)
-			return null;
-		return userRepo.findOne(id);
+	public Optional<User> findById(Long id) {
+		return (id != null ? Optional.ofNullable(userRepo.findOne(id)) : Optional.empty());
+	}
+	
+	@Override
+	public boolean existsByUsername(String username) {
+		checkParam(username);
+		return userRepo.existsByUsername(username);
+	}
+
+	@Override
+	public boolean existsById(Long id) {
+		checkParam(id);
+		return userRepo.exists(id);
 	}
 
 	@Override
 	public User register(String username) throws ObjectAlreadyExistsException, MissingElementException {
-		return register(username, null, domains.getGlobalDomain().getId());				
+		checkParam(username);
+		return register(username, null, null);				
 	}
 
 	@Override
 	public User register(String username, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException {
-		Domain domain = (domainId != null ? domains.findDomain(domainId) : domains.getGlobalDomain());
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
-				
-		User user = userRepo.findByUsername(username).orElse(null);
-		if(user != null)
-			throw new ObjectAlreadyExistsException("User exists.");
+		checkParam(username);
+		
+		Domain domain = (domainId != null ? domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found")) 
+											: domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")));
+
+		// check if user already exists
+		userRepo.findByUsername(username)
+				.ifPresent((user) -> new ObjectAlreadyExistsException("User already exists."));
 
 		User newUser = new User(username, password, domain, Role.ROLE_GUEST);
 		
@@ -87,26 +99,37 @@ public class UserService implements net.geant.nmaas.portal.service.UserService {
 	
 	@Override
 	public void update(User user) throws ProcessingException {
-		if(user == null || user.getId() == null)
-			throw new ProcessingException("Missing user object");
-		
-		if(userRepo.findOne(user.getId()) == null)
+		checkParam(user);
+		checkParam(user.getId());
+				
+		if(!userRepo.exists(user.getId()))
 			throw new ProcessingException("User (id=" + user.getId() + " does not exists.");
 		
 		userRepo.saveAndFlush(user);
 	}
 
 	@Override
-	public void delete(User user) throws MissingElementException, ProcessingException {
-		if(user == null)
-			throw new MissingElementException("user is null");
-		if(user.getId() == null)
-			throw new ProcessingException("user id is null");
+	public void delete(User user) {
+		checkParam(user);
+		checkParam(user.getId());
 		
 		userRepo.delete(user);
 	}
 
-
+	protected void checkParam(Long id) {
+		if(id == null)
+			throw new IllegalArgumentException("id is null");
+	}
+	
+	protected void checkParam(String username) {
+		if(username == null)
+			throw new IllegalArgumentException("username is null");
+	}
+	
+	protected void checkParam(User user) {
+		if(user == null)
+			throw new IllegalArgumentException("user is null");
+	}
 
 	 
 	

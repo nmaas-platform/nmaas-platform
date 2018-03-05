@@ -60,12 +60,11 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
 		
 		Set<Permissions> resultPerms = new HashSet<Permissions>();
 		
-		Domain domain = (targetId != null ? domains.findDomain((Long)targetId) : domains.getGlobalDomain());
-		if(domain == null)
-			throw new IllegalStateException("no domain found");
+		Domain domain = (targetId != null ? domains.findDomain((Long)targetId).orElseThrow(() -> new IllegalStateException("Domain not found."))
+											: domains.getGlobalDomain().orElseThrow(() -> new IllegalStateException("Global domain not found.")));
 		
 		for(UserRole role : user.getRoles()) {
-			if(domains.getGlobalDomain().equals(role.getDomain()))
+			if(domains.getGlobalDomain().get().equals(role.getDomain()))
 				resultPerms.addAll(Arrays.asList(globalPermMatrix.get(role.getRole())));
 			else if(role.getDomain().equals(domain))
 				resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));

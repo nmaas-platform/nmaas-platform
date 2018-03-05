@@ -62,9 +62,7 @@ public class BasicAuthController {
 		if(StringUtils.isEmpty(userLogin.getUsername()) || StringUtils.isEmpty(userLogin.getPassword()))
 			throw new AuthenticationException("Missing credentials.");
 		
-		User user = users.findByUsername(userLogin.getUsername());
-		if(user == null)
-			throw new AuthenticationException("User not found.");
+		User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found."));
 		
 		if(!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
 			throw new AuthenticationException("Invalid password.");
@@ -79,7 +77,7 @@ public class BasicAuthController {
 		
 		if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
 			Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
-			User user = users.findByUsername(claims.getSubject());
+			User user = users.findByUsername(claims.getSubject()).orElseThrow(() -> new AuthenticationException("User in token not found."));
 			if(user != null) {
 				return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 			}
