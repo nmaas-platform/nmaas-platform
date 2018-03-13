@@ -18,6 +18,7 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 import { LogoutComponent } from './logout/logout.component';
+import { ChangelogComponent } from './changelog/changelog.component';
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -38,6 +39,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     AppComponent,
     LoginComponent,
     LogoutComponent,
+    ChangelogComponent,
   ],
   imports: [
     BrowserModule,
