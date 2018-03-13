@@ -29,7 +29,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   public domainId: number;
 
   protected applications: Observable<Application[]>;
-  protected selected: Map<number, boolean>;
+  protected selected: Observable<Set<number>>;
 
   protected searchedAppName: string;
 
@@ -57,6 +57,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
     switch (+this.appView) {
       case AppViewType.APPLICATION:
         applications = this.appsService.getApps();
+        applications.subscribe((apps) => this.updateSelected(apps));
         break;
       case AppViewType.DOMAIN:
         applications = this.appSubsService.getSubscribedApplications(domainId);
@@ -67,6 +68,28 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.applications = applications;
+
+  }
+
+  protected updateSelected(apps: Application[]) {
+
+    let subscriptions: Observable<AppSubscription[]>;
+    if (isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
+      subscriptions = this.appSubsService.getAll();
+    } else {
+      subscriptions = this.appSubsService.getAllByDomain(this.domainId);
+    }
+    
+    subscriptions.subscribe((appSubs) => {
+
+      const selected: Set<number> = new Set<number>();
+
+      for (let i = 0; i < appSubs.length; i++) {
+        selected.add(appSubs[i].applicationId);
+      }
+      
+      this.selected = Observable.of<Set<number>>(selected);
+    });
 
   }
 

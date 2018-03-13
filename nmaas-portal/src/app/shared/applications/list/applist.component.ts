@@ -34,11 +34,14 @@ export class AppListComponent implements OnInit, OnDestroy {
   public applications: Observable<Application[]>;
   
   @Input()
-  public selected: Map<number, boolean>;
+  public selected: Observable<Set<number>>;
 
   constructor(private appSubscriptionService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {
     if (isUndefined(this.listType)) {
       this.listType = ListType.GRID;
+    }
+    if(isUndefined(this.appView)) {
+      this.appView = AppViewType.APPLICATION;
     }
   }
 
@@ -49,30 +52,5 @@ export class AppListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
   }
 
-  
-  public isAppSubscribed(appId?: number): boolean {
-    //console.debug('isAppSubscribed:' + appId);
-    /*
-    if (isUndefined(appId) || isUndefined(this.domainId)) {
-      return false;
-    }
-    if (this.cache.hasData(appId)) {
-      return this.cache.getData(appId);
-    } else {
-      this.cache.setData(appId, false);
-
-      if (this.domainId === 0) {
-        console.debug('getAllByApplication: ' + appId);
-        this.appSubscriptionService.getAllByApplication(appId).subscribe((result) => this.cache.setData(appId, result.length > 0), (error) => this.cache.setData(appId, false));
-      } else {
-        console.debug('getSubscription for: ' + appId);
-        this.appSubscriptionService.getSubscription(appId, this.domainId).subscribe((result) => this.cache.setData(appId, true), (error) => this.cache.setData(appId, false));
-      }
-
-      return false;
-    }
-    */
-    return false;
-  }
 
 }

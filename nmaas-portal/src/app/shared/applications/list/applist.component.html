@@ -3,7 +3,7 @@
 	<div class="tab-pane fade in"
 		[class.active]="listType === ListType.GRID" id="tab-grid">
 		<div class="row auto-clear">
-			<nmaas-applist-element *ngFor="let app of applications | async" [app]="app" [selected]="cache.getData(app?.id)"></nmaas-applist-element>
+			<nmaas-applist-element *ngFor="let app of applications | async" [app]="app" [selected]="(selected | async)?.has(app.id)"></nmaas-applist-element>
 		</div>
 	</div>
 	<div class="tab-pane fade in"
@@ -22,7 +22,7 @@
 
 				<tbody>
 					<ng-template ngFor let-app [ngForOf]="applications | async">
-					<tr [class.subscribed]="isAppSubscribed(app?.id)">
+					<tr [class.subscribed]="(selected | async)?.has(app?.id)">
 						<td>{{app?.name}}</td>
 						<td>{{app?.briefDescription}}</td>
 						<td>{{app?.tags.join(", ")}}</td>
