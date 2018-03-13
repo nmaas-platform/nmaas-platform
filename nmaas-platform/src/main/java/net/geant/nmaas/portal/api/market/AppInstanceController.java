@@ -178,7 +178,7 @@ public class AppInstanceController extends AppBaseController {
 		}
 	}
 
-	@GetMapping("/domains/{domainId}/apps/instances/{appInstanceId}/state")
+	@GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
