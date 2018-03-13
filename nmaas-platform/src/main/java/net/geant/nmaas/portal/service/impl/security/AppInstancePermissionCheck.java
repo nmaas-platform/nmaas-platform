@@ -68,8 +68,11 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 		
 		Set<Permissions> resultPerms = new HashSet<Permissions>();
 		
-		AppInstance appInstance = appInstances.findOne((Long)targetId); 		
-		Domain domain = (appInstance.getDomain() != null ? appInstance.getDomain() : domains.getGlobalDomain());
+		AppInstance appInstance = appInstances.findOne((Long)targetId);
+		if(appInstance == null)
+			return resultPerms;
+		
+		Domain domain = (appInstance.getDomain() != null ? appInstance.getDomain() : domains.getGlobalDomain().get());
 		
 		if(appInstance != null && appInstance.getOwner() != null && appInstance.getOwner().equals(user))
 			resultPerms.addAll(Arrays.asList(OWNER_DEFAULT_PERMS));
@@ -77,7 +80,7 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 			for(UserRole role : user.getRoles())
 				if(role.getDomain().equals(domain))
 					resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));
-				else if(domains.getGlobalDomain().equals(role.getDomain()))
+				else if(domains.getGlobalDomain().get().equals(role.getDomain()))
 					resultPerms.addAll(Arrays.asList(globalPermMatrix.get(role.getRole())));
 		
 		return resultPerms;

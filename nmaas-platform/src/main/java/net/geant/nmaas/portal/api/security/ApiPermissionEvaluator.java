@@ -48,7 +48,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 			targetName = targetType.getClass().getSimpleName();
 		targetName = targetName.toLowerCase();
 								
-		User user = users.findByUsername(authentication.getName());
+		User user = users.findByUsername(authentication.getName()).get();
 		if(user == null)
 			return false;
 		

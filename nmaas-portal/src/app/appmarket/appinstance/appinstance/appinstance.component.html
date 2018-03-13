@@ -52,7 +52,7 @@
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<div class = "btn-group pull-right">
 								<a *ngIf="appInstanceStatus?.state == AppInstanceState.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
-								<button class = "btn btn-danger" (click)="unsubscribe()">Unsubscribe</button>
+								<button class = "btn btn-danger" (click)="undeploy()">Undeploy</button>
 							</div>
 						</div>
 					</div>

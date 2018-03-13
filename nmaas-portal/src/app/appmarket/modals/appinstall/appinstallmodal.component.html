@@ -2,12 +2,12 @@
 	<div class="nmaas-modal-header">Create new instance of {{app?.name}} instance</div>
 	<div class="nmaas-modal-body">
 		<div class="form-group">
-			<label for="name">Instance name</label> 
+			<label for="name" class="control-label">Instance name</label> 
 			<input type="text" class="form-control" id="name" [(ngModel)]="name">
-			<label for="userDomains">Available domains: </label>
-			<select id="userDomains" class="form-control" [(ngModel)]="domainId">				
-				<option *ngFor="let domain of userDomains" [value]="domain.id">{{domain.name}}</option>
-			</select>	
+			<label class="control-label">Domain: </label>
+			<div>
+				<p class="form-control-static">{{domainName}} ({{domainId}})</p>
+			</div>
 		</div>
 	</div>
 	<div class="nmaas-modal-footer">

@@ -26,7 +26,7 @@ public class Tag implements Serializable {
 	
 	@Id
 	@Column(name="tag_id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Long id;
 
 	@Column(unique=true)
@@ -75,4 +75,10 @@ public class Tag implements Serializable {
 		this.applications = applications;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	
 }

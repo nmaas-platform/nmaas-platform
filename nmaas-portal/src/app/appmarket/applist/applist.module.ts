@@ -9,9 +9,6 @@ import {AuthModule} from '../../auth/auth.module';
 import {SharedModule} from '../../shared/shared.module';
 
 import {AppListComponent} from './applist.component';
-import {AppElementComponent} from './appelement/appelement.component';
-
-
 
 import {AppsService} from '../../service/apps.service';
 import {TagService} from '../../service/tag.service';
@@ -20,7 +17,6 @@ import {TagService} from '../../service/tag.service';
 @NgModule({
   declarations: [
     AppListComponent,
-    AppElementComponent,
   ],
   imports: [
     CommonModule,

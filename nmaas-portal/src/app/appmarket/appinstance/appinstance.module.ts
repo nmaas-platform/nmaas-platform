@@ -31,7 +31,7 @@ import {AppInstanceListComponent} from './appinstancelist/appinstancelist.compon
     AuthModule,
     AppInstanceProgressModule,
     PipesModule,
-    JsonSchemaFormModule
+    JsonSchemaFormModule.forRoot()
   ],
   exports: [
     AppInstanceComponent,

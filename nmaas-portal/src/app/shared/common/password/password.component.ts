@@ -7,7 +7,6 @@ export class PasswordValidator implements Validator {
     const password: string = ac.get('password').value; // to get value in input tag
     const confirmPassword = ac.get('confirmPassword').value; // to get value in input tag
     if (password !== confirmPassword) {
-      console.debug('Passwords mismatching.');
       ac.get('confirmPassword').setErrors({validateEqual: true})
     } else {
       return null

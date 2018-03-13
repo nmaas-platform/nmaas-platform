@@ -40,6 +40,9 @@ public interface UserRoleRepository extends JpaRepository<UserRole, UserRole.Id>
 	@Query("SELECT DISTINCT id.user FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user.id = ?2")
 	User findDomainMember(Domain domain, Long userId);
 	
+	@Query("SELECT DISTINCT id.user FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2")
+	User findDomainMember(Domain domain, User user);	
+	
 	@Modifying
 	@Query("DELETE FROM UserRole ur WHERE ur.id.user = ?1 AND ur.id.domain = ?2")
 	void deleteBy(User user, Domain domain);

@@ -12,7 +12,7 @@ public class DockerComposeFile {
     public final static String DEFAULT_DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
 

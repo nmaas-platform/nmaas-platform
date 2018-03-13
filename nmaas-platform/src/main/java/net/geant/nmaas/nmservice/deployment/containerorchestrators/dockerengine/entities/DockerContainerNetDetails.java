@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class DockerContainerNetDetails {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column(name="network_id")
     private Long id;
 

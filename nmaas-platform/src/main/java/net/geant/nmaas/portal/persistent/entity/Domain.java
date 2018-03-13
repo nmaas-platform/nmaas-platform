@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class Domain {
 
 	@Id
-	@GeneratedValue( strategy = GenerationType.AUTO )
+	@GeneratedValue( strategy = GenerationType.IDENTITY )
 	Long id;
 	
 	@NotNull

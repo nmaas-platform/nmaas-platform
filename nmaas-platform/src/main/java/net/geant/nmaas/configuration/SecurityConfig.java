@@ -120,8 +120,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/platform/api/orchestration/deployments/**/state").authenticated()
 				.antMatchers("/platform/api/orchestration/deployments/**/access").authenticated()
 				.antMatchers("/platform/api/management/**").authenticated()
-			.and()
-				.addFilterBefore(statelessAuthFilter(
+				.and()
+					.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(
 								new AntPathRequestMatcher[] { 
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),

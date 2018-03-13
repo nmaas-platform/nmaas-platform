@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -11,13 +12,15 @@ import net.geant.nmaas.portal.persistent.entity.User;
 public interface DomainService {
 	
 	Domain createGlobalDomain();	
-	Domain getGlobalDomain();
+	Optional<Domain> getGlobalDomain();
 	
 	List<Domain> getDomains();
 	
+	boolean existsDomain(String name);
+	
 	Domain createDomain(String name);
-	Domain findDomain(String name);
-	Domain findDomain(Long id);
+	Optional<Domain> findDomain(String name);
+	Optional<Domain> findDomain(Long id);
 	
 	void updateDomain(Domain domain);
 	boolean removeDomain(Long id);
