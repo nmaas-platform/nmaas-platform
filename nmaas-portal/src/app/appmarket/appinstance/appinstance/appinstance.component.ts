@@ -66,7 +66,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
 
       this.updateAppInstanceState();
-      this.intervalCheckerSubscribtion = IntervalObservable.create(3000).subscribe(() => this.updateAppInstanceState());
+      this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
     });
   }
 
