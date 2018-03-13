@@ -38,7 +38,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   private appInstanceStatus: AppInstanceStatus; // = new AppInstanceStatus();
 
-  private appInstanceId: Number;
+  private appInstanceId: number;
   private appInstance: AppInstance;
 
   private intervalCheckerSubscribtion;
@@ -102,7 +102,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
   }
 
-  public unsubscribe(): void {
+  public undeploy(): void {
     if (this.appInstanceId) {
       this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
     }

@@ -4,15 +4,19 @@ public class ApplicationSubscription extends ApplicationSubscriptionBase {
 
 	protected boolean active = false;
 	
+	protected ApplicationSubscription() {
+		super();
+	}
+	
 	public ApplicationSubscription(Long domainId, Long applicationId) {
 		super(domainId, applicationId);
 	}
 
-	protected boolean isActive() {
+	public boolean isActive() {
 		return active;
 	}
 
-	protected void setActive(boolean active) {
+	public void setActive(boolean active) {
 		this.active = active;
 	}
 

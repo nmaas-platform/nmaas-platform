@@ -8,6 +8,8 @@ import { Rate } from '../model/rate';
 import { Comment } from '../model/comment';
 import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
+import { GenericDataService } from './genericdata.service';
+import { JsonMapperService } from './jsonmapper.service';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
@@ -16,24 +18,21 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
 @Injectable()
-export class AppsService {
+export class AppsService extends GenericDataService {
 
-    constructor(private authHttp: AuthHttp, private appConfig: AppConfigService) { }
+    constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
+      super(authHttp, appConfig);
+    }
 
 
     public getApps(): Observable<Application[]> {
-        return this.authHttp.get(this.appConfig.getApiUrl() + '/apps')
-            .timeout(10000)
-            .map((res: Response) => res.json())
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps')
+                    .map((applications) => this.jsonModelMapper.deserialize(applications, Application));
     }
 
-    public getApp(id: Number): Observable<Application> {
-        console.debug('Get app with id=' + id);
-        return this.authHttp.get(this.appConfig.getApiUrl() + '/apps/' + id)
-            .timeout(10000)
-            .map((res: Response) => res.json())
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+    public getApp(id: number): Observable<Application> {
+        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id)
+                    .map((application) => this.jsonModelMapper.deserialize(application, Application))
     }
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {

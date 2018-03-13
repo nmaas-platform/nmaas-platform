@@ -167,5 +167,14 @@ public class ApplicationSubscriptionRepositoryTest {
 
 	}
 	
+	@Test
+	public void testFindApplicationBriefAll() {
+		assertEquals(2, appSubRepo.findApplicationBriefAllBy().size());
+	}
+	
+	@Test
+	public void testFindApplicationBriefAllByDomain() {
+		assertEquals(2, appSubRepo.findApplicationBriefAllByDomain(domain2.getId()).size());
+	}
 	
 }

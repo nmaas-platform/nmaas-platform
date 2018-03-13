@@ -1,6 +1,7 @@
 export * from './appinstance';
 export * from './appinstanceprogressstage';
 export * from './appinstancestatus';
+export * from './appsubscription';
 export * from './application';
 export * from './authority';
 export * from './comment';

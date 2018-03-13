@@ -75,4 +75,10 @@ public class Tag implements Serializable {
 		this.applications = applications;
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	
 }

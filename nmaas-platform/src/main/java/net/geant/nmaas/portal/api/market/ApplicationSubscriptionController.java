@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.geant.nmaas.portal.api.domain.ApplicationBrief;
+import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @RestController
-@RequestMapping("/portal/api/apps/subscriptions")
+@RequestMapping("/portal/api/subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 	
 	@Autowired
@@ -52,7 +55,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	}
 	
 	
-	@DeleteMapping("/{appId}/domains/{domainId}")
+	@DeleteMapping("/apps/{appId}/domains/{domainId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.ACCEPTED)
@@ -64,8 +67,17 @@ public class ApplicationSubscriptionController extends AppBaseController {
 		}
 	}
 	
+	@GetMapping("/apps/{appId}/domains/{domainId}")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	@Transactional(readOnly=true)
+	public ApplicationSubscription getSubscription(@PathVariable Long domainId, @PathVariable Long appId) throws MissingElementException {
+		return appSubscriptions.getSubscription(appId, domainId).map(appSub -> modelMapper.map(appSub, ApplicationSubscription.class))
+				.orElseThrow(() -> new MissingElementException("Subscription not found"));
+	}
+	
 	@GetMapping
 	@Transactional(readOnly=true)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	public List<ApplicationSubscriptionBase> getAllSubscriptions() {
 		return appSubscriptions.getSubscriptions().stream()
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
@@ -74,12 +86,26 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	
 	@GetMapping("/domains/{domainId}")
 	@Transactional(readOnly=true)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	public List<ApplicationSubscriptionBase> getDomainSubscriptions(@PathVariable Long domainId) {
 		return appSubscriptions.getSubscriptionsBy(domainId, null).stream()
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
 	}
 	
-	@GetMapping("/{appId}")
+	@GetMapping("/domains/{domainId}/apps")
+	@Transactional(readOnly=true)
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
+	public List<ApplicationBrief> getDomainSubscribedApplications(@PathVariable Long domainId) {
+		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
+	}
+	
+	@GetMapping("/apps")
+	@Transactional(readOnly=true)
+	public List<ApplicationBrief> getSubscribedApplications() {
+		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());		
+	}
+	
+	@GetMapping("/apps/{appId}")
 	@Transactional(readOnly=true)
 	public List<ApplicationSubscriptionBase> getApplicationSubscriptions(@PathVariable Long appId) {
 		return appSubscriptions.getSubscriptionsBy(null, appId).stream()

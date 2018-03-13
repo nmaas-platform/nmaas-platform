@@ -20,7 +20,7 @@ import {DomainService} from '../service/domain.service';
 import {TagService} from '../service/tag.service';
 import {UserService} from '../service/user.service';
 
-import {AppInstallModalComponent} from './appinstall/appinstallmodal.component';
+import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.component';
 
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';

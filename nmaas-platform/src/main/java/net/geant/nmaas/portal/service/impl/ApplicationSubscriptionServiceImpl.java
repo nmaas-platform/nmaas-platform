@@ -17,6 +17,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription.Id;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRespository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.ApplicationService;
@@ -239,6 +240,17 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		
 		ApplicationSubscription appSub = findApplicationSubscription(application, domain);		
 		return unsubscribe(appSub);
+	}
+
+
+	@Override
+	public List<Application> getSubscribedApplications() {		
+		return getSubscribedApplications(null);
+	}
+
+	@Override
+	public List<Application> getSubscribedApplications(Long domainId) {		
+		return (domainId != null ? appSubRepo.findApplicationBriefAllByDomain(domainId) : appSubRepo.findApplicationBriefAllBy());
 	}
 
 	protected ApplicationSubscription findApplicationSubscription(Id id) throws ObjectNotFoundException {

@@ -99,7 +99,7 @@ public class AppInstanceController extends AppBaseController {
 		User user = users.findByUsername(username)
 							.orElseThrow(() -> new MissingElementException("User not found"));
 
-		return instances.findAllByOwner(user, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+		return instances.findAllByOwner(user, domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
 	
 	@GetMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})

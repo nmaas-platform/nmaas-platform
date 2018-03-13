@@ -6,7 +6,7 @@ import {JsonObject, JsonProperty} from 'json2typescript';
 export class Domain {
   
   @JsonProperty('id', Number)
-  public id: Number = undefined;
+  public id: number = undefined;
   
   @JsonProperty('name', String)
   public name: string = undefined;
@@ -15,7 +15,7 @@ export class Domain {
   public active: boolean = undefined
   
   constructor();  
-  constructor(id?: Number,
+  constructor(id?: number,
               name?: string,
               active?: boolean) { 
     this.id = id;

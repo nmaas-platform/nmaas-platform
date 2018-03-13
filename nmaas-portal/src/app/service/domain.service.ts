@@ -54,7 +54,7 @@ export class DomainService extends GenericDataService {
   }
 
   public getMyDomains(): Observable<Domain[]> {
-    return this.get<Domain[]>(this.url + '/my');
+    return this.get<Domain[]>(this.url + '/my').map((domain) => this.jsonModelMapper.deserialize(domain, Domain));
   }
 
   public getUsers(domainId: number): Observable<User[]> {

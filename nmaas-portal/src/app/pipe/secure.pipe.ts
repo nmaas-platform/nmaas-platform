@@ -26,7 +26,7 @@ export class AuthHttpWrapper {
 
 
   public get(url: string): Observable<any> {
-    console.debug('Secure get url ' + url);
+    console.debug('Get secured url ' + url);
     if (!url) {
       return Observable.throw('Empty url');
     }

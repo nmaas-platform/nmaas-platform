@@ -4,6 +4,7 @@ export * from './modal/modal.component';
 export * from './rate/rate.component';
 export * from './screenshots/screenshots.component';
 export * from './common/componentmode';
+export * from './common/listtype';
 export * from './common/password/password.component';
 export * from './users/details/userdetails.component';
 export * from './users/list/userslist.component';

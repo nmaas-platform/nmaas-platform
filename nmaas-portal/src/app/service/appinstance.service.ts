@@ -7,9 +7,11 @@ import {AppConfigService} from '../service/appconfig.service';
 
 import {Id} from '../model/id';
 import {AppInstanceStatus} from '../model/appinstancestatus';
-import {AppInstance} from '../model/appinstance';
+import {AppInstance, AppInstanceRequest} from '../model/appinstance';
 import {AppInstanceState} from '../model/appinstancestatus';
 import {AppInstanceProgressStage} from '../model/appinstanceprogressstage';
+import { GenericDataService } from './genericdata.service';
+import { JsonMapperService } from './jsonmapper.service';
 
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
@@ -18,65 +20,48 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 
 @Injectable()
-export class AppInstanceService {
+export class AppInstanceService extends GenericDataService {
 
-  constructor(private authHttp: AuthHttp, private appConfig: AppConfigService) {}
+  constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
+    super(authHttp, appConfig);
+  }
 
   public getAllAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.authHttp.get(this.getUrl(domainId))
-      .timeout(10000)
-      .map((res: Response) => res.json())
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+    return this.get<AppInstance[]>(this.getUrl(domainId))
+                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));   
   }
 
   public getMyAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.authHttp.get(this.getUrl(domainId) + 'my')
-      .timeout(10000)
-      .map((res: Response) => res.json() as AppInstance[])
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my')
+                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));
   }
 
-  public getUserAppInstances(domainId: number, username: string): Observable<AppInstance[]> {
-    return this.authHttp.get(this.getUrl(domainId) + 'user/' + username)
-      .timeout(10000)
-      .map((res: Response) => res.json())
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+  public getUserAppInstances(username: string, domainId?: number): Observable<AppInstance[]> {
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'user/' + username)
+                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));
   }
 
   public getAppInstanceState(id: Number, domainId?: number): Observable<AppInstanceStatus> {
-    return this.authHttp.get(this.getUrl(domainId) + id + '/state')
-      .timeout(10000)
-      .map((res: Response) => {
-        var ais = res.json();
-        return new AppInstanceStatus(ais.appInstanceId, <AppInstanceState>(AppInstanceState[<string>(ais.state)]), ais.details);
-      })
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+    return this.get<AppInstanceStatus>(this.getUrl(domainId) + id + '/state')
+                .map((appInstanceStatus) => this.jsonModelMapper.deserialize(appInstanceStatus, AppInstanceStatus));
   }
 
-  public createAppInstance(domainId: number, appId: Number, name: string): Observable<Id> {
-    return this.authHttp.post(this.getUrl(domainId), JSON.stringify({'applicationId': appId, 'name': name}))
-      .timeout(10000)
-      .map((res: Response) => res.json())
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+  public createAppInstance(domainId: number, appId: number, name: string): Observable<Id> {
+    return this.post<AppInstanceRequest, Id>(this.getUrl(domainId), new AppInstanceRequest(appId, name))
+                .map((id) => this.jsonModelMapper.deserialize(id, Id));
   }
 
-  public removeAppInstance(appInstanceId: Number, domainId?: number): Observable<void> {
-    return this.authHttp.delete(this.getUrl(domainId) + appInstanceId)
-      .timeout(10000)
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+  public removeAppInstance(appInstanceId: Number, domainId?: number): Observable<any> {
+    return this.delete<any>(this.getUrl(domainId) + appInstanceId);      
   }
 
   public getAppInstance(appInstanceId: Number, domainId?: number): Observable<AppInstance> {
-    return this.authHttp.get(this.getUrl(domainId) + appInstanceId)
-      .timeout(10000)
-      .map((res: Response) => res.json())
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+    return this.get<AppInstance>(this.getUrl(domainId) + appInstanceId)
+                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));
   }
 
-  public applyConfiguration(appInstanceId: Number, configuration, domainId?: number): Observable<void> {
-    return this.authHttp.post(this.getUrl(domainId) + appInstanceId + '/configure', configuration)
-      .timeout(10000)
-      .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+  public applyConfiguration(appInstanceId: Number, configuration: string, domainId?: number): Observable<void> {
+    return this.post<String, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);                
   }
 
   protected getUrl(domainId?: number): string {

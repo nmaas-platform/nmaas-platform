@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 
@@ -44,6 +45,29 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throw new IllegalArgumentException("applicationId is null");
 	}
 
+	
+	@Override
+	public Optional<ApplicationBriefProjection> findApplicationBrief(Long applicationId) {
+		checkParam(applicationId);
+		return appRepo.findApplicationBriefById(applicationId);
+	}
+
+	@Override
+	public List<ApplicationBriefProjection> findAllBrief() {		
+		return appRepo.findApplicationBriefAll();
+	}
+
+	@Override
+	public List<ApplicationBriefProjection> findAllBrief(List<Long> appIds) {
+		checkParam(appIds);
+		return appRepo.findApplicationBriefAllByIdIn(appIds);
+	}
+
+	@Override
+	public Page<ApplicationBriefProjection> findAllBrief(Pageable pageable) {		
+		return appRepo.findApplicationBriefAll(pageable);
+	}
+
 	@Override
 	public Page<Application> findAll(Pageable pageable) {
 		return appRepo.findAll(pageable);
@@ -69,4 +93,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throw new IllegalArgumentException("app is null");
 	}
 	
+	protected void checkParam(List<Long> ids) {
+		if(ids == null)
+			throw new IllegalArgumentException("ids list is null");		
+	}
 }

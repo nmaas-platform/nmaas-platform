@@ -291,6 +291,7 @@ public class UsersController {
 		Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 		Domain globalDomain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
+		/*
 		if(domain.equals(globalDomain)) {
 			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER))
 				throw new ProcessingException("Illegal role.");			
@@ -298,7 +299,8 @@ public class UsersController {
 			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
 				throw new ProcessingException("Illegal role.");
 		}
-			
+		*/
+		
 		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));;
 				
 		domains.removeMemberRole(domain.getId(), user.getId(), role);

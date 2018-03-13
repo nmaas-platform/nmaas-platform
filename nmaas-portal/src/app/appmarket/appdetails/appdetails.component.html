@@ -1,5 +1,5 @@
 
-<div class="container">
+<div *ngIf="appId" class="container">
 	<div class="row">
 		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
 			<div class="thumbnail">
@@ -35,19 +35,24 @@
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<p>
 						<span>Rating:</span>
-						<rate name="appRate" [pathUrl]="'/apps/' + id + '/rate'"></rate>
+						<rate name="appRate" [pathUrl]="'/apps/' + appId + '/rate'"></rate>
 					</p>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<p>
 						<span>My rating:</span>
-						<rate name="myAppRate" [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + id + '/rate/my'"></rate>
+						<rate name="myAppRate" [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + appId + '/rate/my'"></rate>
 					</p>
 				</div>
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<div class="btn-group pull-right">
-						<button class="btn btn-primary" (click)="appInstallModal.show()">Subscribe</button>
+					<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
+						<button class="btn btn-primary" (click)="subscribe()">Subscribe</button>
 					</div>
+					<div *ngIf="subscribed" class="btn-group pull-right">
+						<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">Deploy</button>
+						<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">Unsubscribe</button>
+					</div>
+					
 				</div>
 			</div>
 		</div>
@@ -57,7 +62,7 @@
 	<div class='row'>
 		<h3>Screenshots</h3>
 		<hr>
-		<screenshots [pathUrl]="'/apps/' + id + '/screenshots'"></screenshots>
+		<screenshots [pathUrl]="'/apps/' + appId + '/screenshots'"></screenshots>
 	</div>
 
 	<div class="row">
@@ -67,10 +72,10 @@
 	</div>
 	<hr>
 
-	<comments [pathUrl]="'/apps/' + id + '/comments'"></comments>
+	<comments [pathUrl]="'/apps/' + appId + '/comments'"></comments>
 
 
-	<nmaas-appInstallModal [app]="app">
-	</nmaas-appInstallModal>
+	<nmaas-modal-app-install [app]="app">
+	</nmaas-modal-app-install>
 
 </div>

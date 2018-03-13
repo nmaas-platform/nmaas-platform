@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 
 public interface ApplicationSubscriptionService {
 	
@@ -44,4 +45,7 @@ public interface ApplicationSubscriptionService {
 	boolean unsubscribe(Long applicationId, Long domainId) throws ProcessingException, ObjectNotFoundException;
 	boolean unsubscribe(Application application, Domain domain) throws ProcessingException, ObjectNotFoundException;
 		
+	List<Application> getSubscribedApplications();
+	List<Application> getSubscribedApplications(Long domainId);
+	
 }

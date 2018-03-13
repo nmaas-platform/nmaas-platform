@@ -15,6 +15,14 @@ public class ApplicationSubscriptionBase {
 		this.applicationId = applicationId;
 	}
 
+	public void setDomainId(Long domainId) {
+		this.domainId = domainId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+
 	public Long getDomainId() {
 		return domainId;
 	}

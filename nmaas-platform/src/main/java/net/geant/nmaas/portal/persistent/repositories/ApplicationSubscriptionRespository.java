@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription.Id;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 
 public interface ApplicationSubscriptionRespository extends JpaRepository<ApplicationSubscription, ApplicationSubscription.Id>{
 	
@@ -116,4 +117,14 @@ public interface ApplicationSubscriptionRespository extends JpaRepository<Applic
 
 	List<ApplicationSubscription> findAllByIdApplicationAndActive(Application application, boolean active);
 	Page<ApplicationSubscription> findAllByIdApplicationAndActive(Application application, boolean active, Pageable pageable);
+	
+	//TODO: try to fix to return projection after upgrading spring boot 2.x
+	@Query("SELECT DISTINCT appSub.id.application FROM ApplicationSubscription appSub")
+	List<Application> findApplicationBriefAllBy();
+
+	//TODO: try to fix to return projection after upgrading spring boot 2.x
+	@Query("SELECT DISTINCT appSub.id.application FROM ApplicationSubscription appSub WHERE appSub.id.domain.id = :domainId")
+	List<Application> findApplicationBriefAllByDomain(@Param("domainId") Long domainId);
+
+	
 }
