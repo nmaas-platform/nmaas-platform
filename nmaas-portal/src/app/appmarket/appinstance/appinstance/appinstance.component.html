@@ -68,15 +68,20 @@
 				<p>State: {{appInstanceStatus?.state ? appInstanceStatus?.state : '...'}}</p>
 				<p>Details: {{appInstanceStatus?.details}}</p>
 			</div>
-			
+						
 			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
 				<h3>Configuration</h3>
 				<hr>
-				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration($event)" >
-				
-				</json-schema-form>
+				<json-schema-form *ngIf="configurationTemplate"
+					[form]="configurationTemplate"
+					[options]="jsonFormOptions" 
+					[framework]="bootstrap-3" 
+					[language]="en"
+					(onSubmit)="applyConfiguration($event)">
+				</json-schema-form>	
 
 			</div>
+
 			<hr>
 		</div>
 	

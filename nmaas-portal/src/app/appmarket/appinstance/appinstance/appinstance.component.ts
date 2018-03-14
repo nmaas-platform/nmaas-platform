@@ -20,6 +20,8 @@ import {
 } from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
+import { isNullOrUndefined } from 'util';
+
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -36,15 +38,25 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   app: Application;
 
-  private appInstanceStatus: AppInstanceStatus; // = new AppInstanceStatus();
+  private appInstanceStatus: AppInstanceStatus; 
 
   private appInstanceId: number;
   private appInstance: AppInstance;
+  private configurationTemplate: any;
 
   private intervalCheckerSubscribtion;
-
-  private configurationTemplate: string;
-
+  
+  jsonFormOptions: any = {
+    addSubmit: false, // Add a submit button if layout does not have one
+    debug: false, // Don't show inline debugging information
+    loadExternalAssets: false, // Load external css and JavaScript for frameworks
+    returnEmptyFields: false, // Don't return values for empty input fields
+    setSchemaDefaults: true, // Always use schema defaults for empty fields
+    defautWidgetOptions: { feedback: false }, // Show inline feedback icons
+    options: {},
+    widgetOptions: {}
+  };
+  
   constructor(private appsService: AppsService,
     private appImagesService: AppImagesService,
     private appInstanceService: AppInstanceService,
@@ -60,7 +72,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appInstance = appInstance;
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
-          this.configurationTemplate = this.app.configTemplate.template;
+          this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
         });
       });
 
@@ -112,4 +124,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     return this.appInstanceService.getProgressStages();
   }
 
+  protected getTemplate(template: string): any {
+    let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);    
+    return result;
+  }
 }
