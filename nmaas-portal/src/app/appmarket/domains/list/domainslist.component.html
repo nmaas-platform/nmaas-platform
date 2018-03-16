@@ -7,6 +7,7 @@
 		<thead>
 			<tr>
 				<th>Id</th>
+				<th>Codename</th>
 				<th>Name</th>
 				<th>Active</th>
 				<th>&nbsp;</th>
@@ -17,6 +18,7 @@
 			<ng-template ngFor let-domain [ngForOf]="domains">
 			<tr>
 				<td>{{domain?.id}}</td>
+				<td>{{domain?.codename}}</td>
 				<td>{{domain?.name}}</td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="domain?.active"></span><span class="glyphicon glyphicon-remove" *ngIf="!(domain?.active)"></span></td>				
 				<td class="text-right">

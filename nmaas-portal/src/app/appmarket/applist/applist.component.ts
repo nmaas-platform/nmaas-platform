@@ -17,7 +17,7 @@ import { isUndefined } from 'util';
   selector: 'nmaas-applications',
   templateUrl: './applist.component.html',
   styleUrls: ['./applist.component.css'],
-//  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None,
   providers: [AppsService, AppSubscriptionsService]
 })
 @AppViewTypeAware

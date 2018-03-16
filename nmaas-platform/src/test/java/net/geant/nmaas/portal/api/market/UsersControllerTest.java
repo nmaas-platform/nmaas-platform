@@ -55,7 +55,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		mvc = createMVC();
 		
 		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN);
+		domains.createDomain(DOMAIN, DOMAIN);
 		
 		//Add extra users, default admin is already there
 		userRepo.save(new User("manager", "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
@@ -91,7 +91,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testGetUser() throws MissingElementException {
-		net.geant.nmaas.portal.api.domain.User user = userController.getUser(1L);
+		net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
 		assertEquals(new Long(1), user.getId());
 		assertEquals("admin", user.getUsername());
 		

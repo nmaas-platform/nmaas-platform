@@ -4,11 +4,14 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Domain} from '../../../model/domain';
 import {DomainService} from '../../../service/domain.service';
 import {isUndefined} from 'util';
+import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
+
 
 @Component({
   selector: 'app-domain',
   templateUrl: './domain.component.html',
-  styleUrls: ['./domain.component.css']
+  styleUrls: ['./domain.component.css'],
+  providers: [{provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true}]
 })
 export class DomainComponent implements OnInit {
 

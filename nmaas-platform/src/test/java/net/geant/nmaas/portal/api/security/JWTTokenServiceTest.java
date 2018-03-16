@@ -61,7 +61,7 @@ public class JWTTokenServiceTest {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(Role.ROLE_SUPERADMIN);
 		roles.add(Role.ROLE_USER);
-		User tester = new User("tester", "test123", new Domain(DOMAIN), roles);
+		User tester = new User("tester", "test123", new Domain(DOMAIN, DOMAIN), roles);
 		
 		String token = tokenService.getToken(tester);
 		assertNotNull(token);
@@ -81,7 +81,7 @@ public class JWTTokenServiceTest {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(Role.ROLE_SUPERADMIN);
 		roles.add(Role.ROLE_USER);
-		User tester = new User("tester", "test123", new Domain(DOMAIN), roles);
+		User tester = new User("tester", "test123", new Domain(DOMAIN, DOMAIN), roles);
 		
 		String token = tokenService.getToken(tester);
 		assertNotNull(token);
@@ -99,7 +99,7 @@ public class JWTTokenServiceTest {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(Role.ROLE_SUPERADMIN);
 		roles.add(Role.ROLE_USER);
-		User tester = new User("tester", "test123", new Domain(DOMAIN), roles);
+		User tester = new User("tester", "test123", new Domain(DOMAIN, DOMAIN), roles);
 
 		String refreshToken = tokenService.getRefreshToken(tester);
 		assertNotNull(refreshToken);

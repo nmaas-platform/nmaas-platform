@@ -58,9 +58,9 @@ public class ApplicationSubscriptionRepositoryTest {
 		app3 = appRepo.save(new Application("APP3"));
 		appRepo.flush();
 
-		domain1 = domainRepo.save(new Domain("DOMAIN1"));
-		domain2 = domainRepo.save(new Domain("DOMAIN2"));
-		domain3 = domainRepo.save(new Domain("DOMAIN3"));
+		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1"));
+		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2"));
+		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3"));
 		domainRepo.flush();
 		
 		appSub1 = appSubRepo.save(new ApplicationSubscription(domain1, app1, true));

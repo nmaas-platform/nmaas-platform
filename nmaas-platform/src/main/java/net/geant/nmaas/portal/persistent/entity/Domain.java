@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table (
-		uniqueConstraints = { @UniqueConstraint(columnNames={"name"})}
+		uniqueConstraints = { @UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})}
 )
 public class Domain {
 
@@ -20,27 +20,39 @@ public class Domain {
 	Long id;
 	
 	@NotNull
-	@Column(unique=true)
+    @Column(nullable = false, unique = true)
+    private String codename;
+	
+	@NotNull
+	@Column(nullable = false, unique=true)
 	String name;
+	
+	
 	
 	boolean active;
 	
 	protected Domain() {		
 	}
 
-	public Domain(String name) {
+	public Domain(String name, String codename) {
 		super();
 		this.name = name;
+		this.codename = codename;
 		this.active = true;
 	}
+
+	public Domain(String name, String codename, boolean active) {
+		this(name, codename);
+		this.active = active;
+	}
 	
-	public Domain(Long id, String name) {
-		this(name);
+	public Domain(Long id, String name, String codename) {
+		this(name, codename);
 		this.id = id;
 	}
 
-	public Domain(Long id, String name, boolean active) {
-		this(id, name);
+	public Domain(Long id, String name, String codename, boolean active) {
+		this(id, name, codename);
 		this.active = active;
 	}
 	
@@ -50,6 +62,14 @@ public class Domain {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getCodename() {
+		return codename;
+	}
+
+	public void setCodename(String codename) {
+		this.codename = codename;
 	}
 
 	public String getName() {
@@ -72,6 +92,7 @@ public class Domain {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((codename == null) ? 0 : codename.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
@@ -85,6 +106,11 @@ public class Domain {
 		if (getClass() != obj.getClass())
 			return false;
 		Domain other = (Domain) obj;
+		if (codename == null) {
+			if (other.codename != null)
+				return false;
+		} else if (!codename.equals(other.codename))
+			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;

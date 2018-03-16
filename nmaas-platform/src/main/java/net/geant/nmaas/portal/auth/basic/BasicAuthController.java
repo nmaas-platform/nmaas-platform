@@ -24,6 +24,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -110,11 +111,11 @@ public class BasicAuthController {
 			users.update(newUser);
 			if(userSignup.getDomainId() != null)
 				domains.addMemberRole(userSignup.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
+		} catch (ObjectNotFoundException e) {
+			throw new SignupException("Domain not found."); 
 		} catch (ProcessingException e) {
 			throw new SignupException("Unable to update newly registered user.");
-		} catch (MissingElementException e) {
-			throw new SignupException("Domain not found."); 
-		}
+		} 
 	}
 	
 	@RequestMapping(value="/ping", method=RequestMethod.GET)
