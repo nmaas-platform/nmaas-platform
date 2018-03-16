@@ -12,4 +12,7 @@ public interface DomainRepository extends JpaRepository<Domain, Long> {
 	
 	boolean existsByName(String name);
 	Optional<Domain> findByName(String name);
+	
+	boolean existsByCodename(String name);
+	Optional<Domain> findByCodename(String name);
 }

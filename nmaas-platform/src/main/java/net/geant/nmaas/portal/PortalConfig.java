@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -39,7 +40,7 @@ public class PortalConfig {
 			
 			@Override
 			@Transactional
-			public void afterPropertiesSet() {
+			public void afterPropertiesSet() throws ProcessingException {
 				domains.createGlobalDomain();				
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
@@ -68,4 +69,6 @@ public class PortalConfig {
 		characterEncodingFilter.setForceEncoding(true);
 		return characterEncodingFilter;
 	}
+	
+
 }

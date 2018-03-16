@@ -49,7 +49,7 @@ public class UserRepositoryTest {
 	@Before
 	public void setUp() throws Exception {
 		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN);
+		domains.createDomain(DOMAIN, DOMAIN);
 		userRepository.deleteAll();
 	}
 

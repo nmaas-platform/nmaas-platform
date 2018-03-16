@@ -5,9 +5,9 @@ import java.util.List;
 
 public class UsersHelper {
 
-	public final static Domain GLOBAL = new Domain(1l, "GLOBAL");
-	public final static Domain DOMAIN1 = new Domain(2l, "domain1");
-	public final static Domain DOMAIN2 = new Domain(3l, "domain2");
+	public final static Domain GLOBAL = new Domain(1l, "GLOBAL", "GLOBAL");
+	public final static Domain DOMAIN1 = new Domain(2l, "domain1", "D1");
+	public final static Domain DOMAIN2 = new Domain(3l, "domain2", "D2");
 
 	
 	public final static User ADMIN = new User(1l, "admin", GLOBAL, Role.ROLE_SUPERADMIN);

@@ -23,6 +23,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -48,7 +49,11 @@ public class DomainController extends AppBaseController {
 	public List<Domain> getMyDomains(@NotNull Principal principal) throws ProcessingException, MissingElementException {
 		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 					
-		return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+		try {
+			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}
 	}
 	
 	@PostMapping
@@ -58,9 +63,13 @@ public class DomainController extends AppBaseController {
 		if(domainService.existsDomain(domainRequest.getName())) 
 			throw new ProcessingException("Domain already exists.");
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.createDomain(domainRequest.getName());
-		
-		return new Id(domain.getId());
+		net.geant.nmaas.portal.persistent.entity.Domain domain;
+		try {
+			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive());
+			return new Id(domain.getId());
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
 	}
 	
 	@PutMapping("/{domainId}")
@@ -74,7 +83,12 @@ public class DomainController extends AppBaseController {
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
-		domainService.updateDomain(domain);
+		try {
+			domainService.updateDomain(domain);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+		
 		return new Id(domainId);
 	}
 	

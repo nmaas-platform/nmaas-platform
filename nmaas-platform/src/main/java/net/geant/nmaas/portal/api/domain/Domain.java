@@ -4,6 +4,7 @@ public class Domain {
 	Long id;
 
 	String name;
+	String codename;
 	boolean active;
 	
 	public Long getId() {
@@ -20,6 +21,14 @@ public class Domain {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getCodename() {
+		return codename;
+	}
+
+	public void setCodename(String codename) {
+		this.codename = codename;
 	}
 
 	public boolean isActive() {
