@@ -11,7 +11,7 @@ import {AppDetailsComponent} from './appdetails/index';
 import {AppInstanceModule} from './appinstance/appinstance.module';
 
 import {NavbarComponent} from './navbar/index';
-import {LogoutComponent} from '../logout/index';
+import {LogoutComponent} from '../welcome/logout/index';
 
 import {SharedModule} from '../shared/shared.module';
 

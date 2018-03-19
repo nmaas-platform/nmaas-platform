@@ -11,13 +11,13 @@ import { AppComponent } from './app.component';
 
 import { AppConfigService } from './service/appconfig.service';
 
-import { LoginComponent } from './login/login.component';
+import { WelcomeModule } from './welcome/welcome.module';
 import { AppMarketModule } from './appmarket/index';
 import { SharedModule } from './shared/index';
 
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
-import { LogoutComponent } from './logout/logout.component';
+
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -36,8 +36,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    LogoutComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,6 +43,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     HttpModule,
     AppMarketModule,
     SharedModule,
+    WelcomeModule,
     routing
   ],
   providers: [
