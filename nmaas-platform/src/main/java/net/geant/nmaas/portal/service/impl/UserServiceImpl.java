@@ -89,8 +89,9 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 											: domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")));
 
 		// check if user already exists
-		userRepo.findByUsername(username)
-				.ifPresent((user) -> new ObjectAlreadyExistsException("User already exists."));
+		Optional<User> user = userRepo.findByUsername(username);
+		if(user.isPresent())
+			throw new ObjectAlreadyExistsException("User already exists.");
 
 		User newUser = new User(username, password, domain, Role.ROLE_GUEST);
 		

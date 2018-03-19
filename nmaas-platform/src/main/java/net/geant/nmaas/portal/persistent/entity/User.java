@@ -28,6 +28,10 @@ public class User {
 	//@NotNull
 	private String password;
 	
+	private String email;	
+	private String firstname;
+	private String lastname;
+	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
 	private List<UserRole> roles = new ArrayList<UserRole>();
 
@@ -97,6 +101,29 @@ public class User {
 		return password;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
 
 	public List<UserRole> getRoles() {
 		return roles;

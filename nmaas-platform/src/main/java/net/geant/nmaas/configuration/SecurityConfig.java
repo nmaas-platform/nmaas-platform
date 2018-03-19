@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String SSL_ENABLED = "server.ssl.enabled";
 	
 	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
-	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/signup";
+	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/registration/**";
 	private final static String AUTH_BASIC_TOKEN = "/portal/api/auth/basic/token";
 	private final static String APP_LOGO = "/portal/api/apps/{appId:[\\d+]}/logo";
 	private final static String APP_SCREENSHOTS = "/portal/api/apps/{appId:[\\d+]}/screenshots/**";

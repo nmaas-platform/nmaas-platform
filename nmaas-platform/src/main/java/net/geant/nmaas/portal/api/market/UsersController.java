@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.auth.UserSignup;
+import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.User;
@@ -77,7 +77,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PreAuthorize("hasPermission(#userSignup.domainId, 'domain', 'OWNER')")
 	@Transactional
-	public Id addUser(@RequestBody @NotNull UserSignup userSignup) throws SignupException {
+	public Id addUser(@RequestBody @NotNull Registration userSignup) throws SignupException {
 		net.geant.nmaas.portal.persistent.entity.User user = null;
 		try {
 			user = users.register(userSignup.getUsername());

@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
-import { FooterComponent } from '../shared/index';
+import { AuthService } from '../../auth/auth.service';
+import { FooterComponent } from '../../shared/index';
 
 @Component({
   selector: 'nmaas-login',

@@ -20,7 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.api.auth.UserSignup;
+import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -83,7 +83,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testAddUser() throws SignupException {
-		Id id = userController.addUser(new UserSignup("tester", "tester", null));
+		Id id = userController.addUser(new Registration("tester"));
 		assertNotNull(id);
 		
 		assertEquals(5, userController.getUsers(null).size());
