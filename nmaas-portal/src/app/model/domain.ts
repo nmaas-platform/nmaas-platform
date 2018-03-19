@@ -15,7 +15,7 @@ export class Domain {
   public codename: string = undefined;
   
   @JsonProperty('active', Boolean)
-  public active: boolean = undefined
+  public active: boolean = undefined;
   
   constructor();  
   constructor(id?: number,

@@ -17,8 +17,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   private userId: number;
   private user: User;
 
-  protected mode: ComponentMode;
-
   constructor(private userService: UserService, private router: Router,
     private route: ActivatedRoute,
     private location: Location) {
@@ -33,15 +31,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
       }
     });
     this.mode = this.getMode(this.route);
-  }
-
-  protected getMode(route: ActivatedRoute): ComponentMode {
-    if (isUndefined(route) || isUndefined(route.snapshot.data) || isUndefined(route.snapshot.data.mode)) {
-      return ComponentMode.VIEW;
-    } else {
-      return route.snapshot.data.mode;
-    }
-
   }
 
   public onPasswordSubmit($event): void {

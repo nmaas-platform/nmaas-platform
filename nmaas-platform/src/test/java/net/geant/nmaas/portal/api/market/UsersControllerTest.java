@@ -22,6 +22,7 @@ import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -83,7 +84,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testAddUser() throws SignupException {
-		Id id = userController.addUser(new Registration("tester"));
+		Id id = userController.addUser(new NewUserRequest("tester"));
 		assertNotNull(id);
 		
 		assertEquals(5, userController.getUsers(null).size());
