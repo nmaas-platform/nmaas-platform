@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-//@Component
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @Autowired
@@ -73,8 +72,8 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         return repository.getStateByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
-    public Identifier loadClientId(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.getClientIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    public String loadDomain(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.getDomainByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
     public Identifier loadApplicationId(Identifier deploymentId) throws InvalidDeploymentIdException {

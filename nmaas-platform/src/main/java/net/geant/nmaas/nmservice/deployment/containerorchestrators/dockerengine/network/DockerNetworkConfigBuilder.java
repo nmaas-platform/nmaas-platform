@@ -31,7 +31,7 @@ public class DockerNetworkConfigBuilder {
         int vlanNumber = dockerHostNetwork.getVlanNumber();
         String dataInterfaceName = dockerHostNetwork.getHost().getDataInterfaceName();
         return NetworkConfig.builder()
-                .name(networkName(dockerHostNetwork.getClientId().value(), vlanNumber))
+                .name(networkName(dockerHostNetwork.getDomain(), vlanNumber))
                 .driver(DOCKER_NETWORK_DRIVER)
                 .checkDuplicate(true)
                 .ipam(ipam)

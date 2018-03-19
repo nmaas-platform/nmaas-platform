@@ -40,9 +40,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(Identifier clientId, Identifier applicationId) {
+    public Identifier deployApplication(String domain, Identifier applicationId) {
         Identifier deploymentId = generateDeploymentId();
-        AppDeployment appDeployment = new AppDeployment(deploymentId, clientId, applicationId);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId);
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
@@ -60,7 +60,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         return !generatedId.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?");
     }
 
-    boolean deploymentIdAlreadyInUse(Identifier generatedId) {
+    private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
         return repositoryManager.load(generatedId).isPresent();
     }
 

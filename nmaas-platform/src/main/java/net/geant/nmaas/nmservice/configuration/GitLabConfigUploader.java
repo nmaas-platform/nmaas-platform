@@ -35,15 +35,19 @@ import java.util.List;
 public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private static final String GROUPS_PATH_PREFIX = "groups";
-    private static final int DEFAULT_CLIENT_LIMIT_ON_CREATED_PROJECTS = 10;
+    private static final int DEFAULT_DOMAIN_LIMIT_ON_CREATED_PROJECTS = 100;
     private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
 
-    @Autowired
     private NmServiceRepositoryManager serviceRepositoryManager;
-    @Autowired
     private NmServiceConfigFileRepository configurations;
+
+    @Autowired
+    public GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations) {
+        this.serviceRepositoryManager = serviceRepositoryManager;
+        this.configurations = configurations;
+    }
 
     @Value("${gitlab.api.url}")
     private String gitLabApiUrl;
@@ -66,29 +70,29 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     @Override
     public void transferConfigFiles(Identifier deploymentId, List<String> configIds)
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
-        Identifier clientId = serviceRepositoryManager.loadClientId(deploymentId);
+        String domain = serviceRepositoryManager.loadDomain(deploymentId);
         gitlab = new GitLabApi(ApiVersion.V4, gitLabApiUrl, gitLabApiToken);
         String gitLabPassword = generateRandomPassword();
-        Integer gitLabUserId = createUser(clientId, deploymentId, gitLabPassword);
-        Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, clientId);
+        Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
+        Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
         GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
         uploadConfigFilesToProject(gitLabProjectId, configIds);
     }
 
-    private Integer createUser(Identifier clientId, Identifier deploymentId, String password) throws FileTransferException {
+    private Integer createUser(String domain, Identifier deploymentId, String password) throws FileTransferException {
         try {
-            return gitlab.getUserApi().createUser(createStandardUser(clientId, deploymentId), password, limitOnProjects()).getId();
+            return gitlab.getUserApi().createUser(createStandardUser(domain, deploymentId), password, limitOnProjects()).getId();
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 
-    private User createStandardUser(Identifier clientId, Identifier deploymentId) {
+    private User createStandardUser(String domain, Identifier deploymentId) {
         User user = new User();
-        user.setName(name(clientId, deploymentId));
-        String userName = userName(clientId, deploymentId);
+        user.setName(name(domain, deploymentId));
+        String userName = userName(domain, deploymentId);
         user.setUsername(userName);
         user.setEmail(userEmail(userName));
         user.setCanCreateGroup(false);
@@ -96,34 +100,34 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     private int limitOnProjects() {
-        return DEFAULT_CLIENT_LIMIT_ON_CREATED_PROJECTS;
+        return DEFAULT_DOMAIN_LIMIT_ON_CREATED_PROJECTS;
     }
 
     private String generateRandomPassword() {
         return RandomStringUtils.random(10, true, true);
     }
 
-    private String name(Identifier clientId, Identifier deploymentId) {
-        return "Client " + clientId + " (" + deploymentId + ")";
+    private String name(String domain, Identifier deploymentId) {
+        return domain + " (" + deploymentId + ")";
     }
 
-    private String userName(Identifier clientId, Identifier deploymentId) {
-        return "client-" + clientId + "-" + deploymentId;
+    private String userName(String domain, Identifier deploymentId) {
+        return domain + "-" + deploymentId;
     }
 
     private String userEmail(String username) {
         return username + "@" + DEFAULT_CLIENT_EMAIL_DOMAIN;
     }
 
-    private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, Identifier clientId) throws FileTransferException {
+    private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) throws FileTransferException {
         try {
-            return gitlab.getGroupApi().getGroup(groupPath(clientId)).getId();
+            return gitlab.getGroupApi().getGroup(groupPath(domain)).getId();
         } catch (GitLabApiException e) {
             if (statusIsDifferentThenNotFound(e.getHttpStatus()))
                 throw new FileTransferException("" + e.getMessage());
             try {
-                gitlab.getGroupApi().addGroup(groupName(clientId), groupPath(clientId));
-                Integer groupId = gitlab.getGroupApi().getGroup(groupPath(clientId)).getId();
+                gitlab.getGroupApi().addGroup(groupName(domain), groupPath(domain));
+                Integer groupId = gitlab.getGroupApi().getGroup(groupPath(domain)).getId();
                 gitlab.getGroupApi().addMember(groupId, gitLabUserId, fullAccessCode());
                 return groupId;
             } catch (GitLabApiException e1) {
@@ -132,13 +136,12 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
-    private String groupName(Identifier clientId) {
-        return "client-" + clientId;
+    private String groupName(String domain) {
+        return domain;
     }
 
-    // TODO group path should include the name of client's company/organisation
-    private String groupPath(Identifier clientId) {
-        return GROUPS_PATH_PREFIX + "-" + groupName(clientId);
+    private String groupPath(String domain) {
+        return GROUPS_PATH_PREFIX + "-" + groupName(domain);
     }
 
     private boolean statusIsDifferentThenNotFound(int httpStatus) {

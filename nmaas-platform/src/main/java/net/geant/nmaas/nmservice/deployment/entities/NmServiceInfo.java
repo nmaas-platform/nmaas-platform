@@ -48,10 +48,10 @@ public abstract class NmServiceInfo {
     private Identifier applicationId;
 
     /**
-     * Identifier of the client requesting application deployment
+     * Name of the client domain for this deployment
      */
     @Column(nullable=false)
-    private Identifier clientId;
+    private String domain;
 
     /**
      * The list of IP addresses of devices to be managed/monitored by the deployed service.
@@ -70,11 +70,11 @@ public abstract class NmServiceInfo {
 
     public NmServiceInfo() { }
 
-    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId) {
+    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.applicationId = applicationId;
-        this.clientId = clientId;
+        this.domain = domain;
     }
 
     public Long getId() {
@@ -117,12 +117,12 @@ public abstract class NmServiceInfo {
         this.applicationId = applicationId;
     }
 
-    public Identifier getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setClientId(Identifier clientId) {
-        this.clientId = clientId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public List<String> getManagedDevicesIpAddresses() {

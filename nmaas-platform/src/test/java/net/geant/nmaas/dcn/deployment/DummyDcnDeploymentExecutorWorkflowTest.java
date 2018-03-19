@@ -3,7 +3,7 @@ package net.geant.nmaas.dcn.deployment;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +31,15 @@ public class DummyDcnDeploymentExecutorWorkflowTest {
     @MockBean
     private DcnRepositoryManager dcnRepositoryManager;
 
-    private Identifier deploymentId = Identifier.newInstance("did");
-    private Identifier clientId = Identifier.newInstance("cid");
+    private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
+    private static final String DOMAIN = "domain";
 
     @Test
     public void shouldCompleteDcnWorkflowWithDummyExecutor() throws Exception {
-        when(appDeploymentRepositoryManager.loadClientIdByDeploymentId(any())).thenReturn(clientId);
-        when(dcnRepositoryManager.loadCurrentState(clientId)).thenThrow(new InvalidClientIdException());
-        eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId));
-        verify(appDeploymentRepositoryManager, timeout(1000)).loadAllWaitingForDcn(clientId);
+        when(appDeploymentRepositoryManager.loadDomainByDeploymentId(any())).thenReturn(DOMAIN);
+        when(dcnRepositoryManager.loadCurrentState(DOMAIN)).thenThrow(new InvalidDomainException());
+        eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));
+        verify(appDeploymentRepositoryManager, timeout(1000)).loadAllWaitingForDcn(DOMAIN);
     }
 
 }

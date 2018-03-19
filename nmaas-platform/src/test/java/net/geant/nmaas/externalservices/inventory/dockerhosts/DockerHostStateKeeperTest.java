@@ -33,13 +33,12 @@ public class DockerHostStateKeeperTest {
     private static final Identifier DEPLOYMENT_ID_1 = Identifier.newInstance("deploymentId1");
     private static final Identifier DEPLOYMENT_ID_2 = Identifier.newInstance("deploymentId2");
     private static final Identifier DEPLOYMENT_ID_3 = Identifier.newInstance("deploymentId3");
-    private static final Identifier CLIENT_ID_1 = Identifier.newInstance("10L");
-    private static final Identifier CLIENT_ID_2 = Identifier.newInstance("11L");
-    private static final Identifier CLIENT_ID_3 = Identifier.newInstance("12L");
+    private static final String DOMAIN_1 = "domain1";
+    private static final String DOMAIN_2 = "domain2";
+    private static final String DOMAIN_3 = "domain3";
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
-
     @Autowired
     private DockerHostStateKeeper dockerHostStateKeeper;
 
@@ -79,44 +78,44 @@ public class DockerHostStateKeeperTest {
 
     @Test
     public void shouldAssignVlan() throws DockerHostNotFoundException, DockerHostStateNotFoundException {
-        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_1), equalTo(500));
-        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_2), equalTo(501));
-        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_3), equalTo(502));
-        dockerHostStateKeeper.removeVlanAssignment(DOCKER_HOST_NAME_1, CLIENT_ID_2);
-        dockerHostStateKeeper.removeVlanAssignment(DOCKER_HOST_NAME_1, CLIENT_ID_2);
-        assertThat(dockerHostStateKeeper.getAssignedVlan(DOCKER_HOST_NAME_1, CLIENT_ID_3), equalTo(502));
-        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_2), equalTo(501));
-        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_2, CLIENT_ID_1), equalTo(500));
-        assertThat(dockerHostStateKeeper.getAssignedVlan(DOCKER_HOST_NAME_2, CLIENT_ID_2), is(nullValue()));
+        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, DOMAIN_1), equalTo(500));
+        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, DOMAIN_2), equalTo(501));
+        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, DOMAIN_3), equalTo(502));
+        dockerHostStateKeeper.removeVlanAssignment(DOCKER_HOST_NAME_1, DOMAIN_2);
+        dockerHostStateKeeper.removeVlanAssignment(DOCKER_HOST_NAME_1, DOMAIN_2);
+        assertThat(dockerHostStateKeeper.getAssignedVlan(DOCKER_HOST_NAME_1, DOMAIN_3), equalTo(502));
+        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_1, DOMAIN_2), equalTo(501));
+        assertThat(dockerHostStateKeeper.assignVlanForNetwork(DOCKER_HOST_NAME_2, DOMAIN_1), equalTo(500));
+        assertThat(dockerHostStateKeeper.getAssignedVlan(DOCKER_HOST_NAME_2, DOMAIN_2), is(nullValue()));
     }
 
     @Test(expected = DockerHostStateNotFoundException.class)
     public void shouldThrowExceptionOnMissingStateWhenGettingVlanAssignment() throws DockerHostStateNotFoundException {
-        dockerHostStateKeeper.getAssignedVlan(DOCKER_HOST_NAME_3, CLIENT_ID_1);
+        dockerHostStateKeeper.getAssignedVlan(DOCKER_HOST_NAME_3, DOMAIN_1);
     }
 
     @Test(expected = DockerHostStateNotFoundException.class)
     public void shouldThrowExceptionOnMissingStateWhenRemovingVlanAssignment() throws DockerHostStateNotFoundException {
-        dockerHostStateKeeper.removeVlanAssignment(DOCKER_HOST_NAME_3, CLIENT_ID_1);
+        dockerHostStateKeeper.removeVlanAssignment(DOCKER_HOST_NAME_3, DOMAIN_1);
     }
 
     @Test
     public void shouldAssignAddressPools() throws DockerHostNotFoundException, DockerHostStateNotFoundException {
-        DockerNetworkIpam addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_1);
+        DockerNetworkIpam addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_1, DOMAIN_1);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.11.1.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.11.1.254"));
         assertThat(addressPool.getIpAddressOfContainer(), equalTo("10.11.1.1"));
-        addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_1, CLIENT_ID_2);
+        addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_1, DOMAIN_2);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.11.2.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.11.2.254"));
         assertThat(addressPool.getIpAddressOfContainer(), equalTo("10.11.2.1"));
-        assertThat(dockerHostStateKeeper.getAssignedAddressPool(DOCKER_HOST_NAME_1, CLIENT_ID_1), is(notNullValue()));
-        dockerHostStateKeeper.removeAddressPoolAssignment(DOCKER_HOST_NAME_1, CLIENT_ID_1);
-        dockerHostStateKeeper.removeAddressPoolAssignment(DOCKER_HOST_NAME_1, CLIENT_ID_1);
-        assertThat(dockerHostStateKeeper.getAssignedAddressPool(DOCKER_HOST_NAME_1, CLIENT_ID_1), is(nullValue()));
-        addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_2, CLIENT_ID_3);
+        assertThat(dockerHostStateKeeper.getAssignedAddressPool(DOCKER_HOST_NAME_1, DOMAIN_1), is(notNullValue()));
+        dockerHostStateKeeper.removeAddressPoolAssignment(DOCKER_HOST_NAME_1, DOMAIN_1);
+        dockerHostStateKeeper.removeAddressPoolAssignment(DOCKER_HOST_NAME_1, DOMAIN_1);
+        assertThat(dockerHostStateKeeper.getAssignedAddressPool(DOCKER_HOST_NAME_1, DOMAIN_1), is(nullValue()));
+        addressPool = dockerHostStateKeeper.assignAddressPoolForNetwork(DOCKER_HOST_NAME_2, DOMAIN_3);
         assertThat(addressPool.getIpRangeWithMask(), equalTo("10.12.1.0/24"));
         assertThat(addressPool.getSubnetWithMask(), equalTo(addressPool.getIpRangeWithMask()));
         assertThat(addressPool.getGateway(), equalTo("10.12.1.254"));
@@ -125,12 +124,12 @@ public class DockerHostStateKeeperTest {
 
     @Test(expected = DockerHostStateNotFoundException.class)
     public void shouldThrowExceptionOnMissingStateWhenGettingAddressAssignment() throws DockerHostStateNotFoundException {
-        dockerHostStateKeeper.getAssignedAddressPool(DOCKER_HOST_NAME_3, CLIENT_ID_1);
+        dockerHostStateKeeper.getAssignedAddressPool(DOCKER_HOST_NAME_3, DOMAIN_1);
     }
 
     @Test(expected = DockerHostStateNotFoundException.class)
     public void shouldThrowExceptionOnMissingStateWhenRemovingAddressAssignment() throws DockerHostStateNotFoundException {
-        dockerHostStateKeeper.removeAddressPoolAssignment(DOCKER_HOST_NAME_3, CLIENT_ID_1);
+        dockerHostStateKeeper.removeAddressPoolAssignment(DOCKER_HOST_NAME_3, DOMAIN_1);
     }
 
 }

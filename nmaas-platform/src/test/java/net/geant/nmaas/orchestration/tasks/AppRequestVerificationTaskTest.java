@@ -31,16 +31,13 @@ public class AppRequestVerificationTaskTest {
 
     @Autowired
     private ApplicationRepository applications;
-
     @Autowired
     private AppDeploymentRepositoryManager deployments;
-
     @Autowired
     private AppRequestVerificationTask task;
 
+    private static final String DOMAIN = "domain1";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
-    private Identifier clientId = Identifier.newInstance("clientId");
 
     @Before
     public void setup() {
@@ -53,7 +50,7 @@ public class AppRequestVerificationTaskTest {
         AppDeployment appDeployment = new AppDeployment();
         appDeployment.setDeploymentId(deploymentId);
         appDeployment.setApplicationId(Identifier.newInstance(String.valueOf(application.getId())));
-        appDeployment.setClientId(clientId);
+        appDeployment.setDomain(DOMAIN);
         deployments.store(appDeployment);
     }
 

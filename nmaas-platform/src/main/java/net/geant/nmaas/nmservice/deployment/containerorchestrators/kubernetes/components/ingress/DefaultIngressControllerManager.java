@@ -6,8 +6,8 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,8 +24,8 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     private static final String HELM_INSTALL_OPTION_INGRESS_CLASS = "controller.ingressClass";
     private static final String HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS = "controller.service.externalIPs";
-    private static final String NMAAS_INGRESS_CONTROLLER_NAME_PREFIX = "nmaas-icrtl-client-";
-    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
+    private static final String NMAAS_INGRESS_CONTROLLER_NAME_PREFIX = "nmaas-icrtl-";
+    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-";
 
     private KubernetesClusterManager clusterManager;
     private KNamespaceService namespaceService;
@@ -41,15 +41,15 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     @Override
-    public void deployIngressControllerIfMissing(Identifier clientId) throws IngressControllerManipulationException {
+    public void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
         try {
-            String ingressControllerName = ingressControllerName(clientId.value());
+            String ingressControllerName = ingressControllerName(domain);
             if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
-                String externalIpAddress = obtainExternalIpAddressForClient(clientId);
+                String externalIpAddress = obtainExternalIpAddressForClient(domain);
                 installIngressControllerHelmChart(
-                        namespaceService.namespace(clientId),
+                        namespaceService.namespace(domain),
                         ingressControllerName,
-                        ingressClassName(clientId),
+                        ingressClassName(domain),
                         externalIpAddress);
             }
         } catch (ExternalNetworkNotFoundException ennfe) {
@@ -59,13 +59,13 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         }
     }
 
-    private String obtainExternalIpAddressForClient(Identifier clientId) throws ExternalNetworkNotFoundException {
-        ExternalNetworkView externalNetwork = clusterManager.reserveExternalNetwork(clientId);
+    private String obtainExternalIpAddressForClient(String domain) throws ExternalNetworkNotFoundException {
+        ExternalNetworkView externalNetwork = clusterManager.reserveExternalNetwork(domain);
         return externalNetwork.getExternalIp().getHostAddress();
     }
 
-    private String ingressControllerName(String clientId) {
-        return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + clientId;
+    private String ingressControllerName(String domain) {
+        return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + domain;
     }
 
     private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) throws CommandExecutionException {
@@ -73,8 +73,8 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         return !currentReleases.contains(ingressControllerName);
     }
 
-    private String ingressClassName(Identifier clientId) {
-        return NMAAS_INGRESS_CLASS_NAME_PREFIX + clientId;
+    private String ingressClassName(String domain) {
+        return NMAAS_INGRESS_CLASS_NAME_PREFIX + domain;
     }
 
     private void installIngressControllerHelmChart(String namespace, String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
@@ -90,8 +90,9 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     @Override
-    public void deleteIngressController(Identifier clientId) throws IngressControllerManipulationException {
-        // TODO
+    public void deleteIngressController(String domain) throws IngressControllerManipulationException {
+        // TODO add missing functionality
+        throw new NotImplementedException();
     }
 
     @Value("${kubernetes.ingress.chart}")

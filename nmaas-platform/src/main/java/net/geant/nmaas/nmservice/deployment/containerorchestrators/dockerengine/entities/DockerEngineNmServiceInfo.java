@@ -31,8 +31,8 @@ public class DockerEngineNmServiceInfo extends DockerNmServiceInfo {
         super();
     }
 
-    public DockerEngineNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, DockerContainerTemplate dockerContainerTemplate) {
-        super(deploymentId, applicationId, clientId);
+    public DockerEngineNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, DockerContainerTemplate dockerContainerTemplate) {
+        super(deploymentId, applicationId, domain);
         this.dockerContainerTemplate = dockerContainerTemplate;
     }
 

@@ -23,10 +23,10 @@ public class AppDeployment {
     private Identifier deploymentId;
 
     /**
-     * Identifier of the user/client requesting this deployment.
+     * Name of the client domain for this deployment.
      */
     @Column(nullable = false)
-    private Identifier clientId;
+    private String domain;
 
     /**
      * Identifier of the application being deployed.
@@ -41,16 +41,16 @@ public class AppDeployment {
     private AppDeploymentState state = AppDeploymentState.REQUESTED;
 
     /**
-     * Initial application configuration provided by the user/client.
+     * Initial application configuration provided by the user.
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
 
     public AppDeployment() { }
 
-    public AppDeployment(Identifier deploymentId, Identifier clientId, Identifier applicationId) {
+    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId) {
         this.deploymentId = deploymentId;
-        this.clientId = clientId;
+        this.domain = domain;
         this.applicationId = applicationId;
     }
 
@@ -70,12 +70,12 @@ public class AppDeployment {
         this.deploymentId = deploymentId;
     }
 
-    public Identifier getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setClientId(Identifier clientId) {
-        this.clientId = clientId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public Identifier getApplicationId() {

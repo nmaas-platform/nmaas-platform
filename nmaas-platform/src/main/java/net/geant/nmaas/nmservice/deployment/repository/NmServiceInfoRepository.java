@@ -17,8 +17,8 @@ import java.util.Optional;
 @Repository
 public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRepository<T, Long>  {
 
-    @Query("select t from #{#entityName} t where t.clientId = ?1")
-    List<T> findAllByClientId(Identifier clientId);
+    @Query("select t from #{#entityName} t where t.domain = ?1")
+    List<T> findAllByDomain(String domain);
 
     @Query("select t from #{#entityName} t where t.deploymentId = ?1")
     Optional<T> findByDeploymentId(Identifier deploymentId);
@@ -26,8 +26,8 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
     @Query("SELECT n.state FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<NmServiceDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
-    @Query("SELECT n.clientId FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
-    Optional<Identifier> getClientIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+    @Query("SELECT n.domain FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
+    Optional<String> getDomainByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
     @Query("SELECT n.applicationId FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<Identifier> getApplicationIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);

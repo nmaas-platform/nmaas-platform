@@ -6,7 +6,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -31,8 +31,8 @@ public class DockerNetworkResourceManager {
         this.dockerHostStateKeeper = dockerHostStateKeeper;
     }
 
-    public int obtainPortForClientNetwork(Identifier clientId, Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
-        final DockerHostNetwork network = networkForClient(clientId);
+    public int obtainPortForClientNetwork(String domain, Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
+        final DockerHostNetwork network = networkForDomain(domain);
         try {
             return dockerHostStateKeeper.assignPortForContainer(network.getHost().getName(), deploymentId);
         } catch (DockerHostNotFoundException e) {
@@ -40,26 +40,26 @@ public class DockerNetworkResourceManager {
         }
     }
 
-    public String obtainDeploymentNameFromClientNetwork(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
-        final DockerHostNetwork network = networkForClient(clientId);
+    public String obtainDeploymentNameFromClientNetwork(String domain) throws ContainerOrchestratorInternalErrorException {
+        final DockerHostNetwork network = networkForDomain(domain);
         return network.getDeploymentName();
     }
 
-    public String obtainSubnetFromClientNetwork(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
-        final DockerHostNetwork network = networkForClient(clientId);
+    public String obtainSubnetFromClientNetwork(String domain) throws ContainerOrchestratorInternalErrorException {
+        final DockerHostNetwork network = networkForDomain(domain);
         return network.getSubnet();
     }
 
-    public String obtainGatewayFromClientNetwork(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
-        final DockerHostNetwork network = networkForClient(clientId);
+    public String obtainGatewayFromClientNetwork(String domain) throws ContainerOrchestratorInternalErrorException {
+        final DockerHostNetwork network = networkForDomain(domain);
         return network.getGateway();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String assignNewIpAddressForContainer(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
-        final DockerHostNetwork network = networkForClient(clientId);
+    public String assignNewIpAddressForContainer(String domain) throws ContainerOrchestratorInternalErrorException {
+        final DockerHostNetwork network = networkForDomain(domain);
         String address = findNewAddress(network);
-        updateNetworkWithNewAssignedAddress(clientId, address);
+        updateNetworkWithNewAssignedAddress(domain, address);
         return address;
     }
 
@@ -75,34 +75,33 @@ public class DockerNetworkResourceManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeAddressAssignment(Identifier clientId, String previouslyAssignedAddress)
+    public void removeAddressAssignment(String domain, String previouslyAssignedAddress)
             throws ContainerOrchestratorInternalErrorException {
         try {
-            List<String> assignedAddresses = new ArrayList<>(repositoryManager.loadNetwork(clientId).getAssignedAddresses());
+            List<String> assignedAddresses = new ArrayList<>(repositoryManager.loadNetwork(domain).getAssignedAddresses());
             assignedAddresses.remove(previouslyAssignedAddress);
-            repositoryManager.updateAssignedAddresses(clientId, assignedAddresses);
-        } catch (InvalidClientIdException invalidClientIdException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "No network found in repository for client " + clientId, invalidClientIdException);
+            repositoryManager.updateAssignedAddresses(domain, assignedAddresses);
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 
-    private DockerHostNetwork networkForClient(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
+    private DockerHostNetwork networkForDomain(String domain) throws ContainerOrchestratorInternalErrorException {
         try {
-            return repositoryManager.loadNetwork(clientId);
-        } catch (InvalidClientIdException e) {
-            throw new ContainerOrchestratorInternalErrorException("No network found in repository for client " + clientId);
+            return repositoryManager.loadNetwork(domain);
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 
-    private void updateNetworkWithNewAssignedAddress(Identifier clientId, String address) throws ContainerOrchestratorInternalErrorException {
+    private void updateNetworkWithNewAssignedAddress(String domain, String address) throws ContainerOrchestratorInternalErrorException {
         try {
-            final DockerHostNetwork network = repositoryManager.loadNetwork(clientId);
+            final DockerHostNetwork network = repositoryManager.loadNetwork(domain);
             List<String> assignedAddresses = new ArrayList<>(network.getAssignedAddresses());
             assignedAddresses.add(address);
-            repositoryManager.updateAssignedAddresses(clientId, assignedAddresses);
-        } catch (InvalidClientIdException e) {
-            throw new ContainerOrchestratorInternalErrorException("No network found in repository for client " + clientId);
+            repositoryManager.updateAssignedAddresses(domain, assignedAddresses);
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 

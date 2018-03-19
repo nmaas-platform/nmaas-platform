@@ -17,11 +17,11 @@ public interface NmServiceDeploymentProvider {
      *
      * @param deploymentId unique identifier of service deployment
      * @param applicationId identifier of the application / service
-     * @param clientId identifier of the client requesting the deployment
+     * @param domain name of the client domain for this deployment
      * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if service can't be deployed or some input parameters are missing
      */
-    void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec appDeploymentSpec) throws NmServiceRequestVerificationException;
+    void verifyRequest(Identifier deploymentId, Identifier applicationId, String domain, AppDeploymentSpec appDeploymentSpec) throws NmServiceRequestVerificationException;
 
     /**
      * Coordinates deployment environment preparation (delegates tasks to attached {@link ContainerOrchestrator}).

@@ -52,7 +52,7 @@ public class AppRequestVerificationTask {
         serviceDeployment.verifyRequest(
                 deploymentId,
                 appDeployment.getApplicationId(),
-                appDeployment.getClientId(),
+                appDeployment.getDomain(),
                 application.getAppDeploymentSpec());
     }
 

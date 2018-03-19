@@ -2,7 +2,7 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -52,7 +52,7 @@ public class AnsiblePlaybookVpnConfigBuilder {
         return COMMON_ID_PREFIX + asNumber + "-EXPORT";
     }
 
-    static AnsiblePlaybookVpnConfig fromCustomerNetworkAttachPoint(CustomerNetworkAttachPoint customerNetworkAttachPoint) {
+    static AnsiblePlaybookVpnConfig fromCustomerNetworkAttachPoint(NetworkAttachPoint customerNetworkAttachPoint) {
         AnsiblePlaybookVpnConfig playbookVpnConfig = new AnsiblePlaybookVpnConfig();
         playbookVpnConfig.setType(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
         playbookVpnConfig.setTargetRouter(customerNetworkAttachPoint.getRouterName());

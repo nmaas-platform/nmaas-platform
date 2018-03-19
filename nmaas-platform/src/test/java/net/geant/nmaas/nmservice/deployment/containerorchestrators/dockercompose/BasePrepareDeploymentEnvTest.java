@@ -2,8 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
@@ -49,14 +47,14 @@ public abstract class BasePrepareDeploymentEnvTest {
     private DockerComposeCommandExecutor composeCommandExecutor;
 
     protected Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance("10");
+    private final static String DOMAIN = "domain";
     private Identifier applicationId;
     private DockerComposeFileTemplate template;
 
     public void setup(String composeFileTemplatePath) throws Exception {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
         DockerHost dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
-        dockerHostNetworkRepositoryManager.storeNetwork(dockerHostNetwork(clientId, dockerHost));
+        dockerHostNetworkRepositoryManager.storeNetwork(dockerHostNetwork(DOMAIN, dockerHost));
         prepareTestComposeFileTemplate(composeFileTemplatePath);
         applicationId = storeTestApplication();
         storeNmServiceInfo(dockerHost);
@@ -78,7 +76,7 @@ public abstract class BasePrepareDeploymentEnvTest {
     }
 
     private void storeNmServiceInfo(DockerHost dockerHost) {
-        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, DOMAIN, null);
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
         nmServiceRepositoryManager.storeService(serviceInfo);
@@ -92,7 +90,7 @@ public abstract class BasePrepareDeploymentEnvTest {
     }
 
     @After
-    public void clean() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
+    public void clean() throws Exception {
         nmServiceRepositoryManager.removeService(deploymentId);
         dockerHostRepositoryManager.removeDockerHost("dh1");
         applicationRepository.deleteAll();
@@ -115,8 +113,9 @@ public abstract class BasePrepareDeploymentEnvTest {
                 true);
     }
 
-    private static DockerHostNetwork dockerHostNetwork(Identifier clientId, DockerHost dockerHost) {
-        return new DockerHostNetwork(clientId,
+    private static DockerHostNetwork dockerHostNetwork(String domain, DockerHost dockerHost) {
+        return new DockerHostNetwork(
+                domain,
                 dockerHost,
                 500,
                 "10.10.1.0/24",

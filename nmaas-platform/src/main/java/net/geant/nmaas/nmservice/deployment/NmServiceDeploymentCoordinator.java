@@ -42,16 +42,12 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec deploymentSpec)
+    public void verifyRequest(Identifier deploymentId, Identifier applicationId, String domain, AppDeploymentSpec deploymentSpec)
             throws NmServiceRequestVerificationException {
         try {
-            orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, applicationId, clientId, deploymentSpec);
+            orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, applicationId, domain, deploymentSpec);
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
-        } catch (NmServiceRequestVerificationException
-                | ContainerOrchestratorInternalErrorException e) {
-            notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
-            throw new NmServiceRequestVerificationException(e.getMessage());
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
             throw new NmServiceRequestVerificationException(e.getMessage());

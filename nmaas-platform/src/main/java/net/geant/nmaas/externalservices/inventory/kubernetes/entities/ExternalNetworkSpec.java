@@ -1,7 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
-
 import javax.persistence.*;
 import java.net.InetAddress;
 import java.util.Date;
@@ -19,13 +17,13 @@ public class ExternalNetworkSpec {
     private Long id;
 
     /**
-     * Concrete Ip address to be configured on the Ingress Controller
+     * Concrete IP address to be configured on the Ingress Controller
      */
     @Column(nullable = false)
     private InetAddress externalIp;
 
     /**
-     * Network to be routed in the customer VPN
+     * Network to be routed in the DCN
      */
     @Column(nullable = false)
     private InetAddress externalNetwork;
@@ -36,7 +34,7 @@ public class ExternalNetworkSpec {
     private int externalNetworkMaskLength;
 
     /**
-     * Indicates if network is already assigned to any customer
+     * Indicates if network is already assigned to any domain
      */
     private boolean assigned = false;
 
@@ -46,9 +44,9 @@ public class ExternalNetworkSpec {
     private Date assignedSince;
 
     /**
-     * Identifier of the customer
+     * Name of the domain
      */
-    private Identifier assignedTo;
+    private String assignedTo;
 
     public Long getId() {
         return id;
@@ -98,11 +96,11 @@ public class ExternalNetworkSpec {
         this.assignedSince = assignedSince;
     }
 
-    public Identifier getAssignedTo() {
+    public String getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(Identifier assignedTo) {
+    public void setAssignedTo(String assignedTo) {
         this.assignedTo = assignedTo;
     }
 }

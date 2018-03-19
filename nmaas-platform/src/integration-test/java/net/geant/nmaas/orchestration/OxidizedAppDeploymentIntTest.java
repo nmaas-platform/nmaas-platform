@@ -5,7 +5,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
@@ -17,8 +17,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.After;
@@ -47,7 +47,7 @@ public class OxidizedAppDeploymentIntTest {
 
     private static final String OXIDIZED_APP_NAME = "Oxidized";
     private static final String OXIDIZED_APP_VERSION = "0.19.0";
-    private static final long CUSTOMER_ID = 1L;
+    private static final String DOMAIN = "domain1";
 
     @Autowired
     private AppLifecycleManager appLifecycleManager;
@@ -71,14 +71,12 @@ public class OxidizedAppDeploymentIntTest {
     @Autowired
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
     @Autowired
-    private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
+    private DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
 
-    private Identifier clientId;
     private Long testAppId;
 
     @Before
     public void setup() throws DockerException, InterruptedException {
-        clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
         storeOxidizedApp();
         storeOxidizedConfigurationTemplates();
         DockerApiClientMockInit.mockMethods(dockerApiClient);
@@ -88,8 +86,8 @@ public class OxidizedAppDeploymentIntTest {
     }
 
     @After
-    public void clear() throws InvalidClientIdException {
-        dockerHostNetworkRepositoryManager.removeNetwork(clientId);
+    public void clear() throws InvalidDomainException {
+        dockerHostNetworkRepositoryManager.removeNetwork(DOMAIN);
         DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
         NetworkAttachPointsInit.cleanDockerHostAttachPoints(dockerHostAttachPointRepository);
         NetworkAttachPointsInit.cleanBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
@@ -99,7 +97,7 @@ public class OxidizedAppDeploymentIntTest {
 
     @Test
     public void shouldTriggerAndFollowTheAppDeploymentWorkflow() throws InvalidDeploymentIdException, InterruptedException, InvalidAppStateException {
-        final Identifier deploymentId = appLifecycleManager.deployApplication(clientId, Identifier.newInstance(String.valueOf(testAppId)));
+        final Identifier deploymentId = appLifecycleManager.deployApplication(DOMAIN, Identifier.newInstance(String.valueOf(testAppId)));
         waitAndVerifyDeploymentEnvironmentPrepared(deploymentId);
         manuallyNotifyDcnDeploymentStateToDeployed(deploymentId);
         waitAndVerifyManagementVpnConfigured(deploymentId);
@@ -152,7 +150,7 @@ public class OxidizedAppDeploymentIntTest {
     }
 
     private void manuallyNotifyDcnDeploymentStateToDeployed(Identifier deploymentId) throws InvalidDeploymentIdException {
-        applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.VERIFIED));
+        applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.VERIFIED));
     }
 
     private void waitAndVerifyManagementVpnConfigured(Identifier deploymentId) throws InvalidDeploymentIdException, InterruptedException {

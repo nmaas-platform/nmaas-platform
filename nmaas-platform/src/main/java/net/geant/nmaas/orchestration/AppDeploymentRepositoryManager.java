@@ -20,8 +20,12 @@ import java.util.Optional;
 @Service
 public class AppDeploymentRepositoryManager {
 
-    @Autowired
     private AppDeploymentRepository repository;
+
+    @Autowired
+    public AppDeploymentRepositoryManager(AppDeploymentRepository repository) {
+        this.repository = repository;
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void store(AppDeployment appDeployment) {
@@ -56,12 +60,12 @@ public class AppDeploymentRepositoryManager {
         return repository.findAll();
     }
 
-    public List<AppDeployment> loadAllWaitingForDcn(Identifier clientId) {
-        return repository.findByClientIdAndState(clientId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+    public List<AppDeployment> loadAllWaitingForDcn(String domain) {
+        return repository.findByDomainAndState(domain, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
     }
 
-    public Identifier loadClientIdByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.getClientIdByDeploymentId(deploymentId)
+    public String loadDomainByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.getDomainByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
     }
 
@@ -69,4 +73,3 @@ public class AppDeploymentRepositoryManager {
         repository.deleteAll();
     }
 }
-

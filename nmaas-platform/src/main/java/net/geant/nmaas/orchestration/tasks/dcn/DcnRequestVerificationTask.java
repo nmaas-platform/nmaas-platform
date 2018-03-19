@@ -2,8 +2,9 @@ package net.geant.nmaas.orchestration.tasks.dcn;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,18 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class DcnRequestVerificationTask extends BaseDcnTask {
 
     @EventListener
+    @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void trigger(DcnVerifyRequestActionEvent event) throws DcnRequestVerificationException {
-        final Identifier clientId = event.getRelatedTo();
-        dcnDeployment.verifyRequest(clientId, constructDcnSpec(clientId));
+        final String domain = event.getRelatedTo();
+        dcnDeployment.verifyRequest(domain, constructDcnSpec(domain));
     }
 
-    public DcnSpec constructDcnSpec(Identifier clientId) {
-        return new DcnSpec(buildDcnName(clientId), clientId);
+    private DcnSpec constructDcnSpec(String domain) {
+        return new DcnSpec(buildDcnName(domain), domain);
     }
 
-    public String buildDcnName(Identifier clientId) {
-        return clientId + "-" + System.nanoTime();
+    private String buildDcnName(String domain) {
+        return domain + "-" + System.nanoTime();
     }
 
 }

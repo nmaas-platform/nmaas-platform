@@ -32,7 +32,7 @@ public class DockerHostNetworkResourceManagerTest {
     @Autowired
     private DockerHostNetworkRepositoryManager dockerHostNetworkRepositoryManager;
 
-    private Identifier clientId = Identifier.newInstance("1L");
+    private static final String DOMAIN = "domain1";
     private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
     private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
 
@@ -40,21 +40,21 @@ public class DockerHostNetworkResourceManagerTest {
     public void setup() throws Exception {
         DockerHost testDockerHost1 = dockerHost();
         dockerHostRepositoryManager.addDockerHost(testDockerHost1);
-        DockerHostNetwork testDockerHostNetwork1 = new DockerHostNetwork(clientId, testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
+        DockerHostNetwork testDockerHostNetwork1 = new DockerHostNetwork(DOMAIN, testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
         dockerHostNetworkRepositoryManager.storeNetwork(testDockerHostNetwork1);
     }
 
     @Test
     public void shouldReturnNetworkDetails() throws ContainerOrchestratorInternalErrorException {
-        assertThat(networkManager.obtainGatewayFromClientNetwork(clientId), equalTo("10.10.1.254"));
-        assertThat(networkManager.obtainSubnetFromClientNetwork(clientId), equalTo("10.10.1.0/24"));
-        assertThat(networkManager.obtainPortForClientNetwork(clientId, deploymentId1), equalTo(1000));
-        assertThat(networkManager.obtainPortForClientNetwork(clientId, deploymentId2), equalTo(1001));
-        assertThat(networkManager.assignNewIpAddressForContainer(clientId), equalTo("10.10.1.1"));
-        assertThat(networkManager.assignNewIpAddressForContainer(clientId), equalTo("10.10.1.2"));
-        networkManager.removeAddressAssignment(clientId,"10.10.1.1");
-        assertThat(networkManager.assignNewIpAddressForContainer(clientId), equalTo("10.10.1.1"));
-        assertThat(networkManager.assignNewIpAddressForContainer(clientId), equalTo("10.10.1.3"));
+        assertThat(networkManager.obtainGatewayFromClientNetwork(DOMAIN), equalTo("10.10.1.254"));
+        assertThat(networkManager.obtainSubnetFromClientNetwork(DOMAIN), equalTo("10.10.1.0/24"));
+        assertThat(networkManager.obtainPortForClientNetwork(DOMAIN, deploymentId1), equalTo(1000));
+        assertThat(networkManager.obtainPortForClientNetwork(DOMAIN, deploymentId2), equalTo(1001));
+        assertThat(networkManager.assignNewIpAddressForContainer(DOMAIN), equalTo("10.10.1.1"));
+        assertThat(networkManager.assignNewIpAddressForContainer(DOMAIN), equalTo("10.10.1.2"));
+        networkManager.removeAddressAssignment(DOMAIN,"10.10.1.1");
+        assertThat(networkManager.assignNewIpAddressForContainer(DOMAIN), equalTo("10.10.1.1"));
+        assertThat(networkManager.assignNewIpAddressForContainer(DOMAIN), equalTo("10.10.1.3"));
     }
 
     private DockerHost dockerHost() throws UnknownHostException {

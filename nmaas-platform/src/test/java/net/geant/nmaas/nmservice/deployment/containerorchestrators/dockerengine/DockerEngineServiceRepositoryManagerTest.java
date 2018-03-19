@@ -32,37 +32,33 @@ public class DockerEngineServiceRepositoryManagerTest {
 
     @Autowired
     private DockerEngineServiceRepositoryManager repositoryManager;
-
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
 
+    private static final String DOMAIN = "domain";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
     private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
-
     private Identifier applicationId = Identifier.newInstance("applicationId");
-
-    private Identifier clientId = Identifier.newInstance("clientId");
 
     @Before
     public void setup() throws Exception {
-        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
+        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, DOMAIN, oxidizedTemplate());
         repositoryManager.storeService(service);
         dockerHostRepositoryManager.addDockerHost(dockerHost("dh"));
     }
 
     @After
     public void clean() throws DockerHostNotFoundException, DockerHostInvalidException, InvalidDeploymentIdException {
-        repositoryManager.removeService(deploymentId);
+        repositoryManager.removeAllServices();
         dockerHostRepositoryManager.removeDockerHost("dh");
     }
 
     @Test
     public void shouldStoreUpdateAndRemoveServiceInfo() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
-        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId2, applicationId, clientId, oxidizedTemplate());
+        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId2, applicationId, DOMAIN, oxidizedTemplate());
         repositoryManager.storeService(service);
         assertThat(repositoryManager.loadService(deploymentId), is(notNullValue()));
-        assertThat(repositoryManager.loadClientId(deploymentId), equalTo(clientId));
+        assertThat(repositoryManager.loadDomain(deploymentId), equalTo(DOMAIN));
         assertThat(repositoryManager.loadApplicationId(deploymentId), equalTo(applicationId));
         assertThat(repositoryManager.loadCurrentState(deploymentId), equalTo(NmServiceDeploymentState.INIT));
         assertThat(repositoryManager.loadService(deploymentId).getHost(), is(nullValue()));
@@ -78,7 +74,7 @@ public class DockerEngineServiceRepositoryManagerTest {
 
     @Test(expected = Exception.class)
     public void shouldNotAllowForTwoServicesWithTheSameDeploymentId() throws InvalidDeploymentIdException {
-        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, oxidizedTemplate());
+        DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, DOMAIN, oxidizedTemplate());
         repositoryManager.storeService(service);
     }
 

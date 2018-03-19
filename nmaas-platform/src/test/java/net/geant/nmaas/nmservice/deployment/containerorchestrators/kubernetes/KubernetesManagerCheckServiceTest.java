@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.DefaultIngressResourceManager;
@@ -21,7 +22,8 @@ public class KubernetesManagerCheckServiceTest {
     private KubernetesManager manager;
     private KubernetesRepositoryManager repositoryManager = mock(KubernetesRepositoryManager.class);
     private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
-    private KServiceLifecycleManager serviceManager = mock(HelmKServiceManager.class);
+    private KServiceLifecycleManager serviceLifecycleManager = mock(HelmKServiceManager.class);
+    private KServiceOperationsManager serviceOperationsManager = mock(DefaultKServiceOperationsManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
 
@@ -29,20 +31,21 @@ public class KubernetesManagerCheckServiceTest {
     public void setup() {
         manager = new KubernetesManager(repositoryManager,
                 clusterValidator,
-                serviceManager,
+                serviceLifecycleManager,
+                serviceOperationsManager,
                 ingressControllerManager,
                 ingressResourceManager);
     }
 
     @Test
     public void shouldVerifyThatServiceIsDeployed() throws Exception {
-        when(serviceManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
+        when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 
     @Test(expected = ContainerCheckFailedException.class)
     public void shouldThrowExceptionSinceServiceNotDeployed() throws Exception {
-        when(serviceManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
+        when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 

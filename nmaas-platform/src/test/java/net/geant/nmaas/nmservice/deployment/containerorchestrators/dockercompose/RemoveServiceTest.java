@@ -48,8 +48,8 @@ public class RemoveServiceTest {
     @MockBean
     private DockerNetworkLifecycleManager dockerNetworkLifecycleManager;
 
+    private static String DOMAIN = "domain";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance("10");
     private Identifier applicationId = Identifier.newInstance("1");
 
     @Before
@@ -72,7 +72,7 @@ public class RemoveServiceTest {
     }
 
     private void storeNmServiceInfo(DockerHost dockerHost) {
-        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, DOMAIN, null);
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
         nmServiceRepositoryManager.storeService(serviceInfo);

@@ -3,8 +3,9 @@ package net.geant.nmaas.dcn.deployment;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,12 +27,25 @@ public class AnsibleDcnDeploymentExecutorTest {
 
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
+    @Autowired
+    private DcnInfoRepository dcnInfoRepository;
 
     private AnsibleDcnDeploymentExecutor executor;
 
     @Before
     public void setup() {
-        executor = new AnsibleDcnDeploymentExecutor(dcnRepositoryManager, null, null, null, null, null);
+        executor = new AnsibleDcnDeploymentExecutor(
+                dcnRepositoryManager,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @After
+    public void clean() {
+        dcnInfoRepository.deleteAll();
     }
 
     @Test
@@ -45,22 +59,22 @@ public class AnsibleDcnDeploymentExecutorTest {
     }
 
     @Test
-    public void shouldCheckCurrentDcnState() throws InvalidClientIdException {
-        Identifier clientId = Identifier.newInstance("id");
-        assertThat(executor.checkState(clientId), equalTo(DcnState.NONE));
+    public void shouldCheckCurrentDcnState() throws InvalidDomainException {
+        String domain = "domain";
+        assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
         DcnInfo dcnInfo = new DcnInfo();
-        dcnInfo.setClientId(Identifier.newInstance("id2"));
+        dcnInfo.setDomain("domain2");
         dcnInfo.setName("name");
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
-        assertThat(executor.checkState(clientId), equalTo(DcnState.NONE));
-        dcnInfo.setClientId(Identifier.newInstance("id"));
+        assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
+        dcnInfo.setDomain(domain);
         dcnInfo.setName("name2");
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
-        assertThat(executor.checkState(clientId), equalTo(DcnState.PROCESSED));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.VERIFIED));
-        assertThat(executor.checkState(clientId), equalTo(DcnState.DEPLOYED));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REMOVED));
-        assertThat(executor.checkState(clientId), equalTo(DcnState.REMOVED));
+        assertThat(executor.checkState(domain), equalTo(DcnState.PROCESSED));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, domain, DcnDeploymentState.VERIFIED));
+        assertThat(executor.checkState(domain), equalTo(DcnState.DEPLOYED));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, domain, DcnDeploymentState.REMOVED));
+        assertThat(executor.checkState(domain), equalTo(DcnState.REMOVED));
     }
 
 }

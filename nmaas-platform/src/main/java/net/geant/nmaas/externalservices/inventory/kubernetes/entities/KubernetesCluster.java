@@ -15,42 +15,30 @@ import java.util.List;
 public class KubernetesCluster {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
-    /**
-     * Some unique human readable name assigned for the cluster
-     */
+    /** Some unique human readable name assigned for the cluster */
     @Column(nullable = false, unique = true)
     private String name;
 
-    /**
-     * Address of the host of which helm commands should be executed
-     */
+    /** Address of the host of which helm commands should be executed */
     @Column(nullable = false)
     private InetAddress helmHostAddress;
 
-    /**
-     * Username to be used to connect to host with SSH and execute helm commands
-     */
+    /** Username to be used to connect to host with SSH and execute helm commands */
     @Column(nullable = false)
     private String helmHostSshUsername;
 
-    /**
-     * Directory on the helm host in which all charts are stored
-     */
+    /** Directory on the helm host in which all charts are stored */
     private String helmHostChartsDirectory;
 
-    /**
-     * Address of the host on which Kubernetes REST API is exposed
-     */
+    /** Address of the host on which Kubernetes REST API is exposed */
     @Column(nullable = false)
     private InetAddress restApiHostAddress;
 
-    /**
-     * Port on which Kubernetes REST API is exposed
-     */
+    /** Port on which Kubernetes REST API is exposed */
     @Column(nullable = false)
     private int restApiPort;
 
@@ -61,9 +49,7 @@ public class KubernetesCluster {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesClusterAttachPoint attachPoint;
 
-    /**
-     * All public networks made available for the cluster. Each customer is assigned with a dedicated network.
-     */
+    /** All public networks made available for the cluster. Each customer is assigned with a dedicated network. */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ExternalNetworkSpec> externalNetworks = new ArrayList<>();
 

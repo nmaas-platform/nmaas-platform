@@ -17,17 +17,17 @@ public interface AppLifecycleManager {
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
      *
-     * @param clientId unique identifier of the client
+     * @param domain unique name of the client domain for which application is deployed
      * @param applicationId unique identifier of the application to be deployed
      * @return unique identifier of the deployed user application
      */
-    Identifier deployApplication(Identifier clientId, Identifier applicationId);
+    Identifier deployApplication(String domain, Identifier applicationId);
 
     /**
-     * Applies custom configuration for the NMaaS application being deployed once provided by the client.
+     * Applies custom configuration for the NMaaS application being deployed once provided by the user.
      *
      * @param deploymentId unique identifier of the deployed user application
-     * @param configuration application user configuration
+     * @param configuration application configuration provided by the user
      */
     void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException;
 
@@ -39,7 +39,7 @@ public interface AppLifecycleManager {
     void removeApplication(Identifier deploymentId) throws InvalidDeploymentIdException;
 
     /**
-     * Updates already deployed user application to the latest or provided by client version available in the NMaaS Portal.
+     * Updates already deployed user application to the latest or provided by user version available in the NMaaS Portal.
      * This most probably requires application container redeployment.
      * Application configuration and persistent data must be restored.
      *
@@ -52,7 +52,7 @@ public interface AppLifecycleManager {
      * Updates the configuration of already deployed user application.
      *
      * @param deploymentId unique identifier of the deployed user application
-     * @param configuration updated configuration provided by client
+     * @param configuration updated application configuration provided by the user
      */
     void updateConfiguration(Identifier deploymentId, AppConfiguration configuration);
 

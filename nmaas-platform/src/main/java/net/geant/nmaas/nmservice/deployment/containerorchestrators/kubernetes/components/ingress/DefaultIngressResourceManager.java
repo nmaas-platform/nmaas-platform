@@ -30,9 +30,10 @@ import java.util.stream.Collectors;
 @Component
 public class DefaultIngressResourceManager implements IngressResourceManager {
 
-    private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-client-";
-    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-client-";
+    private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-";
+    private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-";
     private static final String NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME = "kubernetes.io/ingress.class";
+    // TODO move to cluster object
     private static final String NMAAS_DOMAIN_SUFFIX = ".nmaas.geant.net";
 
     private static final String DEFAULT_SERVICE_PATH = "/";
@@ -57,16 +58,17 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      * name. In such case special lookup algorithm needs to be applied to retrieve the correct service name from the cluster.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param clientId identifier of the client requesting the deployment
+     * @param domain name of the domain for this deployment
+     * @return URL under which deployed service is available
      * @throws IngressResourceManipulationException if Kubernetes client throws any exception
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
+    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, String domain) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
-        String namespace = namespaceService.namespace(clientId);
-        String ingressResourceName = ingressResourceName(clientId.value());
-        String externalUrl = externalUrl(deploymentId.value(), clientId.value());
+        String namespace = namespaceService.namespace(domain);
+        String ingressResourceName = ingressResourceName(domain);
+        String externalUrl = externalUrl(deploymentId.value(), domain);
         String releaseName = deploymentId.value();
         Service serviceObject = retrieveServiceObject(namespace, client, releaseName);
         String serviceName = extractServiceName(serviceObject);
@@ -81,7 +83,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 ingress = prepareNewIngress(
                         namespace,
                         ingressResourceName,
-                        ingressClassName(clientId),
+                        ingressClassName(domain),
                         externalUrl,
                         serviceName,
                         servicePort);
@@ -98,13 +100,17 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         }
     }
 
-    private String ingressResourceName(String clientId) {
-        return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + clientId;
+    private String ingressResourceName(String domain) {
+        return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + domain;
     }
 
-    // TODO fix or replace this externalURL string creation
-    private String externalUrl(String deploymentId, String clientId) {
-        return deploymentId.substring(deploymentId.length() - 12) + "." + "client-" + clientId + NMAAS_DOMAIN_SUFFIX;
+    // TODO fix or replace this externalURL string creation (probably use instance name provided by the client)
+    private String externalUrl(String deploymentId, String domain) {
+        return deploymentId.substring(deploymentId.length() - 12) + "." + domain + NMAAS_DOMAIN_SUFFIX;
+    }
+
+    private String ingressClassName(String domain) {
+        return NMAAS_INGRESS_CLASS_NAME_PREFIX + domain;
     }
 
     private Service retrieveServiceObject(String namespace, KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
@@ -141,16 +147,16 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      * Removes ingress rule from an existing ingress resource.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param clientId identifier of the client requesting the deployment
+     * @param domain name of the domain for this deployment
      * @throws IngressResourceManipulationException if ingress object with provided name does not exist in the cluster or Kubernetes client throws any exception
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized void deleteIngressRule(Identifier deploymentId, Identifier clientId) throws IngressResourceManipulationException {
+    public synchronized void deleteIngressRule(Identifier deploymentId, String domain) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
-        String namespace = namespaceService.namespace(clientId);
-        String ingressResourceName = ingressResourceName(clientId.value());
-        String externalUrl = externalUrl(deploymentId.value(), clientId.value());
+        String namespace = namespaceService.namespace(domain);
+        String ingressResourceName = ingressResourceName(domain);
+        String externalUrl = externalUrl(deploymentId.value(), domain);
         try {
             Ingress ingress = client.extensions().ingresses().inNamespace(namespace).list().getItems()
                     .stream()
@@ -178,14 +184,14 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     /**
      * Removes ingress resource for given client.
      *
-     * @param clientId identifier of the client requesting the deployment
+     * @param domain name of the domain for this deployment
      * @throws IngressResourceManipulationException if ingress object with provided name does not exist in the cluster or Kubernetes client throws any exception
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void deleteIngressResource(Identifier clientId) throws IngressResourceManipulationException {
+    public void deleteIngressResource(String domain) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
-        String ingressResourceName = ingressResourceName(clientId.value());
+        String ingressResourceName = ingressResourceName(domain);
         try {
             Ingress ingress = client.extensions().ingresses().list().getItems()
                     .stream()
@@ -221,10 +227,6 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         HTTPIngressPath path = new HTTPIngressPath(backend, DEFAULT_SERVICE_PATH);
         HTTPIngressRuleValue ruleValue = new HTTPIngressRuleValue(Arrays.asList(path));
         return new IngressRule(externalUrl, ruleValue);
-    }
-
-    private String ingressClassName(Identifier clientId) {
-        return NMAAS_INGRESS_CLASS_NAME_PREFIX + clientId;
     }
 
 }

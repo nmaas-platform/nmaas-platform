@@ -2,8 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine
 
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,8 +16,12 @@ import java.util.List;
 @Component
 public class DockerHostNetworkRepositoryManager {
 
-    @Autowired
     private DockerHostNetworkRepository repository;
+
+    @Autowired
+    public DockerHostNetworkRepositoryManager(DockerHostNetworkRepository repository) {
+        this.repository = repository;
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void storeNetwork(DockerHostNetwork dockerHostNetwork) {
@@ -26,37 +29,38 @@ public class DockerHostNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateNetwork(DockerHostNetwork dockerHostNetwork) {
+    void updateNetwork(DockerHostNetwork dockerHostNetwork) {
         repository.save(dockerHostNetwork);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateNetworkIdAndNetworkName(Identifier clientId, String networkId, String networkName) throws InvalidClientIdException {
-        DockerHostNetwork dockerHostNetwork = repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    void updateNetworkIdAndNetworkName(String domain, String networkId, String networkName) throws InvalidDomainException {
+        DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         dockerHostNetwork.setDeploymentId(networkId);
         dockerHostNetwork.setDeploymentName(networkName);
         repository.save(dockerHostNetwork);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateAssignedAddresses(Identifier clientId, List<String> assignedAddresses) throws InvalidClientIdException {
-        DockerHostNetwork dockerHostNetwork = repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    void updateAssignedAddresses(String domain, List<String> assignedAddresses) throws InvalidDomainException {
+        DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         dockerHostNetwork.setAssignedAddresses(assignedAddresses);
         repository.save(dockerHostNetwork);
     }
 
-    public DockerHostNetwork loadNetwork(Identifier clientId) throws InvalidClientIdException {
-        return repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    DockerHostNetwork loadNetwork(String domain) throws InvalidDomainException {
+        return repository.findByDomain(domain)
+                .orElseThrow(() -> new InvalidDomainException("No network found in repository for domain " + domain));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeNetwork(Identifier clientId) throws InvalidClientIdException {
-        DockerHostNetwork dockerHostNetwork = repository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    public void removeNetwork(String domain) throws InvalidDomainException {
+        DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         repository.delete(dockerHostNetwork.getId());
     }
 
-    public boolean checkNetwork(Identifier clientId) {
-        return repository.findByClientId(clientId).isPresent();
+    public boolean checkNetwork(String domain) {
+        return repository.findByDomain(domain).isPresent();
     }
 
 }

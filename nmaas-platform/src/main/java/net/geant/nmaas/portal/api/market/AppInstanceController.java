@@ -17,7 +17,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -134,7 +133,7 @@ public class AppInstanceController extends AppBaseController {
 			throw new MissingElementException("Domain not found");
 		appInstance.setDomain(domain);
 
-		Identifier internalId = appLifecycleManager.deployApplication(new Identifier(Long.toString(user.getId())),
+		Identifier internalId = appLifecycleManager.deployApplication(domain.getName(),
 				new Identifier(Long.toString(app.getId())));
 		appInstance.setInternalId(internalId);
 

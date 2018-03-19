@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -11,9 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,20 +38,13 @@ public class OrchestratorManagerRestControllerTest {
 
     private MockMvc mvc;
 
-    private Identifier clientId;
-
+    private static final String DOMAIN = "domain";
     private Identifier applicationId;
-
     private Identifier deploymentId;
-
     private AppConfiguration appConfiguration;
-
-    @Autowired
-    private Environment env;
 
     @Before
     public void setup() {
-        clientId = Identifier.newInstance("100L");
         applicationId = Identifier.newInstance("15L");
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
@@ -67,7 +57,7 @@ public class OrchestratorManagerRestControllerTest {
         when(lifecycleManager.deployApplication(any(),any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("clientid", clientId.getValue());
+        params.set("domain", DOMAIN);
         params.set("applicationid", applicationId.getValue());
         mvc.perform(post("/platform/api/orchestration/deployments")
                 .params(params)

@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyActionEvent;
@@ -23,17 +22,17 @@ public class DcnDeploymentStateChangeManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent triggerActionOnStateChange(DcnDeploymentStateChangeEvent event) {
-        return triggerActionEventIfRequired(event.getClientId(), event.getState()).orElse(null);
+        return triggerActionEventIfRequired(event.getDomain(), event.getState()).orElse(null);
     }
 
-    private Optional<ApplicationEvent> triggerActionEventIfRequired(Identifier clientId, DcnDeploymentState currentState) {
+    private Optional<ApplicationEvent> triggerActionEventIfRequired(String domain, DcnDeploymentState currentState) {
         switch (currentState) {
             case REQUEST_VERIFIED:
-                return Optional.of(new DcnDeployActionEvent(this, clientId));
+                return Optional.of(new DcnDeployActionEvent(this, domain));
             case DEPLOYED:
-                return Optional.of(new DcnVerifyActionEvent(this, clientId));
+                return Optional.of(new DcnVerifyActionEvent(this, domain));
             case VERIFIED:
-                return Optional.of(new DcnDeployedEvent(this, clientId));
+                return Optional.of(new DcnDeployedEvent(this, domain));
             default:
                 return Optional.empty();
         }

@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
-import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * Methods for ingress controller manipulation.
@@ -10,8 +9,20 @@ import net.geant.nmaas.orchestration.entities.Identifier;
  */
 public interface IngressControllerManager {
 
-    void deployIngressControllerIfMissing(Identifier clientId) throws IngressControllerManipulationException;
+    /**
+     * If an ingress controller for given domain is missing, creates a new one.
+     *
+     * @param domain name of the client domain for this deployment
+     * @throws IngressControllerManipulationException if any exception is thrown during ingress processing
+     */
+    void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException;
 
-    void deleteIngressController(Identifier clientId) throws IngressControllerManipulationException;
+    /**
+     * Deletes an ingress controller for given domain.
+     *
+     * @param domain name of the client domain for this deployment
+     * @throws IngressControllerManipulationException if any exception is thrown during ingress processing
+     */
+    void deleteIngressController(String domain) throws IngressControllerManipulationException;
 
 }

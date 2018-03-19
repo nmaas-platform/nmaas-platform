@@ -38,8 +38,8 @@ public class DockerComposeNmServiceInfo extends DockerNmServiceInfo {
         super();
     }
 
-    public DockerComposeNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, DockerComposeFileTemplate dockerComposeFileTemplate) {
-        super(deploymentId, applicationId, clientId);
+    public DockerComposeNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, DockerComposeFileTemplate dockerComposeFileTemplate) {
+        super(deploymentId, applicationId, domain);
         this.dockerComposeFileTemplate = dockerComposeFileTemplate;
     }
 

@@ -21,39 +21,35 @@ public class AppLifecycleManagerRestController {
     private AppLifecycleManager lifecycleManager;
 
     @Autowired
-    public AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager) {
+    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
     }
 
     /**
      * Requests new application deployment.
      *
-     * @param clientId identifier of the user/client requesting the deployment
+     * @param domain name of the client domain for this deployment
      * @param applicationId identifier of the application
      * @return unique identifier of the application deployment
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(value = "",
-            params = {"clientid", "applicationid"},
-            method = RequestMethod.POST)
+    @PostMapping(params = {"domain", "applicationid"})
     @ResponseStatus(code = HttpStatus.CREATED)
     public Identifier deployApplication(
-            @RequestParam("clientid") String clientId,
+            @RequestParam("domain") String domain,
             @RequestParam("applicationid") String applicationId) {
-        return lifecycleManager.deployApplication(Identifier.newInstance(clientId), Identifier.newInstance(applicationId));
+        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId));
     }
 
     /**
-     * Applies application configuration provided by the user/client for given deployment.
+     * Applies application configuration provided by the user for given deployment.
      *
      * @param deploymentId unique identifier of the application deployment
-     * @param configuration initial application configuration provided by the user/client
+     * @param configuration initial application configuration provided by the user
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(value = "/{deploymentId}",
-            method = RequestMethod.POST,
-            consumes = "application/json")
+    @PostMapping(value = "/{deploymentId}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
@@ -68,8 +64,7 @@ public class AppLifecycleManagerRestController {
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(value = "/{deploymentId}",
-            method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{deploymentId}")
     @ResponseStatus(code = HttpStatus.OK)
     public void removeApplication(
             @PathVariable("deploymentId") String deploymentId) throws InvalidDeploymentIdException {

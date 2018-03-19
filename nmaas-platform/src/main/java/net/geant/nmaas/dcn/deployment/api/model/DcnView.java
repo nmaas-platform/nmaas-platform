@@ -7,7 +7,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
  */
 public class DcnView {
 
-    private String clientId;
+    private String domain;
     private String state;
     private int vlanNumber;
     private String subnet;
@@ -15,18 +15,18 @@ public class DcnView {
     public DcnView() {}
 
     public DcnView(DcnInfo dcnInfo) {
-        this.clientId = dcnInfo.getClientId().value();
+        this.domain = dcnInfo.getDomain();
         this.state = dcnInfo.getState().name();
         this.vlanNumber = dcnInfo.getCloudEndpointDetails().getVlanNumber();
         this.subnet = dcnInfo.getCloudEndpointDetails().getSubnet();
     }
 
-    public String getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public String getState() {

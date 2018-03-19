@@ -8,8 +8,8 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="customer_network_monitored_equipment")
-public class CustomerNetworkMonitoredEquipment {
+@Table(name="domain_network_monitored_equipment")
+public class DomainNetworkMonitoredEquipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

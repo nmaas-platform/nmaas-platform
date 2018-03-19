@@ -1,8 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,16 +24,16 @@ public class PrepareDeploymentEnvForNavTest extends BasePrepareDeploymentEnvTest
 
     @Before
     public void setup() throws Exception {
-        setup(NAV_DOCKER_COMPOSE_TEMPLATE_XML_FILE);
+        super.setup(NAV_DOCKER_COMPOSE_TEMPLATE_XML_FILE);
     }
 
     @After
-    public void clean() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
+    public void clean() throws Exception {
         super.clean();
     }
 
     @Test
-    public void shouldBuildAndStoreComposeFileFromOpenNtiComposeTemplateXml() throws Exception {
+    public void shouldBuildAndStoreComposeFileFromNavComposeTemplateXml() throws Exception {
         manager.prepareDeploymentEnvironment(deploymentId);
         assertThat(contentOfGeneratedComposeFile(), allOf(
                         containsString("1000:"),
@@ -44,7 +41,7 @@ public class PrepareDeploymentEnvForNavTest extends BasePrepareDeploymentEnvTest
                         containsString("deploymentId-nav"),
                         containsString("10.10.1.1"),
                         containsString("nmaas-access"),
-                        containsString("nmaas-dcn-10-vlan500")));
+                        containsString("nmaas-dcn-domain-vlan500")));
     }
 
 }

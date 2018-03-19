@@ -7,11 +7,12 @@ import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -44,52 +45,55 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
+    private DcnInfoRepository dcnInfoRepository;
+    @Autowired
     private AppDeploymentRepository appDeploymentRepository;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private DockerHostNetworkRepository dockerHostNetworkRepository;
 
+    private static final String DOMAIN = "domain";
+    private static final String DCN_NAME = "this-is-example-dcn-name";
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
-    private final Identifier clientId = Identifier.newInstance("this-is-example-client-id");
     private final Identifier applicationId = Identifier.newInstance("this-is-example-application-id");
-    private final String dcnName = "this-is-example-dcn-name";
     private String statusUpdateJsonContent;
     private MockMvc mvc;
 
     @Before
-    public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidClientIdException {
-        appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, applicationId));
-        DcnSpec spec = new DcnSpec(dcnName, clientId);
+    public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidDomainException {
+        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId));
+        DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.DEPLOYMENT_INITIATED));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
         AnsiblePlaybookExecutionStateListener coordinator = new AnsibleDcnDeploymentExecutor(dcnRepositoryManager, null, null, applicationEventPublisher, dockerHostNetworkRepository, null);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
     }
 
     @After
-    public void cleanup() {
+    public void cleanup() throws InvalidDomainException {
         appDeploymentRepository.deleteAll();
+        dcnInfoRepository.deleteAll();
     }
 
     @Test
     public void testAnsiblePlaybookStatusApiUpdate() throws Exception {
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
-        mvc.perform(MockMvcRequestBuilders.post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(clientId.value()))
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
+        mvc.perform(MockMvcRequestBuilders.post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(DOMAIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         Thread.sleep(200);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(clientId.value()))
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
+        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(DOMAIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         Thread.sleep(200);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), anyOf(is(DcnDeploymentState.VERIFICATION_INITIATED), is(DcnDeploymentState.DEPLOYED)));
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), anyOf(is(DcnDeploymentState.VERIFICATION_INITIATED), is(DcnDeploymentState.DEPLOYED)));
     }
 
 }

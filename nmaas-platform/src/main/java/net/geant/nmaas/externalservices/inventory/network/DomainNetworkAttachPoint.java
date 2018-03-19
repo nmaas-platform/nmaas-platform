@@ -6,8 +6,8 @@ import javax.persistence.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="basic_customer_network_attach_point")
-public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoint {
+@Table(name="domain_network_attach_point")
+public class DomainNetworkAttachPoint implements NetworkAttachPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -15,7 +15,7 @@ public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoi
     private Long id;
 
     @Column(nullable=false, unique=true)
-    private Long customerId;
+    private String domain;
 
     @Column(nullable=false)
     private String routerName;
@@ -41,8 +41,9 @@ public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoi
     @Column(nullable=false)
     private String bgpNeighborIp;
 
+    // TODO move to a class representing the whole domain
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private CustomerNetworkMonitoredEquipment monitoredEquipment;
+    private DomainNetworkMonitoredEquipment monitoredEquipment;
 
     public Long getId() {
         return id;
@@ -52,12 +53,12 @@ public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoi
         this.id = id;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     @Override
@@ -132,11 +133,24 @@ public class BasicCustomerNetworkAttachPoint implements CustomerNetworkAttachPoi
         this.bgpNeighborIp = bgpNeighborIp;
     }
 
-    public CustomerNetworkMonitoredEquipment getMonitoredEquipment() {
+    public DomainNetworkMonitoredEquipment getMonitoredEquipment() {
         return monitoredEquipment;
     }
 
-    public void setMonitoredEquipment(CustomerNetworkMonitoredEquipment monitoredEquipment) {
+    public void setMonitoredEquipment(DomainNetworkMonitoredEquipment monitoredEquipment) {
         this.monitoredEquipment = monitoredEquipment;
+    }
+
+    public DomainNetworkAttachPoint update(DomainNetworkAttachPoint domainNetworkAttachPoint) {
+        domain = domainNetworkAttachPoint.getDomain();
+        routerName = domainNetworkAttachPoint.getRouterName();
+        routerId = domainNetworkAttachPoint.getRouterId();
+        asNumber = domainNetworkAttachPoint.getAsNumber();
+        routerInterfaceName = domainNetworkAttachPoint.getRouterInterfaceName();
+        routerInterfaceUnit = domainNetworkAttachPoint.getRouterInterfaceUnit();
+        routerInterfaceVlan = domainNetworkAttachPoint.getRouterInterfaceVlan();
+        bgpLocalIp = domainNetworkAttachPoint.getBgpLocalIp();
+        bgpNeighborIp = domainNetworkAttachPoint.getBgpNeighborIp();
+        return this;
     }
 }

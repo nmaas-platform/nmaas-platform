@@ -1,13 +1,13 @@
-package net.geant.nmaas.orchestration.events;
+package net.geant.nmaas.orchestration.events.app;
 
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.context.ApplicationEvent;
 
-public abstract class BaseEvent extends ApplicationEvent {
+public abstract class AppBaseEvent extends ApplicationEvent {
 
     private Identifier relatedTo;
 
-    public BaseEvent(Object source, Identifier relatedTo) {
+    public AppBaseEvent(Object source, Identifier relatedTo) {
         super(source);
         this.relatedTo = relatedTo;
     }
