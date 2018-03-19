@@ -23,6 +23,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -46,36 +47,48 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
 	public List<Domain> getMyDomains(@NotNull Principal principal) throws ProcessingException, MissingElementException {
-		User user = userService.findByUsername(principal.getName());
-		if(user == null)
-			throw new ProcessingException("User not found.");
+		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 					
-		return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+		try {
+			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}
 	}
 	
 	@PostMapping
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) throws ProcessingException {
-		if(domainService.findDomain(domainRequest.getName()) != null)
+		if(domainService.existsDomain(domainRequest.getName())) 
 			throw new ProcessingException("Domain already exists.");
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.createDomain(domainRequest.getName());
-		
-		return new Id(domain.getId());
+		net.geant.nmaas.portal.persistent.entity.Domain domain;
+		try {
+			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive());
+			return new Id(domain.getId());
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
 	}
 	
 	@PutMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException {
+	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
 		if(!domainId.equals(domainUpdate.getId()))
 			throw new ProcessingException("Unable to change domain id");
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId);
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
-		domainService.updateDomain(domain);
+		try {
+			domainService.updateDomain(domain);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+		
 		return new Id(domainId);
 	}
 	
@@ -90,9 +103,7 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)	
 	public Domain getDomain(@PathVariable Long domainId) throws MissingElementException {	
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found.");
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
 		return modelMapper.map(domain, Domain.class);
 	}
 	

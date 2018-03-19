@@ -45,12 +45,12 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
   
   protected getDomainName(domainId: number): Observable<string> {
-    console.debug('getDomainName(' + domainId + ')');
+    //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
-      console.debug('getDomainName(' + domainId + ') from cache');
+      //console.debug('getDomainName(' + domainId + ') from cache');
       return Observable.of(this.domainCache.getData(domainId).name);
     } else {
-      console.debug('getDomainName(' + domainId + ') from network');
+      //console.debug('getDomainName(' + domainId + ') from network');
       return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
               .shareReplay(1).take(1);
     }

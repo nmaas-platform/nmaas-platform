@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.jsonwebtoken.Claims;
 import net.geant.nmaas.portal.api.auth.UserLogin;
 import net.geant.nmaas.portal.api.auth.UserRefreshToken;
-import net.geant.nmaas.portal.api.auth.UserSignup;
+import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
@@ -24,6 +24,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -62,9 +63,7 @@ public class BasicAuthController {
 		if(StringUtils.isEmpty(userLogin.getUsername()) || StringUtils.isEmpty(userLogin.getPassword()))
 			throw new AuthenticationException("Missing credentials.");
 		
-		User user = users.findByUsername(userLogin.getUsername());
-		if(user == null)
-			throw new AuthenticationException("User not found.");
+		User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found."));
 		
 		if(!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
 			throw new AuthenticationException("Invalid password.");
@@ -79,44 +78,13 @@ public class BasicAuthController {
 		
 		if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
 			Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
-			User user = users.findByUsername(claims.getSubject());
+			User user = users.findByUsername(claims.getSubject()).orElseThrow(() -> new AuthenticationException("User in token not found."));
 			if(user != null) {
 				return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 			}
 		}
 				
 		throw new AuthenticationException("Unable to generate new tokens");
-	}
-	
-	
-	@RequestMapping(value="/signup", method=RequestMethod.POST)
-	@Transactional
-	public void signup(@RequestBody final UserSignup userSignup) throws SignupException {
-		if(userSignup == null || StringUtils.isEmpty(userSignup.getUsername()) || StringUtils.isEmpty(userSignup.getPassword()) )
-			throw new SignupException("Invalid credentials.");
-							
-		User newUser = null;
-		try {
-			newUser = users.register(userSignup.getUsername());
-			if(newUser == null)
-				throw new SignupException("Unable to register new user");
-		} catch (ObjectAlreadyExistsException e) {
-			throw new SignupException("User already exists.");
-		} catch (MissingElementException e) {
-			throw new SignupException("Domain not found.");
-		}
-		
-		newUser.setPassword(passwordEncoder.encode(userSignup.getPassword()));		
-		
-		try {
-			users.update(newUser);
-			if(userSignup.getDomainId() != null)
-				domains.addMemberRole(userSignup.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
-		} catch (ProcessingException e) {
-			throw new SignupException("Unable to update newly registered user.");
-		} catch (MissingElementException e) {
-			throw new SignupException("Domain not found."); 
-		}
 	}
 	
 	@RequestMapping(value="/ping", method=RequestMethod.GET)

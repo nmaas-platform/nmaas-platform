@@ -16,4 +16,8 @@ export class CacheService<ID, OBJECT> {
   public hasData(id: ID): boolean {
     return this.cache.has(id);
   }
+  
+  public clear(): void {
+    this.cache.clear();
+  }
 }

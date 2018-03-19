@@ -88,7 +88,6 @@ export class AuthService {
     }
 
     for (let index = 0; index < authorities.length; index++) {
-      console.debug("AUTH:getDomainRoles:scope " + authorities[index]);
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
@@ -121,7 +120,6 @@ export class AuthService {
 
     const authorities: Authority[]  = this.jwtHelper.decodeToken(token).scopes;
     for (let index = 0; index < authorities.length; index++) {
-      console.debug("AUTH:getRoles:scope " + authorities[index]);
       if (isUndefined(authorities[index].authority)) {
         continue;
       }
@@ -148,10 +146,8 @@ export class AuthService {
     }
 
     const authorities: Authority[] = this.jwtHelper.decodeToken(token).scopes;
-    console.debug('AUTH:getDomains: ' + authorities);
     
     for (let index = 0; index < authorities.length; index++) {
-      console.debug("AUTH:getDomains:scope " + authorities[index]);
       if (isUndefined(authorities[index].authority)) {
         continue;
       }

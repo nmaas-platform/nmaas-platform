@@ -13,7 +13,7 @@ public class DockerNetworkIpam {
     private static final String ADDRESS_POOL_DEFAULT_MASK_LENGTH = "24";
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable=false)

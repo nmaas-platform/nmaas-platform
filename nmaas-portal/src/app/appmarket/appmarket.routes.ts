@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { AppMarketComponent } from './appmarket.component';
-import { AppListComponent } from './applist/index';
+import { AppListComponent } from './applist/applist.component';
 import { AppDetailsComponent } from './appdetails/index';
 
 import { AuthGuard } from '../auth/auth.guard';

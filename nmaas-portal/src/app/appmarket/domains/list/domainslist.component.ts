@@ -14,13 +14,18 @@ export class DomainsListComponent implements OnInit {
   constructor(protected domainService: DomainService) {}
 
   ngOnInit() {
+    this.update();
+  }
+
+  protected update(): void {
     this.domainService.getAll().subscribe(
       (domains: Domain[]) => this.domains = domains
     );
+
   }
 
   public remove(domainId: number): void {
-    this.domainService.remove(domainId);
+    this.domainService.remove(domainId).subscribe(() => this.update());
   }
 
 }

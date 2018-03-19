@@ -12,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -23,6 +24,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 
 @ContextConfiguration(classes = {ApiSecurityConfig.class, ConvertersConfig.class, PersistentConfig.class})
+@TestPropertySource("classpath:db.properties")
 public class BaseControllerTest {
 
 	protected final static String ADMIN_USERNAME = "admin";
@@ -63,7 +65,7 @@ public class BaseControllerTest {
     protected String getValidUserTokenFor(Role role) {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);
-		User admin = new User(ADMIN_USERNAME, ADMIN_PASSWORD, domains.getGlobalDomain(), roles);
+		User admin = new User(ADMIN_USERNAME, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
 		
 		String token = tokenService.getToken(admin);
 		

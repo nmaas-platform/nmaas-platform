@@ -15,8 +15,8 @@ import java.util.List;
 public class KubernetesCluster {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="id")
     private Long id;
 
     /** Some unique human readable name assigned for the cluster */

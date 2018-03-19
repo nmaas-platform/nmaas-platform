@@ -18,7 +18,7 @@ public class AnsiblePlaybookVpnConfig {
     public static final int MAX_PROPERTY_LENGTH = 50;
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column(name="id")
     private Long id;
 

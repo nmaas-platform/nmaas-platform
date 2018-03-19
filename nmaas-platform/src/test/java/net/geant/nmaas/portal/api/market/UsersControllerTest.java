@@ -20,8 +20,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.api.auth.UserSignup;
+import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -54,12 +55,12 @@ public class UsersControllerTest extends BaseControllerTest {
 		mvc = createMVC();
 		
 		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN);
+		domains.createDomain(DOMAIN, DOMAIN);
 		
 		//Add extra users, default admin is already there
-		userRepo.save(new User("manager", "manager", domains.getGlobalDomain(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
-		user1 = userRepo.save(new User("user1", "user1", domains.findDomain(DOMAIN), Arrays.asList(Role.ROLE_USER)));
-		userRepo.save(new User("user2", "user2", domains.findDomain(DOMAIN), Arrays.asList(Role.ROLE_USER)));
+		userRepo.save(new User("manager", "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
+		user1 = userRepo.save(new User("user1", "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+		userRepo.save(new User("user2", "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
 		
 		prepareSecurity();
@@ -82,22 +83,22 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testAddUser() throws SignupException {
-		Id id = userController.addUser(new UserSignup("tester", "tester", null));
+		Id id = userController.addUser(new Registration("tester"));
 		assertNotNull(id);
 		
 		assertEquals(5, userController.getUsers(null).size());
 	}
 
 	@Test
-	public void testGetUser() {
-		net.geant.nmaas.portal.api.domain.User user = userController.getUser(1L);
+	public void testGetUser() throws MissingElementException {
+		net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
 		assertEquals(new Long(1), user.getId());
 		assertEquals("admin", user.getUsername());
 		
 	}
 
 	@Test
-	public void testSuccessUpdatingWithNonExistingUsername() throws ProcessingException {
+	public void testSuccessUpdatingWithNonExistingUsername() throws ProcessingException, MissingElementException {
 		String oldUsername = user1.getUsername();
 		String newUsername = "newUser1";
 		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null));
@@ -107,7 +108,7 @@ public class UsersControllerTest extends BaseControllerTest {
 	}
 	
 	@Test
-	public void testFailureUpdatingWithExistingUsername() {
+	public void testFailureUpdatingWithExistingUsername() throws MissingElementException {
 		String oldUsername = user1.getUsername();
 		String newUsername = "admin";
 		try {
@@ -119,7 +120,7 @@ public class UsersControllerTest extends BaseControllerTest {
 	}	
 	
 	@Test
-	public void testUpdateUserPasswordAndRole() throws ProcessingException {
+	public void testUpdateUserPasswordAndRole() throws ProcessingException, MissingElementException {
 		String newPass = "newPass";
 		String oldPass = user1.getPassword();
 		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass));
