@@ -23,7 +23,7 @@
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
 						name="role" formControlName="role">
-						<option *ngFor="let r of Role | keys" [value]="r.key">{{r.value}}</option>
+						<option *ngFor="let r of Role | keys" [value]="r.key">{{r.value | slice:5}}</option>
 					</select>
 				</div>
 				<div class="col-lg-3">
@@ -48,7 +48,7 @@
 					<ng-template ngFor let-userrole [ngForOf]="user.userRoles">
 					<tr>
 						<td>{{userrole.domainId}}</td>
-						<td>{{userrole.role}}</td>
+						<td>{{userrole.role | slice:5}}</td>
 						<td class="text-right"><button type="button"
 								class="btn btn-danger"
 								(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button></td>
