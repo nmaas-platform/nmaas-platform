@@ -92,6 +92,7 @@ public class UsersController {
 			throw new SignupException("Unable to register new user");
 
 		user.setPassword(null);
+		user.setEnabled(true);
 		
 		try {
 			users.update(user);
@@ -114,7 +115,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
-	public void updateUser(@PathVariable("userId") Long userId, @NotNull UserRequest userRequest) throws ProcessingException, MissingElementException {
+	public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) throws ProcessingException, MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.User userMod = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
 		
 		if(userRequest.getUsername() != null && !userMod.getUsername().equals(userRequest.getUsername())) {
@@ -127,6 +128,16 @@ public class UsersController {
 		if(userRequest.getPassword() != null)
 			userMod.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
+		if(userRequest.getFirstname() != null)
+			userMod.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			userMod.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null)
+			userMod.setEmail(userRequest.getEmail());		
+		userMod.setEnabled(userRequest.isEnabled());
+
+		
+		
 		
 		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
 			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()

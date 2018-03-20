@@ -65,9 +65,12 @@ public class BasicAuthController {
 		
 		User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found."));
 		
+		if(!user.isEnabled())
+			throw new AuthenticationException("User is not active.");
+		
 		if(!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
-			throw new AuthenticationException("Invalid password.");
-						
+			throw new AuthenticationException("Invalid password.");		
+		
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
 	

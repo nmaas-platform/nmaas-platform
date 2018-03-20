@@ -44,6 +44,10 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
        return;
     }
 
-    this.userService.addUser(user.username).subscribe((id) => this.router.navigate(['/users/view/', id.id]));
+    if(user.id) {
+      this.userService.updateUser(user.id, user).subscribe((value) => this.router.navigate(['/users/view/', user.id]));
+    } else {     
+      this.userService.addUser(user.username).subscribe((id) => this.router.navigate(['/users/view/', id.id]));
+    }
   }
 }

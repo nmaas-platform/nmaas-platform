@@ -59,9 +59,9 @@ public class UsersControllerTest extends BaseControllerTest {
 		domains.createDomain(DOMAIN, DOMAIN);
 		
 		//Add extra users, default admin is already there
-		userRepo.save(new User("manager", "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
-		user1 = userRepo.save(new User("user1", "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
-		userRepo.save(new User("user2", "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+		userRepo.save(new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
+		user1 = userRepo.save(new User("user1", true, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+		userRepo.save(new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
 		
 		prepareSecurity();

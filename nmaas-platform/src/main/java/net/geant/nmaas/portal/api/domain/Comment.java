@@ -8,7 +8,7 @@ public class Comment {
 
 	private Long id;
 	private Long parentId;
-	private User owner;
+	private UserBase owner;
 	private Date createdAt;
 	private String comment;
 	private boolean deleted;
@@ -18,7 +18,7 @@ public class Comment {
 	public Comment() {		
 	}
 
-	public User getOwner() {
+	public UserBase getOwner() {
 		return owner;
 	}
 
