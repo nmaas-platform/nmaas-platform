@@ -68,7 +68,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	}
 	
 	@GetMapping("/apps/{appId}/domains/{domainId}")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	@Transactional(readOnly=true)
 	public ApplicationSubscription getSubscription(@PathVariable Long domainId, @PathVariable Long appId) throws MissingElementException {
 		return appSubscriptions.getSubscription(appId, domainId).map(appSub -> modelMapper.map(appSub, ApplicationSubscription.class))
@@ -76,8 +76,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	}
 	
 	@GetMapping
-	@Transactional(readOnly=true)
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
+	@Transactional(readOnly=true)	
 	public List<ApplicationSubscriptionBase> getAllSubscriptions() {
 		return appSubscriptions.getSubscriptions().stream()
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
