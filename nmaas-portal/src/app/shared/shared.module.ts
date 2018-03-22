@@ -17,6 +17,7 @@ import {UsersListComponent} from './users/list/userslist.component';
 import { UserPrivilegesComponent } from './users/privileges/userprivileges.component';
 import { BaseComponent } from './common/basecomponent/base.component';
 import { RouterModule } from '@angular/router';
+import { NavbarComponent } from './navbar/index';
 
 @NgModule({
   imports: [
@@ -38,7 +39,8 @@ import { RouterModule } from '@angular/router';
     PasswordComponent,
     UserPrivilegesComponent,
     BaseComponent,
-    DefaultLogo
+    DefaultLogo,
+    NavbarComponent
   ],
   providers: [
     PasswordValidator
@@ -52,7 +54,8 @@ import { RouterModule } from '@angular/router';
     UserDetailsComponent,
     UsersListComponent,
     PasswordComponent,
-    UserPrivilegesComponent
+    UserPrivilegesComponent,
+    NavbarComponent
   ]
 })
 export class SharedModule {}

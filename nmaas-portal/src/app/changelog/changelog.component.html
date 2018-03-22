@@ -1,97 +1,112 @@
-<a *ngIf="this.router.url === '/login'" routerLink="/changelog">Version 0.3.0</a>
-<a *ngIf="this.router.url === '/changelog'" routerLink="/">Login</a>
+<!-- shown on login route -->
+<a *ngIf="isRouteLogin();else changelog" routerLink="/changelog">Version 0.3.0</a>
 
-<div *ngIf="this.router.url === '/changelog'" id="accordion">
-  <div class="card">
-    <div class="card-header" id="headingOne">
-      <h5 class="mb-0">
-        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          0.3.0 (2017/10/06)
-        </button>
-      </h5>
-    </div>
+<!-- shown on changelog route -->
+<ng-template #changelog>
+  <app-navbar></app-navbar>
+  <div class="container-fluid">
+    <div id="accordion" class="login-vertical-offset panel-group">
+      <div class="card panel panel-default">
+        <div class="card-header panel-heading">
+          <h4 class="panel-title">
+            Changelog    
+          </h4>
+        </div>
+      </div>
+      <div class="card panel panel-default">
+        <div class="card-header panel-heading" id="headingOne">
+          <h5 class="mb-0 panel-title">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              0.3.0 (2017/10/06)
+            </button>
+          </h5>
+        </div>
 
-    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-      <div class="card-body">
-	    * Support for NAV application.<br>
-		[New Feature] [NMAAS-195] [nmaas-platform]<br>
-		<br>
-		Implemented support for complete NAV application deployment workflow using Docker Compose.<br>
-	<br>
-		* Support for OpenNTI application.<br>
-		[New Feature] [NMAAS-200] [nmaas-platform]<br>
-		<br>
-		Implemented support for complete OpenNTI application deployment workflow using Docker Compose.<br>
-		<br>
-		* NMaaS Portal improvements.<br>
-		[Improvement] [NMAAS-203, NMAAS-204, NMAAS-205] [nmaas-portal]<br>
-		<br>
-		Added support for application comments and ratings. Implemented minor layout improvements.<br>
+        <div id="collapseOne" class="collapse in" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
+           * Support for NAV application.<br>
+           [New Feature] [NMAAS-195] [nmaas-platform]<br>
+           <br>
+           Implemented support for complete NAV application deployment workflow using Docker Compose.<br>
+           <br>
+           * Support for OpenNTI application.<br>
+           [New Feature] [NMAAS-200] [nmaas-platform]<br>
+           <br>
+           Implemented support for complete OpenNTI application deployment workflow using Docker Compose.<br>
+           <br>
+           * NMaaS Portal improvements.<br>
+           [Improvement] [NMAAS-203, NMAAS-204, NMAAS-205] [nmaas-portal]<br>
+           <br>
+           Added support for application comments and ratings. Implemented minor layout improvements.<br>
+         </div>
+       </div>
+     </div>
+     <div class="card panel panel-default">
+      <div class="card-header panel-heading" id="headingTwo">
+        <h5 class="mb-0 panel-title">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            0.2.0 (2017/07/11)
+          </button>
+        </h5>
+      </div>
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="card-body">
+        	* Containerized application deployment using Docker Compose.<br>
+        	[New Feature] [NMAAS-116] [nmaas-platform]<br>
+        	<br>
+        	Implemented support for Docker container deployment with dedicated network setup on the Docker Host using Docker Compose tool.<br>
+        	<br>
+        	* Support for LibreNMS application.<br>
+        	[New Feature] [NMAAS-86] [nmaas-platform]<br>
+        	<br>
+        	Implemented support for complete LibreNMS application deployment workflow using Docker Compose.<br>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="headingTwo">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          0.2.0 (2017/07/11)
-        </button>
-      </h5>
-    </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-      <div class="card-body">
-      	* Containerized application deployment using Docker Compose.<br>
-      	[New Feature] [NMAAS-116] [nmaas-platform]<br>
-      	<br>
-      	Implemented support for Docker container deployment with dedicated network setup on the Docker Host using Docker Compose tool.<br>
-      	<br>
-      	* Support for LibreNMS application.<br>
-      	[New Feature] [NMAAS-86] [nmaas-platform]<br>
-      	<br>
-      	Implemented support for complete LibreNMS application deployment workflow using Docker Compose.<br>
+    <div class="card panel panel-default">
+      <div class="card-header panel-heading" id="headingThree">
+        <h5 class="mb-0 panel-title">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            0.1.0 (2017/06/13)
+          </button>
+        </h5>
+      </div>
+      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+        <div class="card-body">
+        	* Project setup.<br>
+        	[New Feature] [nmaas-platform, nmaas-portal]<br>
+        	<br>
+        	Prepared gradle multi module project and package structure for two main system components: platform and portal.<br>
+        	<br>
+        	* Containerized application deployment and configuration.<br>
+        	[New Feature] [NMAAS-66, NMAAS-70, NMAAS-79] [nmaas-platform]<br>
+        	<br>
+        	Implemented support for Docker container deployment and configuration with dedicated network setup on the Docker Host using Docker Engine Remote API.<br>
+        	<br>
+        	* Secure data plane connectivity setup.<br>
+        	[New Feature] [NMAAS-71, NMAAS-83] [nmaas-platform]<br>
+        	<br>
+        	Implemented client DCN/VPN configuration by means of Ansible playbooks execution.<br>
+        	<br>
+        	* Support for Oxidized application.<br>
+        	[New Feature] [NMAAS-77] [nmaas-platform]<br>
+        	<br>
+        	Implemented support for complete Oxidized application deployment workflow.<br>
+        	<br>
+        	* Backend for NMaaS Portal.<br>
+        	[New Feature] [NMAAS-75, NMAAS-94] [nmaas-platform]<br>
+        	<br>
+        	Implemented nmaas-portal API backend (part of the nmaas-platform) and integrated it with the rest of nmaas-platform.<br>
+        	<br>
+        	* First version of NMaaS Portal.<br>
+        	[New Feature] [NMAAS-65, NMAAS-81, NMAAS-103] [nmaas-portal]<br>
+        	<br>
+        	Implemented first nmaas-portal web-based GUI supporting Oxidized application instance deployment.<br>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-header" id="headingThree">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          0.1.0 (2017/06/13)
-        </button>
-      </h5>
-    </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-      <div class="card-body">
-      	* Project setup.<br>
-      	[New Feature] [nmaas-platform, nmaas-portal]<br>
-      	<br>
-      	Prepared gradle multi module project and package structure for two main system components: platform and portal.<br>
-      	<br>
-      	* Containerized application deployment and configuration.<br>
-      	[New Feature] [NMAAS-66, NMAAS-70, NMAAS-79] [nmaas-platform]<br>
-      	<br>
-      	Implemented support for Docker container deployment and configuration with dedicated network setup on the Docker Host using Docker Engine Remote API.<br>
-      	<br>
-      	* Secure data plane connectivity setup.<br>
-      	[New Feature] [NMAAS-71, NMAAS-83] [nmaas-platform]<br>
-      	<br>
-      	Implemented client DCN/VPN configuration by means of Ansible playbooks execution.<br>
-      	<br>
-      	* Support for Oxidized application.<br>
-      	[New Feature] [NMAAS-77] [nmaas-platform]<br>
-      	<br>
-      	Implemented support for complete Oxidized application deployment workflow.<br>
-      	<br>
-      	* Backend for NMaaS Portal.<br>
-      	[New Feature] [NMAAS-75, NMAAS-94] [nmaas-platform]<br>
-      	<br>
-      	Implemented nmaas-portal API backend (part of the nmaas-platform) and integrated it with the rest of nmaas-platform.<br>
-      	<br>
-      	* First version of NMaaS Portal.<br>
-      	[New Feature] [NMAAS-65, NMAAS-81, NMAAS-103] [nmaas-portal]<br>
-      	<br>
-      	Implemented first nmaas-portal web-based GUI supporting Oxidized application instance deployment.<br>
-      </div>
-    </div>
+    <a routerLink="/" style="color: white;">Login</a>
   </div>
 </div>
+</ng-template>
+<nmaas-footer></nmaas-footer>
