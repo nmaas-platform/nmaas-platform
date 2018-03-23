@@ -65,7 +65,7 @@ public class BaseControllerTest {
     protected String getValidUserTokenFor(Role role) {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);
-		User admin = new User(ADMIN_USERNAME, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
+		User admin = new User(ADMIN_USERNAME, true, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
 		
 		String token = tokenService.getToken(admin);
 		

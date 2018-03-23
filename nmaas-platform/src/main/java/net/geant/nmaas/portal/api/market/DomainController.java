@@ -102,6 +102,7 @@ public class DomainController extends AppBaseController {
 
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)	
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	public Domain getDomain(@PathVariable Long domainId) throws MissingElementException {	
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
 		return modelMapper.map(domain, Domain.class);

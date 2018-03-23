@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.User;
 import net.geant.nmaas.portal.api.domain.UserRequest;
@@ -75,12 +76,12 @@ public class UsersController {
 	
 	@PostMapping(value="/users")
 	@ResponseStatus(HttpStatus.CREATED)
-	@PreAuthorize("hasPermission(#userSignup.domainId, 'domain', 'OWNER')")
+	@PreAuthorize("hasPermission(#newUserRequest.domainId, 'domain', 'OWNER')")
 	@Transactional
-	public Id addUser(@RequestBody @NotNull Registration userSignup) throws SignupException {
+	public Id addUser(@RequestBody NewUserRequest newUserRequest) throws SignupException {
 		net.geant.nmaas.portal.persistent.entity.User user = null;
 		try {
-			user = users.register(userSignup.getUsername());
+			user = users.register(newUserRequest.getUsername());
 		} catch(ObjectAlreadyExistsException ex) {
 			throw new SignupException("User already exists.");
 		} catch (MissingElementException e) {			
@@ -90,7 +91,8 @@ public class UsersController {
 		if(user == null)
 			throw new SignupException("Unable to register new user");
 
-		user.setPassword(userSignup.getPassword() != null ? passwordEncoder.encode(userSignup.getPassword()): null);
+		user.setPassword(null);
+		user.setEnabled(true);
 		
 		try {
 			users.update(user);
@@ -113,7 +115,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
-	public void updateUser(@PathVariable("userId") Long userId, @NotNull UserRequest userRequest) throws ProcessingException, MissingElementException {
+	public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) throws ProcessingException, MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.User userMod = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
 		
 		if(userRequest.getUsername() != null && !userMod.getUsername().equals(userRequest.getUsername())) {
@@ -126,6 +128,16 @@ public class UsersController {
 		if(userRequest.getPassword() != null)
 			userMod.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
+		if(userRequest.getFirstname() != null)
+			userMod.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			userMod.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null)
+			userMod.setEmail(userRequest.getEmail());		
+		userMod.setEnabled(userRequest.isEnabled());
+
+		
+		
 		
 		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
 			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()

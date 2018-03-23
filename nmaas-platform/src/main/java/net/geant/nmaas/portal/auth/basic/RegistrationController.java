@@ -64,6 +64,7 @@ public class RegistrationController {
 		newUser.setEmail(registration.getEmail());
 		newUser.setFirstname(registration.getFirstname());
 		newUser.setLastname(registration.getLastname());
+		newUser.setEnabled(false);
 		
 		try {
 			users.update(newUser);

@@ -1,51 +1,27 @@
 package net.geant.nmaas.portal.api.domain;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.validation.constraints.NotNull;
-
-import net.geant.nmaas.portal.persistent.entity.Role;
-
-public class User {
-
-	Long id;
+public class User extends UserBase {
 	
-	@NotNull
-	String username;
+	protected String firstname;
+	protected String lastname;
+	protected String email;
 	
-	Set<UserRole> roles = new HashSet<UserRole>();
+	protected Set<UserRole> roles = new HashSet<UserRole>();
 	
-	public User() {
-		// TODO Auto-generated constructor stub
+	protected User() {
+		super();
 	}
 	
 	public User(Long id, String username) {
-		this.id = id;
-		this.username = username;		
+		super(id, username);
 	}
 	
 	public User(Long id, String username, Set<UserRole> roles) {
 		this(id, username);
 		this.roles = roles;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 	public Set<UserRole> getRoles() {
@@ -54,6 +30,30 @@ public class User {
 
 	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

@@ -22,6 +22,7 @@ import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -58,9 +59,9 @@ public class UsersControllerTest extends BaseControllerTest {
 		domains.createDomain(DOMAIN, DOMAIN);
 		
 		//Add extra users, default admin is already there
-		userRepo.save(new User("manager", "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
-		user1 = userRepo.save(new User("user1", "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
-		userRepo.save(new User("user2", "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+		userRepo.save(new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
+		user1 = userRepo.save(new User("user1", true, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+		userRepo.save(new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
 		
 		prepareSecurity();
@@ -83,7 +84,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testAddUser() throws SignupException {
-		Id id = userController.addUser(new Registration("tester"));
+		Id id = userController.addUser(new NewUserRequest("tester"));
 		assertNotNull(id);
 		
 		assertEquals(5, userController.getUsers(null).size());
