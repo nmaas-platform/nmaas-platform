@@ -35,10 +35,11 @@ public class DcnRepositoryManagerTest {
 
     private static Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
     private static String DOMAIN = "domain";
+    private static String DEPLOYMENT_NAME = "deploymentName";
 
     @Before
     public void populateRepositories() {
-        appDeploymentRepository.save(new AppDeployment(DEPLOYMENT_ID, DOMAIN, Identifier.newInstance("")));
+        appDeploymentRepository.save(new AppDeployment(DEPLOYMENT_ID, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME));
     }
 
     @After

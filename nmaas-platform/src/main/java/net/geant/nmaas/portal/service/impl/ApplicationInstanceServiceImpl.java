@@ -43,12 +43,9 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	public AppInstance create(Long domainId, Long applicationId, String name) throws ObjectNotFoundException, ApplicationSubscriptionNotActiveException {
 		Application app = applications.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
 		Domain domain = domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found."));
-		
 		return create(domain, app, name);
 	}
 
-		
-		
 	@Override
 	public AppInstance create(Domain domain, Application application, String name) throws ApplicationSubscriptionNotActiveException {		
 		checkParam(domain);
@@ -58,10 +55,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
 			throw new ApplicationSubscriptionNotActiveException("Application subscription is missing or not active.");
-
 	}
-
-
 
 	@Override
 	public void delete(Long appInstanceId) {

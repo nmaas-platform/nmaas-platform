@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,6 +40,7 @@ public class OrchestratorManagerRestControllerTest {
     private MockMvc mvc;
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier applicationId;
     private Identifier deploymentId;
     private AppConfiguration appConfiguration;
@@ -54,11 +56,12 @@ public class OrchestratorManagerRestControllerTest {
 
     @Test
     public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
-        when(lifecycleManager.deployApplication(any(),any())).thenReturn(deploymentId);
+        when(lifecycleManager.deployApplication(any(), any(), any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);
         params.set("applicationid", applicationId.getValue());
+        params.set("deploymentname", DEPLOYMENT_NAME);
         mvc.perform(post("/platform/api/orchestration/deployments")
                 .params(params)
                 .accept(MediaType.APPLICATION_JSON))

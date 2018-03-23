@@ -46,13 +46,17 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, AppDeploymentSpec appDeploymentSpec)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.DOCKER_ENGINE))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
-        repositoryManager.storeService(
-                new DockerEngineNmServiceInfo(deploymentId, applicationId, domain, DockerContainerTemplate.copy(appDeploymentSpec.getDockerContainerTemplate())));
+        repositoryManager.storeService(new DockerEngineNmServiceInfo(
+                deploymentId,
+                deploymentName,
+                domain,
+                DockerContainerTemplate.copy(appDeploymentSpec.getDockerContainerTemplate()))
+        );
     }
 
     @Override

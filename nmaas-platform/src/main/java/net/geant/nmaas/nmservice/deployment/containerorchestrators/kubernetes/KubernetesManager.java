@@ -52,12 +52,17 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, AppDeploymentSpec appDeploymentSpec)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
-        repositoryManager.storeService(new KubernetesNmServiceInfo(deploymentId, applicationId, domain, KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate())));
+        repositoryManager.storeService(new KubernetesNmServiceInfo(
+                deploymentId,
+                deploymentName,
+                domain,
+                KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
+        );
     }
 
     @Override

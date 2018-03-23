@@ -76,8 +76,8 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         return repository.getDomainByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
-    public Identifier loadApplicationId(Identifier deploymentId) throws InvalidDeploymentIdException {
-        return repository.getApplicationIdByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+    public String loadDeploymentName(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.getDeploymentNameByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
 }

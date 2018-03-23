@@ -48,6 +48,7 @@ import static org.mockito.Mockito.when;
 public class DcnDeploymentIntTest {
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
 
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
@@ -79,7 +80,7 @@ public class DcnDeploymentIntTest {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         NetworkAttachPointsInit.initDockerHostAttachPoints(dockerHostAttachPointRepository);
         NetworkAttachPointsInit.initBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
-        AppDeployment appDeployment = new AppDeployment(deploymentId, DOMAIN, applicationId);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME);
         appDeploymentRepository.save(appDeployment);
         DockerHostNetwork dockerHostNetwork = new DockerHostNetwork(
                 DOMAIN,

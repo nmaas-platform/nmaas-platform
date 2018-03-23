@@ -128,8 +128,10 @@ public class AppInstanceController extends AppBaseController {
 			throw new ProcessingException("Unable to create instance. " + e.getMessage());
 		}
 
-		Identifier internalId = appLifecycleManager.deployApplication(domain.getName(),
-				new Identifier(Long.toString(app.getId())));
+		Identifier internalId = appLifecycleManager.deployApplication(
+				domain.getCodename(),
+				Identifier.newInstance(appInstance.getApplication().getId()),
+				appInstance.getName());
 		appInstance.setInternalId(internalId);
 
 		instances.update(appInstance);

@@ -34,8 +34,8 @@ public class DockerComposeFilePreparerTest {
     private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier applicationId = Identifier.newInstance("1");
     private DockerComposeFileTemplate template;
 
     @Before
@@ -48,7 +48,7 @@ public class DockerComposeFilePreparerTest {
         template = new DockerComposeFileTemplate();
         template.setDcnAttachedContainers(Arrays.asList(new DcnAttachedContainer("container", "test container")));
         template.setComposeFileTemplateContent(composeFileTemplateContent);
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, DOMAIN, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         nmServiceRepositoryManager.storeService(nmServiceInfo);
     }
 

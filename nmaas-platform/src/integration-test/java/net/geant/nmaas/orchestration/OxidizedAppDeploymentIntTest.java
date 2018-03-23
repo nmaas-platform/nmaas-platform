@@ -5,8 +5,8 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.helpers.DockerApiClientMockInit;
 import net.geant.nmaas.helpers.DockerContainerTemplatesInit;
 import net.geant.nmaas.helpers.NetworkAttachPointsInit;
@@ -48,6 +48,7 @@ public class OxidizedAppDeploymentIntTest {
     private static final String OXIDIZED_APP_NAME = "Oxidized";
     private static final String OXIDIZED_APP_VERSION = "0.19.0";
     private static final String DOMAIN = "domain1";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
 
     @Autowired
     private AppLifecycleManager appLifecycleManager;
@@ -97,7 +98,7 @@ public class OxidizedAppDeploymentIntTest {
 
     @Test
     public void shouldTriggerAndFollowTheAppDeploymentWorkflow() throws InvalidDeploymentIdException, InterruptedException, InvalidAppStateException {
-        final Identifier deploymentId = appLifecycleManager.deployApplication(DOMAIN, Identifier.newInstance(String.valueOf(testAppId)));
+        final Identifier deploymentId = appLifecycleManager.deployApplication(DOMAIN, Identifier.newInstance(String.valueOf(testAppId)), DEPLOYMENT_NAME);
         waitAndVerifyDeploymentEnvironmentPrepared(deploymentId);
         manuallyNotifyDcnDeploymentStateToDeployed(deploymentId);
         waitAndVerifyManagementVpnConfigured(deploymentId);

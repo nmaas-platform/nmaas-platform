@@ -18,7 +18,6 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -60,16 +59,17 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, AppDeploymentSpec appDeploymentSpec)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.DOCKER_COMPOSE))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
         DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(
                 deploymentId,
-                applicationId,
+                deploymentName,
                 domain,
-                DockerComposeFileTemplate.copy(appDeploymentSpec.getDockerComposeFileTemplate()));
+                DockerComposeFileTemplate.copy(appDeploymentSpec.getDockerComposeFileTemplate())
+        );
         repositoryManager.storeService(serviceInfo);
     }
 
@@ -115,7 +115,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
             final DockerComposeNmServiceInfo service = loadService(deploymentId);
             String networkName = deployNetworkForClientOnDockerHostIfNotDoneBefore(service);
             service.getDockerComposeService().setDcnNetworkName(networkName);
-            DockerComposeFileTemplate dockerComposeFileTemplate = loadDockerComposeFileTemplateForApplication(service.getApplicationId());
+            DockerComposeFileTemplate dockerComposeFileTemplate = service.getDockerComposeFileTemplate();
             for(DcnAttachedContainer container : dockerComposeFileTemplate.getDcnAttachedContainers()) {
                 DockerComposeServiceComponent component = new DockerComposeServiceComponent();
                 component.setName(container.getName());
@@ -153,20 +153,6 @@ public class DockerComposeManager implements ContainerOrchestrator {
     private String deployNetworkForClientOnDockerHostIfNotDoneBefore(NmServiceInfo service)
             throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
         return dockerNetworkLifecycleManager.deployNetworkForDomain(service.getDomain());
-    }
-
-    private DockerComposeFileTemplate loadDockerComposeFileTemplateForApplication(Identifier applicationId)
-            throws DockerComposeFileTemplateNotFoundException, InternalErrorException {
-        Application application = applicationRepository.findOne(applicationId.longValue());
-        if (application == null)
-            throw new InternalErrorException("Application with id " + applicationId + " not found in repository");
-        AppDeploymentSpec appDeploymentSpec = application.getAppDeploymentSpec();
-        if (appDeploymentSpec == null)
-            throw new InternalErrorException("Application deployment spec for application with id " + applicationId + " is not set");
-        DockerComposeFileTemplate template = appDeploymentSpec.getDockerComposeFileTemplate();
-        if (template == null)
-            throw new DockerComposeFileTemplateNotFoundException(applicationId.value());
-        return template;
     }
 
     private void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService service, DockerComposeFileTemplate dockerComposeFileTemplate)

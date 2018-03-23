@@ -19,9 +19,10 @@ public interface AppLifecycleManager {
      *
      * @param domain unique name of the client domain for which application is deployed
      * @param applicationId unique identifier of the application to be deployed
+     * @param deploymentName name of application instance provided by the user
      * @return unique identifier of the deployed user application
      */
-    Identifier deployApplication(String domain, Identifier applicationId);
+    Identifier deployApplication(String domain, Identifier applicationId, String deploymentName);
 
     /**
      * Applies custom configuration for the NMaaS application being deployed once provided by the user.

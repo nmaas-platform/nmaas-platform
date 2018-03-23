@@ -29,7 +29,7 @@ public interface NmServiceInfoRepository<T extends NmServiceInfo> extends JpaRep
     @Query("SELECT n.domain FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
     Optional<String> getDomainByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
-    @Query("SELECT n.applicationId FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
-    Optional<Identifier> getApplicationIdByDeploymentId(@Param("deploymentId") Identifier deploymentId);
+    @Query("SELECT n.deploymentName FROM #{#entityName} n WHERE n.deploymentId = :deploymentId")
+    Optional<String> getDeploymentNameByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
 }

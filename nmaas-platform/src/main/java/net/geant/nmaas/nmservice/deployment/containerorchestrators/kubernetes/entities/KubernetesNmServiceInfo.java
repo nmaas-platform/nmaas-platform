@@ -30,8 +30,8 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public KubernetesNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, KubernetesTemplate kubernetesTemplate) {
-        super(deploymentId, applicationId, domain);
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, KubernetesTemplate kubernetesTemplate) {
+        super(deploymentId, deploymentName, domain);
         this.kubernetesTemplate = kubernetesTemplate;
     }
 

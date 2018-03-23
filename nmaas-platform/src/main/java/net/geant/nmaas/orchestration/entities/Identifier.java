@@ -21,6 +21,10 @@ public class Identifier implements Serializable {
         return new Identifier(value);
     }
 
+    public static Identifier newInstance(Long value) {
+        return new Identifier(String.valueOf(value));
+    }
+
     @Override
     public String toString() {
         return value;

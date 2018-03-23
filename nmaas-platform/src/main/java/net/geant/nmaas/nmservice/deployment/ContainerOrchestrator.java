@@ -24,12 +24,12 @@ public interface ContainerOrchestrator {
      * for NM service being requested and if so creates proper NM service info object.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param applicationId identifier of the application / service
+     * @param deploymentName name of application instance provided by the user
      * @param domain name of the client domain for this deployment
      * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if current deployment environment is not supported by the application
      */
-    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain, AppDeploymentSpec appDeploymentSpec)
+    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException;
 
     /**

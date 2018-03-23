@@ -37,16 +37,16 @@ public class UpdateNmServiceInfoWithDevicesTest {
     private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME_1 = "deploymentName1";
+    private static final String DEPLOYMENT_NAME_2 = "deploymentName2";
     private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
-    private Identifier applicationId1 = Identifier.newInstance("applicationId1");
     private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
-    private Identifier applicationId2 = Identifier.newInstance("applicationId2");
 
     @Before
     public void setup() {
-        DockerEngineNmServiceInfo serviceInfo = new DockerEngineNmServiceInfo(deploymentId1, applicationId1, DOMAIN, oxidizedTemplate());
+        DockerEngineNmServiceInfo serviceInfo = new DockerEngineNmServiceInfo(deploymentId1, DEPLOYMENT_NAME_1, DOMAIN, oxidizedTemplate());
         nmServiceRepositoryManager.storeService(serviceInfo);
-        serviceInfo = new DockerEngineNmServiceInfo(deploymentId2, applicationId2, DOMAIN, null);
+        serviceInfo = new DockerEngineNmServiceInfo(deploymentId2, DEPLOYMENT_NAME_2, DOMAIN, null);
         nmServiceRepositoryManager.storeService(serviceInfo);
     }
 

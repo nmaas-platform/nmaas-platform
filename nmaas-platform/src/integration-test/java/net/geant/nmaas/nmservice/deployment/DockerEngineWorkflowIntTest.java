@@ -40,12 +40,12 @@ public class DockerEngineWorkflowIntTest {
 	private DockerApiClient dockerApiClient;
 
 	private static final String DOMAIN = "domain";
+	private static final String DEPLOYMENT_NAME = "deploymentName";
 	private Identifier deploymentId = Identifier.newInstance("deploymentId");
-	private Identifier applicationId = Identifier.newInstance("applicationId");
 
 	@Before
 	public void setup() throws DockerException, InterruptedException {
-		final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, DOMAIN, DockerContainerTemplatesInit.alpineTomcatTemplate());
+		final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, DockerContainerTemplatesInit.alpineTomcatTemplate());
 		nmServiceRepositoryManager.storeService(service);
 		DockerApiClientMockInit.mockMethods(dockerApiClient);
 		DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);

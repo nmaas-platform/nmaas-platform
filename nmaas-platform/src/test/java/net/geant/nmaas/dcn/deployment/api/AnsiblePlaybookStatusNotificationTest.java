@@ -54,6 +54,7 @@ public class AnsiblePlaybookStatusNotificationTest {
     private DockerHostNetworkRepository dockerHostNetworkRepository;
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private static final String DCN_NAME = "this-is-example-dcn-name";
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
     private final Identifier applicationId = Identifier.newInstance("this-is-example-application-id");
@@ -62,7 +63,7 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Before
     public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidDomainException {
-        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId));
+        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME));
         DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));

@@ -37,6 +37,7 @@ public class AppRequestVerificationTaskTest {
     private AppRequestVerificationTask task;
 
     private static final String DOMAIN = "domain1";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
     @Before
@@ -51,6 +52,7 @@ public class AppRequestVerificationTaskTest {
         appDeployment.setDeploymentId(deploymentId);
         appDeployment.setApplicationId(Identifier.newInstance(String.valueOf(application.getId())));
         appDeployment.setDomain(DOMAIN);
+        appDeployment.setDeploymentName(DEPLOYMENT_NAME);
         deployments.store(appDeployment);
     }
 

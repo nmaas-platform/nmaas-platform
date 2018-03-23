@@ -54,6 +54,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     private AppDcnRequestOrVerificationTask task;
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private AppRequestNewOrVerifyExistingDcnEvent event = new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId);
 
@@ -69,6 +70,7 @@ public class AppDcnRequestOrVerificationTaskTest {
         appDeployment.setDeploymentId(deploymentId);
         appDeployment.setApplicationId(Identifier.newInstance(String.valueOf(application.getId())));
         appDeployment.setDomain(DOMAIN);
+        appDeployment.setDeploymentName(DEPLOYMENT_NAME);
         deployments.store(appDeployment);
     }
 

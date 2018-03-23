@@ -26,12 +26,12 @@ public class DockerComposeServiceRepositoryManagerTest {
     private DockerComposeServiceRepositoryManager manager;
 
     private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
 
     @Test
     public void shouldAddUpdateAndRemoveNmServiceInfo() throws InvalidDeploymentIdException {
-        DockerComposeNmServiceInfo info = new DockerComposeNmServiceInfo(deploymentId, applicationId, DOMAIN, null);
+        DockerComposeNmServiceInfo info = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         manager.storeService(info);
         DockerComposeNmServiceInfo storedInfo = manager.loadService(deploymentId);
         assertThat(storedInfo, is(notNullValue()));

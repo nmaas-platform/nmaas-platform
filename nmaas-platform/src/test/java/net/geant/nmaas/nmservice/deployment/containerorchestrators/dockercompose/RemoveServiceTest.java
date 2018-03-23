@@ -49,8 +49,8 @@ public class RemoveServiceTest {
     private DockerNetworkLifecycleManager dockerNetworkLifecycleManager;
 
     private static String DOMAIN = "domain";
+    private static String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier applicationId = Identifier.newInstance("1");
 
     @Before
     public void setup() throws Exception {
@@ -72,7 +72,7 @@ public class RemoveServiceTest {
     }
 
     private void storeNmServiceInfo(DockerHost dockerHost) {
-        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, DOMAIN, null);
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
         nmServiceRepositoryManager.storeService(serviceInfo);

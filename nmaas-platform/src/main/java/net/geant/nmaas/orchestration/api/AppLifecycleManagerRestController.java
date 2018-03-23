@@ -37,8 +37,9 @@ public class AppLifecycleManagerRestController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public Identifier deployApplication(
             @RequestParam("domain") String domain,
-            @RequestParam("applicationid") String applicationId) {
-        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId));
+            @RequestParam("applicationid") String applicationId,
+            @RequestParam("deploymentname") String deploymentName) {
+        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName);
     }
 
     /**

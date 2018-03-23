@@ -40,25 +40,34 @@ public class OrchestratorMonitorRestControllerTest {
 
     @Mock
     private AppDeploymentMonitor deploymentMonitor;
-
     @Autowired
     private ModelMapper modelMapper;
 
     private MockMvc mvc;
 
     private Identifier deploymentId;
-
     private List<AppDeployment> deployments;
-
     private AppUiAccessDetails accessDetails;
 
     @Before
     public void setup() {
         deploymentId = Identifier.newInstance("deploymentId1");
-        AppDeployment deployment1 = new AppDeployment(deploymentId, "domain1", Identifier.newInstance("applicationId1"));
-        AppDeployment deployment2 = new AppDeployment(Identifier.newInstance("deploymentId2"), "domain2", Identifier.newInstance("applicationId2"));
+        AppDeployment deployment1 = new AppDeployment(
+                deploymentId,
+                "domain1",
+                Identifier.newInstance("applicationId1"),
+                "deploymentName1");
+        AppDeployment deployment2 = new AppDeployment(
+                Identifier.newInstance("deploymentId2"),
+                "domain2",
+                Identifier.newInstance("applicationId2"),
+                "deploymentName2");
         deployment2.setState(AppDeploymentState.APPLICATION_DEPLOYED);
-        AppDeployment deployment3 = new AppDeployment(Identifier.newInstance("deploymentId3"), "domain3", Identifier.newInstance("applicationId3"));
+        AppDeployment deployment3 = new AppDeployment(
+                Identifier.newInstance("deploymentId3"),
+                "domain3",
+                Identifier.newInstance("applicationId3"),
+                "deploymentName3");
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails("http://testurl:8080");
@@ -121,11 +130,12 @@ public class OrchestratorMonitorRestControllerTest {
         AppDeployment source = new AppDeployment(
                 Identifier.newInstance("deploymentId"),
                 "domain1",
-                Identifier.newInstance("2"));
+                Identifier.newInstance("2"),
+                "deploymentName");
         AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);
         assertThat(output.getDeploymentId(), equalTo(source.getDeploymentId().value()));
         assertThat(output.getDomain(), equalTo(source.getDomain()));
-        assertThat(output.getApplicationId(), equalTo(source.getApplicationId().value()));
+        assertThat(output.getDeploymentName(), equalTo(source.getDeploymentName()));
         assertThat(output.getState(), equalTo(source.getState().name()));
     }
 }

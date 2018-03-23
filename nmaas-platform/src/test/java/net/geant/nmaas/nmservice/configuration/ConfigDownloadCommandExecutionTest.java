@@ -69,7 +69,7 @@ public class ConfigDownloadCommandExecutionTest {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
         DockerEngineNmServiceInfo nmServiceInfo = new DockerEngineNmServiceInfo(
                 deploymentId,
-                Identifier.newInstance("appId"),
+                "deploymentName",
                 "domain",
                 new DockerContainerTemplate("app/image"));
         nmServiceInfo.setHost(dockerHostRepositoryManager.loadPreferredDockerHost());

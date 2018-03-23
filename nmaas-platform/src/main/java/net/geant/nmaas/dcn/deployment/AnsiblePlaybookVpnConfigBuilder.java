@@ -7,7 +7,7 @@ import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class AnsiblePlaybookVpnConfigBuilder {
+class AnsiblePlaybookVpnConfigBuilder {
 
     private static final String COMMON_ID_PREFIX = "NMAAS-C-AS";
     private static final String BGP_GROUP_ID_PREFIX = "INET-VPN-NMAAS-C-";

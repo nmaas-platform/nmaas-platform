@@ -56,17 +56,16 @@ public class DockerHostNetworkLifecycleManagerTest {
     @MockBean
     private DockerApiClient dockerApiClient;
 
-    private Identifier deploymentId;
-    private Identifier applicationId;
     private static final String DOMAIN_1 = "domain1";
     private static final String DOMAIN_2 = "domain2";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
+    private Identifier deploymentId;
     private DockerHost dockerHost;
 
     @Before
     public void setup() throws DockerHostNotFoundException {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         deploymentId = Identifier.newInstance("deploymentId");
-        applicationId = Identifier.newInstance("applicationId");
         dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
     }
 
@@ -128,7 +127,7 @@ public class DockerHostNetworkLifecycleManagerTest {
         when(dockerApiClient.createNetwork(Mockito.any(), Mockito.any())).thenReturn("testNetworkId");
         when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(1);
         when(dockerApiClient.listNetworks(Mockito.any())).thenReturn(Arrays.asList("testNetworkId", "testNetworkId2"));
-        final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, DOMAIN_1, new DockerContainerTemplate("image"));
+        final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN_1, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
         final DockerContainer dockerContainer = prepareTestContainer();
         service.setDockerContainer(dockerContainer);

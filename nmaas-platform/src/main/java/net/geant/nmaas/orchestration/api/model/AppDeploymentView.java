@@ -6,16 +6,16 @@ package net.geant.nmaas.orchestration.api.model;
 public class AppDeploymentView {
 
     private String deploymentId;
+    private String deploymentName;
     private String domain;
-    private String applicationId;
     private String state;
 
     public AppDeploymentView() {}
 
-    public AppDeploymentView(String deploymentId, String domain, String applicationId, String state) {
+    public AppDeploymentView(String deploymentId, String deploymentName, String domain, String state) {
         this.deploymentId = deploymentId;
+        this.deploymentName = deploymentName;
         this.domain = domain;
-        this.applicationId = applicationId;
         this.state = state;
     }
 
@@ -27,20 +27,20 @@ public class AppDeploymentView {
         this.deploymentId = deploymentId;
     }
 
+    public String getDeploymentName() {
+        return deploymentName;
+    }
+
+    public void setDeploymentName(String deploymentName) {
+        this.deploymentName = deploymentName;
+    }
+
     public String getDomain() {
         return domain;
     }
 
     public void setDomain(String domain) {
         this.domain = domain;
-    }
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
     }
 
     public String getState() {

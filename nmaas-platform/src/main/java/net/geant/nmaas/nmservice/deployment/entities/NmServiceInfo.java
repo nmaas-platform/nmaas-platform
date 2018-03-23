@@ -19,38 +19,28 @@ import java.util.List;
 public abstract class NmServiceInfo {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    /**
-     * Unique name of the service provided by the caller
-     */
+    /** Unique name of the service provided by the caller */
     @Column(nullable = false)
     private String name;
 
-    /**
-     * State in which service should be at this point
-     */
-    @Column(nullable=false)
+    /** State in which service should be at this point */
+    @Column(nullable = false)
     private NmServiceDeploymentState state = NmServiceDeploymentState.INIT;
 
-    /**
-     * Identifier of the application deployment assigned by application lifecycle manager
-     */
-    @Column(nullable=false, unique=true)
+    /** Identifier of the application deployment assigned by application lifecycle manager */
+    @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
-    /**
-     * Identifier of the application being deployed
-     */
-    @Column(nullable=false)
-    private Identifier applicationId;
+    /** Name of the deployment provided by the user. */
+    @Column(nullable = false)
+    private String deploymentName;
 
-    /**
-     * Name of the client domain for this deployment
-     */
-    @Column(nullable=false)
+    /** Name of the client domain for this deployment */
+    @Column(nullable = false)
     private String domain;
 
     /**
@@ -58,22 +48,20 @@ public abstract class NmServiceInfo {
      * These addresses are provided by the user during wizard completion.
      * For these addresses specific routing entries needs to be by applied on the container once run.
      */
-    @ElementCollection(fetch=FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private List<String> managedDevicesIpAddresses;
 
-    /**
-     * GitLab project information created to store configuration files for this service (deployment)
-     */
+    /** GitLab project information created to store configuration files for this service (deployment) */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private GitLabProject gitLabProject;
 
     public NmServiceInfo() { }
 
-    public NmServiceInfo(Identifier deploymentId, Identifier applicationId, String domain) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
-        this.applicationId = applicationId;
+        this.deploymentName = deploymentName;
         this.domain = domain;
     }
 
@@ -109,12 +97,12 @@ public abstract class NmServiceInfo {
         this.deploymentId = deploymentId;
     }
 
-    public Identifier getApplicationId() {
-        return applicationId;
+    public String getDeploymentName() {
+        return deploymentName;
     }
 
-    public void setApplicationId(Identifier applicationId) {
-        this.applicationId = applicationId;
+    public void setDeploymentName(String deploymentName) {
+        this.deploymentName = deploymentName;
     }
 
     public String getDomain() {
