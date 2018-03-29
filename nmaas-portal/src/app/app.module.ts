@@ -17,8 +17,11 @@ import { SharedModule } from './shared/index';
 
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
+import { ChangelogService } from './service/changelog.service';
 import { LogoutComponent } from './logout/logout.component';
 import { ChangelogComponent } from './changelog/changelog.component';
+
+import { HttpClientModule } from '@angular/common/http';
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -45,6 +48,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     BrowserModule,
     FormsModule,
     HttpModule,
+    HttpClientModule,
     AppMarketModule,
     SharedModule,
     routing
@@ -63,7 +67,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       provide: AuthHttp,
       useFactory: authHttpServiceFactory,
       deps: [Http, RequestOptions]
-    }
+    },
+    ChangelogService
   ],
   bootstrap: [ AppComponent ]
 })
