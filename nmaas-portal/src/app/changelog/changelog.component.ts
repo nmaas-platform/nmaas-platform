@@ -13,23 +13,12 @@ import { ChangelogService } from '../service/index';
 export class ChangelogComponent implements OnInit {
 
 	changelog: any;
-	test:any = {
-		arr:[
-		{
-			a: "Hello"
-		},
-		{
-			b: "whatsup"
-		}]
-	}
 
 	constructor(private router: Router, private changelogService: ChangelogService) { }
 
 	ngOnInit() {
 		this.changelogService.getChangelog().subscribe(changelog => {
 			this.changelog = changelog;
-			console.log(this.changelog);
-			console.log(this.test);
 		})
 	}
 

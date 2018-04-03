@@ -12,3 +12,6 @@ h4.panel-title {
 	font-size: 18px;
 }
 
+.card-body span {
+	font-weight: bold;
+}

@@ -8,7 +8,6 @@ export class ChangelogService {
 	constructor(private http: HttpClient) { }
 
 	getChangelog() {
-		return this.http.get('http://localhost:4200/assets/changelog/changelog.json');
+		return this.http.get('assets/changelog/changelog.json');
 	}
-
 }
