@@ -59,16 +59,18 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      *
      * @param deploymentId unique identifier of service deployment
      * @param domain name of the domain for this deployment
+     * @param deploymentName name of the deployment provided by the user
      * @return URL under which deployed service is available
      * @throws IngressResourceManipulationException if Kubernetes client throws any exception
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, String domain) throws IngressResourceManipulationException {
+    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName)
+            throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
         String ingressResourceName = ingressResourceName(domain);
-        String externalUrl = externalUrl(deploymentId.value(), domain);
+        String externalUrl = externalUrl(deploymentName, domain);
         String releaseName = deploymentId.value();
         Service serviceObject = retrieveServiceObject(namespace, client, releaseName);
         String serviceName = extractServiceName(serviceObject);
@@ -104,9 +106,8 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + domain;
     }
 
-    // TODO fix or replace this externalURL string creation (probably use instance name provided by the client)
-    private String externalUrl(String deploymentId, String domain) {
-        return deploymentId.substring(deploymentId.length() - 12) + "." + domain + NMAAS_DOMAIN_SUFFIX;
+    private String externalUrl(String deploymentName, String domain) {
+        return deploymentName + "." + domain + NMAAS_DOMAIN_SUFFIX;
     }
 
     private String ingressClassName(String domain) {
@@ -146,17 +147,16 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     /**
      * Removes ingress rule from an existing ingress resource.
      *
-     * @param deploymentId unique identifier of service deployment
+     * @param externalServiceUrl external URL assigned for the deployment
      * @param domain name of the domain for this deployment
      * @throws IngressResourceManipulationException if ingress object with provided name does not exist in the cluster or Kubernetes client throws any exception
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized void deleteIngressRule(Identifier deploymentId, String domain) throws IngressResourceManipulationException {
+    public synchronized void deleteIngressRule(String externalServiceUrl, String domain) throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
         String ingressResourceName = ingressResourceName(domain);
-        String externalUrl = externalUrl(deploymentId.value(), domain);
         try {
             Ingress ingress = client.extensions().ingresses().inNamespace(namespace).list().getItems()
                     .stream()
@@ -166,7 +166,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                             () -> new IngressResourceManipulationException("Ingress object with name " + ingressResourceName + " does not exist in the cluster"));
             List<IngressRule> filtered = ingress.getSpec().getRules()
                     .stream()
-                    .filter(r -> !r.getHost().equals(externalUrl))
+                    .filter(r -> !r.getHost().equals(externalServiceUrl))
                     .collect(Collectors.toList());
             if (filtered.isEmpty()) {
                 deleteIngressResource(client, ingress);
