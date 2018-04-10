@@ -45,11 +45,11 @@ public class AppDcnRequestOrVerificationTask {
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getRelatedTo();
-        final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
-        switch(dcnDeployment.checkState(clientId)) {
+        final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+        switch(dcnDeployment.checkState(domain)) {
             case NONE:
             case REMOVED:
-                return dcnDeploymentEvent(clientId);
+                return dcnDeploymentEvent(domain);
             case DEPLOYED:
                 return dcnReadyNotificationEvent(deploymentId);
             case PROCESSED:
@@ -58,8 +58,8 @@ public class AppDcnRequestOrVerificationTask {
         return noEvent();
     }
 
-    private DcnVerifyRequestActionEvent dcnDeploymentEvent(Identifier clientId) {
-        return new DcnVerifyRequestActionEvent(this, clientId);
+    private DcnVerifyRequestActionEvent dcnDeploymentEvent(String domain) {
+        return new DcnVerifyRequestActionEvent(this, domain);
     }
 
     private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {

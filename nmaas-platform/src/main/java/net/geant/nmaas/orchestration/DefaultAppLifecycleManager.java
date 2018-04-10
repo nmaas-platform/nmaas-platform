@@ -31,18 +31,22 @@ import java.util.UUID;
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
-    @Autowired
     private AppDeploymentRepositoryManager repositoryManager;
 
-    @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    public DefaultAppLifecycleManager(AppDeploymentRepositoryManager repositoryManager, ApplicationEventPublisher eventPublisher) {
+        this.repositoryManager = repositoryManager;
+        this.eventPublisher = eventPublisher;
+    }
 
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(Identifier clientId, Identifier applicationId) {
+    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName) {
         Identifier deploymentId = generateDeploymentId();
-        AppDeployment appDeployment = new AppDeployment(deploymentId, clientId, applicationId);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName);
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
@@ -60,7 +64,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         return !generatedId.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?");
     }
 
-    boolean deploymentIdAlreadyInUse(Identifier generatedId) {
+    private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
         return repositoryManager.load(generatedId).isPresent();
     }
 

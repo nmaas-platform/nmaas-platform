@@ -5,8 +5,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -21,72 +20,80 @@ import java.util.List;
 @Component
 public class DcnRepositoryManager {
 
-    @Autowired
     private DcnInfoRepository dcnInfoRepository;
 
+    @Autowired
+    public DcnRepositoryManager(DcnInfoRepository dcnInfoRepository) {
+        this.dcnInfoRepository = dcnInfoRepository;
+    }
+
     @EventListener
-    public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidClientIdException {
-        updateDcnState(event.getClientId(), event.getState());
+    public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidDomainException {
+        updateDcnState(event.getDomain(), event.getState());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void updateDcnState(Identifier clientId, DcnDeploymentState state) throws InvalidClientIdException {
-        DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    private void updateDcnState(String domain, DcnDeploymentState state) throws InvalidDomainException {
+        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setState(state);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateAnsiblePlaybookForClientSideRouter(Identifier clientId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
-            throws InvalidClientIdException {
-        DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    void updateAnsiblePlaybookForClientSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
+            throws InvalidDomainException {
+        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setPlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateAnsiblePlaybookForCloudSideRouter(Identifier clientId, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
-            throws InvalidClientIdException {
-        DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    void updateAnsiblePlaybookForCloudSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
+            throws InvalidDomainException {
+        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setPlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateDcnCloudEndpointDetails(Identifier clientId, DcnCloudEndpointDetails dcnCloudEndpointDetails)
-            throws InvalidClientIdException {
-        DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    void updateDcnCloudEndpointDetails(String domain, DcnCloudEndpointDetails dcnCloudEndpointDetails)
+            throws InvalidDomainException {
+        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setCloudEndpointDetails(dcnCloudEndpointDetails);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void storeDcnInfo(DcnInfo dcnInfo) throws InvalidClientIdException {
-        if (exists(dcnInfo.getClientId()))
-            throw new InvalidClientIdException("DCN information for client " + dcnInfo.getClientId() + " already stored in database");
+    public void storeDcnInfo(DcnInfo dcnInfo) throws InvalidDomainException {
+        if (exists(dcnInfo.getDomain()))
+            throw new InvalidDomainException("DCN information for domain " + dcnInfo.getDomain() + " already stored in database");
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeDcnInfo(Identifier clientId) throws InvalidClientIdException {
-        DcnInfo dcnInfo = dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    public void removeDcnInfo(String domain) throws InvalidDomainException {
+        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfoRepository.delete(dcnInfo.getId());
     }
 
-    public DcnInfo loadNetwork(Identifier clientId) throws InvalidClientIdException {
-        return dcnInfoRepository.findByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    DcnInfo loadNetwork(String domain) throws InvalidDomainException {
+        return dcnInfoRepository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
     }
 
     public List<DcnInfo> loadAllNetworks() {
         return dcnInfoRepository.findAll();
     }
 
-    public DcnDeploymentState loadCurrentState(Identifier clientId) throws InvalidClientIdException {
-        return dcnInfoRepository.getStateByClientId(clientId).orElseThrow(() -> new InvalidClientIdException(clientId));
+    public DcnDeploymentState loadCurrentState(String domain) throws InvalidDomainException {
+        return dcnInfoRepository.getStateByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
     }
 
-    public boolean exists(Identifier clientId) {
-        return dcnInfoRepository.findByClientId(clientId).isPresent();
+    private DcnInfo loadDcnOrThrowException(String domain) throws InvalidDomainException {
+        return dcnInfoRepository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
+    }
+
+    public boolean exists(String domain) {
+        return dcnInfoRepository.findByDomain(domain).isPresent();
     }
 
 }

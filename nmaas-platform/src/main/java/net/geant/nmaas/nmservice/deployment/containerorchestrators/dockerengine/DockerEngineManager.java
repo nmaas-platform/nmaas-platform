@@ -46,13 +46,17 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec appDeploymentSpec)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.DOCKER_ENGINE))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
-        repositoryManager.storeService(
-                new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplate.copy(appDeploymentSpec.getDockerContainerTemplate())));
+        repositoryManager.storeService(new DockerEngineNmServiceInfo(
+                deploymentId,
+                deploymentName,
+                domain,
+                DockerContainerTemplate.copy(appDeploymentSpec.getDockerContainerTemplate()))
+        );
     }
 
     @Override
@@ -60,9 +64,9 @@ public class DockerEngineManager implements ContainerOrchestrator {
     public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
-            final Identifier clientId = repositoryManager.loadClientId(deploymentId);
-            declareNewNetworkForClientIfNotExists(clientId);
-            final DockerHostNetwork network = dockerNetworkLifecycleManager.networkForClient(clientId);
+            final String domain = repositoryManager.loadDomain(deploymentId);
+            declareNewNetworkForClientIfNotExists(domain);
+            final DockerHostNetwork network = dockerNetworkLifecycleManager.networkForDomain(domain);
             repositoryManager.updateDockerHost(deploymentId, network.getHost());
             final DockerContainer container = dockerContainerManager.declareNewContainerForDeployment(deploymentId);
             repositoryManager.updateDockerContainer(deploymentId, container);
@@ -76,10 +80,10 @@ public class DockerEngineManager implements ContainerOrchestrator {
         }
     }
 
-    private void declareNewNetworkForClientIfNotExists(Identifier clientId)
+    private void declareNewNetworkForClientIfNotExists(String domain)
             throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException {
-        if (!dockerNetworkLifecycleManager.networkForClientAlreadyConfigured(clientId))
-            dockerNetworkLifecycleManager.declareNewNetworkForClientOnHost(clientId, dockerHosts.loadPreferredDockerHost());
+        if (!dockerNetworkLifecycleManager.networkForDomainAlreadyConfigured(domain))
+            dockerNetworkLifecycleManager.declareNewNetworkForClientOnHost(domain, dockerHosts.loadPreferredDockerHost());
     }
 
     @Override
@@ -101,7 +105,7 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     private void deployNetworkForClientOnDockerHostIfNotDoneBefore(NmServiceInfo service)
             throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
-        dockerNetworkLifecycleManager.deployNetworkForClient(service.getClientId());
+        dockerNetworkLifecycleManager.deployNetworkForDomain(service.getDomain());
     }
 
     private void downloadContainerImageOnDockerHost(DockerEngineNmServiceInfo service)
@@ -139,20 +143,20 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     private DockerContainerNetDetails obtainNetworkDetailsFoNewContainerAndStoreInRepository(Identifier deploymentId)
             throws InvalidDeploymentIdException, ContainerOrchestratorInternalErrorException {
-        final Identifier clientId = repositoryManager.loadClientId(deploymentId);
-        final DockerContainerNetDetails netDetails = obtainNetworkDetailsForContainer(clientId, deploymentId);
+        final String domain = repositoryManager.loadDomain(deploymentId);
+        final DockerContainerNetDetails netDetails = obtainNetworkDetailsForContainer(domain, deploymentId);
         repositoryManager.updateDockerContainerNetworkDetails(deploymentId, netDetails);
         return netDetails;
     }
 
-    private DockerContainerNetDetails obtainNetworkDetailsForContainer(Identifier clientId, Identifier deploymentId)
+    private DockerContainerNetDetails obtainNetworkDetailsForContainer(String domain, Identifier deploymentId)
             throws ContainerOrchestratorInternalErrorException {
         DockerContainerNetDetails details = new DockerContainerNetDetails();
-        details.setPublicPort(dockerNetworkResourceManager.obtainPortForClientNetwork(clientId, deploymentId));
+        details.setPublicPort(dockerNetworkResourceManager.obtainPortForClientNetwork(domain, deploymentId));
         DockerNetworkIpam ipam = new DockerNetworkIpam(
-                dockerNetworkResourceManager.assignNewIpAddressForContainer(clientId),
-                dockerNetworkResourceManager.obtainSubnetFromClientNetwork(clientId),
-                dockerNetworkResourceManager.obtainGatewayFromClientNetwork(clientId));
+                dockerNetworkResourceManager.assignNewIpAddressForContainer(domain),
+                dockerNetworkResourceManager.obtainSubnetFromClientNetwork(domain),
+                dockerNetworkResourceManager.obtainGatewayFromClientNetwork(domain));
         details.setIpam(ipam);
         return details;
     }
@@ -173,7 +177,7 @@ public class DockerEngineManager implements ContainerOrchestrator {
 
     private void connectContainerToNetwork(DockerEngineNmServiceInfo service)
             throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
-        dockerNetworkLifecycleManager.connectContainerToNetwork(service.getClientId(), service.getDockerContainer());
+        dockerNetworkLifecycleManager.connectContainerToNetwork(service.getDomain(), service.getDockerContainer());
     }
 
     private void startContainer(DockerEngineNmServiceInfo service)
@@ -208,7 +212,7 @@ public class DockerEngineManager implements ContainerOrchestrator {
     private void checkContainerNetworkAndContainerItself(DockerEngineNmServiceInfo service)
             throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
         dockerContainerManager.checkService(service.getDockerContainer().getDeploymentId(), service.getHost());
-        dockerNetworkLifecycleManager.verifyNetwork(service.getClientId());
+        dockerNetworkLifecycleManager.verifyNetwork(service.getDomain());
     }
 
     @Override
@@ -234,15 +238,15 @@ public class DockerEngineManager implements ContainerOrchestrator {
     private void removeContainer(DockerEngineNmServiceInfo service)
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
         dockerContainerManager.remove(service.getDockerContainer().getDeploymentId(), service.getHost());
-        dockerNetworkResourceManager.removeAddressAssignment(service.getClientId(), service.getDockerContainer().getNetworkDetails().getIpam().getIpAddressOfContainer());
-        dockerNetworkLifecycleManager.disconnectContainerFromNetwork(service.getClientId(), service.getDockerContainer());
+        dockerNetworkResourceManager.removeAddressAssignment(service.getDomain(), service.getDockerContainer().getNetworkDetails().getIpam().getIpAddressOfContainer());
+        dockerNetworkLifecycleManager.disconnectContainerFromNetwork(service.getDomain(), service.getDockerContainer());
     }
 
     private void removeNetworkIfNoContainerAttached(NmServiceInfo justRemovedService)
             throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
-        List<DockerEngineNmServiceInfo> runningServices = repositoryManager.loadAllRunningClientServices(justRemovedService.getClientId());
+        List<DockerEngineNmServiceInfo> runningServices = repositoryManager.loadAllRunningServicesInDomain(justRemovedService.getDomain());
         if (noRunningClientServices(justRemovedService, runningServices))
-            dockerNetworkLifecycleManager.removeNetwork(justRemovedService.getClientId());
+            dockerNetworkLifecycleManager.removeNetwork(justRemovedService.getDomain());
     }
 
     private boolean noRunningClientServices(NmServiceInfo justRemovedService, List<DockerEngineNmServiceInfo> runningServices) {

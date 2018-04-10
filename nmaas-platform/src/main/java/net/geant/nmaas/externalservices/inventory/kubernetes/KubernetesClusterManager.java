@@ -12,7 +12,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +57,7 @@ public class KubernetesClusterManager {
         return loadSingleCluster().getHelmHostChartsDirectory();
     }
 
-    public synchronized ExternalNetworkView reserveExternalNetwork(Identifier clientId) throws ExternalNetworkNotFoundException {
+    public synchronized ExternalNetworkView reserveExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
         KubernetesCluster cluster = loadSingleCluster();
         ExternalNetworkSpec network = cluster.getExternalNetworks().stream()
                 .filter(n -> !n.isAssigned())
@@ -66,15 +65,15 @@ public class KubernetesClusterManager {
                 .orElseThrow(() -> new ExternalNetworkNotFoundException("No external networks available for cluster."));
         network.setAssigned(true);
         network.setAssignedSince(new Date());
-        network.setAssignedTo(clientId);
+        network.setAssignedTo(domain);
         repository.save(cluster);
         return new ExternalNetworkView(network);
     }
 
-    public ExternalNetworkView getReservedExternalNetwork(Identifier clientId) throws ExternalNetworkNotFoundException {
+    public ExternalNetworkView getReservedExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
         KubernetesCluster cluster = loadSingleCluster();
         ExternalNetworkSpec network = cluster.getExternalNetworks().stream()
-                .filter(n -> clientId.value().equals(n.getAssignedTo().value()))
+                .filter(n -> domain.equals(n.getAssignedTo()))
                 .findFirst()
                 .orElseThrow(() -> new ExternalNetworkNotFoundException("No external networks available for cluster."));
         return new ExternalNetworkView(network);

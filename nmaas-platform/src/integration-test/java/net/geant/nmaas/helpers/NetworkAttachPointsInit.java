@@ -1,9 +1,9 @@
 package net.geant.nmaas.helpers;
 
-import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.DockerHostAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -18,11 +18,11 @@ public class NetworkAttachPointsInit {
         dockerHostAttachPointRepository.deleteAll();
     }
 
-    public static void initBasicCustomerNetworkAttachPoints(BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository) {
-        basicCustomerNetworkAttachPointRepository.save(customerNetworkAttachPoint(1L));
+    public static void initBasicCustomerNetworkAttachPoints(DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository) {
+        basicCustomerNetworkAttachPointRepository.save(domainNetworkAttachPoint("domain"));
     }
 
-    public static void cleanBasicCustomerNetworkAttachPoints(BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository) {
+    public static void cleanBasicCustomerNetworkAttachPoints(DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository) {
         basicCustomerNetworkAttachPointRepository.deleteAll();
     }
 
@@ -35,9 +35,9 @@ public class NetworkAttachPointsInit {
         return dockerHostAttachPoint;
     }
 
-    private static BasicCustomerNetworkAttachPoint customerNetworkAttachPoint(Long customerId) {
-        BasicCustomerNetworkAttachPoint customerNetworkAttachPoint = new BasicCustomerNetworkAttachPoint();
-        customerNetworkAttachPoint.setCustomerId(customerId);
+    private static DomainNetworkAttachPoint domainNetworkAttachPoint(String domain) {
+        DomainNetworkAttachPoint customerNetworkAttachPoint = new DomainNetworkAttachPoint();
+        customerNetworkAttachPoint.setDomain(domain);
         customerNetworkAttachPoint.setRouterName("R4");
         customerNetworkAttachPoint.setRouterId("172.16.4.4");
         customerNetworkAttachPoint.setRouterInterfaceName("ge-0/0/4");

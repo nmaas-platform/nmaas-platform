@@ -1,10 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine;
 
-import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkConfigBuilder;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkDetailsVerificationException;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,13 +15,11 @@ import java.net.UnknownHostException;
  */
 public class DockerContainerNetworkConfigBuildingTest {
 
-    private Identifier clientId = Identifier.newInstance("testClientId");
-    private DockerHost testDockerHost1;
     private DockerHostNetwork testDockerHostNetwork1;
 
     @Before
     public void setup() throws UnknownHostException {
-        testDockerHost1 = new DockerHost(
+        DockerHost testDockerHost1 = new DockerHost(
                 "testHost1",
                 InetAddress.getByName("1.1.1.1"),
                 1234,
@@ -33,7 +30,7 @@ public class DockerContainerNetworkConfigBuildingTest {
                 "/data/scripts",
                 "/data/volumes",
                 true);
-        testDockerHostNetwork1 = new DockerHostNetwork(clientId, testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
+        testDockerHostNetwork1 = new DockerHostNetwork("domain", testDockerHost1, 123, "10.10.1.0/24", "10.10.1.254");
     }
 
     @Test(expected = DockerNetworkDetailsVerificationException.class)

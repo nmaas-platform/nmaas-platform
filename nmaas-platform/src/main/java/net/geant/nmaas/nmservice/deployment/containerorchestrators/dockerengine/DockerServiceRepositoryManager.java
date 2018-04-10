@@ -27,8 +27,8 @@ public abstract class DockerServiceRepositoryManager<T extends DockerNmServiceIn
         return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId)).getHost();
     }
 
-    public List<T> loadAllRunningClientServices(Identifier clientId) {
-        return repository.findAllByClientId(clientId).stream().filter(service -> service.getState().isRunning()).collect(Collectors.toList());
+    public List<T> loadAllRunningServicesInDomain(String domain) {
+        return repository.findAllByDomain(domain).stream().filter(service -> service.getState().isRunning()).collect(Collectors.toList());
     }
 
 }

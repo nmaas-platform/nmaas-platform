@@ -46,8 +46,8 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
     @Override
     @Loggable(LogLevel.INFO)
     public void restartService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
-        Identifier clientId = repositoryManager.loadClientId(deploymentId);
-        String namespace = namespaceService.namespace(clientId);
+        String domain = repositoryManager.loadDomain(deploymentId);
+        String namespace = namespaceService.namespace(domain);
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         Pod pod = retrievePodObject(namespace, client, deploymentId.value());
         client.pods().delete(pod);

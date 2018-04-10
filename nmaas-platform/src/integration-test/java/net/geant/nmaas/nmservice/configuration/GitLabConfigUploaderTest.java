@@ -47,13 +47,11 @@ public class GitLabConfigUploaderTest {
     @Value("${gitlab.api.token}")
     private String gitLabApiToken;
 
-    NmServiceConfiguration testConfig1 = new NmServiceConfiguration("1", "fileName1", "fileContent1");
-    NmServiceConfiguration testConfig2 = new NmServiceConfiguration("2", "fileName2", "fileContent2");
+    private NmServiceConfiguration testConfig1 = new NmServiceConfiguration("1", "fileName1", "fileContent1");
+    private NmServiceConfiguration testConfig2 = new NmServiceConfiguration("2", "fileName2", "fileContent2");
 
     @Before
     public void addTwoExampleConfigurations() {
-        NmServiceConfiguration testConfig1 = new NmServiceConfiguration("1", "fileName1", "fileContent1");
-        NmServiceConfiguration testConfig2 = new NmServiceConfiguration("2", "fileName2", "fileContent2");
         configurations.save(testConfig1);
         configurations.save(testConfig2);
     }
@@ -67,15 +65,17 @@ public class GitLabConfigUploaderTest {
     @Test
     public void shouldUploadConfigFilesToNewRepo() throws FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException {
         Identifier deploymentId = Identifier.newInstance("1928-3413-2934");
-        Identifier clientId = Identifier.newInstance("505");
-        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo(deploymentId, Identifier.newInstance("appId"), clientId, null);
+        String domain = "testDomain";
+        String deploymentName = "testDeploymentName";
+        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo(deploymentId, deploymentName, domain, null);
         repositoryManager.storeService(service);
         gitLabUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()));
         KubernetesNmServiceInfo serviceWithGitLabProject = repositoryManager.loadService(deploymentId);
         assertThat(serviceWithGitLabProject.getGitLabProject(), is(notNullValue()));
-        assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUser(), containsString(clientId.value()));
+        assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUser(), containsString(domain));
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessPassword(), is(notNullValue()));
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUrl(), containsString(deploymentId.value()));
         assertThat(serviceWithGitLabProject.getGitLabProject().getCloneUrl(), containsString(deploymentId.value()));
+        repositoryManager.removeAllServices();
     }
 }

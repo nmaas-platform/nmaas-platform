@@ -45,7 +45,7 @@ public class AppInstanceController extends AppBaseController {
 
 	@Autowired
 	ApplicationInstanceService instances;
-	
+
 	@Autowired
 	UserService users;
 
@@ -118,7 +118,7 @@ public class AppInstanceController extends AppBaseController {
 			@NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException, ProcessingException {
 		Application app = getApp(appInstanceSubscription.getApplicationId());
 		User user = getUser(principal.getName());
-		
+
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance;
@@ -128,8 +128,10 @@ public class AppInstanceController extends AppBaseController {
 			throw new ProcessingException("Unable to create instance. " + e.getMessage());
 		}
 
-		Identifier internalId = appLifecycleManager.deployApplication(new Identifier(Long.toString(user.getId())),
-				new Identifier(Long.toString(app.getId())));
+		Identifier internalId = appLifecycleManager.deployApplication(
+				domain.getCodename(),
+				Identifier.newInstance(appInstance.getApplication().getId()),
+				appInstance.getName());
 		appInstance.setInternalId(internalId);
 
 		instances.update(appInstance);
@@ -313,7 +315,7 @@ public class AppInstanceController extends AppBaseController {
 		
 		return ai;		
 	}
-	
+
 	protected void checkParam(Long id) throws MissingElementException {
 		if(id == null)
 			throw new MissingElementException("Missing id.");

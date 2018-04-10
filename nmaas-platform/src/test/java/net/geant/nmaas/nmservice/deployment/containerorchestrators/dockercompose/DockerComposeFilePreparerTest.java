@@ -4,6 +4,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.repositories.DockerComposeFileRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,9 +33,9 @@ public class DockerComposeFilePreparerTest {
     @Autowired
     private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
 
+    private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier applicationId = Identifier.newInstance("1");
-    private Identifier clientId = Identifier.newInstance("1");
     private DockerComposeFileTemplate template;
 
     @Before
@@ -47,8 +48,13 @@ public class DockerComposeFilePreparerTest {
         template = new DockerComposeFileTemplate();
         template.setDcnAttachedContainers(Arrays.asList(new DcnAttachedContainer("container", "test container")));
         template.setComposeFileTemplateContent(composeFileTemplateContent);
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         nmServiceRepositoryManager.storeService(nmServiceInfo);
+    }
+
+    @After
+    public void cleanup() {
+        nmServiceRepositoryManager.removeAllServices();
     }
 
     @Test

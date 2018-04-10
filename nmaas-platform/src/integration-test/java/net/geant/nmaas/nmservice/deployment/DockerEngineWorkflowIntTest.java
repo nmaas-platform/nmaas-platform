@@ -10,8 +10,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerEngineNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,20 +39,20 @@ public class DockerEngineWorkflowIntTest {
 	@MockBean
 	private DockerApiClient dockerApiClient;
 
+	private static final String DOMAIN = "domain";
+	private static final String DEPLOYMENT_NAME = "deploymentName";
 	private Identifier deploymentId = Identifier.newInstance("deploymentId");
-	private Identifier applicationId = Identifier.newInstance("applicationId");
-	private Identifier clientId = Identifier.newInstance("clientId");
 
 	@Before
 	public void setup() throws DockerException, InterruptedException {
-		final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, DockerContainerTemplatesInit.alpineTomcatTemplate());
+		final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, DockerContainerTemplatesInit.alpineTomcatTemplate());
 		nmServiceRepositoryManager.storeService(service);
 		DockerApiClientMockInit.mockMethods(dockerApiClient);
 		DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
 	}
 
 	@After
-	public void clear() throws InvalidDeploymentIdException, InvalidClientIdException {
+	public void clear() throws InvalidDeploymentIdException, InvalidDomainException {
 		nmServiceRepositoryManager.removeService(deploymentId);
 		DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
 	}

@@ -121,7 +121,7 @@ public class DockerHostStateKeeper {
     private List<Integer> getAssignedPorts(DockerHostState state, Identifier deploymentId) {
         return state.getPortAssignments().stream()
                 .filter(a -> a.getOwnerId().equals(deploymentId))
-                .map(a -> a.getNumber())
+                .map(NumberAssignment::getNumber)
                 .collect(Collectors.toList());
     }
 
@@ -130,21 +130,21 @@ public class DockerHostStateKeeper {
      * and returns its number.
      *
      * @param dockerHostName name identifying a Docker Host
-     * @param clientId identifier of a client/customer
+     * @param domain name of the client domain
      * @return assigned VLAN number
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public int assignVlanForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
+    public int assignVlanForNetwork(String dockerHostName, String domain) throws DockerHostNotFoundException {
         addStateForDockerHostIfAbsent(dockerHostName);
-        return assignVlan(stateForDockerHost(dockerHostName), clientId);
+        return assignVlan(stateForDockerHost(dockerHostName), domain);
     }
 
-    private int assignVlan(DockerHostState state, Identifier clientId) {
+    private int assignVlan(DockerHostState state, String domain) {
         int vlanNumber = MIN_ASSIGNABLE_VLAN_NUMBER;
         while(vlanAlreadyAssigned(state.getVlanAssignments(), vlanNumber))
             vlanNumber++;
-        state.getVlanAssignments().add(new NumberAssignment(vlanNumber, clientId));
+        state.getVlanAssignments().add(new NumberAssignment(vlanNumber, Identifier.newInstance(domain)));
         stateRepository.save(state);
         return vlanNumber;
     }
@@ -154,22 +154,22 @@ public class DockerHostStateKeeper {
     }
 
     /**
-     * Removes VLAN assignment for given client/customer.
+     * Removes VLAN assignment for given domain.
      *
      * @param dockerHostName name identifying a Docker Host
-     * @param clientId identifier of a client/customer
+     * @param domain name of the client domain
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public void removeVlanAssignment(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+    public void removeVlanAssignment(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
         if (stateForDockerHostNotExists(dockerHostName))
             throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
-        removeVlanAssignment(stateForDockerHost(dockerHostName), clientId);
+        removeVlanAssignment(stateForDockerHost(dockerHostName), domain);
     }
 
-    private void removeVlanAssignment(DockerHostState state, Identifier clientId) {
+    private void removeVlanAssignment(DockerHostState state, String domain) {
         Optional<NumberAssignment> vlan = state.getVlanAssignments().stream()
-                .filter(a -> a.getOwnerId().equals(clientId))
+                .filter(a -> a.getOwnerId().equals(Identifier.newInstance(domain)))
                 .findFirst();
         if (vlan.isPresent()) {
             state.getVlanAssignments().remove(vlan.get());
@@ -178,24 +178,24 @@ public class DockerHostStateKeeper {
     }
 
     /**
-     * Retrieves a VLAN already assigned for given client/customer.
+     * Retrieves a VLAN already assigned for given domain.
      *
      * @param dockerHostName name identifying a Docker Host
-     * @param clientId identifier of a client/customer
+     * @param domain name of the client domain
      * @return assigned VLAN number
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public Integer getAssignedVlan(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+    public Integer getAssignedVlan(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
         if (stateForDockerHostNotExists(dockerHostName))
             throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
-        return getAssignedVlan(stateForDockerHost(dockerHostName), clientId);
+        return getAssignedVlan(stateForDockerHost(dockerHostName), domain);
     }
 
-    private Integer getAssignedVlan(DockerHostState state, Identifier clientId) {
+    private Integer getAssignedVlan(DockerHostState state, String domain) {
         return state.getVlanAssignments().stream()
-                .filter(a -> a.getOwnerId().equals(clientId))
-                .map(a -> a.getNumber())
+                .filter(a -> a.getOwnerId().equals(Identifier.newInstance(domain)))
+                .map(NumberAssignment::getNumber)
                 .findFirst().orElse(null);
     }
 
@@ -204,21 +204,21 @@ public class DockerHostStateKeeper {
      * assigns a new address and returns its number.
      *
      * @param dockerHostName name identifying a Docker Host
-     * @param clientId identifier of a client/customer
+     * @param domain name of the client domain
      * @return assigned network address
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, Identifier clientId) throws DockerHostNotFoundException {
+    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, String domain) throws DockerHostNotFoundException {
         addStateForDockerHostIfAbsent(dockerHostName);
-        return assignAddresses(stateForDockerHost(dockerHostName), clientId);
+        return assignAddresses(stateForDockerHost(dockerHostName), domain);
     }
 
-    private DockerNetworkIpam assignAddresses(DockerHostState state, Identifier clientId) {
+    private DockerNetworkIpam assignAddresses(DockerHostState state, String domain) {
         Integer address = ADDRESS_POOL_MIN_ASSIGNABLE_ADDRESS;
         while(addressAlreadyAssigned(state.getAddressAssignments(), address))
             address++;
-        state.getAddressAssignments().add(new NumberAssignment(address, clientId));
+        state.getAddressAssignments().add(new NumberAssignment(address, Identifier.newInstance(domain)));
         stateRepository.save(state);
         return DockerNetworkIpam.fromParameters(
                 state.getDockerHostAddressPoolBase(),
@@ -235,19 +235,19 @@ public class DockerHostStateKeeper {
      * Removes address assignment for given client/customer.
      *
      * @param dockerHostName name identifying a Docker Host
-     * @param clientId identifier of a client/customer
+     * @param domain name of the client domain
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public void removeAddressPoolAssignment(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+    public void removeAddressPoolAssignment(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
         if (stateForDockerHostNotExists(dockerHostName))
             throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
-        removeAddressPoolAssignment(stateForDockerHost(dockerHostName), clientId);
+        removeAddressPoolAssignment(stateForDockerHost(dockerHostName), domain);
     }
 
-    private void removeAddressPoolAssignment(DockerHostState state, Identifier clientId) {
+    private void removeAddressPoolAssignment(DockerHostState state, String domain) {
         Optional<NumberAssignment> vlan = state.getAddressAssignments().stream()
-                .filter(a -> a.getOwnerId().equals(clientId))
+                .filter(a -> a.getOwnerId().equals(Identifier.newInstance(domain)))
                 .findFirst();
         if (vlan.isPresent()) {
             state.getAddressAssignments().remove(vlan.get());
@@ -259,20 +259,20 @@ public class DockerHostStateKeeper {
      * Retrieves an address already assigned for given client/customer.
      *
      * @param dockerHostName name identifying a Docker Host
-     * @param clientId identifier of a client/customer
+     * @param domain name of the client domain
      * @return assigned network address
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public DockerNetworkIpam getAssignedAddressPool(String dockerHostName, Identifier clientId) throws DockerHostStateNotFoundException {
+    public DockerNetworkIpam getAssignedAddressPool(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
         if (stateForDockerHostNotExists(dockerHostName))
             throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
-        return getAssignedAddressPool(stateForDockerHost(dockerHostName), clientId);
+        return getAssignedAddressPool(stateForDockerHost(dockerHostName), domain);
     }
 
-    private DockerNetworkIpam getAssignedAddressPool(DockerHostState state, Identifier clientId) {
+    private DockerNetworkIpam getAssignedAddressPool(DockerHostState state, String domain) {
         return state.getAddressAssignments().stream()
-                .filter(a -> a.getOwnerId().equals(clientId))
+                .filter(a -> a.getOwnerId().equals(Identifier.newInstance(domain)))
                 .map(a -> DockerNetworkIpam.fromParameters(
                                 state.getDockerHostAddressPoolBase(),
                                 a.getNumber(),

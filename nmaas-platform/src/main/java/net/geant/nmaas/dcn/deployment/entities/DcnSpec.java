@@ -1,7 +1,5 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -9,19 +7,18 @@ public class DcnSpec {
 
     private final String name;
 
-    private final Identifier clientId;
+    private final String domain;
 
-    public DcnSpec(String name, Identifier clientId) {
+    public DcnSpec(String name, String domain) {
         this.name = name;
-        this.clientId = clientId;
+        this.domain = domain;
     }
 
     public String getName() {
         return name;
     }
 
-    public Identifier getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
-
 }

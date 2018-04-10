@@ -6,7 +6,6 @@ import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * Defines a set of methods to manage DCN deployment lifecycle.
@@ -16,45 +15,45 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 public interface DcnDeploymentProvider {
 
     /**
-     * Checks current state of given client's DCN.
+     * Checks current state of DCN deployed for given domain.
      *
-     * @param clientId identifier of the client
+     * @param domain name of the domain
      * @return DCN state information
      */
-    DcnState checkState(Identifier clientId);
+    DcnState checkState(String domain);
 
     /**
-     * Verifies if requested DCN for given client can be deployed.
+     * Verifies if the requested DCN for given domain can be deployed.
      *
-     * @param clientId identifier of the client
+     * @param domain name of the domain
      * @param dcnSpec specification of the DCN
      * @throws DcnRequestVerificationException if request verification failed
      */
-    void verifyRequest(Identifier clientId, DcnSpec dcnSpec) throws DcnRequestVerificationException;
+    void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException;
 
     /**
-     * Performs actual deployment of the DCN for given client.
+     * Performs actual deployment of the DCN for given domain.
      *
-     * @param clientId identifier of the client
+     * @param domain name of the domain
      * @throws CouldNotDeployDcnException if DCN deployment couldn't be completed due to any reason
      */
-    void deployDcn(Identifier clientId) throws CouldNotDeployDcnException;
+    void deployDcn(String domain) throws CouldNotDeployDcnException;
 
     /**
-     * Verifies a successful deployment of a DCN for given client.
+     * Verifies the successful deployment of the DCN for given domain.
      *
-     * @param clientId identifier of the client
+     * @param domain name of the domain
      * @throws CouldNotVerifyDcnException if DCN deployment couldn't be verified
      */
-    void verifyDcn(Identifier clientId) throws CouldNotVerifyDcnException;
+    void verifyDcn(String domain) throws CouldNotVerifyDcnException;
 
     /**
-     * Removes DCN for given client. Removal is only possible when there are no NM services currently deployed
-     * by the client.
+     * Removes the DCN for given domain. Removal is only possible if there are no NM services currently deployed
+     * for this domain.
      *
-     * @param clientId identifier of the client
+     * @param domain name of the domain
      * @throws CouldNotRemoveDcnException if DCN removal process failed
      */
-    void removeDcn(Identifier clientId) throws CouldNotRemoveDcnException;
+    void removeDcn(String domain) throws CouldNotRemoveDcnException;
 
 }

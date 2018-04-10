@@ -1,7 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +23,10 @@ public class DockerHostNetwork {
     private DockerHost host;
 
     /**
-     * Identifier of the client requesting application deployment
+     * Name of the client domain for this deployment
      */
     @Column(nullable=false)
-    private Identifier clientId;
+    private String domain;
 
     /**
      * Assigned VLAN number unique for Docker Host
@@ -63,13 +61,13 @@ public class DockerHostNetwork {
 
     public DockerHostNetwork() { }
 
-    public DockerHostNetwork(Identifier clientId, DockerHost dockerHost) {
-        this.clientId = clientId;
+    public DockerHostNetwork(String domain, DockerHost dockerHost) {
+        this.domain = domain;
         this.host = dockerHost;
     }
 
-    public DockerHostNetwork(Identifier clientId, DockerHost dockerHost, int vlanNumber, String subnet, String gateway) {
-        this.clientId = clientId;
+    public DockerHostNetwork(String domain, DockerHost dockerHost, int vlanNumber, String subnet, String gateway) {
+        this.domain = domain;
         this.host = dockerHost;
         this.vlanNumber = vlanNumber;
         this.subnet = subnet;
@@ -92,12 +90,12 @@ public class DockerHostNetwork {
         this.host = host;
     }
 
-    public Identifier getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setClientId(Identifier clientId) {
-        this.clientId = clientId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public int getVlanNumber() {
