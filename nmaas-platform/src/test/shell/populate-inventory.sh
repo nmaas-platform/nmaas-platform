@@ -30,7 +30,7 @@ curl -X GET $API_URL/management/dockerhosts --header "Authorization: Bearer $TOK
 
 echo
 echo Adding default Docker Host attachment points
-curl -X POST $API_URL/management/network/dockerhosts --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/network/docker-host-1-attach-point.json
+curl -X POST $API_URL/management/network/dockerhosts --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-1-attach-point.json
 echo
 curl -X GET $API_URL/management/network/dockerhosts --header "Authorization: Bearer $TOKEN"
 
@@ -41,8 +41,8 @@ echo
 curl -X GET $API_URL/management/kubernetes --header "Authorization: Bearer $TOKEN"
 
 echo
-echo Adding default customer 1 -admin- network attachment points
-curl -X POST $API_URL/management/network/customernetworks --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/network/customer-1-network-attach-point.json
+echo Adding default network attachment point to default domain testDom1
+curl -X POST $API_URL/management/domains/testDom1/network --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/domains/test-domain-1-network-attach-point.json
 echo
-curl -X GET $API_URL/management/network/customernetworks --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/management/domains/testDom1/network --header "Authorization: Bearer $TOKEN"
 echo
