@@ -65,7 +65,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     private String ingressControllerName(String domain) {
-        return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + domain;
+        return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + domain.toLowerCase();
     }
 
     private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) throws CommandExecutionException {
