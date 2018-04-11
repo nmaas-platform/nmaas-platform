@@ -24,12 +24,12 @@ public interface ContainerOrchestrator {
      * for NM service being requested and if so creates proper NM service info object.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param applicationId identifier of the application / service
-     * @param clientId identifier of the client requesting the deployment
+     * @param deploymentName name of application instance provided by the user
+     * @param domain name of the client domain for this deployment
      * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if current deployment environment is not supported by the application
      */
-    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId, AppDeploymentSpec appDeploymentSpec)
+    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException;
 
     /**
@@ -93,4 +93,13 @@ public interface ContainerOrchestrator {
     void removeNmService(Identifier deploymentId)
             throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException;
 
+    /**
+     * Triggers all the required actions to restart given NM service.
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @throws CouldNotRestartNmServiceException if any of the service restart steps failed
+     * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
+     */
+    void restartNmService(Identifier deploymentId)
+            throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException;
 }

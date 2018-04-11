@@ -4,7 +4,7 @@ import net.geant.nmaas.dcn.deployment.entities.*;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -28,20 +28,18 @@ public class DcnRepositoryManagerTest {
 
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
-
     @Autowired
     private DcnInfoRepository dcnInfoRepository;
-
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
 
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
-
-    private Identifier clientId = Identifier.newInstance("clientId");
+    private static Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
+    private static String DOMAIN = "domain";
+    private static String DEPLOYMENT_NAME = "deploymentName";
 
     @Before
     public void populateRepositories() {
-        appDeploymentRepository.save(new AppDeployment(deploymentId, clientId, Identifier.newInstance("")));
+        appDeploymentRepository.save(new AppDeployment(DEPLOYMENT_ID, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME));
     }
 
     @After
@@ -51,104 +49,104 @@ public class DcnRepositoryManagerTest {
     }
 
     @Test
-    public void shouldAddUpdateAndRemoteDcns() throws InvalidClientIdException {
+    public void shouldAddUpdateAndRemoteDcns() throws InvalidDomainException {
         storeDefaultDcnInfoInRepository();
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.INIT));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter(), is(nullValue()));
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.REQUEST_VERIFIED));
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REQUEST_VERIFIED));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId), is(notNullValue()));
-        dcnRepositoryManager.removeDcnInfo(clientId);
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.INIT));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForClientSideRouter(), is(nullValue()));
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.REQUEST_VERIFIED));
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.REQUEST_VERIFIED));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN), is(notNullValue()));
+        dcnRepositoryManager.removeDcnInfo(DOMAIN);
         assertThat(dcnInfoRepository.count(), equalTo(0L));
     }
 
     @Test
-    public void shouldUpdateClientSideRouterVpnConfigs() throws InvalidClientIdException {
+    public void shouldUpdateClientSideRouterVpnConfigs() throws InvalidDomainException {
         storeDefaultDcnInfoInRepository();
         AnsiblePlaybookVpnConfig vpn = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLIENT_SIDE);
-        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter().getId(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter().getLogicalInterface(), is(nullValue()));
-        vpn = dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter();
+        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(DOMAIN, vpn);
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForClientSideRouter(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForClientSideRouter().getId(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForClientSideRouter().getLogicalInterface(), is(nullValue()));
+        vpn = dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForClientSideRouter();
         vpn.setLogicalInterface("ifaceName");
-        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForClientSideRouter().getLogicalInterface(), equalTo("ifaceName"));
+        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(DOMAIN, vpn);
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForClientSideRouter().getLogicalInterface(), equalTo("ifaceName"));
     }
 
     @Test
-    public void shouldUpdateCloudSideRouterVpnConfigs() throws InvalidClientIdException {
+    public void shouldUpdateCloudSideRouterVpnConfigs() throws InvalidDomainException {
         storeDefaultDcnInfoInRepository();
         AnsiblePlaybookVpnConfig vpn = new AnsiblePlaybookVpnConfig(AnsiblePlaybookVpnConfig.Type.CLOUD_SIDE);
-        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter().getId(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter().getLogicalInterface(), is(nullValue()));
-        vpn = dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter();
+        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(DOMAIN, vpn);
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForCloudSideRouter(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForCloudSideRouter().getId(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForCloudSideRouter().getLogicalInterface(), is(nullValue()));
+        vpn = dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForCloudSideRouter();
         vpn.setLogicalInterface("ifaceName");
-        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, vpn);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getPlaybookForCloudSideRouter().getLogicalInterface(), equalTo("ifaceName"));
+        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(DOMAIN, vpn);
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getPlaybookForCloudSideRouter().getLogicalInterface(), equalTo("ifaceName"));
     }
 
     @Test
-    public void shouldUpdateCloudEndpointDetails() throws InvalidClientIdException {
+    public void shouldUpdateCloudEndpointDetails() throws InvalidDomainException {
         storeDefaultDcnInfoInRepository();
         DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(501, "10.10.0.0/24", "10.10.0.254");
-        dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, dcnCloudEndpointDetails);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails().getId(), is(notNullValue()));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails().getVlanNumber(), equalTo(501));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails().getSubnet(), equalTo("10.10.0.0/24"));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails().getGateway(), equalTo("10.10.0.254"));
-        dcnCloudEndpointDetails = dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails();
+        dcnRepositoryManager.updateDcnCloudEndpointDetails(DOMAIN, dcnCloudEndpointDetails);
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getId(), is(notNullValue()));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getVlanNumber(), equalTo(501));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getSubnet(), equalTo("10.10.0.0/24"));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getGateway(), equalTo("10.10.0.254"));
+        dcnCloudEndpointDetails = dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails();
         dcnCloudEndpointDetails.setGateway("gw");
-        dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, dcnCloudEndpointDetails);
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails().getGateway(), equalTo("gw"));
+        dcnRepositoryManager.updateDcnCloudEndpointDetails(DOMAIN, dcnCloudEndpointDetails);
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getGateway(), equalTo("gw"));
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionOnMissingDeployment() throws InvalidClientIdException {
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionOnMissingDeployment() throws InvalidDomainException {
         appDeploymentRepository.deleteAll();
-        dcnRepositoryManager.loadNetwork(clientId);
+        dcnRepositoryManager.loadNetwork(DOMAIN);
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.loadNetwork(clientId);
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.loadNetwork(DOMAIN);
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.removeDcnInfo(clientId);
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.removeDcnInfo(DOMAIN);
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionDuringCloudConfigUpdateOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(clientId, null);
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionDuringCloudConfigUpdateOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(DOMAIN, null);
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionDuringClientConfigUpdateOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(clientId, null);
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionDuringClientConfigUpdateOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(DOMAIN, null);
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionDuringCloudEndpointDetailsUpdateOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.updateDcnCloudEndpointDetails(clientId, null);
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionDuringCloudEndpointDetailsUpdateOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.updateDcnCloudEndpointDetails(DOMAIN, null);
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, clientId, DcnDeploymentState.DEPLOYMENT_INITIATED));
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
     }
 
-    @Test(expected = InvalidClientIdException.class)
-    public void shouldThrowExceptionDuringStateRetrievalOnMissingDcnForGivenClient() throws InvalidClientIdException {
-        dcnRepositoryManager.loadCurrentState(clientId);
+    @Test(expected = InvalidDomainException.class)
+    public void shouldThrowExceptionDuringStateRetrievalOnMissingDcnForGivenClient() throws InvalidDomainException {
+        dcnRepositoryManager.loadCurrentState(DOMAIN);
     }
 
-    private void storeDefaultDcnInfoInRepository() throws InvalidClientIdException {
-        DcnSpec spec = new DcnSpec("", clientId);
+    private void storeDefaultDcnInfoInRepository() throws InvalidDomainException {
+        DcnSpec spec = new DcnSpec("", DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
     }
 }

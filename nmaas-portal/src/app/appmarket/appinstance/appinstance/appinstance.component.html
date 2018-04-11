@@ -51,8 +51,8 @@
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<div class = "btn-group pull-right">
-								<a *ngIf="appInstanceStatus?.state == AppInstanceState.RUNNING && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
-								<button class = "btn btn-danger" (click)="unsubscribe()">Unsubscribe</button>
+								<a *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
+								<button class = "btn btn-danger" (click)="undeploy()">Undeploy</button>
 							</div>
 						</div>
 					</div>
@@ -65,18 +65,23 @@
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 				</div>
-				<p>State: {{appInstanceStatus?.state ? AppInstanceState[appInstanceStatus?.state] : '...'}}</p>
+				<p>State: {{appInstanceStatus?.state ? appInstanceStatus?.state : '...'}}</p>
 				<p>Details: {{appInstanceStatus?.details}}</p>
 			</div>
-			
-			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state != AppInstanceState.CONFIGURATION_AWAITING}" >
+						
+			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
 				<h3>Configuration</h3>
 				<hr>
-				<json-schema-form [form]="app?.configTemplate?.template" (onSubmit)="applyConfiguration($event)" >
-				
-				</json-schema-form>
+				<json-schema-form *ngIf="configurationTemplate"
+					[form]="configurationTemplate"
+					[options]="jsonFormOptions" 
+					[framework]="bootstrap-3" 
+					[language]="en"
+					(onSubmit)="applyConfiguration($event)">
+				</json-schema-form>	
 
 			</div>
+
 			<hr>
 		</div>
 	

@@ -18,11 +18,14 @@ import net.geant.nmaas.portal.persistent.entity.User;
 public interface UserService {
 	
 	boolean hasPriviledge(User user, Domain domain, Role role);
-	User findByUsername(String username);
-	User findById(Long id);
+	Optional<User> findByUsername(String username);
+	Optional<User> findById(Long id);
+	
+	boolean existsByUsername(String username);
+	boolean existsById(Long id);
 	
 	User register(String username) throws ObjectAlreadyExistsException, MissingElementException;
-	User register(String username, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException;
+	User register(String username, boolean enabled, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException;
 	
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);

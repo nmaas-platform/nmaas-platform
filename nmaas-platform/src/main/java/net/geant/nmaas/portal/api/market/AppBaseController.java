@@ -9,6 +9,8 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.UserService;
 
 public class AppBaseController {
 
@@ -16,10 +18,10 @@ public class AppBaseController {
 	protected ModelMapper modelMapper;
 	
 	@Autowired
-	protected ApplicationRepository appRepo;
+	protected ApplicationService applications;
 
 	@Autowired
-	protected UserRepository userRepo;
+	protected UserService users;
 	
 	public AppBaseController() {
 		super();
@@ -29,32 +31,22 @@ public class AppBaseController {
 		if(appId == null)
 			throw new MissingElementException("Missing application id.");
 		
-		net.geant.nmaas.portal.persistent.entity.Application app = appRepo.findOne(appId);
-		if(app == null)
-			throw new MissingElementException("Application id=" + appId + " not found.");
-		return app;
+		return applications.findApplication(appId).orElseThrow(() -> new MissingElementException("Application id=" + appId + " not found."));
 	}
 
 	protected net.geant.nmaas.portal.persistent.entity.User getUser(String username) throws MissingElementException {
 		if(username == null)
 			throw new MissingElementException("Missing username.");
 		
-		Optional<User> user = userRepo.findByUsername(username);
-		if(!user.isPresent())
-			throw new MissingElementException("Missing user " + username);
-		
-		return user.get();
+		return users.findByUsername(username).orElseThrow(() -> new MissingElementException("Missing user " + username));
 	}
 
 	protected net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) throws MissingElementException {
 		if(userId == null)
 			throw new MissingElementException("Missing username.");
 		
-		User user = userRepo.findOne(userId);
-		if(user == null)
-			throw new MissingElementException("Missing user id=" + userId);
-		
-		return user;
+		return users.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
+
 	}
 
 	

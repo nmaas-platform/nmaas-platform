@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
-import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
@@ -28,25 +28,29 @@ import java.util.stream.Collectors;
  */
 @Component
 @Profile("env_docker-compose")
-public class StaticRoutingConfigManager {
+class StaticRoutingConfigManager {
 
     private final static Logger log = LogManager.getLogger(StaticRoutingConfigManager.class);
 
-    @Autowired
-    private BasicCustomerNetworkAttachPointRepository customerNetworks;
-    @Autowired
+    private DomainNetworkAttachPointRepository customerNetworks;
     private DockerNetworkResourceManager dockerNetworkResourceManager;
-    @Autowired
     private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
-    @Autowired
     private DockerComposeCommandExecutor composeCommandExecutor;
+
+    @Autowired
+    public StaticRoutingConfigManager(DomainNetworkAttachPointRepository customerNetworks, DockerNetworkResourceManager dockerNetworkResourceManager, DockerComposeServiceRepositoryManager nmServiceRepositoryManager, DockerComposeCommandExecutor composeCommandExecutor) {
+        this.customerNetworks = customerNetworks;
+        this.dockerNetworkResourceManager = dockerNetworkResourceManager;
+        this.nmServiceRepositoryManager = nmServiceRepositoryManager;
+        this.composeCommandExecutor = composeCommandExecutor;
+    }
 
     @Loggable(LogLevel.INFO)
     @Transactional
-    public void configure(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
+    void configure(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
         DockerComposeNmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
-        BasicCustomerNetworkAttachPoint customerNetwork = customerNetworks.findByCustomerId(service.getClientId().longValue())
-                .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for customer with id " + service.getClientId()));
+        DomainNetworkAttachPoint customerNetwork = customerNetworks.findByDomain(service.getDomain())
+                .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for domain " + service.getDomain()));
         List<String> networks = obtainListOfCustomerNetworks(customerNetwork);
         List<String> devices = obtainListOfCustomerDevices(customerNetwork);
         networks.addAll(devices.stream().map(d -> d + "/32").collect(Collectors.toList()));
@@ -58,11 +62,11 @@ public class StaticRoutingConfigManager {
         }
     }
 
-    private List<String> obtainListOfCustomerNetworks(BasicCustomerNetworkAttachPoint customerNetwork) {
+    private List<String> obtainListOfCustomerNetworks(DomainNetworkAttachPoint customerNetwork) {
         return new ArrayList<>(customerNetwork.getMonitoredEquipment().getNetworks());
     }
 
-    private List<String> obtainListOfCustomerDevices(BasicCustomerNetworkAttachPoint customerNetwork) {
+    private List<String> obtainListOfCustomerDevices(DomainNetworkAttachPoint customerNetwork) {
         return new ArrayList<>(customerNetwork.getMonitoredEquipment().getAddresses());
     }
 
@@ -72,7 +76,7 @@ public class StaticRoutingConfigManager {
                     service.getDeploymentId(),
                     component.getDeploymentName(),
                     service.getHost(),
-                    addIpRouteCommand(network, dockerNetworkResourceManager.obtainGatewayFromClientNetwork(service.getClientId())));
+                    addIpRouteCommand(network, dockerNetworkResourceManager.obtainGatewayFromClientNetwork(service.getDomain())));
         }
     }
 

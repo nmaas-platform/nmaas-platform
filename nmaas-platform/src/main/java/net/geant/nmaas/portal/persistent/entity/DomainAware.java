@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
+@MappedSuperclass
 public class DomainAware {
 	
-	@OneToOne(fetch=FetchType.LAZY, cascade = {}, optional = false)
-	@Column(nullable = false)
+	@ManyToOne(fetch=FetchType.LAZY, cascade = {}, optional = false)
 	protected Domain domain;
 
 	public Domain getDomain() {

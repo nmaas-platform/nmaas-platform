@@ -3,7 +3,7 @@ package net.geant.nmaas.orchestration.entities;
 import javax.persistence.*;
 
 /**
- * Application configuration in Json format provided by the user/client.
+ * Application configuration in Json format provided by the user.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class AppConfiguration {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO )
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column(name="id")
     private Long id;
 

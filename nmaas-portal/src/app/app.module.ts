@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 
 import { AppConfigService } from './service/appconfig.service';
 
-import { LoginComponent } from './login/login.component';
+import { WelcomeModule } from './welcome/welcome.module';
 import { AppMarketModule } from './appmarket/index';
 import { SharedModule } from './shared/index';
 
@@ -51,6 +51,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     HttpClientModule,
     AppMarketModule,
     SharedModule,
+    WelcomeModule,
     routing
   ],
   providers: [

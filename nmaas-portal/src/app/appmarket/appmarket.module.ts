@@ -11,7 +11,7 @@ import {AppDetailsComponent} from './appdetails/index';
 import {AppInstanceModule} from './appinstance/appinstance.module';
 
 import {NavbarComponent} from './navbar/index';
-import {LogoutComponent} from '../logout/index';
+import {LogoutComponent} from '../welcome/logout/index';
 
 import {SharedModule} from '../shared/shared.module';
 
@@ -20,7 +20,7 @@ import {DomainService} from '../service/domain.service';
 import {TagService} from '../service/tag.service';
 import {UserService} from '../service/user.service';
 
-import {AppInstallModalComponent} from './appinstall/appinstallmodal.component';
+import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.component';
 
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';

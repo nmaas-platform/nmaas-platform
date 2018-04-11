@@ -9,9 +9,9 @@ export class JsonMapperService {
 
   constructor() {
     this.jsonConverter = new JsonConvert();
-    this.jsonConverter.operationMode = OperationMode.LOGGING;
+    this.jsonConverter.operationMode = OperationMode.ENABLE;
     this.jsonConverter.ignorePrimitiveChecks = false;
-    this.jsonConverter.valueCheckingMode = ValueCheckingMode.DISALLOW_NULL; //ALLOW_OBJECT_NULL;
+    this.jsonConverter.valueCheckingMode = ValueCheckingMode.ALLOW_NULL; //ALLOW_OBJECT_NULL;
   }
 
   public deserialize(json: any, classReference: { new(): any }): any {

@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.api.AppLifecycleManagerRestController;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -11,15 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,20 +39,14 @@ public class OrchestratorManagerRestControllerTest {
 
     private MockMvc mvc;
 
-    private Identifier clientId;
-
+    private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier applicationId;
-
     private Identifier deploymentId;
-
     private AppConfiguration appConfiguration;
-
-    @Autowired
-    private Environment env;
 
     @Before
     public void setup() {
-        clientId = Identifier.newInstance("100L");
         applicationId = Identifier.newInstance("15L");
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
@@ -64,11 +56,12 @@ public class OrchestratorManagerRestControllerTest {
 
     @Test
     public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
-        when(lifecycleManager.deployApplication(any(),any())).thenReturn(deploymentId);
+        when(lifecycleManager.deployApplication(any(), any(), any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.set("clientid", clientId.getValue());
+        params.set("domain", DOMAIN);
         params.set("applicationid", applicationId.getValue());
+        params.set("deploymentname", DEPLOYMENT_NAME);
         mvc.perform(post("/platform/api/orchestration/deployments")
                 .params(params)
                 .accept(MediaType.APPLICATION_JSON))

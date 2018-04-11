@@ -35,8 +35,8 @@ public class AppDcnRemovalIfRequiredTask {
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(AppRemoveDcnIfRequiredEvent event) throws InvalidDeploymentIdException {
         final Identifier deploymentId = event.getRelatedTo();
-        final Identifier clientId = appDeploymentRepositoryManager.loadClientIdByDeploymentId(deploymentId);
-        return dockerHostNetworkRepositoryManager.checkNetwork(clientId) ? null : new DcnRemoveActionEvent(this, clientId);
+        final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+        return dockerHostNetworkRepositoryManager.checkNetwork(domain) ? null : new DcnRemoveActionEvent(this, domain);
     }
 
 }

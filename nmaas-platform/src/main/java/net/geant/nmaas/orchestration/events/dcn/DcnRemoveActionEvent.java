@@ -1,15 +1,12 @@
 package net.geant.nmaas.orchestration.events.dcn;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.BaseEvent;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DcnRemoveActionEvent extends BaseEvent {
+public class DcnRemoveActionEvent extends DcnBaseEvent {
 
-    public DcnRemoveActionEvent(Object source, Identifier clientId) {
-        super(source, clientId);
+    public DcnRemoveActionEvent(Object source, String domain) {
+        super(source, domain);
     }
 
 }

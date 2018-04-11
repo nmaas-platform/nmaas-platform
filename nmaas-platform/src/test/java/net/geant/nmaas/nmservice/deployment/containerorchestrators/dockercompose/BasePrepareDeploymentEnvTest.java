@@ -2,8 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
@@ -12,10 +10,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.After;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,40 +44,33 @@ public abstract class BasePrepareDeploymentEnvTest {
     @MockBean
     private DockerComposeCommandExecutor composeCommandExecutor;
 
+    private final static String DOMAIN = "domain";
+    private final static String DEPLOYMENT_NAME = "deploymentName";
     protected Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance("10");
-    private Identifier applicationId;
-    private DockerComposeFileTemplate template;
 
     public void setup(String composeFileTemplatePath) throws Exception {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
         DockerHost dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
-        dockerHostNetworkRepositoryManager.storeNetwork(dockerHostNetwork(clientId, dockerHost));
-        prepareTestComposeFileTemplate(composeFileTemplatePath);
-        applicationId = storeTestApplication();
-        storeNmServiceInfo(dockerHost);
+        dockerHostNetworkRepositoryManager.storeNetwork(dockerHostNetwork(DOMAIN, dockerHost));
+        storeNmServiceInfo(dockerHost, composeFileTemplatePath);
     }
 
-    private void prepareTestComposeFileTemplate(String composeFileTemplatePath) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        template = mapper.readValue(
-                new String(Files.readAllBytes(Paths.get(composeFileTemplatePath))),
-                DockerComposeFileTemplate.class);
-    }
-
-    private Identifier storeTestApplication() {
-        Application application = new Application("genericname");
-        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setDockerComposeFileTemplate(template);
-        application.setAppDeploymentSpec(appDeploymentSpec);
-        return Identifier.newInstance(String.valueOf(applicationRepository.save(application).getId()));
-    }
-
-    private void storeNmServiceInfo(DockerHost dockerHost) {
-        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
+    private void storeNmServiceInfo(DockerHost dockerHost, String composeFileTemplatePath) throws IOException {
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(
+                deploymentId,
+                DEPLOYMENT_NAME,
+                DOMAIN,
+                prepareTestComposeFileTemplate(composeFileTemplatePath));
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
         nmServiceRepositoryManager.storeService(serviceInfo);
+    }
+
+    private DockerComposeFileTemplate prepareTestComposeFileTemplate(String composeFileTemplatePath) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(
+                new String(Files.readAllBytes(Paths.get(composeFileTemplatePath))),
+                DockerComposeFileTemplate.class);
     }
 
     private static DockerComposeService dockerComposeService() {
@@ -92,7 +81,7 @@ public abstract class BasePrepareDeploymentEnvTest {
     }
 
     @After
-    public void clean() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
+    public void clean() throws Exception {
         nmServiceRepositoryManager.removeService(deploymentId);
         dockerHostRepositoryManager.removeDockerHost("dh1");
         applicationRepository.deleteAll();
@@ -115,8 +104,9 @@ public abstract class BasePrepareDeploymentEnvTest {
                 true);
     }
 
-    private static DockerHostNetwork dockerHostNetwork(Identifier clientId, DockerHost dockerHost) {
-        return new DockerHostNetwork(clientId,
+    private static DockerHostNetwork dockerHostNetwork(String domain, DockerHost dockerHost) {
+        return new DockerHostNetwork(
+                domain,
                 dockerHost,
                 500,
                 "10.10.1.0/24",

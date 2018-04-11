@@ -23,11 +23,11 @@ public class DockerContainerConfigBuilderTest {
 
     private static final String TEST_IMAGE_NAME_1 = "test-service-1";
 
+    private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
+    private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private DockerEngineNmServiceInfo serviceInfo;
     private DockerContainer dockerContainer;
-    private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
-    private Identifier clientId = Identifier.newInstance("clientId");
 
     @Before
     public void setup() throws UnknownHostException {
@@ -44,7 +44,7 @@ public class DockerContainerConfigBuilderTest {
                 "/data/scripts",
                 "/data/volumes",
                 true);
-        serviceInfo = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, testTemplate1);
+        serviceInfo = new DockerEngineNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, testTemplate1);
         serviceInfo.setHost(testDockerHost1);
         serviceInfo.setManagedDevicesIpAddresses(Arrays.asList("1.1.1.1", "2.2.2.2", "3.3.3.3"));
         DockerNetworkIpam addresses = new DockerNetworkIpam("1.1.0.0/24", "1.1.1.254");

@@ -35,10 +35,10 @@ public class DockerComposeFileDownloadRestControllerTest {
     private DockerComposeServiceRepositoryManager repositoryManager;
 
     private MockMvc mvc;
+    private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
+    private static final String COMPOSE_FILE_CONTENT = "simple content";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance("clientId");
-    private Identifier applicationId = Identifier.newInstance("applicationId");
-    private String composeFileContent = "simple content";
 
     @Before
     public void setup() {
@@ -46,8 +46,8 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, applicationId, clientId, null);
-        nmServiceInfo.setDockerComposeFile(new DockerComposeFile(composeFileContent));
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        nmServiceInfo.setDockerComposeFile(new DockerComposeFile(COMPOSE_FILE_CONTENT));
         repositoryManager.storeService(nmServiceInfo);
     }
 
@@ -63,7 +63,7 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME))
                 .andExpect(content().contentTypeCompatibleWith("application/octet-stream"))
-                .andExpect(content().string(composeFileContent));
+                .andExpect(content().string(COMPOSE_FILE_CONTENT));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
         Identifier deploymentId = Identifier.newInstance("newDeploymentId");
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, clientId, applicationId, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         repositoryManager.storeService(nmServiceInfo);
         mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))

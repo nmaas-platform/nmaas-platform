@@ -3,9 +3,9 @@ package net.geant.nmaas.dcn.deployment;
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
-import net.geant.nmaas.externalservices.inventory.network.BasicCustomerNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.CustomerNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.DockerHostAttachPoint;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -145,8 +145,8 @@ public class AnsiblePlaybookContainerBuilderTest {
         return cloudAttachPoint;
     }
 
-    public static CustomerNetworkAttachPoint customerNetworkAttachPoint() {
-        BasicCustomerNetworkAttachPoint customerNetworkAttachPoint = new BasicCustomerNetworkAttachPoint();
+    public static NetworkAttachPoint customerNetworkAttachPoint() {
+        DomainNetworkAttachPoint customerNetworkAttachPoint = new DomainNetworkAttachPoint();
         customerNetworkAttachPoint.setRouterName("R4");
         customerNetworkAttachPoint.setRouterId("172.16.4.4");
         customerNetworkAttachPoint.setRouterInterfaceName("ge-0/0/4");

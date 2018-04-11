@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.After;
@@ -41,10 +42,10 @@ public class AppInstancePermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(domains.getGlobalDomain()).thenReturn(UsersHelper.GLOBAL);
-		when(domains.findDomain(UsersHelper.GLOBAL.getId())).thenReturn(UsersHelper.GLOBAL);
-		when(domains.findDomain(UsersHelper.DOMAIN1.getId())).thenReturn(UsersHelper.DOMAIN1);
-		when(domains.findDomain(UsersHelper.DOMAIN2.getId())).thenReturn(UsersHelper.DOMAIN2);
+		when(domains.getGlobalDomain()).thenReturn(Optional.of(UsersHelper.GLOBAL));
+		when(domains.findDomain(UsersHelper.GLOBAL.getId())).thenReturn(Optional.of(UsersHelper.GLOBAL));
+		when(domains.findDomain(UsersHelper.DOMAIN1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1));
+		when(domains.findDomain(UsersHelper.DOMAIN2.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN2));
 		
 		when(appInstances.findOne(UsersHelper.DOMAIN1_APP1.getId())).thenReturn(UsersHelper.DOMAIN1_APP1);
 		when(appInstances.findOne(UsersHelper.DOMAIN1_APP2.getId())).thenReturn(UsersHelper.DOMAIN1_APP2);

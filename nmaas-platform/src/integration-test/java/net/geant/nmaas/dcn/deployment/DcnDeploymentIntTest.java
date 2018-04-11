@@ -10,8 +10,8 @@ import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.externalservices.inventory.network.repositories.BasicCustomerNetworkAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
+import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.helpers.NetworkAttachPointsInit;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
@@ -19,7 +19,7 @@ import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkReposito
 import net.geant.nmaas.orchestration.DcnDeploymentStateChangeManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -47,14 +47,15 @@ import static org.mockito.Mockito.when;
 @TestPropertySource("classpath:application-test-engine.properties")
 public class DcnDeploymentIntTest {
 
-    private static final long CUSTOMER_ID = 1L;
+    private static final String DOMAIN = "domain";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
 
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
     @Autowired
-    private BasicCustomerNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
+    private DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
     @Autowired
@@ -70,7 +71,6 @@ public class DcnDeploymentIntTest {
     private DcnDeploymentStateChangeManager dcnDeploymentStateChangeManager;
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
-    private Identifier clientId = Identifier.newInstance(String.valueOf(CUSTOMER_ID));
     private Identifier applicationId = Identifier.newInstance("applicationId");
 
     private AnsibleDcnDeploymentExecutor dcnDeployment;
@@ -80,10 +80,10 @@ public class DcnDeploymentIntTest {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         NetworkAttachPointsInit.initDockerHostAttachPoints(dockerHostAttachPointRepository);
         NetworkAttachPointsInit.initBasicCustomerNetworkAttachPoints(basicCustomerNetworkAttachPointRepository);
-        AppDeployment appDeployment = new AppDeployment(deploymentId, clientId, applicationId);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME);
         appDeploymentRepository.save(appDeployment);
         DockerHostNetwork dockerHostNetwork = new DockerHostNetwork(
-                clientId,
+                DOMAIN,
                 dockerHostRepositoryManager.loadPreferredDockerHost(),
                 505,
                 "10.10.10.0/24",
@@ -113,27 +113,27 @@ public class DcnDeploymentIntTest {
             DcnRequestVerificationException,
             CouldNotDeployDcnException,
             CouldNotRemoveDcnException,
-            InvalidClientIdException, InterruptedException {
-        dcnDeployment.verifyRequest(clientId, new DcnSpec("dcnName1", clientId));
+            InvalidDomainException, InterruptedException {
+        dcnDeployment.verifyRequest(DOMAIN, new DcnSpec("dcnName1", DOMAIN));
         Thread.sleep(500);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REQUEST_VERIFIED));
-        assertThat(dcnRepositoryManager.loadNetwork(clientId).getCloudEndpointDetails().getVlanNumber(), equalTo(505));
-        dcnDeployment.deployDcn(clientId);
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.REQUEST_VERIFIED));
+        assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getVlanNumber(), equalTo(505));
+        dcnDeployment.deployDcn(DOMAIN);
         Thread.sleep(300);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.DEPLOYMENT_INITIATED));
-        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(clientId.value()), AnsiblePlaybookStatus.Status.SUCCESS);
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.DEPLOYMENT_INITIATED));
+        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(DOMAIN), AnsiblePlaybookStatus.Status.SUCCESS);
         Thread.sleep(300);
-        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(clientId.value()), AnsiblePlaybookStatus.Status.SUCCESS);
+        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(DOMAIN), AnsiblePlaybookStatus.Status.SUCCESS);
         Thread.sleep(500);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.DEPLOYED));
-        dcnDeployment.removeDcn(clientId);
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.DEPLOYED));
+        dcnDeployment.removeDcn(DOMAIN);
         Thread.sleep(300);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REMOVAL_INITIATED));
-        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(clientId.value()), AnsiblePlaybookStatus.Status.SUCCESS);
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.REMOVAL_INITIATED));
+        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(DOMAIN), AnsiblePlaybookStatus.Status.SUCCESS);
         Thread.sleep(300);
-        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(clientId.value()), AnsiblePlaybookStatus.Status.SUCCESS);
+        dcnDeployment.notifyPlaybookExecutionState(AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(DOMAIN), AnsiblePlaybookStatus.Status.SUCCESS);
         Thread.sleep(500);
-        assertThat(dcnRepositoryManager.loadCurrentState(clientId), equalTo(DcnDeploymentState.REMOVED));
+        assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), equalTo(DcnDeploymentState.REMOVED));
     }
 
 }

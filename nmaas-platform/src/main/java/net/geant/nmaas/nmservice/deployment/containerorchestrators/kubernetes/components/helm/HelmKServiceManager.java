@@ -1,8 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
@@ -22,22 +22,24 @@ import java.util.Map;
  */
 @Component
 @Profile("env_kubernetes")
-public class HelmKServiceManager implements KServiceManager {
+public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
     static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
+    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION = "nmaas.config.action";
+    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
 
     private KubernetesRepositoryManager repositoryManager;
-    private KubernetesClusterManager clusterManager;
+    private KNamespaceService namespaceService;
     private HelmCommandExecutor helmCommandExecutor;
 
     private String kubernetesPersistenceStorageClass;
 
     @Autowired
-    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, KubernetesClusterManager clusterManager, HelmCommandExecutor helmCommandExecutor) {
+    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, KNamespaceService namespaceService, HelmCommandExecutor helmCommandExecutor) {
         this.repositoryManager = repositoryManager;
-        this.clusterManager = clusterManager;
+        this.namespaceService = namespaceService;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
@@ -52,12 +54,15 @@ public class HelmKServiceManager implements KServiceManager {
 
     private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) throws CommandExecutionException {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
+        String domain = serviceInfo.getDomain();
         String repoUrl = serviceInfo.getGitLabProject().getCloneUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
+        arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
         helmCommandExecutor.executeHelmInstallCommand(
+                namespaceService.namespace(domain),
                 deploymentId,
                 template.getArchive(),
                 arguments
@@ -78,6 +83,20 @@ public class HelmKServiceManager implements KServiceManager {
     public void deleteService(Identifier deploymentId) throws KServiceManipulationException  {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+        } catch (CommandExecutionException cee) {
+            throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
+        }
+    }
+
+    @Override
+    public void upgradeService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
+        KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
+        KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
+        try {
+            helmCommandExecutor.executeHelmUpgradeCommand(
+                    deploymentId,
+                    template.getArchive()
+            );
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
         }

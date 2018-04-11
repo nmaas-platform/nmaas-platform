@@ -19,16 +19,16 @@ public class ApplicationController extends AppBaseController {
 	@RequestMapping(method=RequestMethod.GET)
 	@Transactional
 	public List<ApplicationBrief> getApplications() {
-		return appRepo.findAll().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
+		return applications.findAll().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) ApplicationComplete appRequest) {
-		net.geant.nmaas.portal.persistent.entity.Application app;
-		app = modelMapper.map(appRequest, net.geant.nmaas.portal.persistent.entity.Application.class);
-		appRepo.save(app);
+		net.geant.nmaas.portal.persistent.entity.Application app = applications.create(appRequest.getName());
+		modelMapper.map(appRequest, app);
+		applications.update(app);
 		return new Id(app.getId());
 	}
 	

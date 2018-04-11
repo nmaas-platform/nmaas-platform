@@ -25,8 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.auth.UserSignup;
+import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
+import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.User;
 import net.geant.nmaas.portal.api.domain.UserRequest;
@@ -35,6 +36,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
@@ -74,12 +76,12 @@ public class UsersController {
 	
 	@PostMapping(value="/users")
 	@ResponseStatus(HttpStatus.CREATED)
-	@PreAuthorize("hasPermission(#userSignup.domainId, 'domain', 'OWNER')")
+	@PreAuthorize("hasPermission(#newUserRequest.domainId, 'domain', 'OWNER')")
 	@Transactional
-	public Id addUser(@RequestBody @NotNull UserSignup userSignup) throws SignupException {
+	public Id addUser(@RequestBody NewUserRequest newUserRequest) throws SignupException {
 		net.geant.nmaas.portal.persistent.entity.User user = null;
 		try {
-			user = users.register(userSignup.getUsername());
+			user = users.register(newUserRequest.getUsername());
 		} catch(ObjectAlreadyExistsException ex) {
 			throw new SignupException("User already exists.");
 		} catch (MissingElementException e) {			
@@ -89,7 +91,8 @@ public class UsersController {
 		if(user == null)
 			throw new SignupException("Unable to register new user");
 
-		user.setPassword(userSignup.getPassword() != null ? passwordEncoder.encode(userSignup.getPassword()): null);
+		user.setPassword(null);
+		user.setEnabled(true);
 		
 		try {
 			users.update(user);
@@ -103,8 +106,8 @@ public class UsersController {
 		
 	@GetMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public User getUser(@PathVariable("userId") Long userId) {
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);		
+	public User retrieveUser(@PathVariable("userId") Long userId) throws MissingElementException {
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
 		return modelMapper.map(user, User.class);
 	}
 	
@@ -112,21 +115,38 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
-	public void updateUser(@PathVariable("userId") Long userId, @NotNull UserRequest userRequest) throws ProcessingException {
-		net.geant.nmaas.portal.persistent.entity.User userMod = users.findById(userId);
+	public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) throws ProcessingException, MissingElementException {
+		net.geant.nmaas.portal.persistent.entity.User userMod = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
 		
 		if(userRequest.getUsername() != null && !userMod.getUsername().equals(userRequest.getUsername())) {
-			net.geant.nmaas.portal.persistent.entity.User userByUsername = users.findByUsername(userRequest.getUsername());
-			if(userByUsername != null)
+			if(users.existsByUsername(userRequest.getUsername()))
 				throw new ProcessingException("Unable to change username.");
+			
 			userMod.setUsername(userRequest.getUsername());
 		}
 		
 		if(userRequest.getPassword() != null)
 			userMod.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+
+		if(userRequest.getFirstname() != null)
+			userMod.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			userMod.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null)
+			userMod.setEmail(userRequest.getEmail());		
+		userMod.setEnabled(userRequest.isEnabled());
+
+		
+		
 		
 		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
-			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream().map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(userMod, domains.findDomain(ur.getDomainId()), ur.getRole())).collect(Collectors.toSet());
+			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
+					.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
+							userMod,
+							domains.findDomain(ur.getDomainId()).get(), 
+							ur.getRole()))
+					.collect(Collectors.toSet());
+			
 			userMod.setNewRoles(roles);
 		}
 		try {
@@ -145,11 +165,8 @@ public class UsersController {
 	
 	@GetMapping("/users/{userId}/roles")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
-	public Set<UserRole> getUserRoles(@PathVariable Long userId) throws MissingElementException {
-		
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
+	public Set<UserRole> getUserRoles(@PathVariable Long userId) throws MissingElementException {		
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 				
 		return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRole.class)).collect(Collectors.toSet());
 	}
@@ -164,25 +181,25 @@ public class UsersController {
 
 		Domain domain = null;
 		if (userRole.getDomainId() == null) 
-			domain = domains.getGlobalDomain();
+			domain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		else
-			domain = domains.findDomain(userRole.getDomainId());		
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+			domain = domains.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException("Domain not found"));		
 
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 
-		domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());		
+		try {
+			domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}		
 	}
 
 	@PostMapping("/users/{userId}/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
-	public void changePassword(@PathVariable Long userId, @RequestBody PasswordChange passwordChange) throws ProcessingException {
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
+	public void changePassword(@PathVariable Long userId, @RequestBody PasswordChange passwordChange) throws ProcessingException, MissingElementException {
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 		try {
 			changePassword(user, passwordChange.getPassword());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -194,7 +211,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
 	public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) throws ProcessingException {
-		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName());
+		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
 		try {
 			changePassword(user, passwordChange.getPassword());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -215,45 +232,43 @@ public class UsersController {
 	
 	@GetMapping("/domains/{domainId}/users/{userId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
-	public User getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException {
-		Domain domain = domains.findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
-		
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
-
-		return modelMapper.map(domains.getMember(domainId, userId), User.class);
+	public User getDomainUser(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException, ProcessingException {
+		try {
+			return modelMapper.map(domains.getMember(domainId, userId), User.class);
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
 	}
 	
 	@DeleteMapping("/domains/{domainId}/users/{userId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void removeDomainUser(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException {
-		Domain domain = domains.findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = getDomain(domainId);
 		
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 		
-		domains.removeMember(user.getId(), domain.getId());
+		try {
+			domains.removeMember(domain.getId(), user.getId());
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}
 	}
 	
 	@GetMapping("/domains/{domainId}/users/{userId}/roles")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	public Set<Role> getUserRoles(@PathVariable Long domainId, @PathVariable Long userId) throws MissingElementException {
-		Domain domain = domains.findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = getDomain(domainId);
 		
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 
-		return domains.getMemberRoles(domain.getId(), user.getId());
+		try {
+			return domains.getMemberRoles(domain.getId(), user.getId());
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}
 	}
 	
 	@PostMapping("/domains/{domainId}/users/{userId}/roles")
@@ -272,11 +287,10 @@ public class UsersController {
 		if(!domainId.equals(userRole.getDomainId()))
 			throw new ProcessingException("Invalid request domain");
 								
-		Domain domain = domains.findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
+		Domain domain = getDomain(domainId);
+		Domain globalDomain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
-		if(domain.equals(domains.getGlobalDomain())) {
+		if(domain.equals(globalDomain)) {
 			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_GUEST))
 				throw new ProcessingException("Role cannot be assigned.");			
 		} else {
@@ -284,11 +298,13 @@ public class UsersController {
 				throw new ProcessingException("Role cannot be assigned.");
 		}
 			
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
 
-		domains.addMemberRole(domain.getId(), user.getId(), role);		
+		try {
+			domains.addMemberRole(domain.getId(), user.getId(), role);
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}		
 	}
 	
 	@DeleteMapping("/domains/{domainId}/users/{userId}/roles/{userRole}")
@@ -296,31 +312,34 @@ public class UsersController {
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
 	public void removeUserRole(@PathVariable Long domainId, @PathVariable Long userId, @PathVariable String userRole) throws ProcessingException, MissingElementException {
+		Role role = convertRole(userRole);
+
+		Domain domain = getDomain(domainId);
+		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
+				
+		try {
+			domains.removeMemberRole(domain.getId(), user.getId(), role);
+		} catch (ObjectNotFoundException e) {
+			throw new MissingElementException(e.getMessage());
+		}
+	}
+
+	protected Role convertRole(String userRole) throws MissingElementException {
 		Role role = null;
 		try {
 			role = Role.valueOf(userRole);
 		} catch(IllegalArgumentException ex) {
 			throw new MissingElementException("Missing or invalid role");
 		}
-
-		Domain domain = domains.findDomain(domainId);
-		if(domain == null)
-			throw new MissingElementException("Domain not found");
-		
-		if(domain.equals(domains.getGlobalDomain())) {
-			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER))
-				throw new ProcessingException("Illegal role.");			
-		} else {
-			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
-				throw new ProcessingException("Illegal role.");
-		}
-			
-		net.geant.nmaas.portal.persistent.entity.User user = users.findById(userId);
-		if(user == null)
-			throw new MissingElementException("User not found");
-				
-		domains.removeMemberRole(domain.getId(), user.getId(), role);
+		return role;
 	}
 	
+	protected Domain getDomain(Long domainId) throws MissingElementException {
+		return domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+	}
+	
+	protected net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) throws MissingElementException {
+		return users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
+	}
 }
 

@@ -15,8 +15,8 @@ import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,17 +56,16 @@ public class DockerHostNetworkLifecycleManagerTest {
     @MockBean
     private DockerApiClient dockerApiClient;
 
+    private static final String DOMAIN_1 = "domain1";
+    private static final String DOMAIN_2 = "domain2";
+    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId;
-    private Identifier applicationId;
-    private Identifier clientId = Identifier.newInstance("clientId");
-    private Identifier clientId2 = Identifier.newInstance("clientId2");
     private DockerHost dockerHost;
 
     @Before
     public void setup() throws DockerHostNotFoundException {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
         deploymentId = Identifier.newInstance("deploymentId");
-        applicationId = Identifier.newInstance("applicationId");
         dockerHost = dockerHostRepositoryManager.loadPreferredDockerHost();
     }
 
@@ -76,32 +75,32 @@ public class DockerHostNetworkLifecycleManagerTest {
     }
 
     @Test
-    public void shouldDeclareNewNetworkForClient() throws ContainerOrchestratorInternalErrorException, InvalidClientIdException, CouldNotRemoveContainerNetworkException {
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
-        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
-        DockerHostNetwork dockerHostNetwork = networkManager.networkForClient(clientId);
+    public void shouldDeclareNewNetworkForClient() throws ContainerOrchestratorInternalErrorException, InvalidDomainException, CouldNotRemoveContainerNetworkException {
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(false));
+        networkManager.declareNewNetworkForClientOnHost(DOMAIN_1, dockerHost);
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(true));
+        DockerHostNetwork dockerHostNetwork = networkManager.networkForDomain(DOMAIN_1);
         assertThat(dockerHostNetwork, is(notNullValue()));
-        assertThat(dockerHostNetwork.getClientId(), equalTo(clientId));
+        assertThat(dockerHostNetwork.getDomain(), equalTo(DOMAIN_1));
         assertThat(dockerHostNetwork.getHost(), equalTo(dockerHost));
         assertThat(dockerHostNetwork.getAssignedAddresses().isEmpty(), is(true));
         assertThat(dockerHostNetwork.getVlanNumber(), is(greaterThan(0)));
         assertThat(dockerHostNetwork.getSubnet().length(), is(greaterThan(0)));
         assertThat(dockerHostNetwork.getGateway().length(), is(greaterThan(0)));
-        networkManager.removeNetwork(clientId);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        networkManager.removeNetwork(DOMAIN_1);
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(false));
     }
 
     @Test
     public void shouldRemoveAllNetworksWhenHostRemoved() throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException, DockerHostInvalidException {
-        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
-        networkManager.declareNewNetworkForClientOnHost(clientId2, dockerHost);
+        networkManager.declareNewNetworkForClientOnHost(DOMAIN_1, dockerHost);
+        networkManager.declareNewNetworkForClientOnHost(DOMAIN_2, dockerHost);
         assertThat(dockerHostNetworkRepository.count(), is(2L));
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId2), is(true));
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(true));
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_2), is(true));
         dockerHostRepositoryManager.removeDockerHost(dockerHost.getName());
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId2), is(false));
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(false));
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_2), is(false));
         assertThat(dockerHostNetworkRepository.count(), is(0L));
     }
 
@@ -111,39 +110,39 @@ public class DockerHostNetworkLifecycleManagerTest {
         when(dockerApiClient.createNetwork(Mockito.any(), Mockito.any())).thenReturn("networkId");
         when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(0);
         when(dockerApiClient.listNetworks(Mockito.any())).thenReturn(Arrays.asList("networkId"));
-        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
-        assertThat(networkManager.networkForClient(clientId).getDeploymentId(), is(nullValue()));
-        networkManager.deployNetworkForClient(clientId);
+        networkManager.declareNewNetworkForClientOnHost(DOMAIN_1, dockerHost);
+        assertThat(networkManager.networkForDomain(DOMAIN_1).getDeploymentId(), is(nullValue()));
+        networkManager.deployNetworkForDomain(DOMAIN_1);
         verify(dockerApiClient, times(1)).createNetwork(Mockito.any(), Mockito.any());
-        assertThat(networkManager.networkForClient(clientId).getDeploymentId(), equalTo("networkId"));
-        networkManager.verifyNetwork(clientId);
-        networkManager.removeNetwork(clientId);
+        assertThat(networkManager.networkForDomain(DOMAIN_1).getDeploymentId(), equalTo("networkId"));
+        networkManager.verifyNetwork(DOMAIN_1);
+        networkManager.removeNetwork(DOMAIN_1);
         verify(dockerApiClient, times(1)).removeNetwork(Mockito.any(), Mockito.any());
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(false));
         assertThat(dockerHostNetworkRepository.count(), is(0L));
     }
 
     @Test
-    public void shouldConnectContainerAndVerifyNetwork() throws InvalidClientIdException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException, CouldNotCreateContainerNetworkException {
+    public void shouldConnectContainerAndVerifyNetwork() throws InvalidDomainException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException, DockerException, InterruptedException, CouldNotConnectContainerToNetworkException, CouldNotRemoveContainerNetworkException, InvalidDeploymentIdException, CouldNotCreateContainerNetworkException {
         when(dockerApiClient.createNetwork(Mockito.any(), Mockito.any())).thenReturn("testNetworkId");
         when(dockerApiClient.countContainersInNetwork(Mockito.any(), Mockito.any())).thenReturn(1);
         when(dockerApiClient.listNetworks(Mockito.any())).thenReturn(Arrays.asList("testNetworkId", "testNetworkId2"));
-        final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, applicationId, clientId, new DockerContainerTemplate("image"));
+        final DockerEngineNmServiceInfo service = new DockerEngineNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN_1, new DockerContainerTemplate("image"));
         service.setHost(dockerHost);
         final DockerContainer dockerContainer = prepareTestContainer();
         service.setDockerContainer(dockerContainer);
         nmServiceRepositoryManager.storeService(service);
-        networkManager.declareNewNetworkForClientOnHost(clientId, dockerHost);
-        networkManager.deployNetworkForClient(clientId);
-        networkManager.connectContainerToNetwork(clientId, dockerContainer);
-        networkManager.verifyNetwork(clientId);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(true));
-        assertThat(nmServiceRepositoryManager.loadAllRunningClientServices(clientId).isEmpty(), is(false));
-        networkManager.disconnectContainerFromNetwork(clientId, dockerContainer);
+        networkManager.declareNewNetworkForClientOnHost(DOMAIN_1, dockerHost);
+        networkManager.deployNetworkForDomain(DOMAIN_1);
+        networkManager.connectContainerToNetwork(DOMAIN_1, dockerContainer);
+        networkManager.verifyNetwork(DOMAIN_1);
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(true));
+        assertThat(nmServiceRepositoryManager.loadAllRunningServicesInDomain(DOMAIN_1).isEmpty(), is(false));
+        networkManager.disconnectContainerFromNetwork(DOMAIN_1, dockerContainer);
         nmServiceRepositoryManager.notifyStateChange(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED));
-        assertThat(nmServiceRepositoryManager.loadAllRunningClientServices(clientId).isEmpty(), is(true));
-        networkManager.removeNetwork(clientId);
-        assertThat(networkManager.networkForClientAlreadyConfigured(clientId), is(false));
+        assertThat(nmServiceRepositoryManager.loadAllRunningServicesInDomain(DOMAIN_1).isEmpty(), is(true));
+        networkManager.removeNetwork(DOMAIN_1);
+        assertThat(networkManager.networkForDomainAlreadyConfigured(DOMAIN_1), is(false));
         nmServiceRepositoryManager.removeService(deploymentId);
     }
 

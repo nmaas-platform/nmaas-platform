@@ -14,8 +14,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidClientIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +25,7 @@ import org.springframework.stereotype.Component;
 public class DockerNetworkLifecycleManager {
 
     private DockerHostNetworkRepositoryManager repositoryManager;
-
     private DockerHostStateKeeper dockerHostStateKeeper;
-
     private DockerApiClient dockerApiClient;
 
     @Autowired
@@ -38,46 +35,44 @@ public class DockerNetworkLifecycleManager {
         this.dockerApiClient = dockerApiClient;
     }
 
-    public void declareNewNetworkForClientOnHost(Identifier clientId, DockerHost dockerHost) throws ContainerOrchestratorInternalErrorException {
-        DockerHostNetwork dockerHostNetwork = new DockerHostNetwork(clientId, dockerHost);
+    public void declareNewNetworkForClientOnHost(String domain, DockerHost dockerHost) throws ContainerOrchestratorInternalErrorException {
+        DockerHostNetwork dockerHostNetwork = new DockerHostNetwork(domain, dockerHost);
         repositoryManager.storeNetwork(dockerHostNetwork);
         try {
-            dockerHostNetwork = repositoryManager.loadNetwork(clientId);
-            int assignedVlan = dockerHostStateKeeper.assignVlanForNetwork(dockerHost.getName(), clientId);
+            dockerHostNetwork = repositoryManager.loadNetwork(domain);
+            int assignedVlan = dockerHostStateKeeper.assignVlanForNetwork(dockerHost.getName(), domain);
             dockerHostNetwork.setVlanNumber(assignedVlan);
-            DockerNetworkIpam assignedAddresses = dockerHostStateKeeper.assignAddressPoolForNetwork(dockerHost.getName(), clientId);
+            DockerNetworkIpam assignedAddresses = dockerHostStateKeeper.assignAddressPoolForNetwork(dockerHost.getName(), domain);
             dockerHostNetwork.setSubnet(assignedAddresses.getSubnetWithMask());
             dockerHostNetwork.setGateway(assignedAddresses.getGateway());
             repositoryManager.updateNetwork(dockerHostNetwork);
-        } catch (DockerHostNotFoundException e) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Internal error -> " + e.getMessage(), e);
-        } catch (InvalidClientIdException invalidClientIdException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "No network found in repository for client " + clientId, invalidClientIdException);
+        } catch (DockerHostNotFoundException dhnfe) {
+            throw new ContainerOrchestratorInternalErrorException("Internal error -> " + dhnfe.getMessage());
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 
-    public boolean networkForClientAlreadyConfigured(Identifier clientId) {
-        return repositoryManager.checkNetwork(clientId);
+    public boolean networkForDomainAlreadyConfigured(String domain) {
+        return repositoryManager.checkNetwork(domain);
     }
 
-    public DockerHostNetwork networkForClient(Identifier clientId) throws ContainerOrchestratorInternalErrorException {
+    public DockerHostNetwork networkForDomain(String domain) throws ContainerOrchestratorInternalErrorException {
         try {
-            return repositoryManager.loadNetwork(clientId);
-        } catch (InvalidClientIdException e) {
-            throw new ContainerOrchestratorInternalErrorException("No network found in repository for client " + clientId);
+            return repositoryManager.loadNetwork(domain);
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 
-    public String deployNetworkForClient(Identifier clientId) throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
+    public String deployNetworkForDomain(String domain) throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
         try {
-            final DockerHostNetwork network = networkForClient(clientId);
+            final DockerHostNetwork network = networkForDomain(domain);
             if (networkAlreadyDeployed(network))
                 return network.getDeploymentName();
             final NetworkConfig networkConfig = DockerNetworkConfigBuilder.build(network);
             final String networkId = executeCreateNetwork(networkConfig, network.getHost().apiUrl());
-            repositoryManager.updateNetworkIdAndNetworkName(clientId, networkId, networkConfig.name());
+            repositoryManager.updateNetworkIdAndNetworkName(domain, networkId, networkConfig.name());
             return networkConfig.name();
         } catch (DockerNetworkDetailsVerificationException verificationException) {
             throw new CouldNotCreateContainerNetworkException(
@@ -91,9 +86,9 @@ public class DockerNetworkLifecycleManager {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } catch (InvalidClientIdException invalidClientIdException) {
+        } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(
-                    "No network found in repository for client " + clientId, invalidClientIdException);
+                    "No network found in repository for domain " + domain, ide);
         }
     }
 
@@ -106,10 +101,10 @@ public class DockerNetworkLifecycleManager {
         return dockerApiClient.createNetwork(apiUrl, networkConfig);
     }
 
-    public void verifyNetwork(Identifier clientId) throws DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
+    public void verifyNetwork(String domain) throws DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
         DockerHostNetwork network = null;
         try {
-            network = repositoryManager.loadNetwork(clientId);
+            network = repositoryManager.loadNetwork(domain);
             executeCheckNetwork(network.getDeploymentId(), network.getHost().apiUrl());
         } catch (NetworkNotFoundException networkNotFoundException) {
             throw new DockerNetworkCheckFailedException(
@@ -123,9 +118,8 @@ public class DockerNetworkLifecycleManager {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } catch (InvalidClientIdException invalidClientIdException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "No network found in repository for client " + clientId, invalidClientIdException);
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 
@@ -135,11 +129,11 @@ public class DockerNetworkLifecycleManager {
             throw new DockerNetworkCheckFailedException("Network with given id " + networkId + " not exists on Docker Host");
     }
 
-    public void connectContainerToNetwork(Identifier clientId, DockerContainer container)
+    public void connectContainerToNetwork(String domain, DockerContainer container)
             throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
         DockerHostNetwork network = null;
         try {
-            network = repositoryManager.loadNetwork(clientId);
+            network = repositoryManager.loadNetwork(domain);
             executeConnectContainerToNetwork(network.getDeploymentId(), container, network.getHost().apiUrl());
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new ContainerOrchestratorInternalErrorException(
@@ -150,9 +144,8 @@ public class DockerNetworkLifecycleManager {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } catch (InvalidClientIdException invalidClientIdException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "No network found in repository for client " + clientId, invalidClientIdException);
+        } catch (InvalidDomainException invalidDomainException) {
+            throw new ContainerOrchestratorInternalErrorException(invalidDomainException.getMessage());
         }
     }
 
@@ -175,24 +168,24 @@ public class DockerNetworkLifecycleManager {
     }
 
     /**
-     * Removes the given container from the list of containers attached to given client's network.
+     * Removes the given container from the list of containers attached to given client's domain network.
      * No action is triggered on the Docker Host. It is assumed that the container has been already removed
      * from the Docker Host and thus not attached to the network anymore.
      *
-     * @param clientId Identifier of the client
+     * @param domain Name of the client domain
      * @param container Container being disconnected
-     * @throws ContainerOrchestratorInternalErrorException if network for given client not found in repository
+     * @throws ContainerOrchestratorInternalErrorException if network for given domain not found in repository
      */
-    public void disconnectContainerFromNetwork(Identifier clientId, DockerContainer container)
+    public void disconnectContainerFromNetwork(String domain, DockerContainer container)
             throws ContainerOrchestratorInternalErrorException {
     }
 
-    public void removeNetwork(Identifier clientId)
+    public void removeNetwork(String domain)
             throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
         DockerHostNetwork network = null;
         try {
-            network = repositoryManager.loadNetwork(clientId);
-            repositoryManager.removeNetwork(clientId);
+            network = repositoryManager.loadNetwork(domain);
+            repositoryManager.removeNetwork(domain);
             if (checkIfNetworkExists(network.getDeploymentId(), network.getHost().apiUrl()))
                 executeRemove(network.getDeploymentId(), network.getHost().apiUrl());
         } catch (DockerTimeoutException dockerTimeoutException) {
@@ -204,9 +197,8 @@ public class DockerNetworkLifecycleManager {
         } catch (InterruptedException interruptedException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } catch (InvalidClientIdException invalidClientIdException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "No network found in repository for client " + clientId, invalidClientIdException);
+        } catch (InvalidDomainException ide) {
+            throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
     }
 

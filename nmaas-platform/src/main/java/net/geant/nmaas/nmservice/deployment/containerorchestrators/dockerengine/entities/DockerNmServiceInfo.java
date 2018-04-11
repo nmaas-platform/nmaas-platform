@@ -23,8 +23,8 @@ public abstract class DockerNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public DockerNmServiceInfo(Identifier deploymentId, Identifier applicationId, Identifier clientId) {
-        super(deploymentId, applicationId, clientId);
+    public DockerNmServiceInfo(Identifier deploymentId, String deploymentName, String domain) {
+        super(deploymentId, deploymentName, domain);
     }
 
     public DockerHost getHost() {

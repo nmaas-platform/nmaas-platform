@@ -75,6 +75,47 @@ echo ---------------------
 echo Get all users
 curl -X GET %API_URL%/users --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
+
+echo.
+echo ---------------------
+echo Create app1 aubscription to DOMAIN1
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\subscriptions\sub1.json
+
+echo.
+echo ---------------------
+echo Create app2 aubscription to DOMAIN1
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\subscriptions\sub2.json
+
+echo.
+echo ---------------------
+echo Get all subscriptions
+curl -X GET %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Get all subscriptions for Domain1
+curl -X GET %API_URL%/subscriptions/domains/2 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Get all subscriptions for App1
+curl -X GET %API_URL%/subscriptions/apps/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Get subscription for App1 in DOMAIN1
+curl -X GET %API_URL%/subscriptions/apps/1/domains/2 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Delete app2 aubscription to DOMAIN1
+curl -X DELETE %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+
+echo.
+echo ---------------------
+echo Get all subscriptions for App1
+curl -X GET %API_URL%/subscriptions/apps/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
 echo.
 echo ---------------------
 echo Create app2 instance
@@ -95,5 +136,4 @@ echo.
 echo ---------------------
 echo Get app instance 1
 curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
-
 

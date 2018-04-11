@@ -1,5 +1,5 @@
 <div class="row">
-	<h3>Domain details: </h3>
+	<h3>Domain details:</h3>
 	<form *ngIf="domain" (submit)="submit()" class="form-horizontal">
 		<div *ngIf="domain.id" class="form-group">
 			<label class="col-sm-2 control-label">Id:</label>
@@ -7,21 +7,46 @@
 				<p class="form-control-static">{{domain.id}}</p>
 			</div>
 		</div>
-	
+
 		<div class="form-group">
 			<label for="name" class="col-sm-2 control-label">Name:</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" id="name" name="name" [(ngModel)]="domain.name">
+				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="name" name="name"
+					[(ngModel)]="domain.name" #name="ngModel" required>
+				<div *ngIf="name.invalid && (name.dirty || name.touched)"
+					class="alert alert-danger">
+					<div *ngIf="name.errors.required">Name is required.</div>
+				</div>
 			</div>
 		</div>
-		
+
+
+		<div class="form-group">
+			<label for="codename" class="col-sm-2 control-label">Codename:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="codename"
+					name="codename" pattern="[a-zA-Z0-9_]*"
+					[(ngModel)]="domain.codename" #codename="ngModel" minlength="2" maxlength="8" required>
+				<div *ngIf="codename.invalid && (codename.dirty || codename.touched)"
+					class="alert alert-danger">
+
+					<div *ngIf="codename.errors.required">Codename is required.</div>
+					<div *ngIf="codename.errors.pattern">Codename must contains a-z, A-Z, 0_9, _ characters</div>
+					<div *ngIf="codename.errors.minlength || codename.errors.maxlength">Codename has to be 2-8 characters long.</div>
+
+				</div>
+			</div>
+		</div>
+
 		<div class="form-group">
 			<label for="active" class="col-sm-2 control-label">Active:</label>
 			<div class="col-sm-10">
-				<input type="checkbox" class="btn btn-default" id="active" name="active" [(ngModel)]="domain.active">
+				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="active"
+					name="active" [(ngModel)]="domain.active">
 			</div>
 		</div>
-		
-		<button type="submit" class="btn btn-default">Submit</button>		
+
+		<button *ngIf="isInMode(ComponentMode.EDIT) || isInMode(ComponentMode.CREATE)" type="submit" class="btn btn-default" valid>Submit</button>
 	</form>
+	<div *ngIf="!domain">Not found.</div>
 </div>

@@ -57,12 +57,12 @@ public class AppScreenshotsController extends AppBaseController {
 		if(app.getLogo() != null) {
 			fileStorage.remove(app.getLogo());
 			app.setLogo(null);
-			appRepo.save(app);
+			applications.update(app);
 		}
 		
 		FileInfo fileInfo = fileStorage.store(file);
 		app.setLogo(fileInfo);
-		appRepo.save(app);
+		applications.update(app);
 		
 		return modelMapper.map(fileInfo, net.geant.nmaas.portal.api.domain.FileInfo.class);
 	}
@@ -76,7 +76,7 @@ public class AppScreenshotsController extends AppBaseController {
 		if(app.getLogo() != null) {
 			fileStorage.remove(app.getLogo());
 			app.setLogo(null);
-			appRepo.save(app);
+			applications.update(app);
 		}
 	}
 	
@@ -98,7 +98,7 @@ public class AppScreenshotsController extends AppBaseController {
 		
 		FileInfo fileInfo = fileStorage.store(file);
 		app.getScreenshots().add(fileInfo);
-		appRepo.save(app);
+		applications.update(app);
 		
 		return modelMapper.map(fileInfo, net.geant.nmaas.portal.api.domain.FileInfo.class);
 	}

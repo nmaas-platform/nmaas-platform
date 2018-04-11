@@ -14,7 +14,7 @@ import java.util.Set;
 public class Application implements Serializable {
 
 	@Id
-	@GeneratedValue( strategy = GenerationType.AUTO )
+	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	@Column(name="application_id")
 	private Long id;
 	
@@ -51,6 +51,8 @@ public class Application implements Serializable {
 
 	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
 	private AppDeploymentSpec appDeploymentSpec;
+	
+	private boolean deleted;
 	
 	protected Application() {}
 
@@ -175,4 +177,39 @@ public class Application implements Serializable {
 	public void setAppDeploymentSpec(AppDeploymentSpec appDeploymentSpec) {
 		this.appDeploymentSpec = appDeploymentSpec;
 	}
+	
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Application other = (Application) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+	
+	
 }

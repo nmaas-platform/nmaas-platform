@@ -49,7 +49,7 @@ public class UserRepositoryTest {
 	@Before
 	public void setUp() throws Exception {
 		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN);
+		domains.createDomain(DOMAIN, DOMAIN);
 		userRepository.deleteAll();
 	}
 
@@ -59,9 +59,9 @@ public class UserRepositoryTest {
 
 	@Test
 	public void test() {
-		User tester = new User("tester", "test123", domains.findDomain(DOMAIN), Role.ROLE_USER);
-		User admin = new User("admin", "admin123", domains.getGlobalDomain(), Role.ROLE_SUPERADMIN);
-		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN), Role.ROLE_USER));
+		User tester = new User("tester", true, "test123", domains.findDomain(DOMAIN).get(), Role.ROLE_USER);
+		User admin = new User("admin", true, "admin123", domains.getGlobalDomain().get(), Role.ROLE_SUPERADMIN);
+		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);
 		

@@ -1,7 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -9,18 +8,18 @@ import org.springframework.context.ApplicationEvent;
  */
 public class DcnDeploymentStateChangeEvent extends ApplicationEvent {
 
-    private Identifier clientId;
+    private String domain;
 
     private DcnDeploymentState state;
 
-    public DcnDeploymentStateChangeEvent(Object source, Identifier clientId, DcnDeploymentState state) {
+    public DcnDeploymentStateChangeEvent(Object source, String domain, DcnDeploymentState state) {
         super(source);
-        this.clientId = clientId;
+        this.domain = domain;
         this.state = state;
     }
 
-    public Identifier getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
 
     public DcnDeploymentState getState() {
@@ -30,7 +29,7 @@ public class DcnDeploymentStateChangeEvent extends ApplicationEvent {
     @Override
     public String toString() {
         return "DcnDeploymentStateChangeEvent{" +
-                "clientId=" + clientId +
+                "domain=" + domain +
                 ", state=" + state +
                 '}';
     }

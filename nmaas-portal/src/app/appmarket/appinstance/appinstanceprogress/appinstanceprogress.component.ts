@@ -28,12 +28,16 @@ export class AppInstanceProgressComponent implements OnInit {
         // available here
     }
 
-    public getCurrentStage(): AppInstanceProgressStage {
-        for(let stage of this.stages)
-            if(this.activeState === stage.activeState)
-                return stage; 
-        return null;
-    }
+//    public getCurrentStage(): AppInstanceProgressStage {
+//        console.debug('Test state: ' + this.activeState);
+//        for(let stage of this.stages) {
+//            if(this.activeState === stage.activeState) {
+//                console.debug('Current stage:' + stage);
+//                return stage; 
+//            }
+//        }
+//        return null;
+//    }
     
 //    public setState(state: AppInstanceState): void {
 //        console.debug('Set progress state: ' + state);

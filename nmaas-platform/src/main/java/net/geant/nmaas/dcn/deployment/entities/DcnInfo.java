@@ -1,7 +1,5 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
-
 import javax.persistence.*;
 
 /**
@@ -12,7 +10,7 @@ import javax.persistence.*;
 public class DcnInfo {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
 
@@ -20,7 +18,7 @@ public class DcnInfo {
     private String name;
 
     @Column(nullable=false)
-    private Identifier clientId;
+    private String domain;
 
     @Column(nullable=false)
     private DcnDeploymentState state = DcnDeploymentState.INIT;
@@ -38,7 +36,7 @@ public class DcnInfo {
 
     public DcnInfo(DcnSpec spec) {
         this.name = spec.getName();
-        this.clientId = spec.getClientId();
+        this.domain = spec.getDomain();
     }
 
     public Long getId() {
@@ -57,12 +55,12 @@ public class DcnInfo {
         this.name = name;
     }
 
-    public Identifier getClientId() {
-        return clientId;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setClientId(Identifier clientId) {
-        this.clientId = clientId;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
     public void setState(DcnDeploymentState state) {

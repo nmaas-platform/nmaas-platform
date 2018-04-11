@@ -6,7 +6,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.Kubernetes
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,19 +78,19 @@ public class KubernetesClusterManagerTest {
     @Test
     public void shouldReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
         repository.save(simpleKubernetesCluster("cluster1"));
-        Identifier client10 = Identifier.newInstance("10");
-        ExternalNetworkView network10 = manager.reserveExternalNetwork(client10);
-        Identifier client20 = Identifier.newInstance("20");
-        ExternalNetworkView network20 = manager.reserveExternalNetwork(client20);
+        String domain10 = "domain10";
+        ExternalNetworkView network10 = manager.reserveExternalNetwork(domain10);
+        String domain20 = "domain20";
+        ExternalNetworkView network20 = manager.reserveExternalNetwork(domain20);
         assertThat(network10.getExternalIp().getHostAddress(), not(equalTo(network20.getExternalIp().getHostAddress())));
     }
 
     @Test(expected = ExternalNetworkNotFoundException.class)
     public void shouldFailToReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
         repository.save(simpleKubernetesCluster("cluster1"));
-        manager.reserveExternalNetwork(Identifier.newInstance("10"));
-        manager.reserveExternalNetwork(Identifier.newInstance("20"));
-        manager.reserveExternalNetwork(Identifier.newInstance("30"));
+        manager.reserveExternalNetwork("domain10");
+        manager.reserveExternalNetwork("domain20");
+        manager.reserveExternalNetwork("domain30");
     }
 
     private KubernetesCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {

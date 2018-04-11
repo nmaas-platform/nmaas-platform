@@ -1,18 +1,11 @@
 					<div class="row">
+						<h3>Application instances</h3> 
+					
 						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 							<form class = "form-inline" role = "form">
 								<label for="selectionType">Show: </label>
 								<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">				
 									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value}}</option>
-								</select>	
-							</form>
-						</div>					
-						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-							<form class = "form-inline" role = "form">
-								<label for="userDomains">Domains: </label>
-								<select id="userDomains" class="form-control" [(ngModel)]="selectedDomainId" (change)="onSelectionChange($event)" [selectedIndex]="selectedDomainId" [ngModelOptions]="{standalone: true}">				
-									<option [value]="0">All</option>
-									<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
 								</select>	
 							</form>
 						</div>
@@ -23,6 +16,7 @@
 						   <thead>
 							  <tr>
 								 <th>Name</th>
+								 <th>Domain</th>
 								 <th>Owner</th>
 								 <th>Deployed at</th>
 								 <th>Application</th>
@@ -32,9 +26,10 @@
 						   </thead>
 						   
 						   <tbody>
-						      <ng-template ngFor let-appInstance [ngForOf]="appInstances">
+						      <ng-template ngFor let-appInstance [ngForOf]="appInstances | async">
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
+								 <td>{{appInstance?.domainId}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
 								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
 								 <td>{{appInstance?.applicationName}}</td>

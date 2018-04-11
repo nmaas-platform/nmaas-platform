@@ -27,13 +27,13 @@ import java.util.Map;
  */
 @Component
 @Profile("env_docker-compose")
-public class DockerComposeFilePreparer {
+class DockerComposeFilePreparer {
 
     @Autowired
     private DockerComposeServiceRepositoryManager repositoryManager;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate)
+    void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate)
             throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
         final Map<String, Object> model = buildModel(input);
         try {
@@ -41,6 +41,7 @@ public class DockerComposeFilePreparer {
             Template template = convertToTemplate(dockerComposeFileTemplate);
             DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
             nmServiceInfo.setDockerComposeFile(composeFile);
+            repositoryManager.storeService(nmServiceInfo);
         } catch (InvalidDeploymentIdException e) {
             throw new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found");
         }
