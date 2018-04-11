@@ -1,5 +1,5 @@
 {
-  "customerId":"1",
+  "domain":"testDom1",
   "routerName":"R4",
   "routerId":"172.16.4.4",
   "routerInterfaceName":"ge-0/0/4",

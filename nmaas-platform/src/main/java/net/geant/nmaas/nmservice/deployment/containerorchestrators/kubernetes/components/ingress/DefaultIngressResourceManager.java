@@ -103,15 +103,15 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     private String ingressResourceName(String domain) {
-        return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + domain;
+        return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + domain.toLowerCase();
     }
 
     private String externalUrl(String deploymentName, String domain) {
-        return deploymentName + "." + domain + NMAAS_DOMAIN_SUFFIX;
+        return deploymentName + "." + domain.toLowerCase() + NMAAS_DOMAIN_SUFFIX;
     }
 
     private String ingressClassName(String domain) {
-        return NMAAS_INGRESS_CLASS_NAME_PREFIX + domain;
+        return NMAAS_INGRESS_CLASS_NAME_PREFIX + domain.toLowerCase();
     }
 
     private Service retrieveServiceObject(String namespace, KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
