@@ -1,20 +1,20 @@
 import { DefaultLogo } from '../directive/defaultlogo.directive';
 import { RolesDirective } from '../directive/roles.directive';
-import {NgModule} from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
-import {CommentsComponent} from './comments/index';
-import {FooterComponent} from './footer/index';
-import {RateComponent} from './rate/index';
-import {ScreenshotsComponent} from './screenshots/index';
-import {ModalComponent} from './modal/index';
-import {PipesModule} from '../pipe/pipes.module';
-import {ServicesModule} from '../service/services.module';
+import { CommentsComponent } from './comments/index';
+import { FooterComponent } from './footer/index';
+import { RateComponent } from './rate/index';
+import { ScreenshotsComponent } from './screenshots/index';
+import { ModalComponent } from './modal/index';
+import { PipesModule } from '../pipe/pipes.module';
+import { ServicesModule } from '../service/services.module';
 import { UserDataService } from '../service/userdata.service';
-import {PasswordComponent, PasswordValidator} from './common/password/password.component';
-import {UserDetailsComponent} from './users/details/userdetails.component';
-import {UsersListComponent} from './users/list/userslist.component';
+import { PasswordComponent, PasswordValidator } from './common/password/password.component';
+import { UserDetailsComponent } from './users/details/userdetails.component';
+import { UsersListComponent } from './users/list/userslist.component';
 import { UserPrivilegesComponent } from './users/privileges/userprivileges.component';
 import { BaseComponent } from './common/basecomponent/base.component';
 import { RouterModule } from '@angular/router';
@@ -47,7 +47,7 @@ import { AppElementComponent } from './applications/list/element/appelement.comp
     UserPrivilegesComponent,
     BaseComponent,
     DefaultLogo,
-    NavbarComponent
+    NavbarComponent,
     DefaultLogo,
     RolesDirective,
     SearchComponent,
