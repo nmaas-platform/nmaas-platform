@@ -18,7 +18,8 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 import { ChangelogService } from './service/changelog.service';
-import { LogoutComponent } from './logout/logout.component';
+import { LoginComponent } from './welcome/login/login.component';
+import { LogoutComponent } from './welcome/logout/logout.component';
 import { ChangelogComponent } from './changelog/changelog.component';
 
 import { HttpClientModule } from '@angular/common/http';

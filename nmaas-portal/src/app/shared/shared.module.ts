@@ -71,7 +71,7 @@ import { AppElementComponent } from './applications/list/element/appelement.comp
     UsersListComponent,
     PasswordComponent,
     UserPrivilegesComponent,
-    NavbarComponent
+    NavbarComponent,
     UserPrivilegesComponent,
     RolesDirective,
     SearchComponent,
