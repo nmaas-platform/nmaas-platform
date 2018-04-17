@@ -17,10 +17,8 @@ import { SharedModule } from './shared/index';
 
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
-import { ChangelogService } from './service/changelog.service';
 import { LoginComponent } from './welcome/login/login.component';
 import { LogoutComponent } from './welcome/logout/logout.component';
-import { ChangelogComponent } from './changelog/changelog.component';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -41,9 +39,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    LogoutComponent,
-    ChangelogComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,8 +64,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       provide: AuthHttp,
       useFactory: authHttpServiceFactory,
       deps: [Http, RequestOptions]
-    },
-    ChangelogService
+    }
   ],
   bootstrap: [ AppComponent ]
 })

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { NavbarComponent } from '../shared/index';
-import { FooterComponent } from '../shared/index';
-import { ChangelogService } from '../service/index';
+import { NavbarComponent } from '../../shared/index';
+import { FooterComponent } from '../../shared/index';
+import { ChangelogService } from '../../service/index';
 
 @Component({
 	selector: 'app-changelog',

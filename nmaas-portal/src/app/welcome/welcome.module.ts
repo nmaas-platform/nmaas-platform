@@ -1,9 +1,11 @@
 import { RegistrationService } from '../auth/registration.service';
 import { LoginComponent } from './login';
 import { LogoutComponent } from './logout/logout.component';
+import { ChangelogComponent } from './changelog/changelog.component';
 import { PipesModule } from '../pipe/pipes.module';
 import { SharedModule } from '../shared/shared.module';
 import { RegistrationComponent } from './registration/registration.component';
+import { ChangelogService } from '../service/changelog.service';
 import { WelcomeComponent } from './welcome.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -16,6 +18,7 @@ import { AuthModule } from 'angular2-jwt';
     WelcomeComponent,
     LoginComponent,
     LogoutComponent,
+    ChangelogComponent,
     RegistrationComponent,
   ],
   imports: [
@@ -31,7 +34,8 @@ import { AuthModule } from 'angular2-jwt';
     WelcomeComponent
   ],
   providers: [
-    RegistrationService
+    RegistrationService,
+    ChangelogService
   ]
 })
 export class WelcomeModule {}
