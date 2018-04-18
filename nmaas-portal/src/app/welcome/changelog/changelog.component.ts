@@ -17,12 +17,12 @@ export class ChangelogComponent implements OnInit {
 	constructor(private router: Router, private changelogService: ChangelogService) { }
 
 	ngOnInit() {
-		this.changelogService.getChangelog().subscribe(changelog => {
+		this.changelogService.getChangelog().subscribe((changelog) => {
 			this.changelog = changelog;
 		})
 	}
 
 	public isRouteLogin(): boolean {
-		return this.router.url === '/login'? true : false;
+		return this.router.url === '/welcome/login' || this.router.url === '/welcome/registration' ? true : false;
 	}
 }
