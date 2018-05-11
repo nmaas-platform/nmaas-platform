@@ -97,12 +97,15 @@ public class KubernetesManager implements ContainerOrchestrator {
             throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
         try {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            String serviceExternalUrl = ingressResourceManager.createOrUpdateIngressResource(
-                    deploymentId,
+            String serviceExternalUrl = ingressResourceManager.generateServiceExternalURL(
                     service.getDomain(),
                     service.getDeploymentName());
             repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
             serviceLifecycleManager.deployService(deploymentId);
+            ingressResourceManager.createOrUpdateIngressResource(
+                    deploymentId,
+                    service.getDomain(),
+                    service.getDeploymentName());
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + idie.getMessage());

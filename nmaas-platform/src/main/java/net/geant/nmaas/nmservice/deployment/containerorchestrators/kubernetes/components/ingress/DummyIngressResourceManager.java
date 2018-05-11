@@ -18,13 +18,25 @@ public class DummyIngressResourceManager implements IngressResourceManager {
     // TODO move to cluster object
     private static final String NMAAS_DOMAIN_SUFFIX = ".nmaas.geant.net";
 
+    /**
+     * Generates URL to be used to access the deployed service from outside of the cluster.
+     *
+     * @param domain name of the client domain for this deployment
+     * @param deploymentName name of the deployment provided by the user
+     * @return URL under which deployed service is available
+     */
     @Override
-    public String createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName) throws IngressResourceManipulationException {
+    public String generateServiceExternalURL(String domain, String deploymentName) {
         return externalUrl(deploymentName, domain);
     }
 
     private String externalUrl(String deploymentName, String domain) {
         return deploymentName + "." + domain.toLowerCase() + NMAAS_DOMAIN_SUFFIX;
+    }
+
+    @Override
+    public void createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName) throws IngressResourceManipulationException {
+        // Nothing to do
     }
 
     @Override

@@ -53,6 +53,18 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     /**
+     * Generates URL to be used to access the deployed service from outside of the cluster.
+     *
+     * @param domain name of the client domain for this deployment
+     * @param deploymentName name of the deployment provided by the user
+     * @return URL under which deployed service is available
+     */
+    @Override
+    public String generateServiceExternalURL(String domain, String deploymentName) {
+        return externalUrl(deploymentName, domain);
+    }
+
+    /**
      * Creates new ingress resource if one does not exists or updates the existing one by adding an ingress rule for newly
      * deployed service.
      * Note:
@@ -62,12 +74,11 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      * @param deploymentId unique identifier of service deployment
      * @param domain name of the domain for this deployment
      * @param deploymentName name of the deployment provided by the user
-     * @return URL under which deployed service is available
      * @throws IngressResourceManipulationException if Kubernetes client throws any exception
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized String createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName)
+    public synchronized void createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName)
             throws IngressResourceManipulationException {
         KubernetesClient client = kubernetesClusterManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
@@ -98,7 +109,6 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                 deleteIngressResource(client, ingress);
             }
             createIngressResource(client, ingress);
-            return externalUrl;
         } catch (KubernetesClientException iee) {
             throw new IngressResourceManipulationException("Problem wih executing command on Kubernetes API -> " + iee.getMessage());
         }

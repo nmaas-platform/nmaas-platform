@@ -11,15 +11,23 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 public interface IngressResourceManager {
 
     /**
+     * Generates URL to be used to access the deployed service from outside of the cluster.
+     *
+     * @param domain name of the client domain for this deployment
+     * @param deploymentName name of the deployment provided by the user
+     * @return URL under which deployed service is available
+     */
+    String generateServiceExternalURL(String domain, String deploymentName);
+
+    /**
      * Creates a new ingress resource for given domain or updates an existing one with new entry.
      *
      * @param deploymentId unique identifier of service deployment
      * @param domain name of the client domain for this deployment
      * @param deploymentName name of the deployment provided by the user
-     * @return URL under which deployed service is available
      * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
-    String createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName) throws IngressResourceManipulationException;
+    void createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName) throws IngressResourceManipulationException;
 
     /**
      * Deletes a rule from existing ingress resource.
