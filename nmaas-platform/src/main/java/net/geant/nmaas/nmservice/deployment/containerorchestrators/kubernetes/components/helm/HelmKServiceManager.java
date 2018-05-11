@@ -29,6 +29,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION = "nmaas.config.action";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
+    static final String HELM_INSTALL_OPTION_EXTERNAL_URL = "nmaas.serviceurl";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
@@ -56,9 +57,11 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         String domain = serviceInfo.getDomain();
         String repoUrl = serviceInfo.getGitLabProject().getCloneUrl();
+        String serviceExternalURL = serviceInfo.getServiceExternalUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
+        arguments.put(HELM_INSTALL_OPTION_EXTERNAL_URL, serviceExternalURL);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
         helmCommandExecutor.executeHelmInstallCommand(

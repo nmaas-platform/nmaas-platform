@@ -14,6 +14,7 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Profile("kubernetes_api_in_use")
 public class DefaultIngressResourceManager implements IngressResourceManager {
 
     private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-";
