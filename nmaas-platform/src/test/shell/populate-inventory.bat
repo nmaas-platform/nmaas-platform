@@ -63,8 +63,8 @@ echo
 curl -X GET %API_URL%/management/network/dockerhosts --header "Authorization: Bearer %token%"
 
 echo.
-echo Adding default network attachment point to default domain testDom1
-curl -X POST %API_URL%/management/domains/testDom1/network --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\domains\test-domain-1-network-attach-point.json
+echo Adding default network attachment point to default domain testdom1
+curl -X POST %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\domains\test-domain-1-network-attach-point.json
 echo
-curl -X GET %API_URL%/management/domains/testDom1/network --header "Authorization: Bearer %token%"
+curl -X GET %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%"
 echo.
