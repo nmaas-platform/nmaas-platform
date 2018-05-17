@@ -1,0 +1,17 @@
+.container-fluid {
+	min-height: 100vh;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(#406081, #004041);
+}
+
+.login-vertical-offset {
+	margin-top: 66px;
+}
+
+h4.panel-title {
+	font-size: 18px;
+}
+
+.card-body span {
+	font-weight: bold;
+}

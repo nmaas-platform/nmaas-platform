@@ -17,7 +17,10 @@ import { SharedModule } from './shared/index';
 
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
+import { LoginComponent } from './welcome/login/login.component';
+import { LogoutComponent } from './welcome/logout/logout.component';
 
+import { HttpClientModule } from '@angular/common/http';
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -41,6 +44,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     BrowserModule,
     FormsModule,
     HttpModule,
+    HttpClientModule,
     AppMarketModule,
     SharedModule,
     WelcomeModule,
