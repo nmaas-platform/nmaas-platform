@@ -79,6 +79,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public Boolean getUseIngressFromChart() {
+        return loadSingleCluster().getIngress().getUseIngressFromChart();
+    }
+
+    @Override
     public String getExternalServiceDomain() {
         return loadSingleCluster().getIngress().getExternalServiceDomain();
     }

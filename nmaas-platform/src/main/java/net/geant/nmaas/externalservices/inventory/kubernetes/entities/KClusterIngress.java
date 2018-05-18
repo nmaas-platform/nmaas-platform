@@ -23,6 +23,10 @@ public class KClusterIngress {
     /** Name of ingress controller helm chart archive */
     private String controllerChartArchive;
 
+    /** Use ingress resource definition from the helm chart */
+    @Column(nullable = false)
+    private Boolean useIngressFromChart;
+
     /** Common part of the external service URL assigned to deployed services */
     @Column(nullable = false)
     private String externalServiceDomain;
@@ -49,6 +53,14 @@ public class KClusterIngress {
 
     public void setControllerChartArchive(String controllerChartArchive) {
         this.controllerChartArchive = controllerChartArchive;
+    }
+
+    public Boolean getUseIngressFromChart() {
+        return useIngressFromChart;
+    }
+
+    public void setUseIngressFromChart(Boolean useIngressFromChart) {
+        this.useIngressFromChart = useIngressFromChart;
     }
 
     public String getExternalServiceDomain() {
