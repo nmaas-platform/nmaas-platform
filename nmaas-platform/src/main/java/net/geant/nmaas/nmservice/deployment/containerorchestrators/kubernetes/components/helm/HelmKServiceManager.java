@@ -1,8 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
@@ -10,7 +11,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -33,14 +33,17 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
+    private KClusterDeploymentManager deploymentManager;
     private HelmCommandExecutor helmCommandExecutor;
 
-    private String kubernetesPersistenceStorageClass;
-
     @Autowired
-    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager, KNamespaceService namespaceService, HelmCommandExecutor helmCommandExecutor) {
+    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager,
+                               KNamespaceService namespaceService,
+                               KClusterDeploymentManager deploymentManager,
+                               HelmCommandExecutor helmCommandExecutor) {
         this.repositoryManager = repositoryManager;
         this.namespaceService = namespaceService;
+        this.deploymentManager = deploymentManager;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
@@ -60,8 +63,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         String serviceExternalURL = serviceInfo.getServiceExternalUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
-        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, kubernetesPersistenceStorageClass);
         arguments.put(HELM_INSTALL_OPTION_EXTERNAL_URL, serviceExternalURL);
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getDefaultPersistenceClass());
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
         helmCommandExecutor.executeHelmInstallCommand(
@@ -103,11 +106,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
         }
-    }
-
-    @Value("${kubernetes.persistence.class}")
-    public void setKubernetesPersistenceStorageClass(String kubernetesPersistenceStorageClass) {
-        this.kubernetesPersistenceStorageClass = kubernetesPersistenceStorageClass;
     }
 
 }

@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.api;
 
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class KubernetesClusterManagerRestController {
     }
 
     /**
-     * List all {@link KubernetesCluster} stored in repository
+     * List all {@link KCluster} stored in repository
      * @return list of {@link KubernetesClusterView} objects
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
@@ -41,36 +41,36 @@ public class KubernetesClusterManagerRestController {
     }
 
     /**
-     * Fetch {@link KubernetesCluster} instance by name
-     * @param name Unique {@link KubernetesCluster} name
-     * @return {@link KubernetesCluster} instance
+     * Fetch {@link KCluster} instance by name
+     * @param name Unique {@link KCluster} name
+     * @return {@link KCluster} instance
      * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @GetMapping(value = "/{name}")
-    public KubernetesCluster getKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
+    public KCluster getKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
         return clusterManager.getClusterByName(name);
     }
 
     /**
-     * Store new {@link KubernetesCluster} instance. In current implementation only a single Kubernetes cluster in
+     * Store new {@link KCluster} instance. In current implementation only a single Kubernetes cluster in
      * the system is supported.
-     * @param newKubernetesCluster new {@link KubernetesCluster} data
+     * @param newKubernetesCluster new {@link KCluster} data
      * @throws OnlyOneKubernetesClusterSupportedException when trying to add new cluster while one already exists (HttpStatus.NOT_ACCEPTABLE)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addKubernetesCluster(@RequestBody KubernetesCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
+    public void addKubernetesCluster(@RequestBody KCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
         clusterManager.addNewCluster(newKubernetesCluster);
     }
 
     /**
-     * Update {@link KubernetesCluster} instance
-     * @param name Unique {@link KubernetesCluster} name
-     * @param updatedKubernetesCluster {@link KubernetesCluster} instance pass to update
+     * Update {@link KCluster} instance
+     * @param name Unique {@link KCluster} name
+     * @param updatedKubernetesCluster {@link KCluster} instance pass to update
      * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -79,14 +79,14 @@ public class KubernetesClusterManagerRestController {
             value = "/{name}",
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("name") String name,@RequestBody KubernetesCluster updatedKubernetesCluster)
+    public void updateKubernetesCluster(@PathVariable("name") String name,@RequestBody KCluster updatedKubernetesCluster)
             throws KubernetesClusterNotFoundException {
         clusterManager.updateCluster(name, updatedKubernetesCluster);
     }
 
     /**
-     * Remove {@link KubernetesCluster} instance
-     * @param name Unique {@link KubernetesCluster} name
+     * Remove {@link KCluster} instance
+     * @param name Unique {@link KCluster} name
      * @throws KubernetesClusterNotFoundException when Kubernetes cluster does not exists (HttpStatus.NOT_FOUND)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")

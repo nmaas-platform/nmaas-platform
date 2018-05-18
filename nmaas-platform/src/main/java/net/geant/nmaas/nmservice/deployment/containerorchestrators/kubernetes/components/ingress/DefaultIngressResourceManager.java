@@ -7,9 +7,10 @@ import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.extensions.*;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressResourceManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -35,20 +36,20 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     private static final String NMAAS_INGRESS_RESOURCE_NAME_PREFIX = "nmaas-i-";
     private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-";
     private static final String NMAAS_INGRESS_CLASS_ANNOTATION_PARAM_NAME = "kubernetes.io/ingress.class";
-    // TODO move to cluster object
-    private static final String NMAAS_DOMAIN_SUFFIX = ".nmaas.geant.net";
 
     private static final String DEFAULT_SERVICE_PATH = "/";
     private static final String SERVICE_SELECT_OPTION_RELEASE = "release";
     private static final String SERVICE_SELECT_OPTION_ACCESS = "access";
     private static final String SERVICE_SELECT_VALUE_ACCESS_FOR_INGRESS = "external";
 
-    private KubernetesClusterManager kubernetesClusterManager;
+    private KClusterApiManager clusterApiManager;
+    private KClusterIngressManager clusterIngressManager;
     private KNamespaceService namespaceService;
 
     @Autowired
-    public DefaultIngressResourceManager(KubernetesClusterManager kubernetesClusterManager, KNamespaceService namespaceService) {
-        this.kubernetesClusterManager = kubernetesClusterManager;
+    public DefaultIngressResourceManager(KClusterApiManager clusterApiManager, KClusterIngressManager clusterIngressManager, KNamespaceService namespaceService) {
+        this.clusterApiManager = clusterApiManager;
+        this.clusterIngressManager = clusterIngressManager;
         this.namespaceService = namespaceService;
     }
 
@@ -80,7 +81,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Loggable(LogLevel.INFO)
     public synchronized void createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName)
             throws IngressResourceManipulationException {
-        KubernetesClient client = kubernetesClusterManager.getApiClient();
+        KubernetesClient client = clusterApiManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
         String ingressResourceName = ingressResourceName(domain);
         String externalUrl = externalUrl(deploymentName, domain);
@@ -119,7 +120,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     private String externalUrl(String deploymentName, String domain) {
-        return deploymentName + "." + domain.toLowerCase() + NMAAS_DOMAIN_SUFFIX;
+        return deploymentName + "." + domain.toLowerCase() + "." + clusterIngressManager.getExternalServiceDomain();
     }
 
     private String ingressClassName(String domain) {
@@ -166,7 +167,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Override
     @Loggable(LogLevel.INFO)
     public synchronized void deleteIngressRule(String externalServiceUrl, String domain) throws IngressResourceManipulationException {
-        KubernetesClient client = kubernetesClusterManager.getApiClient();
+        KubernetesClient client = clusterApiManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
         String ingressResourceName = ingressResourceName(domain);
         try {
@@ -202,7 +203,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void deleteIngressResource(String domain) throws IngressResourceManipulationException {
-        KubernetesClient client = kubernetesClusterManager.getApiClient();
+        KubernetesClient client = clusterApiManager.getApiClient();
         String ingressResourceName = ingressResourceName(domain);
         try {
             Ingress ingress = client.extensions().ingresses().list().getItems()

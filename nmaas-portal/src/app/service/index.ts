@@ -6,3 +6,4 @@ export * from './domain.service';
 export * from './tag.service';
 export * from './user.service';
 export * from './cache.service';
+export * from './changelog.service';

@@ -5,9 +5,10 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
@@ -28,7 +29,8 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-public class KubernetesClusterManager {
+public class KubernetesClusterManager implements KClusterApiManager, KClusterHelmManager, KClusterIngressManager,
+        KClusterDeploymentManager, KNamespaceService {
 
     private KubernetesClusterRepository repository;
     private ModelMapper modelMapper;
@@ -41,25 +43,50 @@ public class KubernetesClusterManager {
 
     private KubernetesClient client;
 
+    @Override
     public KubernetesClient getApiClient() {
         return client;
     }
 
+    @Override
     public String getHelmHostAddress() {
-        return loadSingleCluster().getHelmHostAddress().getHostAddress();
+        return loadSingleCluster().getHelm().getHelmHostAddress().getHostAddress();
     }
 
+    @Override
     public String getHelmHostSshUsername() {
-        return loadSingleCluster().getHelmHostSshUsername();
+        return loadSingleCluster().getHelm().getHelmHostSshUsername();
     }
 
+    @Override
+    public Boolean getUseLocalChartArchives() {
+        return loadSingleCluster().getHelm().getUseLocalChartArchives();
+    }
+
+    @Override
     public String getHelmHostChartsDirectory() {
-        return loadSingleCluster().getHelmHostChartsDirectory();
+        return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
     }
 
-    public synchronized ExternalNetworkView reserveExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
-        KubernetesCluster cluster = loadSingleCluster();
-        ExternalNetworkSpec network = cluster.getExternalNetworks().stream()
+    @Override
+    public Boolean getUseExistingController() {
+        return loadSingleCluster().getIngress().getUseExistingController();
+    }
+
+    @Override
+    public String getControllerChartArchive() {
+        return loadSingleCluster().getIngress().getControllerChartArchive();
+    }
+
+    @Override
+    public String getExternalServiceDomain() {
+        return loadSingleCluster().getIngress().getExternalServiceDomain();
+    }
+
+    @Override
+    public synchronized KClusterExtNetworkView reserveExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
+        KCluster cluster = loadSingleCluster();
+        KClusterExtNetwork network = cluster.getExternalNetworks().stream()
                 .filter(n -> !n.isAssigned())
                 .findFirst()
                 .orElseThrow(() -> new ExternalNetworkNotFoundException("No external networks available for cluster."));
@@ -67,19 +94,31 @@ public class KubernetesClusterManager {
         network.setAssignedSince(new Date());
         network.setAssignedTo(domain);
         repository.save(cluster);
-        return new ExternalNetworkView(network);
+        return new KClusterExtNetworkView(network);
     }
 
-    public ExternalNetworkView getReservedExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
-        KubernetesCluster cluster = loadSingleCluster();
-        ExternalNetworkSpec network = cluster.getExternalNetworks().stream()
+    @Override
+    public KClusterExtNetworkView getReservedExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
+        KCluster cluster = loadSingleCluster();
+        KClusterExtNetwork network = cluster.getExternalNetworks().stream()
                 .filter(n -> domain.equals(n.getAssignedTo()))
                 .findFirst()
                 .orElseThrow(() -> new ExternalNetworkNotFoundException("No external networks available for cluster."));
-        return new ExternalNetworkView(network);
+        return new KClusterExtNetworkView(network);
     }
 
-    private KubernetesCluster loadSingleCluster() {
+    @Override
+    public String namespace(String domain) {
+        KClusterDeployment clusterDeployment = loadSingleCluster().getDeployment();
+        return (clusterDeployment.getUseDefaultNamespace()) ? clusterDeployment.getDefaultNamespace() : NMAAS_NAMESPACE_PREFIX + domain;
+    }
+
+    @Override
+    public String getDefaultPersistenceClass() {
+        return loadSingleCluster().getDeployment().getDefaultPersistenceClass();
+    }
+
+    private KCluster loadSingleCluster() {
         long noOfClusters = repository.count();
         if (noOfClusters != 1) {
             throw new IllegalStateException("Found " + repository.count() + " instead of one");
@@ -93,14 +132,14 @@ public class KubernetesClusterManager {
                 .collect(Collectors.toList());
     }
 
-    public KubernetesCluster getClusterByName(String clusterName) throws KubernetesClusterNotFoundException {
+    public KCluster getClusterByName(String clusterName) throws KubernetesClusterNotFoundException {
         return modelMapper.map(
                 repository.findByName(clusterName)
                         .orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + clusterName + " not found in repository."))
-                , KubernetesCluster.class);
+                , KCluster.class);
     }
 
-    public void addNewCluster(KubernetesCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
+    public void addNewCluster(KCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
         if(repository.count() > 0)
             throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
         repository.save(newKubernetesCluster);
@@ -119,12 +158,12 @@ public class KubernetesClusterManager {
     }
 
     private String getKubernetesApiUrl() {
-        KubernetesCluster cluster = loadSingleCluster();
-        return "http://" + cluster.getRestApiHostAddress().getHostAddress() + ":" + cluster.getRestApiPort();
+        KCluster cluster = loadSingleCluster();
+        return "http://" + cluster.getApi().getRestApiHostAddress().getHostAddress() + ":" + cluster.getApi().getRestApiPort();
     }
 
-    public void updateCluster(String name, KubernetesCluster updatedKubernetesCluster) throws KubernetesClusterNotFoundException {
-        Optional<KubernetesCluster> existingKubernetesCluster = repository.findByName(name);
+    public void updateCluster(String name, KCluster updatedKubernetesCluster) throws KubernetesClusterNotFoundException {
+        Optional<KCluster> existingKubernetesCluster = repository.findByName(name);
         if (!existingKubernetesCluster.isPresent())
             throw new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository.");
         else {
@@ -134,7 +173,7 @@ public class KubernetesClusterManager {
     }
 
     public void removeCluster(String name) throws KubernetesClusterNotFoundException {
-        KubernetesCluster cluster = repository.findByName(name).
+        KCluster cluster = repository.findByName(name).
                 orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository."));
         repository.delete(cluster.getId());
     }

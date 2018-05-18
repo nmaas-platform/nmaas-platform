@@ -1,10 +1,25 @@
 {
   "name":"K8S-NAME-1",
-  "helmHostAddress":"10.134.241.6",
-  "helmHostSshUsername":"nmaas",
-  "helmHostChartsDirectory":"/home/nmaas/charts",
-  "restApiHostAddress":"10.134.241.6",
-  "restApiPort":8080,
+  "helm": {
+    "helmHostAddress":"10.134.241.6",
+    "helmHostSshUsername":"nmaas",
+    "useLocalChartArchives":true,
+    "helmHostChartsDirectory":"/home/nmaas/charts"
+  },
+  "api": {
+    "restApiHostAddress":"10.134.241.6",
+    "restApiPort":8080
+  },
+  "ingress": {
+    "useExistingController":false,
+    "controllerChartArchive":"nginx-ingress.tgz",
+    "externalServiceDomain":"nmaas.geant.net"
+  },
+  "deployment": {
+    "useDefaultNamespace":true,
+    "defaultNamespace":"default",
+    "defaultPersistenceClass":"managed-nfs-storage"
+  },
   "attachPoint": {
     "routerName":"R3",
     "routerId":"172.16.3.3",
