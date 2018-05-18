@@ -1,15 +1,14 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -27,21 +26,25 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     private static final String NMAAS_INGRESS_CONTROLLER_NAME_PREFIX = "nmaas-icrtl-";
     private static final String NMAAS_INGRESS_CLASS_NAME_PREFIX = "nmaas-iclass-";
 
-    private KubernetesClusterManager clusterManager;
+    private KClusterIngressManager clusterIngressManager;
     private KNamespaceService namespaceService;
     private HelmCommandExecutor helmCommandExecutor;
 
-    private String kubernetesIngressControllerChart;
-
     @Autowired
-    public DefaultIngressControllerManager(HelmCommandExecutor helmCommandExecutor, KNamespaceService namespaceService, KubernetesClusterManager clusterManager) {
-        this.clusterManager = clusterManager;
+    public DefaultIngressControllerManager(KClusterIngressManager clusterIngressManager, KNamespaceService namespaceService, HelmCommandExecutor helmCommandExecutor) {
+        this.clusterIngressManager = clusterIngressManager;
         this.namespaceService = namespaceService;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
     @Override
     public void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
+        if(!clusterIngressManager.getUseExistingController()) {
+            executeDeployIngressControllerIfMissing(domain);
+        }
+    }
+
+    private void executeDeployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
         try {
             String ingressControllerName = ingressControllerName(domain);
             if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
@@ -60,7 +63,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     private String obtainExternalIpAddressForClient(String domain) throws ExternalNetworkNotFoundException {
-        ExternalNetworkView externalNetwork = clusterManager.reserveExternalNetwork(domain);
+        KClusterExtNetworkView externalNetwork = clusterIngressManager.reserveExternalNetwork(domain);
         return externalNetwork.getExternalIp().getHostAddress();
     }
 
@@ -84,20 +87,21 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         helmCommandExecutor.executeHelmInstallCommand(
                 namespace,
                 releaseName,
-                kubernetesIngressControllerChart,
+                clusterIngressManager.getControllerChartArchive(),
                 arguments
         );
     }
 
     @Override
     public void deleteIngressController(String domain) throws IngressControllerManipulationException {
-        // TODO add missing functionality
-        throw new NotImplementedException();
+        if (!clusterIngressManager.getUseExistingController()) {
+            executeDeleteIngressController(domain);
+        }
     }
 
-    @Value("${kubernetes.ingress.chart}")
-    public void setKubernetesIngressControllerChart(String kubernetesIngressControllerChart) {
-        this.kubernetesIngressControllerChart = kubernetesIngressControllerChart;
+    private void executeDeleteIngressController(String domain) {
+        // TODO add missing functionality
+        throw new NotImplementedException();
     }
 
 }

@@ -1,9 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
@@ -79,9 +76,9 @@ public class KubernetesClusterManagerTest {
     public void shouldReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
         repository.save(simpleKubernetesCluster("cluster1"));
         String domain10 = "domain10";
-        ExternalNetworkView network10 = manager.reserveExternalNetwork(domain10);
+        KClusterExtNetworkView network10 = manager.reserveExternalNetwork(domain10);
         String domain20 = "domain20";
-        ExternalNetworkView network20 = manager.reserveExternalNetwork(domain20);
+        KClusterExtNetworkView network20 = manager.reserveExternalNetwork(domain20);
         assertThat(network10.getExternalIp().getHostAddress(), not(equalTo(network20.getExternalIp().getHostAddress())));
     }
 
@@ -93,24 +90,39 @@ public class KubernetesClusterManagerTest {
         manager.reserveExternalNetwork("domain30");
     }
 
-    private KubernetesCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
-        KubernetesCluster cluster = new KubernetesCluster();
+    private KCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
+        KCluster cluster = new KCluster();
         cluster.setName(clusterName);
-        cluster.setRestApiHostAddress(InetAddress.getByName(REST_API_HOST_ADDRESS));
-        cluster.setRestApiPort(REST_API_PORT);
-        cluster.setHelmHostChartsDirectory(HELM_HOST_CHARTS_DIRECTORY);
-        cluster.setHelmHostAddress(InetAddress.getByName(HELM_HOST_ADDRESS));
-        cluster.setHelmHostSshUsername(HELM_HOST_SSH_USERNAME);
-        KubernetesClusterAttachPoint attachPoint = new KubernetesClusterAttachPoint();
+        KClusterHelm helm = new KClusterHelm();
+        helm.setHelmHostAddress(InetAddress.getByName(HELM_HOST_ADDRESS));
+        helm.setHelmHostSshUsername(HELM_HOST_SSH_USERNAME);
+        helm.setUseLocalChartArchives(true);
+        helm.setHelmHostChartsDirectory(HELM_HOST_CHARTS_DIRECTORY);
+        cluster.setHelm(helm);
+        KClusterApi api = new KClusterApi();
+        api.setRestApiHostAddress(InetAddress.getByName(REST_API_HOST_ADDRESS));
+        api.setRestApiPort(REST_API_PORT);
+        cluster.setApi(api);
+        KClusterIngress ingress = new KClusterIngress();
+        ingress.setUseExistingController(false);
+        ingress.setControllerChartArchive("chart.tgz");
+        ingress.setExternalServiceDomain("test.net");
+        cluster.setIngress(ingress);
+        KClusterDeployment deployment = new KClusterDeployment();
+        deployment.setUseDefaultNamespace(true);
+        deployment.setDefaultNamespace("testNamespace");
+        deployment.setDefaultPersistenceClass("persistenceClass");
+        cluster.setDeployment(deployment);
+        KClusterAttachPoint attachPoint = new KClusterAttachPoint();
         attachPoint.setRouterName("R1");
         attachPoint.setRouterId("172.0.0.1");
         attachPoint.setRouterInterfaceName("ge-0/0/1");
         cluster.setAttachPoint(attachPoint);
-        ExternalNetworkSpec externalNetworkSpec1 = new ExternalNetworkSpec();
+        KClusterExtNetwork externalNetworkSpec1 = new KClusterExtNetwork();
         externalNetworkSpec1.setExternalIp(InetAddress.getByName("192.168.1.1"));
         externalNetworkSpec1.setExternalNetwork(InetAddress.getByName("192.168.1.0"));
         externalNetworkSpec1.setExternalNetworkMaskLength(24);
-        ExternalNetworkSpec externalNetworkSpec2 = new ExternalNetworkSpec();
+        KClusterExtNetwork externalNetworkSpec2 = new KClusterExtNetwork();
         externalNetworkSpec2.setExternalIp(InetAddress.getByName("192.168.2.1"));
         externalNetworkSpec2.setExternalNetwork(InetAddress.getByName("192.168.2.0"));
         externalNetworkSpec2.setExternalNetworkMaskLength(24);

@@ -3,12 +3,12 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KClusterValidator;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,13 +23,13 @@ public class DefaultKClusterValidator implements KClusterValidator {
 
     private static final int MIN_NUMBER_OF_WORKERS_IN_CLUSTER = 3;
 
-    private KubernetesClusterManager kubernetesClusterManager;
-
-    private String kubernetesPersistenceClass;
+    private KClusterApiManager clusterApiManager;
+    private KClusterDeploymentManager clusterDeploymentManager;
 
     @Autowired
-    public DefaultKClusterValidator(KubernetesClusterManager kubernetesClusterManager) {
-        this.kubernetesClusterManager = kubernetesClusterManager;
+    public DefaultKClusterValidator(KClusterApiManager clusterApiManager, KClusterDeploymentManager clusterDeploymentManager) {
+        this.clusterApiManager = clusterApiManager;
+        this.clusterDeploymentManager = clusterDeploymentManager;
     }
 
     /**
@@ -41,7 +41,7 @@ public class DefaultKClusterValidator implements KClusterValidator {
     @Override
     @Loggable(LogLevel.INFO)
     public void checkClusterStatusAndPrerequisites() throws KClusterCheckException {
-        KubernetesClient client = kubernetesClusterManager.getApiClient();
+        KubernetesClient client = clusterApiManager.getApiClient();
         try {
             atLeastGivenNumberOfWorkers(client, MIN_NUMBER_OF_WORKERS_IN_CLUSTER);
             isStorageClassDeployed(client);
@@ -61,11 +61,6 @@ public class DefaultKClusterValidator implements KClusterValidator {
 
     private void isStorageClassDeployed(KubernetesClient client) throws KClusterCheckException {
         // TODO waiting for new library release with storageClass support
-    }
-
-    @Value("${kubernetes.persistence.class}")
-    public void setKubernetesPersistenceClass(String kubernetesPersistenceClass) {
-        this.kubernetesPersistenceClass = kubernetesPersistenceClass;
     }
 
 }

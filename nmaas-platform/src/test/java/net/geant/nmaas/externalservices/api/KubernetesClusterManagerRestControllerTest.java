@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.ExternalNetworkSpec;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KubernetesClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
@@ -50,11 +48,26 @@ public class KubernetesClusterManagerRestControllerTest {
     private final static String KUBERNETES_CLUSTER_JSON =
             "{" +
                     "\"name\":\"K8S-NAME-1\"," +
-                    "\"helmHostAddress\":\"192.168.0.1\"," +
-                    "\"helmHostSshUsername\":\"testuser\"," +
-                    "\"helmHostChartsDirectory\":\"/home/testuser/charts\"," +
-                    "\"restApiHostAddress\":\"192.168.0.8\"," +
-                    "\"restApiPort\":9999," +
+                    "\"helm\":{" +
+                        "\"helmHostAddress\":\"192.168.0.1\"," +
+                        "\"helmHostSshUsername\":\"testuser\"," +
+                        "\"useLocalChartArchives\":\"true\"," +
+                        "\"helmHostChartsDirectory\":\"/home/testuser/charts\"" +
+                    "}," +
+                    "\"api\":{" +
+                        "\"restApiHostAddress\":\"192.168.0.8\"," +
+                        "\"restApiPort\":9999" +
+                    "}," +
+                    "\"ingress\": {" +
+                        "\"useExistingController\":false," +
+                        "\"controllerChartArchive\":\"chart.tgz\"," +
+                        "\"externalServiceDomain\":\"test.net\"" +
+                    "}," +
+                    "\"deployment\": {" +
+                        "\"useDefaultNamespace\":true," +
+                        "\"defaultNamespace\":\"testNamespace\"," +
+                        "\"defaultPersistenceClass\":\"persistenceClass\"" +
+                    "}," +
                     "\"attachPoint\":{" +
                         "\"routerName\":\"R1\"," +
                         "\"routerId\":\"172.0.0.1\"," +
@@ -148,8 +161,8 @@ public class KubernetesClusterManagerRestControllerTest {
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        KubernetesCluster updated = initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME);
-        updated.setRestApiPort(350);
+        KCluster updated = initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME);
+        updated.getApi().setRestApiPort(350);
         mvc.perform(put(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(updated))
@@ -177,7 +190,7 @@ public class KubernetesClusterManagerRestControllerTest {
                 .andReturn();
         assertEquals(
                 clusterManager.getAllClusters().size(),
-                ((List<KubernetesCluster>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<KubernetesCluster>>() {})).size());
+                ((List<KCluster>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<KCluster>>() {})).size());
     }
 
     @Test
@@ -192,7 +205,7 @@ public class KubernetesClusterManagerRestControllerTest {
                 .andReturn();
         assertEquals(
                 NEW_KUBERNETES_CLUSTER_NAME,
-                ((KubernetesCluster) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<KubernetesCluster>() {})).getName());
+                ((KCluster) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<KCluster>() {})).getName());
     }
 
     @Test
@@ -203,32 +216,47 @@ public class KubernetesClusterManagerRestControllerTest {
 
     @Test
     public void shouldMapKubernetesClusterToKubernetesClusterView() throws UnknownHostException {
-        KubernetesCluster source = initNewKubernetesCluster("k8s1");
+        KCluster source = initNewKubernetesCluster("k8s1");
         KubernetesClusterView output = modelMapper.map(source, KubernetesClusterView.class);
         assertThat(output.getName(), equalTo(source.getName()));
-        assertThat(output.getHelmHostAddress().getHostAddress(), equalTo(source.getHelmHostAddress().getHostAddress()));
-        assertThat(output.getRestApiHostAddress().getHostAddress(), equalTo(source.getRestApiHostAddress().getHostAddress()));
-        assertThat(output.getRestApiPort(), equalTo(source.getRestApiPort()));
+        assertThat(output.getHelmHostAddress().getHostAddress(), equalTo(source.getHelm().getHelmHostAddress().getHostAddress()));
+        assertThat(output.getRestApiHostAddress().getHostAddress(), equalTo(source.getApi().getRestApiHostAddress().getHostAddress()));
+        assertThat(output.getRestApiPort(), equalTo(source.getApi().getRestApiPort()));
     }
 
-    private KubernetesCluster initNewKubernetesCluster(String name) throws UnknownHostException {
-        KubernetesCluster cluster = new KubernetesCluster();
+    private KCluster initNewKubernetesCluster(String name) throws UnknownHostException {
+        KCluster cluster = new KCluster();
         cluster.setName(name);
-        cluster.setHelmHostAddress(InetAddress.getByName("192.168.0.1"));
-        cluster.setHelmHostSshUsername("testuser");
-        cluster.setHelmHostChartsDirectory("/home/testuser/charts");
-        cluster.setRestApiHostAddress(InetAddress.getByName("192.168.0.8"));
-        cluster.setRestApiPort(9999);
-        KubernetesClusterAttachPoint attachPoint = new KubernetesClusterAttachPoint();
+        KClusterHelm helm = new KClusterHelm();
+        helm.setHelmHostAddress(InetAddress.getByName("192.168.0.1"));
+        helm.setHelmHostSshUsername("testuser");
+        helm.setUseLocalChartArchives(true);
+        helm.setHelmHostChartsDirectory("/home/testuser/charts");
+        cluster.setHelm(helm);
+        KClusterApi api = new KClusterApi();
+        api.setRestApiHostAddress(InetAddress.getByName("192.168.0.8"));
+        api.setRestApiPort(9999);
+        cluster.setApi(api);
+        KClusterIngress ingress = new KClusterIngress();
+        ingress.setUseExistingController(false);
+        ingress.setControllerChartArchive("chart.tgz");
+        ingress.setExternalServiceDomain("test.net");
+        cluster.setIngress(ingress);
+        KClusterDeployment deployment = new KClusterDeployment();
+        deployment.setUseDefaultNamespace(true);
+        deployment.setDefaultNamespace("testNamespace");
+        deployment.setDefaultPersistenceClass("persistenceClass");
+        cluster.setDeployment(deployment);
+        KClusterAttachPoint attachPoint = new KClusterAttachPoint();
         attachPoint.setRouterId("172.0.0.1");
         attachPoint.setRouterInterfaceName("ge-0/0/1");
         attachPoint.setRouterName("R1");
         cluster.setAttachPoint(attachPoint);
-        ExternalNetworkSpec externalNetwork1 = new ExternalNetworkSpec();
+        KClusterExtNetwork externalNetwork1 = new KClusterExtNetwork();
         externalNetwork1.setExternalIp(InetAddress.getByName("10.0.0.1"));
         externalNetwork1.setExternalNetwork(InetAddress.getByName("10.0.0.0"));
         externalNetwork1.setExternalNetworkMaskLength(24);
-        ExternalNetworkSpec externalNetwork2 = new ExternalNetworkSpec();
+        KClusterExtNetwork externalNetwork2 = new KClusterExtNetwork();
         externalNetwork2.setExternalIp(InetAddress.getByName("10.0.1.1"));
         externalNetwork2.setExternalNetwork(InetAddress.getByName("10.0.1.0"));
         externalNetwork2.setExternalNetworkMaskLength(24);

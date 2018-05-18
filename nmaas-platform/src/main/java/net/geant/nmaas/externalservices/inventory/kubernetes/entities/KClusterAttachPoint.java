@@ -8,21 +8,21 @@ import javax.persistence.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="kubernetes_cluster_attach_point")
-public class KubernetesClusterAttachPoint implements CloudAttachPoint {
+@Table(name="k_cluster_attach_point")
+public class KClusterAttachPoint implements CloudAttachPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerId;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerInterfaceName;
 
     public Long getId() {
