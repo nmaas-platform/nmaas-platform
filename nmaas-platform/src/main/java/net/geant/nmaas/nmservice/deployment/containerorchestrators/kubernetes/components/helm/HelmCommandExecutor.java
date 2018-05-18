@@ -1,12 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterHelmManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -19,10 +18,12 @@ import java.util.Map;
 @Component
 public class HelmCommandExecutor {
 
-    @Autowired
-    private KubernetesClusterManager cluster;
+    private KClusterHelmManager clusterHelmManager;
 
-    private boolean useLocalArchives;
+    @Autowired
+    public HelmCommandExecutor(KClusterHelmManager clusterHelmManager) {
+        this.clusterHelmManager = clusterHelmManager;
+    }
 
     public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
         executeInstall(kubernetesNamespace, releaseName, chartArchiveName, arguments);
@@ -35,7 +36,7 @@ public class HelmCommandExecutor {
     private void executeInstall(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
-            if (!useLocalArchives)
+            if (!clusterHelmManager.getUseLocalChartArchives())
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
             String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
             HelmInstallCommand command = HelmInstallCommand.command(
@@ -56,7 +57,7 @@ public class HelmCommandExecutor {
     }
 
     private String baseChartArchivePath() {
-        String hostChartsDirectory = cluster.getHelmHostChartsDirectory();
+        String hostChartsDirectory = clusterHelmManager.getHelmHostChartsDirectory();
         if (!hostChartsDirectory.endsWith("/"))
             return hostChartsDirectory.concat("/");
         return hostChartsDirectory;
@@ -107,7 +108,7 @@ public class HelmCommandExecutor {
 
     public void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
             throws CommandExecutionException {
-        if (!useLocalArchives)
+        if (!clusterHelmManager.getUseLocalChartArchives())
             throw new CommandExecutionException("Currently only referencing local chart archive is supported");
         try {
             String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
@@ -122,12 +123,7 @@ public class HelmCommandExecutor {
     }
 
     private SingleCommandExecutor singleCommandExecutor() {
-        return SingleCommandExecutor.getExecutor(cluster.getHelmHostAddress(), cluster.getHelmHostSshUsername());
-    }
-
-    @Value("${kubernetes.helm.charts.use.local.archives}")
-    public void setUseLocalArchives(boolean useLocalArchives) {
-        this.useLocalArchives = useLocalArchives;
+        return SingleCommandExecutor.getExecutor(clusterHelmManager.getHelmHostAddress(), clusterHelmManager.getHelmHostSshUsername());
     }
 
 }

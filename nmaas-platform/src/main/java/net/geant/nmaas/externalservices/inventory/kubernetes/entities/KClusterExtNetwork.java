@@ -8,8 +8,8 @@ import java.util.Date;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-@Table(name="kubernetes_cluster_external_network_spec")
-public class ExternalNetworkSpec {
+@Table(name="k_cluster_ext_network")
+public class KClusterExtNetwork {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
