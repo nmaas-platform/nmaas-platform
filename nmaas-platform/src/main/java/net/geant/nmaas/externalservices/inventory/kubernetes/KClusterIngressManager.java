@@ -9,7 +9,7 @@ public interface KClusterIngressManager {
 
     String getControllerChartArchive();
 
-    Boolean getUseIngressFromChart();
+    Boolean getUseExistingIngress();
 
     String getExternalServiceDomain();
 

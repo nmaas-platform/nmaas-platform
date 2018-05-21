@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
@@ -32,6 +33,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterValidator clusterValidator;
     private KServiceLifecycleManager serviceLifecycleManager;
     private KServiceOperationsManager serviceOperationsManager;
+    private KClusterIngressManager clusterIngressManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
 
@@ -81,8 +83,10 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void prepareDeploymentEnvironment(Identifier deploymentId)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
         try {
-            String domain = repositoryManager.loadDomain(deploymentId);
-            ingressControllerManager.deployIngressControllerIfMissing(domain);
+            if(!clusterIngressManager.getUseExistingController()) {
+                String domain = repositoryManager.loadDomain(deploymentId);
+                ingressControllerManager.deployIngressControllerIfMissing(domain);
+            }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + idie.getMessage());
@@ -99,13 +103,16 @@ public class KubernetesManager implements ContainerOrchestrator {
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             String serviceExternalUrl = ingressResourceManager.generateServiceExternalURL(
                     service.getDomain(),
-                    service.getDeploymentName());
+                    service.getDeploymentName(),
+                    clusterIngressManager.getExternalServiceDomain());
             repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
             serviceLifecycleManager.deployService(deploymentId);
-            ingressResourceManager.createOrUpdateIngressResource(
-                    deploymentId,
-                    service.getDomain(),
-                    service.getDeploymentName());
+            if (!clusterIngressManager.getUseExistingIngress()) {
+                ingressResourceManager.createOrUpdateIngressResource(
+                        deploymentId,
+                        service.getDomain(),
+                        serviceExternalUrl);
+            }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + idie.getMessage());
@@ -132,7 +139,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteService(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
+            if (!clusterIngressManager.getUseExistingIngress()) {
+                ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
+            }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + idie.getMessage());

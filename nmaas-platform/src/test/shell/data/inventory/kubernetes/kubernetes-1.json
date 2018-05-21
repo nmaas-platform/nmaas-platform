@@ -13,7 +13,7 @@
   "ingress": {
     "useExistingController":false,
     "controllerChartArchive":"nginx-ingress.tgz",
-    "useIngressFromChart":false,
+    "useExistingIngress":false,
     "externalServiceDomain":"nmaas.geant.net"
   },
   "deployment": {

@@ -15,19 +15,20 @@ public interface IngressResourceManager {
      *
      * @param domain name of the client domain for this deployment
      * @param deploymentName name of the deployment provided by the user
+     * @param externalServiceDomain base domain name for external services
      * @return URL under which deployed service is available
      */
-    String generateServiceExternalURL(String domain, String deploymentName);
+    String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain);
 
     /**
      * Creates a new ingress resource for given domain or updates an existing one with new entry.
      *
      * @param deploymentId unique identifier of service deployment
      * @param domain name of the client domain for this deployment
-     * @param deploymentName name of the deployment provided by the user
+     * @param serviceExternalUrl service external URL
      * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
-    void createOrUpdateIngressResource(Identifier deploymentId, String domain, String deploymentName) throws IngressResourceManipulationException;
+    void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl) throws IngressResourceManipulationException;
 
     /**
      * Deletes a rule from existing ingress resource.
