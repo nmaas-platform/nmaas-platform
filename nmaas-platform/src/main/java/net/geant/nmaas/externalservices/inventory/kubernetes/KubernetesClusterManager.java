@@ -74,6 +74,16 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public String getSupportedIngressClass() {
+        return loadSingleCluster().getIngress().getSupportedIngressClass();
+    }
+
+    @Override
+    public Boolean getTlsSupported() {
+        return loadSingleCluster().getIngress().getTlsSupported();
+    }
+
+    @Override
     public String getControllerChartArchive() {
         return loadSingleCluster().getIngress().getControllerChartArchive();
     }

@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
@@ -29,21 +30,23 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION = "nmaas.config.action";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
-    static final String HELM_INSTALL_OPTION_EXTERNAL_URL = "nmaas.serviceurl";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
     private KClusterDeploymentManager deploymentManager;
+    private KClusterIngressManager ingressManager;
     private HelmCommandExecutor helmCommandExecutor;
 
     @Autowired
     public HelmKServiceManager(KubernetesRepositoryManager repositoryManager,
                                KNamespaceService namespaceService,
                                KClusterDeploymentManager deploymentManager,
+                               KClusterIngressManager ingressManager,
                                HelmCommandExecutor helmCommandExecutor) {
         this.repositoryManager = repositoryManager;
         this.namespaceService = namespaceService;
         this.deploymentManager = deploymentManager;
+        this.ingressManager = ingressManager;
         this.helmCommandExecutor = helmCommandExecutor;
     }
 
@@ -63,10 +66,15 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         String serviceExternalURL = serviceInfo.getServiceExternalUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
-        arguments.put(HELM_INSTALL_OPTION_EXTERNAL_URL, serviceExternalURL);
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getDefaultPersistenceClass());
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
+        arguments.putAll(HelmChartVariables.ingressVariablesMap(
+                ingressManager.getUseExistingIngress(),
+                serviceExternalURL,
+                ingressManager.getSupportedIngressClass(),
+                ingressManager.getTlsSupported())
+        );
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(domain),
                 deploymentId,

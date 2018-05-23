@@ -62,7 +62,8 @@ public class KubernetesClusterManagerRestControllerTest {
                         "\"useExistingController\":false," +
                         "\"controllerChartArchive\":\"chart.tgz\"," +
                         "\"useExistingIngress\":false," +
-                        "\"externalServiceDomain\":\"test.net\"" +
+                        "\"externalServiceDomain\":\"test.net\"," +
+                        "\"tlsSupported\":false" +
                     "}," +
                     "\"deployment\": {" +
                         "\"useDefaultNamespace\":true," +
@@ -243,6 +244,7 @@ public class KubernetesClusterManagerRestControllerTest {
         ingress.setControllerChartArchive("chart.tgz");
         ingress.setUseExistingIngress(false);
         ingress.setExternalServiceDomain("test.net");
+        ingress.setTlsSupported(false);
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
         deployment.setUseDefaultNamespace(true);
