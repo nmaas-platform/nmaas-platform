@@ -42,12 +42,14 @@ public class KubernetesManager implements ContainerOrchestrator {
                              KClusterValidator clusterValidator,
                              KServiceLifecycleManager serviceLifecycleManager,
                              KServiceOperationsManager serviceOperationsManager,
+                             KClusterIngressManager clusterIngressManager,
                              IngressControllerManager ingressControllerManager,
                              IngressResourceManager ingressResourceManager) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
         this.serviceLifecycleManager = serviceLifecycleManager;
         this.serviceOperationsManager = serviceOperationsManager;
+        this.clusterIngressManager = clusterIngressManager;
         this.ingressControllerManager = ingressControllerManager;
         this.ingressResourceManager = ingressResourceManager;
     }
