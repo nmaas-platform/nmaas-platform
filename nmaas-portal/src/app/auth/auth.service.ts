@@ -1,8 +1,8 @@
 import {Role} from '../model/userrole';
 import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
-import {JwtHelper} from 'angular2-jwt';
-import {Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import {JwtHelperService} from '@auth0/angular-jwt';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/timeout';
@@ -30,10 +30,7 @@ export class DomainRoles {
 
 @Injectable()
 export class AuthService {
-  private jwtHelper: JwtHelper = new JwtHelper();
-
-
-  constructor(private http: Http, private appConfig: AppConfigService) {}
+  constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
 
   private storeToken(token: string): void {
     localStorage.setItem(this.appConfig.config.tokenName, token);
@@ -178,14 +175,14 @@ export class AuthService {
   }
 
   public login(username: string, password: string): Observable<boolean> {
-    const headers = new Headers({'Content-Type': 'application/json', 'Accept': 'application/json'});
+    const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/basic/login',
-      JSON.stringify({'username': username, 'password': password}), new RequestOptions({headers: headers}))
+      JSON.stringify({'username': username, 'password': password}), {headers: headers})
       .timeout(10000)
       .map((response: Response) => {
-        console.debug('Login response: ' + response);
+        console.debug('Login response: ' + response.statusText);
         // login successful if there's a jwt token in the response
-        const token = response.json() && response.json().token;
+        const token = response && response['token'];
         if (token) {
           // set token property
           this.storeToken(token);
@@ -205,9 +202,9 @@ export class AuthService {
         console.debug('Login error: ' + error);
         let errMsg: string;
         if (error instanceof Response) {
-          console.debug(error.json());
-          const body = error.json() || '';
-          const err = body.message || JSON.stringify(body);
+          console.debug(error);
+          const body = error || '';
+          const err = body['message'] || JSON.stringify(body);
           errMsg = `${error.status} - ${err}`;
         } else {
           errMsg = 'Server error';

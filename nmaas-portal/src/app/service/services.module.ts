@@ -8,7 +8,6 @@ import {ChangelogService} from './changelog.service';
 import {AppSubscriptionsService} from './appsubscriptions.service';
 import {DomainService} from './domain.service';
 import {GenericDataService} from './genericdata.service';
-import {JsonMapperService} from './jsonmapper.service';
 import {TagService} from './tag.service';
 import {UserService} from './user.service';
 
@@ -24,8 +23,6 @@ import {UserService} from './user.service';
     DomainService,
     TagService,
     UserService,
-    JsonMapperService
-
   ]
 })
 export class ServicesModule {}

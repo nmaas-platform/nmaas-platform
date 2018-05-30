@@ -11,7 +11,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AuthModule } from 'angular2-jwt';
+import { HttpClientModule } from "@angular/common/http";
+import { JwtModule } from '@auth0/angular-jwt';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { AuthModule } from 'angular2-jwt';
     CommonModule,
     RouterModule,
     SharedModule,
-    AuthModule,
+    HttpClientModule,
+    JwtModule,
     PipesModule,
   ],
   exports: [

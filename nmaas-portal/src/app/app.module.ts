@@ -2,8 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-import { HttpModule, Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
-import { AuthHttp, AuthConfig } from 'angular2-jwt';
+import { JwtModule } from '@auth0/angular-jwt';
 
 import { routing } from './app.routes';
 
@@ -20,20 +19,13 @@ import { AuthService } from './auth/auth.service';
 import { LoginComponent } from './welcome/login/login.component';
 import { LogoutComponent } from './welcome/logout/logout.component';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { CORSHeaderInterceptor } from "./interceptor/corsheader.interceptor";
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
     return config.load();
   }
-}
-
-export function authHttpServiceFactory(http: Http, options: RequestOptions) {
-  return new AuthHttp(new AuthConfig({
-        tokenName: 'token',
-        tokenGetter: (() => localStorage.getItem('token')),
-        globalHeaders: [{'Content-Type': 'application/json', 'Accept': 'application/json'}],
-    }), http, options);
 }
 
 @NgModule({
@@ -43,8 +35,15 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
     HttpClientModule,
+    JwtModule.forRoot({
+        config: {
+          tokenGetter: () => {
+            return localStorage.getItem('token');
+          },
+        whitelistedDomains: ['localhost:9000']
+      }
+    }),
     AppMarketModule,
     SharedModule,
     WelcomeModule,
@@ -61,9 +60,10 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         multi: true
     },
     {
-      provide: AuthHttp,
-      useFactory: authHttpServiceFactory,
-      deps: [Http, RequestOptions]
+      provide: HTTP_INTERCEPTORS,
+      useClass: CORSHeaderInterceptor,
+      multi: true
+
     }
   ],
   bootstrap: [ AppComponent ]
