@@ -30,7 +30,7 @@ export class AuthHttpWrapper {
       return Observable.throw('Empty url');
     }
 
-    return new Observable<any>((observer: Subscriber<any>) => {
+    return new Observable<Blob>((observer: Subscriber<any>) => {
       let objectUrl: string = null;
 
       this.http
@@ -41,7 +41,7 @@ export class AuthHttpWrapper {
           return Observable.throw(errMsg);
         })
         .subscribe(m => {
-          objectUrl = URL.createObjectURL(m.blob());
+          objectUrl = URL.createObjectURL(m);
           observer.next(objectUrl);
         });
 
@@ -82,7 +82,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
 
   transform(url: string): any {
     const obj = this.internalTransform(url);
-    return this.asyncTrasnform(obj);
+    return this.asyncTransform(obj);
   }
 
   private internalTransform(url: string): Observable<any> {
@@ -101,7 +101,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     return this.result;
   }
 
-  private asyncTrasnform(obj: Observable<any>): any {
+  private asyncTransform(obj: Observable<any>): any {
     if (!this.obj) {
       if (obj) {
         this.subscribe(obj);
@@ -111,7 +111,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     }
     if (obj !== this.obj) {
       this.dispose();
-      return this.asyncTrasnform(obj);
+      return this.asyncTransform(obj);
     }
     if (this.latestValue === this.latestReturnedValue) {
       return this.latestReturnedValue;

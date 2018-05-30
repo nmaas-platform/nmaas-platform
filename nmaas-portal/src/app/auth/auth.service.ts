@@ -198,19 +198,15 @@ export class AuthService {
           return false;
         }
       })
-      .catch((error: Response | any) => {
-        console.debug('Login error: ' + error);
-        let errMsg: string;
-        if (error instanceof Response) {
-          console.debug(error);
-          const body = error || '';
-          const err = body['message'] || JSON.stringify(body);
-          errMsg = `${error.status} - ${err}`;
-        } else {
-          errMsg = 'Server error';
-        }
-        console.error(errMsg);
-        return Observable.throw(errMsg);
+      .catch((error) => {
+        let message : string;
+        if(error['message'])
+          message = error['status']+' - '+error['message'];
+        else
+          message = 'Server error';
+
+        console.debug(message);
+        return Observable.throw(message);
       });
   }
 
