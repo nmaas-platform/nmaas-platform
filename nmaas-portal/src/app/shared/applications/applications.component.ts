@@ -97,8 +97,16 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  public filterAppsByName($event): void {
+  protected filterAppsByName(typed: string): void {
 
+    if(typed.length === 0){this.updateDomain()};    
+    let filteredApps: Application[];
+    this.applications.subscribe((apps) => {
+      filteredApps = apps.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
+      console.log("Ausgefürt");
+      console.log(filteredApps);
+      this.applications = Observable.of(filteredApps);
+    });
   }
 
 }
