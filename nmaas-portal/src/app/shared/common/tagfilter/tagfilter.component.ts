@@ -13,7 +13,7 @@ export class TagFilterComponent implements OnInit {
   public value: string;
   
   @Output()
-  public change: EventEmitter<string> = new EventEmitter<string>();
+  public changed: EventEmitter<string> = new EventEmitter<string>();
   
   tags: Observable<string[]>;
   
@@ -24,7 +24,7 @@ export class TagFilterComponent implements OnInit {
   }
 
   public onChange($event): void {    
-    this.change.emit(this.value !== 'all' ? this.value : null);
+    this.changed.emit(this.value !== 'all' ? this.value : null);
   }
   
 }

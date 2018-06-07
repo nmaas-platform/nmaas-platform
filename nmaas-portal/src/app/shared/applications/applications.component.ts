@@ -99,14 +99,31 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   protected filterAppsByName(typed: string): void {
 
-    if(typed.length === 0){this.updateDomain()};    
-    let filteredApps: Application[];
-    this.applications.subscribe((apps) => {
-      filteredApps = apps.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
-      console.log("Ausgefürt");
-      console.log(filteredApps);
-      this.applications = Observable.of(filteredApps);
-    });
+    if(typed.length === 0){
+      this.updateDomain()
+    }else{
+      typed = typed.toLocaleLowerCase();
+      let filteredApps: Application[];
+      this.applications.subscribe((apps) => {
+        filteredApps = apps.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
+        this.applications = Observable.of(filteredApps);
+      });
+    }
+  }
+
+  protected filterAppsByTag(tag: string): void {
+
+    console.log(tag);
+    if(tag == ""){
+      this.updateDomain();
+    }else{
+      tag = tag.toLocaleLowerCase();
+      let filteredApps: Application[];
+      this.applications.subscribe((apps) => {
+        filteredApps = apps.filter(app => app.tags.map(entry => entry.toLocaleLowerCase()).findIndex(function (element) {return element.indexOf(tag) > -1;}) > -1);
+        this.applications = Observable.of(filteredApps);
+      });
+    }
   }
 
 }
