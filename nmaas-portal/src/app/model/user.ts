@@ -7,14 +7,14 @@ export class User {
   public firstname: string = undefined;
   public lastname: string = undefined;
   public email: string = undefined;
-  public userRoles: UserRole[] = [];
+  public roles: UserRole[] = [];
   
   public getDomainIds(): number[] {
-    return Array.from(new Set(this.userRoles.map(ur => ur.domainId)));
+    return Array.from(new Set(this.roles.map(ur => ur.domainId)));
   }
 
   public getRoles(): Role[] {
-    return Array.from(new Set(this.userRoles.map(ur => ur.role)));
+    return Array.from(new Set(this.roles.map(ur => ur.role)));
   }
 
 }

@@ -45,7 +45,7 @@
 				</thead>
 
 				<tbody>
-					<ng-template ngFor let-userrole [ngForOf]="user.userRoles">
+					<ng-template ngFor let-userrole [ngForOf]="user.roles">
 					<tr>
 						<td>{{userrole.domainId}}</td>
 						<td>{{userrole.role | slice:5}}</td>
