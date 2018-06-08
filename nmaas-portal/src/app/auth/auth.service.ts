@@ -200,8 +200,8 @@ export class AuthService {
       })
       .catch((error) => {
         let message : string;
-        if(error['message'])
-          message = error['status']+' - '+error['message'];
+        if(error.error['message'])
+          message = error['status']+' - '+error.error['message'];
         else
           message = 'Server error';
 
