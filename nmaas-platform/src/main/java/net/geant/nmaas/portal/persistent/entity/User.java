@@ -92,8 +92,11 @@ public class User {
 		this.password = password;
 	}
 
-	public void setNewRoles(Set<UserRole> roles) {
+	public void clearRoles() {
 		this.roles.clear();
+	}
+
+	public void setNewRoles(Set<UserRole> roles) {
 		this.roles.addAll(roles);
 	}
 	

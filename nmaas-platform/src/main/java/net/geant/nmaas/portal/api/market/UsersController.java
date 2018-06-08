@@ -135,14 +135,15 @@ public class UsersController {
 		if(userRequest.getEmail() != null)
 			userMod.setEmail(userRequest.getEmail());		
 		userMod.setEnabled(userRequest.isEnabled());
+		userMod.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
+		try {
+			users.update(userMod);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to modify user");
+		}
+		
 
-		
-		
-		/* TODO: fix this, now we assume nobody will change user groups this way - this code is broken anyway
-		 * due to hibernate integrity errors and erroreous set behaviour when it comes to comparing classes.
-		 * To fix this we will have to introduce userrole hashcode, or equ, or something similar
-		 */
-		/*if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
+		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
 			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
 					.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
 							userMod,
@@ -151,11 +152,11 @@ public class UsersController {
 					.collect(Collectors.toSet());
 			
 			userMod.setNewRoles(roles);
-		}*/
+		}
 		try {
 			users.update(userMod);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to modify user");
+			throw new ProcessingException("Unable to modify roles");
 		}
 	}
 	
