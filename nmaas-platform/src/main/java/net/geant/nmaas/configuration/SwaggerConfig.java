@@ -39,10 +39,10 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder().title("NMAAS API")
                 .description("NMAAS API documentation")
-                .termsOfServiceUrl("none")
-                .contact("psnc.pl")
-                .license("Prioprietary")
-                .licenseUrl("none")
+                .termsOfServiceUrl("TBD")
+                .contact("geant.net")
+                .license("TBD")
+                .licenseUrl("TBD")
                 .version("1.0.0-pre")
                 .build();
     }
