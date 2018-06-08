@@ -47,7 +47,7 @@ export class AppInstallModalComponent implements OnInit {
   }
 
   public create(): void {
-    if(this.domainId && this.app && this.app.id) {
+    if(this.domainId && this.app && this.app.id && !this.checkInput(this.name)) {
       this.appInstanceService.createAppInstance(this.domainId, this.app.id, this.name).subscribe(
         instanceId => {
           this.modal.hide();
@@ -58,6 +58,11 @@ export class AppInstallModalComponent implements OnInit {
 
   public show(): void {
     this.modal.show();
+  }
+
+  private checkInput(name:string): boolean{
+    let format = /[!@#$%^&*()+=\[\]{};':"\\|,.<>\/?]/;
+    return format.test(name)
   }
 
 }

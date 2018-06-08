@@ -51,6 +51,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		checkParam(domain);
 		checkParam(application);
 		checkNameUniqueness(domain, name);
+		checkNameCharacters(name);
 		if(applicationSubscriptions.isActive(application, domain))
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
@@ -202,6 +203,15 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	protected void checkNameUniqueness(Domain domain, String name){
 		if(findAllByDomain(domain).stream().anyMatch(s -> s.getName().equalsIgnoreCase(name))){
 			throw new IllegalArgumentException("Name is already taken");
+		}
+	}
+
+	protected void checkNameCharacters(String name){
+		String specialChars = "/[!@#$%^&*()+=\\[\\]{};':\"\\\\|,.<>\\/?]/";
+		for (int x = 0;x <name.length(); x++){
+			if(specialChars.contains(name.substring(x,x+1))){
+				throw new IllegalArgumentException("Name contains illegal characters");
+			}
 		}
 	}
 
