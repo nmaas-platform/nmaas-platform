@@ -50,7 +50,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	public AppInstance create(Domain domain, Application application, String name) throws ApplicationSubscriptionNotActiveException {		
 		checkParam(domain);
 		checkParam(application);
-		
+		checkNameUniqueness(domain, name);
 		if(applicationSubscriptions.isActive(application, domain))
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
@@ -198,7 +198,13 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
 	}
-	
+
+	protected void checkNameUniqueness(Domain domain, String name){
+		if(findAllByDomain(domain).stream().anyMatch(s -> s.getName().equalsIgnoreCase(name))){
+			throw new IllegalArgumentException("Name is already taken");
+		}
+	}
+
 	protected Domain getDomain(Long domainId) throws ObjectNotFoundException {
 		checkParam(domainId);
 		return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
