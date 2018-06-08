@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AuthHttp} from 'angular2-jwt';
-import {Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {isUndefined} from 'util';
 
 import {AppConfigService} from '../service/appconfig.service';
@@ -11,7 +10,6 @@ import {AppInstance, AppInstanceRequest} from '../model/appinstance';
 import {AppInstanceState} from '../model/appinstancestatus';
 import {AppInstanceProgressStage} from '../model/appinstanceprogressstage';
 import { GenericDataService } from './genericdata.service';
-import { JsonMapperService } from './jsonmapper.service';
 
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
@@ -22,33 +20,28 @@ import 'rxjs/add/observable/throw';
 @Injectable()
 export class AppInstanceService extends GenericDataService {
 
-  constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
-    super(authHttp, appConfig);
+  constructor(http: HttpClient, appConfig: AppConfigService) {
+    super(http, appConfig);
   }
 
   public getAllAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId))
-                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));   
+    return this.get<AppInstance[]>(this.getUrl(domainId));
   }
 
   public getMyAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my')
-                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my');
   }
 
   public getUserAppInstances(username: string, domainId?: number): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId) + 'user/' + username)
-                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'user/' + username);
   }
 
   public getAppInstanceState(id: Number, domainId?: number): Observable<AppInstanceStatus> {
-    return this.get<AppInstanceStatus>(this.getUrl(domainId) + id + '/state')
-                .map((appInstanceStatus) => this.jsonModelMapper.deserialize(appInstanceStatus, AppInstanceStatus));
+    return this.get<AppInstanceStatus>(this.getUrl(domainId) + id + '/state');
   }
 
   public createAppInstance(domainId: number, appId: number, name: string): Observable<Id> {
-    return this.post<AppInstanceRequest, Id>(this.getUrl(domainId), new AppInstanceRequest(appId, name))
-                .map((id) => this.jsonModelMapper.deserialize(id, Id));
+    return this.post<AppInstanceRequest, Id>(this.getUrl(domainId), new AppInstanceRequest(appId, name));
   }
 
   public removeAppInstance(appInstanceId: Number, domainId?: number): Observable<any> {
@@ -56,8 +49,7 @@ export class AppInstanceService extends GenericDataService {
   }
 
   public getAppInstance(appInstanceId: Number, domainId?: number): Observable<AppInstance> {
-    return this.get<AppInstance>(this.getUrl(domainId) + appInstanceId)
-                .map((appInstance) => this.jsonModelMapper.deserialize(appInstance, AppInstance));
+    return this.get<AppInstance>(this.getUrl(domainId) + appInstanceId);
   }
 
   public applyConfiguration(appInstanceId: Number, configuration: string, domainId?: number): Observable<void> {

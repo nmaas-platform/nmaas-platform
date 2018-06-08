@@ -3,7 +3,7 @@ import {isUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {GenericDataService} from './genericdata.service';
 
-import {AuthHttp} from 'angular2-jwt';
+import {HttpClient} from "@angular/common/http";
 import {AppConfigService} from './appconfig.service';
 
 import {Id} from '../model/id';
@@ -11,23 +11,20 @@ import {Password} from '../model/password';
 import {User} from '../model/user';
 import {UserRole, Role} from '../model/userrole';
 import {UserSignup} from '../model/usersignup';
-import {JsonMapperService} from './jsonmapper.service';
 
 @Injectable()
 export class UserService extends GenericDataService {
 
-  constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
-    super(authHttp, appConfig);
+  constructor(http: HttpClient, appConfig: AppConfigService) {
+    super(http, appConfig);
   }
 
   public getAll(domainId?: number): Observable<User[]> {
-    return this.get<User[]>(isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId))
-      .map((users) => this.jsonModelMapper.deserialize(users, User));
+    return this.get<User[]>(isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId));
   }
 
   public getOne(userId: number, domainId?: number): Observable<User> {
-    return this.get<User>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId)
-      .map((user) => this.jsonModelMapper.deserialize(user, User));
+    return this.get<User>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId);
   }
 
   public deleteOne(userId: number, domainId?: number): Observable<any> {
@@ -35,13 +32,11 @@ export class UserService extends GenericDataService {
   }
 
   public getRoles(userId: number, domainId?: number): Observable<UserRole[]> {
-    return this.get<UserRole[]>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles')
-      .map((userRoles) => this.jsonModelMapper.deserialize(userRoles, UserRole));
+    return this.get<UserRole[]>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles');
   }
 
   public addUser(username: string, domainId?: number): Observable<Id> {
-    return this.post<UserSignup, Id>(this.getUsersUrl(), new UserSignup(username, domainId))
-      .map((id) => this.jsonModelMapper.deserialize(id, Id));
+    return this.post<UserSignup, Id>(this.getUsersUrl(), new UserSignup(username, domainId));
   }
 
   public updateUser(userId: number, user: User): Observable<any> {

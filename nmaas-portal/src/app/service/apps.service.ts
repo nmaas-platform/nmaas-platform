@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthHttp } from 'angular2-jwt';
-import { Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Id } from '../model/id';
 import { Application } from '../model/application';
@@ -9,7 +8,6 @@ import { Comment } from '../model/comment';
 import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
 import { GenericDataService } from './genericdata.service';
-import { JsonMapperService } from './jsonmapper.service';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
@@ -20,59 +18,52 @@ import 'rxjs/add/observable/throw';
 @Injectable()
 export class AppsService extends GenericDataService {
 
-    constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
-      super(authHttp, appConfig);
+    constructor(http: HttpClient, appConfig: AppConfigService) {
+      super(http, appConfig);
     }
 
 
     public getApps(): Observable<Application[]> {
-        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps')
-                    .map((applications) => this.jsonModelMapper.deserialize(applications, Application));
+        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps');
     }
 
     public getApp(id: number): Observable<Application> {
-        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id)
-                    .map((application) => this.jsonModelMapper.deserialize(application, Application))
+        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
-        return this.authHttp.get(this.appConfig.getApiUrl() + urlPath)
+        return this.http.get(this.appConfig.getApiUrl() + urlPath)
             .timeout(10000)
-            .map((res: Response) => res.json())
             .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
 
     public setMyAppRateByUrl(urlPath: string): Observable<any> {
-        return this.authHttp.post(this.appConfig.getApiUrl() + urlPath, null)
+        return this.http.post(this.appConfig.getApiUrl() + urlPath, null)
             .timeout(10000)
-            .map((res: Response) => res.json())
             .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
 
     public getAppCommentsByUrl(urlPath: string): Observable<Comment[]> {
-        return this.authHttp.get(this.appConfig.getApiUrl() + urlPath)
+        return this.http.get(this.appConfig.getApiUrl() + urlPath)
             .timeout(10000)
-            .map((res: Response) => res.json())
             .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
 
     public addAppCommentByUrl(urlPath: string, comment: Comment): Observable<Id> {
-        return this.authHttp.post(this.appConfig.getApiUrl() + urlPath, comment)
+        return this.http.post(this.appConfig.getApiUrl() + urlPath, comment)
             .timeout(10000)
-            .map((res: Response) => res.json())
             .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
 
     public deleteAppCommentByUrl(urlPath: string, id: Id): Observable<any> {
-        return this.authHttp.delete(this.appConfig.getApiUrl() + urlPath + '/' + id.id)
+        return this.http.delete(this.appConfig.getApiUrl() + urlPath + '/' + id.id)
             .timeout(10000)            
             .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
     
     public getAppScreenshotsByUrl(urlPath: string): Observable<FileInfo[]> {
-        return this.authHttp.get(this.appConfig.getApiUrl() + urlPath)
+        return this.http.get(this.appConfig.getApiUrl() + urlPath)
             .timeout(10000)
-            .map((res: Response) => res.json())
             .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
 

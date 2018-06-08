@@ -2,17 +2,16 @@ import { Application } from '../model/application';
 import { AppSubscription } from '../model/appsubscription';
 import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
-import { JsonMapperService } from './jsonmapper.service';
 import { Injectable } from '@angular/core';
-import { AuthHttp } from 'angular2-jwt';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { isUndefined } from 'util';
 
 @Injectable()
 export class AppSubscriptionsService extends GenericDataService {
 
-  constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
-    super(authHttp, appConfig);
+  constructor(http: HttpClient, appConfig: AppConfigService) {
+    super(http, appConfig);
   }
 
   public subscribe(domainId: number, applicationId: number): Observable<any> {
@@ -28,29 +27,24 @@ export class AppSubscriptionsService extends GenericDataService {
   }
   
   public getAll(): Observable<AppSubscription[]> {
-    return this.get<AppSubscription[]>(this.getSubscriptionsUrl())
-                .map((appSubscriptions) => this.jsonModelMapper.deserialize(appSubscriptions, AppSubscription));
+    return this.get<AppSubscription[]>(this.getSubscriptionsUrl());
   }
   
   public getAllByApplication(applicationId: number): Observable<AppSubscription[]> {
-    return this.get<AppSubscription[]>(this.getApplicationSubscriptionsUrl(applicationId))
-                .map((appSubscriptions) => this.jsonModelMapper.deserialize(appSubscriptions, AppSubscription));
+    return this.get<AppSubscription[]>(this.getApplicationSubscriptionsUrl(applicationId));
   }
 
   public getAllByDomain(domainId: number): Observable<AppSubscription[]> {
-    return this.get<AppSubscription[]>(this.getDomainSubscriptionsUrl(domainId))
-                .map((appSubscriptions) => this.jsonModelMapper.deserialize(appSubscriptions, AppSubscription));
+    return this.get<AppSubscription[]>(this.getDomainSubscriptionsUrl(domainId));
   }
   
   public getSubscription(applicationId: number, domainId: number): Observable<AppSubscription> {
-    return this.get<AppSubscription>(this.getSubscriptionUrl(applicationId, domainId))
-                .map((appSubscription) => this.jsonModelMapper.deserialize(appSubscription, AppSubscription));
+    return this.get<AppSubscription>(this.getSubscriptionUrl(applicationId, domainId));
   }
     
   public getSubscribedApplications(domainId?: number): Observable<Application[]> {
       return this.get<Application[]>(
-                      (isUndefined(domainId) ? this.getSubscriptionsUrl() : this.getDomainSubscriptionsUrl(domainId)) + '/apps')
-                 .map((applications) => this.jsonModelMapper.deserialize(applications, Application));
+                      (isUndefined(domainId) ? this.getSubscriptionsUrl() : this.getDomainSubscriptionsUrl(domainId)) + '/apps');
   }
   
   protected getUrl(): string {

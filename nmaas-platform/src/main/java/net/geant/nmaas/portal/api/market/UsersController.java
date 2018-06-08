@@ -135,10 +135,15 @@ public class UsersController {
 		if(userRequest.getEmail() != null)
 			userMod.setEmail(userRequest.getEmail());		
 		userMod.setEnabled(userRequest.isEnabled());
+		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
+			userMod.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
+		try {
+			users.update(userMod);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to modify user");
+		}
+		
 
-		
-		
-		
 		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
 			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
 					.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
@@ -152,7 +157,7 @@ public class UsersController {
 		try {
 			users.update(userMod);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to modify user");
+			throw new ProcessingException("Unable to modify roles");
 		}
 	}
 	

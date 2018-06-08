@@ -2,7 +2,6 @@ import {AuthService} from '../../../auth/auth.service';
 import {User} from '../../../model/user';
 import {Role} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
-import {JsonMapperService} from '../../../service/jsonmapper.service';
 import {UserService} from '../../../service/user.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit} from '@angular/core';

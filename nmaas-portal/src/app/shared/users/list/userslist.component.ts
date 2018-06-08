@@ -41,7 +41,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('UsersList:onChanges ' + changes);
+    console.log('UsersList:onChanges ' + changes.toString());
   }
   
   protected getDomainName(domainId: number): Observable<string> {

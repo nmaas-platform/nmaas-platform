@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
 import {GenericDataService} from "./genericdata.service";
-import {AuthHttp} from "angular2-jwt";
 import {AppConfigService} from "./appconfig.service";
-import {JsonMapperService} from "./jsonmapper.service";
 import {Observable} from "rxjs/Observable";
 import {User} from "../model";
+import {HttpClient} from '@angular/common/http';
+
 
 @Injectable()
 export class ProfileService extends GenericDataService {
 
-  constructor(authHttp: AuthHttp, appConfig: AppConfigService, private jsonModelMapper: JsonMapperService) {
-    super(authHttp, appConfig)
+  constructor(http: HttpClient, appConfig: AppConfigService) {
+    super(http, appConfig)
   }
 
   public getOne():Observable<User>{
-    return this.get<User>(this.getProfileUrl()+'user').map((user) => this.jsonModelMapper.deserialize(user, User))
+    return this.http.get<User>(this.getProfileUrl()+'user')
   }
 
   protected getProfileUrl(): string{
