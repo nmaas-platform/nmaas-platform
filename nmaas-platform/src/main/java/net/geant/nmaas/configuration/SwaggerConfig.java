@@ -33,9 +33,7 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(apiInfo())
-                .securitySchemes(Arrays.asList(securityScheme()))
-                .securityContexts(Arrays.asList(securityContext()));
+                .apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
@@ -46,45 +44,6 @@ public class SwaggerConfig {
                 .license("Prioprietary")
                 .licenseUrl("none")
                 .version("1.0.0-pre")
-                .build();
-    }
-
-    @Bean
-    public SecurityConfiguration security() {
-        return SecurityConfigurationBuilder.builder()
-                .clientId("admin")
-                .clientSecret("admin")
-                .scopeSeparator(" ")
-                .useBasicAuthenticationWithAccessCodeGrant(true)
-                .build();
-    }
-
-    private SecurityScheme securityScheme() {
-        GrantType grantType = new AuthorizationCodeGrantBuilder()
-                .tokenEndpoint(new TokenEndpoint("/portal/api/auth/basic/token", "token"))
-                .tokenRequestEndpoint(
-                        new TokenRequestEndpoint("/portal/api/auth/basic/login", "admin", "admin"))
-                .build();
-
-        SecurityScheme oauth = new OAuthBuilder().name("BasicLogin")
-                .grantTypes(Arrays.asList(grantType))
-                .scopes(Arrays.asList(scopes()))
-                .build();
-        return oauth;
-    }
-
-    private AuthorizationScope[] scopes() {
-        AuthorizationScope[] scopes = {
-                new AuthorizationScope("user", "for basic usage"),
-                new AuthorizationScope("admin", "for administrative tasks"),
-                new AuthorizationScope("superadmin", "for configuration tasks") };
-        return scopes;
-    }
-
-    private SecurityContext securityContext() {
-        return SecurityContext.builder()
-                .securityReferences(Arrays.asList(new SecurityReference("BasicLogin", scopes())))
-                .forPaths(PathSelectors.regex("/*"))
                 .build();
     }
 }
