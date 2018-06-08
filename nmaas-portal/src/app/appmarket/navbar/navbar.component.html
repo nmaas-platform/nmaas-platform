@@ -31,7 +31,7 @@
 					aria-expanded="false"><span class="glyphicon glyphicon-user"></span>
 						{{authService.getUsername()}} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a href="#">Profile</a></li>
+						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/profile']">Profile</a></li>
 						<li class="divider"></li>
 						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/logout']">Logout</a></li>
 					</ul></li>

@@ -2,7 +2,8 @@ export enum ComponentMode {
   CREATE,
   VIEW,
   EDIT,
-  DELETE
+  DELETE,
+  PROFILVIEW
 }
 
 export function ComponentModeAware(constructor: Function) {
