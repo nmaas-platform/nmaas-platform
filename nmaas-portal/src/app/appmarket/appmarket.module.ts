@@ -11,7 +11,6 @@ import {AppDetailsComponent} from './appdetails/index';
 import {AppInstanceModule} from './appinstance/appinstance.module';
 
 import {NavbarComponent} from './navbar/index';
-import {LogoutComponent} from '../welcome/logout/index';
 
 import {SharedModule} from '../shared/shared.module';
 
@@ -46,7 +45,8 @@ import {UsersModule} from './users/users.module';
     PipesModule
   ],
   exports: [
-    AppMarketComponent
+    AppMarketComponent,
+      NavbarComponent
   ],
   providers: [
     AppsService,
