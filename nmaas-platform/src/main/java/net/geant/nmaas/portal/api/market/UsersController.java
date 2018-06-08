@@ -135,7 +135,8 @@ public class UsersController {
 		if(userRequest.getEmail() != null)
 			userMod.setEmail(userRequest.getEmail());		
 		userMod.setEnabled(userRequest.isEnabled());
-		userMod.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
+		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
+			userMod.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
 		try {
 			users.update(userMod);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
