@@ -11,7 +11,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     tokenGetter: () => {
         return localStorage.getItem(appConfig.config.tokenName ? appConfig.config.tokenName : 'token');
     },
-    whitelistedDomains: ['localhost:9000']
+    whitelistedDomains: [new RegExp("[\s\S]")]
 });
 
 @NgModule({

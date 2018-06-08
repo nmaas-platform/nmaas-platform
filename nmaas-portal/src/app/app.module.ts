@@ -41,7 +41,7 @@ export function appConfigFactory( config: AppConfigService) {
           tokenGetter: () => {
             return localStorage.getItem('token');
           },
-        whitelistedDomains: ['localhost:9000']
+        whitelistedDomains: [new RegExp("[\s\S]")]
       }
     }),
     AppMarketModule,
