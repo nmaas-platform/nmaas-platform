@@ -1,0 +1,10 @@
+<nmaas-navbar></nmaas-navbar>
+<div class="container">
+    <div class="page-header">
+        <h3>&nbsp;</h3>
+        <h3>User {{user?.username}} profile</h3>
+    </div>
+    <nmaas-userdetails [user]="user" [mode]="ComponentMode.PROFILVIEW" [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]"></nmaas-userdetails>
+    <nmaas-userprivileges [user]="user" [mode]="ComponentMode.PROFILVIEW" [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]"></nmaas-userprivileges>
+</div>
+<nmaas-footer></nmaas-footer>

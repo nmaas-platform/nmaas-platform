@@ -1,18 +1,20 @@
-import { RegistrationService } from '../auth/registration.service';
-import { LoginComponent } from './login';
-import { LogoutComponent } from './logout/logout.component';
-import { ChangelogComponent } from './changelog/changelog.component';
-import { PipesModule } from '../pipe/pipes.module';
-import { SharedModule } from '../shared/shared.module';
-import { RegistrationComponent } from './registration/registration.component';
-import { ChangelogService } from '../service/changelog.service';
-import { WelcomeComponent } from './welcome.component';
-import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { HttpClientModule } from "@angular/common/http";
-import { JwtModule } from '@auth0/angular-jwt';
+import {RegistrationService} from '../auth/registration.service';
+import {LoginComponent} from './login';
+import {LogoutComponent} from './logout/logout.component';
+import {ChangelogComponent} from './changelog/changelog.component';
+import {PipesModule} from '../pipe/pipes.module';
+import {SharedModule} from '../shared/shared.module';
+import {RegistrationComponent} from './registration/registration.component';
+import {ChangelogService} from '../service/changelog.service';
+import {WelcomeComponent} from './welcome.component';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {RouterModule} from '@angular/router';
+import {HttpClientModule} from "@angular/common/http";
+import {JwtModule} from '@auth0/angular-jwt';
+import {ProfileComponent} from './profile/profile.component';
+import {AppMarketModule} from "../appmarket";
 
 @NgModule({
   declarations: [
@@ -21,6 +23,7 @@ import { JwtModule } from '@auth0/angular-jwt';
     LogoutComponent,
     ChangelogComponent,
     RegistrationComponent,
+    ProfileComponent,
   ],
   imports: [
     FormsModule,
@@ -31,6 +34,7 @@ import { JwtModule } from '@auth0/angular-jwt';
     HttpClientModule,
     JwtModule,
     PipesModule,
+      AppMarketModule
   ],
   exports: [
     WelcomeComponent
