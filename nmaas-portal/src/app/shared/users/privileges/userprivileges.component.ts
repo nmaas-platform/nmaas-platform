@@ -1,6 +1,7 @@
 import {AuthService} from '../../../auth/auth.service';
 import {Domain} from '../../../model/domain';
 import {User} from '../../../model/user';
+import {KeysPipe} from "../../../pipe";
 import {Role, RoleAware} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
