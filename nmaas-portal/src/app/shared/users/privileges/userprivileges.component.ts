@@ -2,12 +2,13 @@ import {AuthService} from '../../../auth/auth.service';
 import {Domain} from '../../../model/domain';
 import {User} from '../../../model/user';
 import {Role, RoleAware} from '../../../model/userrole';
-import { KeysPipe } from '../../../pipe/keys.pipe';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
-import { BaseComponent } from '../../common/basecomponent/base.component';
-import {Component, OnInit, Input} from '@angular/core';
-import {FormGroup, FormBuilder, Validators} from '@angular/forms';
+import {BaseComponent} from '../../common/basecomponent/base.component';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Observable} from "rxjs/Observable";
+import {CacheService} from "../../../service/cache.service";
 
 @Component({
   selector: 'nmaas-userprivileges',
@@ -26,8 +27,11 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   private domains: Domain[] = [];
   private roles: Role[] = [];
 
+  protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  private newPrivilegeForm: FormGroup;
+
+
+    private newPrivilegeForm: FormGroup;
 
   constructor(protected fb: FormBuilder, protected domainService: DomainService,
     protected userService: UserService, protected authService: AuthService) {
@@ -87,5 +91,14 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   protected remove(userId: number, role: Role, domainId?: number): void {
     this.userService.removeRole(userId, role, domainId).subscribe(
         () => this.userService.getOne(this.user.id).subscribe((user) => this.user = user))
+  }
+
+  protected getDomainName(domainId: number): Observable<string> {
+        if (this.domainCache.hasData(domainId)) {
+            return Observable.of(this.domainCache.getData(domainId).name);
+        } else {
+            return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
+                .shareReplay(1).take(1);
+        }
   }
 }

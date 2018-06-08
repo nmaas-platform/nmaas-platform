@@ -47,7 +47,7 @@
 				<tbody>
 					<ng-template ngFor let-userrole [ngForOf]="user.userRoles">
 					<tr>
-						<td>{{userrole.domainId}}</td>
+						<td>{{getDomainName(userrole.domainId)|async}}</td>
 						<td>{{userrole.role | slice:5}}</td>
 						<td *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="text-right"><button type="button"
 								class="btn btn-danger"
