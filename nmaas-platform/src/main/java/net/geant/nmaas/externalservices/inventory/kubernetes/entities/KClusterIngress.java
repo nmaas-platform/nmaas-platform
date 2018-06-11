@@ -16,16 +16,27 @@ public class KClusterIngress {
     @Column(name = "id")
     private Long id;
 
-    /** Use existing ingress controller */
+    /** Indicates if existing ingress controller should be used */
     @Column(nullable = false)
     private Boolean useExistingController;
+
+    /** Name of the ingress class handled by the existing ingress controller */
+    private String supportedIngressClass;
 
     /** Name of ingress controller helm chart archive */
     private String controllerChartArchive;
 
+    /** Use existing ingress or ingress resource definition from the helm chart */
+    @Column(nullable = false)
+    private Boolean useExistingIngress;
+
     /** Common part of the external service URL assigned to deployed services */
     @Column(nullable = false)
     private String externalServiceDomain;
+
+    /** Indicates if TLS for ingress is supported */
+    @Column(nullable = false)
+    private Boolean tlsSupported;
 
     public Long getId() {
         return id;
@@ -43,6 +54,14 @@ public class KClusterIngress {
         this.useExistingController = useExistingController;
     }
 
+    public String getSupportedIngressClass() {
+        return supportedIngressClass;
+    }
+
+    public void setSupportedIngressClass(String supportedIngressClass) {
+        this.supportedIngressClass = supportedIngressClass;
+    }
+
     public String getControllerChartArchive() {
         return controllerChartArchive;
     }
@@ -51,11 +70,27 @@ public class KClusterIngress {
         this.controllerChartArchive = controllerChartArchive;
     }
 
+    public Boolean getUseExistingIngress() {
+        return useExistingIngress;
+    }
+
+    public void setUseExistingIngress(Boolean useExistingIngress) {
+        this.useExistingIngress = useExistingIngress;
+    }
+
     public String getExternalServiceDomain() {
         return externalServiceDomain;
     }
 
     public void setExternalServiceDomain(String externalServiceDomain) {
         this.externalServiceDomain = externalServiceDomain;
+    }
+
+    public Boolean getTlsSupported() {
+        return tlsSupported;
+    }
+
+    public void setTlsSupported(Boolean tlsSupported) {
+        this.tlsSupported = tlsSupported;
     }
 }
