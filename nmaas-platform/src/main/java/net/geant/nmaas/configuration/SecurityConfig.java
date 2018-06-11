@@ -44,6 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
 	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/registration/**";
 	private final static String AUTH_BASIC_TOKEN = "/portal/api/auth/basic/token";
+
+	private final static String AUTH_SSO_LOGIN = "/portal/api/auth/sso/login";
+
 	private final static String APP_LOGO = "/portal/api/apps/{appId:[\\d+]}/logo";
 	private final static String APP_SCREENSHOTS = "/portal/api/apps/{appId:[\\d+]}/screenshots/**";
 	
@@ -108,6 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
+				.antMatchers(AUTH_SSO_LOGIN).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
@@ -127,6 +131,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/platform/api/dcns/notifications/**/status"),

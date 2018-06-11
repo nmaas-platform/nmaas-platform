@@ -23,7 +23,7 @@
 #### Build and run
 ---
   + Build the Portal with *gradlew clean build* in reactor directory.
-  + The output archive *nmaas-portal-0.3.0.zip* file is created in *nmaas-portal/build* directory.
+  + The output archive *nmaas-portal-0.3.0.zip* file is created in *nmaas-portal/build/distributions* directory.
   + Unzip the archive and run the http server in the same directory
     - nohup angular-http-server -p 9009 -s --cors > nmaas-portal.log 2> Error.err < /dev/null &
 
