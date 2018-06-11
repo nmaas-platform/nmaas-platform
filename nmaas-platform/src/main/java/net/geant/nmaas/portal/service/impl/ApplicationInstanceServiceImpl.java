@@ -50,8 +50,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	public AppInstance create(Domain domain, Application application, String name) throws ApplicationSubscriptionNotActiveException {		
 		checkParam(domain);
 		checkParam(application);
-		checkNameUniqueness(domain, name);
 		checkNameCharacters(name);
+		checkNameUniqueness(domain, name);
 		if(applicationSubscriptions.isActive(application, domain))
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
