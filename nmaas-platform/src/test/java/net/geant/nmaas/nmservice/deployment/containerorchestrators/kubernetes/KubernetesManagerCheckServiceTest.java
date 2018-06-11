@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmKServiceManager;
@@ -24,6 +25,7 @@ public class KubernetesManagerCheckServiceTest {
     private DefaultKClusterValidator clusterValidator = mock(DefaultKClusterValidator.class);
     private KServiceLifecycleManager serviceLifecycleManager = mock(HelmKServiceManager.class);
     private KServiceOperationsManager serviceOperationsManager = mock(DefaultKServiceOperationsManager.class);
+    private KClusterIngressManager clusterIngressManager = mock(KClusterIngressManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
 
@@ -33,6 +35,7 @@ public class KubernetesManagerCheckServiceTest {
                 clusterValidator,
                 serviceLifecycleManager,
                 serviceOperationsManager,
+                clusterIngressManager,
                 ingressControllerManager,
                 ingressResourceManager);
     }

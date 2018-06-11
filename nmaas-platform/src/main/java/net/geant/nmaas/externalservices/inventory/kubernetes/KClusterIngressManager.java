@@ -7,9 +7,15 @@ public interface KClusterIngressManager {
 
     Boolean getUseExistingController();
 
+    String getSupportedIngressClass();
+
     String getControllerChartArchive();
 
+    Boolean getUseExistingIngress();
+
     String getExternalServiceDomain();
+
+    Boolean getTlsSupported();
 
     KClusterExtNetworkView reserveExternalNetwork(String domain) throws ExternalNetworkNotFoundException;
 

@@ -84,6 +84,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 		}
 	}
+
+	private static final String[] AUTH_WHITELIST = {
+			"/v2/api-docs",
+			"/swagger-resources",
+			"/swagger-resources/**",
+			"/configuration/ui",
+			"/configuration/security",
+			"/swagger-ui.html",
+			"/webjars/**"
+	};
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -108,6 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
+				.antMatchers(AUTH_WHITELIST).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
@@ -127,6 +138,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+										new AntPathRequestMatcher("/v2/api-docs"),
+										new AntPathRequestMatcher("/swagger-resources"),
+										new AntPathRequestMatcher("/swagger-resources/**"),
+										new AntPathRequestMatcher("/configuration/ui"),
+										new AntPathRequestMatcher("/configuration/security"),
+										new AntPathRequestMatcher("/swagger-ui.html"),
+										new AntPathRequestMatcher("/webjars/**"),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/platform/api/dcns/notifications/**/status"),
