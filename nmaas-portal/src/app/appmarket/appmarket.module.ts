@@ -24,6 +24,8 @@ import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.comp
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
+import {ClustersModule} from "./admin/clusters/clusters.module";
+import {ClusterService} from "../service/cluster.service";
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import {UsersModule} from './users/users.module';
     DomainsModule,
     UsersModule,
     AuthModule,
-    PipesModule
+    PipesModule,
+    ClustersModule
   ],
   exports: [
     AppMarketComponent,
@@ -53,7 +56,8 @@ import {UsersModule} from './users/users.module';
     DomainService,
     UserService,
     TagService,
-    UserService
+    UserService,
+    ClusterService
   ]
 
 })
