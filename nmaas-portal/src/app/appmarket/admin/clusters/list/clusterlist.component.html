@@ -13,7 +13,7 @@
             <ng-template ngFor let-cluster [ngForOf]="clusters">
                 <tr>
                     <td>{{cluster.name}}</td>
-                    <td>{{user.restApiPort}}</td>
+                    <td>{{cluster.restApiPort}}</td>
                     <td class="text-right">
                         <a (click)="onView(cluster.name)" class="btn btn-sm btn-primary" role="button">Details</a>
                         <a (click)="onDelete(cluster.name)" class="btn btn-sm btn-danger" role="button">Remove</a>
