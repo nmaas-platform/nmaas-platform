@@ -1,6 +1,6 @@
 import { HostAddress } from "./hostaddress";
 
-class ClusterInfo {
+export class ClusterInfo {
     public helmHostAddress: HostAddress;
     public name: String;
     public restApiHostAddress: HostAddress;
@@ -55,7 +55,7 @@ class ClusterIngress {
     public useExistingIngress: boolean;
 }
 
-class Cluster {
+export class Cluster {
     public api: ClusterApi;
     public attachPoint: ClusterAttachPoint;
     public deployment: ClusterDeployment;
