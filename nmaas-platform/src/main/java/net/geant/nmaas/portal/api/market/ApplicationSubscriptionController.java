@@ -78,7 +78,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping
 	@Transactional(readOnly=true)	
 	public List<ApplicationSubscriptionBase> getAllSubscriptions() {
-		return appSubscriptions.getSubscriptions().stream()
+		return appSubscriptions.getSubscriptions().stream().filter(appSub->!appSub.isDeleted())
 				.map(appSub -> modelMapper.map(appSub, ApplicationSubscriptionBase.class)).collect(Collectors.toList());
 	}
 	
