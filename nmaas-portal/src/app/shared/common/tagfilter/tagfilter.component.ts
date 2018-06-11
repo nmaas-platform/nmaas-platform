@@ -23,8 +23,8 @@ export class TagFilterComponent implements OnInit {
     this.tags = this.tagService.getTags();
   }
 
-  public onChange($event): void {    
-    this.changed.emit(this.value !== 'all' ? this.value : null);
+  public onChange(): void {    
+    this.changed.emit(this.value);
   }
   
 }

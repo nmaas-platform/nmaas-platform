@@ -113,8 +113,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   protected filterAppsByTag(tag: string): void {
 
-    console.log(tag);
-    if(tag == ""){
+    if(tag == "all"){
       this.updateDomain();
     }else{
       tag = tag.toLocaleLowerCase();
