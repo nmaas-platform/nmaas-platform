@@ -31,7 +31,8 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   protected applications: Observable<Application[]>;
   protected selected: Observable<Set<number>>;
 
-  protected searchedAppName: string;
+  protected searchedAppName: string = "";
+  protected searchedTag: string = "all";
 
   constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
 
@@ -97,32 +98,33 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  protected doSearch():void {
+
+    let filteredAppsOne: Application[];
+    let filteredAppsTwo: Application[];
+    let tag = this.searchedTag.toLocaleLowerCase();
+    let typed = this.searchedAppName.toLocaleLowerCase();
+    this.updateDomain()
+    this.applications.subscribe((apps) => {
+      if (tag === "all"){
+        filteredAppsOne = apps;
+      } else {
+        filteredAppsOne = apps.filter(app => app.tags.map(entry => entry.toLocaleLowerCase()).findIndex(function (element) {return element.indexOf(tag) > -1;}) > -1);
+      }
+      filteredAppsTwo = filteredAppsOne.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
+      this.applications = Observable.of(filteredAppsTwo);
+    });
+  }
+
   protected filterAppsByName(typed: string): void {
 
-    if(typed.length === 0){
-      this.updateDomain()
-    }else{
-      typed = typed.toLocaleLowerCase();
-      let filteredApps: Application[];
-      this.applications.subscribe((apps) => {
-        filteredApps = apps.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
-        this.applications = Observable.of(filteredApps);
-      });
-    }
+    this.searchedAppName = typed;
+    this.doSearch();
   }
 
   protected filterAppsByTag(tag: string): void {
 
-    if(tag == "all"){
-      this.updateDomain();
-    }else{
-      tag = tag.toLocaleLowerCase();
-      let filteredApps: Application[];
-      this.applications.subscribe((apps) => {
-        filteredApps = apps.filter(app => app.tags.map(entry => entry.toLocaleLowerCase()).findIndex(function (element) {return element.indexOf(tag) > -1;}) > -1);
-        this.applications = Observable.of(filteredApps);
-      });
-    }
+    this.searchedTag = tag;
+    this.doSearch();
   }
-
 }
