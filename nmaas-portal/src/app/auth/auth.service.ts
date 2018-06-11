@@ -210,6 +210,67 @@ export class AuthService {
       });
   }
 
+  public allowsSSO(): boolean {
+    return 'sso' in this.appConfig.config;
+  }
+
+  public allowsBasic(): boolean {
+    return !this.allowsSSO() || ('allowsBasic' in this.appConfig.config.sso);
+  }
+
+  public getSSOName(): string {
+    if(!this.allowsSSO()) return '';
+    return ('name' in this.appConfig.config.sso) ? this.appConfig.config.sso.name : 'SSO service';
+  }
+
+  public getSSOLoginUrl(): string {
+    return this.allowsSSO() ? this.appConfig.config.sso.loginUrl : null;
+  }
+
+  public getSSOLogoutUrl(): string {
+    return this.allowsSSO() ? this.appConfig.config.sso.logoutUrl : null;
+  }
+
+  public propagateSSOLogin(userid: string): Observable<boolean> {
+    const headers = new Headers({'Content-Type': 'application/json', 'Accept': 'application/json'});
+    return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
+      JSON.stringify({'userid': userid}), new RequestOptions({headers: headers}))
+      .timeout(10000)
+      .map((response: Response) => {
+        console.debug('SSO login response: ' + response);
+        // login successful if there's a jwt token in the response
+        const token = response.json() && response.json().token;
+        if (token) {
+          // set token property
+          this.storeToken(token);
+
+          console.debug('SSO AUTH | User: ' + this.getUsername());
+          console.debug('SSO AUTH | Domains: ' + this.getDomains());
+          console.debug('SSO AUTH | Roles: ' + this.getRoles());
+          console.debug('SSO AUTH | DomainRoles: ' + this.getDomainRoles());
+
+          return true;
+        } else {
+          // return false to indicate failed login
+          return false;
+        }
+      })
+      .catch((error: Response | any) => {
+        console.debug('SSO login error: ' + error);
+        let errMsg: string;
+        if (error instanceof Response) {
+          console.debug(error.json());
+          const body = error.json() || '';
+          const err = body.message || JSON.stringify(body);
+          errMsg = `${error.status} - ${err}`;
+        } else {
+          errMsg = 'Server error';
+        }
+        console.error(errMsg);
+        return Observable.throw(errMsg);
+      });
+  }
+
   public logout(): void {
     this.removeToken();
   }
