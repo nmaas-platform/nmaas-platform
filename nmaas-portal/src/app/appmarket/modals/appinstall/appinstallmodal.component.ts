@@ -60,7 +60,7 @@ export class AppInstallModalComponent implements OnInit {
     this.modal.show();
   }
 
-  private checkInput(name:string): boolean{
+  protected checkInput(name:string): boolean{
     let format = /[!@#$%^&*()+=\[\]{};':"\\|,.<>\/?]/;
     return format.test(name)
   }

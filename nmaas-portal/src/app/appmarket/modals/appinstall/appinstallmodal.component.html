@@ -4,6 +4,7 @@
 		<div class="form-group">
 			<label for="name" class="control-label">Instance name</label> 
 			<input type="text" class="form-control" id="name" [(ngModel)]="name">
+			<div class="alert alert-danger" *ngIf="this.checkInput(name)">Name contains invalid characters</div>
 			<label class="control-label">Domain: </label>
 			<div>
 				<p class="form-control-static">{{domainName}}</p>
