@@ -119,11 +119,11 @@ public interface ApplicationSubscriptionRespository extends JpaRepository<Applic
 	Page<ApplicationSubscription> findAllByIdApplicationAndActive(Application application, boolean active, Pageable pageable);
 	
 	//TODO: try to fix to return projection after upgrading spring boot 2.x
-	@Query("SELECT DISTINCT appSub.id.application FROM ApplicationSubscription appSub")
+	@Query("SELECT DISTINCT appSub.id.application FROM ApplicationSubscription appSub WHERE appSub.deleted=FALSE")
 	List<Application> findApplicationBriefAllBy();
 
 	//TODO: try to fix to return projection after upgrading spring boot 2.x
-	@Query("SELECT DISTINCT appSub.id.application FROM ApplicationSubscription appSub WHERE appSub.id.domain.id = :domainId")
+	@Query("SELECT DISTINCT appSub.id.application FROM ApplicationSubscription appSub WHERE appSub.id.domain.id = :domainId and appSub.deleted=FALSE")
 	List<Application> findApplicationBriefAllByDomain(@Param("domainId") Long domainId);
 
 	
