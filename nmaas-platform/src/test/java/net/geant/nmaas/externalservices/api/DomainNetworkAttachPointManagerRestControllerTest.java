@@ -37,9 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DomainNetworkAttachPointManagerRestControllerTest {
 
     private static final String CORRECT_DOMAIN_NAME = "domainName";
-    private static final String CORRECT_URL = "/platform/api/management/domains/" + CORRECT_DOMAIN_NAME + "/network";
+    private static final String CORRECT_URL = "/api/management/domains/" + CORRECT_DOMAIN_NAME + "/network";
     private static final String INCORRECT_DOMAIN_NAME = "missingDomainName";
-    private static final String INCORRECT_URL = "/platform/api/management/domains/" + INCORRECT_DOMAIN_NAME + "/network";
+    private static final String INCORRECT_URL = "/api/management/domains/" + INCORRECT_DOMAIN_NAME + "/network";
 
     private static final String EXAMPLE_CUSTOMER_NETWORK_ATTACH_POINT_JSON = "" +
             "{" +

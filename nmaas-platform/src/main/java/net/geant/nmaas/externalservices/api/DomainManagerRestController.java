@@ -14,7 +14,7 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/domains")
+@RequestMapping(value = "/api/management/domains")
 public class DomainManagerRestController {
 
     private DomainNetworkAttachPointRepository attachPointRepository;

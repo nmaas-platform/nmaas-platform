@@ -3,7 +3,7 @@ setlocal enableDelayedExpansion
 @echo off
 setlocal enableDelayedExpansion
 
-set PORTAL_API_URL=http://localhost:9000/portal/api
+set PORTAL_API_URL=http://localhost:9000/api
 echo %PORTAL_API_URL%
 
 set LF=^
@@ -39,7 +39,7 @@ echo ----------------------
 echo Ping
 curl -X GET %PORTAL_API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
-set API_URL=http://localhost:9000/platform/api
+set API_URL=http://localhost:9000/api
 echo %API_URL%
 
 echo.

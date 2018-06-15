@@ -43,7 +43,7 @@ public class DockerHostManagerRestControllerTest {
     private final static String FOURTH_HOST_NAME = "GN4-DOCKER-1";
     private final static String NEW_DOCKER_HOST_NAME = "GN4-DOCKER-X";
     private final static String WRONG_DOCKER_HOST_NAME = "WRONG-DOCKER-HOST-NAME";
-    private final static String URL_PREFIX = "/platform/api/management/dockerhosts";
+    private final static String URL_PREFIX = "/api/management/dockerhosts";
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;

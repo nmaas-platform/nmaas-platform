@@ -43,7 +43,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api")
+@RequestMapping("/api")
 public class UsersController {
 
 //	@Autowired

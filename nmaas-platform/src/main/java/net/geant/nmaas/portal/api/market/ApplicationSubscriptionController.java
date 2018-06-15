@@ -24,7 +24,7 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @RestController
-@RequestMapping("/portal/api/subscriptions")
+@RequestMapping("/api/subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 	
 	@Autowired

@@ -62,7 +62,7 @@ public class OrchestratorManagerRestControllerTest {
         params.set("domain", DOMAIN);
         params.set("applicationid", applicationId.getValue());
         params.set("deploymentname", DEPLOYMENT_NAME);
-        mvc.perform(post("/platform/api/orchestration/deployments")
+        mvc.perform(post("/api/orchestration/deployments")
                 .params(params)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -72,7 +72,7 @@ public class OrchestratorManagerRestControllerTest {
     @Test
     public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        mvc.perform(post("/platform/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(appConfiguration.getJsonInput())
                 .accept(MediaType.APPLICATION_JSON))
@@ -89,7 +89,7 @@ public class OrchestratorManagerRestControllerTest {
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Exception {
         doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
-        mvc.perform(post("/platform/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(appConfiguration.getJsonInput())
                 .accept(MediaType.APPLICATION_JSON))

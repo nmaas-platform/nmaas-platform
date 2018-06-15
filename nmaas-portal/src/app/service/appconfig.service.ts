@@ -20,7 +20,7 @@ export class AppConfigService {
     }
 
     public getApiUrl(): string {
-        return this.config.apiUrl || 'http://localhost/portal/api';
+        return this.config.apiUrl || 'http://localhost/api';
     }
 
     public getNmaasGlobalDomainId(): number {

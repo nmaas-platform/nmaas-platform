@@ -16,7 +16,7 @@ export class ClusterService extends GenericDataService {
         super(http, appConfig);
 
         //TODO: TEMPORARY API HACK
-        this.url = this.appConfig.getApiUrl().replace('portal', 'platform') + '/management/kubernetes/';
+        this.url = this.appConfig.getApiUrl() + '/management/kubernetes/';
     }
 
     public getAll(): Observable<ClusterInfo[]> {

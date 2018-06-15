@@ -13,7 +13,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/configurations/templates")
+@RequestMapping(value = "/api/management/configurations/templates")
 public class NmServiceConfigTemplateAdminRestController {
 
     @Autowired

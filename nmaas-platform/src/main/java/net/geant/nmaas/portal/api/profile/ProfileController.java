@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/portal/api/profile")
+@RequestMapping("/api/profile")
 public class ProfileController {
 
     private UserService users;

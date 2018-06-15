@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/orchestration/deployments")
+@RequestMapping(value = "/api/orchestration/deployments")
 public class AppDeploymentMonitorRestController {
 
     private final static Logger log = LogManager.getLogger(AppDeploymentMonitorRestController.class);

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @Profile("dcn_ansible")
-@RequestMapping(value = "/platform/api/dcns/notifications")
+@RequestMapping(value = "/api/dcns/notifications")
 public class AnsibleNotificationRestController {
 
     private AnsiblePlaybookExecutionStateListener stateListener;

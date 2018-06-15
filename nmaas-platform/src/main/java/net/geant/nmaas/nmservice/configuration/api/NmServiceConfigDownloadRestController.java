@@ -17,7 +17,7 @@ import java.nio.charset.Charset;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/configs")
+@RequestMapping(value = "/api/configs")
 public class NmServiceConfigDownloadRestController {
 
     private final static Logger log = LogManager.getLogger(NmServiceConfigDownloadRestController.class);

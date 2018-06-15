@@ -52,7 +52,7 @@ public class NmServiceConfigurationRestControllerTest {
         NmServiceConfiguration configuration
                 = new NmServiceConfiguration(TEST_OXIDIZED_CONFIG_FIRST_ID, TEST_OXIDIZED_CONFIG_FIRST_FILENAME, configFileContent);
         configurations.save(configuration);
-        mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
+        mvc.perform(get("/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
                 .with(httpBasic(context.getEnvironment().getProperty("app.config.download.client.username"), context.getEnvironment().getProperty("app.config.download.client.password"))))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + TEST_OXIDIZED_CONFIG_FIRST_FILENAME))
@@ -62,14 +62,14 @@ public class NmServiceConfigurationRestControllerTest {
 
     @Test
     public void shouldForbidDownload() throws Exception {
-        mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
+        mvc.perform(get("/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID)
                 .with(httpBasic("testClient", "testPassword")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void shouldReturnNotFoundOnMissingConfigurationWithProvidedId() throws Exception {
-        mvc.perform(get("/platform/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID + "invalid-string")
+        mvc.perform(get("/api/configs/{configId}", TEST_OXIDIZED_CONFIG_FIRST_ID + "invalid-string")
                 .with(httpBasic(context.getEnvironment().getProperty("app.config.download.client.username"), context.getEnvironment().getProperty("app.config.download.client.password"))))
                 .andExpect(status().isNotFound());
     }

@@ -4,7 +4,7 @@ function getToken() {
 	python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)['token']))" | sed -e 's/^"//' -e 's/"$//'
 }
 
-PORTAL_API_URL=http://localhost:9000/portal/api
+PORTAL_API_URL=http://localhost:9000/api
 echo $PORTAL_API_URL
 
 TOKEN=`curl -sX POST $PORTAL_API_URL/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data/login.json | getToken`
@@ -17,7 +17,7 @@ echo ----------------------
 echo Ping
 curl -X GET $PORTAL_API_URL/auth/basic/ping --header "Authorization: Bearer $TOKEN"
 
-API_URL=http://localhost:9000/platform/api
+API_URL=http://localhost:9000/api
 echo $API_URL
 
 echo

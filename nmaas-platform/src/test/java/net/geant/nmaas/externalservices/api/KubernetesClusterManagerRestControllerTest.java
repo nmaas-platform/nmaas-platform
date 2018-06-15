@@ -43,7 +43,7 @@ public class KubernetesClusterManagerRestControllerTest {
 
     private final static String NEW_KUBERNETES_CLUSTER_NAME = "K8S-NAME-1";
     private final static String DIFFERENT_KUBERNETES_CLUSTER_NAME = "DIFFERENT-K8S-NAME-1";
-    private final static String URL_PREFIX = "/platform/api/management/kubernetes";
+    private final static String URL_PREFIX = "/api/management/kubernetes";
 
     private final static String KUBERNETES_CLUSTER_JSON =
             "{" +
