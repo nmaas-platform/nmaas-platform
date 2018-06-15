@@ -41,7 +41,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
       let users: Observable<User[]>;
       users = this.userService.getAll(this.domainId);
 
-      users.subscribe((all)=>{this.users = all;console.log(all)});
+      users.subscribe((all)=>{this.users = all;});
 
     });
   }
