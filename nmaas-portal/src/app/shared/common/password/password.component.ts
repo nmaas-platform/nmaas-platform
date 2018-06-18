@@ -51,7 +51,9 @@ export class PasswordComponent implements OnInit {
   }
 
   public submit(): void {
-    this.passwordSubmit.emit(this.passwordForm.controls['password'].value);
-    this.passwordForm.reset();
+    if(this.passwordForm.valid){
+        this.passwordSubmit.emit(this.passwordForm.controls['password'].value);
+        this.passwordForm.reset();
+    }
   }
 }
