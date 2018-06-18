@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,10 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Autowired
 	ApplicationSubscriptionService applicationSubscriptions;
 
+	@Autowired
+	@Qualifier("InstanceNameValidator")
+	DomainServiceImpl.CodenameValidator validator;
+
 	@Override
 	public AppInstance create(Long domainId, Long applicationId, String name) throws ObjectNotFoundException, ApplicationSubscriptionNotActiveException {
 		Application app = applications.findApplication(applicationId).orElseThrow(() -> new ObjectNotFoundException("Application not found."));
@@ -47,10 +52,11 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
-	public AppInstance create(Domain domain, Application application, String name) throws ApplicationSubscriptionNotActiveException {		
+	public AppInstance create(Domain domain, Application application, String name) throws ApplicationSubscriptionNotActiveException {
 		checkParam(domain);
 		checkParam(application);
-		
+		checkNameCharacters(name);
+		checkNameUniqueness(domain, name);
 		if(applicationSubscriptions.isActive(application, domain))
 			return appInstanceRepo.save(new AppInstance(application, domain, name));
 		else
@@ -198,7 +204,20 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
 	}
-	
+
+	protected void checkNameUniqueness(Domain domain, String name){
+		if(findAllByDomain(domain).stream().anyMatch(s -> s.getName().equalsIgnoreCase(name))){
+			throw new IllegalArgumentException("Name is already taken");
+		}
+	}
+
+	protected void checkNameCharacters(String name){
+		Optional.ofNullable(validator)
+				.map(v -> v.valid(name))
+				.filter(result -> result)
+				.orElseThrow(() -> new IllegalArgumentException("Instance name is not valid"));
+	}
+
 	protected Domain getDomain(Long domainId) throws ObjectNotFoundException {
 		checkParam(domainId);
 		return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
