@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @Profile("env_docker-compose")
-@RequestMapping(value = "/platform/api/management/apps/{appId}/dockercompose/template")
+@RequestMapping(value = "/api/management/apps/{appId}/dockercompose/template")
 public class DockerComposeFileTemplateAdminRestController {
 
     @Autowired

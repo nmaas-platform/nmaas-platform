@@ -71,7 +71,7 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
     public void shouldStoreAndLoadTemplate() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
         assertThat(templateRepository.count(), equalTo(0L));
-        mvc.perform(post("/platform/api/management/apps/{appId}/kubernetes/template", appId)
+        mvc.perform(post("/api/management/apps/{appId}/kubernetes/template", appId)
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(templateJson()))
@@ -79,7 +79,7 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
         assertThat(templateRepository.count(), equalTo(1L));
         assertThat(applicationRepository.findOne(appId).getAppDeploymentSpec().getKubernetesTemplate().getArchive(),
                 equalTo("test.zip"));
-        MvcResult result = mvc.perform(get("/platform/api/management/apps/{appId}/kubernetes/template", appId)
+        MvcResult result = mvc.perform(get("/api/management/apps/{appId}/kubernetes/template", appId)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -92,17 +92,17 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
     @Transactional
     public void shouldReturnProperCodesOnExceptions() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/platform/api/management/apps/{appId}/kubernetes/template", 100)
+        mvc.perform(get("/api/management/apps/{appId}/kubernetes/template", 100)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
         Application application = new Application("testApp2");
         appId = applicationRepository.save(application).getId();
-        mvc.perform(get("/platform/api/management/apps/{appId}/kubernetes/template", appId)
+        mvc.perform(get("/api/management/apps/{appId}/kubernetes/template", appId)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isInternalServerError());
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         applicationRepository.save(application);
-        mvc.perform(get("/platform/api/management/apps/{appId}/kubernetes/template", appId)
+        mvc.perform(get("/api/management/apps/{appId}/kubernetes/template", appId)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
@@ -110,7 +110,7 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/platform/api/management/apps/{appId}/kubernetes/template", appId)
+        mvc.perform(get("/api/management/apps/{appId}/kubernetes/template", appId)
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

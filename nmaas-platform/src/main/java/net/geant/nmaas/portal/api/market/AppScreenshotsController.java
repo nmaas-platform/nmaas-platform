@@ -32,7 +32,7 @@ import net.geant.nmaas.portal.service.FileStorageService;
 
 
 @RestController
-@RequestMapping("/portal/api/apps/{appId}")
+@RequestMapping("/api/apps/{appId}")
 public class AppScreenshotsController extends AppBaseController {
 	
 	@Autowired

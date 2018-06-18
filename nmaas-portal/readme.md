@@ -29,7 +29,7 @@
 ---
   + URL:
     - WWW: http://<HOSTNAME>:9009
-    - API: http://<HOSTNAME>:9001/portal/api
+    - API: http://<HOSTNAME>:9001/api
   + Access:
     - username: admin
     - password: admin

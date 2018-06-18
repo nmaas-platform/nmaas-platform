@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("classpath:application-test-engine.properties")
 public class DockerHostAttachPointManagerRestControllerTest {
 
-    private final static String URL_PREFIX = "/platform/api/management/network";
+    private final static String URL_PREFIX = "/api/management/network";
 
     private static final String FIRST_DOCKER_HOST_NAME = "dh-1";
     private static final String SECOND_DOCKER_HOST_NAME = "dh-2";

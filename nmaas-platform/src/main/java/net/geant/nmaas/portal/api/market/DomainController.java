@@ -29,7 +29,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api/domains")
+@RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
 	@Autowired

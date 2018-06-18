@@ -33,7 +33,7 @@ public class DockerHostManagerApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/platform/api/management/dockerhosts")
+        mvc.perform(get("/api/management/dockerhosts")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -41,7 +41,7 @@ public class DockerHostManagerApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldRejectNonAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/platform/api/management/dockerhosts")
+        mvc.perform(get("/api/management/dockerhosts")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/portal/api/apps")
+@RequestMapping("/api/apps")
 public class ApplicationController extends AppBaseController {
 	
 	@RequestMapping(method=RequestMethod.GET)
