@@ -19,6 +19,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/isEmpty';
 import {empty} from 'rxjs/observable/empty';
 import {isUndefined} from 'util';
+import {AppSubscription} from "../../model";
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -76,10 +77,11 @@ export class AppDetailsComponent implements OnInit {
     let result: Observable<any> = null;
     if (isUndefined(domainId) || domainId === 0) {
       result = this.appSubsService.getAllByApplication(this.appId);
+      result.isEmpty().subscribe(res => this.subscribed = !res, error => this.subscribed = false);
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
+      result.subscribe((appSub:AppSubscription)=>this.subscribed=appSub.active, error=>this.subscribed = false);
     }
-    result.isEmpty().subscribe(res => this.subscribed = !res, error => this.subscribed = false);
   }
 
   protected subscribe(): void {

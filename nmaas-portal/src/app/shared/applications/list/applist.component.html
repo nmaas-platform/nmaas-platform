@@ -28,7 +28,7 @@
 						<td>{{app?.tags.join(", ")}}</td>
 						<td><rate [pathUrl]="'/apps/' + app?.id + '/rate'"></rate></td>
 						<td>
-							<a [routerLink]="['apps/', app.id]"
+							<a [routerLink]="['/apps', app.id]"
 							class="btn btn-sm btn-primary" role="button">Details</a></td>
 					</tr>
 					</ng-template>

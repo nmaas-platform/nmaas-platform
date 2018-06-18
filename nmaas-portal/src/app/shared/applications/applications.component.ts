@@ -61,6 +61,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
         break;
       case AppViewType.DOMAIN:
         applications = this.appSubsService.getSubscribedApplications(domainId);
+        applications.subscribe((apps) => this.updateSelected(apps));
         break;
       default:
         applications = Observable.of<Application[]>([]);
