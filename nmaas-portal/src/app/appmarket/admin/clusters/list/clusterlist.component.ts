@@ -5,7 +5,7 @@ import {ClusterService} from "../../../../service/cluster.service";
 import {Router} from "@angular/router";
 
 @Component({
-    selector: 'nmaas-clusterlist',
+    selector: 'app-clusterlist',
     templateUrl: './clusterlist.component.html',
     styleUrls: ['./clusterlist.component.css']
 })
@@ -25,6 +25,7 @@ export class ClusterListComponent extends BaseComponent implements OnInit {
     }
 
     public onDelete($event): void {
+        console.log("delete", $event);
         this.clusterService.remove($event);
     }
 }

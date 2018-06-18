@@ -1,7 +1,6 @@
 import {CommonModule} from "@angular/common";
 import {RouterModule} from "@angular/router";
 import {AuthModule} from "../../../auth/auth.module";
-import {UserService} from "../../../service/user.service";
 import {PipesModule} from "../../../pipe/pipes.module";
 import {FormsModule} from "@angular/forms";
 import {NgModule} from "@angular/core";

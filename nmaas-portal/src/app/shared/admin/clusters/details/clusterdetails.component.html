@@ -1,0 +1,38 @@
+<div class="panel panel-default">
+    <div class="panel-heading">Cluster</div>
+    <div class="panel-body">
+        <form *ngIf="!isInMode(ComponentMode.CREATE) && cluster" (submit)="submit()" class="form-horizontal">
+            <div *ngIf="cluster?.id" class="form-group">
+                <label class="col-sm-2 control-label">Id:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">{{cluster?.id}}</p>
+                </div>
+            </div>
+
+            <div *ngIf="cluster?.name" class="form-group">
+                <label class="col-sm-2 control-label">Name:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">{{cluster?.name}}</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="apihost" class="col-sm-2 control-label">API host:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="apihost" name="apihost"
+                           [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)">
+                    :
+                    <input type="text" class="form-control" id="apiport" name="apiport"
+                           [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)">
+                </div>
+            </div>
+
+            <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
+                    class="btn btn-default" (click)="onModeChange()">View</button>
+            <button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit"
+                    class="btn btn-danger">Submit</button>
+            <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
+                    type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
+        </form>
+    </div>
+</div>

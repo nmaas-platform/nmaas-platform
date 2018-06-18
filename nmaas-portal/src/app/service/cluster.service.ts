@@ -15,7 +15,6 @@ export class ClusterService extends GenericDataService {
     constructor(http: HttpClient, appConfig: AppConfigService) {
         super(http, appConfig);
 
-        //TODO: TEMPORARY API HACK
         this.url = this.appConfig.getApiUrl() + '/management/kubernetes/';
     }
 
@@ -36,6 +35,6 @@ export class ClusterService extends GenericDataService {
     }
 
     public remove(clusterName: string): Observable<any> {
-        return this.delete(this.url + clusterName);
+        return this.http.delete(this.url + clusterName);
     }
 }

@@ -1,15 +1,13 @@
-import { HostAddress } from "./hostaddress";
-
 export class ClusterInfo {
-    public helmHostAddress: HostAddress;
+    public helmHostAddress: string;
     public name: String;
-    public restApiHostAddress: HostAddress;
+    public restApiHostAddress: string;
     public restApiPort: number;
 }
 
 class ClusterApi {
     public id: number;
-    public restApiHostAddress: HostAddress;
+    public restApiHostAddress: string;
     public restApiPort: number;
 }
 
@@ -31,14 +29,14 @@ class ClusterExtNetwork {
     public assigned: boolean;
     public assignedSince: string;
     public assignedTo: string;
-    public externalIp: HostAddress;
-    public externalNetwork: HostAddress;
+    public externalIp: string;
+    public externalNetwork: string;
     public externalNetworkMaskLength: number;
     public id: number;
 }
 
 class ClusterHelm {
-    public helmHostAddress: HostAddress;
+    public helmHostAddress: string;
     public helmHostChartsDirectory: string;
     public helmHostSshUsername: string;
     public id: number;

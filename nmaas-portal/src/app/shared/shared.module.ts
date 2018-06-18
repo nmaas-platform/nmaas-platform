@@ -25,7 +25,8 @@ import { DomainFilterComponent } from './common/domainfilter/domainfilter.compon
 import { AppListComponent } from './applications/list/applist.component';
 import { ApplicationsViewComponent } from './applications/applications.component';
 import { AppElementComponent } from './applications/list/element/appelement.component';
-import { HostAddressComponent } from "./common/hostaddress/hostaddress.component";
+import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
+import { ClusterListComponent } from "./admin/clusters/lists/clusterlist.component";
 
 @NgModule({
   imports: [
@@ -57,7 +58,8 @@ import { HostAddressComponent } from "./common/hostaddress/hostaddress.component
     AppElementComponent,
     AppListComponent,
     ApplicationsViewComponent,
-    HostAddressComponent
+    ClusterDetailsComponent,
+    ClusterListComponent
   ],
   providers: [
     PasswordValidator,
@@ -80,7 +82,8 @@ import { HostAddressComponent } from "./common/hostaddress/hostaddress.component
     TagFilterComponent,
     DomainFilterComponent,
     ApplicationsViewComponent,
-    HostAddressComponent
+    ClusterDetailsComponent,
+    ClusterListComponent
   ]
 })
 export class SharedModule {}

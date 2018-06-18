@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HostAddressComponent } from './hostaddress.component';
+import { ClusterDetailsComponent } from './clusterdetails.component';
 
-describe('HostAddressComponent', () => {
-    let component: HostAddressComponent;
-    let fixture: ComponentFixture<HostAddressComponent>;
+describe('ClusterDetailsComponent', () => {
+    let component: ClusterDetailsComponent;
+    let fixture: ComponentFixture<ClusterDetailsComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ HostAddressComponent ]
+            declarations: [ ClusterDetailsComponent ]
         })
             .compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(HostAddressComponent);
+        fixture = TestBed.createComponent(ClusterDetailsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
