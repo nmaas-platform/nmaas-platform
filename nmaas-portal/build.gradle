@@ -11,9 +11,9 @@ task buildGUI(type: Exec) {
 	println 'Building using Angular CLI'
 
 	if ( OperatingSystem.current().isWindows() ) {
-		commandLine 'cmd', '/c', 'ng', 'build'
+		commandLine 'cmd', '/c', 'ng', 'build', '--base-href', '/', '--deploy-url', '/'
 	} else {
-		commandLine 'ng', 'build'
+		commandLine 'ng', 'build', '--base-href', '/', '--deploy-url', '/'
 	}	
 	
 }
