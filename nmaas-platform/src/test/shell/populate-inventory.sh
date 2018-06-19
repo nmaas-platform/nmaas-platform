@@ -26,23 +26,23 @@ curl -X POST $API_URL/management/dockerhosts --header "Authorization: Bearer $TO
 curl -X POST $API_URL/management/dockerhosts --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-2.json
 curl -X POST $API_URL/management/dockerhosts --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-3.json
 echo
-curl -X GET $API_URL/management/dockerhosts --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/management/dockerhosts --header "Authorization: Bearer $TOKEN" | python -m json.tool
 
 echo
 echo Adding default Docker Host attachment points
 curl -X POST $API_URL/management/network/dockerhosts --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/dockerhosts/docker-host-1-attach-point.json
 echo
-curl -X GET $API_URL/management/network/dockerhosts --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/management/network/dockerhosts --header "Authorization: Bearer $TOKEN" | python -m json.tool
 
 echo
 echo Adding default Kubernetes cluster
 curl -X POST $API_URL/management/kubernetes --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/kubernetes/kubernetes-1.json
 echo
-curl -X GET $API_URL/management/kubernetes --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/management/kubernetes --header "Authorization: Bearer $TOKEN" | python -m json.tool
 
 echo
 echo Adding default network attachment point to default domain testdom1
 curl -X POST $API_URL/management/domains/testdom1/network --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/domains/test-domain-1-network-attach-point.json
 echo
-curl -X GET $API_URL/management/domains/testdom1/network --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/management/domains/testdom1/network --header "Authorization: Bearer $TOKEN" | python -m json.tool
 echo

@@ -18,11 +18,35 @@ echo Ping
 curl -X GET $API_URL/auth/basic/ping --header "Authorization: Bearer $TOKEN"
 
 echo
-echo Domain1
+echo
+echo Domain1 -> testdom1
 curl -X POST $API_URL/domains --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/domains/domain1.json
 echo
+curl -X GET $API_URL/domains --header "Authorization: Bearer $TOKEN" | python -m json.tool
+echo
+echo Register User1 -> Admin1 at Domain1
+curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
+echo
+echo Enable User1
+curl -X PUT $API_URL/users/2 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-enable.json
+echo
+echo Set User1 Admin role within Domain1
+curl -X POST $API_URL/domains/2/users/2/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
+echo
+echo Register User2 -> User1 at Domain1
+curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2.json
+echo
+echo Enable User2
+curl -X PUT $API_URL/users/3 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-enable.json
+echo
+echo Set User2 User role within Domain1
+curl -X POST $API_URL/domains/2/users/3/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
+echo
+echo Get all users
+curl -X GET $API_URL/users --header "Authorization: Bearer $TOKEN" --header "Accept: application/json" | python -m json.tool
 
-echo 
+echo
+echo
 echo App1
 curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app1-librenms.json
 echo
@@ -157,3 +181,11 @@ curl -X GET $API_URL/tags/management --header "Authorization: Bearer $TOKEN" --h
 
 echo 
 echo ---------------------
+echo Create app1 aubscription to DOMAIN1
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub1.json
+echo
+echo Create app2 aubscription to DOMAIN1
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub2.json
+echo
+echo Get all subscriptions
+curl -X GET $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Accept: application/json" | python -m json.tool
