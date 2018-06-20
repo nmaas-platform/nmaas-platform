@@ -16,11 +16,13 @@ import {AppsService} from '../../service/apps.service';
 import {AppInstanceService} from '../../service/appinstance.service';
 import {TagService} from '../../service/tag.service';
 import {AppInstanceListComponent} from './appinstancelist/appinstancelist.component';
+import {AppRestartModalComponent} from "../modals/apprestart";
 
 @NgModule({
   declarations: [
     AppInstanceComponent,
     AppInstanceListComponent,
+      AppRestartModalComponent
   ],
   imports: [
     CommonModule,

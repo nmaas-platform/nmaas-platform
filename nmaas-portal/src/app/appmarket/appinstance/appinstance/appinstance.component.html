@@ -54,6 +54,9 @@
 								<a *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
 								<button class = "btn btn-danger" (click)="undeploy()">Undeploy</button>
 							</div>
+							<div class="btn-group pull-right">
+								<button class="btn btn-primary" (click)="this.modal.show()">Restart</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -83,5 +86,6 @@
 			</div>
 
 			<hr>
+			<nmaas-modal-app-restart [appInstanceId]="appInstanceId"></nmaas-modal-app-restart>
 		</div>
 	
