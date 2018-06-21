@@ -189,6 +189,7 @@ public class AppInstanceController extends AppBaseController {
 		return getAppInstanceState(appInstance);
 	}
 
+	//domainId is not used in this method.
     @PostMapping({"/apps/instances/{appInstanceId}/restart", "/domains/{domainId}/apps/instances/{appInstanceId}/restart"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     public void restartAppInstance(@PathVariable(value="appInstanceId") Long appInstanceId) throws MissingElementException, ProcessingException{

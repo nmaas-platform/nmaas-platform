@@ -16,6 +16,9 @@ export class AppRestartModalComponent implements OnInit {
     @Input()
     private appInstanceId: number;
 
+    @Input()
+    private domainId: number;
+
     constructor(private appInstanceService:AppInstanceService) { }
 
     ngOnInit() {
@@ -27,6 +30,6 @@ export class AppRestartModalComponent implements OnInit {
     }
 
     public restart(){
-        this.appInstanceService.restartAppInstance(this.appInstanceId).subscribe(suc=>this.modal.hide());
+        this.appInstanceService.restartAppInstance(this.appInstanceId, this.domainId).subscribe(suc=>this.modal.hide());
     }
 }

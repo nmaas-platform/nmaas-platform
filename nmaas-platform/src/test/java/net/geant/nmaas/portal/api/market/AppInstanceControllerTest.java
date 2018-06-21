@@ -44,6 +44,9 @@ public class AppInstanceControllerTest extends BaseControllerTest {
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
         .header("Authorization","Bearer " + getValidTokenForUser(user))).andExpect(status().isOk());
         Mockito.verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId());
+        mvc.perform(post("/api/domains/{domainId}/apps/instances/{appInstanceId}/restart",domain.getId(),1L)
+                .header("Authorization","Bearer " + getValidTokenForUser(user))).andExpect(status().isOk());
+        Mockito.verify(appLifecycleManager,times(2)).restartApplication(appInstance.getInternalId());
     }
 
     @Test
