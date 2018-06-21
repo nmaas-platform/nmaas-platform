@@ -21,13 +21,14 @@ import {
 
 import {SecurePipe} from '../../../pipe/index';
 import { isNullOrUndefined } from 'util';
+import {AppRestartModalComponent} from "../../modals/apprestart";
 
 
 @Component({
   selector: 'nmaas-appinstance',
   templateUrl: './appinstance.component.html',
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe]
+  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
 })
 @AppInstanceStateAware
 export class AppInstanceComponent implements OnInit, OnDestroy {
@@ -35,6 +36,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   @ViewChild(AppInstanceProgressComponent)
   public appInstanceProgress: AppInstanceProgressComponent;
 
+  @ViewChild(AppRestartModalComponent)
+  public modal:AppRestartModalComponent;
 
   app: Application;
 
@@ -128,4 +131,5 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);    
     return result;
   }
+
 }
