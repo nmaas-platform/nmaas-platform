@@ -64,6 +64,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public String getHelmChartRepositoryName() {
+        return loadSingleCluster().getHelm().getHelmChartRepositoryName();
+    }
+
+    @Override
     public String getHelmHostChartsDirectory() {
         return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
     }

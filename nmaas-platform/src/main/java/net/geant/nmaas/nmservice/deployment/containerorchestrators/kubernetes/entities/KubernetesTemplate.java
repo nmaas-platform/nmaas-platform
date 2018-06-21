@@ -1,6 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -13,9 +16,13 @@ public class KubernetesTemplate {
     private Long id;
 
     /**
-     * The name of the helm chart archive to use
+     * The name of the helm chart to use from repository
      */
-    @Column(nullable=false)
+    private String chart;
+
+    /**
+     * The name of the helm chart archive to use from local directory
+     */
     private String archive;
 
     public Long getId() {
@@ -24,6 +31,14 @@ public class KubernetesTemplate {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getChart() {
+        return chart;
+    }
+
+    public void setChart(String chart) {
+        this.chart = chart;
     }
 
     public String getArchive() {
