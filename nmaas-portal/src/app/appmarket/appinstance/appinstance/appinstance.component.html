@@ -75,13 +75,14 @@
 			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
 				<h3>Configuration</h3>
 				<hr>
-				<json-schema-form *ngIf="configurationTemplate"
-					[form]="configurationTemplate"
-					[options]="jsonFormOptions" 
-					[framework]="bootstrap-3" 
-					[language]="en"
-					(onSubmit)="applyConfiguration($event)">
-				</json-schema-form>	
+				<!--TODO: Replace with different, up to date schema form -->
+				<!--<json-schema-form *ngIf="configurationTemplate"-->
+					<!--[form]="configurationTemplate"-->
+					<!--[options]="jsonFormOptions" -->
+					<!--[framework]="bootstrap-3" -->
+					<!--[language]="en"-->
+					<!--(onSubmit)="applyConfiguration($event)">-->
+				<!--</json-schema-form>	-->
 
 			</div>
 

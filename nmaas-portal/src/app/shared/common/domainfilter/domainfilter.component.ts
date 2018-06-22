@@ -19,9 +19,9 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   //@Input()
   public domainId: number;
 
-  protected domains: Observable<Domain[]>;
-
-  protected refresh:Subscription;
+  public domains: Observable<Domain[]>;
+  
+  public refresh: Subscription;
 
   constructor(protected authService: AuthService, protected domainService: DomainService, protected userData: UserDataService, protected appConfig: AppConfigService) {}
 
@@ -39,7 +39,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
       this.userData.selectedDomainId.subscribe(id => this.domainId = id);
   }
 
-  protected updateDomains(): void {
+  public updateDomains(): void {
     if (this.authService.hasRole('ROLE_SUPERADMIN')) {
       this.domains = this.domainService.getAll();
     } else {

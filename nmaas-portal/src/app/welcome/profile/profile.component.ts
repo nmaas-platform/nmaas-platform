@@ -13,7 +13,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
 
   constructor(protected profileService:ProfileService) {super()}
 
-  private user:User;
+  public user:User;
 
   ngOnInit() {
     this.profileService.getOne().subscribe((user)=>this.user = user)
