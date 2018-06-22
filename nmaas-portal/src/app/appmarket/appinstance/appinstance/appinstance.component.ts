@@ -49,17 +49,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public intervalCheckerSubscribtion;
 
-    // TODO: REPLACE WITH NEW SCHEMAFORM OPTIONS
-    // jsonFormOptions: any = {
-    //   addSubmit: false, // Add a submit button if layout does not have one
-    //   debug: false, // Don't show inline debugging information
-    //   loadExternalAssets: false, // Load external css and JavaScript for frameworks
-    //   returnEmptyFields: false, // Don't return values for empty input fields
-    //   setSchemaDefaults: true, // Always use schema defaults for empty fields
-    //   defautWidgetOptions: { feedback: false }, // Show inline feedback icons
-    //   options: {},
-    //   widgetOptions: {}
-    // };
+  jsonFormOptions: any = {
+    addSubmit: false, // Add a submit button if layout does not have one
+    debug: false, // Don't show inline debugging information
+    loadExternalAssets: false, // Load external css and JavaScript for frameworks
+    returnEmptyFields: false, // Don't return values for empty input fields
+    setSchemaDefaults: true, // Always use schema defaults for empty fields
+    defautWidgetOptions: { feedback: false }, // Show inline feedback icons
+    options: {},
+    widgetOptions: {}
+  };
 
   constructor(private appsService: AppsService,
     public appImagesService: AppImagesService,
