@@ -1,15 +1,15 @@
 import { Component, OnInit, AfterViewInit, Input, Output, ViewEncapsulation, ViewChildren, QueryList } from '@angular/core';
 
-import { AppInstanceState, AppInstanceProgressStage, AppInstanceStateAware } from '../../../model/index';
+import { AppInstanceState, AppInstanceProgressStage } from '../../../model/index';
 
 @Component({
     selector: 'nmaas-appinstanceprogress',
     templateUrl: './appinstanceprogress.component.html',
     styleUrls: ['./appinstanceprogress.component.css']
 })
-@AppInstanceStateAware
 export class AppInstanceProgressComponent implements OnInit {
 
+    public AppInstanceState = AppInstanceState;
 
     @Input()
     stages: AppInstanceProgressStage[]  = new Array<AppInstanceProgressStage>();

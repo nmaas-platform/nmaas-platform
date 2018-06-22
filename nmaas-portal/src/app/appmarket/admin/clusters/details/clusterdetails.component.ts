@@ -12,8 +12,8 @@ import {ActivatedRoute, Router} from "@angular/router";
     styleUrls: ['./clusterdetails.component.css']
 })
 export class ClusterDetailsComponent extends BaseComponent implements OnInit{
-    private clusterName: string;
-    private cluster: Cluster;
+    public clusterName: string;
+    public cluster: Cluster;
 
     constructor(private clusterService: ClusterService, private route: ActivatedRoute, private router: Router) {
         super();

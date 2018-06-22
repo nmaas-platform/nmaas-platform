@@ -5,7 +5,3 @@ export enum ComponentMode {
   DELETE,
   PROFILVIEW
 }
-
-export function ComponentModeAware(constructor: Function) {
-    constructor.prototype.ComponentMode = ComponentMode;
-}
