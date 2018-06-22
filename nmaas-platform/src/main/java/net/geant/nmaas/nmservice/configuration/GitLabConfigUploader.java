@@ -224,4 +224,11 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return "Initial commit of " + fileName;
     }
 
+    private void setGitLabApiUrl(String url) {
+        this.gitLabApiUrl = url;
+    }
+
+    private void setGitLabApiToken(String token) {
+        this.gitLabApiToken = token;
+    }
 }
