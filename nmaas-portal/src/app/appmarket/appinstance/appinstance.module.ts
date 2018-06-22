@@ -14,6 +14,12 @@ import {AppInstanceService} from '../../service/appinstance.service';
 import {TagService} from '../../service/tag.service';
 import {AppInstanceListComponent} from './appinstancelist/appinstancelist.component';
 import {AppRestartModalComponent} from "../modals/apprestart";
+import {
+    JsonSchemaFormModule,
+    Bootstrap3FrameworkModule,
+    Bootstrap3Framework,
+    Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
+} from "angular2-json-schema-form";
 
 @NgModule({
   declarations: [
@@ -28,7 +34,17 @@ import {AppRestartModalComponent} from "../modals/apprestart";
     SharedModule,
     AuthModule,
     AppInstanceProgressModule,
-    PipesModule
+    PipesModule,
+    Bootstrap3FrameworkModule,
+    {
+      ngModule: JsonSchemaFormModule,
+      providers: [
+        JsonSchemaFormService,
+        FrameworkLibraryService,
+        WidgetLibraryService,
+        {provide: Framework, useClass: Bootstrap3Framework, multi: true}
+      ]
+    }
   ],
   exports: [
     AppInstanceComponent,
