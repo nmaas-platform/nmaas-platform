@@ -3,48 +3,51 @@ import {Router, ActivatedRoute, Params} from '@angular/router';
 import {Location} from '@angular/common';
 
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
+// import 'rxjs/add/operator/switchMap';
 
 import {AppsService, AppInstanceService, AppImagesService} from '../../../service/index';
 
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
+import {RateComponent} from '../../../shared/rate/rate.component';
 
 import {
-    Application,
-    AppInstance,
-    AppInstanceState,
-    AppInstanceStatus,
-    AppInstanceProgressStage
+  Application,
+  AppInstance,
+  AppInstanceState,
+  AppInstanceStatus,
+  AppInstanceProgressStage
 } from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
 import { isNullOrUndefined } from 'util';
+import {AppRestartModalComponent} from "../../modals/apprestart";
 
 
 @Component({
-    selector: 'nmaas-appinstance',
-    templateUrl: './appinstance.component.html',
-    styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-    providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
+  selector: 'nmaas-appinstance',
+  templateUrl: './appinstance.component.html',
+  styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
+  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
 })
 export class AppInstanceComponent implements OnInit, OnDestroy {
 
-    public AppInstanceState = AppInstanceState;
+  public AppInstanceState = AppInstanceState;
 
-    @ViewChild(AppInstanceProgressComponent)
-    public appInstanceProgress: AppInstanceProgressComponent;
+  @ViewChild(AppInstanceProgressComponent)
+  public appInstanceProgress: AppInstanceProgressComponent;
 
-    @ViewChild(AppRestartModalComponent)
-    public modal:AppRestartModalComponent;
+  @ViewChild(AppRestartModalComponent)
+  public modal:AppRestartModalComponent;
 
-    app: Application;
+  app: Application;
 
-    public appInstanceStatus: AppInstanceStatus;
+  public appInstanceStatus: AppInstanceStatus;
 
-    public appInstanceId: number;
-    public appInstance: AppInstance;
-    public configurationTemplate: any;
+  public appInstanceId: number;
+  public appInstance: AppInstance;
+  public configurationTemplate: any;
 
-    public intervalCheckerSubscribtion;
+  public intervalCheckerSubscribtion;
 
     // TODO: REPLACE WITH NEW SCHEMAFORM OPTIONS
     // jsonFormOptions: any = {
@@ -58,75 +61,76 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     //   widgetOptions: {}
     // };
 
-    constructor(private appsService: AppsService,
-                public appImagesService: AppImagesService,
-                private appInstanceService: AppInstanceService,
-                private router: Router,
-                private route: ActivatedRoute,
-                private location: Location) {}
+  constructor(private appsService: AppsService,
+    public appImagesService: AppImagesService,
+    private appInstanceService: AppInstanceService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location) {}
 
-    ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.appInstanceId = +params['id'];
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.appInstanceId = +params['id'];
 
-            this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-                this.appInstance = appInstance;
-                this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
-                    this.app = app;
-                    this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
-                });
-            });
-
-
-            this.updateAppInstanceState();
-            this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+      this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
+        this.appInstance = appInstance;
+        this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
+          this.app = app;
+          this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
         });
-    }
+      });
 
-    private updateAppInstanceState() {
-        this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
-            appInstanceStatus => {
-                console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
-                this.appInstanceStatus = appInstanceStatus;
-                this.appInstanceProgress.activeState = this.appInstanceStatus.state;
-                if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
-                    this.updateAppInstance();
-                }
-            }
-        )
 
-    }
+      this.updateAppInstanceState();
+      this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+    });
+  }
 
-    private updateAppInstance() {
-        console.log('update app instance')
-        this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
-            console.log('updated app instance url: ' + appInstance.url);
-            this.appInstance = appInstance;
-        });
-    }
-
-    ngOnDestroy() {
-        if (this.intervalCheckerSubscribtion) {
-            this.intervalCheckerSubscribtion.unsubscribe();
+  private updateAppInstanceState() {
+    this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
+      appInstanceStatus => {
+        console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
+        this.appInstanceStatus = appInstanceStatus;
+        this.appInstanceProgress.activeState = this.appInstanceStatus.state;
+        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
+          this.updateAppInstance();
         }
-    }
+      }
+    )
 
-    public applyConfiguration(configuration: string): void {
-        this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
-    }
+  }
 
-    public undeploy(): void {
-        if (this.appInstanceId) {
-            this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
-        }
-    }
+  private updateAppInstance() {
+    console.log('update app instance')
+    this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
+      console.log('updated app instance url: ' + appInstance.url);
+      this.appInstance = appInstance;
+    });
+  }
 
-    public getStages(): AppInstanceProgressStage[] {
-        return this.appInstanceService.getProgressStages();
+  ngOnDestroy() {
+    if (this.intervalCheckerSubscribtion) {
+      this.intervalCheckerSubscribtion.unsubscribe();
     }
+  }
 
-    protected getTemplate(template: string): any {
-        let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);
-        return result;
+  public applyConfiguration(configuration: string): void {
+    this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
+  }
+
+  public undeploy(): void {
+    if (this.appInstanceId) {
+      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
     }
+  }
+
+  public getStages(): AppInstanceProgressStage[] {
+    return this.appInstanceService.getProgressStages();
+  }
+
+  protected getTemplate(template: string): any {
+    let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);
+    return result;
+  }
+
 }
