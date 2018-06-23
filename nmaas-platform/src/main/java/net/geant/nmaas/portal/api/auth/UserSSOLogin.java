@@ -19,42 +19,42 @@ import net.geant.nmaas.portal.api.exception.AuthenticationException;
 
 public class UserSSOLogin {
 
-    private String username;
-    private long time;
-    private String signature;
+	private String username;
+	private long time;
+	private String signature;
 
-    @JsonCreator
-    public UserSSOLogin(@JsonProperty("userid") String userid) throws AuthenticationException {
-        System.out.println("JOVANA: userid '" + userid + "'");
-        String[] id = userid.split("\\|");
+	@JsonCreator
+	public UserSSOLogin(@JsonProperty("userid") String userid) throws AuthenticationException {
+		System.out.println("JOVANA: userid '" + userid + "'");
+		String[] id = userid.split("\\|");
 
-        if(id.length != 3)
-            throw new AuthenticationException("Bad userid format");
+		if(id.length != 3)
+			throw new AuthenticationException("Bad userid format");
 
-        this.username = TextCodec.BASE64.decodeToString(id[0]);
-        this.time = Long.parseLong(id[1]);
-        this.signature = id[2];
-    }
+		this.username = TextCodec.BASE64.decodeToString(id[0]);
+		this.time = Long.parseLong(id[1]);
+		this.signature = id[2];
+	}
 
-    public void validate(String key, int timeout) throws AuthenticationException {
-        String signed = TextCodec.BASE64.encode(this.username) + "|" + Long.toString(this.time);
+	public void validate(String key, int timeout) throws AuthenticationException {
+		String signed = TextCodec.BASE64.encode(this.username) + "|" + Long.toString(this.time);
 
-        byte[] keyBytes = key.getBytes(Charset.forName("US-ASCII"));
-        Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+		byte[] keyBytes = key.getBytes(Charset.forName("US-ASCII"));
+		Key keyspec = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
 
 
-        Signer signer = DefaultSignerFactory.INSTANCE.createSigner(SignatureAlgorithm.HS256, keyspec);
-        String signature = DatatypeConverter.printHexBinary(signer.sign(signed.getBytes(Charset.forName("US-ASCII"))));
+		Signer signer = DefaultSignerFactory.INSTANCE.createSigner(SignatureAlgorithm.HS256, keyspec);
+		String signature = DatatypeConverter.printHexBinary(signer.sign(signed.getBytes(Charset.forName("US-ASCII"))));
 
-        if(!this.signature.equalsIgnoreCase(signature))
-            throw new AuthenticationException("Invalid userID signature");
+		if(!this.signature.equalsIgnoreCase(signature))
+			throw new AuthenticationException("Invalid userID signature");
 
-        long now = (new Date()).getTime() / 1000;
-        if(this.time < now - timeout)
-            throw new AuthenticationException("UserID is too old");
-    }
+		long now = (new Date()).getTime() / 1000;
+		if(this.time < now - timeout)
+			throw new AuthenticationException("Login data already expired");
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 }

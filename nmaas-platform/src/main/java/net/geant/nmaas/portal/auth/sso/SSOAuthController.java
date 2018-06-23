@@ -34,51 +34,48 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api/auth/sso")
+@RequestMapping("/api/auth/sso")
 public class SSOAuthController {
 
-//	@Autowired
-//	UserRepository users;
+	@Autowired
+	UserService users;
 
-    @Autowired
-    UserService users;
+	@Autowired
+	DomainService domains;
 
-    @Autowired
-    DomainService domains;
+	@Autowired
+	SSOSettings ssoSettings;
 
-    @Autowired
-    SSOSettings ssoSettings;
+	@Autowired
+	JWTTokenService jwtTokenService;
 
-    @Autowired
-    JWTTokenService jwtTokenService;
+	@RequestMapping(value="/login", method=RequestMethod.POST)
+	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException {
+		if(userSSOLoginData == null)
+			throw new AuthenticationException("Received user SSO login data is empty");
 
-    @RequestMapping(value="/login", method=RequestMethod.POST)
-    public UserToken login(@RequestBody final UserSSOLogin userID) throws AuthenticationException,SignupException {
-        if(userID == null)
-            throw new AuthenticationException("No userID");
+		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
+			throw new AuthenticationException("Missing username");
 
-        userID.validate(ssoSettings.getKey(), ssoSettings.getTimeout());
+		userSSOLoginData.validate(ssoSettings.getKey(), ssoSettings.getTimeout());
 
-        if(StringUtils.isEmpty(userID.getUsername()))
-            throw new AuthenticationException("Missing username");
+		Optional<User> maybeUser = users.findByUsername(userSSOLoginData.getUsername());
+		User user = maybeUser.isPresent() ? maybeUser.get() : null;
 
-        Optional<User> maybeUser = users.findByUsername(userID.getUsername());
-        User user = maybeUser.isPresent() ? maybeUser.get() : null;
+		if(user == null) {
+			// Autocreate as we trust sso
+			try {
+				user = users.register(userSSOLoginData.getUsername());
+				if(user == null)
+					throw new SignupException("Unable to register new user");
 
-        if(user == null) {
-            // Autocreate as we trust sso
-            try {
-                user = users.register(userID.getUsername());
-                if(user == null)
-                    throw new SignupException("Unable to register new user");
+			} catch (ObjectAlreadyExistsException e) {
+				throw new SignupException("User already exists");
+			} catch (MissingElementException e) {
+				throw new SignupException("Domain not found");
+			}
+		}
 
-            } catch (ObjectAlreadyExistsException e) {
-                throw new SignupException("User already exists");
-            } catch (MissingElementException e) {
-                throw new SignupException("Domain not found");
-            }
-        }
-
-        return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
-    }
+		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
+	}
 }

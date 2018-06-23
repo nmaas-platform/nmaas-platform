@@ -3,9 +3,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { FooterComponent } from '../../shared/index';
-// import { environment } from '../../../environments';
-import {Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
-
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Component({
   selector: 'nmaas-login',
@@ -22,14 +20,9 @@ export class LoginComponent implements OnInit {
     ssoLoading: boolean = false;
     ssoError:string = '';
 
-
     constructor(private router: Router, private auth: AuthService) { }
 
     ngOnInit() {
-      console.log("onInit");
-
-      console.log(window.location);
-
 
       if(this.auth.getUsername() && this.auth.allowsSSO()) {
         window.location.href = this.auth.getSSOLogoutUrl();
@@ -68,7 +61,7 @@ export class LoginComponent implements OnInit {
 
 
     public checkSSO() {
-      let params = this.router.parseUrl(this.router.url).queryParams;
+     let params = this.router.parseUrl(this.router.url).queryParams;
 
       if('ssoUserId' in params) {
         // Got auth data, send to api
@@ -77,11 +70,9 @@ export class LoginComponent implements OnInit {
         this.auth.propagateSSOLogin(params.ssoUserId)
             .subscribe(result => {
                 if (result === true) {
-                    console.log('User logged in');
                     this.ssoLoading = false;
                     this.router.navigate(['/']);
                 } else {
-                    console.error('Error during login');
                     this.ssoError = 'Failed to propagate SSO user id';
                     this.ssoLoading = false;
                 }

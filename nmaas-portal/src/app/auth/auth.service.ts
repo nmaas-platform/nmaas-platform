@@ -2,7 +2,8 @@ import {Role} from '../model/userrole';
 import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+// import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/timeout';
@@ -232,14 +233,21 @@ export class AuthService {
   }
 
   public propagateSSOLogin(userid: string): Observable<boolean> {
-    const headers = new Headers({'Content-Type': 'application/json', 'Accept': 'application/json'});
+    console.log('propagateSSOLogin');
+    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl);
+    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
+    console.log('propagateSSOLogin ' + userid);
+    const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
-      JSON.stringify({'userid': userid}), new RequestOptions({headers: headers}))
+      JSON.stringify({'userid': userid}), {headers: headers})
       .timeout(10000)
       .map((response: Response) => {
         console.debug('SSO login response: ' + response);
         // login successful if there's a jwt token in the response
-        const token = response.json() && response.json().token;
+        // JOVANA: migration to HttpClient
+        // const token = response.json() && response.json().token;
+        const token = response && response['token'];
+
         if (token) {
           // set token property
           this.storeToken(token);
@@ -258,7 +266,9 @@ export class AuthService {
       .catch((error: Response | any) => {
         console.debug('SSO login error: ' + error);
         let errMsg: string;
-        if (error instanceof Response) {
+        // JOVANA: HttpClient refactoring
+        // if (error instanceof Response) {
+        if(error.error['message']) {
           console.debug(error.json());
           const body = error.json() || '';
           const err = body.message || JSON.stringify(body);
