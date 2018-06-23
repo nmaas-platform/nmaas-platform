@@ -25,7 +25,6 @@ public class UserSSOLogin {
 
 	@JsonCreator
 	public UserSSOLogin(@JsonProperty("userid") String userid) throws AuthenticationException {
-		System.out.println("JOVANA: userid '" + userid + "'");
 		String[] id = userid.split("\\|");
 
 		if(id.length != 3)

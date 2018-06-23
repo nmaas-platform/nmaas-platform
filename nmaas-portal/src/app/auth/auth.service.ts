@@ -244,8 +244,6 @@ export class AuthService {
       .map((response: Response) => {
         console.debug('SSO login response: ' + response);
         // login successful if there's a jwt token in the response
-        // JOVANA: migration to HttpClient
-        // const token = response.json() && response.json().token;
         const token = response && response['token'];
 
         if (token) {
@@ -266,8 +264,6 @@ export class AuthService {
       .catch((error: Response | any) => {
         console.debug('SSO login error: ' + error);
         let errMsg: string;
-        // JOVANA: HttpClient refactoring
-        // if (error instanceof Response) {
         if(error.error['message']) {
           console.debug(error.json());
           const body = error.json() || '';
