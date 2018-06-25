@@ -30,7 +30,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
         this.refresh = Observable.interval(10000).subscribe(next => {
             if(this.domainService.shouldUpdate()) {
                 this.updateDomains();
-                this.domainService.setDomainFilterFlag(false);
+                this.domainService.setUpdateRequiredFlag(false);
             }
         });
       }

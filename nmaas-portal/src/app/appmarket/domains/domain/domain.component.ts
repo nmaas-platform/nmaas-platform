@@ -52,7 +52,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     } else {
       this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
     }
-    this.domainService.setDomainFilterFlag(true);
+    this.domainService.setUpdateRequiredFlag(true);
   }
 
   protected getDomainRoleNames(roles:UserRole[]):UserRole[]{

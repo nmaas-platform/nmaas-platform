@@ -14,11 +14,11 @@ export class DomainService extends GenericDataService {
 
   protected url: string;
 
-  private domainFilterFlag: boolean;
+  private updateRequiredFlag: boolean;
 
   constructor(http: HttpClient, appConfig: AppConfigService) {
     super(http, appConfig);
-    this.domainFilterFlag = false;
+    this.updateRequiredFlag = false;
     this.url = this.appConfig.getApiUrl() + '/domains/';
   }
 
@@ -58,11 +58,11 @@ export class DomainService extends GenericDataService {
     return this.get<User[]>(this.url + 'users');
   }
 
-  public setDomainFilterFlag(flag:boolean){
-    this.domainFilterFlag = flag;
+  public setUpdateRequiredFlag(flag:boolean){
+    this.updateRequiredFlag = flag;
   }
 
   public shouldUpdate(): boolean{
-    return this.domainFilterFlag;
+    return this.updateRequiredFlag;
   }
 }
