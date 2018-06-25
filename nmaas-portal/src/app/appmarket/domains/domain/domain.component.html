@@ -56,8 +56,8 @@
 								<tr>
 									<td>{{user.id}}</td>
 									<td>{{user.username}}</td>
-									<td *ngIf="domainId == domainService.getGlobalDomainId()"><span *ngFor="let role of user.roles">{{role.role | slice:5}}{{"@"}}{{this.getDomainName(role.domainId)|async}}{{", "}}</span></td>
-									<td *ngIf="domainId != domainService.getGlobalDomainId()"><span *ngFor="let role of this.getDomainRoleNames(user.roles)">{{role.role | slice:5}}{{", "}}</span></td>
+									<td *ngIf="domainId == domainService.getGlobalDomainId()"><span *ngFor="let role of user.roles">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}, </span></td>
+									<td *ngIf="domainId != domainService.getGlobalDomainId()"><span *ngFor="let role of this.getDomainRoleNames(user.roles)">{{role.role | slice:5}}, </span></td>
 								</tr>
 							</ng-template>
 
