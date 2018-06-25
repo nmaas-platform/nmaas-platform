@@ -21,9 +21,19 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
 
   protected domains: Observable<Domain[]>;
 
+  protected refresh:Subscription;
+
   constructor(protected authService: AuthService, protected domainService: DomainService, protected userData: UserDataService, protected appConfig: AppConfigService) {}
 
   ngOnInit() {
+      if(this.authService.hasRole('ROLE_SUPERADMIN')){
+        this.refresh = Observable.interval(10000).subscribe(next => {
+            if(this.domainService.shouldUpdate()) {
+                this.updateDomains();
+                this.domainService.setDomainFilterFlag(false);
+            }
+        });
+      }
       this.updateDomains();
       this.domains.subscribe(domain => this.userData.selectDomainId(domain[0].id));
       this.userData.selectedDomainId.subscribe(id => this.domainId = id);
@@ -45,7 +55,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   }
   
   public onChange($event) {
-    console.log('onChange(domainId)');
+    console.log('onChange(',this.domainId,')');
     this.userData.selectDomainId(Number(this.domainId));
   }
 

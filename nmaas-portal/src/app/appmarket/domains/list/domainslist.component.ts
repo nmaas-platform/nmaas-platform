@@ -30,6 +30,7 @@ export class DomainsListComponent implements OnInit {
 
   public remove(domainId: number): void {
     this.domainService.remove(domainId).subscribe(() => this.update());
+    this.domainService.setDomainFilterFlag(true);
   }
 
 }
