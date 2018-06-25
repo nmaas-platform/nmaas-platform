@@ -27,11 +27,7 @@
 				</li>
 			</ul>
 
-			<ul class="nav navbar-form navbar-left">
-				<nmaas-domain-filter></nmaas-domain-filter>				
-			</ul>
-
-			<ul class="nav navbar-nav navbar-right">				
+			<ul class="nav navbar-nav navbar-right">
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"
 					aria-expanded="false"><span class="glyphicon glyphicon-user"></span>
@@ -42,6 +38,12 @@
 						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/logout']">Logout</a></li>
 					</ul></li>
 			</ul>
+
+			<ul class="nav navbar-form navbar-right">
+				<nmaas-domain-filter></nmaas-domain-filter>
+			</ul>
+
+
 
 
 		</div>
