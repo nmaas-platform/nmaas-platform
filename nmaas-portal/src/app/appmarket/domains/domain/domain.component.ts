@@ -9,7 +9,7 @@ import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
 import {User} from "../../../model";
 import {UserService} from "../../../service";
 import {Observable} from "rxjs/Observable";
-import {UserRole} from "../../../model/userrole";
+import {Role, UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
 
 
@@ -73,5 +73,9 @@ export class DomainComponent extends BaseComponent implements OnInit {
             return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename})
                 .shareReplay(1).take(1);
         }
+    }
+
+    protected filterDomainNames(user:User):UserRole[]{
+      return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId() ||  role.role.toString() != "ROLE_GUEST");
     }
 }
