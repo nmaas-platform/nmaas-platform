@@ -1,7 +1,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">Cluster</div>
     <div class="panel-body">
-        <form *ngIf="!isInMode(ComponentMode.CREATE) && cluster" (submit)="submit()" class="form-horizontal">
+        <form *ngIf="cluster" (submit)="submit()" class="form-horizontal">
             <div *ngIf="cluster?.id" class="form-group">
                 <label class="col-sm-2 control-label">Id:</label>
                 <div class="col-sm-10">
@@ -175,30 +175,50 @@
                         <th>Assigned since:</th>
                         <th>Assigned to:</th>
                         <th>&nbsp;</th>
-                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <ng-template ngFor let-extnetwork [ngForOf]="cluster?.externalNetworks">
+                    <ng-template *ngFor="let extnetwork of cluster.externalNetworks; trackBy: trackByFn">
                         <tr>
-                            <td>{{extnetwork.assigned}}</td>
-                            <td>{{extnetwork.externalIp}}</td>
-                            <td>{{extnetwork.externalNetwork}}</td>
-                            <td>{{extnetwork.externalNetworkMaskLength}}</td>
-                            <td>{{extnetwork.assignedSince}}</td>
-                            <td>{{extnetwork.assignedTo}}</td>
-                            <td class="text-right">
-                                <button type="button" class="btn btn-primary"
-                                        (click)="detailsNetwork(extnetwork.id)">Details
-                                </button>
+                            <td>
+                                <input type="checkbox" id="extnetassigned" name="extnetassigned"
+                                       [(ngModel)]="extnetwork.assigned" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="extnetextip" name="extnetextip"
+                                       [(ngModel)]="extnetwork.externalIp" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="extnetextnet" name="extnetextnet"
+                                       [(ngModel)]="extnetwork.externalNetwork" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="extnetmask" name="extnetmask"
+                                       [(ngModel)]="extnetwork.externalNetworkMaskLength" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="extnetassince" name="extnetassince"
+                                       [(ngModel)]="extnetwork.assignedSince" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" id="extnetassto" name="extnetassto"
+                                       [(ngModel)]="extnetwork.assignedTo" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td class="text-right">
-                                <button type="button" class="btn btn-danger"
+                                <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button" class="btn btn-sm btn-danger"
                                         (click)="removeNetwork(extnetwork.id)">Remove
                                 </button>
                             </td>
                         </tr>
                     </ng-template>
+                        <tr *ngIf="!isInMode(ComponentMode.VIEW)">
+                            <td></td><td></td><td></td><td></td><td></td><td></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success"
+                                        (click)="addNetwork()">Add
+                                </button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

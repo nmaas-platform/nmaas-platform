@@ -43,7 +43,13 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
                 }), 1);
     }
 
-    public detailsNetwork(id) {
-        console.log("Show details on network ", id);
+    public addNetwork() {
+        let newlist = this.cluster.externalNetworks.slice();
+        newlist.push(new ClusterExtNetwork());
+        this.cluster.externalNetworks = newlist;
+    }
+
+    public trackByFn(index, item) {
+        return index;
     }
 }
