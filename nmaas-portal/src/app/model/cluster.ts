@@ -25,7 +25,7 @@ class ClusterDeployment {
     public useDefaultNamespace: boolean;
 }
 
-class ClusterExtNetwork {
+export class ClusterExtNetwork {
     public assigned: boolean;
     public assignedSince: string;
     public assignedTo: string;
