@@ -82,7 +82,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(domain),
                 deploymentId,
-                template.getArchive(),
+                template,
                 arguments
         );
     }

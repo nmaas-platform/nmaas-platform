@@ -4,6 +4,7 @@
     "helmHostAddress":"10.134.241.6",
     "helmHostSshUsername":"nmaas",
     "useLocalChartArchives":true,
+    "helmChartRepositoryName":"nmaas-test",
     "helmHostChartsDirectory":"/home/nmaas/charts"
   },
   "api": {

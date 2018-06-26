@@ -6,6 +6,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterEx
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         helmCommandExecutor.executeHelmInstallCommand(
                 namespace,
                 releaseName,
-                clusterIngressManager.getControllerChartArchive(),
+                new KubernetesTemplate(clusterIngressManager.getControllerChart(), clusterIngressManager.getControllerChartArchive()),
                 arguments
         );
     }

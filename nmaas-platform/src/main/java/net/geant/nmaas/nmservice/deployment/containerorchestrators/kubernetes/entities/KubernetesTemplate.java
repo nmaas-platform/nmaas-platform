@@ -25,6 +25,14 @@ public class KubernetesTemplate {
      */
     private String archive;
 
+    public KubernetesTemplate() {
+    }
+
+    public KubernetesTemplate(String chart, String archive) {
+        this.chart = chart;
+        this.archive = archive;
+    }
+
     public Long getId() {
         return id;
     }

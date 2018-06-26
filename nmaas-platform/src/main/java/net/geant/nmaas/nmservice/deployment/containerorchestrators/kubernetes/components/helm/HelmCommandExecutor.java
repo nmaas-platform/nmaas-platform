@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterHelmManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
@@ -25,15 +26,15 @@ public class HelmCommandExecutor {
         this.clusterHelmManager = clusterHelmManager;
     }
 
-    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, String chartInfo, Map<String, String> arguments) throws CommandExecutionException {
-        executeInstall(kubernetesNamespace, releaseName, chartInfo, arguments);
+    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, releaseName, template, arguments);
     }
 
-    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, String chartInfo, Map<String, String> arguments) throws CommandExecutionException {
-        executeInstall(kubernetesNamespace, deploymentId.value(), chartInfo, arguments);
+    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, deploymentId.value(), template, arguments);
     }
 
-    private void executeInstall(String namespace, String releaseName, String chartInfo, Map<String, String> arguments)
+    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
             HelmInstallCommand command;
@@ -42,14 +43,14 @@ public class HelmCommandExecutor {
                         namespace,
                         releaseName,
                         arguments,
-                        constructChartArchivePath(chartInfo)
+                        constructChartArchivePath(template.getArchive())
                 );
             } else {
                 command = HelmInstallCommand.commandWithRepo(
                         namespace,
                         releaseName,
                         arguments,
-                        constructChartRepoName(chartInfo)
+                        constructChartRepoName(template.getChart())
                 );
             }
             singleCommandExecutor().executeSingleCommand(command);
