@@ -37,7 +37,7 @@ public class HelmCommandExecutor {
             throws CommandExecutionException {
         try {
             HelmInstallCommand command;
-            if (!clusterHelmManager.getUseLocalChartArchives()) {
+            if (clusterHelmManager.getUseLocalChartArchives()) {
                 command = HelmInstallCommand.commandWithArchive(
                         namespace,
                         releaseName,
