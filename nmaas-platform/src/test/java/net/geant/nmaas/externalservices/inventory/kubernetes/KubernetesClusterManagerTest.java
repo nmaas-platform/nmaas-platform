@@ -106,6 +106,7 @@ public class KubernetesClusterManagerTest {
         KClusterIngress ingress = new KClusterIngress();
         ingress.setUseExistingController(false);
         ingress.setControllerChartArchive("chart.tgz");
+        ingress.setConfigureIngress(true);
         ingress.setUseExistingIngress(false);
         ingress.setExternalServiceDomain("test.net");
         ingress.setTlsSupported(false);
