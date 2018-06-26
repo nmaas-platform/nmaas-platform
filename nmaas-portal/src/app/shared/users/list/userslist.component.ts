@@ -22,16 +22,16 @@ import { isUndefined } from 'util';
 export class UsersListComponent extends BaseComponent implements OnInit, OnChanges {
 
   @Input()
-  users: User[] = [];
+  public users: User[] = [];
 
 
   @Output()
-  onDelete: EventEmitter<number> = new EventEmitter<number>();
+  public onDelete: EventEmitter<number> = new EventEmitter<number>();
 
   @Output()
-  onView: EventEmitter<number> = new EventEmitter<number>();
+  public onView: EventEmitter<number> = new EventEmitter<number>();
 
-  protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+  public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
   constructor(private userService: UserService, private domainService: DomainService) {
     super();
@@ -44,7 +44,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     console.log('UsersList:onChanges ' + changes.toString());
   }
   
-  protected getDomainName(domainId: number): Observable<string> {
+  public getDomainName(domainId: number): Observable<string> {
     //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
       //console.debug('getDomainName(' + domainId + ') from cache');
@@ -56,7 +56,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  protected getUserDomainIds(user: User): number[] {
+  public getUserDomainIds(user: User): number[] {
     if (!isUndefined(user)) {
       return user.getDomainIds();
     } else {
@@ -64,11 +64,11 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  protected remove(userId: number) {
+  public remove(userId: number) {
     this.onDelete.emit(userId);
   }
 
-  protected view(userId: number): void {
+  public view(userId: number): void {
     console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }

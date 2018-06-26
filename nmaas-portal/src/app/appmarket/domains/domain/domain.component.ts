@@ -20,9 +20,9 @@ import {UserRole} from "../../../model/userrole";
 })
 export class DomainComponent extends BaseComponent implements OnInit {
 
-  private domainId: number;
-  private domain: Domain;
-  private users:User[];
+  public domainId: number;
+  public domain: Domain;
+  public users:User[];
 
   constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location) {
     super();
@@ -46,7 +46,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     });
   }
 
-  protected submit(): void {
+  public submit(): void {
     if (!isUndefined(this.domainId)) {
       this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
@@ -55,7 +55,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     this.domainService.setUpdateRequiredFlag(true);
   }
 
-  protected getDomainRoleNames(roles:UserRole[]):UserRole[]{
+  public getDomainRoleNames(roles:UserRole[]):UserRole[]{
     let domainRoles:UserRole[] = [];
     roles.forEach((value => {
       if(value.domainId == this.domainId){

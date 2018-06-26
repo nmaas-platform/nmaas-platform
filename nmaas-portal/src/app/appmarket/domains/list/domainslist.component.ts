@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/Observable';
 })
 export class DomainsListComponent implements OnInit {
 
-  private domains: Observable<Domain[]>;
+  public domains: Observable<Domain[]>;
 
   constructor(protected domainService: DomainService, protected authService: AuthService) {}
 

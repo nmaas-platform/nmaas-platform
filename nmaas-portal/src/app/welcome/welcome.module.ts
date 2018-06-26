@@ -11,8 +11,6 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-import {HttpClientModule} from "@angular/common/http";
-import {JwtModule} from '@auth0/angular-jwt';
 import {ProfileComponent} from './profile/profile.component';
 import {AppMarketModule} from "../appmarket";
 
@@ -31,8 +29,6 @@ import {AppMarketModule} from "../appmarket";
     CommonModule,
     RouterModule,
     SharedModule,
-    HttpClientModule,
-    JwtModule,
     PipesModule,
       AppMarketModule
   ],

@@ -11,10 +11,10 @@ import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 export class ClusterDetailsComponent extends BaseComponent implements OnInit {
 
     @Input()
-    private cluster: Cluster = new Cluster();
+    public cluster: Cluster = new Cluster();
 
     @Output()
-    private onSave: EventEmitter<Cluster> = new EventEmitter<Cluster>();
+    public onSave: EventEmitter<Cluster> = new EventEmitter<Cluster>();
 
     constructor() {
         super();
