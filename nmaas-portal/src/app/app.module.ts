@@ -29,7 +29,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     tokenGetter: () => {
         return localStorage.getItem('token'); //TODO: change this to be able to replace 'token' with definied name
     },
-    whitelistedDomains: [new RegExp("[\s\S]")]
+    whitelistedDomains: [new RegExp("[\s\S]*")]
 });
 
 @NgModule({
