@@ -12,7 +12,9 @@
   },
   "ingress": {
     "useExistingController":false,
+    "controllerChart":"nginx",
     "controllerChartArchive":"nginx-ingress.tgz",
+    "configureIngress": true,
     "useExistingIngress":false,
     "externalServiceDomain":"nmaas.geant.net",
     "tlsSupported":false
@@ -20,7 +22,7 @@
   "deployment": {
     "useDefaultNamespace":true,
     "defaultNamespace":"default",
-    "defaultPersistenceClass":"managed-nfs-storage"
+    "defaultPersistenceClass":"nmaas-nfs-storage"
   },
   "attachPoint": {
     "routerName":"R3",

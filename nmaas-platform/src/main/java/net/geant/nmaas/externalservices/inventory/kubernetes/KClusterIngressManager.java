@@ -5,13 +5,17 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 
 public interface KClusterIngressManager {
 
-    Boolean getUseExistingController();
+    Boolean shouldUseExistingController();
 
     String getSupportedIngressClass();
 
+    String getControllerChart();
+
     String getControllerChartArchive();
 
-    Boolean getUseExistingIngress();
+    Boolean shouldConfigureIngress();
+
+    Boolean shouldUseExistingIngress();
 
     String getExternalServiceDomain();
 

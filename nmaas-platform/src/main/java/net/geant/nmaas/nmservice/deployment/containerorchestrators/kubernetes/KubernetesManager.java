@@ -85,7 +85,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void prepareDeploymentEnvironment(Identifier deploymentId)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
         try {
-            if(!clusterIngressManager.getUseExistingController()) {
+            if(!clusterIngressManager.shouldUseExistingController()) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }
@@ -109,7 +109,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                     clusterIngressManager.getExternalServiceDomain());
             repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
             serviceLifecycleManager.deployService(deploymentId);
-            if (!clusterIngressManager.getUseExistingIngress()) {
+            if (!clusterIngressManager.shouldUseExistingIngress()) {
                 ingressResourceManager.createOrUpdateIngressResource(
                         deploymentId,
                         service.getDomain(),
@@ -141,7 +141,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteService(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            if (!clusterIngressManager.getUseExistingIngress()) {
+            if (!clusterIngressManager.shouldUseExistingIngress()) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }
         } catch (InvalidDeploymentIdException idie) {

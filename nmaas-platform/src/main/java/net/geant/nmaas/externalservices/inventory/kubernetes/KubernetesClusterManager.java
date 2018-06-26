@@ -74,7 +74,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public Boolean getUseExistingController() {
+    public Boolean shouldUseExistingController() {
         return loadSingleCluster().getIngress().getUseExistingController();
     }
 
@@ -89,12 +89,22 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public String getControllerChart() {
+        return loadSingleCluster().getIngress().getControllerChart();
+    }
+
+    @Override
     public String getControllerChartArchive() {
         return loadSingleCluster().getIngress().getControllerChartArchive();
     }
 
     @Override
-    public Boolean getUseExistingIngress() {
+    public Boolean shouldConfigureIngress() {
+        return loadSingleCluster().getIngress().getConfigureIngress();
+    }
+
+    @Override
+    public Boolean shouldUseExistingIngress() {
         return loadSingleCluster().getIngress().getUseExistingIngress();
     }
 

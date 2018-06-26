@@ -39,7 +39,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
-        if(!clusterIngressManager.getUseExistingController()) {
+        if(!clusterIngressManager.shouldUseExistingController()) {
             executeDeployIngressControllerIfMissing(domain);
         }
     }
@@ -94,7 +94,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deleteIngressController(String domain) throws IngressControllerManipulationException {
-        if (!clusterIngressManager.getUseExistingController()) {
+        if (!clusterIngressManager.shouldUseExistingController()) {
             executeDeleteIngressController(domain);
         }
     }
