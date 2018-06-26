@@ -178,30 +178,30 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <ng-template *ngFor="let extnetwork of cluster.externalNetworks; trackBy: trackByFn">
+                    <ng-template ngFor let-extnetwork [ngForOf]="cluster.externalNetworks" let-i="index" [ngForTrackBy]="trackByFn">
                         <tr>
                             <td>
-                                <input type="checkbox" id="extnetassigned" name="extnetassigned"
+                                <input type="checkbox" [name]="'extnetassigned'+i"
                                        [(ngModel)]="extnetwork.assigned" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td>
-                                <input type="text" class="form-control" id="extnetextip" name="extnetextip"
+                                <input type="text" class="form-control" [name]="'extnetextip'+i"
                                        [(ngModel)]="extnetwork.externalIp" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td>
-                                <input type="text" class="form-control" id="extnetextnet" name="extnetextnet"
+                                <input type="text" class="form-control" [name]="'extnetextnet'+i"
                                        [(ngModel)]="extnetwork.externalNetwork" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td>
-                                <input type="text" class="form-control" id="extnetmask" name="extnetmask"
+                                <input type="text" class="form-control" [name]="'extnetmask'+i"
                                        [(ngModel)]="extnetwork.externalNetworkMaskLength" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td>
-                                <input type="text" class="form-control" id="extnetassince" name="extnetassince"
+                                <input type="text" class="form-control" [name]="'extnetassince'+i"
                                        [(ngModel)]="extnetwork.assignedSince" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td>
-                                <input type="text" class="form-control" id="extnetassto" name="extnetassto"
+                                <input type="text" class="form-control" [name]="'extnetassto'+i"
                                        [(ngModel)]="extnetwork.assignedTo" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td class="text-right">

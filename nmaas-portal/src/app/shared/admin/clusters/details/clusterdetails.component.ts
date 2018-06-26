@@ -44,12 +44,11 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     }
 
     public addNetwork() {
-        let newlist = this.cluster.externalNetworks.slice();
-        newlist.push(new ClusterExtNetwork());
-        this.cluster.externalNetworks = newlist;
+        let newobj: ClusterExtNetwork= new ClusterExtNetwork();
+        this.cluster.externalNetworks.push(newobj);
     }
 
-    public trackByFn(index, item) {
+    public trackByFn(index) {
         return index;
     }
 }
