@@ -25,7 +25,6 @@ export class ClusterListComponent extends BaseComponent implements OnInit {
     }
 
     public onDelete($event): void {
-        console.log("delete", $event);
-        this.clusterService.remove($event);
+        this.clusterService.remove($event).subscribe(() => this.ngOnInit());
     }
 }
