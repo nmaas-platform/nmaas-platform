@@ -1,9 +1,12 @@
-import { LoginComponent } from './login/login.component';
-import { LogoutComponent } from './logout/logout.component';
-import { RegistrationComponent } from './registration/registration.component';
-import { ChangelogComponent } from './changelog/changelog.component';
-import { Routes } from '@angular/router';
-import { WelcomeComponent } from './welcome.component';
+import {LoginComponent} from './login/login.component';
+import {LogoutComponent} from './logout/logout.component';
+import {RegistrationComponent} from './registration/registration.component';
+import {ChangelogComponent} from './changelog/changelog.component';
+import {Routes} from '@angular/router';
+import {WelcomeComponent} from './welcome.component';
+import {ProfileComponent} from "./profile/profile.component";
+import {AuthGuard} from "../auth/auth.guard";
+import {ComponentMode} from "../shared";
 
 export const WelcomeRoutes: Routes = [
     {
@@ -17,4 +20,5 @@ export const WelcomeRoutes: Routes = [
     },
     { path: 'logout', component: LogoutComponent },
     { path: 'changelog', component: ChangelogComponent },
+    { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: {mode: ComponentMode.PROFILVIEW} }
 ];

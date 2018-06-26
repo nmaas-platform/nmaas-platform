@@ -26,13 +26,13 @@ export class PasswordValidator implements Validator {
   styleUrls: ['./password.component.css']
 })
 export class PasswordComponent implements OnInit {
-  private passwordForm: FormGroup;
+  public passwordForm: FormGroup;
 
   @Input()
-  private password: string;
+  public password: string;
 
   @Output()
-  private passwordSubmit = new EventEmitter<string>();
+  public passwordSubmit = new EventEmitter<string>();
 
   constructor(private fb: FormBuilder) {
     this.passwordForm = fb.group(
@@ -51,7 +51,9 @@ export class PasswordComponent implements OnInit {
   }
 
   public submit(): void {
-    this.passwordSubmit.emit(this.passwordForm.controls['password'].value);
-    this.passwordForm.reset();
+    if(this.passwordForm.valid){
+        this.passwordSubmit.emit(this.passwordForm.controls['password'].value);
+        this.passwordForm.reset();
+    }
   }
 }

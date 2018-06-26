@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
@@ -7,11 +7,11 @@ import 'rxjs/add/operator/catch';
 export class AppConfigService {
     config: any;
 
-    constructor(private http: Http) { }
+    constructor(private http: HttpClient) { }
 
     public load() {
         return new Promise((resolve) => {
-            this.http.get('config.json').map(res => res.json())
+            this.http.get('config.json')
                 .subscribe(config => {
                     this.config = config;
                     resolve();
@@ -20,7 +20,7 @@ export class AppConfigService {
     }
 
     public getApiUrl(): string {
-        return this.config.apiUrl || 'http://localhost/portal/api';
+        return this.config.apiUrl || 'http://localhost/api';
     }
 
     public getNmaasGlobalDomainId(): number {

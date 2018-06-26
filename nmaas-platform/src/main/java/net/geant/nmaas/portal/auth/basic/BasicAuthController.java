@@ -34,7 +34,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api/auth/basic")
+@RequestMapping("/api/auth/basic")
 public class BasicAuthController {
 
 //	@Autowired

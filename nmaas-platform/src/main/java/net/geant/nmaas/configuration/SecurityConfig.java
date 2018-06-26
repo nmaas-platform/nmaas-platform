@@ -41,11 +41,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private final static String SSL_ENABLED = "server.ssl.enabled";
 	
-	private final static String AUTH_BASIC_LOGIN = "/portal/api/auth/basic/login";
-	private final static String AUTH_BASIC_SIGNUP = "/portal/api/auth/basic/registration/**";
-	private final static String AUTH_BASIC_TOKEN = "/portal/api/auth/basic/token";
-	private final static String APP_LOGO = "/portal/api/apps/{appId:[\\d+]}/logo";
-	private final static String APP_SCREENSHOTS = "/portal/api/apps/{appId:[\\d+]}/screenshots/**";
+	private final static String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
+	private final static String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
+	private final static String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
+	private final static String APP_LOGO = "/api/apps/{appId:[\\d+]}/logo";
+	private final static String APP_SCREENSHOTS = "/api/apps/{appId:[\\d+]}/screenshots/**";
 	
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
     private static final String ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME = "ansible.notification.client.password";
@@ -84,6 +84,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 		}
 	}
+
+	private static final String[] AUTH_WHITELIST = {
+			"/v2/api-docs",
+			"/swagger-resources",
+			"/swagger-resources/**",
+			"/configuration/ui",
+			"/configuration/security",
+			"/swagger-ui.html",
+			"/webjars/**"
+	};
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -99,27 +109,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 				.authorizeRequests()
-	            .antMatchers("/platform/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
-				.antMatchers("/platform/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-				.antMatchers("/platform/api/dockercompose/files/**").hasRole(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT)
+	            .antMatchers("/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
+				.antMatchers("/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
+				.antMatchers("/api/dockercompose/files/**").hasRole(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT)
 	            .and().httpBasic()
 			.and()
 				.authorizeRequests()
 				.antMatchers(AUTH_BASIC_LOGIN).permitAll()
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
+				.antMatchers(AUTH_WHITELIST).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/portal/api/**").permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/deployments/**").permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/deployments/**/state").permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/platform/api/orchestration/deployments/**/access").permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/platform/api/management/**").permitAll()
-				.antMatchers("/portal/api/**").authenticated()
-				.antMatchers("/platform/api/orchestration/deployments/**").authenticated()
-				.antMatchers("/platform/api/orchestration/deployments/**/state").authenticated()
-				.antMatchers("/platform/api/orchestration/deployments/**/access").authenticated()
-				.antMatchers("/platform/api/management/**").authenticated()
+				.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
+				.antMatchers("/api/**").authenticated()
+				.antMatchers("/api/orchestration/deployments/**").authenticated()
+				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
+				.antMatchers("/api/orchestration/deployments/**/access").authenticated()
+				.antMatchers("/api/management/**").authenticated()
 				.and()
 					.addFilterBefore(statelessAuthFilter(
 						new SkipPathRequestMatcher(
@@ -127,11 +138,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+										new AntPathRequestMatcher("/v2/api-docs"),
+										new AntPathRequestMatcher("/swagger-resources"),
+										new AntPathRequestMatcher("/swagger-resources/**"),
+										new AntPathRequestMatcher("/configuration/ui"),
+										new AntPathRequestMatcher("/configuration/security"),
+										new AntPathRequestMatcher("/swagger-ui.html"),
+										new AntPathRequestMatcher("/webjars/**"),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
-										new AntPathRequestMatcher("/platform/api/dcns/notifications/**/status"),
-										new AntPathRequestMatcher("/platform/api/configs/**"),
-										new AntPathRequestMatcher("/platform/api/dockercompose/files/**")
+										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
+										new AntPathRequestMatcher("/api/configs/**"),
+										new AntPathRequestMatcher("/api/dockercompose/files/**")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),
@@ -155,8 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		corsConfig.addAllowedHeader("*");
 		corsConfig.addAllowedMethod("*");
 		
-		source.registerCorsConfiguration("/portal/api/**", corsConfig);
-		source.registerCorsConfiguration("/platform/api/**", corsConfig);
+		source.registerCorsConfiguration("/api/**", corsConfig);
 
 		FilterRegistrationBean bean = new FilterRegistrationBean();
 		bean.setFilter(new CorsFilter(source));

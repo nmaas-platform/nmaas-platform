@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/portal/api")
+@RequestMapping("/api")
 public class AppInstanceController extends AppBaseController {
 
 	@Autowired
@@ -189,7 +189,21 @@ public class AppInstanceController extends AppBaseController {
 		return getAppInstanceState(appInstance);
 	}
 
-	private AppInstanceStatus getAppInstanceState(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) throws ProcessingException, MissingElementException {
+	//domainId is not used in this method.
+    @PostMapping({"/apps/instances/{appInstanceId}/restart", "/domains/{domainId}/apps/instances/{appInstanceId}/restart"})
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    public void restartAppInstance(@PathVariable(value="appInstanceId") Long appInstanceId) throws MissingElementException, ProcessingException{
+        net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+        try{
+            this.appLifecycleManager.restartApplication(appInstance.getInternalId());
+        }
+        catch (InvalidDeploymentIdException e){
+            throw new ProcessingException("Missing app instance");
+        }
+    }
+
+
+    private AppInstanceStatus getAppInstanceState(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) throws ProcessingException, MissingElementException {
 		if(appInstance == null)
 			throw new MissingElementException("App instance is null");
 		

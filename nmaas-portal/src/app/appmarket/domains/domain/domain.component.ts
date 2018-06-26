@@ -6,6 +6,10 @@ import {DomainService} from '../../../service/domain.service';
 import { BaseComponent } from '../../../shared/common/basecomponent/base.component';
 import {isUndefined} from 'util';
 import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
+import {User} from "../../../model";
+import {UserService} from "../../../service";
+import {Observable} from "rxjs/Observable";
+import {UserRole} from "../../../model/userrole";
 
 
 @Component({
@@ -16,10 +20,11 @@ import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
 })
 export class DomainComponent extends BaseComponent implements OnInit {
 
-  private domainId: number;
-  private domain: Domain;
+  public domainId: number;
+  public domain: Domain;
+  public users:User[];
 
-  constructor(protected domainService: DomainService, private router: Router, private route: ActivatedRoute, private location: Location) {
+  constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location) {
     super();
   }
 
@@ -33,15 +38,30 @@ export class DomainComponent extends BaseComponent implements OnInit {
         this.domain = new Domain();
         this.domain.active = true;
       }
+      let users: Observable<User[]>;
+      users = this.userService.getAll(this.domainId);
+
+      users.subscribe((all)=>{this.users = all;});
+
     });
   }
 
-  protected submit(): void {
+  public submit(): void {
     if (!isUndefined(this.domainId)) {
       this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
       this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
     }
+    this.domainService.setUpdateRequiredFlag(true);
+  }
+
+  public getDomainRoleNames(roles:UserRole[]):UserRole[]{
+    let domainRoles:UserRole[] = [];
+    roles.forEach((value => {
+      if(value.domainId == this.domainId){
+        domainRoles.push(value);
+      }}));
+    return domainRoles;
   }
 
 }

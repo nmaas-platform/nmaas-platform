@@ -42,7 +42,7 @@ public class BaseControllerTest {
 	protected JWTTokenService tokenService;
     
     @Autowired
-    DomainService domains;
+    protected DomainService domains;
     
 	public BaseControllerTest() {
 		
@@ -68,8 +68,11 @@ public class BaseControllerTest {
 		User admin = new User(ADMIN_USERNAME, true, ADMIN_PASSWORD, domains.getGlobalDomain().get(), roles);
 		
 		String token = tokenService.getToken(admin);
-		
 		return token;
     }
+
+    protected String getValidTokenForUser(User user){
+		return tokenService.getToken(user);
+	}
 	
 }

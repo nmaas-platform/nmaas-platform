@@ -20,7 +20,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/kubernetes")
+@RequestMapping(value = "/api/management/kubernetes")
 public class KubernetesClusterManagerRestController {
 
     private KubernetesClusterManager clusterManager;

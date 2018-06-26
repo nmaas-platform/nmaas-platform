@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/dcns")
+@RequestMapping(value = "/api/management/dcns")
 public class DcnAdminRestController {
 
     @Autowired

@@ -4,8 +4,7 @@
 		<label for="domains">Domain</label> <select class="form-control" id="domains"
 			[(ngModel)]="domainId" [ngModelOptions]="{standalone: true}"
 			(ngModelChange)="onChange($event)">
-			<option [value]="0">all</option>
 			<option *ngFor="let domain of domains | async" [value]="domain?.id">{{domain?.name}}</option>
-		</select>
+	</select>
 	</div>
 </form>

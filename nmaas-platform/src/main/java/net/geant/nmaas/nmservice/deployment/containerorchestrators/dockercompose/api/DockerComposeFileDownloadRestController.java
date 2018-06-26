@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
  */
 @RestController
 @Profile("env_docker-compose")
-@RequestMapping(value = "/platform/api/dockercompose/files")
+@RequestMapping(value = "/api/dockercompose/files")
 public class DockerComposeFileDownloadRestController {
 
     private final static Logger log = LogManager.getLogger(DockerComposeFileDownloadRestController.class);

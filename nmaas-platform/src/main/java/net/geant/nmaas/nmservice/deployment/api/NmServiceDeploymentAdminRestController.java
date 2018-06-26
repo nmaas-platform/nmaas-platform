@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl/>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/services")
+@RequestMapping(value = "/api/management/services")
 public class NmServiceDeploymentAdminRestController {
 
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")

@@ -6,32 +6,30 @@
 
 #### Technologies
 ---
- * Angular 2 (2.3.1)
+ * Angular 5 (5.2.x)
  * Bootstrap 3
  * JWT authentication
  * Spring 4 with REST API for GUI backend
 
 #### Prerequisites
 ---
- + Install npm (from NodeJS 6.11.0+) ([https://nodejs.org](https://nodejs.org))
- + Install angular-cli (version 1.1.3+) ([http://cli.angular.io](http://cli.angular.io))
-   - npm install -g @angular/cli@latest
- + Install git ([https://git-scm.com/](https://git-scm.com/))
+ + Install npm (>=5.0) and NodeJS (>=8.0)
+ + Install git
  + (run) Install http server 
    - npm install -g angular-http-server
 
 #### Build and run
 ---
-  + Build the Portal with *gradlew clean build* in reactor directory.
-  + The output archive *nmaas-portal-0.3.0.zip* file is created in *nmaas-portal/build* directory.
-  + Unzip the archive and run the http server in the same directory
+  + Build the Portal with *gradle clean build* in reactor directory.
+  + The output archive *nmaas-portal-x.x.x.zip* file is created in *nmaas-portal/build/distributions* directory.
+  + Run the http server in *nmaas-portal/build/app*
     - nohup angular-http-server -p 9009 -s --cors > nmaas-portal.log 2> Error.err < /dev/null &
 
 #### Defaults
 ---
   + URL:
     - WWW: http://<HOSTNAME>:9009
-    - API: http://<HOSTNAME>:9001/portal/api
+    - API: http://<HOSTNAME>:9001/api
   + Access:
     - username: admin
     - password: admin

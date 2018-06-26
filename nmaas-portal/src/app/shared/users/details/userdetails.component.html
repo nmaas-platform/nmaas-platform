@@ -4,7 +4,7 @@
 		<form *ngIf="!isInMode(ComponentMode.CREATE) && user"
 			(submit)="submit()"
 			class="form-horizontal">
-			<div *ngIf="user?.id" class="form-group">
+			<div *ngIf="user?.id && !isInMode(ComponentMode.PROFILVIEW)" class="form-group">
 				<label class="col-sm-2 control-label">Id:</label>		
 				<div class="col-sm-10">		
 				<p class="form-control-static">{{user?.id}}</p>
@@ -16,11 +16,11 @@
 				<div class="col-sm-10">			
 					<input type="text" class="form-control" id="username"
 						name="username" [(ngModel)]="user.username"
-						[disabled]="isInMode(ComponentMode.VIEW)">
+						[disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
 				</div>				
 			</div>
 
-			<div class="form-group">
+			<div *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="form-group">
 				<label for="enabled" class="col-sm-2 control-label">Enabled:</label>
 				<div class="col-sm-10">
 						<input type="checkbox" id="enabled"
@@ -34,7 +34,7 @@
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="firstname"
 						name="firstname" [(ngModel)]="user.firstname"
-						[disabled]="isInMode(ComponentMode.VIEW)">
+						[disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
 				</div>
 			</div>
 
@@ -43,7 +43,7 @@
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="lastname"
 						name="lastname" [(ngModel)]="user.lastname"
-						[disabled]="isInMode(ComponentMode.VIEW)">
+						[disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
 				</div>
 			</div>
 
@@ -51,13 +51,13 @@
 				<label for="email" class="col-sm-2 control-label">Email:</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="email" name="email"
-						[(ngModel)]="user.email" [disabled]="isInMode(ComponentMode.VIEW)">
+						[(ngModel)]="user.email" [disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
 				</div>
 			</div>
 
-			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
+			<button *ngIf="!isInMode(ComponentMode.VIEW) && !isInMode(ComponentMode.PROFILVIEW)" type="button"
 				class="btn btn-default" (click)="onModeChange()">View</button>
-			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit"
+			<button *ngIf="!isInMode(ComponentMode.VIEW) && !isInMode(ComponentMode.PROFILVIEW)" type="submit"
 				class="btn btn-danger">Submit</button>
 			<button
 				*ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"

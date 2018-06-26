@@ -11,10 +11,10 @@ import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   @Input()
-  private user: User = new User();
+  public user: User = new User();
 
   @Output()
-  private onSave: EventEmitter<User> = new EventEmitter<User>();
+  public onSave: EventEmitter<User> = new EventEmitter<User>();
 
   constructor() {
     super();

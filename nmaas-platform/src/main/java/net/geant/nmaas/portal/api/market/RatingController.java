@@ -21,7 +21,7 @@ import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 
 @RestController
-@RequestMapping("/portal/api/apps/{appId}/rate")
+@RequestMapping("/api/apps/{appId}/rate")
 public class RatingController extends AppBaseController {
 	
 	@Autowired

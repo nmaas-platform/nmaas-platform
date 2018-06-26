@@ -23,7 +23,7 @@ public class CommandExecutionTest {
     private static final String CORRECT_COMPOSE_FILE_DOWNLOAD_COMMAND =
                     "mkdir -p /home/user/dir/deploymentId/ " +
                     "&& " +
-                    "wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic dXNlcjpwYXNz\" http://1.1.1.1:9999/platform/api/dockercompose/files/deploymentId -O /home/user/dir/deploymentId/docker-compose.yml";
+                    "wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic dXNlcjpwYXNz\" http://1.1.1.1:9999/api/dockercompose/files/deploymentId -O /home/user/dir/deploymentId/docker-compose.yml";
 
     private static final String CORRECT_DOCKER_COMPOSE_UP_COMMAND =
                     "cd /home/user/dir/deploymentId/ " +
@@ -55,7 +55,7 @@ public class CommandExecutionTest {
 
     @Test
     public void shouldPrepareComposeFileDownloadCommandString() {
-        String sourceUrl = "http://1.1.1.1:9999/platform/api/dockercompose/files/";
+        String sourceUrl = "http://1.1.1.1:9999/api/dockercompose/files/";
         Identifier deploymentId = Identifier.newInstance("deploymentId");
         String targetDirectory = "/home/user/dir/deploymentId/";
         String targetFile = DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME;

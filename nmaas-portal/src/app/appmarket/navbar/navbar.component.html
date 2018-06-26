@@ -19,23 +19,31 @@
 							<li><a [routerLink]="['/users/add']">Add</a>
 						</ul>
 				</li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']" class="dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a [routerLink]="['/admin/clusters']">Clusters</a>
+					</ul>
+				</li>
 			</ul>
 
-			<ul class="nav navbar-form navbar-left">
-				<nmaas-domain-filter></nmaas-domain-filter>				
-			</ul>
-
-			<ul class="nav navbar-nav navbar-right">				
+			<ul class="nav navbar-nav navbar-right">
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"
 					aria-expanded="false"><span class="glyphicon glyphicon-user"></span>
 						{{authService.getUsername()}} <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a href="#">Profile</a></li>
+						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/profile']">Profile</a></li>
 						<li class="divider"></li>
 						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/logout']">Logout</a></li>
 					</ul></li>
 			</ul>
+
+			<ul class="nav navbar-form navbar-right">
+				<nmaas-domain-filter></nmaas-domain-filter>
+			</ul>
+
+
 
 
 		</div>

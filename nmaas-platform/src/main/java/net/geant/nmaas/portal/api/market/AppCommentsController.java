@@ -27,7 +27,7 @@ import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 
 @RestController
-@RequestMapping("/portal/api/apps/{appId}/comments")
+@RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
 	@Autowired
