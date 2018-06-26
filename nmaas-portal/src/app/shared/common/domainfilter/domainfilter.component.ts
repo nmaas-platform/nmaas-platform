@@ -20,7 +20,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   public domainId: number;
 
   public domains: Observable<Domain[]>;
-  
+
   public refresh: Subscription;
 
   constructor(protected authService: AuthService, protected domainService: DomainService, protected userData: UserDataService, protected appConfig: AppConfigService) {}
