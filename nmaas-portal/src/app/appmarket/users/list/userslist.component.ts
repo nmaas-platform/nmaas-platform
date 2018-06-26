@@ -66,7 +66,7 @@ export class UsersListComponent implements OnInit {
   }
 
   public onUserDelete($event): void {
-    this.userService.deleteOne($event);
+    this.userService.deleteOne($event).subscribe(() => this.update(this.domainId));
   }
 
 }

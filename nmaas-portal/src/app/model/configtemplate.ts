@@ -1,3 +1,3 @@
 export class ConfigTemplate {
-  public template: string = undefined;
+  public template: any = undefined;
 }

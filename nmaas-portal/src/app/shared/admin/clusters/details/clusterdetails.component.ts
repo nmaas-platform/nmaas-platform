@@ -1,4 +1,4 @@
-import {Cluster} from '../../../../model/cluster';
+import {Cluster, ClusterExtNetwork} from '../../../../model/cluster';
 import { BaseComponent } from '../../../common/basecomponent/base.component';
 import {ComponentMode} from '../../../common/componentmode';
 import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
@@ -33,5 +33,22 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
         if (this.isModeAllowed(newMode)) {
             this.mode = newMode;
         }
+    }
+
+    public removeNetwork(id) {
+        this.cluster.externalNetworks.splice(
+            this.cluster.externalNetworks.findIndex(
+                function(i){
+                    return i.id = id;
+                }), 1);
+    }
+
+    public addNetwork() {
+        let newobj: ClusterExtNetwork= new ClusterExtNetwork();
+        this.cluster.externalNetworks.push(newobj);
+    }
+
+    public trackByFn(index) {
+        return index;
     }
 }

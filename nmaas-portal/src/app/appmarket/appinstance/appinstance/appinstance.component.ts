@@ -128,8 +128,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   }
 
   protected getTemplate(template: string): any {
-    let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);
-    return result;
+    return template;
   }
 
 }
