@@ -15,7 +15,7 @@
 			<tr>
 				<td>{{user.id}}</td>
 				<td>{{user.username}}</td>
-				<td><span *ngFor="let role of user.roles">{{getDomainName(role.domainId) | async}}, </span><br></td>
+				<td><span *ngFor="let role of filterDomainNames(user)">{{getDomainName(role.domainId) | async}}, </span><br></td>
 <!-- 				<td><span *ngFor="let domainId of getUserDomainIds(user)">{{getDomainName(domainId) | async}}</span><br></td> -->
 <!-- 				 <td><ng-template ngFor let-domainId [ngForOf]="user.getDomainIds()"><span>{{getDomainName(domainId) | async}}</span><br></ng-template></td> -->
 				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
