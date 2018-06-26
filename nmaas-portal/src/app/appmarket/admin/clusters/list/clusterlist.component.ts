@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
     styleUrls: ['./clusterlist.component.css']
 })
 export class ClusterListComponent extends BaseComponent implements OnInit {
-    private clusters: ClusterInfo[] = [];
+    public clusters: ClusterInfo[] = [];
 
     constructor(private clusterService: ClusterService, private router: Router) {
         super();

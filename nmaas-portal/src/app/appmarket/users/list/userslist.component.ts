@@ -5,7 +5,7 @@ import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit} from '@angular/core';
-import {ComponentMode, ComponentModeAware} from '../../../shared/common/componentmode';
+import {ComponentMode} from '../../../shared/common/componentmode';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {Location} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
@@ -16,8 +16,9 @@ import {isNullOrUndefined} from 'util';
   templateUrl: './userslist.component.html',
   styleUrls: ['./userslist.component.css']
 })
-@ComponentModeAware
 export class UsersListComponent implements OnInit {
+
+  public ComponentMode = ComponentMode;
 
   private domainId: number;
 

@@ -1,7 +1,6 @@
 import {AuthService} from '../../../auth/auth.service';
 import {Domain} from '../../../model/domain';
 import {User} from '../../../model/user';
-import {KeysPipe} from "../../../pipe";
 import {Role, RoleAware} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
@@ -20,19 +19,17 @@ import {CacheService} from "../../../service/cache.service";
 export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
   @Input()
-  private domainId: number;
+  public domainId: number;
 
   @Input()
-  private user: User;
+  public user: User;
 
-  private domains: Domain[] = [];
-  private roles: Role[] = [];
+  public domains: Domain[] = [];
+  public roles: Role[] = [];
 
-  protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+  public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-
-
-    private newPrivilegeForm: FormGroup;
+  public newPrivilegeForm: FormGroup;
 
   constructor(protected fb: FormBuilder, protected domainService: DomainService,
     protected userService: UserService, protected authService: AuthService) {
@@ -47,7 +44,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
     this.roles = this.getAllowedRoles();
   }
 
-  protected getAllowedRoles(): Role[] {
+  public getAllowedRoles(): Role[] {
     let roles: Role[];
 
     if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {
@@ -76,7 +73,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
     }
   }
 
-  protected add(): void {
+  public add(): void {
     this.userService.addRole(this.user.id,
       Role[<string>(this.newPrivilegeForm.get('role').value)],
       this.newPrivilegeForm.get('domainId').value).subscribe(
@@ -89,12 +86,12 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
   }
 
-  protected remove(userId: number, role: Role, domainId?: number): void {
+  public remove(userId: number, role: Role, domainId?: number): void {
     this.userService.removeRole(userId, role, domainId).subscribe(
         () => this.userService.getOne(this.user.id).subscribe((user) => this.user = user))
   }
 
-  protected getDomainName(domainId: number): Observable<string> {
+  public getDomainName(domainId: number): Observable<string> {
         if (this.domainCache.hasData(domainId)) {
             return Observable.of(this.domainCache.getData(domainId).name);
         } else {

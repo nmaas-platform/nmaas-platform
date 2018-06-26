@@ -14,7 +14,6 @@ import {
   Application,
   AppInstance,
   AppInstanceState,
-  AppInstanceStateAware,
   AppInstanceStatus,
   AppInstanceProgressStage
 } from '../../../model/index';
@@ -30,8 +29,9 @@ import {AppRestartModalComponent} from "../../modals/apprestart";
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
   providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
 })
-@AppInstanceStateAware
 export class AppInstanceComponent implements OnInit, OnDestroy {
+
+  public AppInstanceState = AppInstanceState;
 
   @ViewChild(AppInstanceProgressComponent)
   public appInstanceProgress: AppInstanceProgressComponent;
@@ -41,14 +41,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   app: Application;
 
-  private appInstanceStatus: AppInstanceStatus; 
+  public appInstanceStatus: AppInstanceStatus;
 
-  private appInstanceId: number;
-  private appInstance: AppInstance;
-  private configurationTemplate: any;
+  public appInstanceId: number;
+  public appInstance: AppInstance;
+  public configurationTemplate: any;
 
-  private intervalCheckerSubscribtion;
-  
+  public intervalCheckerSubscribtion;
+
   jsonFormOptions: any = {
     addSubmit: false, // Add a submit button if layout does not have one
     debug: false, // Don't show inline debugging information
@@ -59,9 +59,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     options: {},
     widgetOptions: {}
   };
-  
+
   constructor(private appsService: AppsService,
-    private appImagesService: AppImagesService,
+    public appImagesService: AppImagesService,
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
@@ -123,12 +123,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getStages(): AppInstanceProgressStage[] {
+  public getStages(): AppInstanceProgressStage[] {
     return this.appInstanceService.getProgressStages();
   }
 
   protected getTemplate(template: string): any {
-    let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);    
+    let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);
     return result;
   }
 
