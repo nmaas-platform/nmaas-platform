@@ -10,6 +10,7 @@
 				<div *ngIf="instance_name.errors.minlength || instance_name.errors.maxlength">Instance name has to be 3-10 characters long.</div>
 				<div *ngIf="instance_name.errors.required">Instance name is required.</div>
 			</div>
+			<div *ngIf="error" class="alert alert-danger">{{error}}</div>
 			<label class="control-label">Domain: </label>
 			<div>
 				<p class="form-control-static">{{domainName}}</p>
