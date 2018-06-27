@@ -59,6 +59,7 @@ public class KubernetesTemplate {
 
     public static KubernetesTemplate copy(KubernetesTemplate toCopy) {
         KubernetesTemplate template = new KubernetesTemplate();
+        template.setChart(toCopy.getChart());
         template.setArchive(toCopy.getArchive());
         return template;
     }
