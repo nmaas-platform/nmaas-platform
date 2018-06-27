@@ -9,6 +9,7 @@ import {AppInstanceService} from '../../../service/appinstance.service';
 import {DomainService} from '../../../service/domain.service';
 import { UserDataService } from '../../../service/userdata.service';
 import { isUndefined } from 'util';
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'nmaas-modal-app-install',
@@ -27,6 +28,7 @@ export class AppInstallModalComponent implements OnInit {
   name: string;
   domainId: number;
   domainName: string;
+  error:string;
 
   userDomains: Domain[];
 
@@ -52,6 +54,9 @@ export class AppInstallModalComponent implements OnInit {
         instanceId => {
           this.modal.hide();
           this.router.navigate(['/instances', instanceId.id]);
+        },
+          err=>{
+          this.error = err.message;
         });
     }
   }
