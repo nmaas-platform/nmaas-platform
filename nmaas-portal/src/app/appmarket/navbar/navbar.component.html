@@ -7,9 +7,10 @@
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/']">Market</a></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/subscriptions']">Subscriptions</a></li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *ngIf="checkUserRole()"><a [routerLink]="['/subscriptions']">Subscriptions</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_USER']"><a
 					[routerLink]="['/instances']">Instances</a></li>
+				<li class="divider-vertical"></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']"><a
 					[routerLink]="['/domains']">Domains</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']"
@@ -39,7 +40,7 @@
 					</ul></li>
 			</ul>
 
-			<ul class="nav navbar-form navbar-right">
+			<ul class="nav navbar-form navbar-right" *ngIf="checkUserRole()">
 				<nmaas-domain-filter></nmaas-domain-filter>
 			</ul>
 

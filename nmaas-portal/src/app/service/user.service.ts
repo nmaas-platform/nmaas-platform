@@ -11,16 +11,17 @@ import {Password} from '../model/password';
 import {User} from '../model/user';
 import {UserRole, Role} from '../model/userrole';
 import {UserSignup} from '../model/usersignup';
+import {DomainService} from "./domain.service";
 
 @Injectable()
 export class UserService extends GenericDataService {
 
-  constructor(http: HttpClient, appConfig: AppConfigService) {
+  constructor(http: HttpClient, appConfig: AppConfigService, protected domainService: DomainService) {
     super(http, appConfig);
   }
 
   public getAll(domainId?: number): Observable<User[]> {
-    return this.get<User[]>(isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId));
+    return this.get<User[]>(isUndefined(domainId) || domainId === this.domainService.getGlobalDomainId() ? this.getUsersUrl() : this.getDomainUsersUrl(domainId));
   }
 
   public getOne(userId: number, domainId?: number): Observable<User> {

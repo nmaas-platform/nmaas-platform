@@ -10,6 +10,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
+import {UserRole} from "../../../model/userrole";
 
 
 
@@ -54,6 +55,10 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
       return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
               .shareReplay(1).take(1);
     }
+  }
+
+  public filterDomainNames(user:User):UserRole[]{
+    return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId());
   }
 
   public getUserDomainIds(user: User): number[] {

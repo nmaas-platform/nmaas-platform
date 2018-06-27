@@ -9,7 +9,8 @@ import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
 import {User} from "../../../model";
 import {UserService} from "../../../service";
 import {Observable} from "rxjs/Observable";
-import {UserRole} from "../../../model/userrole";
+import {Role, UserRole} from "../../../model/userrole";
+import {CacheService} from "../../../service/cache.service";
 
 
 @Component({
@@ -20,11 +21,12 @@ import {UserRole} from "../../../model/userrole";
 })
 export class DomainComponent extends BaseComponent implements OnInit {
 
-  public domainId: number;
-  public domain: Domain;
-  public users:User[];
+  private domainId: number;
+  private domain: Domain;
+  private users:User[];
+  protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location) {
+    constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location) {
     super();
   }
 
@@ -46,7 +48,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     });
   }
 
-  public submit(): void {
+  protected submit(): void {
     if (!isUndefined(this.domainId)) {
       this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
@@ -55,7 +57,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     this.domainService.setUpdateRequiredFlag(true);
   }
 
-  public getDomainRoleNames(roles:UserRole[]):UserRole[]{
+  protected getDomainRoleNames(roles:UserRole[]):UserRole[]{
     let domainRoles:UserRole[] = [];
     roles.forEach((value => {
       if(value.domainId == this.domainId){
@@ -64,4 +66,16 @@ export class DomainComponent extends BaseComponent implements OnInit {
     return domainRoles;
   }
 
+    protected getDomainName(domainId: number): Observable<string> {
+        if (this.domainCache.hasData(domainId)) {
+            return Observable.of(this.domainCache.getData(domainId).codename);
+        } else {
+            return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename})
+                .shareReplay(1).take(1);
+        }
+    }
+
+    protected filterDomainNames(user:User):UserRole[]{
+      return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId() ||  role.role.toString() != "ROLE_GUEST");
+    }
 }
