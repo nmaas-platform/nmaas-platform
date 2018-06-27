@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -16,9 +13,10 @@ public class KubernetesTemplate {
     private Long id;
 
     /**
-     * The name of the helm chart to use from repository
+     * The helm chart to use from repository
      */
-    private String chart;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private KubernetesChart chart;
 
     /**
      * The name of the helm chart archive to use from local directory
@@ -28,8 +26,13 @@ public class KubernetesTemplate {
     public KubernetesTemplate() {
     }
 
-    public KubernetesTemplate(String chart, String archive) {
+    public KubernetesTemplate(KubernetesChart chart, String archive) {
         this.chart = chart;
+        this.archive = archive;
+    }
+
+    public KubernetesTemplate(String chartName, String chartVersion, String archive) {
+        this.chart = new KubernetesChart(chartName, chartVersion);
         this.archive = archive;
     }
 
@@ -41,11 +44,11 @@ public class KubernetesTemplate {
         this.id = id;
     }
 
-    public String getChart() {
+    public KubernetesChart getChart() {
         return chart;
     }
 
-    public void setChart(String chart) {
+    private void setChart(KubernetesChart chart) {
         this.chart = chart;
     }
 
@@ -53,13 +56,15 @@ public class KubernetesTemplate {
         return archive;
     }
 
-    public void setArchive(String archive) {
+    private void setArchive(String archive) {
         this.archive = archive;
     }
 
     public static KubernetesTemplate copy(KubernetesTemplate toCopy) {
         KubernetesTemplate template = new KubernetesTemplate();
-        template.setChart(toCopy.getChart());
+        if (toCopy.getArchive() != null) {
+            template.setChart(KubernetesChart.copy(toCopy.getChart()));
+        }
         template.setArchive(toCopy.getArchive());
         return template;
     }

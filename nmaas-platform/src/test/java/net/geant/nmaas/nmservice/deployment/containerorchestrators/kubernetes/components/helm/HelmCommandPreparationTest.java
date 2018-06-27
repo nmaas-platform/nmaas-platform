@@ -19,13 +19,16 @@ public class HelmCommandPreparationTest {
     private static final String NAMESPACE = "nmaas";
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("deploymentId");
     private static final String CHART_ARCHIVE_NAME = "/home/nmaas/charts/testapp-0.0.1.tgz";
-    private static final String CHART_FROM_REPO_NAME = "test-repo/testapp-0.0.1";
+    private static final String CHART_NAME_WITH_REPO = "test-repo/testapp";
+    private static final String CHART_VERSION = "0.0.1";
     private static final String CORRECT_HELM_INSTALL_COMMAND_FIRST_PART =
             "helm install --name " + DEPLOYMENT_ID.value() + " --namespace " + NAMESPACE;
     private static final String CORRECT_HELM_INSTALL_COMMAND_USING_LOCAL_CHART_ARCHIVE =
             CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_ARCHIVE_NAME;
     private static final String CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO =
-            CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_FROM_REPO_NAME;
+            CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_NAME_WITH_REPO;
+    private static final String CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO_WITH_VERSION =
+            CORRECT_HELM_INSTALL_COMMAND_FIRST_PART + " " + CHART_NAME_WITH_REPO + " --version " + CHART_VERSION;
     private static final String CORRECT_HELM_DELETE_COMMAND = "helm delete --purge " + DEPLOYMENT_ID.value();
     private static final String CORRECT_HELM_STATUS_COMMAND = "helm status " + DEPLOYMENT_ID.value();
     private static final String CORRECT_HELM_UPGRADE_COMMAND =
@@ -39,8 +42,22 @@ public class HelmCommandPreparationTest {
 
     @Test
     public void shouldConstructInstallCommandUsingChartFromRepoWithNoArguments() {
-        assertThat(HelmInstallCommand.commandWithArchive(NAMESPACE, DEPLOYMENT_ID.value(), null, CHART_FROM_REPO_NAME).asString(),
+        assertThat(
+                HelmInstallCommand.commandWithRepo(
+                        NAMESPACE,
+                        DEPLOYMENT_ID.value(),
+                        null,
+                        CHART_NAME_WITH_REPO,
+                        null).asString(),
                 equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO));
+        assertThat(
+                HelmInstallCommand.commandWithRepo(
+                        NAMESPACE,
+                        DEPLOYMENT_ID.value(),
+                        null,
+                        CHART_NAME_WITH_REPO,
+                        CHART_VERSION).asString(),
+                equalTo(CORRECT_HELM_INSTALL_COMMAND_USING_CHART_FROM_REPO_WITH_VERSION));
     }
 
     @Test

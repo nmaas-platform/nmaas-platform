@@ -1,4 +1,7 @@
 {
-  "chart": "nmaas-oxidized-1.0.0-alfa",
+  "chart": {
+    "name": "nmaas-oxidized",
+    "version": "1.0.0-alfa"
+  },
   "archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 }

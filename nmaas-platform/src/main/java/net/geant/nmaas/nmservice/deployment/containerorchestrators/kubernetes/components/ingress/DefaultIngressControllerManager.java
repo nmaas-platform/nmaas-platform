@@ -88,7 +88,10 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         helmCommandExecutor.executeHelmInstallCommand(
                 namespace,
                 releaseName,
-                new KubernetesTemplate(clusterIngressManager.getControllerChart(), clusterIngressManager.getControllerChartArchive()),
+                new KubernetesTemplate(
+                        clusterIngressManager.getControllerChart(),
+                        null,
+                        clusterIngressManager.getControllerChartArchive()),
                 arguments
         );
     }

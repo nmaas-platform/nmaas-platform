@@ -17,14 +17,19 @@ public class HelmInstallCommand extends HelmCommand {
      * @param namespace namespace to install the release into
      * @param releaseName release name
      * @param values a map of key - value pairs to customize the release installation
-     * @param chartRepoName complete chart name for download from repository
+     * @param chartName chart name for download from repository
+     * @param chartVersion chart version from download from repository
      * @return complete command object
      */
-    static HelmInstallCommand commandWithRepo(String namespace, String releaseName, Map<String, String> values, String chartRepoName) {
+    static HelmInstallCommand commandWithRepo(String namespace, String releaseName, Map<String, String> values, String chartName, String chartVersion) {
         StringBuilder sb = buildBaseInstallCommand(namespace, releaseName, values);
-        if (chartRepoName == null || chartRepoName.isEmpty())
-            throw new IllegalArgumentException("Path to chart archive can't be null or empty");
-        sb.append(SPACE).append(chartRepoName);
+        if (chartName == null || chartName.isEmpty()) {
+            throw new IllegalArgumentException("Chart name can't be null or empty");
+        }
+        sb.append(SPACE).append(chartName);
+        if (chartVersion != null && !chartVersion.isEmpty()) {
+            sb.append(SPACE).append(OPTION_VERSION).append(SPACE).append(chartVersion);
+        }
         return new HelmInstallCommand(sb.toString());
     }
 
@@ -39,21 +44,24 @@ public class HelmInstallCommand extends HelmCommand {
      */
     static HelmInstallCommand commandWithArchive(String namespace, String releaseName, Map<String, String> values, String chartArchive) {
         StringBuilder sb = buildBaseInstallCommand(namespace, releaseName, values);
-        if (chartArchive == null || chartArchive.isEmpty())
+        if (chartArchive == null || chartArchive.isEmpty()) {
             throw new IllegalArgumentException("Path to chart archive can't be null or empty");
+        }
         sb.append(SPACE).append(chartArchive);
         return new HelmInstallCommand(sb.toString());
     }
 
     private static StringBuilder buildBaseInstallCommand(String namespace, String releaseName, Map<String, String> values) {
-        if (releaseName == null || releaseName.isEmpty())
+        if (releaseName == null || releaseName.isEmpty()) {
             throw new IllegalArgumentException("Name of the release can't be null or empty");
+        }
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(INSTALL).append(SPACE)
                 .append(OPTION_NAME).append(SPACE).append(releaseName).append(SPACE)
                 .append(OPTION_NAMESPACE).append(SPACE).append(namespace);
-        if (values != null && !values.isEmpty())
+        if (values != null && !values.isEmpty()) {
             sb.append(SPACE).append(OPTION_SET).append(SPACE).append(commaSeparatedValuesString(values));
+        }
         return sb;
     }
 

@@ -50,7 +50,8 @@ public class HelmCommandExecutor {
                         namespace,
                         releaseName,
                         arguments,
-                        constructChartRepoName(template.getChart())
+                        constructChartNameWithRepo(template.getChart().getName()),
+                        template.getChart().getVersion()
                 );
             }
             singleCommandExecutor().executeSingleCommand(command);
@@ -71,8 +72,8 @@ public class HelmCommandExecutor {
         return hostChartsDirectory;
     }
 
-    private String constructChartRepoName(String chartInfo) {
-        return clusterHelmManager.getHelmChartRepositoryName() + "/" + chartInfo;
+    private String constructChartNameWithRepo(String chartName) {
+        return clusterHelmManager.getHelmChartRepositoryName() + "/" + chartName;
     }
 
     void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
