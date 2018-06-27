@@ -75,5 +75,6 @@ jacocoTestReport {
 	executionData(test, integrationTest)
 }
 
-check.dependsOn integrationTest
+// removed integrationTest task from build
+// check.dependsOn integrationTest
 integrationTest.mustRunAfter test
