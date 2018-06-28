@@ -109,11 +109,11 @@ public class KubernetesManager implements ContainerOrchestrator {
                     clusterIngressManager.getExternalServiceDomain());
             repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
             serviceLifecycleManager.deployService(deploymentId);
-            if (!clusterIngressManager.shouldUseExistingIngress()) {
-                ingressResourceManager.createOrUpdateIngressResource(
-                        deploymentId,
-                        service.getDomain(),
-                        serviceExternalUrl);
+            if (shouldManipulateIngress()) {
+                    ingressResourceManager.createOrUpdateIngressResource(
+                            deploymentId,
+                            service.getDomain(),
+                            serviceExternalUrl);
             }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
@@ -124,11 +124,15 @@ public class KubernetesManager implements ContainerOrchestrator {
         }
     }
 
+    private boolean shouldManipulateIngress() {
+        return clusterIngressManager.shouldConfigureIngress() && !clusterIngressManager.shouldUseExistingIngress();
+    }
+
     @Override
     @Loggable(LogLevel.INFO)
     public void checkService(Identifier deploymentId) throws ContainerCheckFailedException, ContainerOrchestratorInternalErrorException {
         try {
-            if(!serviceLifecycleManager.checkServiceDeployed(deploymentId))
+            if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
         } catch (KServiceManipulationException e) {
             throw new ContainerCheckFailedException(e.getMessage());
@@ -141,7 +145,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteService(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            if (!clusterIngressManager.shouldUseExistingIngress()) {
+            if (shouldManipulateIngress()) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }
         } catch (InvalidDeploymentIdException idie) {
