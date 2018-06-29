@@ -9,6 +9,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Observable} from "rxjs/Observable";
 import {CacheService} from "../../../service/cache.service";
+import {UserDataService} from "../../../service/userdata.service";
 
 @Component({
   selector: 'nmaas-userprivileges',
@@ -18,7 +19,6 @@ import {CacheService} from "../../../service/cache.service";
 @RoleAware
 export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
-  @Input()
   public domainId: number;
 
   @Input()
@@ -32,7 +32,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   public newPrivilegeForm: FormGroup;
 
   constructor(protected fb: FormBuilder, protected domainService: DomainService,
-    protected userService: UserService, protected authService: AuthService) {
+    protected userService: UserService, protected authService: AuthService, protected userData:UserDataService) {
     super();
     this.newPrivilegeForm = fb.group(
       {
@@ -42,6 +42,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
       });
 
     this.roles = this.getAllowedRoles();
+    userData.selectedDomainId.subscribe(value => this.domainId = value);
   }
 
   public getAllowedRoles(): Role[] {
@@ -54,14 +55,10 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
     } else {
       roles = [];
     }
-
     return roles;
   }
 
   ngOnInit() {
-    if (this.domainId) {
-      this.domainService.getOne(this.domainId).subscribe((domain) => this.domains.push(domain));
-    } else {
       if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {
         this.domainService.getAll().subscribe((domains) => this.domains = domains);
       } else if (this.authService.hasRole(Role[Role.ROLE_DOMAIN_ADMIN])) {
@@ -70,7 +67,6 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
           this.domainService.getOne(domainId).subscribe((domain) => this.domains.push(domain));
         });
       }
-    }
   }
 
   public add(): void {

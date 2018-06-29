@@ -23,7 +23,7 @@
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
 						name="role" formControlName="role">
-						<option *ngFor="let r of Role | keys" [value]="r.key">{{r.value | slice:5}}</option>
+						<option *ngFor="let r of roles" [value]="r">{{Role[r] | slice:5}}</option>
 					</select>
 				</div>
 				<div class="col-lg-3">
