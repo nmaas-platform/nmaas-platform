@@ -12,7 +12,7 @@
 				<div class="form-group col-lg-3">
 					<label for="domainId">Domain:</label>
 					<select class="form-control" [formGroup]="newPrivilegeForm"
-						id="domainId" name="domainId" formControlName="domainId">
+						id="domainId" name="domainId" formControlName="domainId" style="min-width: 170px">
 						<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
 					</select>
 
@@ -22,8 +22,8 @@
 					<label for="role" >Role:</label>
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
-						name="role" formControlName="role">
-						<option *ngFor="let r of roles" [value]="r">{{Role[r] | slice:5}}</option>
+						name="role" formControlName="role" style="min-width: 170px">
+						<option *ngFor="let r of getAllowedRoles()" [value]="r">{{Role[r] | slice:5}}</option>
 					</select>
 				</div>
 				<div class="col-lg-3">

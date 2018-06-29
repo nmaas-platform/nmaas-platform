@@ -147,9 +147,16 @@ public class DomainServiceImpl implements DomainService {
 		Domain domain = getDomain(domainId);
 		
 		User user = getUser(userId);
-		
-		if(userRoleRepo.findByDomainAndUserAndRole(domain, user, role) == null)
+
+		if(userRoleRepo.findByDomainAndUserAndRole(domain, user, role) == null) {
+			removePreviousRoleInDomain(domain, user);
 			userRoleRepo.save(new UserRole(user, domain, role));
+		}
+	}
+
+	private void removePreviousRoleInDomain(Domain domain, User user){
+		Optional<UserRole> previousRole = user.getRoles().stream().filter(value -> value.getDomain().getId().equals(domain.getId())).findAny();
+		previousRole.ifPresent(value -> userRoleRepo.deleteBy(user, domain, value.getRole()));
 	}
 
 	private User getUser(Long userId) throws ObjectNotFoundException {

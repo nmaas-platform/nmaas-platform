@@ -10,6 +10,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Observable} from "rxjs/Observable";
 import {CacheService} from "../../../service/cache.service";
 import {UserDataService} from "../../../service/userdata.service";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'nmaas-userprivileges',
@@ -47,15 +48,24 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
   public getAllowedRoles(): Role[] {
     let roles: Role[];
-
-    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {
+    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN]) && this.newPrivilegeForm.get('domainId').value==this.domainService.getGlobalDomainId()) {
       roles = [Role.ROLE_SUPERADMIN, Role.ROLE_DOMAIN_ADMIN, Role.ROLE_TOOL_MANAGER, Role.ROLE_USER, Role.ROLE_GUEST];
-    } else if (this.authService.hasRole(Role[Role.ROLE_DOMAIN_ADMIN])) {
+      roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
+    } else if (this.newPrivilegeForm.get('domainId').value!=null) {
       roles = [Role.ROLE_DOMAIN_ADMIN, Role.ROLE_USER, Role.ROLE_GUEST];
+      roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
     } else {
       roles = [];
     }
     return roles;
+  }
+
+  private filterRoles(roles:Role[], domainId:number): Role[]{
+      let role = this.user.roles.find(value => value.domainId == domainId);
+      if(isNullOrUndefined(role)){
+          return roles;
+      }
+      return roles.filter(value => Role[value] != role.role.toString());
   }
 
   ngOnInit() {
