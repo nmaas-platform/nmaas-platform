@@ -29,6 +29,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   public domainId: number;
 
   protected applications: Observable<Application[]>;
+  protected copy_applications: Observable<Application[]>;
   protected selected: Observable<Set<number>>;
 
   protected searchedAppName: string = "";
@@ -37,7 +38,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
 
   ngOnInit() {
-    this.updateDomain();
+    // this.updateDomain();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -45,7 +46,6 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   protected updateDomain(): void {
-
     let domainId: number;
     let applications: Observable<Application[]>;
 
@@ -57,15 +57,15 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (+this.appView) {
       case AppViewType.APPLICATION:
-        applications = this.appsService.getApps();
-        applications.subscribe((apps) => this.updateSelected(apps));
-        break;
+      applications = this.appsService.getApps();
+      applications.subscribe((apps) => this.updateSelected(apps));
+      break;
       case AppViewType.DOMAIN:
-        applications = this.appSubsService.getSubscribedApplications(domainId);
-        break;
+      applications = this.appSubsService.getSubscribedApplications(domainId);
+      break;
       default:
-        applications = Observable.of<Application[]>([]);
-        break;
+      applications = Observable.of<Application[]>([]);
+      break;
     }
 
     this.applications = applications;
@@ -99,12 +99,12 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   protected doSearch():void {
-
+    if (this.copy_applications == null) {this.copy_applications = this.applications}
+    this.applications = this.copy_applications;
     let filteredAppsOne: Application[];
     let filteredAppsTwo: Application[];
     let tag = this.searchedTag.toLocaleLowerCase();
     let typed = this.searchedAppName.toLocaleLowerCase();
-    this.updateDomain()
     this.applications.subscribe((apps) => {
       if (tag === "all"){
         filteredAppsOne = apps;
@@ -124,6 +124,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   protected filterAppsByTag(tag: string): void {
 
+    this.searchedAppName = "";
     this.searchedTag = tag;
     this.doSearch();
   }
