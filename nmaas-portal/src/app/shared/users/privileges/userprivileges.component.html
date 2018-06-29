@@ -44,7 +44,7 @@
 					</tr>
 				</thead>
 
-				<tbody>
+				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SUPERADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
 						<td>{{getDomainName(userrole.domainId)|async}}</td>
@@ -53,6 +53,19 @@
 								class="btn btn-danger"
 								(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button></td>
 					</tr>
+					</ng-template>
+				</tbody>
+
+				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SUPERADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
+					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
+						<tr *ngIf="domainId == userrole.domainId">
+							<td>{{getDomainName(userrole.domainId)|async}}</td>
+							<td>{{userrole.role | slice:5}}</td>
+							<td class="text-right">
+								<button type="button" class="btn btn-danger"
+										(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button>
+							</td>
+						</tr>
 					</ng-template>
 				</tbody>
 			</table>
