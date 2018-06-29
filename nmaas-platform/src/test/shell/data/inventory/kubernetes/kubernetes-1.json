@@ -13,6 +13,7 @@
   },
   "ingress": {
     "useExistingController":false,
+    "supportedIngressClass":"nginx",
     "controllerChart":"nginx",
     "controllerChartArchive":"nginx-ingress.tgz",
     "configureIngress": true,

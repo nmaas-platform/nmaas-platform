@@ -73,7 +73,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(ingressManager.shouldConfigureIngress()));
         if (ingressManager.shouldConfigureIngress()) {
             arguments.putAll(HelmChartVariables.ingressVariablesMap(
-                    ingressManager.shouldUseExistingIngress(),
                     serviceExternalURL,
                     ingressManager.getSupportedIngressClass(),
                     ingressManager.getTlsSupported())
