@@ -1,6 +1,15 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterApi;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
@@ -104,10 +113,9 @@ public class KubernetesClusterManagerTest {
         api.setRestApiPort(REST_API_PORT);
         cluster.setApi(api);
         KClusterIngress ingress = new KClusterIngress();
-        ingress.setUseExistingController(false);
+        ingress.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
         ingress.setControllerChartArchive("chart.tgz");
-        ingress.setConfigureIngress(true);
-        ingress.setUseExistingIngress(false);
+        ingress.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         ingress.setExternalServiceDomain("test.net");
         ingress.setTlsSupported(false);
         cluster.setIngress(ingress);

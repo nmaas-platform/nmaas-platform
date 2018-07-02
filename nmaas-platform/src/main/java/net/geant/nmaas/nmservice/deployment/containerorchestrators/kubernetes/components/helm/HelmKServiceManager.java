@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -70,8 +71,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getDefaultPersistenceClass());
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
-        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(ingressManager.shouldConfigureIngress()));
-        if (ingressManager.shouldConfigureIngress()) {
+        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED,
+                String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
+        if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
             arguments.putAll(HelmChartVariables.ingressVariablesMap(
                     serviceExternalURL,
                     ingressManager.getSupportedIngressClass(),

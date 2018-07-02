@@ -12,12 +12,11 @@
     "restApiPort":8080
   },
   "ingress": {
-    "useExistingController":false,
+    "controllerConfigOption":"USE_EXISTING",
     "supportedIngressClass":"nginx",
     "controllerChart":"nginx",
     "controllerChartArchive":"nginx-ingress.tgz",
-    "configureIngress": true,
-    "useExistingIngress":false,
+    "resourceConfigOption":"DEPLOY_FROM_CHART",
     "externalServiceDomain":"nmaas.geant.net",
     "tlsSupported":false
   },

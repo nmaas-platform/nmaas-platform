@@ -1,11 +1,13 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 
 public interface KClusterIngressManager {
 
-    Boolean shouldUseExistingController();
+    IngressControllerConfigOption getControllerConfigOption();
 
     String getSupportedIngressClass();
 
@@ -13,9 +15,7 @@ public interface KClusterIngressManager {
 
     String getControllerChartArchive();
 
-    Boolean shouldConfigureIngress();
-
-    Boolean shouldUseExistingIngress();
+    IngressResourceConfigOption getResourceConfigOption();
 
     String getExternalServiceDomain();
 

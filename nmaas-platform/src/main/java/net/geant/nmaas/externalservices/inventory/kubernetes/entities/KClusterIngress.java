@@ -1,6 +1,13 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Set of properties describing a Kubernetes cluster ingress handling
@@ -18,30 +25,27 @@ public class KClusterIngress {
 
     /** Indicates if existing ingress controller should be used */
     @Column(nullable = false)
-    private Boolean useExistingController;
+    @Enumerated(EnumType.STRING)
+    private IngressControllerConfigOption controllerConfigOption;
 
-    /** Name of the ingress class handled by the existing ingress controller */
+    /** Name of the ingress class handled by the existing ingress controller (required if useExistingController == true) */
     private String supportedIngressClass;
 
-    /** Name of the chart to be downloaded from repository */
-    private String controllerChart;
+    /** Name of the chart to be downloaded from repository (required if useExistingController == false) */
+    private String controllerChartName;
 
-    /** Name of ingress controller helm chart archive */
+    /** Name of ingress controller helm chart archive (required if useExistingController == false) */
     private String controllerChartArchive;
 
-    /** Indicates whether the ingress resource should be updated automatically */
+    /** Indicates if and how ingress resources should be configured */
     @Column(nullable = false)
-    private Boolean configureIngress;
-
-    /** Use existing ingress or ingress resource definition from the helm chart */
-    private Boolean useExistingIngress;
+    @Enumerated(EnumType.STRING)
+    private IngressResourceConfigOption resourceConfigOption;
 
     /** Common part of the external service URL assigned to deployed services */
-    @Column(nullable = false)
     private String externalServiceDomain;
 
     /** Indicates if TLS for ingress is supported */
-    @Column(nullable = false)
     private Boolean tlsSupported;
 
     public Long getId() {
@@ -52,12 +56,12 @@ public class KClusterIngress {
         this.id = id;
     }
 
-    public Boolean getUseExistingController() {
-        return useExistingController;
+    public IngressControllerConfigOption getControllerConfigOption() {
+        return controllerConfigOption;
     }
 
-    public void setUseExistingController(Boolean useExistingController) {
-        this.useExistingController = useExistingController;
+    public void setControllerConfigOption(IngressControllerConfigOption controllerConfigOption) {
+        this.controllerConfigOption = controllerConfigOption;
     }
 
     public String getSupportedIngressClass() {
@@ -68,12 +72,12 @@ public class KClusterIngress {
         this.supportedIngressClass = supportedIngressClass;
     }
 
-    public String getControllerChart() {
-        return controllerChart;
+    public String getControllerChartName() {
+        return controllerChartName;
     }
 
-    public void setControllerChart(String controllerChart) {
-        this.controllerChart = controllerChart;
+    public void setControllerChartName(String controllerChartName) {
+        this.controllerChartName = controllerChartName;
     }
 
     public String getControllerChartArchive() {
@@ -84,20 +88,12 @@ public class KClusterIngress {
         this.controllerChartArchive = controllerChartArchive;
     }
 
-    public Boolean getConfigureIngress() {
-        return configureIngress;
+    public IngressResourceConfigOption getResourceConfigOption() {
+        return resourceConfigOption;
     }
 
-    public void setConfigureIngress(Boolean configureIngress) {
-        this.configureIngress = configureIngress;
-    }
-
-    public Boolean getUseExistingIngress() {
-        return useExistingIngress;
-    }
-
-    public void setUseExistingIngress(Boolean useExistingIngress) {
-        this.useExistingIngress = useExistingIngress;
+    public void setResourceConfigOption(IngressResourceConfigOption resourceConfigOption) {
+        this.resourceConfigOption = resourceConfigOption;
     }
 
     public String getExternalServiceDomain() {

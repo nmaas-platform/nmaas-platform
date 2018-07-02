@@ -87,7 +87,7 @@ public class HelmCommandPreparationTest {
 
     @Test
     public void shouldConstructUpgradeCommand() {
-        assertThat(HelmUpgradeCommand.command(DEPLOYMENT_ID.value(), CHART_ARCHIVE_NAME).asString(),
+        assertThat(HelmUpgradeCommand.commandWithArchive(DEPLOYMENT_ID.value(), CHART_ARCHIVE_NAME).asString(),
                 equalTo(CORRECT_HELM_UPGRADE_COMMAND));
     }
 
