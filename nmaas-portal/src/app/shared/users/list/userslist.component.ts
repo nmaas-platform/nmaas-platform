@@ -24,13 +24,16 @@ import {AuthService} from "../../../auth/auth.service";
 export class UsersListComponent extends BaseComponent implements OnInit, OnChanges {
 
   @Input()
+  private domainId: number;
+
+  @Input()
   public users: User[] = [];
 
   @Output()
   public onSave: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
-  public onDelete: EventEmitter<number> = new EventEmitter<number>();
+  public onDelete: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
   public onView: EventEmitter<number> = new EventEmitter<number>();
@@ -72,8 +75,8 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public remove(userId: number) {
-    this.onDelete.emit(userId);
+  public remove(user:User) {
+    this.onDelete.emit(user);
   }
 
   public view(userId: number): void {

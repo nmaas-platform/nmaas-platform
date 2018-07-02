@@ -1,5 +1,5 @@
 <div class="page-header">
-	<h3 *ngIf="!isInMode(ComponentMode.CREATE)">User {{user?.username}} </h3>
+	<h3 *ngIf="!isInMode(ComponentMode.CREATE)">User {{user?.username}}  <a *ngIf="authService.hasRole('ROLE_SUPERADMIN')" (click)="remove(user?.id)" class="btn btn-sm btn-danger" role="button">Remove</a></h3>
 	<h3 *ngIf="isInMode(ComponentMode.CREATE)">Create user</h3>
 </div>
 <nmaas-userdetails *ngIf="!isInMode(ComponentMode.CREATE)" [user]="user" [mode]="getCurrentMode()" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" (onSave)="onSave($event)"></nmaas-userdetails>
