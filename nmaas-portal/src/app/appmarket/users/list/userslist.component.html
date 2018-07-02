@@ -1,3 +1,3 @@
 <div class="row" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']">
-	<nmaas-userslist [domainId]="domainId" [users]="allUsers" [allowedModes]="[ComponentMode.VIEW, ComponentMode.DELETE]" (onView)="onUserView($event)" (onDelete)="onUserDelete($event)" (onSave)="onSave($event)"></nmaas-userslist>
+	<nmaas-userslist [users]="allUsers" [allowedModes]="[ComponentMode.VIEW, ComponentMode.DELETE]" (onView)="onUserView($event)" (onDelete)="onUserDelete($event)" (onSave)="onSave($event)"></nmaas-userslist>
 </div>

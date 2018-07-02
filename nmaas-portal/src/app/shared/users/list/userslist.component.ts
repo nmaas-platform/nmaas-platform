@@ -11,6 +11,8 @@ import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
 import {UserRole} from "../../../model/userrole";
+import {UserDataService} from "../../../service/userdata.service";
+import {AuthService} from "../../../auth/auth.service";
 
 
 
@@ -38,7 +40,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService) {
+  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService, private authService:AuthService) {
     super();
     userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
