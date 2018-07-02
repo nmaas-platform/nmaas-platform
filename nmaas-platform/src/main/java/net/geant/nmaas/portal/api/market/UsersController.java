@@ -194,6 +194,7 @@ public class UsersController {
 
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
+			addGlobalGuest(domain.getId(), userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}		
@@ -324,8 +325,21 @@ public class UsersController {
 				
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), role);
+			addGlobalGuest(domainId, userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
+		}
+	}
+
+	private void addGlobalGuest(Long domainId, Long userId) throws MissingElementException{
+		if(domains.getGlobalDomain().isPresent()){
+			if(domains.getGlobalDomain().get().getId().equals(domainId)){
+				try{
+					domains.addMemberRole(domainId, userId, Role.ROLE_GUEST);
+				} catch(ObjectNotFoundException e){
+					throw new MissingElementException(e.getMessage());
+				}
+			}
 		}
 	}
 
