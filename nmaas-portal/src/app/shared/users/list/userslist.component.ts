@@ -11,6 +11,7 @@ import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
 import {UserRole} from "../../../model/userrole";
+import {UserDataService} from "../../../service/userdata.service";
 
 
 
@@ -25,6 +26,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   @Input()
   public users: User[] = [];
 
+  public domainId: number;
 
   @Output()
   public onDelete: EventEmitter<number> = new EventEmitter<number>();
@@ -34,8 +36,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, private domainService: DomainService) {
+  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService) {
     super();
+    userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
 
   ngOnInit() {
@@ -43,6 +46,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log('UsersList:onChanges ' + changes.toString());
+    this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
   
   public getDomainName(domainId: number): Observable<string> {
@@ -59,6 +63,10 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public filterDomainNames(user:User):UserRole[]{
     return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId());
+  }
+
+  public getOnlyDomainRoles(user:User):UserRole[]{
+    return user.roles.filter(role=>role.domainId===this.domainId);
   }
 
   public getUserDomainIds(user: User): number[] {
