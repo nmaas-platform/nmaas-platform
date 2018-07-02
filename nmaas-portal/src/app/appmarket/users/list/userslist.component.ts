@@ -1,6 +1,6 @@
 import {AuthService} from '../../../auth/auth.service';
 import {User} from '../../../model/user';
-import {Role} from '../../../model/userrole';
+import {Role, UserRole} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {UserService} from '../../../service/user.service';
 import {UserDataService} from '../../../service/userdata.service';
@@ -66,7 +66,19 @@ export class UsersListComponent implements OnInit {
   }
 
   public onUserDelete($event): void {
-    this.userService.deleteOne($event).subscribe(() => this.update(this.domainId));
+      this.userService.removeRole($event.id, $event.roles.find(value => value.domainId===this.domainId).role,this.domainId).subscribe(()=> this.update(this.domainId))
   }
+
+    public onSave($event) {
+        const user: User = $event;
+
+        if (!user) {
+            return;
+        }
+        if(user.id) {
+          user.enabled = !user.enabled;
+          this.userService.updateUser(user.id, user).subscribe();
+        }
+    }
 
 }

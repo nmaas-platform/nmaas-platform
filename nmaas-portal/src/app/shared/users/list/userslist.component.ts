@@ -12,6 +12,7 @@ import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
 import {UserRole} from "../../../model/userrole";
 import {UserDataService} from "../../../service/userdata.service";
+import {AuthService} from "../../../auth/auth.service";
 
 
 
@@ -29,14 +30,17 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   public domainId: number;
 
   @Output()
-  public onDelete: EventEmitter<number> = new EventEmitter<number>();
+  public onSave: EventEmitter<User> = new EventEmitter<User>();
+
+  @Output()
+  public onDelete: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
   public onView: EventEmitter<number> = new EventEmitter<number>();
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService) {
+  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService, private authService:AuthService) {
     super();
     userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
@@ -77,12 +81,18 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public remove(userId: number) {
-    this.onDelete.emit(userId);
+  public remove(user:User) {
+    this.onDelete.emit(user);
   }
 
   public view(userId: number): void {
     console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
+
+   public submit(user:User): void {
+       console.log('submit(' + user.username + ')');
+       this.onSave.emit(user);
+   }
+
 }
