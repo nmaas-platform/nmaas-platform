@@ -12,7 +12,7 @@
 				<div class="form-group col-lg-3">
 					<label for="domainId">Domain:</label>
 					<select class="form-control" [formGroup]="newPrivilegeForm"
-						id="domainId" name="domainId" formControlName="domainId">
+						id="domainId" name="domainId" formControlName="domainId" style="min-width: 170px">
 						<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
 					</select>
 
@@ -22,8 +22,8 @@
 					<label for="role" >Role:</label>
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
-						name="role" formControlName="role">
-						<option *ngFor="let r of Role | keys" [value]="r.key">{{r.value | slice:5}}</option>
+						name="role" formControlName="role" style="min-width: 170px">
+						<option *ngFor="let r of getAllowedRoles()" [value]="r">{{Role[r] | slice:5}}</option>
 					</select>
 				</div>
 				<div class="col-lg-3">
@@ -44,7 +44,7 @@
 					</tr>
 				</thead>
 
-				<tbody>
+				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SUPERADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
 						<td>{{getDomainName(userrole.domainId)|async}}</td>
@@ -53,6 +53,19 @@
 								class="btn btn-danger"
 								(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button></td>
 					</tr>
+					</ng-template>
+				</tbody>
+
+				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SUPERADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
+					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
+						<tr *ngIf="domainId == userrole.domainId">
+							<td>{{getDomainName(userrole.domainId)|async}}</td>
+							<td>{{userrole.role | slice:5}}</td>
+							<td class="text-right">
+								<button type="button" class="btn btn-danger"
+										(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button>
+							</td>
+						</tr>
 					</ng-template>
 				</tbody>
 			</table>
