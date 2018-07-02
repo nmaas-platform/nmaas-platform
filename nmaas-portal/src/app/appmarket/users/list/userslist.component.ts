@@ -69,4 +69,16 @@ export class UsersListComponent implements OnInit {
     this.userService.deleteOne($event).subscribe(() => this.update(this.domainId));
   }
 
+    public onSave($event) {
+        const user: User = $event;
+
+        if (!user) {
+            return;
+        }
+        if(user.id) {
+          user.enabled = !user.enabled;
+          this.userService.updateUser(user.id, user).subscribe();
+        }
+    }
+
 }

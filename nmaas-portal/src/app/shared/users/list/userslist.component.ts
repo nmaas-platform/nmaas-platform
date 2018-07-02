@@ -11,6 +11,7 @@ import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
 import {UserRole} from "../../../model/userrole";
+import {AuthService} from "../../../auth/auth.service";
 
 
 
@@ -25,6 +26,8 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   @Input()
   public users: User[] = [];
 
+  @Output()
+  public onSave: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
   public onDelete: EventEmitter<number> = new EventEmitter<number>();
@@ -34,7 +37,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, private domainService: DomainService) {
+  constructor(private userService: UserService, private domainService: DomainService, private authService:AuthService) {
     super();
   }
 
@@ -77,4 +80,10 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
+
+   public submit(user:User): void {
+       console.log('submit(' + user.username + ')');
+       this.onSave.emit(user);
+   }
+
 }
