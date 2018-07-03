@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.externalservices.inventory.gitlab.GitlabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
@@ -42,17 +43,15 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
+    private GitlabManager gitlabManager;
 
     @Autowired
-    public GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations) {
+    public GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations,
+                                GitlabManager gitlabManager) {
         this.serviceRepositoryManager = serviceRepositoryManager;
         this.configurations = configurations;
+        this.gitlabManager = gitlabManager;
     }
-
-    @Value("${gitlab.api.url}")
-    private String gitLabApiUrl;
-    @Value("${gitlab.api.token}")
-    private String gitLabApiToken;
 
     private GitLabApi gitlab;
 
@@ -71,7 +70,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     public void transferConfigFiles(Identifier deploymentId, List<String> configIds)
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
         String domain = serviceRepositoryManager.loadDomain(deploymentId);
-        gitlab = new GitLabApi(ApiVersion.V4, gitLabApiUrl, gitLabApiToken);
+        gitlab = new GitLabApi(ApiVersion.V4, gitlabManager.getGitLabApiUrl(), gitlabManager.getGitLabApiToken());
         String gitLabPassword = generateRandomPassword();
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
@@ -222,13 +221,5 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private String commitMessage(String fileName) {
         return "Initial commit of " + fileName;
-    }
-
-    private void setGitLabApiUrl(String url) {
-        this.gitLabApiUrl = url;
-    }
-
-    private void setGitLabApiToken(String token) {
-        this.gitLabApiToken = token;
     }
 }
