@@ -1,6 +1,6 @@
 {
 	"name":"Oxidized",
-	"version":"0.19.0",
+	"version":"0.24.0",
 	"license":"MIT",
 	"briefDescription":"Oxidized is a network device configuration backup tool",
 	"tags": [ "management", "backup", "configuration"],

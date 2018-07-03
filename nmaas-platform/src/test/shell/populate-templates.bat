@@ -3,15 +3,15 @@ setlocal enableDelayedExpansion
 @echo off
 setlocal enableDelayedExpansion
 
-set PORTAL_API_URL=http://localhost:9000/api
-echo %PORTAL_API_URL%
+set API_URL=http://localhost:9000/portal/api
+echo %API_URL%
 
 set LF=^
 
 
 
 
-for /f "delims=" %%f in ('curl -sX POST %PORTAL_API_URL%/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data\login.json') do (
+for /f "delims=" %%f in ('curl -sX POST %API_URL%/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data\login.json') do (
 REM set "LOGIN="
 	if defined LOGIN set "LOGIN=!LOGIN!!LF!"
 	set "LOGIN=!LOGIN!%%f"
@@ -37,10 +37,7 @@ echo ----------------------
 echo %token%
 echo ----------------------
 echo Ping
-curl -X GET %PORTAL_API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
-
-set API_URL=http://localhost:9000/api
-echo %API_URL%
+curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
 echo.
 echo Adding default configuration templates for app 1, app 2 and app 4

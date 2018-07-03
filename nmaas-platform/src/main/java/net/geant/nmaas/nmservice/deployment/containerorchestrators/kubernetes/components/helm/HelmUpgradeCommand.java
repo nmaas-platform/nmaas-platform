@@ -16,7 +16,7 @@ public class HelmUpgradeCommand extends HelmCommand {
      * @param chartArchive complete path to the release chart archive
      * @return complete command object
      */
-    public static HelmUpgradeCommand command(String releaseName, String chartArchive) {
+    static HelmUpgradeCommand commandWithArchive(String releaseName, String chartArchive) {
         if (releaseName == null || releaseName.isEmpty())
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         if (chartArchive == null || chartArchive.isEmpty())
