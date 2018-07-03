@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.api;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitlabRepository;
+import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GitLabConfigApiSecurityTest extends BaseControllerTest {
 
     @MockBean
-    private GitlabRepository repository;
+    private GitLabRepository repository;
 
     @Before
     public void setup(){
@@ -30,7 +30,7 @@ public class GitLabConfigApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception{
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/api/management/configurations/gitlab")
+        mvc.perform(get("/api/management/gitlab")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -38,7 +38,7 @@ public class GitLabConfigApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldRejectNonAdminProperUser() throws Exception{
         String token = getValidUserTokenFor(Role.ROLE_DOMAIN_ADMIN);
-        mvc.perform(get("/api/management/configurations/gitlab")
+        mvc.perform(get("/api/management/gitlab")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

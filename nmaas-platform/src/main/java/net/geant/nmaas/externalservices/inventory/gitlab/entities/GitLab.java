@@ -1,11 +1,27 @@
-package net.geant.nmaas.externalservices.api.model;
+package net.geant.nmaas.externalservices.inventory.gitlab.entities;
 
-public class GitlabView {
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name="gitlab")
+public class GitLab {
+
+    @Id
+    @Column(name="id")
     private Long id;
+
+    @Column(nullable=false)
     private String server;
+
+    @Column(nullable=false)
     private String apiVersion;
+
+    @Column(nullable=false)
     private String token;
+
+    @Column(nullable=false)
     private Integer port;
 
     public Long getId() {
@@ -46,5 +62,10 @@ public class GitlabView {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    @JsonIgnore
+    public String getApiUrl(){
+        return String.format("http://%s:%d",this.server,this.port);
     }
 }

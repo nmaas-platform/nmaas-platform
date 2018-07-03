@@ -1,10 +1,10 @@
 package net.geant.nmaas.externalservices.api;
 
-import net.geant.nmaas.externalservices.api.model.GitlabView;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitlabManager;
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.Gitlab;
-import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitlabConfigNotFoundException;
-import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitlabConfigSupportedException;
+import net.geant.nmaas.externalservices.api.model.GitLabView;
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabConfigNotFoundException;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabConfigSupportedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,61 +15,61 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/management/configurations/gitlab")
+@RequestMapping(value = "/api/management/gitlab")
 public class GitLabConfigController {
 
-    private GitlabManager gitlabManager;
+    private GitLabManager gitLabManager;
 
     @Autowired
-    public GitLabConfigController(GitlabManager gitlabManager){
-        this.gitlabManager = gitlabManager;
+    public GitLabConfigController(GitLabManager gitLabManager){
+        this.gitLabManager = gitLabManager;
     }
 
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @GetMapping
-    public List<GitlabView> listAllGitlabConfig(){
-        return gitlabManager.getAllGitlabConfig();
+    public List<GitLabView> listAllGitlabConfig(){
+        return gitLabManager.getAllGitlabConfig();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @GetMapping(value = "/{id}")
-    public Gitlab getGitlabConfigById(@PathVariable("id") Long id) throws GitlabConfigNotFoundException {
-        return gitlabManager.getGitlabConfigById(id);
+    public GitLab getGitlabConfigById(@PathVariable("id") Long id) throws GitLabConfigNotFoundException {
+        return gitLabManager.getGitlabConfigById(id);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addGitlabConfig (@RequestBody Gitlab newGitlabConfig) throws OnlyOneGitlabConfigSupportedException {
-        gitlabManager.addGitlabConfig(newGitlabConfig);
+    public void addGitlabConfig (@RequestBody GitLab newGitLabConfig) throws OnlyOneGitLabConfigSupportedException {
+        gitLabManager.addGitlabConfig(newGitLabConfig);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateGitlabConfig(@PathVariable("id") Long id, @RequestBody Gitlab updatedGitlabConfig) throws GitlabConfigNotFoundException{
-        gitlabManager.updateGitlabConfig(id, updatedGitlabConfig);
+    public void updateGitlabConfig(@PathVariable("id") Long id, @RequestBody GitLab updatedGitLabConfig) throws GitLabConfigNotFoundException {
+        gitLabManager.updateGitlabConfig(id, updatedGitLabConfig);
     }
 
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeGitlabConfig(@PathVariable("id") Long id) throws GitlabConfigNotFoundException{
-        gitlabManager.removeGitlabConfig(id);
+    public void removeGitlabConfig(@PathVariable("id") Long id) throws GitLabConfigNotFoundException {
+        gitLabManager.removeGitlabConfig(id);
     }
 
-    @ExceptionHandler(GitlabConfigNotFoundException.class)
+    @ExceptionHandler(GitLabConfigNotFoundException.class)
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public String handleGitlabConfigNotFoundException(GitlabConfigNotFoundException e){
+    public String handleGitlabConfigNotFoundException(GitLabConfigNotFoundException e){
         return e.getMessage();
     }
 
-    @ExceptionHandler(OnlyOneGitlabConfigSupportedException.class)
+    @ExceptionHandler(OnlyOneGitLabConfigSupportedException.class)
     @ResponseStatus(code = HttpStatus.NOT_ACCEPTABLE)
-    public String handleOnlyOneGitlabConfigSupportedException(OnlyOneGitlabConfigSupportedException e){
+    public String handleOnlyOneGitlabConfigSupportedException(OnlyOneGitLabConfigSupportedException e){
         return e.getMessage();
     }
 }

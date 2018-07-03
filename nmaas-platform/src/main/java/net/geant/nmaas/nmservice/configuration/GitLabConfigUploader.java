@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.GitlabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
@@ -17,7 +17,6 @@ import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.RepositoryFile;
 import org.gitlab4j.api.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -43,14 +42,14 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
-    private GitlabManager gitlabManager;
+    private GitLabManager gitLabManager;
 
     @Autowired
     public GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations,
-                                GitlabManager gitlabManager) {
+                                GitLabManager gitLabManager) {
         this.serviceRepositoryManager = serviceRepositoryManager;
         this.configurations = configurations;
-        this.gitlabManager = gitlabManager;
+        this.gitLabManager = gitLabManager;
     }
 
     private GitLabApi gitlab;
@@ -70,7 +69,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     public void transferConfigFiles(Identifier deploymentId, List<String> configIds)
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
         String domain = serviceRepositoryManager.loadDomain(deploymentId);
-        gitlab = new GitLabApi(ApiVersion.V4, gitlabManager.getGitLabApiUrl(), gitlabManager.getGitLabApiToken());
+        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
         String gitLabPassword = generateRandomPassword();
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);

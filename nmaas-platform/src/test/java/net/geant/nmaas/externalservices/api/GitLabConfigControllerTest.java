@@ -2,10 +2,10 @@ package net.geant.nmaas.externalservices.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.api.model.GitlabView;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitlabManager;
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.Gitlab;
-import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitlabRepository;
+import net.geant.nmaas.externalservices.api.model.GitLabView;
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
+import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,17 +33,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("classpath:application-test-k8s.properties")
 public class GitLabConfigControllerTest {
     @Autowired
-    private GitlabManager manager;
+    private GitLabManager manager;
 
     @Autowired
     private ModelMapper modelMapper;
 
     @Autowired
-    private GitlabRepository repository;
+    private GitLabRepository repository;
 
     private MockMvc mvc;
 
-    private static String URL_PREFIX = "/api/management/configurations/gitlab";
+    private static String URL_PREFIX = "/api/management/gitlab";
 
     @Before
     public void init(){
@@ -81,7 +81,7 @@ public class GitLabConfigControllerTest {
                 .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(1L)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        Gitlab updated = simpleGitlabConfig(1L);
+        GitLab updated = simpleGitlabConfig(1L);
         updated.setToken("newtesttoken");
         mvc.perform(put(URL_PREFIX+"/{id}", updated.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -127,7 +127,7 @@ public class GitLabConfigControllerTest {
         MvcResult result = mvc.perform(get(URL_PREFIX+"/{id}", 1L))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(1L, ((Gitlab) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<Gitlab>(){})).getId().longValue());
+        assertEquals(1L, ((GitLab) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<GitLab>(){})).getId().longValue());
     }
 
     @Test
@@ -142,12 +142,12 @@ public class GitLabConfigControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(manager.getAllGitlabConfig().size(),
-                ((List<GitlabView>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<GitlabView>>(){})).size());
+                ((List<GitLabView>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<GitLabView>>(){})).size());
     }
 
 
-    private Gitlab simpleGitlabConfig(Long id){
-        Gitlab config = new Gitlab();
+    private GitLab simpleGitlabConfig(Long id){
+        GitLab config = new GitLab();
         config.setId(id);
         config.setApiVersion("v4");
         config.setPort(80);

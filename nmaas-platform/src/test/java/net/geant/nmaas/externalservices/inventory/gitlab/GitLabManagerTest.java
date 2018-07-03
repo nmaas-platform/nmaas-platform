@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.Gitlab;
-import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitlabRepository;
+import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
+import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,18 +17,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class GitlabManagerTest {
+public class GitLabManagerTest {
     @Autowired
-    private GitlabRepository repository;
+    private GitLabRepository repository;
 
     @Autowired
     private ModelMapper modelMapper;
 
-    private GitlabManager manager;
+    private GitLabManager manager;
 
     @Before
     public void setup(){
-        manager = new GitlabManager(repository, modelMapper);
+        manager = new GitLabManager(repository, modelMapper);
     }
 
     @After
@@ -56,8 +56,8 @@ public class GitlabManagerTest {
         assertThat("GitLab api version is wrong",manager.getGitLabApiVersion().equals("v4"));
     }
 
-    private Gitlab simpleGitlabConfig(Long id){
-        Gitlab config = new Gitlab();
+    private GitLab simpleGitlabConfig(Long id){
+        GitLab config = new GitLab();
         config.setId(id);
         config.setApiVersion("v4");
         config.setPort(80);
