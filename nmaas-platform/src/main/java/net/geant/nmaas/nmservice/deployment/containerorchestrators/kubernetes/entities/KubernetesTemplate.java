@@ -13,10 +13,28 @@ public class KubernetesTemplate {
     private Long id;
 
     /**
-     * The name of the helm chart archive to use
+     * The helm chart to use from repository
      */
-    @Column(nullable=false)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private KubernetesChart chart;
+
+    /**
+     * The name of the helm chart archive to use from local directory
+     */
     private String archive;
+
+    public KubernetesTemplate() {
+    }
+
+    public KubernetesTemplate(KubernetesChart chart, String archive) {
+        this.chart = chart;
+        this.archive = archive;
+    }
+
+    public KubernetesTemplate(String chartName, String chartVersion, String archive) {
+        this.chart = new KubernetesChart(chartName, chartVersion);
+        this.archive = archive;
+    }
 
     public Long getId() {
         return id;
@@ -26,16 +44,27 @@ public class KubernetesTemplate {
         this.id = id;
     }
 
+    public KubernetesChart getChart() {
+        return chart;
+    }
+
+    private void setChart(KubernetesChart chart) {
+        this.chart = chart;
+    }
+
     public String getArchive() {
         return archive;
     }
 
-    public void setArchive(String archive) {
+    private void setArchive(String archive) {
         this.archive = archive;
     }
 
     public static KubernetesTemplate copy(KubernetesTemplate toCopy) {
         KubernetesTemplate template = new KubernetesTemplate();
+        if (toCopy.getArchive() != null) {
+            template.setChart(KubernetesChart.copy(toCopy.getChart()));
+        }
         template.setArchive(toCopy.getArchive());
         return template;
     }

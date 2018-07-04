@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterHelmManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
@@ -21,30 +22,38 @@ public class HelmCommandExecutor {
     private KClusterHelmManager clusterHelmManager;
 
     @Autowired
-    public HelmCommandExecutor(KClusterHelmManager clusterHelmManager) {
+    HelmCommandExecutor(KClusterHelmManager clusterHelmManager) {
         this.clusterHelmManager = clusterHelmManager;
     }
 
-    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeInstall(kubernetesNamespace, releaseName, chartArchiveName, arguments);
+    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, releaseName, template, arguments);
     }
 
-    public void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, String chartArchiveName, Map<String, String> arguments) throws CommandExecutionException {
-        executeInstall(kubernetesNamespace, deploymentId.value(), chartArchiveName, arguments);
+    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+        executeInstall(kubernetesNamespace, deploymentId.value(), template, arguments);
     }
 
-    private void executeInstall(String namespace, String releaseName, String chartArchiveName, Map<String, String> arguments)
+    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments)
             throws CommandExecutionException {
         try {
-            if (!clusterHelmManager.getUseLocalChartArchives())
-                throw new CommandExecutionException("Currently only referencing local chart archive is supported");
-            String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
-            HelmInstallCommand command = HelmInstallCommand.command(
-                    namespace,
-                    releaseName,
-                    arguments,
-                    completeChartArchivePath
-            );
+            HelmInstallCommand command;
+            if (clusterHelmManager.getUseLocalChartArchives()) {
+                command = HelmInstallCommand.commandWithArchive(
+                        namespace,
+                        releaseName,
+                        arguments,
+                        constructChartArchivePath(template.getArchive())
+                );
+            } else {
+                command = HelmInstallCommand.commandWithRepo(
+                        namespace,
+                        releaseName,
+                        arguments,
+                        constructChartNameWithRepo(template.getChart().getName()),
+                        template.getChart().getVersion()
+                );
+            }
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
@@ -63,7 +72,11 @@ public class HelmCommandExecutor {
         return hostChartsDirectory;
     }
 
-    public void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
+    private String constructChartNameWithRepo(String chartName) {
+        return clusterHelmManager.getHelmChartRepositoryName() + "/" + chartName;
+    }
+
+    void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
         try {
             HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value());
             singleCommandExecutor().executeSingleCommand(command);
@@ -73,11 +86,11 @@ public class HelmCommandExecutor {
         }
     }
 
-    public HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
         return executeHelmStatusCommand(deploymentId.value());
     }
 
-    HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
+    private HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(releaseName);
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
@@ -106,16 +119,18 @@ public class HelmCommandExecutor {
         }
     }
 
-    public void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
+    void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
             throws CommandExecutionException {
-        if (!clusterHelmManager.getUseLocalChartArchives())
-            throw new CommandExecutionException("Currently only referencing local chart archive is supported");
         try {
-            String completeChartArchivePath = constructChartArchivePath(chartArchiveName);
-            HelmUpgradeCommand command = HelmUpgradeCommand.command(
-                    deploymentId.value(),
-                    completeChartArchivePath
-            );
+            HelmUpgradeCommand command;
+            if (clusterHelmManager.getUseLocalChartArchives()) {
+                command = HelmUpgradeCommand.commandWithArchive(
+                        deploymentId.value(),
+                        constructChartArchivePath(chartArchiveName)
+                );
+            } else {
+                throw new CommandExecutionException("Currently only referencing local chart archive is supported");
+            }
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm upgrade command -> " + e.getMessage());

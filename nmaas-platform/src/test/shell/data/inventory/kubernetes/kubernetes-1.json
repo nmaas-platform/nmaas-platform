@@ -4,6 +4,7 @@
     "helmHostAddress":"10.134.241.6",
     "helmHostSshUsername":"nmaas",
     "useLocalChartArchives":true,
+    "helmChartRepositoryName":"nmaas-test",
     "helmHostChartsDirectory":"/home/nmaas/charts"
   },
   "api": {
@@ -11,16 +12,18 @@
     "restApiPort":8080
   },
   "ingress": {
-    "useExistingController":false,
+    "controllerConfigOption":"USE_EXISTING",
+    "supportedIngressClass":"nginx",
+    "controllerChart":"nginx",
     "controllerChartArchive":"nginx-ingress.tgz",
-    "useExistingIngress":false,
+    "resourceConfigOption":"DEPLOY_FROM_CHART",
     "externalServiceDomain":"nmaas.geant.net",
     "tlsSupported":false
   },
   "deployment": {
     "useDefaultNamespace":true,
     "defaultNamespace":"default",
-    "defaultPersistenceClass":"managed-nfs-storage"
+    "defaultPersistenceClass":"nmaas-nfs-storage"
   },
   "attachPoint": {
     "routerName":"R3",

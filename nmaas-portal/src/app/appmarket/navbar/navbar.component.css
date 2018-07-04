@@ -3,3 +3,21 @@
     display: block;
   }
 }
+
+.navbar .divider-vertical {
+  height: 50px;
+  margin: 0 5px;
+  border-right: 2px solid #ffffff;
+  border-left: 2px solid #e6e6e6;
+}
+
+.navbar-inverse .divider-vertical {
+  border-right-color: #222222;
+  border-left-color: #111111;
+}
+
+@media (max-width: 979px) {
+  .navbar-collapse .nav > .divider-vertical {
+    display: none;
+  }
+}

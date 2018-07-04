@@ -29,6 +29,9 @@ public class KClusterHelm {
     @Column(nullable = false)
     private Boolean useLocalChartArchives;
 
+    /** Name of the remote repository from which charts should be downloaded */
+    private String helmChartRepositoryName;
+
     /** Directory on the helm host in which all charts are stored */
     private String helmHostChartsDirectory;
 
@@ -62,6 +65,14 @@ public class KClusterHelm {
 
     public void setUseLocalChartArchives(Boolean useLocalChartArchives) {
         this.useLocalChartArchives = useLocalChartArchives;
+    }
+
+    public String getHelmChartRepositoryName() {
+        return helmChartRepositoryName;
+    }
+
+    public void setHelmChartRepositoryName(String helmChartRepositoryName) {
+        this.helmChartRepositoryName = helmChartRepositoryName;
     }
 
     public String getHelmHostChartsDirectory() {

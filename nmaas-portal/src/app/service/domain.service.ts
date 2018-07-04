@@ -14,9 +14,11 @@ export class DomainService extends GenericDataService {
 
   protected url: string;
 
+  private updateRequiredFlag: boolean;
+
   constructor(http: HttpClient, appConfig: AppConfigService) {
     super(http, appConfig);
-
+    this.updateRequiredFlag = false;
     this.url = this.appConfig.getApiUrl() + '/domains/';
   }
 
@@ -54,5 +56,13 @@ export class DomainService extends GenericDataService {
 
   public getUsers(domainId: number): Observable<User[]> {
     return this.get<User[]>(this.url + 'users');
+  }
+
+  public setUpdateRequiredFlag(flag:boolean){
+    this.updateRequiredFlag = flag;
+  }
+
+  public shouldUpdate(): boolean{
+    return this.updateRequiredFlag;
   }
 }

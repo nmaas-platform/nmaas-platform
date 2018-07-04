@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
     styleUrls: ['./clusterlist.component.css']
 })
 export class ClusterListComponent extends BaseComponent implements OnInit {
-    private clusters: ClusterInfo[] = [];
+    public clusters: ClusterInfo[] = [];
 
     constructor(private clusterService: ClusterService, private router: Router) {
         super();
@@ -25,7 +25,6 @@ export class ClusterListComponent extends BaseComponent implements OnInit {
     }
 
     public onDelete($event): void {
-        console.log("delete", $event);
-        this.clusterService.remove($event);
+        this.clusterService.remove($event).subscribe(() => this.ngOnInit());
     }
 }

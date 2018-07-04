@@ -21,11 +21,11 @@ export class SearchComponent implements OnInit {
   ngOnInit() {
   }
 
-  protected onSubmit(): void {
+  public onSubmit(): void {
     this.submit.emit(this.value);
   }
   
-  protected onChange(): void {
+  public onChange(): void {
     this.change.emit(this.value);
   }
   

@@ -1,6 +1,13 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Set of properties describing a Kubernetes cluster ingress handling
@@ -18,24 +25,27 @@ public class KClusterIngress {
 
     /** Indicates if existing ingress controller should be used */
     @Column(nullable = false)
-    private Boolean useExistingController;
+    @Enumerated(EnumType.STRING)
+    private IngressControllerConfigOption controllerConfigOption;
 
-    /** Name of the ingress class handled by the existing ingress controller */
+    /** Name of the ingress class handled by the existing ingress controller (required if useExistingController == true) */
     private String supportedIngressClass;
 
-    /** Name of ingress controller helm chart archive */
+    /** Name of the chart to be downloaded from repository (required if useExistingController == false) */
+    private String controllerChartName;
+
+    /** Name of ingress controller helm chart archive (required if useExistingController == false) */
     private String controllerChartArchive;
 
-    /** Use existing ingress or ingress resource definition from the helm chart */
+    /** Indicates if and how ingress resources should be configured */
     @Column(nullable = false)
-    private Boolean useExistingIngress;
+    @Enumerated(EnumType.STRING)
+    private IngressResourceConfigOption resourceConfigOption;
 
     /** Common part of the external service URL assigned to deployed services */
-    @Column(nullable = false)
     private String externalServiceDomain;
 
     /** Indicates if TLS for ingress is supported */
-    @Column(nullable = false)
     private Boolean tlsSupported;
 
     public Long getId() {
@@ -46,12 +56,12 @@ public class KClusterIngress {
         this.id = id;
     }
 
-    public Boolean getUseExistingController() {
-        return useExistingController;
+    public IngressControllerConfigOption getControllerConfigOption() {
+        return controllerConfigOption;
     }
 
-    public void setUseExistingController(Boolean useExistingController) {
-        this.useExistingController = useExistingController;
+    public void setControllerConfigOption(IngressControllerConfigOption controllerConfigOption) {
+        this.controllerConfigOption = controllerConfigOption;
     }
 
     public String getSupportedIngressClass() {
@@ -62,6 +72,14 @@ public class KClusterIngress {
         this.supportedIngressClass = supportedIngressClass;
     }
 
+    public String getControllerChartName() {
+        return controllerChartName;
+    }
+
+    public void setControllerChartName(String controllerChartName) {
+        this.controllerChartName = controllerChartName;
+    }
+
     public String getControllerChartArchive() {
         return controllerChartArchive;
     }
@@ -70,12 +88,12 @@ public class KClusterIngress {
         this.controllerChartArchive = controllerChartArchive;
     }
 
-    public Boolean getUseExistingIngress() {
-        return useExistingIngress;
+    public IngressResourceConfigOption getResourceConfigOption() {
+        return resourceConfigOption;
     }
 
-    public void setUseExistingIngress(Boolean useExistingIngress) {
-        this.useExistingIngress = useExistingIngress;
+    public void setResourceConfigOption(IngressResourceConfigOption resourceConfigOption) {
+        this.resourceConfigOption = resourceConfigOption;
     }
 
     public String getExternalServiceDomain() {

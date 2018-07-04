@@ -1,7 +1,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">Cluster</div>
     <div class="panel-body">
-        <form *ngIf="!isInMode(ComponentMode.CREATE) && cluster" (submit)="submit()" class="form-horizontal">
+        <form *ngIf="cluster" (submit)="submit()" class="form-horizontal">
             <div *ngIf="cluster?.id" class="form-group">
                 <label class="col-sm-2 control-label">Id:</label>
                 <div class="col-sm-10">
@@ -16,15 +16,211 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="apihost" class="col-sm-2 control-label">API host:</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="apihost" name="apihost"
-                           [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)">
-                    :
-                    <input type="text" class="form-control" id="apiport" name="apiport"
-                           [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)">
+            <div class="panel-heading">API host:</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="apihostaddress" class="col-sm-2 control-label">Address:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="apihostaddress" name="apihostaddress"
+                            [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
                 </div>
+                <div class="form-group">
+                    <label for="apihostport" class="col-sm-2 control-label">Port:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="apihostport" name="apihostport"
+                               [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-heading">Attach point:</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="routername" class="col-sm-2 control-label">Router name:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="routername" name="routername"
+                               [(ngModel)]="cluster.attachPoint.routerName" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="routerid" class="col-sm-2 control-label">Router ID:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="routerid" name="routerid"
+                               [(ngModel)]="cluster.attachPoint.routerId" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="routerintname" class="col-sm-2 control-label">Router interface name:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="routerintname" name="routerintname"
+                               [(ngModel)]="cluster.attachPoint.routerInterfaceName" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-heading">Deployment:</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="deploymentdefaultnamespace" class="col-sm-2 control-label">Default namespace:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="deploymentdefaultnamespace" name="deploymentdefaultnamespace"
+                               [(ngModel)]="cluster.deployment.defaultNamespace" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="deploymentdefaultpersistenceclass" class="col-sm-2 control-label">Default persistence class:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="deploymentdefaultpersistenceclass" name="deploymentdefaultpersistenceclass"
+                               [(ngModel)]="cluster.deployment.defaultPersistenceClass" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="deploymentusedefaultnamespace" class="col-sm-2 control-label">Use default namespace:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="deploymentusedefaultnamespace" name="deploymentusedefaultnamespace"
+                               [(ngModel)]="cluster.deployment.useDefaultNamespace" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-heading">Helm:</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="helmhostaddress" class="col-sm-2 control-label">Host address:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="helmhostaddress" name="helmhostaddress"
+                               [(ngModel)]="cluster.helm.helmHostAddress" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="helmhostchartsdirectory" class="col-sm-2 control-label">Host charts directory:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="helmhostchartsdirectory" name="helmhostchartsdirectory"
+                               [(ngModel)]="cluster.helm.helmHostChartsDirectory" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="helmhostsshusername" class="col-sm-2 control-label">Host SSH username:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="helmhostsshusername" name="helmhostsshusername"
+                               [(ngModel)]="cluster.helm.helmHostSshUsername" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="helmuselocalchartarchives" class="col-sm-2 control-label">Use local chart archives:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="helmuselocalchartarchives" name="helmuselocalchartarchives"
+                               [(ngModel)]="cluster.helm.useLocalChartArchives" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-heading">Ingress:</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="ingresscontrollerchartarchive" class="col-sm-2 control-label">Controller chart archive:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="ingresscontrollerchartarchive" name="ingresscontrollerchartarchive"
+                               [(ngModel)]="cluster.ingress.controllerChartArchive" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ingressexternalservicedomain" class="col-sm-2 control-label">External service domain:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="ingressexternalservicedomain" name="ingressexternalservicedomain"
+                               [(ngModel)]="cluster.ingress.externalServiceDomain" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="supportedingressclass" class="col-sm-2 control-label">Supported ingress class:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="supportedingressclass" name="supportedingressclass"
+                               [(ngModel)]="cluster.ingress.supportedIngressClass" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ingresstlssupported" class="col-sm-2 control-label">TLS supported:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="ingresstlssupported" name="ingresstlssupported"
+                               [(ngModel)]="cluster.ingress.tlsSupported" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ingressuseexistingcontroller" class="col-sm-2 control-label">Use existing controller:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="ingressuseexistingcontroller" name="ingressuseexistingcontroller"
+                               [(ngModel)]="cluster.ingress.useExistingController" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="useexistingingress" class="col-sm-2 control-label">Use exisiting ingress:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="useexistingingress" name="useexistingingress"
+                               [(ngModel)]="cluster.ingress.useExistingIngress" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+            </div>
+            <div class="panel-heading">External networks:</div>
+            <div class="panel-body">
+                <table class="table table-hover table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Assigned</th>
+                        <th>Address</th>
+                        <th>Network</th>
+                        <th>Netmask</th>
+                        <th>Assigned since:</th>
+                        <th>Assigned to:</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <ng-template ngFor let-extnetwork [ngForOf]="cluster.externalNetworks" let-i="index" [ngForTrackBy]="trackByFn">
+                        <tr>
+                            <td>
+                                <input type="checkbox" [name]="'extnetassigned'+i"
+                                       [(ngModel)]="extnetwork.assigned" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" [name]="'extnetextip'+i"
+                                       [(ngModel)]="extnetwork.externalIp" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" [name]="'extnetextnet'+i"
+                                       [(ngModel)]="extnetwork.externalNetwork" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" [name]="'extnetmask'+i"
+                                       [(ngModel)]="extnetwork.externalNetworkMaskLength" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" [name]="'extnetassince'+i"
+                                       [(ngModel)]="extnetwork.assignedSince" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" [name]="'extnetassto'+i"
+                                       [(ngModel)]="extnetwork.assignedTo" [disabled]="isInMode(ComponentMode.VIEW)">
+                            </td>
+                            <td class="text-right">
+                                <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button" class="btn btn-sm btn-danger"
+                                        (click)="removeNetwork(extnetwork.id)">Remove
+                                </button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                        <tr *ngIf="!isInMode(ComponentMode.VIEW)">
+                            <td></td><td></td><td></td><td></td><td></td><td></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success"
+                                        (click)="addNetwork()">Add
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
