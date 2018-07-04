@@ -9,6 +9,7 @@ import { AppInstanceRoutes } from './appinstance/appinstance.routes';
 import { DomainsRoutes } from './domains/domains.routes';
 import { UsersRoutes } from './users/users.routes';
 import {ClustersRoutes} from "./admin/clusters/clusters.routes";
+import {GitlabRoutes} from "./admin/gitlab/gitlab.routes";
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -22,6 +23,7 @@ export const AppMarketRoutes: Route[] = [
         ...DomainsRoutes,
         ...UsersRoutes,
         ...ClustersRoutes,
+          ...GitlabRoutes,
           { path: 'apps/:id', component: AppDetailsComponent },
 
       ]

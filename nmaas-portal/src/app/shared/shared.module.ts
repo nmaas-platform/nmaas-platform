@@ -27,6 +27,7 @@ import { ApplicationsViewComponent } from './applications/applications.component
 import { AppElementComponent } from './applications/list/element/appelement.component';
 import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
 import { ClusterListComponent } from "./admin/clusters/lists/clusterlist.component";
+import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
 
 @NgModule({
   imports: [
@@ -59,7 +60,8 @@ import { ClusterListComponent } from "./admin/clusters/lists/clusterlist.compone
     AppListComponent,
     ApplicationsViewComponent,
     ClusterDetailsComponent,
-    ClusterListComponent
+    ClusterListComponent,
+      GitlabDetailsComponent
   ],
   providers: [
     PasswordValidator,
@@ -83,7 +85,8 @@ import { ClusterListComponent } from "./admin/clusters/lists/clusterlist.compone
     DomainFilterComponent,
     ApplicationsViewComponent,
     ClusterDetailsComponent,
-    ClusterListComponent
+    ClusterListComponent,
+      GitlabDetailsComponent
   ]
 })
 export class SharedModule {}
