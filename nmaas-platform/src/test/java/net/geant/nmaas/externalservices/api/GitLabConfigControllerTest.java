@@ -57,13 +57,15 @@ public class GitLabConfigControllerTest {
 
     @Test
     public void shouldAddAndRemoveNewGitlabConfig() throws Exception{
-        mvc.perform(post(URL_PREFIX)
+        MvcResult result = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(1L)))
+                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig()))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
         assertEquals(1, manager.getAllGitlabConfig().size());
-        mvc.perform(delete(URL_PREFIX+"/{id}", 1L))
+        System.out.println(Long.parseLong(result.getResponse().getContentAsString()));
+        mvc.perform(delete(URL_PREFIX+"/{id}", Long.parseLong(result.getResponse().getContentAsString())))
                 .andExpect(status().isNoContent());
         assertEquals(0, manager.getAllGitlabConfig().size());
     }
@@ -76,29 +78,31 @@ public class GitLabConfigControllerTest {
 
     @Test
     public void shouldUpdateExistingGitlabConfig() throws Exception{
-        mvc.perform(post(URL_PREFIX)
+        MvcResult result = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(1L)))
+                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig()))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        GitLab updated = simpleGitlabConfig(1L);
+                .andExpect(status().isCreated())
+                .andReturn();
+        GitLab updated = simpleGitlabConfig();
+        updated.setId(Long.parseLong(result.getResponse().getContentAsString()));
         updated.setToken("newtesttoken");
         mvc.perform(put(URL_PREFIX+"/{id}", updated.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(updated))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-        MvcResult result = mvc.perform(get(URL_PREFIX+"/{id}",updated.getId()))
+        MvcResult result2 = mvc.perform(get(URL_PREFIX+"/{id}",updated.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("newtesttoken"));
+        assertThat(result2.getResponse().getContentAsString(), containsString("newtesttoken"));
     }
 
     @Test
     public void shouldNotUpdateNotExistingGitlabConfig() throws Exception{
         mvc.perform(put(URL_PREFIX+"/{id}",1L)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(1L)))
+                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -107,27 +111,28 @@ public class GitLabConfigControllerTest {
     public void shouldNotAddSecondGitlabConfig() throws Exception{
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(1L)))
+                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(2L)))
+                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());
     }
 
     @Test
     public void shouldReturnGitlabConfigById() throws Exception{
-        mvc.perform(post(URL_PREFIX)
+        MvcResult mvcResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig(1L)))
+                .content(new ObjectMapper().writeValueAsString(simpleGitlabConfig()))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        MvcResult result = mvc.perform(get(URL_PREFIX+"/{id}", 1L))
+                .andExpect(status().isCreated())
+                .andReturn();
+        MvcResult result = mvc.perform(get(URL_PREFIX+"/{id}", Long.parseLong(mvcResult.getResponse().getContentAsString())))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(1L, ((GitLab) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<GitLab>(){})).getId().longValue());
+        assertEquals(Long.parseLong(mvcResult.getResponse().getContentAsString()), ((GitLab) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<GitLab>(){})).getId().longValue());
     }
 
     @Test
@@ -146,9 +151,8 @@ public class GitLabConfigControllerTest {
     }
 
 
-    private GitLab simpleGitlabConfig(Long id){
+    private GitLab simpleGitlabConfig(){
         GitLab config = new GitLab();
-        config.setId(id);
         config.setApiVersion("v4");
         config.setPort(80);
         config.setServer("11.10.1.1");
