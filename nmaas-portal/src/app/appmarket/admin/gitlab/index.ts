@@ -1,0 +1,1 @@
+export * from "./details/gitlab-details.component"

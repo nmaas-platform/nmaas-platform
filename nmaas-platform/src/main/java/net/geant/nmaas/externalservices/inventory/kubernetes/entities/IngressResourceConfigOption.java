@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public enum IngressResourceConfigOption {
 
@@ -15,16 +15,16 @@ public enum IngressResourceConfigOption {
     DEPLOY_USING_API {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkNotNull(ingress.getExternalServiceDomain());
-            checkNotNull(ingress.getTlsSupported());
+            checkArgument(ingress.getExternalServiceDomain() != null, "External service domain can't be empty.");
+            checkArgument(ingress.getTlsSupported() != null, "TLS support flag must be set.");
         }
     },
     /** Use ingress resource definition from the application helm chart */
     DEPLOY_FROM_CHART {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkNotNull(ingress.getExternalServiceDomain());
-            checkNotNull(ingress.getTlsSupported());
+            checkArgument(ingress.getExternalServiceDomain() != null, "External service domain can't be empty.");
+            checkArgument(ingress.getTlsSupported() != null, "TLS support flag must be set.");
         }
     };
 

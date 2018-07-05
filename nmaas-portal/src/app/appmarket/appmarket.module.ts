@@ -26,6 +26,7 @@ import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
 import {ClustersModule} from "./admin/clusters/clusters.module";
 import {ClusterService} from "../service/cluster.service";
+import {GitlabModule} from "./admin/gitlab/gitlab.module";
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import {ClusterService} from "../service/cluster.service";
     UsersModule,
     AuthModule,
     PipesModule,
-    ClustersModule
+    ClustersModule,
+      GitlabModule
   ],
   exports: [
     AppMarketComponent,

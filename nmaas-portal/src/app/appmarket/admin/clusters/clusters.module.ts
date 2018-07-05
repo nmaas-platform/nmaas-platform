@@ -5,13 +5,11 @@ import {PipesModule} from "../../../pipe/pipes.module";
 import {FormsModule} from "@angular/forms";
 import {NgModule} from "@angular/core";
 import {SharedModule} from "../../../shared/shared.module";
-import {ClusterListComponent} from "./list/clusterlist.component";
 import {ClusterDetailsComponent} from "./details/clusterdetails.component";
 import {ClusterService} from "../../../service/cluster.service";
 
 @NgModule({
     declarations: [
-        ClusterListComponent,
         ClusterDetailsComponent,
     ],
     imports: [
