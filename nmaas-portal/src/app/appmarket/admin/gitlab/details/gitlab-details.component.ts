@@ -24,7 +24,6 @@ export class GitlabDetailsComponent extends BaseComponent implements OnInit {
         this.router.navigate(['admin/gitlab',this.config_id])
       } else{
         this.gitLabConfig = new GitLabConfig();
-        this.config_id = 1;
         this.mode = ComponentMode.CREATE;
       }
     });
@@ -46,7 +45,7 @@ export class GitlabDetailsComponent extends BaseComponent implements OnInit {
     } else{
       newGitLabConfig.id = this.config_id;
       this.gitLabService.add(newGitLabConfig)
-          .subscribe(e=>this.router.navigate(['/admin/gitlab/', newGitLabConfig.id]));
+          .subscribe(id=>this.router.navigate(['/admin/gitlab/', id]));
     }
   }
 
