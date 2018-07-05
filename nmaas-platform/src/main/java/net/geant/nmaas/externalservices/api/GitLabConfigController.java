@@ -42,8 +42,9 @@ public class GitLabConfigController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addGitlabConfig (@RequestBody GitLab newGitLabConfig) throws OnlyOneGitLabConfigSupportedException {
+    public Long addGitlabConfig (@RequestBody GitLab newGitLabConfig) throws OnlyOneGitLabConfigSupportedException {
         gitLabManager.addGitlabConfig(newGitLabConfig);
+        return newGitLabConfig.getId();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
