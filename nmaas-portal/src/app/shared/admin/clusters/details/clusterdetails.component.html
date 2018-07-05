@@ -1,22 +1,16 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Cluster</div>
+    <div class="panel-heading">Cluster configuration</div>
     <div class="panel-body">
         <form *ngIf="cluster" (submit)="submit()" class="form-horizontal">
-            <div *ngIf="cluster?.id" class="form-group">
-                <label class="col-sm-2 control-label">Id:</label>
+            <div class="form-group">
+                <label for="clusterName" class="col-sm-2 control-label">Name:</label>
                 <div class="col-sm-10">
-                    <p class="form-control-static">{{cluster?.id}}</p>
+                    <input type="text" class="form-control" id="clusterName" name="clusterName"
+                        [(ngModel)]="cluster.name" [disabled]="isInMode(ComponentMode.VIEW)">
                 </div>
             </div>
 
-            <div *ngIf="cluster?.name" class="form-group">
-                <label class="col-sm-2 control-label">Name:</label>
-                <div class="col-sm-10">
-                    <p class="form-control-static">{{cluster?.name}}</p>
-                </div>
-            </div>
-
-            <div class="panel-heading">API host:</div>
+            <div class="panel-default panel-heading">API host:</div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="apihostaddress" class="col-sm-2 control-label">Address:</label>
@@ -34,7 +28,7 @@
                 </div>
             </div>
 
-            <div class="panel-heading">Attach point:</div>
+            <div class="panel-default panel-heading">Attach point:</div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="routername" class="col-sm-2 control-label">Router name:</label>
@@ -61,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="panel-heading">Deployment:</div>
+            <div class="panel-default panel-heading">Deployment:</div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="deploymentdefaultnamespace" class="col-sm-2 control-label">Default namespace:</label>
@@ -81,18 +75,25 @@
                     <label for="deploymentusedefaultnamespace" class="col-sm-2 control-label">Use default namespace:</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="deploymentusedefaultnamespace" name="deploymentusedefaultnamespace"
-                               [(ngModel)]="cluster.deployment.useDefaultNamespace" [disabled]="isInMode(ComponentMode.VIEW)">
+                               [(ngModel)]="cluster.deployment.useDefaultNamespace" [checked]="cluster.deployment.useDefaultNamespace == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
             </div>
 
-            <div class="panel-heading">Helm:</div>
+            <div class="panel-default panel-heading">Helm:</div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="helmhostaddress" class="col-sm-2 control-label">Host address:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmhostaddress" name="helmhostaddress"
                                [(ngModel)]="cluster.helm.helmHostAddress" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="helmrepositoryname" class="col-sm-2 control-label">Host chart repository name:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="helmrepositoryname" name="helmrepositoryname"
+                            [(ngModel)]="cluster.helm.helmChartRepositoryName" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -113,12 +114,12 @@
                     <label for="helmuselocalchartarchives" class="col-sm-2 control-label">Use local chart archives:</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="helmuselocalchartarchives" name="helmuselocalchartarchives"
-                               [(ngModel)]="cluster.helm.useLocalChartArchives" [disabled]="isInMode(ComponentMode.VIEW)">
+                               [(ngModel)]="cluster.helm.useLocalChartArchives" [checked]="cluster.helm.useLocalChartArchives == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
             </div>
 
-            <div class="panel-heading">Ingress:</div>
+            <div class="panel-default panel-heading">Ingress:</div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="ingresscontrollerchartarchive" class="col-sm-2 control-label">Controller chart archive:</label>
@@ -135,9 +136,18 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="supportedingressclass" class="col-sm-2 control-label">Supported ingress class:</label>
+                    <label for="ingresscontrollerconfigoption" class="col-sm-2 control-label">Controller config option:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="supportedingressclass" name="supportedingressclass"
+                        <select class="form-control" id="ingresscontrollerconfigoption" name="ingresscontrollerconfigoption"
+                            [(ngModel)]="cluster.ingress.controllerConfigOption" [disabled]="isInMode(ComponentMode.VIEW)">
+                            <option *ngFor="let configOption of controllerConfigOption">{{configOption}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="suportedingressclass" class="col-sm-2 control-label">External service domain:</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="suportedingressclass" name="suportedingressclass"
                                [(ngModel)]="cluster.ingress.supportedIngressClass" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
@@ -145,25 +155,28 @@
                     <label for="ingresstlssupported" class="col-sm-2 control-label">TLS supported:</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="ingresstlssupported" name="ingresstlssupported"
-                               [(ngModel)]="cluster.ingress.tlsSupported" [disabled]="isInMode(ComponentMode.VIEW)">
+                               [(ngModel)]="cluster.ingress.tlsSupported" [checked]="cluster.ingress.tlsSupported == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingressuseexistingcontroller" class="col-sm-2 control-label">Use existing controller:</label>
+                    <label for="ingresscontrollerchartname" class="col-sm-2 control-label">Controller chart name:</label>
                     <div class="col-sm-10">
-                        <input type="checkbox" id="ingressuseexistingcontroller" name="ingressuseexistingcontroller"
-                               [(ngModel)]="cluster.ingress.useExistingController" [disabled]="isInMode(ComponentMode.VIEW)">
+                        <input type="text" class="form-control" id="ingresscontrollerchartname" name="ingresscontrollerchartname"
+                               [(ngModel)]="cluster.ingress.controllerChartName" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="useexistingingress" class="col-sm-2 control-label">Use exisiting ingress:</label>
+                    <label for="ingressresourceconfigoption" class="col-sm-2 control-label">Resource config option:</label>
                     <div class="col-sm-10">
-                        <input type="checkbox" id="useexistingingress" name="useexistingingress"
-                               [(ngModel)]="cluster.ingress.useExistingIngress" [disabled]="isInMode(ComponentMode.VIEW)">
+                        <select class="form-control" id="ingressresourceconfigoption" name="ingressresourceconfigoption"
+                                [(ngModel)]="cluster.ingress.resourceConfigOption" [disabled]="isInMode(ComponentMode.VIEW)">
+                            <!--<option disabled selected value>--SELECT VALUE--</option>-->
+                            <option *ngFor="let configOption of resourceConfigOption">{{configOption}}</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div class="panel-heading">External networks:</div>
+            <div class="panel-default panel-heading">External networks:</div>
             <div class="panel-body">
                 <table class="table table-hover table-condensed">
                     <thead>
@@ -182,7 +195,7 @@
                         <tr>
                             <td>
                                 <input type="checkbox" [name]="'extnetassigned'+i"
-                                       [(ngModel)]="extnetwork.assigned" [disabled]="isInMode(ComponentMode.VIEW)">
+                                       [(ngModel)]="extnetwork.assigned" [checked]="extnetwork.assigned == true" [disabled]="isInMode(ComponentMode.VIEW)">
                             </td>
                             <td>
                                 <input type="text" class="form-control" [name]="'extnetextip'+i"
@@ -229,6 +242,8 @@
                     class="btn btn-danger">Submit</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
+            <button *ngIf="isInMode(ComponentMode.VIEW)" type="button"
+                    class="btn btn-danger" (click)="remove(cluster.name)">Remove</button>
         </form>
     </div>
 </div>
