@@ -23,6 +23,9 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     @Input()
     public cluster: Cluster = new Cluster();
 
+    @Input()
+    public error:string;
+
     @Output()
     public onSave: EventEmitter<Cluster> = new EventEmitter<Cluster>();
 
