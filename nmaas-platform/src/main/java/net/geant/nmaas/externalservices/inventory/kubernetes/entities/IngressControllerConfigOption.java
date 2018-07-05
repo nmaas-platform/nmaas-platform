@@ -1,23 +1,23 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 
 public enum IngressControllerConfigOption {
 
     USE_EXISTING {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkNotNull(ingress.getSupportedIngressClass(), "Supported ingress class can't be empty.");
+            checkArgument(ingress.getSupportedIngressClass() != null, "Supported ingress class can't be empty.");
         }
     }, DEPLOY_NEW_FROM_REPO {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkNotNull(ingress.getControllerChartName(), "Controller chart name can't be empty.");
+            checkArgument(ingress.getControllerChartName() != null, "Controller chart name can't be empty.");
         }
     }, DEPLOY_NEW_FROM_ARCHIVE {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkNotNull(ingress.getControllerChartArchive(), "Controller archive name can't be empty.");
+            checkArgument(ingress.getControllerChartArchive() != null, "Controller archive name can't be empty.");
         }
     };
 

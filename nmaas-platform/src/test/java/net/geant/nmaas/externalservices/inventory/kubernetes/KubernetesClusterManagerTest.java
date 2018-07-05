@@ -99,6 +99,22 @@ public class KubernetesClusterManagerTest {
         manager.reserveExternalNetwork("domain30");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionDuringIngressControllerConfigValidation() throws UnknownHostException {
+        KClusterIngress ingress1 = simpleKubernetesCluster("cluster1").getIngress();
+        ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
+        ingress1.setControllerChartArchive(null);
+        ingress1.getControllerConfigOption().validate(ingress1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionDuringIngressResourceConfigValidation() throws UnknownHostException {
+        KClusterIngress ingress1 = simpleKubernetesCluster("cluster1").getIngress();
+        ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        ingress1.setExternalServiceDomain(null);
+        ingress1.getResourceConfigOption().validate(ingress1);
+    }
+
     private KCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
         KCluster cluster = new KCluster();
         cluster.setName(clusterName);
