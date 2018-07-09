@@ -1,5 +1,13 @@
 		<footer class="footer">
 			<div class="container">
-				<p class="text-center">GEANT NMaaS AppMarket (c) 2017-2018 <a href="http://geant.net">GEANT</a></p>
+				<p>GEANT NMaaS AppMarket (c) 2017-2018 <a href="http://geant.net">GEANT</a>
+					<a (click)="showChangelog()">Version {{changelog?.versions[0].verNo}}</a></p>
+				<nmaas-modal (click)="modal.hide()">
+					<div class="nmaas-modal-header">Changelog</div>
+					<div class="nmaas-modal-body">Text to be added</div>
+					<div class="nmaas-modal-footer">
+						<button class="btn btn-danger center-block" (click)="this.modal.hide()">Go back</button>
+					</div>
+				</nmaas-modal>
 			</div>
 		</footer>
