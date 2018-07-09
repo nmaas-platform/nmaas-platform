@@ -62,6 +62,10 @@ export class AppInstanceListComponent implements OnInit {
 
   }
 
+  public checkPrivileges(app){
+    return app.owner.username === this.authService.getUsername() || this.authService.hasRole("ROLE_SUPERADMIN") || this.authService.hasDomainRole(app.domainId, "ROLE_DOMAIN_ADMIN");
+  }
+
   public onSelectionChange(event) {
     this.update(this.domainId);
   }
