@@ -16,7 +16,7 @@
 						   <thead>
 							  <tr>
 								 <th>Name</th>
-								 <th>Domain</th>
+								 <th *ngIf="domainId === undefined">Domain</th>
 								 <th>Owner</th>
 								 <th>Deployed at</th>
 								 <th>Application</th>
@@ -29,7 +29,7 @@
 						      <ng-template ngFor let-appInstance [ngForOf]="appInstances | async">
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
-								 <td>{{appInstance?.domainId}}</td>
+								 <td *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
 								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
 								 <td>{{appInstance?.applicationName}}</td>
