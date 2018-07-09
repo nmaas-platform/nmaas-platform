@@ -35,7 +35,7 @@
 								 <td>{{appInstance?.applicationName}}</td>
 								 <td>{{appInstance?.state}}</td>
 								<td>
-									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button">
+									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 										Details
 									</a>
 									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">Go to app</a>							
