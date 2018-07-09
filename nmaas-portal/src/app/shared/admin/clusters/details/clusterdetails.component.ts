@@ -16,12 +16,15 @@ import {Router} from "@angular/router";
 })
 export class ClusterDetailsComponent extends BaseComponent implements OnInit {
 
-    controllerConfigOption = Object.keys(IngressControllerConfigOption).filter(value => typeof IngressControllerConfigOption[value] === "number");
+    controllerConfigOption:Map<string,IngressControllerConfigOption> = new Map<string, IngressControllerConfigOption>();
 
-    resourceConfigOption = Object.keys(IngressResourceConfigOption).filter(value => typeof IngressResourceConfigOption[value] === "number");
+    resourceConfigOption:Map<string, IngressResourceConfigOption> = new Map<string, IngressResourceConfigOption>();
 
     @Input()
     public cluster: Cluster = new Cluster();
+
+    @Input()
+    public error:string;
 
     @Output()
     public onSave: EventEmitter<Cluster> = new EventEmitter<Cluster>();
@@ -31,6 +34,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
 
     constructor(private router:Router) {
         super();
+        this.initializeMaps();
     }
 
     ngOnInit() {
@@ -70,5 +74,18 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
 
     public trackByFn(index) {
         return index;
+    }
+
+    public getKeys(map){
+        return Array.from(map.keys());
+    }
+
+    private initializeMaps(){
+        this.resourceConfigOption.set('Do nothing',IngressResourceConfigOption.NOT_USED);
+        this.resourceConfigOption.set('Deploy new or update resource using Kubernetes REST API', IngressResourceConfigOption.DEPLOY_USING_API);
+        this.resourceConfigOption.set('Deploy new resource from the definition in the application chart', IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        this.controllerConfigOption.set('Use existing',IngressControllerConfigOption.USE_EXISTING);
+        this.controllerConfigOption.set('Deploy new controller from chart repository', IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
+        this.controllerConfigOption.set('Deploy new controller from local chart archive',IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
     }
 }
