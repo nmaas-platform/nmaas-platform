@@ -1,7 +1,7 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Cluster configuration</div>
+    <div class="panel-heading">Kubernetes cluster configuration</div>
     <div class="panel-body">
-        <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #formex="ngForm">
+        <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #clusterForm="ngForm">
             <div class="form-group">
                 <label for="clusterName" class="col-sm-2 control-label">Name:</label>
                 <div class="col-sm-10">
@@ -22,7 +22,7 @@
                                [(ngModel)]="cluster.helm.helmHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #hostaddress="ngModel">
                         <div class="alert alert-danger" *ngIf="hostaddress.invalid && (hostaddress.dirty || hostaddress.touched)">
                             <div *ngIf="hostaddress.errors.required">Helm host address is required</div>
-                            <div *ngIf="hostaddress.errors.pattern">Helm host address must contain only numbers and dots</div>
+                            <div *ngIf="hostaddress.errors.pattern">Helm host address must contain only digits and dots</div>
                         </div>
                     </div>
                 </div>
@@ -30,7 +30,10 @@
                     <label for="helmhostsshusername" class="col-sm-2 control-label">Host SSH username:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmhostsshusername" name="helmhostsshusername"
-                               [(ngModel)]="cluster.helm.helmHostSshUsername" [disabled]="isInMode(ComponentMode.VIEW)">
+                               [(ngModel)]="cluster.helm.helmHostSshUsername" [disabled]="isInMode(ComponentMode.VIEW)" required #sshUsername="ngModel">
+                        <div class="alert alert-danger" *ngIf="sshUsername.invalid && (sshUsername.dirty || sshUsername.touched)">
+                            <div *ngIf="sshUsername.errors.required">Host SSH username is required</div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -44,14 +47,22 @@
                     <label for="helmrepositoryname" class="col-sm-2 control-label">Host chart repository name:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmrepositoryname" name="helmrepositoryname"
-                               [(ngModel)]="cluster.helm.helmChartRepositoryName" [disabled]="isInMode(ComponentMode.VIEW) || !cluster.helm.useLocalChartArchives">
+                               [(ngModel)]="cluster.helm.helmChartRepositoryName" [disabled]="isInMode(ComponentMode.VIEW) || cluster.helm.useLocalChartArchives"
+                                required #helmRepositoryName="ngModel">
+                        <div class="alert alert-danger" *ngIf="helmRepositoryName.invalid && (helmRepositoryName.dirty || helmRepositoryName.touched)">
+                            <div *ngIf="helmRepositoryName.errors.required">Host chart repository name is required</div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="helmhostchartsdirectory" class="col-sm-2 control-label">Host charts directory:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmhostchartsdirectory" name="helmhostchartsdirectory"
-                               [(ngModel)]="cluster.helm.helmHostChartsDirectory" [disabled]="isInMode(ComponentMode.VIEW) || !cluster.helm.useLocalChartArchives">
+                               [(ngModel)]="cluster.helm.helmHostChartsDirectory"
+                               [disabled]="isInMode(ComponentMode.VIEW) || !cluster.helm.useLocalChartArchives" required #chartsDirectory="ngModel">
+                        <div class="alert alert-danger" *ngIf="chartsDirectory.invalid && (chartsDirectory.dirty || chartsDirectory.touched)">
+                            <div *ngIf="chartsDirectory.errors.required">Host charts directory is required</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,9 +75,9 @@
                         <input type="text" class="form-control" id="apihostaddress" name="apihostaddress"
                                [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #restaddress="ngModel">
                         <div class="alert alert-danger" *ngIf="restaddress.invalid && (restaddress.dirty || restaddress.touched)">
-                            <div *ngIf="restaddress.errors.required">Rest api host address is required</div>
-                            <div *ngIf="restaddress.errors.pattern">Rest api host address must contain only numbers and dots</div>
-                        </div>
+                        <div *ngIf="restaddress.errors.required">Rest api host address is required</div>
+                        <div *ngIf="restaddress.errors.pattern">Rest api host address must contain only numbers and dots</div>
+                    </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -84,8 +95,8 @@
                     <label for="ingresscontrollerconfigoption" class="col-sm-2 control-label">Controller config option:</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="ingresscontrollerconfigoption" name="ingresscontrollerconfigoption"
-                                [(ngModel)]="cluster.ingress.controllerConfigOption" [disabled]="isInMode(ComponentMode.VIEW)">
-                            <option *ngFor="let configOption of controllerConfigOption">{{configOption}}</option>
+                                [(ngModel)]="cluster.ingress.controllerConfigOption" [disabled]="isInMode(ComponentMode.VIEW)" required>
+                            <option *ngFor="let configOption of getKeys(controllerConfigOption)" [value]="controllerConfigOption.get(configOption)">{{configOption}}</option>
                         </select>
                     </div>
                 </div>
@@ -114,8 +125,8 @@
                     <label for="ingressresourceconfigoption" class="col-sm-2 control-label">Resource config option:</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="ingressresourceconfigoption" name="ingressresourceconfigoption"
-                                [(ngModel)]="cluster.ingress.resourceConfigOption" [disabled]="isInMode(ComponentMode.VIEW)">
-                            <option *ngFor="let configOption of resourceConfigOption">{{configOption}}</option>
+                                [(ngModel)]="cluster.ingress.resourceConfigOption" [disabled]="isInMode(ComponentMode.VIEW)" required>
+                            <option *ngFor="let configOption of getKeys(resourceConfigOption)" [value]="resourceConfigOption.get(configOption)">{{configOption}}</option>
                         </select>
                     </div>
                 </div>
@@ -147,15 +158,18 @@
                 <div class="form-group">
                     <label for="deploymentdefaultnamespace" class="col-sm-2 control-label">Default namespace:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="deploymentdefaultnamespace" name="deploymentdefaultnamespace"
-                               [(ngModel)]="cluster.deployment.defaultNamespace" [disabled]="isInMode(ComponentMode.VIEW) || !cluster.deployment.useDefaultNamespace">
+                        <input type="text" class="form-control" id="deploymentdefaultnamespace" name="deploymentdefaultnamespace" required
+                               [(ngModel)]="cluster.deployment.defaultNamespace" [disabled]="isInMode(ComponentMode.VIEW) || !cluster.deployment.useDefaultNamespace" #defaultNamespace="ngModel">
+                        <div class="alert alert-danger" *ngIf="defaultNamespace.invalid && (defaultNamespace.dirty || defaultNamespace.touched)">
+                            <div *ngIf="defaultNamespace.errors.required">Default namespace is required</div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="deploymentdefaultpersistenceclass" class="col-sm-2 control-label">Default persistence class:</label>
+                    <label for="deploymentdefaultpersistenceclass" class="col-sm-2 control-label">Default storage class:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="deploymentdefaultpersistenceclass" name="deploymentdefaultpersistenceclass"
-                               [(ngModel)]="cluster.deployment.defaultPersistenceClass" [disabled]="isInMode(ComponentMode.VIEW) || !cluster.deployment.useDefaultNamespace">
+                               [(ngModel)]="cluster.deployment.defaultPersistenceClass" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
             </div>
@@ -209,7 +223,7 @@
                                        [(ngModel)]="extnetwork.externalIp" [disabled]="isInMode(ComponentMode.VIEW)" required pattern="[0-9.]*" #ip="ngModel">
                                 <div class="alert alert-danger" *ngIf="ip.invalid && (ip.dirty || ip.touched)">
                                     <div *ngIf="ip.errors.required">IP is required</div>
-                                    <div *ngIf="ip.errors.pattern">IP must contain only numbers and dots</div>
+                                    <div *ngIf="ip.errors.pattern">IP must contain only digits and dots</div>
                                 </div>
                             </td>
                             <td>
@@ -217,7 +231,7 @@
                                        [(ngModel)]="extnetwork.externalNetwork" [disabled]="isInMode(ComponentMode.VIEW)" required pattern="[0-9.]*" #network="ngModel">
                                 <div class="alert alert-danger" *ngIf="network.invalid && (network.dirty || network.touched)">
                                     <div *ngIf="network.errors.required">Network is required</div>
-                                    <div *ngIf="network.errors.pattern">Network address must contain only numbers and dots</div>
+                                    <div *ngIf="network.errors.pattern">Network address must contain only digits and dots</div>
                                 </div>
                             </td>
                             <td>
@@ -262,14 +276,14 @@
                 <p>{{this.error}}</p>
             </div>
 
-            <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
+            <button *ngIf="isInMode(ComponentMode.EDIT)" type="button"
                     class="btn btn-default" (click)="onModeChange()">View</button>
-            <button *ngIf="!isInMode(ComponentMode.VIEW)" [disabled]="!formex.form.valid" type="submit"
+            <button *ngIf="!isInMode(ComponentMode.VIEW)" [disabled]="!clusterForm.form.valid" type="submit"
                     class="btn btn-danger">Submit</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
-            <button *ngIf="isInMode(ComponentMode.VIEW)" type="button"
-                    class="btn btn-danger" (click)="remove(cluster.name)">Remove</button>
+            <!--<button *ngIf="isInMode(ComponentMode.VIEW)" type="button"
+                    class="btn btn-danger" (click)="remove(cluster.name)">Remove</button>-->
         </form>
     </div>
 </div>
