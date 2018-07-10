@@ -71,7 +71,7 @@ public class AppInstanceController extends AppBaseController {
 	}
 
 	@GetMapping("/domains/{domainId}/apps/instances")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
 	@Transactional
 	public List<AppInstance> getAllInstances(@PathVariable Long domainId, Pageable pageable) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
