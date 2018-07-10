@@ -5,7 +5,7 @@
 							<form class = "form-inline" role = "form">
 								<label for="selectionType">Show: </label>
 								<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">				
-									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value}}</option>
+									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value.charAt(0) + sl.value.toLowerCase().substring(1,sl.value.length)}}</option>
 								</select>	
 							</form>
 						</div>
