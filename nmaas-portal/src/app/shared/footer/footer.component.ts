@@ -10,7 +10,7 @@ import {ModalComponent} from "../modal";
 })
 export class FooterComponent implements OnInit {
 
-  changelog:any;
+  gitInfo:string[];
 
   @ViewChild(ModalComponent)
   private modal:ModalComponent;
@@ -18,15 +18,7 @@ export class FooterComponent implements OnInit {
   constructor(private changelogService:ChangelogService, private router:Router) { }
 
   ngOnInit() {
-    this.changelogService.getChangelog().subscribe(changelog => this.changelog = changelog);
-  }
-
-  showChangelog(){
-    if(this.checkURL()){
-      this.modal.show();
-    } else{
-      this.router.navigate(['/changelog']);
-    }
+    this.changelogService.getGitInfo().subscribe(info => this.gitInfo = info);
   }
 
   checkURL():boolean{
