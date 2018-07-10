@@ -39,7 +39,7 @@
 			</div>
 		</div>
 
-		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE)">
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && authService.hasRole('ROLE_SUPERADMIN')">
 			<label class="col-sm-2 control-label">Id in db:</label>
 			<div class="col-sm-10">
 				<p class="form-control-static">{{domain.id}}</p>
@@ -52,7 +52,7 @@
         			<table class="table table-hover table-condensed">
             			<thead>
             				<tr>
-                				<th>Id</th>
+                				<th *ngIf="authService.hasRole('ROLE_SUPERADMIN')">Id</th>
                 				<th>Username</th>
                 				<th>Roles</th>
                 				<th>&nbsp;</th>
@@ -62,7 +62,7 @@
 						<tbody>
 							<ng-template ngFor let-user [ngForOf]="users">
 								<tr>
-									<td>{{user.id}}</td>
+									<td *ngIf="authService.hasRole('ROLE_SUPERADMIN')">{{user.id}}</td>
 									<td>{{user.username}}</td>
 									<td *ngIf="domainId == domainService.getGlobalDomainId()"><span *ngFor="let role of filterDomainNames(user)">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}, </span></td>
 									<td *ngIf="domainId != domainService.getGlobalDomainId()"><span *ngFor="let role of this.getDomainRoleNames(user.roles)">{{role.role | slice:5}}, </span></td>

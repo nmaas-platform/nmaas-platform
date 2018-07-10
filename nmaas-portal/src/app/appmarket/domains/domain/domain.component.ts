@@ -11,6 +11,7 @@ import {UserService} from "../../../service";
 import {Observable} from "rxjs/Observable";
 import {Role, UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
+import {AuthService} from "../../../auth/auth.service";
 
 
 @Component({
@@ -26,7 +27,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-    constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location) {
+    constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService:AuthService) {
     super();
   }
 
