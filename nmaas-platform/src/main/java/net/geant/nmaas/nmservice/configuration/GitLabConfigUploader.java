@@ -10,6 +10,7 @@ import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApi.ApiVersion;
 import org.gitlab4j.api.GitLabApiException;
@@ -39,6 +40,8 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
+
+    private static final Logger logger = Logger.getLogger(GitLabConfigUploader.class);
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -70,13 +73,20 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
         String domain = serviceRepositoryManager.loadDomain(deploymentId);
         gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+        logger.debug(String.format("GitLabApi arguments: version: %s url: %s token: %s",ApiVersion.V4.toString(), gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken()));
         String gitLabPassword = generateRandomPassword();
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
+        logger.debug("GitLab user created");
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
+        logger.debug("GitLab group created");
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
+        logger.debug("GitLab project within group created");
         GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
+        logger.debug("GitLab project created");
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
+        logger.debug("GitLab project updated in repository");
         uploadConfigFilesToProject(gitLabProjectId, configIds);
+        logger.debug("GitLab config files uploaded to project");
     }
 
     private Integer createUser(String domain, Identifier deploymentId, String password) throws FileTransferException {

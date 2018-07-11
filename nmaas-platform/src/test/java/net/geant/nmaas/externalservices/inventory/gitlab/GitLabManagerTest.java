@@ -53,12 +53,10 @@ public class GitLabManagerTest {
         repository.save(simpleGitlabConfig());
         assertThat("GitLab token is wrong",manager.getGitLabApiToken().equals("testtoken"));
         assertThat("GitLab url is wrong",manager.getGitLabApiUrl().equals("http://10.10.1.1:80"));
-        assertThat("GitLab api version is wrong",manager.getGitLabApiVersion().equals("v4"));
     }
 
     private GitLab simpleGitlabConfig(){
         GitLab config = new GitLab();
-        config.setApiVersion("v4");
         config.setPort(80);
         config.setServer("10.10.1.1");
         config.setToken("testtoken");

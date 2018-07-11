@@ -17,9 +17,6 @@ public class GitLab {
     private String server;
 
     @Column(nullable=false)
-    private String apiVersion;
-
-    @Column(nullable=false)
     private String token;
 
     @Column(nullable=false)
@@ -39,14 +36,6 @@ public class GitLab {
 
     public void setServer(String server) {
         this.server = server;
-    }
-
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
     }
 
     public String getToken() {

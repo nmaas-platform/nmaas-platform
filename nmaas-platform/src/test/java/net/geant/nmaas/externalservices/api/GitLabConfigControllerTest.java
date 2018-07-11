@@ -153,7 +153,6 @@ public class GitLabConfigControllerTest {
 
     private GitLab simpleGitlabConfig(){
         GitLab config = new GitLab();
-        config.setApiVersion("v4");
         config.setPort(80);
         config.setServer("11.10.1.1");
         config.setToken("testtoken");
