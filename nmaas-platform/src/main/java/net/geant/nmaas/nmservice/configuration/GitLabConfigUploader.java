@@ -76,9 +76,9 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         logger.debug(String.format("GitLabApi arguments: version: %s url: %s token: %s",ApiVersion.V4.toString(), gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken()));
         String gitLabPassword = generateRandomPassword();
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
-        logger.debug("GitLab user created");
+        logger.debug("GitLab user created - id " + gitLabUserId);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-        logger.debug("GitLab group created");
+        logger.debug("GitLab group created - id " + gitLabGroupId);
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
         logger.debug("GitLab project within group created");
         GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
@@ -163,7 +163,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private Integer createProjectWithinGroupWithMember(Integer groupId, Integer userId, Identifier deploymentId) throws FileTransferException {
         try {
             Project project = gitlab.getProjectApi().createProject(groupId, projectName(deploymentId));
-            gitlab.getProjectApi().addMember(project.getId(), userId, fullAccessCode());
+            // gitlab.getProjectApi().addMember(project.getId(), userId, fullAccessCode());
             return project.getId();
         } catch (GitLabApiException e) {
             throw new FileTransferException("" + e.getMessage() + e.getReason());
