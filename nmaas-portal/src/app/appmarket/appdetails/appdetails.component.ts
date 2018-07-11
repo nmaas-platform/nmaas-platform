@@ -40,10 +40,10 @@ export class AppDetailsComponent implements OnInit {
   @ViewChild(RateComponent)
   public readonly appRate: RateComponent;
 
-  protected appId: number;
-  protected app: Application;
-  protected subscribed: boolean;
-  protected domainId: number;
+  public appId: number;
+  public app: Application;
+  public subscribed: boolean;
+  public domainId: number;
 
   constructor(private appsService: AppsService,
     private appSubsService: AppSubscriptionsService,

@@ -77,4 +77,8 @@ export class AppInstanceService extends GenericDataService {
     ];
   }
 
+  public restartAppInstance(appInstanceId:number, domainId?: number):Observable<any>{
+    return this.post<number,any>((this.getUrl(domainId) +  appInstanceId + '/restart'), appInstanceId);
+  }
+
 }

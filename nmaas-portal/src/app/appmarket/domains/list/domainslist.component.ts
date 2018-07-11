@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/Observable';
 })
 export class DomainsListComponent implements OnInit {
 
-  private domains: Observable<Domain[]>;
+  public domains: Observable<Domain[]>;
 
   constructor(protected domainService: DomainService, protected authService: AuthService) {}
 
@@ -30,6 +30,7 @@ export class DomainsListComponent implements OnInit {
 
   public remove(domainId: number): void {
     this.domainService.remove(domainId).subscribe(() => this.update());
+    this.domainService.setUpdateRequiredFlag(true);
   }
 
 }

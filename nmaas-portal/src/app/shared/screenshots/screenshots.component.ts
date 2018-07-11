@@ -20,11 +20,11 @@ export class ScreenshotsComponent implements OnInit {
     public readonly modal: ModalComponent;
 
     @Input()
-    private pathUrl: string;
+    public pathUrl: string;
 
-    imagesFileInfo: FileInfo[];
+    public imagesFileInfo: FileInfo[];
 
-    protected selectedImg: string;
+    public selectedImg: string;
 
     constructor(private appsService: AppsService) { }
 

@@ -2,10 +2,12 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
-        if(!clusterIngressManager.getUseExistingController()) {
+        if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
             executeDeployIngressControllerIfMissing(domain);
         }
     }
@@ -80,6 +82,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         return NMAAS_INGRESS_CLASS_NAME_PREFIX + domain;
     }
 
+    // TODO add support for installation from repo or from archive
     private void installIngressControllerHelmChart(String namespace, String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_INGRESS_CLASS, ingressClass);
@@ -87,14 +90,17 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         helmCommandExecutor.executeHelmInstallCommand(
                 namespace,
                 releaseName,
-                clusterIngressManager.getControllerChartArchive(),
+                new KubernetesTemplate(
+                        clusterIngressManager.getControllerChart(),
+                        null,
+                        clusterIngressManager.getControllerChartArchive()),
                 arguments
         );
     }
 
     @Override
     public void deleteIngressController(String domain) throws IngressControllerManipulationException {
-        if (!clusterIngressManager.getUseExistingController()) {
+        if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
             executeDeleteIngressController(domain);
         }
     }

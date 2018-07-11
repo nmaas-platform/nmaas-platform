@@ -35,7 +35,8 @@ export class GenericDataService {
 
   protected handleError(error: Response | any) {
     const errorMsg = (typeof error.json === 'function' ? error.json().message : error.message || 'Server error');
-    return Observable.throw(errorMsg);
+    console.log(errorMsg)
+    return Observable.throw(error.error);
   }
 
 

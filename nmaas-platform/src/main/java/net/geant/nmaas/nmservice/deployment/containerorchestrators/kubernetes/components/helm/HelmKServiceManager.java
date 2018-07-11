@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
@@ -30,6 +31,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION = "nmaas.config.action";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
+    static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
@@ -69,16 +71,19 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getDefaultPersistenceClass());
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
-        arguments.putAll(HelmChartVariables.ingressVariablesMap(
-                ingressManager.getUseExistingIngress(),
-                serviceExternalURL,
-                ingressManager.getSupportedIngressClass(),
-                ingressManager.getTlsSupported())
-        );
+        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED,
+                String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
+        if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
+            arguments.putAll(HelmChartVariables.ingressVariablesMap(
+                    serviceExternalURL,
+                    ingressManager.getSupportedIngressClass(),
+                    ingressManager.getTlsSupported())
+            );
+        }
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(domain),
                 deploymentId,
-                template.getArchive(),
+                template,
                 arguments
         );
     }

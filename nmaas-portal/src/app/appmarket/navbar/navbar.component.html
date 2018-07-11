@@ -7,31 +7,25 @@
 		<div class="collapse navbar-collapse">
 			<ul class="nav navbar-nav">
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/']">Market</a></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/subscriptions']">Subscriptions</a></li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *ngIf="checkUserRole()"><a [routerLink]="['/subscriptions']">Subscriptions</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_USER']"><a
 					[routerLink]="['/instances']">Instances</a></li>
+				<li class="divider-vertical"></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']"><a
 					[routerLink]="['/domains']">Domains</a></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']"
-					class="dropdown">
-					<a [routerLink]="['/users']" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li><a [routerLink]="['/users/add']">Add</a>
-						</ul>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']">
+					<a [routerLink]="['/users']">Users</a>
 				</li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']" class="dropdown">
-					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <b class="caret"></b></a>
+					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <b class="caret"></b></a>
 					<ul class="dropdown-menu">
-						<li><a [routerLink]="['/admin/clusters']">Clusters</a>
+						<li><a [routerLink]="['/admin/clusters']">Kubernetes</a>
+							<a [routerLink]="['/admin/gitlab']">GitLab</a>
 					</ul>
 				</li>
 			</ul>
 
-			<ul class="nav navbar-form navbar-left">
-				<nmaas-domain-filter></nmaas-domain-filter>				
-			</ul>
-
-			<ul class="nav navbar-nav navbar-right">				
+			<ul class="nav navbar-nav navbar-right">
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"
 					aria-expanded="false"><span class="glyphicon glyphicon-user"></span>
@@ -42,6 +36,12 @@
 						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/logout']">Logout</a></li>
 					</ul></li>
 			</ul>
+
+			<ul class="nav navbar-form navbar-right" *ngIf="checkUserRole()">
+				<nmaas-domain-filter></nmaas-domain-filter>
+			</ul>
+
+
 
 
 		</div>

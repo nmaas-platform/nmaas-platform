@@ -14,7 +14,7 @@
 		</div>
 
 
-		<div class="form-group">
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.EDIT)">
 			<label for="codename" class="col-sm-2 control-label">Codename:</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="codename"
@@ -38,13 +38,21 @@
 					name="active" [(ngModel)]="domain.active">
 			</div>
 		</div>
-		<div class="panel panel-default">
+
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && authService.hasRole('ROLE_SUPERADMIN')">
+			<label class="col-sm-2 control-label">Id in db:</label>
+			<div class="col-sm-10">
+				<p class="form-control-static">{{domain.id}}</p>
+			</div>
+		</div>
+
+		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW)">
 			<div class="panel-heading">User information</div>
 				<div class="panel-body">
         			<table class="table table-hover table-condensed">
             			<thead>
             				<tr>
-                				<th>Id</th>
+                				<th *ngIf="authService.hasRole('ROLE_SUPERADMIN')">Id</th>
                 				<th>Username</th>
                 				<th>Roles</th>
                 				<th>&nbsp;</th>
@@ -54,9 +62,10 @@
 						<tbody>
 							<ng-template ngFor let-user [ngForOf]="users">
 								<tr>
-									<td>{{user.id}}</td>
+									<td *ngIf="authService.hasRole('ROLE_SUPERADMIN')">{{user.id}}</td>
 									<td>{{user.username}}</td>
-									<td><span *ngFor="let role of this.getDomainRoleNames(user.roles)">{{role.role | slice:5}}{{", "}}</span></td>
+									<td *ngIf="domainId == domainService.getGlobalDomainId()"><span *ngFor="let role of filterDomainNames(user)">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}, </span></td>
+									<td *ngIf="domainId != domainService.getGlobalDomainId()"><span *ngFor="let role of this.getDomainRoleNames(user.roles)">{{role.role | slice:5}}, </span></td>
 								</tr>
 							</ng-template>
 

@@ -2,6 +2,7 @@ import {User} from '../../../model/user';
 import { BaseComponent } from '../../common/basecomponent/base.component';
 import {ComponentMode} from '../../common/componentmode';
 import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {AuthService} from "../../../auth/auth.service";
 
 @Component({
   selector: 'nmaas-userdetails',
@@ -11,12 +12,12 @@ import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   @Input()
-  private user: User = new User();
+  public user: User = new User();
 
   @Output()
-  private onSave: EventEmitter<User> = new EventEmitter<User>();
+  public onSave: EventEmitter<User> = new EventEmitter<User>();
 
-  constructor() {
+  constructor(private authService:AuthService) {
     super();
   }
 

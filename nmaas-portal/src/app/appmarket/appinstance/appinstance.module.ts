@@ -2,9 +2,6 @@ import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-
-import {JsonSchemaFormModule, Bootstrap3FrameworkModule } from 'angular2-json-schema-form';
-
 import {AuthModule} from '../../auth/auth.module';
 import {SharedModule} from '../../shared/shared.module';
 import {PipesModule} from '../../pipe/pipes.module';
@@ -16,11 +13,19 @@ import {AppsService} from '../../service/apps.service';
 import {AppInstanceService} from '../../service/appinstance.service';
 import {TagService} from '../../service/tag.service';
 import {AppInstanceListComponent} from './appinstancelist/appinstancelist.component';
+import {AppRestartModalComponent} from "../modals/apprestart";
+import {
+    JsonSchemaFormModule,
+    Bootstrap3FrameworkModule,
+    Bootstrap3Framework,
+    Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
+} from "angular2-json-schema-form";
 
 @NgModule({
   declarations: [
     AppInstanceComponent,
     AppInstanceListComponent,
+      AppRestartModalComponent
   ],
   imports: [
     CommonModule,
@@ -31,7 +36,15 @@ import {AppInstanceListComponent} from './appinstancelist/appinstancelist.compon
     AppInstanceProgressModule,
     PipesModule,
     Bootstrap3FrameworkModule,
-    JsonSchemaFormModule.forRoot(Bootstrap3FrameworkModule)
+    {
+      ngModule: JsonSchemaFormModule,
+      providers: [
+        JsonSchemaFormService,
+        FrameworkLibraryService,
+        WidgetLibraryService,
+        {provide: Framework, useClass: Bootstrap3Framework, multi: true}
+      ]
+    }
   ],
   exports: [
     AppInstanceComponent,

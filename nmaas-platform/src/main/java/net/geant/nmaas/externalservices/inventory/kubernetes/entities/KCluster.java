@@ -1,6 +1,15 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +53,11 @@ public class KCluster {
     /** All public networks made available for the cluster. Each customer is assigned with a dedicated network. */
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<KClusterExtNetwork> externalNetworks = new ArrayList<>();
+
+    public void validate() {
+        ingress.getControllerConfigOption().validate(ingress);
+        ingress.getResourceConfigOption().validate(ingress);
+    }
 
     public Long getId() {
         return id;
@@ -108,4 +122,5 @@ public class KCluster {
     public void setExternalNetworks(List<KClusterExtNetwork> externalNetworks) {
         this.externalNetworks = externalNetworks;
     }
+
 }

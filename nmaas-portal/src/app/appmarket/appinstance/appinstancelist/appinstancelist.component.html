@@ -5,7 +5,7 @@
 							<form class = "form-inline" role = "form">
 								<label for="selectionType">Show: </label>
 								<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">				
-									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value}}</option>
+									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value.charAt(0) + sl.value.toLowerCase().substring(1,sl.value.length)}}</option>
 								</select>	
 							</form>
 						</div>
@@ -16,7 +16,7 @@
 						   <thead>
 							  <tr>
 								 <th>Name</th>
-								 <th>Domain</th>
+								 <th *ngIf="domainId === undefined">Domain</th>
 								 <th>Owner</th>
 								 <th>Deployed at</th>
 								 <th>Application</th>
@@ -29,13 +29,13 @@
 						      <ng-template ngFor let-appInstance [ngForOf]="appInstances | async">
 							  <tr>
 								 <td>{{appInstance?.name}}</td>
-								 <td>{{appInstance?.domainId}}</td>
+								 <td *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
 								 <td>{{appInstance?.owner?.username}}</td>
 								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
 								 <td>{{appInstance?.applicationName}}</td>
 								 <td>{{appInstance?.state}}</td>
 								<td>
-									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button">
+									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 										Details
 									</a>
 									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">Go to app</a>							
