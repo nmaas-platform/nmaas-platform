@@ -11,11 +11,13 @@ export class TagFilterComponent implements OnInit {
 
   @Input()
   public value: string;
+
+  public all: string = 'all';
   
   @Output()
   public changed: EventEmitter<string> = new EventEmitter<string>();
   
-  tags: Observable<string[]>;
+  public tags: Observable<string[]>;
   
   constructor(private tagService: TagService) { }
 

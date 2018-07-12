@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AuthHttp } from 'angular2-jwt';
-import { Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
-import { FileInfo } from '../model/fileinfo';
+import {FileInfo} from "../model";
 import { AppConfigService } from '../service/appconfig.service';
 
 import { Observable } from 'rxjs/Observable';
@@ -14,9 +13,10 @@ import 'rxjs/add/observable/throw';
 @Injectable()
 export class AppImagesService {
 
-    constructor(private http: Http, private appConfig: AppConfigService) { }
+    constructor(private http: HttpClient, private appConfig: AppConfigService) { }
 
     public getAppLogoUrl(id: Number):string {
+        console.debug('Getting logo: '+id);
         return this.appConfig.getApiUrl() + '/apps/' + id + '/logo';
     }
     
@@ -25,10 +25,12 @@ export class AppImagesService {
     }
     
     public getAppScreenshotsUrls(id: Number): Observable<string[]> {
-        return this.http.get(this.appConfig.getApiUrl() + '/apps' + id + '/screenshots')
+        return this.http.get<FileInfo>(this.appConfig.getApiUrl() + '/apps' + id + '/screenshots')
             .timeout(10000)
-            .map((res: Response) => (res.json() as FileInfo).id)
-            .catch((error: any) => Observable.throw(error.json().message || 'Server error'));
+            .map(res=> {
+                return res.id
+            })
+            .catch((error: any) => Observable.throw(error.message || 'Server error'));
     }
 
 }

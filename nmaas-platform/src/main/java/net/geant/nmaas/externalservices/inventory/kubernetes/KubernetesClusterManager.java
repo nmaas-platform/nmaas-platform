@@ -5,6 +5,8 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
@@ -64,13 +66,28 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public String getHelmChartRepositoryName() {
+        return loadSingleCluster().getHelm().getHelmChartRepositoryName();
+    }
+
+    @Override
     public String getHelmHostChartsDirectory() {
         return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
     }
 
     @Override
-    public Boolean getUseExistingController() {
-        return loadSingleCluster().getIngress().getUseExistingController();
+    public IngressControllerConfigOption getControllerConfigOption() {
+        return loadSingleCluster().getIngress().getControllerConfigOption();
+    }
+
+    @Override
+    public String getSupportedIngressClass() {
+        return loadSingleCluster().getIngress().getSupportedIngressClass();
+    }
+
+    @Override
+    public String getControllerChart() {
+        return loadSingleCluster().getIngress().getControllerChartName();
     }
 
     @Override
@@ -79,8 +96,18 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public IngressResourceConfigOption getResourceConfigOption() {
+        return loadSingleCluster().getIngress().getResourceConfigOption();
+    }
+
+    @Override
     public String getExternalServiceDomain() {
         return loadSingleCluster().getIngress().getExternalServiceDomain();
+    }
+
+    @Override
+    public Boolean getTlsSupported() {
+        return loadSingleCluster().getIngress().getTlsSupported();
     }
 
     @Override

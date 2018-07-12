@@ -1,7 +1,6 @@
 import {Pipe, PipeTransform, OnDestroy, WrappedValue, ChangeDetectorRef, Injectable} from '@angular/core';
 
-import {Http, Headers, Request, Response, RequestOptionsArgs, RequestOptions, ResponseContentType} from '@angular/http';
-import {AuthHttp} from 'angular2-jwt';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
 import {Subscription} from 'rxjs/Subscription';
 import {Subscriber} from 'rxjs/Subscriber';
@@ -20,7 +19,7 @@ import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
 @Injectable()
 export class AuthHttpWrapper {
-  constructor(private authHttp: AuthHttp) {
+  constructor(private http: HttpClient) {
 
   }
 
@@ -30,20 +29,19 @@ export class AuthHttpWrapper {
     if (!url) {
       return Observable.throw('Empty url');
     }
-    const requestOptions: RequestOptions = new RequestOptions({responseType: ResponseContentType.Blob});
 
-    return new Observable<any>((observer: Subscriber<any>) => {
+    return new Observable<Blob>((observer: Subscriber<any>) => {
       let objectUrl: string = null;
 
-      this.authHttp
-        .get(url, requestOptions)
+      this.http
+        .get(url, {responseType: 'blob'})
         .catch((error: Response | any) => {
           var errMsg: string = 'Unable to get ' + url;
           console.debug(errMsg);
           return Observable.throw(errMsg);
         })
         .subscribe(m => {
-          objectUrl = URL.createObjectURL(m.blob());
+          objectUrl = URL.createObjectURL(m);
           observer.next(objectUrl);
         });
 
@@ -84,7 +82,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
 
   transform(url: string): any {
     const obj = this.internalTransform(url);
-    return this.asyncTrasnform(obj);
+    return this.asyncTransform(obj);
   }
 
   private internalTransform(url: string): Observable<any> {
@@ -103,7 +101,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     return this.result;
   }
 
-  private asyncTrasnform(obj: Observable<any>): any {
+  private asyncTransform(obj: Observable<any>): any {
     if (!this.obj) {
       if (obj) {
         this.subscribe(obj);
@@ -113,7 +111,7 @@ export class SecurePipe implements PipeTransform, OnDestroy {
     }
     if (obj !== this.obj) {
       this.dispose();
-      return this.asyncTrasnform(obj);
+      return this.asyncTransform(obj);
     }
     if (this.latestValue === this.latestReturnedValue) {
       return this.latestReturnedValue;

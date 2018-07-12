@@ -29,7 +29,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api/auth/basic/registration")
+@RequestMapping("/api/auth/basic/registration")
 public class RegistrationController {
 	@Autowired
 	UserService users;

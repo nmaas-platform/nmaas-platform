@@ -1,6 +1,5 @@
 import { Route } from '@angular/router';
 import { AppMarketComponent } from './appmarket.component';
-import { AppListComponent } from './applist/applist.component';
 import { AppDetailsComponent } from './appdetails/index';
 
 import { AuthGuard } from '../auth/auth.guard';
@@ -9,6 +8,8 @@ import { AppListRoutes } from './applist/applist.routes';
 import { AppInstanceRoutes } from './appinstance/appinstance.routes';
 import { DomainsRoutes } from './domains/domains.routes';
 import { UsersRoutes } from './users/users.routes';
+import {ClustersRoutes} from "./admin/clusters/clusters.routes";
+import {GitlabRoutes} from "./admin/gitlab/gitlab.routes";
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -21,6 +22,8 @@ export const AppMarketRoutes: Route[] = [
         ...AppInstanceRoutes,
         ...DomainsRoutes,
         ...UsersRoutes,
+        ...ClustersRoutes,
+          ...GitlabRoutes,
           { path: 'apps/:id', component: AppDetailsComponent },
 
       ]

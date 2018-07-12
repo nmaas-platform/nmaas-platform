@@ -1,6 +1,4 @@
 import {Component, OnInit, ViewEncapsulation, Input} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
 import {Application} from '../../../../model/application';
 import {AppImagesService} from '../../../../service/appimages.service';
 import {RateComponent} from '../../../rate/rate.component';
@@ -24,7 +22,7 @@ export class AppElementComponent implements OnInit {
   @Input()
   public selected: boolean;
 
-  constructor(private appImagesService: AppImagesService) {}
+  constructor(public appImagesService: AppImagesService) {}
 
   ngOnInit() {
     if (isUndefined(this.selected)) {

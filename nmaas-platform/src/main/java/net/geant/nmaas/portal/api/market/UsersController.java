@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
@@ -43,7 +40,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api")
+@RequestMapping("/api")
 public class UsersController {
 
 //	@Autowired
@@ -135,10 +132,15 @@ public class UsersController {
 		if(userRequest.getEmail() != null)
 			userMod.setEmail(userRequest.getEmail());		
 		userMod.setEnabled(userRequest.isEnabled());
+		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
+			userMod.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
+		try {
+			users.update(userMod);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to modify user");
+		}
+		
 
-		
-		
-		
 		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
 			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
 					.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
@@ -152,7 +154,7 @@ public class UsersController {
 		try {
 			users.update(userMod);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to modify user");
+			throw new ProcessingException("Unable to modify roles");
 		}
 	}
 	
@@ -189,6 +191,7 @@ public class UsersController {
 
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
+			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}		
@@ -319,8 +322,22 @@ public class UsersController {
 				
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), role);
+			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
+		}
+	}
+
+	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
+		if(domains.getGlobalDomain().isPresent()){
+			Long globalId = domains.getGlobalDomain().get().getId();
+			try{
+				if(domains.getMemberRoles(globalId, userId).isEmpty()){
+					domains.addMemberRole(globalId, userId, Role.ROLE_GUEST);
+				}
+			} catch(ObjectNotFoundException e){
+				throw new MissingElementException(e.getMessage());
+			}
 		}
 	}
 

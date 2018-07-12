@@ -16,7 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 
 @RestController
-@RequestMapping("/portal/api/tags")
+@RequestMapping("/api/tags")
 public class TagController {
 
 	@Autowired

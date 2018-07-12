@@ -6,13 +6,13 @@
 			<form *ngIf="user" [formGroup]="newPrivilegeForm" (submit)="add()" class="form-inline row">
 				<div *ngIf="user?.id" class="form-group col-lg-2">
 					<label>User:</label>
-					<p class="form-control-static">{{user.username}} ({{user.id}})</p>
+					<p class="form-control-static">{{user.username}}</p>
 				</div>
 
 				<div class="form-group col-lg-3">
 					<label for="domainId">Domain:</label>
 					<select class="form-control" [formGroup]="newPrivilegeForm"
-						id="domainId" name="domainId" formControlName="domainId">
+						id="domainId" name="domainId" formControlName="domainId" style="min-width: 170px">
 						<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
 					</select>
 
@@ -22,8 +22,8 @@
 					<label for="role" >Role:</label>
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
-						name="role" formControlName="role">
-						<option *ngFor="let r of Role | keys" [value]="r.key">{{r.value | slice:5}}</option>
+						name="role" formControlName="role" style="min-width: 170px">
+						<option *ngFor="let r of getAllowedRoles()" [value]="r">{{Role[r] | slice:5}}</option>
 					</select>
 				</div>
 				<div class="col-lg-3">
@@ -33,7 +33,7 @@
 			<hr>
 		</div>
 		
-		<div *ngIf="isModeAllowed(ComponentMode.VIEW)">
+		<div *ngIf="isModeAllowed(ComponentMode.VIEW)|| isInMode(ComponentMode.PROFILVIEW)">
 			
 			<table class="table table-hover table-condensed">
 				<thead>
@@ -44,15 +44,28 @@
 					</tr>
 				</thead>
 
-				<tbody>
-					<ng-template ngFor let-userrole [ngForOf]="user.userRoles">
-					<tr>
-						<td>{{userrole.domainId}}</td>
+				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SUPERADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
+					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
+					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
+						<td>{{getDomainName(userrole.domainId)|async}}</td>
 						<td>{{userrole.role | slice:5}}</td>
-						<td class="text-right"><button type="button"
+						<td *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="text-right"><button type="button"
 								class="btn btn-danger"
 								(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button></td>
 					</tr>
+					</ng-template>
+				</tbody>
+
+				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SUPERADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
+					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
+						<tr *ngIf="domainId == userrole.domainId">
+							<td>{{getDomainName(userrole.domainId)|async}}</td>
+							<td>{{userrole.role | slice:5}}</td>
+							<td class="text-right">
+								<button type="button" class="btn btn-danger"
+										(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button>
+							</td>
+						</tr>
 					</ng-template>
 				</tbody>
 			</table>

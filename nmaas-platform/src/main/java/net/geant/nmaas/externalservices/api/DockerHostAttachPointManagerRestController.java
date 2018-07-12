@@ -14,7 +14,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/network")
+@RequestMapping(value = "/api/management/network")
 public class DockerHostAttachPointManagerRestController {
 
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;

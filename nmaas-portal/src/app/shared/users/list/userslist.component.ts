@@ -10,6 +10,9 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
+import {UserRole} from "../../../model/userrole";
+import {UserDataService} from "../../../service/userdata.service";
+import {AuthService} from "../../../auth/auth.service";
 
 
 
@@ -22,29 +25,35 @@ import { isUndefined } from 'util';
 export class UsersListComponent extends BaseComponent implements OnInit, OnChanges {
 
   @Input()
-  users: User[] = [];
+  public users: User[] = [];
 
-
-  @Output()
-  onDelete: EventEmitter<number> = new EventEmitter<number>();
+  public domainId: number;
 
   @Output()
-  onView: EventEmitter<number> = new EventEmitter<number>();
+  public onSave: EventEmitter<User> = new EventEmitter<User>();
 
-  protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+  @Output()
+  public onDelete: EventEmitter<User> = new EventEmitter<User>();
 
-  constructor(private userService: UserService, private domainService: DomainService) {
+  @Output()
+  public onView: EventEmitter<number> = new EventEmitter<number>();
+
+  public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+
+  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService, private authService:AuthService) {
     super();
+    userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
 
   ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('UsersList:onChanges ' + changes);
+    console.log('UsersList:onChanges ' + changes.toString());
+    this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
   
-  protected getDomainName(domainId: number): Observable<string> {
+  public getDomainName(domainId: number): Observable<string> {
     //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
       //console.debug('getDomainName(' + domainId + ') from cache');
@@ -56,7 +65,15 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  protected getUserDomainIds(user: User): number[] {
+  public filterDomainNames(user:User):UserRole[]{
+    return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId());
+  }
+
+  public getOnlyDomainRoles(user:User):UserRole[]{
+    return user.roles.filter(role=>role.domainId===this.domainId);
+  }
+
+  public getUserDomainIds(user: User): number[] {
     if (!isUndefined(user)) {
       return user.getDomainIds();
     } else {
@@ -64,12 +81,18 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  protected remove(userId: number) {
-    this.onDelete.emit(userId);
+  public remove(user:User) {
+    this.onDelete.emit(user);
   }
 
-  protected view(userId: number): void {
+  public view(userId: number): void {
     console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
+
+   public submit(user:User): void {
+       console.log('submit(' + user.username + ')');
+       this.onSave.emit(user);
+   }
+
 }

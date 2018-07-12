@@ -1,12 +1,11 @@
 import {AuthService} from '../../../auth/auth.service';
 import {User} from '../../../model/user';
-import {Role} from '../../../model/userrole';
+import {Role, UserRole} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
-import {JsonMapperService} from '../../../service/jsonmapper.service';
 import {UserService} from '../../../service/user.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit} from '@angular/core';
-import {ComponentMode, ComponentModeAware} from '../../../shared/common/componentmode';
+import {ComponentMode} from '../../../shared/common/componentmode';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {Location} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
@@ -17,8 +16,9 @@ import {isNullOrUndefined} from 'util';
   templateUrl: './userslist.component.html',
   styleUrls: ['./userslist.component.css']
 })
-@ComponentModeAware
 export class UsersListComponent implements OnInit {
+
+  public ComponentMode = ComponentMode;
 
   private domainId: number;
 
@@ -66,7 +66,19 @@ export class UsersListComponent implements OnInit {
   }
 
   public onUserDelete($event): void {
-    this.userService.deleteOne($event);
+      this.userService.removeRole($event.id, $event.roles.find(value => value.domainId===this.domainId).role,this.domainId).subscribe(()=> this.update(this.domainId))
   }
+
+    public onSave($event) {
+        const user: User = $event;
+
+        if (!user) {
+            return;
+        }
+        if(user.id) {
+          user.enabled = !user.enabled;
+          this.userService.updateUser(user.id, user).subscribe();
+        }
+    }
 
 }

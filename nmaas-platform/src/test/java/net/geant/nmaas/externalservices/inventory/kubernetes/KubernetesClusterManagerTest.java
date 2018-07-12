@@ -1,6 +1,15 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterApi;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
@@ -90,6 +99,22 @@ public class KubernetesClusterManagerTest {
         manager.reserveExternalNetwork("domain30");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionDuringIngressControllerConfigValidation() throws UnknownHostException {
+        KClusterIngress ingress1 = simpleKubernetesCluster("cluster1").getIngress();
+        ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
+        ingress1.setControllerChartArchive(null);
+        ingress1.getControllerConfigOption().validate(ingress1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionDuringIngressResourceConfigValidation() throws UnknownHostException {
+        KClusterIngress ingress1 = simpleKubernetesCluster("cluster1").getIngress();
+        ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+        ingress1.setExternalServiceDomain(null);
+        ingress1.getResourceConfigOption().validate(ingress1);
+    }
+
     private KCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
         KCluster cluster = new KCluster();
         cluster.setName(clusterName);
@@ -104,9 +129,11 @@ public class KubernetesClusterManagerTest {
         api.setRestApiPort(REST_API_PORT);
         cluster.setApi(api);
         KClusterIngress ingress = new KClusterIngress();
-        ingress.setUseExistingController(false);
+        ingress.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
         ingress.setControllerChartArchive("chart.tgz");
+        ingress.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         ingress.setExternalServiceDomain("test.net");
+        ingress.setTlsSupported(false);
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
         deployment.setUseDefaultNamespace(true);

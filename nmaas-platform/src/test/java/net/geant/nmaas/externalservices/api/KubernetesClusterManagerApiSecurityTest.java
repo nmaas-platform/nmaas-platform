@@ -33,7 +33,7 @@ public class KubernetesClusterManagerApiSecurityTest extends BaseControllerTest 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/platform/api/management/kubernetes")
+        mvc.perform(get("/api/management/kubernetes")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -41,7 +41,7 @@ public class KubernetesClusterManagerApiSecurityTest extends BaseControllerTest 
     @Test
     public void shouldRejectNonAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/platform/api/management/kubernetes")
+        mvc.perform(get("/api/management/kubernetes")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

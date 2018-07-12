@@ -3,15 +3,15 @@ setlocal enableDelayedExpansion
 @echo off
 setlocal enableDelayedExpansion
 
-set PORTAL_API_URL=http://localhost:9000/portal/api
-echo %PORTAL_API_URL%
+set API_URL=http://localhost:9000/api
+echo %API_URL%
 
 set LF=^
 
 
 
 
-for /f "delims=" %%f in ('curl -sX POST %PORTAL_API_URL%/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data\login.json') do (
+for /f "delims=" %%f in ('curl -sX POST %API_URL%/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data\login.json') do (
 REM set "LOGIN="
 	if defined LOGIN set "LOGIN=!LOGIN!!LF!"
 	set "LOGIN=!LOGIN!%%f"
@@ -37,10 +37,7 @@ echo ----------------------
 echo %token%
 echo ----------------------
 echo Ping
-curl -X GET %PORTAL_API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
-
-set API_URL=http://localhost:9000/platform/api
-echo %API_URL%
+curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
 echo.
 echo Adding default Docker Hosts
@@ -63,8 +60,8 @@ echo
 curl -X GET %API_URL%/management/network/dockerhosts --header "Authorization: Bearer %token%"
 
 echo.
-echo Adding default network attachment point to default domain testDom1
-curl -X POST %API_URL%/management/domains/testDom1/network --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\domains\test-domain-1-network-attach-point.json
+echo Adding default network attachment point to default domain testdom1
+curl -X POST %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\domains\test-domain-1-network-attach-point.json
 echo
-curl -X GET %API_URL%/management/domains/testDom1/network --header "Authorization: Bearer %token%"
+curl -X GET %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%"
 echo.

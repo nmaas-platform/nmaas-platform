@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthHttp } from 'angular2-jwt';
-import { Http, Headers, Request, Response, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import { HttpClient} from '@angular/common/http';
 
 import { AppConfigService } from '../service/appconfig.service';
 
@@ -13,12 +12,11 @@ import 'rxjs/add/observable/throw';
 @Injectable()
 export class TagService {
     
-  constructor(private authHttp : AuthHttp, private appConfig: AppConfigService) { }
+  constructor(private http : HttpClient, private appConfig: AppConfigService) { }
 
     
     public getTags() : Observable<string[]> {
-        return this.authHttp.get(this.appConfig.getApiUrl()+'/tags')
-                            .map((res:Response) => res.json())
+        return this.http.get(this.appConfig.getApiUrl()+'/tags')
                             .catch((error:any) => Observable.throw(error.json().message || 'Server error'));
         
     }

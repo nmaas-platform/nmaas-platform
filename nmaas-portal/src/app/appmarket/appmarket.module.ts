@@ -11,7 +11,6 @@ import {AppDetailsComponent} from './appdetails/index';
 import {AppInstanceModule} from './appinstance/appinstance.module';
 
 import {NavbarComponent} from './navbar/index';
-import {LogoutComponent} from '../welcome/logout/index';
 
 import {SharedModule} from '../shared/shared.module';
 
@@ -25,6 +24,9 @@ import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.comp
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
+import {ClustersModule} from "./admin/clusters/clusters.module";
+import {ClusterService} from "../service/cluster.service";
+import {GitlabModule} from "./admin/gitlab/gitlab.module";
 
 @NgModule({
   declarations: [
@@ -43,17 +45,21 @@ import {UsersModule} from './users/users.module';
     DomainsModule,
     UsersModule,
     AuthModule,
-    PipesModule
+    PipesModule,
+    ClustersModule,
+      GitlabModule
   ],
   exports: [
-    AppMarketComponent
+    AppMarketComponent,
+      NavbarComponent
   ],
   providers: [
     AppsService,
     DomainService,
     UserService,
     TagService,
-    UserService
+    UserService,
+    ClusterService
   ]
 
 })

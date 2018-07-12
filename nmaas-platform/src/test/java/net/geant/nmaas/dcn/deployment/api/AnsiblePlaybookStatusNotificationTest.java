@@ -81,14 +81,14 @@ public class AnsiblePlaybookStatusNotificationTest {
     @Test
     public void testAnsiblePlaybookStatusApiUpdate() throws Exception {
         assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), is(DcnDeploymentState.DEPLOYMENT_INITIATED));
-        mvc.perform(MockMvcRequestBuilders.post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(DOMAIN))
+        mvc.perform(MockMvcRequestBuilders.post("/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter(DOMAIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         Thread.sleep(200);
         assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), is(DcnDeploymentState.ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED));
-        mvc.perform(post("/platform/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(DOMAIN))
+        mvc.perform(post("/api/dcns/notifications/{serviceId}/status", AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter(DOMAIN))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusUpdateJsonContent)
                 .accept(MediaType.APPLICATION_JSON))
