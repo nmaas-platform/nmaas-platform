@@ -4,8 +4,8 @@ import {AppConfigService} from '../../service/appconfig.service';
 import {AppsService} from '../../service/apps.service';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
-import {ListTypeAware, ListType} from '../common/listtype';
-import {AppViewType, AppViewTypeAware} from '../common/viewtype';
+import {ListType} from '../common/listtype';
+import {AppViewType} from '../common/viewtype';
 import {Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {isUndefined} from 'util';
@@ -15,9 +15,11 @@ import {isUndefined} from 'util';
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css']
 })
-@ListTypeAware
-@AppViewTypeAware
+
 export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
+
+    public ListType = ListType;
+    public AppViewType = AppViewType;
 
   @Input()
   public appView: AppViewType = AppViewType.APPLICATION;
