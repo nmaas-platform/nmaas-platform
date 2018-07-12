@@ -2,7 +2,12 @@ package net.geant.nmaas.externalservices.inventory.gitlab.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name="gitlab")
@@ -58,4 +63,10 @@ public class GitLab {
     public String getApiUrl(){
         return String.format("http://%s:%d",this.server,this.port);
     }
+
+    @JsonIgnore
+    public String getApiUrlWithoutProtocol() {
+        return String.format("%s:%d", this.server, this.port);
+    }
+
 }

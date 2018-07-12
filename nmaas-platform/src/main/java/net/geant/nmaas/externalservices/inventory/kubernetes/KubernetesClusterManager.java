@@ -145,6 +145,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         return loadSingleCluster().getDeployment().getDefaultPersistenceClass();
     }
 
+    @Override
+    public Boolean getUseInClusterGitLabInstance() {
+        return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
+    }
+
     private KCluster loadSingleCluster() {
         long noOfClusters = repository.count();
         if (noOfClusters != 1) {

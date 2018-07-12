@@ -61,6 +61,10 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getApiUrl();
     }
 
+    public String getGitLabApiUrlWithoutProtocol() {
+        return loadSingleGitlabConfig().getApiUrlWithoutProtocol();
+    }
+
     public String getGitLabApiToken(){
         return loadSingleGitlabConfig().getToken();
     }

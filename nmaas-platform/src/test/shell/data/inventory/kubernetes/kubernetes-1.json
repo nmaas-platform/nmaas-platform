@@ -23,7 +23,8 @@
   "deployment": {
     "useDefaultNamespace":true,
     "defaultNamespace":"default",
-    "defaultPersistenceClass":"nmaas-nfs-storage"
+    "defaultPersistenceClass":"nmaas-nfs-storage",
+    "useInClusterGitLabInstance":true
   },
   "attachPoint": {
     "routerName":"R3",
