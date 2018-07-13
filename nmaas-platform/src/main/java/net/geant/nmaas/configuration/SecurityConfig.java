@@ -92,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/configuration/ui",
 			"/configuration/security",
 			"/swagger-ui.html",
+			"/api/info/**",
 			"/webjars/**"
 	};
 	
@@ -145,6 +146,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/configuration/security"),
 										new AntPathRequestMatcher("/swagger-ui.html"),
 										new AntPathRequestMatcher("/webjars/**"),
+										new AntPathRequestMatcher("/api/info/**"),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
@@ -164,7 +166,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	public FilterRegistrationBean corsFilter() {
+	public CorsFilter corsFilter(){
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration corsConfig = new CorsConfiguration();
 		
@@ -175,10 +177,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		source.registerCorsConfiguration("/api/**", corsConfig);
 
-		FilterRegistrationBean bean = new FilterRegistrationBean();
-		bean.setFilter(new CorsFilter(source));
-		bean.setOrder(0);
-		return bean;
+		return new CorsFilter(source);
 	}
 	
 	@Bean

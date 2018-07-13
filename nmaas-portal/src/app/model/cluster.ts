@@ -13,14 +13,14 @@ class ClusterApi {
 
 class ClusterAttachPoint {
     public id: number;
-    public routerId: string;
-    public routerInterfaceName: string;
-    public routerName: string;
+    public routerId: string="";
+    public routerInterfaceName: string="";
+    public routerName: string="";
 }
 
 class ClusterDeployment {
-    public defaultNamespace: string;
-    public defaultPersistenceClass: string;
+    public defaultNamespace: string="";
+    public defaultPersistenceClass: string="";
     public id: number;
     public useDefaultNamespace: boolean = false;
 }
@@ -75,13 +75,13 @@ export class Cluster {
 }
 
 export enum IngressControllerConfigOption{
-    USE_EXISTING,
-    DEPLOY_NEW_FROM_REPO,
-    DEPLOY_NEW_FROM_ARCHIVE
+    USE_EXISTING = 'USE_EXISTING',
+    DEPLOY_NEW_FROM_REPO = 'DEPLOY_NEW_FROM_REPO',
+    DEPLOY_NEW_FROM_ARCHIVE = 'DEPLOY_NEW_FROM_ARCHIVE'
 }
 
 export enum IngressResourceConfigOption{
-    NOT_USED,
-    DEPLOY_USING_API,
-    DEPLOY_FROM_CHART
+    NOT_USED = 'NOT_USED',
+    DEPLOY_USING_API = 'DEPLOY_USING_API',
+    DEPLOY_FROM_CHART = 'DEPLOY_FROM_CHART'
 }

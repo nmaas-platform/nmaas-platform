@@ -15,16 +15,20 @@ public enum IngressResourceConfigOption {
     DEPLOY_USING_API {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkArgument(ingress.getExternalServiceDomain() != null, "External service domain can't be empty.");
-            checkArgument(ingress.getTlsSupported() != null, "TLS support flag must be set.");
+            checkArgument(ingress.getExternalServiceDomain() != null && !ingress.getExternalServiceDomain().isEmpty()
+                    , "When deploying ingress resource the external service domain can't be empty.");
+            checkArgument(ingress.getTlsSupported() != null
+                    , "When deploying ingress resource the TLS support flag must be set.");
         }
     },
     /** Use ingress resource definition from the application helm chart */
     DEPLOY_FROM_CHART {
         @Override
         public void validate(KClusterIngress ingress) {
-            checkArgument(ingress.getExternalServiceDomain() != null, "External service domain can't be empty.");
-            checkArgument(ingress.getTlsSupported() != null, "TLS support flag must be set.");
+            checkArgument(ingress.getExternalServiceDomain() != null && !ingress.getExternalServiceDomain().isEmpty()
+                    , "When deploying ingress resource the external service domain can't be empty.");
+            checkArgument(ingress.getTlsSupported() != null
+                    , "When deploying ingress resource the TLS support flag must be set.");
         }
     };
 

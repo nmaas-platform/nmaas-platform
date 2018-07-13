@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, Output} from "@angular/core";
 import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
 import {OnInit} from "@angular/core/public_api";
 import {Cluster} from "../../../../model/cluster";
@@ -14,6 +14,9 @@ import {ComponentMode} from "../../../../shared";
 export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     public clusterName: string;
     public cluster: Cluster;
+
+    @Output()
+    public error:string;
 
     constructor(private clusterService: ClusterService, private route: ActivatedRoute, private router: Router) {
         super();
@@ -39,10 +42,10 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
         if (!upCluster) return;
         if(this.clusterName) {
             this.clusterService.update(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/']));
+                .subscribe((e) => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
         } else {
             this.clusterService.add(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/', upCluster.name]));
+                .subscribe((e) => this.router.navigate(['/admin/clusters/', upCluster.name]),err => this.error=err.message);
         }
     }
 

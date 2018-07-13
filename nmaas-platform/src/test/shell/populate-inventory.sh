@@ -38,6 +38,12 @@ echo
 curl -X GET $API_URL/management/kubernetes --header "Authorization: Bearer $TOKEN" | python -m json.tool
 
 echo
+echo Adding default GitLab configuration
+curl -X POST $API_URL/management/gitlab --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/gitlab/gitlab-1.json
+echo
+curl -X GET $API_URL/management/gitlab --header "Authorization: Bearer $TOKEN" | python -m json.tool
+
+echo
 echo Adding default network attachment point to default domain testdom1
 curl -X POST $API_URL/management/domains/domain1/network --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/inventory/domains/domain1-network-attach-point.json
 echo

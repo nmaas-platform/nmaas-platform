@@ -74,6 +74,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
+        addRepositoryAccessUserToProject(gitLabProjectId);
         GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
         uploadConfigFilesToProject(gitLabProjectId, configIds);
@@ -160,6 +161,14 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
+    private void addRepositoryAccessUserToProject(Integer projectId) throws FileTransferException{
+        try{
+            gitlab.getProjectApi().addMember(projectId, getUserIdByUsername(defaultRepositoryAccessUsername()), 10);
+        } catch(GitLabApiException e){
+            throw new FileTransferException("" + e.getMessage() + e.getReason());
+        }
+    }
+
     private String projectName(Identifier deploymentId) {
         return deploymentId.value();
     }
@@ -174,6 +183,14 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
+    }
+
+    private String defaultRepositoryAccessUsername(){
+        return gitLabManager.getGitLabRepositoryAccessUsername();
+    }
+
+    private Integer getUserIdByUsername(String username) throws GitLabApiException{
+        return gitlab.getUserApi().getUser(username).getId();
     }
 
     private String getUser(Integer gitLabUserId) throws GitLabApiException {
