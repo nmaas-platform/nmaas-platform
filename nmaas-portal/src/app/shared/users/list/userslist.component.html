@@ -3,7 +3,8 @@
 		<thead>
 			<tr>
 				<th>Username</th>
-				<th>Domains</th>
+				<th *ngIf="domainId === domainService.getGlobalDomainId()">Domains</th>
+				<th *ngIf="domainId != domainService.getGlobalDomainId()">Roles</th>
 				<th>Enabled</th>
 				<th>&nbsp;</th>
 			</tr>
@@ -13,13 +14,16 @@
 			<ng-template ngFor let-user [ngForOf]="users">
 			<tr>
 				<td>{{user.username}}</td>
-				<td><span *ngFor="let role of filterDomainNames(user)">{{getDomainName(role.domainId) | async}}, </span><br></td>
+				<td *ngIf="domainId === domainService.getGlobalDomainId()"><span *ngFor="let role of filterDomainNames(user)" >{{getDomainName(role.domainId) | async}}, </span><br></td>
 <!-- 				<td><span *ngFor="let domainId of getUserDomainIds(user)">{{getDomainName(domainId) | async}}</span><br></td> -->
 <!-- 				 <td><ng-template ngFor let-domainId [ngForOf]="user.getDomainIds()"><span>{{getDomainName(domainId) | async}}</span><br></ng-template></td> -->
+				<td *ngIf="domainId != domainService.getGlobalDomainId()"><span *ngFor="let role of getOnlyDomainRoles(user)">{{role.role | slice:5}}</span></td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
 				<td class="text-right">
 					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">Details</a>
-					<a *ngIf="isModeAllowed(ComponentMode.DELETE)" (click)="remove(user.id)" class="btn btn-sm btn-danger" role="button">Remove</a>
+					<a (click)="submit(user)" *ngIf="user.enabled && authService.hasRole('ROLE_SUPERADMIN')" class="btn btn-sm btn-warning" role="button">Disable</a>
+					<a (click)="submit(user)" *ngIf="!user.enabled && authService.hasRole('ROLE_SUPERADMIN')" class="btn btn-sm btn-warning" role="button">Enable</a>
+					<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()" (click)="remove(user)" class="btn btn-sm btn-danger" role="button">Remove from domain</a>
 				</td>
 			</tr>
 			</ng-template>
