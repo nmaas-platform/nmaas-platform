@@ -26,6 +26,7 @@ public interface DomainService {
 	
 	Domain createDomain(String name, String codename) throws ProcessingException;
 	Domain createDomain(String name, String codename, boolean active) throws ProcessingException;
+	Domain createDomain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) throws ProcessingException;
 	
 	Optional<Domain> findDomain(String name);
 	Optional<Domain> findDomain(Long id);
