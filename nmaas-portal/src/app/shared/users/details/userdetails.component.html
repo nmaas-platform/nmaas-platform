@@ -14,15 +14,6 @@
 				</div>				
 			</div>
 
-			<div *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="form-group">
-				<label for="enabled" class="col-sm-2 control-label">Enabled:</label>
-				<div class="col-sm-10">
-						<input type="checkbox" id="enabled"
-							name="enabled" [(ngModel)]="user.enabled"
-							[disabled]="isInMode(ComponentMode.VIEW)">
-				</div>
-			</div>
-
 			<div class="form-group">
 				<label for="firstname" class="col-sm-2 control-label">Firstname:</label>
 				<div class="col-sm-10">
@@ -49,7 +40,7 @@
 				</div>
 			</div>
 
-			<div *ngIf="user?.id && !isInMode(ComponentMode.PROFILVIEW)" class="form-group">
+			<div *ngIf="user?.id && !isInMode(ComponentMode.PROFILVIEW) && authService.hasRole('ROLE_SUPERADMIN')" class="form-group">
 				<label class="col-sm-2 control-label">Id in db:</label>
 				<div class="col-sm-10">
 					<p class="form-control-static">{{user?.id}}</p>

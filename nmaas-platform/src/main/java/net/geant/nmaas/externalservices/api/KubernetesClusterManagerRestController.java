@@ -10,7 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -56,21 +65,22 @@ public class KubernetesClusterManagerRestController {
     /**
      * Store new {@link KCluster} instance. In current implementation only a single Kubernetes cluster in
      * the system is supported.
-     * @param newKubernetesCluster new {@link KCluster} data
+     * @param cluster new {@link KCluster} data
      * @throws OnlyOneKubernetesClusterSupportedException when trying to add new cluster while one already exists (HttpStatus.NOT_ACCEPTABLE)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addKubernetesCluster(@RequestBody KCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
-        clusterManager.addNewCluster(newKubernetesCluster);
+    public void addKubernetesCluster(@RequestBody KCluster cluster) throws OnlyOneKubernetesClusterSupportedException {
+        cluster.validate();
+        clusterManager.addNewCluster(cluster);
     }
 
     /**
      * Update {@link KCluster} instance
      * @param name Unique {@link KCluster} name
-     * @param updatedKubernetesCluster {@link KCluster} instance pass to update
+     * @param cluster {@link KCluster} instance pass to update
      * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -79,9 +89,10 @@ public class KubernetesClusterManagerRestController {
             value = "/{name}",
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("name") String name,@RequestBody KCluster updatedKubernetesCluster)
+    public void updateKubernetesCluster(@PathVariable("name") String name, @RequestBody KCluster cluster)
             throws KubernetesClusterNotFoundException {
-        clusterManager.updateCluster(name, updatedKubernetesCluster);
+        cluster.validate();
+        clusterManager.updateCluster(name, cluster);
     }
 
     /**

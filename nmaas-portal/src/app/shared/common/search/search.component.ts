@@ -11,22 +11,22 @@ export class SearchComponent implements OnInit {
   public value: string;
   
   @Output()
-  public submit: EventEmitter<string> = new EventEmitter<string>();
+  public submitted: EventEmitter<string> = new EventEmitter<string>();
   
   @Output()
-  public change: EventEmitter<string> = new EventEmitter<string>();
+  public changed: EventEmitter<string> = new EventEmitter<string>();
   
   constructor() { }
 
   ngOnInit() {
   }
 
-  public onSubmit(): void {
-    this.submit.emit(this.value);
+  protected onSubmit(): void {
+    this.submitted.emit(this.value);
   }
   
-  public onChange(): void {
-    this.change.emit(this.value);
+  protected onChange(): void {
+    this.changed.emit(this.value);
   }
   
 }

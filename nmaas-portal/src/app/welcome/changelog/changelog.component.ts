@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 import { Router } from '@angular/router';
-import { NavbarComponent } from '../../shared/index';
-import { FooterComponent } from '../../shared/index';
 import { ChangelogService } from '../../service/index';
 
 @Component({
@@ -20,9 +18,5 @@ export class ChangelogComponent implements OnInit {
 		this.changelogService.getChangelog().subscribe((changelog) => {
 			this.changelog = changelog;
 		})
-	}
-
-	public isRouteLogin(): boolean {
-		return this.router.url === '/welcome/login' || this.router.url === '/welcome/registration' ? true : false;
 	}
 }

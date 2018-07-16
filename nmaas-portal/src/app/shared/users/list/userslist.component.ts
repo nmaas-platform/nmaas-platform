@@ -11,6 +11,8 @@ import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
 import {UserRole} from "../../../model/userrole";
+import {UserDataService} from "../../../service/userdata.service";
+import {AuthService} from "../../../auth/auth.service";
 
 
 
@@ -25,17 +27,22 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   @Input()
   public users: User[] = [];
 
+  public domainId: number;
 
   @Output()
-  public onDelete: EventEmitter<number> = new EventEmitter<number>();
+  public onSave: EventEmitter<User> = new EventEmitter<User>();
+
+  @Output()
+  public onDelete: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
   public onView: EventEmitter<number> = new EventEmitter<number>();
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, private domainService: DomainService) {
+  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService, private authService:AuthService) {
     super();
+    userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
 
   ngOnInit() {
@@ -43,6 +50,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   ngOnChanges(changes: SimpleChanges): void {
     console.log('UsersList:onChanges ' + changes.toString());
+    this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
   
   public getDomainName(domainId: number): Observable<string> {
@@ -61,6 +69,10 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId());
   }
 
+  public getOnlyDomainRoles(user:User):UserRole[]{
+    return user.roles.filter(role=>role.domainId===this.domainId);
+  }
+
   public getUserDomainIds(user: User): number[] {
     if (!isUndefined(user)) {
       return user.getDomainIds();
@@ -69,12 +81,18 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public remove(userId: number) {
-    this.onDelete.emit(userId);
+  public remove(user:User) {
+    this.onDelete.emit(user);
   }
 
   public view(userId: number): void {
     console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
+
+   public submit(user:User): void {
+       console.log('submit(' + user.username + ')');
+       this.onSave.emit(user);
+   }
+
 }
