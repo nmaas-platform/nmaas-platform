@@ -4,7 +4,7 @@
 		<div class="form-group">
 			<label for="name" class="col-sm-2 control-label">Name:</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="name" name="name"
+				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW) || authService.hasRole('ROLE_OPERATOR')" id="name" name="name"
 					[(ngModel)]="domain.name" #name="ngModel" required>
 				<div *ngIf="name.invalid && (name.dirty || name.touched)"
 					class="alert alert-danger">
@@ -34,19 +34,19 @@
 		<div class="form-group">
 			<label for="active" class="col-sm-2 control-label">Active:</label>
 			<div class="col-sm-10">
-				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="active"
+				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW) || authService.hasRole('ROLE_OPERATOR')" id="active"
 					name="active" [(ngModel)]="domain.active">
 			</div>
 		</div>
 
-		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && authService.hasRole('ROLE_SUPERADMIN')">
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SUPERADMIN') || authService.hasRole('ROLE_OPERATOR'))">
 			<label class="col-sm-2 control-label">Id in db:</label>
 			<div class="col-sm-10">
 				<p class="form-control-static">{{domain.id}}</p>
 			</div>
 		</div>
 
-		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW)">
+		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW) && !authService.hasRole('ROLE_OPERATOR')">
 			<div class="panel-heading">User information</div>
 				<div class="panel-body">
         			<table class="table table-hover table-condensed">

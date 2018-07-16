@@ -11,12 +11,12 @@
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_USER']"><a
 					[routerLink]="['/instances']">Instances</a></li>
 				<li class="divider-vertical"></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']"><a
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_OPERATOR']"><a
 					[routerLink]="['/domains']">Domains</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']">
 					<a [routerLink]="['/users']">Users</a>
 				</li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']" class="dropdown">
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']" class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a [routerLink]="['/admin/clusters']">Kubernetes</a>

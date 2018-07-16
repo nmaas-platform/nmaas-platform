@@ -6,7 +6,7 @@ import { ComponentMode } from '../../../shared/common/componentmode';
 
 export const ClustersRoutes: Route[] = [
     { path: 'admin/clusters', component: ClusterDetailsComponent, canActivate: [AuthGuard, RoleGuard],
-        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN']}},
+        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN', 'ROLE_OPERATOR']}},
     { path: 'admin/clusters/:name', component: ClusterDetailsComponent, canActivate: [AuthGuard, RoleGuard],
-        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN']} }
+        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN', 'ROLE_OPERATOR']} }
 ];

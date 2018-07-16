@@ -41,11 +41,12 @@ export class DomainComponent extends BaseComponent implements OnInit {
         this.domain = new Domain();
         this.domain.active = true;
       }
-      let users: Observable<User[]>;
-      users = this.userService.getAll(this.domainId);
+      if(!this.authService.hasRole("ROLE_OPERATOR")){
+          let users: Observable<User[]>;
+          users = this.userService.getAll(this.domainId);
 
-      users.subscribe((all)=>{this.users = all;});
-
+          users.subscribe((all)=>{this.users = all;});
+      }
     });
   }
 
