@@ -74,7 +74,7 @@ public class DomainController extends AppBaseController {
 	
 	@PutMapping("/{domainId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
 	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
 		if(!domainId.equals(domainUpdate.getId()))
 			throw new ProcessingException("Unable to change domain id");
