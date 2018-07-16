@@ -131,4 +131,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     return template;
   }
 
+  private getUserFriendlyString(stringToChange:string){
+    let re = /_/gi;
+    return stringToChange.charAt(0).toUpperCase() + stringToChange.substr(1,stringToChange.length).replace(re," ").toLowerCase();
+  }
+
 }

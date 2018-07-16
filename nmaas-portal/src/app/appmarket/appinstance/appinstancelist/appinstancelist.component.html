@@ -33,7 +33,7 @@
 								 <td>{{appInstance?.owner?.username}}</td>
 								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
 								 <td>{{appInstance?.applicationName}}</td>
-								 <td>{{appInstance?.state}}</td>
+								 <td>{{getUserFriendlyString(appInstance?.state.toString())}}</td>
 								<td>
 									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 										Details

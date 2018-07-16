@@ -70,5 +70,9 @@ export class AppInstanceListComponent implements OnInit {
     this.update(this.domainId);
   }
 
+  private getUserFriendlyString(stringToChange:string){
+    let re = /_/gi;
+    return stringToChange.charAt(0).toUpperCase() + stringToChange.substr(1,stringToChange.length).replace(re," ").toLowerCase();
+  }
 
 }

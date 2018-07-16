@@ -68,8 +68,8 @@
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 				</div>
-				<p>State: {{appInstanceStatus?.state ? appInstanceStatus?.state : '...'}}</p>
-				<p>Details: {{appInstanceStatus?.details}}</p>
+				<p>State: {{appInstanceStatus?.state ? getUserFriendlyString(appInstanceStatus?.state.toString()) : 'Something went wrong'}}</p>
+				<p>Details: {{getUserFriendlyString(appInstanceStatus?.details)}}</p>
 			</div>
 						
 			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
