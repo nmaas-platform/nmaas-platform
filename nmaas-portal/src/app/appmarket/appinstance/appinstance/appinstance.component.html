@@ -71,6 +71,29 @@
 				<p>State: {{appInstanceStatus?.state ? appInstanceStatus?.state : '...'}}</p>
 				<p>Details: {{appInstanceStatus?.details}}</p>
 			</div>
+
+			<div class="row" *ngIf="this.appInstanceStateHistory">
+				<hr>
+				<table class="table table-hover table-condensed">
+					<thead>
+						<tr>
+							<th>Timestamp</th>
+							<th>Previous state</th>
+							<th>Next state</th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory">
+							<tr>
+								<td>{{history.timestamp | date:'medium'}}</td>
+								<td>{{history.previousState}}</td>
+								<td>{{history.currentState}}</td>
+							</tr>
+						</ng-template>
+					</tbody>
+				</table>
+			</div>
 						
 			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
 				<h3>Configuration</h3>
