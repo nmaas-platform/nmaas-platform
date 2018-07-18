@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -18,7 +19,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +30,6 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -193,6 +192,18 @@ public class AppInstanceController extends AppBaseController {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
 
 		return getAppInstanceState(appInstance);
+	}
+
+	@GetMapping({"/apps/instances/{appInstanceId}/state/history", "/domains/{domainId}/apps/instances/{appInstanceId}/state/history"})
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+	@Transactional
+	public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId, @NotNull Principal principal) throws MissingElementException{
+		try{
+			net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+			return appDeploymentMonitor.appDeploymentHistory(appInstance.getInternalId());
+		} catch (InvalidDeploymentIdException e){
+			throw new MissingElementException(e.getMessage());
+		}
 	}
 
 	//domainId is not used in this method.

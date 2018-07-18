@@ -1,9 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.entities.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +33,7 @@ public class AppDeploymentRepositoryManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateState(Identifier deploymentId, AppDeploymentState currentState) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        addChangeOfStateToHistory(appDeployment, currentState);
         appDeployment.setState(currentState);
         repository.save(appDeployment);
     }
@@ -71,5 +70,14 @@ public class AppDeploymentRepositoryManager {
 
     public void removeAll() {
         repository.deleteAll();
+    }
+
+    public List<AppDeploymentHistory> getAppStateHistoryByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException{
+        AppDeployment app = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
+        return app.getHistory();
+    }
+
+    private void addChangeOfStateToHistory(AppDeployment appDeployment, AppDeploymentState appDeploymentState){
+        appDeployment.getHistory().add(new AppDeploymentHistory(appDeployment, new Date(), appDeployment.getState(), appDeploymentState));
     }
 }

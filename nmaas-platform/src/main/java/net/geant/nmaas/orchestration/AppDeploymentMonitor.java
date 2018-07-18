@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
@@ -43,5 +44,14 @@ public interface AppDeploymentMonitor {
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
     AppUiAccessDetails userAccessDetails(Identifier deploymentId) throws InvalidAppStateException, InvalidDeploymentIdException;
+
+    /**
+     * Retrieves information about changes in application states.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return all of state changes of the application
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) throws InvalidDeploymentIdException;
 
 }
