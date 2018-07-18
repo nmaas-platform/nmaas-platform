@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 
-import { AppsService } from '../../service/index';
-import { Id, Comment } from '../../model/index';
+import {AppsService} from '../../service/index';
+import {Comment, Id} from '../../model/index';
 
 @Component({
     selector: 'comments',
@@ -17,7 +17,13 @@ export class CommentsComponent implements OnInit {
 
     newComment: Comment = new Comment();
 
+    newReply: Comment = new Comment();
+
     comments: Comment[];
+
+    commentId: number;
+
+    subComment: boolean;
 
     constructor(private appsService: AppsService) { }
 
@@ -38,9 +44,24 @@ export class CommentsComponent implements OnInit {
 
     }
 
+    public addReply(parentId:number):void{
+        this.newReply.parentId = parentId;
+        this.appsService.addAppCommentByUrl(this.pathUrl, this.newReply)
+            .subscribe(id => {
+                this.newReply = new Comment();
+                this.refresh();
+            });
+    }
+
     public deleteComment(id: Number): void {
         this.appsService.deleteAppCommentByUrl(this.pathUrl, new Id(id)).subscribe(
                 () => { this.refresh() }
             );
+    }
+
+    public setCommentNumberOnClick(commentId:number, subComment:boolean){
+        this.commentId = commentId;
+        this.subComment = subComment;
+        this.newReply.comment = "";
     }
 }
