@@ -71,20 +71,19 @@
 				<p>State: {{appInstanceStatus?.state ? appInstanceStatus?.state : '...'}}</p>
 				<p>Details: {{appInstanceStatus?.details}}</p>
 			</div>
-						
 			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
-				<h3>Configuration</h3>
-				<hr>
-				<json-schema-form *ngIf="configurationTemplate"
-					[form]="configurationTemplate"
-					[options]="jsonFormOptions"
-					[framework]="bootstrap-3"
-					[language]="en"
-					(onSubmit)="applyConfiguration($event)">
-				</json-schema-form>
-
+				<div class="col-xs-12">
+					<h3>Configuration</h3>
+					<hr>
+					<json-schema-form *ngIf="configurationTemplate"
+									  [form]="configurationTemplate"
+									  [options]="jsonFormOptions"
+									  [framework]="bootstrap-3"
+									  [language]="en"
+									  (onSubmit)="applyConfiguration($event)">
+					</json-schema-form>
+				</div>
 			</div>
-
 			<hr>
 			<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
 		</div>
