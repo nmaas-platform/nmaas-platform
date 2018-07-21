@@ -6,6 +6,7 @@ public class GitLabView {
     private String server;
     private String token;
     private Integer port;
+    private String repositoryAccessUsername;
 
     public Long getId() {
         return id;
@@ -37,5 +38,13 @@ public class GitLabView {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public void setRepositoryAccessUsername(String repositoryAccessUsername){
+        this.repositoryAccessUsername = repositoryAccessUsername;
+    }
+
+    public String getRepositoryAccessUsername(){
+        return this.repositoryAccessUsername;
     }
 }

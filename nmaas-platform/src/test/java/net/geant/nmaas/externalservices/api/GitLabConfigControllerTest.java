@@ -156,6 +156,7 @@ public class GitLabConfigControllerTest {
         config.setPort(80);
         config.setServer("11.10.1.1");
         config.setToken("testtoken");
+        config.setRepositoryAccessUsername("nmaas-conf-automation");
         return config;
     }
 }

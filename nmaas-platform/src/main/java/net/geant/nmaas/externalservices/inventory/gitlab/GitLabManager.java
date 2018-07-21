@@ -65,6 +65,14 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getToken();
     }
 
+    public String getGitLabApiVersion(){
+        return loadSingleGitlabConfig().getApiVersion();
+    }
+
+    public String getGitLabRepositoryAccessUsername(){
+        return loadSingleGitlabConfig().getRepositoryAccessUsername();
+    }
+
     private GitLab loadSingleGitlabConfig(){
         if(repository.count() != 1){
             throw new IllegalStateException("Found "+repository.count()+" gitlab config instead of one");

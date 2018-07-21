@@ -27,6 +27,9 @@ public class GitLab {
     @Column(nullable=false)
     private Integer port;
 
+    @Column(nullable = false)
+    private String repositoryAccessUsername;
+
     public Long getId() {
         return id;
     }
@@ -57,6 +60,14 @@ public class GitLab {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public String getRepositoryAccessUsername() {
+        return repositoryAccessUsername;
+    }
+
+    public void setRepositoryAccessUsername(String repositoryAccessUsername) {
+        this.repositoryAccessUsername = repositoryAccessUsername;
     }
 
     @JsonIgnore

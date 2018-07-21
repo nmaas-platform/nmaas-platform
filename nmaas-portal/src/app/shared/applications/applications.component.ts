@@ -18,8 +18,8 @@ import {isUndefined} from 'util';
 
 export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
-  public ListType = ListType;
-  public AppViewType = AppViewType;
+    public ListType = ListType;
+    public AppViewType = AppViewType;
 
   @Input()
   public appView: AppViewType = AppViewType.APPLICATION;
@@ -30,23 +30,24 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public domainId: number;
 
-  public applications: Observable<Application[]>;
-  public selected: Observable<Set<number>>;
+  protected applications: Observable<Application[]>;
+  protected copy_applications: Observable<Application[]>;
+  protected selected: Observable<Set<number>>;
 
-  public searchedAppName: string;
+  protected searchedAppName: string = "";
+  protected searchedTag: string = "all";
 
   constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
 
   ngOnInit() {
-    this.updateDomain();
+    // this.updateDomain();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.updateDomain();
   }
 
-  public updateDomain(): void {
-
+  protected updateDomain(): void {
     let domainId: number;
     let applications: Observable<Application[]>;
 
@@ -58,23 +59,22 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (+this.appView) {
       case AppViewType.APPLICATION:
-        applications = this.appsService.getApps();
-        applications.subscribe((apps) => this.updateSelected(apps));
-        break;
+      applications = this.appsService.getApps();
+      applications.subscribe((apps) => this.updateSelected(apps));
+      break;
       case AppViewType.DOMAIN:
-        applications = this.appSubsService.getSubscribedApplications(domainId);
-        applications.subscribe((apps) => this.updateSelected(apps));
-        break;
+      applications = this.appSubsService.getSubscribedApplications(domainId);
+      break;
       default:
-        applications = Observable.of<Application[]>([]);
-        break;
+      applications = Observable.of<Application[]>([]);
+      break;
     }
 
     this.applications = applications;
 
   }
 
-  public updateSelected(apps: Application[]) {
+  protected updateSelected(apps: Application[]) {
 
     let subscriptions: Observable<AppSubscription[]>;
     if (isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
@@ -100,8 +100,34 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  public filterAppsByName($event): void {
-
+  protected doSearch():void {
+    if (this.copy_applications == null) {this.copy_applications = this.applications}
+    this.applications = this.copy_applications;
+    let filteredAppsOne: Application[];
+    let filteredAppsTwo: Application[];
+    let tag = this.searchedTag.toLocaleLowerCase();
+    let typed = this.searchedAppName.toLocaleLowerCase();
+    this.applications.subscribe((apps) => {
+      if (tag === "all"){
+        filteredAppsOne = apps;
+      } else {
+        filteredAppsOne = apps.filter(app => app.tags.map(entry => entry.toLocaleLowerCase()).findIndex(function (element) {return element.indexOf(tag) > -1;}) > -1);
+      }
+      filteredAppsTwo = filteredAppsOne.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
+      this.applications = Observable.of(filteredAppsTwo);
+    });
   }
 
+  protected filterAppsByName(typed: string): void {
+
+    this.searchedAppName = typed;
+    this.doSearch();
+  }
+
+  protected filterAppsByTag(tag: string): void {
+
+    this.searchedAppName = "";
+    this.searchedTag = tag;
+    this.doSearch();
+  }
 }
