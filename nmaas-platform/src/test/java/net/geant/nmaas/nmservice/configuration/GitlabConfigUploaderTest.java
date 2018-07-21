@@ -32,8 +32,9 @@ public class GitlabConfigUploaderTest {
     @Test
     public void shouldGenerateProperRepoCloneUrlForInClusterGitLab() throws InvalidDeploymentIdException {
         when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(true);
+        when(gitLabManager.getGitLabRepositoryAccessUsername()).thenReturn("test-user");
         String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl");
-        assertThat(result, is("http://" + GitLabConfigUploader.DEFAULT_REPO_CLONE_USER + "@gitlab.test.pl"));
+        assertThat(result, is("http://" + "test-user" + "@gitlab.test.pl"));
     }
 
     @Test

@@ -47,8 +47,10 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private KClusterDeploymentManager kClusterDeployment;
 
     @Autowired
-    public GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations,
-                                GitLabManager gitLabManager, KClusterDeploymentManager kClusterDeployment) {
+    GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager,
+                         NmServiceConfigFileRepository configurations,
+                         GitLabManager gitLabManager,
+                         KClusterDeploymentManager kClusterDeployment) {
         this.serviceRepositoryManager = serviceRepositoryManager;
         this.configurations = configurations;
         this.gitLabManager = gitLabManager;
@@ -176,7 +178,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return deploymentId.value();
     }
 
-    GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId)
+    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId)
             throws FileTransferException {
         try {
             String gitLabUser = getUser(gitLabUserId);
@@ -190,7 +192,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     String getGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
         return kClusterDeployment.getUseInClusterGitLabInstance()
-                        ? generateCompleteGitCloneUrl(DEFAULT_REPO_CLONE_USER, gitLabRepoUrl)
+                        ? generateCompleteGitCloneUrl(gitLabManager.getGitLabRepositoryAccessUsername(), gitLabRepoUrl)
                         : generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
     }
 
