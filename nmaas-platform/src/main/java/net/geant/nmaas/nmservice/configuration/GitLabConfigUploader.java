@@ -41,6 +41,8 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
 
+    static final String DEFAULT_REPO_CLONE_USER = "nmaas-conf-automation";
+
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
     private GitLabManager gitLabManager;
@@ -156,10 +158,17 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private Integer createProjectWithinGroupWithMember(Integer groupId, Integer userId, Identifier deploymentId) throws FileTransferException {
         try {
             Project project = gitlab.getProjectApi().createProject(groupId, projectName(deploymentId));
-            // gitlab.getProjectApi().addMember(project.getId(), userId, fullAccessCode());
+            gitlab.getProjectApi().addMember(
+                    project.getId(),
+                    userId,
+                    fullAccessCode());
+            gitlab.getProjectApi().addMember(
+                    project.getId(),
+                    gitlab.getUserApi().getUser(DEFAULT_REPO_CLONE_USER).getId(),
+                    fullAccessCode());
             return project.getId();
         } catch (GitLabApiException e) {
-            throw new FileTransferException("" + e.getMessage() + e.getReason());
+            throw new FileTransferException("" + e.getMessage() + " " + e.getReason());
         }
     }
 
@@ -167,18 +176,22 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return deploymentId.value();
     }
 
-    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId)
+    GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId)
             throws FileTransferException {
         try {
             String gitLabUser = getUser(gitLabUserId);
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            String gitCloneBaseUrl = kClusterDeployment.getUseInClusterGitLabInstance()
-                    ? gitLabManager.getGitLabApiUrlWithoutProtocol() : gitLabRepoUrl;
-            String gitCloneUrl = generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitCloneBaseUrl);
+            String gitCloneUrl = getGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
             return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
+    }
+
+    String getGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
+        return kClusterDeployment.getUseInClusterGitLabInstance()
+                        ? generateCompleteGitCloneUrl(DEFAULT_REPO_CLONE_USER, gitLabRepoUrl)
+                        : generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
     }
 
     private String getUser(Integer gitLabUserId) throws GitLabApiException {
@@ -187,6 +200,11 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
         return gitlab.getProjectApi().getProject(gitLabProjectId).getHttpUrlToRepo();
+    }
+
+    private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabRepoUrl) {
+        String[] urlParts = gitLabRepoUrl.split("//");
+        return urlParts[0] + "//" + gitLabUser + "@" + urlParts[1];
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {

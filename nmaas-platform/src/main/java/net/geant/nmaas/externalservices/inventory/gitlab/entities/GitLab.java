@@ -64,9 +64,4 @@ public class GitLab {
         return String.format("http://%s:%d",this.server,this.port);
     }
 
-    @JsonIgnore
-    public String getApiUrlWithoutProtocol() {
-        return String.format("%s:%d", this.server, this.port);
-    }
-
 }
