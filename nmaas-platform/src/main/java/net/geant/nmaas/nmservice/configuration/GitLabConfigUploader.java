@@ -180,7 +180,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
             throws FileTransferException {
         try {
             String gitLabUser = getUser(gitLabUserId);
-            String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
+            String gitLabRepoUrl = getHttpUrlToRepo();
             String gitCloneUrl = getGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
             return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl);
         } catch (GitLabApiException e) {
@@ -198,8 +198,8 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return gitlab.getUserApi().getUser(gitLabUserId).getUsername();
     }
 
-    private String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
-        return gitlab.getProjectApi().getProject(gitLabProjectId).getHttpUrlToRepo();
+    private String getHttpUrlToRepo() {
+        return gitLabManager.getGitLabApiUrl();
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabRepoUrl) {
