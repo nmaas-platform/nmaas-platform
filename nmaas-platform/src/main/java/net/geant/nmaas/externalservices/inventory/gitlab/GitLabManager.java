@@ -70,6 +70,14 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getRepositoryAccessUsername();
     }
 
+    public String getGitlabServer() {
+        return loadSingleGitlabConfig().getServer();
+    }
+
+    public int gettGitlabPort() {
+        return loadSingleGitlabConfig().getPort();
+    }
+
     private GitLab loadSingleGitlabConfig(){
         if(repository.count() != 1){
             throw new IllegalStateException("Found " + repository.count() + " gitlab config instead of one");

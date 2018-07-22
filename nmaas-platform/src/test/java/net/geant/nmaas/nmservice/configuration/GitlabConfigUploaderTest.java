@@ -38,15 +38,15 @@ public class GitlabConfigUploaderTest {
     public void shouldGenerateProperRepoCloneUrlForInClusterGitLab() throws InvalidDeploymentIdException {
         when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(true);
         when(gitLabManager.getGitLabRepositoryAccessUsername()).thenReturn("test-user");
-        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl");
-        assertThat(result, is("http://" + "test-user" + "@gitlab.test.pl"));
+        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/group/test.git");
+        assertThat(result, is("http://" + "test-user" + "@gitlab.test.pl/group/test.git"));
     }
 
     @Test
     public void shouldGenerateProperRepoCloneUrlForExternalGitLab() throws InvalidDeploymentIdException {
         when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(false);
-        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl");
-        assertThat(result, is("http://user:password@gitlab.test.pl"));
+        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/group/test.git");
+        assertThat(result, is("http://user:password@gitlab.test.pl/group/test.git"));
     }
 
     @Test
@@ -58,9 +58,10 @@ public class GitlabConfigUploaderTest {
         when(projectApi.getProject(anyInt())).thenReturn(project);
         when(project.getHttpUrlToRepo())
                 .thenReturn("http://example.gitlab.com/group/project.git");
-        when(gitLabManager.getGitLabApiUrl()).thenReturn("test-server");
+        when(gitLabManager.getGitlabServer()).thenReturn("test-server");
+        when(gitLabManager.gettGitlabPort()).thenReturn(80);
         uploader.setGitlab(gitLabApi);
         String result = uploader.getHttpUrlToRepo(1);
-        assertThat(result, is("http://test-server/group/project.git"));
+        assertThat(result, is("http://test-server:80/group/project.git"));
     }
 }

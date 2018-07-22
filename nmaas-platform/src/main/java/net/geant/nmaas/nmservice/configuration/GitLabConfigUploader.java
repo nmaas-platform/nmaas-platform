@@ -211,7 +211,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     String getHttpUrlToRepo(Integer gitLabProjectId) throws GitLabApiException {
         String[] urlFromGitlabApiParts = gitlab.getProjectApi().getProject(gitLabProjectId).getHttpUrlToRepo().split("//");
         String[] urlParts = urlFromGitlabApiParts[1].split("/");
-        urlParts[0] = gitLabManager.getGitLabApiUrl();
+        urlParts[0] = gitLabManager.getGitlabServer() + ":" + gitLabManager.gettGitlabPort();
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
     }
 
