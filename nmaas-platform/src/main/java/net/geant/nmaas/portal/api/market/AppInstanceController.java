@@ -18,7 +18,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,6 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -239,10 +237,13 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceStatus appInstanceStatus = new AppInstanceStatus();
 		appInstanceStatus.setAppInstanceId(appInstanceId);
 		appInstanceStatus.setDetails(state.name());
+		appInstanceStatus.setUserFriendlyDetails(state.getUserFriendlyState());
 
 		AppInstanceState appInstanceState = mapAppInstanceState(state);
 
 		appInstanceStatus.setState(appInstanceState);
+
+		appInstanceStatus.setUserFriendlyState(appInstanceState.getUserFriendlyState());
 
 		return appInstanceStatus;
 	}
@@ -251,7 +252,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceState appInstanceState;
 		switch (state) {
 		case REQUESTED:
-			appInstanceState = AppInstanceState.SUBSCRIBED;
+			appInstanceState = AppInstanceState.REQUESTED;
 			break;
 		case REQUEST_VALIDATION_IN_PROGRESS:
 		case REQUEST_VALIDATED:
@@ -319,6 +320,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
 		try {
 			ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
+			ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
 			ai.setDomainId(appInstance.getDomain().getId());
 		} catch (Exception e) {
 			ai.setState(AppInstanceState.UNKNOWN);

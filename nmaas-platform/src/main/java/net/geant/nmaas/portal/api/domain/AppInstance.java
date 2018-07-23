@@ -17,6 +17,8 @@ public class AppInstance extends DomainAware {
 	private String configuration;
 	
 	private AppInstanceState state;
+
+	private String userFriendlyState;
 	
 	private String url;
 	
@@ -95,4 +97,11 @@ public class AppInstance extends DomainAware {
 		this.url = url;
 	}
 
+	public String getUserFriendlyState() {
+		return userFriendlyState;
+	}
+
+	public void setUserFriendlyState(String userFriendlyState) {
+		this.userFriendlyState = userFriendlyState;
+	}
 }

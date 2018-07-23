@@ -8,7 +8,7 @@
 					'btn-primary': (stage.activeState === AppInstanceState[activeState] && activeState != AppInstanceState[AppInstanceState.FAILURE]), 
 					'btn-danger': (activeState === AppInstanceState[AppInstanceState.FAILURE]),  
 					'btn-default': (stage.activeState > AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE]) 
-									|| (activeState == AppInstanceState[AppInstanceState.UNKNOWN]) || (stage.activeState === AppInstanceState.SUBSCRIBED) || (!stage?.activeState)
+									|| (activeState == AppInstanceState[AppInstanceState.UNKNOWN]) || (stage.activeState === AppInstanceState.REQUESTED) || (!stage?.activeState)
 				}">{{stage.activeState}}</a> 
 			<p>{{stage.name}}</p>
 		</div>
