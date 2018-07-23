@@ -1,26 +1,24 @@
-import {Component, OnInit, OnDestroy, Input, ViewChild} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
-// import 'rxjs/add/operator/switchMap';
-
-import {AppsService, AppInstanceService, AppImagesService} from '../../../service/index';
+import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-import {RateComponent} from '../../../shared/rate/rate.component';
 
 import {
-  Application,
-  AppInstance,
-  AppInstanceState,
-  AppInstanceStatus,
-  AppInstanceProgressStage
+    AppInstance,
+    AppInstanceProgressStage,
+    AppInstanceState,
+    AppInstanceStatus,
+    Application
 } from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
-import { isNullOrUndefined } from 'util';
 import {AppRestartModalComponent} from "../../modals/apprestart";
+
+// import 'rxjs/add/operator/switchMap';
 
 
 @Component({
@@ -129,11 +127,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   protected getTemplate(template: string): any {
     return template;
-  }
-
-  private getUserFriendlyString(stringToChange:string){
-    let re = /_/gi;
-    return stringToChange.charAt(0).toUpperCase() + stringToChange.substr(1,stringToChange.length).replace(re," ").toLowerCase();
   }
 
 }

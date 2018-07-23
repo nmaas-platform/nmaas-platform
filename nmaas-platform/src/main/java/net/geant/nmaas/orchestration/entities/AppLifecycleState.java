@@ -12,31 +12,31 @@ public enum AppLifecycleState {
     REQUESTED{
         @Override
         public String getUserFriendlyState(){
-            return "Requested";
+            return "Application instance deployment requested";
         }
     },
     REQUEST_VALIDATION_IN_PROGRESS{
         @Override
         public String getUserFriendlyState(){
-            return "Validation in progress";
+            return "Request validation in progress";
         }
     },
     REQUEST_VALIDATED{
         @Override
         public String getUserFriendlyState(){
-            return "Successful validation";
+            return "Request validated";
         }
     },
     REQUEST_VALIDATION_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "Request validation has failed";
+            return "Request validation failed";
         }
     },
     DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS{
         @Override
         public String getUserFriendlyState(){
-            return "Preparing deployment environment";
+            return "Deployment environment preparation in progress";
         }
     },
     DEPLOYMENT_ENVIRONMENT_PREPARED{
@@ -48,25 +48,25 @@ public enum AppLifecycleState {
     DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "Preparation of deployment environment has failed";
+            return "Deployment environment preparation failed";
         }
     },
     MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS{
         @Override
         public String getUserFriendlyState(){
-            return "VPN configuration in progress";
+            return "DCN configuration in progress";
         }
     },
     MANAGEMENT_VPN_CONFIGURED{
         @Override
         public String getUserFriendlyState(){
-            return "VPN configured successfully";
+            return "DCN configured successfully";
         }
     },
     MANAGEMENT_VPN_CONFIGURATION_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "VPN configuration has failed";
+            return "DCN configuration failed";
         }
     },
     APPLICATION_CONFIGURATION_IN_PROGRESS{
@@ -84,7 +84,7 @@ public enum AppLifecycleState {
     APPLICATION_CONFIGURATION_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "Configuration of application has failed";
+            return "Application configuration failed";
         }
     },
     APPLICATION_DEPLOYMENT_IN_PROGRESS{
@@ -102,7 +102,7 @@ public enum AppLifecycleState {
     APPLICATION_DEPLOYMENT_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "Deployment of application has failed";
+            return "Application deployment failed";
         }
     },
     APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS{
@@ -120,7 +120,7 @@ public enum AppLifecycleState {
     APPLICATION_DEPLOYMENT_VERIFICATION_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "Deployment verification has failed";
+            return "Deployment verification failed";
         }
     },
     APPLICATION_REMOVAL_IN_PROGRESS{
@@ -138,7 +138,7 @@ public enum AppLifecycleState {
     APPLICATION_REMOVAL_FAILED{
         @Override
         public String getUserFriendlyState(){
-            return "Application removal has failed";
+            return "Application removal failed";
         }
     },
     UNKNOWN{

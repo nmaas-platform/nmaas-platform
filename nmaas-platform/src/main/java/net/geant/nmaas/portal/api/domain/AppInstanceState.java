@@ -1,22 +1,22 @@
 package net.geant.nmaas.portal.api.domain;
 
 public enum AppInstanceState {
-	SUBSCRIBED{
+	REQUESTED {
 		@Override
 		public String getUserFriendlyState(){
-			return "Application subscribed";
+			return "Requested";
 		}
 	},
 	VALIDATION{
 		@Override
 		public String getUserFriendlyState(){
-			return "Subscription validation";
+			return "Validating request";
 		}
 	},
 	PREPARATION{
 		@Override
 		public String getUserFriendlyState(){
-			return "Environment creation";
+			return "Configuring deployment environment";
 		}
 	},
 	CONNECTING{
@@ -28,19 +28,19 @@ public enum AppInstanceState {
 	CONFIGURATION_AWAITING{
 		@Override
 		public String getUserFriendlyState(){
-			return "Applying app configuration";
+			return "Applying custom configuration";
 		}
 	},
 	DEPLOYING{
 		@Override
 		public String getUserFriendlyState(){
-			return "App container deployment";
+			return "Deploying";
 		}
 	},
 	RUNNING{
 		@Override
 		public String getUserFriendlyState(){
-			return "App is running";
+			return "Application instance is running";
 		}
 	},
 	UNDEPLOYING{
@@ -52,7 +52,7 @@ public enum AppInstanceState {
 	DONE{
 		@Override
 		public String getUserFriendlyState(){
-			return "Done";
+			return "Undeployed";
 		}
 	},
 	FAILURE{

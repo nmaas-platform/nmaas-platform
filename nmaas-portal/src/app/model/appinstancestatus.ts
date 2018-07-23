@@ -1,5 +1,5 @@
 export enum AppInstanceState {
-  SUBSCRIBED,
+  REQUESTED,
   VALIDATION,
   PREPARATION,
   CONNECTING,
