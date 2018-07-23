@@ -1,17 +1,20 @@
 	<div class="row">
-		<h3>Your comment:</h3>
+		<h4>Add comment:</h4>
 		<div>
 			<form role="form" (ngSubmit)="this.addComment()">
 				<div class="form-group">
-					<label class="sr-only" for="comment">Your comment:</label>
+					<label class="sr-only" for="comment">Add comment:</label>
 					<textarea name="comment" id="comment" placeholder="Add some comment here..."
-						class="form-control" rows="5" required [(ngModel)]="newComment.comment"></textarea>
+						class="form-control" rows="2" required [(ngModel)]="newComment.comment"></textarea>
 					<button type="submit" class="btn btn-default">Add</button>
 				</div>
 			</form>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row" *ngIf="comments.length === 0 || comments === null || comments === undefined">
+		<h3>No comment added yet</h3>
+	</div>
+	<div class="row" *ngIf="comments.length > 0">
 				<h3>Comments:</h3>
 				<ul class="media-list">
 					<ng-template ngFor let-comment [ngForOf]="comments">
@@ -29,9 +32,8 @@
 							<div *ngIf="this.commentId === comment.id && !this.subComment">
 								<form role="form" (ngSubmit)="this.addReply(comment.id)">
 									<div class="form-group">
-										<label class="sr-only" for="comment2">Your reply:</label>
 										<textarea name="comment" id="comment2" placeholder="Add some comment here..."
-												  class="form-control" rows="5" required [(ngModel)]="newReply.comment"></textarea>
+												  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
 										<button type="submit" class="btn btn-default">Add</button>
 									</div>
 								</form>
@@ -55,9 +57,8 @@
 										<div *ngIf="this.commentId === subcomment.id && this.subComment">
 											<form role="form" (ngSubmit)="this.addReply(comment.id)">
 												<div class="form-group">
-													<label class="sr-only" for="comment3">Your reply:</label>
 													<textarea name="comment3" id="comment3" placeholder="Add some comment here..."
-															  class="form-control" rows="5" required [(ngModel)]="newReply.comment"></textarea>
+															  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
 													<button type="submit" class="btn btn-default">Add</button>
 												</div>
 											</form>
