@@ -1,5 +1,5 @@
 export enum AppInstanceState {
-  SUBSCRIBED,
+  REQUESTED,
   VALIDATION,
   PREPARATION,
   CONNECTING,
@@ -16,4 +16,6 @@ export class AppInstanceStatus {
   public appInstanceId: number = undefined;
   public state: AppInstanceState = undefined;
   public details: string = undefined;
+  public userFriendlyDetails: string = undefined;
+  public userFriendlyState: string = undefined;
 }
