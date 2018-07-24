@@ -56,7 +56,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     @Override
     public List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) throws InvalidDeploymentIdException{
         return appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
-                .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousState().toString(), value.getCurrentState().toString()))
+                .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousState().lifecycleState().getUserFriendlyState(), value.getCurrentState().lifecycleState().getUserFriendlyState()))
                 .collect(Collectors.toList());
     }
 
