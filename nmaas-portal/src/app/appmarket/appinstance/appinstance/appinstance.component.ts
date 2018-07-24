@@ -21,6 +21,8 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
 // import 'rxjs/add/operator/switchMap';
 
+// import 'rxjs/add/operator/switchMap';
+
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -55,7 +57,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     loadExternalAssets: false, // Load external css and JavaScript for frameworks
     returnEmptyFields: false, // Don't return values for empty input fields
     setSchemaDefaults: true, // Always use schema defaults for empty fields
-    defautWidgetOptions: { feedback: false }, // Show inline feedback icons
+    defaultWidgetOptions: { feedback: false }, // Show inline feedback icons
     options: {},
     widgetOptions: {}
   };
@@ -78,7 +80,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
         });
       });
-
 
       this.updateAppInstanceState();
       this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());

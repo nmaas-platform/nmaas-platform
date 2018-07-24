@@ -250,10 +250,13 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceStatus appInstanceStatus = new AppInstanceStatus();
 		appInstanceStatus.setAppInstanceId(appInstanceId);
 		appInstanceStatus.setDetails(state.name());
+		appInstanceStatus.setUserFriendlyDetails(state.getUserFriendlyState());
 
 		AppInstanceState appInstanceState = mapAppInstanceState(state);
 
 		appInstanceStatus.setState(appInstanceState);
+
+		appInstanceStatus.setUserFriendlyState(appInstanceState.getUserFriendlyState());
 
 		return appInstanceStatus;
 	}
@@ -262,7 +265,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceState appInstanceState;
 		switch (state) {
 		case REQUESTED:
-			appInstanceState = AppInstanceState.SUBSCRIBED;
+			appInstanceState = AppInstanceState.REQUESTED;
 			break;
 		case REQUEST_VALIDATION_IN_PROGRESS:
 		case REQUEST_VALIDATED:
@@ -330,6 +333,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
 		try {
 			ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
+			ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
 			ai.setDomainId(appInstance.getDomain().getId());
 		} catch (Exception e) {
 			ai.setState(AppInstanceState.UNKNOWN);
