@@ -25,6 +25,8 @@ export class CommentsComponent implements OnInit {
 
     subComment: boolean;
 
+    active:boolean = false;
+
     constructor(private appsService: AppsService) { }
 
     ngOnInit() {
@@ -51,6 +53,7 @@ export class CommentsComponent implements OnInit {
                 this.newReply = new Comment();
                 this.refresh();
             });
+        this.active = false;
     }
 
     public deleteComment(id: Number): void {
@@ -63,5 +66,6 @@ export class CommentsComponent implements OnInit {
         this.commentId = commentId;
         this.subComment = subComment;
         this.newReply.comment = "";
+        this.active = true;
     }
 }

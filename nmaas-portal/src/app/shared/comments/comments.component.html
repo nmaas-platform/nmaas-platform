@@ -26,10 +26,9 @@
 						  </a>
 						</div>
 						<div class="media-body">
-						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}} <span class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span></h6>
+						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}} <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(comment.id, false)">Reply</button> <span class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span></h6>
 						  <p>{{comment.comment}}</p>
-							<button class="btn btn-default" (click)="setCommentNumberOnClick(comment.id, false)">Reply</button>
-							<div *ngIf="this.commentId === comment.id && !this.subComment">
+							<div *ngIf="this.commentId === comment.id && !this.subComment && this.active">
 								<form role="form" (ngSubmit)="this.addReply(comment.id)">
 									<div class="form-group">
 										<textarea name="comment" id="comment2" placeholder="Add some comment here..."
@@ -51,10 +50,9 @@
 									  </a>
 									</div>
 									<div class="media-body">
-									  <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}} <span class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span></h6>
+									  <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}} <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">Reply</button> <span class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span></h6>
 									  <p>{{subcomment.comment}}</p>
-										<button class="btn btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">Reply</button>
-										<div *ngIf="this.commentId === subcomment.id && this.subComment">
+										<div *ngIf="this.commentId === subcomment.id && this.subComment && this.active">
 											<form role="form" (ngSubmit)="this.addReply(comment.id)">
 												<div class="form-group">
 													<textarea name="comment3" id="comment3" placeholder="Add some comment here..."
