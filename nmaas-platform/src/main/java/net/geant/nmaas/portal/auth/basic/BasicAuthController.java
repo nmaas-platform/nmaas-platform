@@ -1,37 +1,26 @@
 package net.geant.nmaas.portal.auth.basic;
 
-import java.security.Principal;
-import java.util.Date;
-import java.util.Optional;
-
+import io.jsonwebtoken.Claims;
+import net.geant.nmaas.portal.api.auth.UserLogin;
+import net.geant.nmaas.portal.api.auth.UserRefreshToken;
+import net.geant.nmaas.portal.api.auth.UserToken;
+import net.geant.nmaas.portal.api.domain.Pong;
+import net.geant.nmaas.portal.api.exception.AuthenticationException;
+import net.geant.nmaas.portal.api.maintenance.MaintenanceManager;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.jsonwebtoken.Claims;
-import net.geant.nmaas.portal.api.auth.UserLogin;
-import net.geant.nmaas.portal.api.auth.UserRefreshToken;
-import net.geant.nmaas.portal.api.auth.Registration;
-import net.geant.nmaas.portal.api.auth.UserToken;
-import net.geant.nmaas.portal.api.domain.Pong;
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
+import java.security.Principal;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/auth/basic")
@@ -51,6 +40,9 @@ public class BasicAuthController {
 	
 	@Autowired
 	JWTTokenService jwtTokenService;
+
+	@Autowired
+	MaintenanceManager maintenanceManager;
 	
 	
 	final long validFor = 60 * 60 * 1000; // 1h
@@ -69,8 +61,11 @@ public class BasicAuthController {
 			throw new AuthenticationException("User is not active.");
 		
 		if(!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
-			throw new AuthenticationException("Invalid password.");		
-		
+			throw new AuthenticationException("Invalid password.");
+
+		if(maintenanceManager.isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")))
+			throw new AuthenticationException("Login is not possible due to active maintenance period");
+
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
 	
