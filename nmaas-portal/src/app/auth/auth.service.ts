@@ -1,4 +1,3 @@
-import {Role} from '../model/userrole';
 import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
@@ -261,19 +260,15 @@ export class AuthService {
           return false;
         }
       })
-      .catch((error: Response | any) => {
-        console.debug('SSO login error: ' + error);
-        let errMsg: string;
-        if(error.error['message']) {
-          console.debug(error.json());
-          const body = error.json() || '';
-          const err = body.message || JSON.stringify(body);
-          errMsg = `${error.status} - ${err}`;
-        } else {
-          errMsg = 'Server error';
-        }
-        console.error(errMsg);
-        return Observable.throw(errMsg);
+      .catch((error) => {
+        console.debug('SSO login error: ' + error.error['message']);
+          let message : string;
+          if(error.error['message'])
+              message = error['status']+' - '+error.error['message'];
+          else
+              message = 'Server error';
+
+          return Observable.throw(message);
       });
   }
 
