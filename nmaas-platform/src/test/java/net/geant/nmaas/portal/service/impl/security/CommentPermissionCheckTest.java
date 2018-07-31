@@ -1,11 +1,9 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-
-import java.util.Set;
-
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
+import net.geant.nmaas.portal.service.AclService.Permissions;
+import net.geant.nmaas.portal.service.DomainService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +14,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
-import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.AclService.Permissions;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -80,8 +79,8 @@ public class CommentPermissionCheckTest {
 		Set<Permissions> perms = null;
 		
 		perms = cpch.evaluatePermissions(UsersHelper.TOOL_MANAGER, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
-		assertEquals(5, perms.size());
-		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
+		assertEquals(4, perms.size());
+		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.OWNER));
 		
 	}
 	
