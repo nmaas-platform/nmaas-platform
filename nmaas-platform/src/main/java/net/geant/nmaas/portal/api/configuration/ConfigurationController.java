@@ -33,13 +33,6 @@ public class ConfigurationController {
         return configuration.getId();
     }
 
-    @DeleteMapping(value = "/{id}")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeConfiguration(@PathVariable("id") Long id) throws ConfigurationNotFoundException {
-        configurationManager.removeConfiguration(id);
-    }
-
     @PutMapping(value="/{id}")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)

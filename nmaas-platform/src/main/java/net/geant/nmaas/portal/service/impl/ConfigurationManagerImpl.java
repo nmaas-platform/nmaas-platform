@@ -44,13 +44,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         repository.save(updatedConfiguration);
     }
 
-    @Override
-    public void removeConfiguration(Long id) throws ConfigurationNotFoundException{
-        Configuration configuration = repository.findById(id)
-                .orElseThrow(() -> new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository"));
-        repository.delete(configuration);
-    }
-
     private Configuration loadSingleConfiguration(){
         if(repository.count() != 1){
             throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");

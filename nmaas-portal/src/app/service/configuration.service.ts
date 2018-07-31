@@ -23,12 +23,4 @@ export class ConfigurationService extends GenericDataService{
     return this.put(this.uri+configuration.id, configuration);
   }
 
-  public addConfiguration(configuration:Configuration):Observable<any>{
-      return this.post(this.uri, configuration);
-  }
-
-  public removeConfiguration(config_id:number):Observable<any>{
-      return this.delete(this.uri+config_id);
-  }
-
 }

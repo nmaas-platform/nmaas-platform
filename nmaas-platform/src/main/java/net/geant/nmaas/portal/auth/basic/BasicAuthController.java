@@ -64,7 +64,7 @@ public class BasicAuthController {
 			throw new AuthenticationException("Invalid password.");
 
 		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
-			throw new AuthenticationException("Login is not possible due to active configuration period");
+			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
