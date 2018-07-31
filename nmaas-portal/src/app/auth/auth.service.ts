@@ -1,8 +1,7 @@
-import {Role} from '../model/userrole';
 import {Injectable} from '@angular/core';
 import {AppConfigService} from '../service/appconfig.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/timeout';
@@ -201,11 +200,11 @@ export class AuthService {
       .catch((error) => {
         let message : string;
         if(error.error['message'])
-          message = error['status']+' - '+error.error['message'];
+          message = error.error['message'];
         else
           message = 'Server error';
 
-        console.debug(message);
+        console.debug(error['status']+' - '+message);
         return Observable.throw(message);
       });
   }
