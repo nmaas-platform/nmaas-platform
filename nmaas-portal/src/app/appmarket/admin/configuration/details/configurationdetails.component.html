@@ -1,12 +1,12 @@
 <div class="panel panel-default">
   <div class="panel-heading">Portal configuration</div>
   <div class="panel-body">
-    <form (submit)="save()" class="form-horizontal" #configurationForm="ngForm">
+    <form (submit)="save()" class="form-horizontal" #configurationForm="ngForm" *ngIf="this.configuration">
       <div class="form-group">
         <label for="setMaintenance" class="col-sm-2 control-label">Maintenance: </label>
         <div class = "col-sm-10">
           <input type="checkbox" id="setMaintenance" name="setMaintenance"
-                 [(ngModel)]="maintenance" [checked]="maintenance == true">
+                 [(ngModel)]="this.configuration.maintenance" [checked]="this.configuration.maintenance === true">
         </div>
       </div>
       <button class="btn btn-primary" type="submit">Submit</button>

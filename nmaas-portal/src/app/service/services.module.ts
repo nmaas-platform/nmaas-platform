@@ -9,7 +9,7 @@ import {AppSubscriptionsService} from './appsubscriptions.service';
 import {DomainService} from './domain.service';
 import {TagService} from './tag.service';
 import {UserService} from './user.service';
-import {MaintenanceService} from "./maintenance.service";
+import {ConfigurationService} from './configuration.service';
 
 
 @NgModule({
@@ -23,7 +23,7 @@ import {MaintenanceService} from "./maintenance.service";
     DomainService,
     TagService,
     UserService,
-      MaintenanceService,
+      ConfigurationService,
   ]
 })
 export class ServicesModule {}

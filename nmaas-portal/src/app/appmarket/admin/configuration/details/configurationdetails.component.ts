@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
-import {Router} from "@angular/router";
-import {MaintenanceService} from "../../../../service";
+import {BaseComponent} from '../../../../shared/common/basecomponent/base.component';
+import {Router} from '@angular/router';
+import {ConfigurationService} from '../../../../service';
+import {Configuration} from '../../../../model/configuration';
 
 @Component({
   selector: 'app-configurationdetails',
@@ -10,22 +11,22 @@ import {MaintenanceService} from "../../../../service";
 })
 export class ConfigurationDetailsComponent extends BaseComponent implements OnInit {
 
-  protected maintenance:boolean;
+  public configuration:Configuration;
 
-  constructor(private router:Router, private maintenanceService:MaintenanceService) {
+  constructor(private router:Router, private configurationService:ConfigurationService) {
     super();
-    this.update();
   }
 
   ngOnInit() {
+      this.update();
   }
 
   public update():void{
-      this.maintenanceService.getMaintenance().subscribe(value => this.maintenance = value.maintenance);
+      this.configurationService.getConfiguration().subscribe(value => this.configuration = value);
   }
 
   public save():void{
-      this.maintenanceService.setMaintenance(this.maintenance).subscribe(() => this.update());
+      this.configurationService.updateConfiguration(this.configuration).subscribe(() => this.update());
   }
 
 
