@@ -7,16 +7,11 @@ import {AppImagesService, AppInstanceService, AppsService} from '../../../servic
 
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 
-import {
-    AppInstance,
-    AppInstanceProgressStage,
-    AppInstanceState,
-    AppInstanceStatus,
-    Application
-} from '../../../model/index';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
-import {AppRestartModalComponent} from "../../modals/apprestart";
+import {AppRestartModalComponent} from '../../modals/apprestart';
+import {RateComponent} from '../../../shared/rate/rate.component';
 
 // import 'rxjs/add/operator/switchMap';
 
@@ -36,6 +31,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
+
+  @ViewChild(RateComponent)
+  public readonly appRate: RateComponent;
 
   app: Application;
 
@@ -126,6 +124,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   protected getTemplate(template: string): any {
     return template;
+  }
+
+  public onRateChanged(): void {
+        this.appRate.refresh();
   }
 
 }
