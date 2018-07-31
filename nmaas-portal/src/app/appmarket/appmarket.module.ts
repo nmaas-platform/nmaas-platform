@@ -27,13 +27,14 @@ import {UsersModule} from './users/users.module';
 import {ClustersModule} from "./admin/clusters/clusters.module";
 import {ClusterService} from "../service/cluster.service";
 import {GitlabModule} from "./admin/gitlab/gitlab.module";
+import {ConfigurationModule} from "./admin/configuration/configuration.module";
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
     NavbarComponent,
-    AppInstallModalComponent
+    AppInstallModalComponent,
   ],
   imports: [
     FormsModule,
@@ -47,7 +48,8 @@ import {GitlabModule} from "./admin/gitlab/gitlab.module";
     AuthModule,
     PipesModule,
     ClustersModule,
-      GitlabModule
+      GitlabModule,
+      ConfigurationModule
   ],
   exports: [
     AppMarketComponent,
