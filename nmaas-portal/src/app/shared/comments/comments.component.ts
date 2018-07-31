@@ -2,6 +2,7 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 
 import {AppsService} from '../../service/index';
 import {Comment, Id} from '../../model/index';
+import {AuthService} from '../../auth/auth.service';
 
 @Component({
     selector: 'comments',
@@ -19,7 +20,7 @@ export class CommentsComponent implements OnInit {
 
     newReply: Comment = new Comment();
 
-    comments: Comment[];
+    comments: Comment[] = [];
 
     commentId: number;
 
@@ -27,7 +28,7 @@ export class CommentsComponent implements OnInit {
 
     active:boolean = false;
 
-    constructor(private appsService: AppsService) { }
+    constructor(private appsService: AppsService, private authService:AuthService) { }
 
     ngOnInit() {
         this.refresh();
