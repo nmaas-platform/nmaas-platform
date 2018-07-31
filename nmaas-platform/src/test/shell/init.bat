@@ -44,6 +44,10 @@ echo ----------------------
 echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
+echo
+echo Configuration
+curl -X POST %API_URL%/configuration --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\configuration.json
+echo.
 
 echo
 echo Domain1
