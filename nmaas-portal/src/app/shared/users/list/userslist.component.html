@@ -7,7 +7,8 @@
 			<tr>
 				<th>Username</th>
 				<th *ngIf="domainId === domainService.getGlobalDomainId()">Domains</th>
-				<th *ngIf="domainId != domainService.getGlobalDomainId()">Roles</th>
+				<th *ngIf="domainId === domainService.getGlobalDomainId()">Global role</th>
+				<th *ngIf="domainId !== domainService.getGlobalDomainId()">Roles</th>
 				<th>Enabled</th>
 				<th>&nbsp;</th>
 			</tr>
@@ -17,10 +18,11 @@
 			<ng-template ngFor let-user [ngForOf]="users">
 			<tr>
 				<td>{{user.username}}</td>
-				<td *ngIf="domainId === domainService.getGlobalDomainId()"><span *ngFor="let role of filterDomainNames(user)" >{{getDomainName(role.domainId) | async}}, </span><br></td>
+				<td *ngIf="domainId === domainService.getGlobalDomainId()"> <div *ngFor="let role of filterDomainNames(user); last as isLast"> <span *ngIf="!isLast" style="float:left;padding-right: 3px">{{getDomainName(role.domainId) | async}},</span> <span *ngIf="isLast" style="float:left;padding-right: 3px">{{getDomainName(role.domainId) | async}}</span></div><br></td>
 <!-- 				<td><span *ngFor="let domainId of getUserDomainIds(user)">{{getDomainName(domainId) | async}}</span><br></td> -->
 <!-- 				 <td><ng-template ngFor let-domainId [ngForOf]="user.getDomainIds()"><span>{{getDomainName(domainId) | async}}</span><br></ng-template></td> -->
-				<td *ngIf="domainId != domainService.getGlobalDomainId()"><span *ngFor="let role of getOnlyDomainRoles(user)">{{role.role | slice:5}}</span></td>
+				<td *ngIf="domainId === domainService.getGlobalDomainId()"><span>{{getGlobalRole(user)}}</span></td>
+				<td *ngIf="domainId !== domainService.getGlobalDomainId()"><span *ngFor="let role of getOnlyDomainRoles(user)">{{role.role | slice:5}}</span></td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
 				<td class="text-right">
 					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">Details</a>

@@ -1,15 +1,14 @@
-import {Domain} from '../../../model/domain';
 import {Component, OnInit} from '@angular/core';
 
 import {isUndefined} from 'util';
 
 import {AppInstance, AppInstanceState} from '../../../model/index';
 import {DomainService} from '../../../service/domain.service';
-import {AppsService, AppInstanceService} from '../../../service/index';
+import {AppInstanceService, AppsService} from '../../../service/index';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 
 export enum AppInstanceListSelection {
   ALL,
@@ -69,6 +68,5 @@ export class AppInstanceListComponent implements OnInit {
   public onSelectionChange(event) {
     this.update(this.domainId);
   }
-
 
 }

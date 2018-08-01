@@ -89,19 +89,24 @@ public class DomainServiceImpl implements DomainService {
 	public Domain createDomain(String name, String codename) throws ProcessingException {
 		return createDomain(name, codename, true);
 	}
+
+	@Override
+	public Domain createDomain(String name, String codename, boolean active) throws ProcessingException{
+		return createDomain(name, codename, active, "", false);
+	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active) throws ProcessingException {
+	public Domain createDomain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) throws ProcessingException {
 		checkParam(name);
 		checkParam(codename);
-		
+
 		Optional.ofNullable(validator)
 				.map(v -> v.valid(codename))
 				.filter(result -> result)
 				.orElseThrow(() -> new ProcessingException("Domain codename is not valid")); 
 		
 		try {
-			return domainRepo.save(new Domain(name, codename, active));
+			return domainRepo.save(new Domain(name, codename, active, kubernetesNamespace, dcnConfigured));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
@@ -125,6 +130,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public void updateDomain(Domain domain) throws ProcessingException {		
 		checkParam(domain);
+		checkGlobal(domain);
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
 		domainRepo.save(domain);
@@ -132,7 +138,7 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public boolean removeDomain(Long id) {
-		return findDomain(id).map(toRemove -> { domainRepo.delete(toRemove); return true;}).orElse(false);		
+		return findDomain(id).map(toRemove -> {checkGlobal(toRemove);domainRepo.delete(toRemove); return true;}).orElse(false);
 	}
 
 	@Override
@@ -253,6 +259,11 @@ public class DomainServiceImpl implements DomainService {
 			throw new IllegalArgumentException("domainId is null");
 		if(userId == null)
 			throw new IllegalArgumentException("userId is null");		
+	}
+
+	protected void checkGlobal(Domain domain){
+		if(domain.getCodename().equals(GLOBAL_DOMAIN))
+			throw new IllegalArgumentException("Global domain can't be updated or removed");
 	}
 	
 }

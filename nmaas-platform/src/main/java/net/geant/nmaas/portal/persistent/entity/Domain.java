@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Embedded;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -27,7 +28,8 @@ public class Domain {
 	@Column(nullable = false, unique=true)
 	String name;
 	
-	
+	@Embedded
+	DomainTechDetails domainTechDetails;
 	
 	boolean active;
 	
@@ -54,6 +56,21 @@ public class Domain {
 	public Domain(Long id, String name, String codename, boolean active) {
 		this(id, name, codename);
 		this.active = active;
+	}
+
+	public Domain(String name, String codename, String kubernetesNamespace, boolean dcnConfigured){
+		this(name,codename);
+		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	}
+
+	public Domain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) {
+		this(name,codename,active);
+		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	}
+
+	public Domain(Long id, String name, String codename, String kubernetesNamespace, boolean dcnConfigured) {
+		this(id,name,codename);
+		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
 	}
 	
 	public Long getId() {
@@ -86,6 +103,18 @@ public class Domain {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public DomainTechDetails getDomainTechDetails(){
+		return this.domainTechDetails;
+	}
+
+	public String getKubernetesNamespace(){
+		return this.domainTechDetails.getKubernetesNamespace();
+	}
+
+	public boolean isDcnConfigured(){
+		return this.domainTechDetails.isDcnConfigured();
 	}
 
 	@Override

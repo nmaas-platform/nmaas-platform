@@ -24,5 +24,6 @@ export class AppInstance {
   public owner: User = undefined;
   public configuration: string = undefined;
   public state: AppInstanceState = undefined;
+  public userFriendlyState = undefined;
   public url: string = undefined;
 }

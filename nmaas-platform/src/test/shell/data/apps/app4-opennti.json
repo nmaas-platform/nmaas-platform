@@ -47,7 +47,18 @@
 				]
 			},
 			"form": [
-				"*",
+				"openntiUsername",
+				{
+					"key":"openntiPassword",
+					"type":"password"
+				},
+				{
+					"key":"targets",
+					"items":[
+						"targets[]",
+						"targets[].ipAddress"
+					]
+				},
 				{
 					"type": "submit",
 					"title": "Apply configuration"

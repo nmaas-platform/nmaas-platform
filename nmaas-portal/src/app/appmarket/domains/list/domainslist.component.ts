@@ -21,8 +21,8 @@ export class DomainsListComponent implements OnInit {
   }
 
   protected update(): void {
-    if(this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {
-      this.domains = this.domainService.getAll();
+    if(this.authService.hasRole(Role[Role.ROLE_SUPERADMIN]) || this.authService.hasRole(Role[Role.ROLE_OPERATOR])) {
+      this.domains = this.domainService.getAll().map((domains) => domains.filter((domain) => domain.id !== this.domainService.getGlobalDomainId()));
     } else {
       this.domains = this.domainService.getAll().map((domains) => domains.filter((domain) => this.authService.hasDomainRole(domain.id, Role[Role.ROLE_DOMAIN_ADMIN])));
     }

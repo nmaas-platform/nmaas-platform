@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 
-import { AppsService } from '../../service/index';
-import { Id, Comment } from '../../model/index';
+import {AppsService} from '../../service/index';
+import {Comment, Id} from '../../model/index';
+import {AuthService} from '../../auth/auth.service';
 
 @Component({
     selector: 'comments',
@@ -17,9 +18,17 @@ export class CommentsComponent implements OnInit {
 
     newComment: Comment = new Comment();
 
-    comments: Comment[];
+    newReply: Comment = new Comment();
 
-    constructor(private appsService: AppsService) { }
+    comments: Comment[] = [];
+
+    commentId: number;
+
+    subComment: boolean;
+
+    active:boolean = false;
+
+    constructor(private appsService: AppsService, private authService:AuthService) { }
 
     ngOnInit() {
         this.refresh();
@@ -38,9 +47,26 @@ export class CommentsComponent implements OnInit {
 
     }
 
+    public addReply(parentId:number):void{
+        this.newReply.parentId = parentId;
+        this.appsService.addAppCommentByUrl(this.pathUrl, this.newReply)
+            .subscribe(id => {
+                this.newReply = new Comment();
+                this.refresh();
+            });
+        this.active = false;
+    }
+
     public deleteComment(id: Number): void {
         this.appsService.deleteAppCommentByUrl(this.pathUrl, new Id(id)).subscribe(
                 () => { this.refresh() }
             );
+    }
+
+    public setCommentNumberOnClick(commentId:number, subComment:boolean){
+        this.commentId = commentId;
+        this.subComment = subComment;
+        this.newReply.comment = "";
+        this.active = true;
     }
 }

@@ -1,26 +1,19 @@
-import {Component, OnInit, OnDestroy, Input, ViewChild} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
-// import 'rxjs/add/operator/switchMap';
-
-import {AppsService, AppInstanceService, AppImagesService} from '../../../service/index';
+import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-import {RateComponent} from '../../../shared/rate/rate.component';
 
-import {
-  Application,
-  AppInstance,
-  AppInstanceState,
-  AppInstanceStatus,
-  AppInstanceProgressStage
-} from '../../../model/index';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
-import { isNullOrUndefined } from 'util';
-import {AppRestartModalComponent} from "../../modals/apprestart";
+import {AppRestartModalComponent} from '../../modals/apprestart';
+import {RateComponent} from '../../../shared/rate/rate.component';
+
+// import 'rxjs/add/operator/switchMap';
 
 
 @Component({
@@ -39,6 +32,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
 
+  @ViewChild(RateComponent)
+  public readonly appRate: RateComponent;
+
   app: Application;
 
   public appInstanceStatus: AppInstanceStatus;
@@ -55,7 +51,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     loadExternalAssets: false, // Load external css and JavaScript for frameworks
     returnEmptyFields: false, // Don't return values for empty input fields
     setSchemaDefaults: true, // Always use schema defaults for empty fields
-    defautWidgetOptions: { feedback: false }, // Show inline feedback icons
+    defaultWidgetOptions: { feedback: false }, // Show inline feedback icons
     options: {},
     widgetOptions: {}
   };
@@ -78,7 +74,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
         });
       });
-
 
       this.updateAppInstanceState();
       this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
@@ -129,6 +124,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   protected getTemplate(template: string): any {
     return template;
+  }
+
+  public onRateChanged(): void {
+        this.appRate.refresh();
   }
 
 }
