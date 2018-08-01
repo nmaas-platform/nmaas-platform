@@ -13,6 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ProfileComponent} from './profile/profile.component';
 import {AppMarketModule} from "../appmarket";
+import {UserService} from "../service";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import {AppMarketModule} from "../appmarket";
   ],
   providers: [
     RegistrationService,
+    UserService,
     ChangelogService
   ]
 })

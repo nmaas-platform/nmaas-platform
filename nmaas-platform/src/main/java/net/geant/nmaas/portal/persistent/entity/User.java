@@ -27,7 +27,9 @@ public class User {
 	
 	//@NotNull
 	private String password;
-	
+
+	private String samlToken;
+
 	private String email;	
 	private String firstname;
 	private String lastname;
@@ -112,6 +114,10 @@ public class User {
 	public String getPassword() {
 		return password;
 	}
+
+	public String getSamlToken() { return samlToken; }
+
+	public void setSamlToken(String samlToken) { this.samlToken = samlToken; }
 
 	public String getEmail() {
 		return email;
