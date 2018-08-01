@@ -148,6 +148,11 @@ public class UsersController {
 							domains.findDomain(ur.getDomainId()).get(), 
 							ur.getRole()))
 					.collect(Collectors.toSet());
+
+			if(userMod.getEmail() == null)
+				roles.add(new net.geant.nmaas.portal.persistent.entity.UserRole(userMod,
+						domains.findDomain("GLOBAL").get(), //TODO: will it work?
+						Role.ROLE_INCOMPLETE));
 			
 			userMod.setNewRoles(roles);
 		}
