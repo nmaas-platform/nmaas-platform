@@ -209,6 +209,68 @@ export class AuthService {
       });
   }
 
+  public allowsSSO(): boolean {
+    return 'sso' in this.appConfig.config;
+  }
+
+  public allowsBasic(): boolean {
+    return !this.allowsSSO() || ('allowsBasic' in this.appConfig.config.sso);
+  }
+
+  public getSSOName(): string {
+    if(!this.allowsSSO()) return '';
+    return ('name' in this.appConfig.config.sso) ? this.appConfig.config.sso.name : 'SSO service';
+  }
+
+  public getSSOLoginUrl(): string {
+    return this.allowsSSO() ? this.appConfig.config.sso.loginUrl : null;
+  }
+
+  public getSSOLogoutUrl(): string {
+    return this.allowsSSO() ? this.appConfig.config.sso.logoutUrl : null;
+  }
+
+  public propagateSSOLogin(userid: string): Observable<boolean> {
+    console.log('propagateSSOLogin');
+    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl);
+    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
+    console.log('propagateSSOLogin ' + userid);
+    const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
+    return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
+      JSON.stringify({'userid': userid}), {headers: headers})
+      .timeout(10000)
+      .map((response: Response) => {
+        console.debug('SSO login response: ' + response);
+        // login successful if there's a jwt token in the response
+        const token = response && response['token'];
+
+        if (token) {
+          // set token property
+          this.storeToken(token);
+
+          console.debug('SSO AUTH | User: ' + this.getUsername());
+          console.debug('SSO AUTH | Domains: ' + this.getDomains());
+          console.debug('SSO AUTH | Roles: ' + this.getRoles());
+          console.debug('SSO AUTH | DomainRoles: ' + this.getDomainRoles());
+
+          return true;
+        } else {
+          // return false to indicate failed login
+          return false;
+        }
+      })
+      .catch((error) => {
+        console.debug('SSO login error: ' + error.error['message']);
+          let message : string;
+          if(error.error['message'])
+              message = error['status']+' - '+error.error['message'];
+          else
+              message = 'Server error';
+
+          return Observable.throw(message);
+      });
+  }
+
   public logout(): void {
     this.removeToken();
   }
