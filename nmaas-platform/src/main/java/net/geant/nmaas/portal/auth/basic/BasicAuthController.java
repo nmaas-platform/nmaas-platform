@@ -71,7 +71,7 @@ public class BasicAuthController {
 
 		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
 			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
-        log.debug(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
+        log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
                 user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
