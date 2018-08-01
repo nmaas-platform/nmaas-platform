@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -74,7 +75,7 @@ public class DomainController extends AppBaseController {
 	
 	@PutMapping("/{domainId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
 		if(!domainId.equals(domainUpdate.getId()))
 			throw new ProcessingException("Unable to change domain id");
@@ -91,6 +92,25 @@ public class DomainController extends AppBaseController {
 			throw new ProcessingException(e.getMessage());
 		}
 		
+		return new Id(domainId);
+	}
+
+	@PatchMapping("/{domainId}")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_OPERATOR')")
+	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
+		if(!domainId.equals(domainUpdate.getId())){
+			throw new ProcessingException("Unable to change domain id");
+		}
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
+		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
+		try {
+			domainService.updateDomain(domain);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+
 		return new Id(domainId);
 	}
 	
