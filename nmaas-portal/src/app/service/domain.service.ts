@@ -46,6 +46,10 @@ export class DomainService extends GenericDataService {
     return this.put<Domain, Id>(this.url + domain.id, domain);
   }
 
+  public updateTechDetails(domain: Domain): Observable<any> {
+    return this.patch<Domain, Id>(this.url + domain.id, domain)
+  }
+
   public remove(domainId: number): Observable<any> {
     return this.delete(this.url + domainId);
   }

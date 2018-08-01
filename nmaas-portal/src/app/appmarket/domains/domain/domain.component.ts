@@ -41,17 +41,18 @@ export class DomainComponent extends BaseComponent implements OnInit {
         this.domain = new Domain();
         this.domain.active = true;
       }
-      let users: Observable<User[]>;
-      users = this.userService.getAll(this.domainId);
+      if(!this.authService.hasRole("ROLE_OPERATOR")){
+          let users: Observable<User[]>;
+          users = this.userService.getAll(this.domainId);
 
-      users.subscribe((all)=>{this.users = all;});
-
+          users.subscribe((all)=>{this.users = all;});
+      }
     });
   }
 
   protected submit(): void {
     if (!isUndefined(this.domainId)) {
-      this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.authService.hasRole('ROLE_SUPERADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
       this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
     }
