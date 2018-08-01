@@ -19,7 +19,7 @@ curl -X GET $API_URL/auth/basic/ping --header "Authorization: Bearer $TOKEN"
 
 echo
 echo Configuration
-curl -X POST %API_URL%/configuration --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\configuration.json
+curl -X POST $API_URL/configuration --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/configuration.json
 echo
 echo Add Domain One with codename domain1
 curl -X POST $API_URL/domains --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/domains/domain1.json
@@ -45,6 +45,15 @@ curl -X PUT $API_URL/users/3 --header "Authorization: Bearer $TOKEN" --header "C
 echo
 echo Set User Second an USER role on Domain One
 curl -X POST $API_URL/domains/2/users/3/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
+echo
+echo Register Operator with username operator
+curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3.json
+echo
+echo Enable Operator
+curl -X PUT $API_URL/users/4 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+echo
+echo Set Operator an OPERATOR role on Global Domain
+curl -X POST $API_URL/domains/1/users/4/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
 echo
 echo Get all users
 curl -X GET $API_URL/users --header "Authorization: Bearer $TOKEN" --header "Accept: application/json" | python -m json.tool

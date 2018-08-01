@@ -2,11 +2,12 @@ import {
     Cluster,
     ClusterExtNetwork,
     IngressControllerConfigOption,
-    IngressResourceConfigOption
+    IngressResourceConfigOption,
+    NamespaceConfigOption
 } from '../../../../model/cluster';
-import { BaseComponent } from '../../../common/basecomponent/base.component';
+import {BaseComponent} from '../../../common/basecomponent/base.component';
 import {ComponentMode} from '../../../common/componentmode';
-import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Router} from "@angular/router";
 
 @Component({
@@ -19,6 +20,8 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     controllerConfigOption:Map<string,IngressControllerConfigOption> = new Map<string, IngressControllerConfigOption>();
 
     resourceConfigOption:Map<string, IngressResourceConfigOption> = new Map<string, IngressResourceConfigOption>();
+
+    namespaceConfigOption:Map<string,NamespaceConfigOption> = new Map<string, NamespaceConfigOption>();
 
     @Input()
     public cluster: Cluster = new Cluster();
@@ -87,5 +90,8 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
         this.controllerConfigOption.set('Use existing',IngressControllerConfigOption.USE_EXISTING);
         this.controllerConfigOption.set('Deploy new controller from chart repository', IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
         this.controllerConfigOption.set('Deploy new controller from local chart archive',IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
+        this.namespaceConfigOption.set('Use default namespace', NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
+        this.namespaceConfigOption.set('Use domain namespace', NamespaceConfigOption.USE_DOMAIN_NAMESPACE);
+        this.namespaceConfigOption.set('Create namespace', NamespaceConfigOption.CREATE_NAMESPACE);
     }
 }

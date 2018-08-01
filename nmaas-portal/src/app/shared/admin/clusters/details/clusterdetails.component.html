@@ -149,20 +149,19 @@
             <div class="panel-default panel-heading">Deployment:</div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="deploymentusedefaultnamespace" class="col-sm-2 control-label">Use default namespace:</label>
+                    <label for="deploymentnamespaceconfigoption" class="col-sm-2 control-label">Namespace config option:</label>
                     <div class="col-sm-10">
-                        <input type="checkbox" id="deploymentusedefaultnamespace" name="deploymentusedefaultnamespace"
-                               [(ngModel)]="cluster.deployment.useDefaultNamespace" [checked]="cluster.deployment.useDefaultNamespace == true" [disabled]="isInMode(ComponentMode.VIEW)">
+                        <select class="form-control" id="deploymentnamespaceconfigoption" name="deploymentnamespaceconfigoption"
+                                [(ngModel)]="cluster.deployment.namespaceConfigOption" [disabled]="isInMode(ComponentMode.VIEW)" required>
+                            <option *ngFor="let configOption of getKeys(namespaceConfigOption)" [value]="namespaceConfigOption.get(configOption)">{{configOption}}</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="deploymentdefaultnamespace" class="col-sm-2 control-label">Default namespace:</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="deploymentdefaultnamespace" name="deploymentdefaultnamespace" required
-                               [(ngModel)]="cluster.deployment.defaultNamespace" [disabled]="isInMode(ComponentMode.VIEW) || !cluster.deployment.useDefaultNamespace" #defaultNamespace="ngModel">
-                        <div class="alert alert-danger" *ngIf="defaultNamespace.invalid && (defaultNamespace.dirty || defaultNamespace.touched)">
-                            <div *ngIf="defaultNamespace.errors.required">Default namespace is required</div>
-                        </div>
+                        <input type="text" class="form-control" id="deploymentdefaultnamespace" name="deploymentdefaultnamespace"
+                               [(ngModel)]="cluster.deployment.defaultNamespace" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">

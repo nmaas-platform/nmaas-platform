@@ -1,17 +1,9 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterApi;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.portal.service.DomainService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,12 +40,14 @@ public class KubernetesClusterManagerTest {
     private KubernetesClusterRepository repository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private DomainService domainService;
 
     private KubernetesClusterManager manager;
 
     @Before
     public void setup() {
-        manager = new KubernetesClusterManager(repository, modelMapper);
+        manager = new KubernetesClusterManager(repository, modelMapper, domainService);
     }
 
     @After
@@ -136,7 +130,7 @@ public class KubernetesClusterManagerTest {
         ingress.setTlsSupported(false);
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
-        deployment.setUseDefaultNamespace(true);
+        deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultPersistenceClass("persistenceClass");
         cluster.setDeployment(deployment);
