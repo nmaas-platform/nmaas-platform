@@ -125,6 +125,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public void updateDomain(Domain domain) throws ProcessingException {		
 		checkParam(domain);
+		checkGlobal(domain);
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
 		domainRepo.save(domain);
@@ -132,7 +133,7 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public boolean removeDomain(Long id) {
-		return findDomain(id).map(toRemove -> { domainRepo.delete(toRemove); return true;}).orElse(false);		
+		return findDomain(id).map(toRemove -> {checkGlobal(toRemove);domainRepo.delete(toRemove); return true;}).orElse(false);
 	}
 
 	@Override
@@ -253,6 +254,11 @@ public class DomainServiceImpl implements DomainService {
 			throw new IllegalArgumentException("domainId is null");
 		if(userId == null)
 			throw new IllegalArgumentException("userId is null");		
+	}
+
+	protected void checkGlobal(Domain domain){
+		if(domain.getCodename().equals(GLOBAL_DOMAIN))
+			throw new IllegalArgumentException("Global domain can't be updated or removed");
 	}
 	
 }
