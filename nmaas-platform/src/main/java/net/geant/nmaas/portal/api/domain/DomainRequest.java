@@ -9,6 +9,12 @@ public class DomainRequest {
 
 	@NotNull
 	private String codename;
+
+	@NotNull
+	private String kubernetesNamespace;
+
+	@NotNull
+	private boolean dcnConfigured;
 	
 	private boolean active = true;
 	
@@ -52,5 +58,20 @@ public class DomainRequest {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-	
+
+	public String getKubernetesNamespace() {
+		return kubernetesNamespace;
+	}
+
+	public void setKubernetesNamespace(String kubernetesNamespace) {
+		this.kubernetesNamespace = kubernetesNamespace;
+	}
+
+	public boolean isDcnConfigured() {
+		return dcnConfigured;
+	}
+
+	public void setDcnConfigured(boolean dcnConfigured) {
+		this.dcnConfigured = dcnConfigured;
+	}
 }

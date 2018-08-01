@@ -25,21 +25,21 @@ public class GitLabConfigController {
         this.gitLabManager = gitLabManager;
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping
     public List<GitLabView> listAllGitlabConfig(){
         return gitLabManager.getAllGitlabConfig();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping(value = "/{id}")
     public GitLab getGitlabConfigById(@PathVariable("id") Long id) throws GitLabConfigNotFoundException {
         return gitLabManager.getGitlabConfigById(id);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public Long addGitlabConfig (@RequestBody GitLab newGitLabConfig) throws OnlyOneGitLabConfigSupportedException {
@@ -48,14 +48,14 @@ public class GitLabConfigController {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateGitlabConfig(@PathVariable("id") Long id, @RequestBody GitLab updatedGitLabConfig) throws GitLabConfigNotFoundException {
         gitLabManager.updateGitlabConfig(id, updatedGitLabConfig);
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeGitlabConfig(@PathVariable("id") Long id) throws GitLabConfigNotFoundException {

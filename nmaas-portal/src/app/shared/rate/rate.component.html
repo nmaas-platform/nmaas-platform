@@ -3,4 +3,4 @@
 										 <span [ngClass]="(rate?.rate >= 3) ? 'glyphicon glyphicon-star' : 'glyphicon glyphicon-star-empty'" (click)="update(3)"></span>
 										 <span [ngClass]="(rate?.rate >= 4) ? 'glyphicon glyphicon-star' : 'glyphicon glyphicon-star-empty'" (click)="update(4)"></span>
 										 <span [ngClass]="(rate?.rate >= 5) ? 'glyphicon glyphicon-star' : 'glyphicon glyphicon-star-empty'" (click)="update(5)"></span>
-										 <span class="text">{{rate?.rate}}</span>	
+										 <span class="text">{{rate?.rate | number:'1.0-1'}}</span>

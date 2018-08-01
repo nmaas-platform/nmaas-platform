@@ -6,6 +6,8 @@ public class Domain {
 	String name;
 	String codename;
 	boolean active;
+	String kubernetesNamespace;
+	boolean dcnConfigured;
 	
 	public Long getId() {
 		return id;
@@ -37,6 +39,22 @@ public class Domain {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public String getKubernetesNamespace() {
+		return kubernetesNamespace;
+	}
+
+	public void setKubernetesNamespace(String kubernetesNamespace) {
+		this.kubernetesNamespace = kubernetesNamespace;
+	}
+
+	public boolean isDcnConfigured() {
+		return dcnConfigured;
+	}
+
+	public void setDcnConfigured(boolean dcnConfigured) {
+		this.dcnConfigured = dcnConfigured;
 	}
 	
 }

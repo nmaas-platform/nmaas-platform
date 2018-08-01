@@ -10,7 +10,7 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/take';
 import { isUndefined } from 'util';
-import {UserRole} from "../../../model/userrole";
+import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
 
@@ -71,6 +71,11 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public getOnlyDomainRoles(user:User):UserRole[]{
     return user.roles.filter(role=>role.domainId===this.domainId);
+  }
+
+  public getGlobalRole(user:User):String{
+    let userRole:UserRole[] = user.roles.filter(role=>role.domainId===this.domainService.getGlobalDomainId());
+    return userRole[0].role.toString() === Role[Role.ROLE_GUEST]?'-':userRole[0].role.toString().slice(5);
   }
 
   public getUserDomainIds(user: User): number[] {

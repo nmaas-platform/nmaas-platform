@@ -1,6 +1,6 @@
 		<footer class="footer">
-			<a style="float:left;padding-left:15px" (click)="modal.show()" class="text-left">Version {{gitInfo?.buildVersion}}</a>
-			<a style="float:right;padding-right:15px" (click)="router.navigate(['/changelog'])" *ngIf="!checkURL()">Changelog</a>
+			<a style="float:left;padding-left:15px;cursor:pointer" (click)="modal.show()" class="text-left">Version {{gitInfo?.buildVersion}}</a>
+			<a style="float:right;padding-right:15px;cursor:pointer" (click)="router.navigate(['/changelog'])" *ngIf="!checkURL()">Changelog</a>
 			<p style="text-align:center">GEANT NMaaS AppMarket (c) 2017-2018 <a href="http://geant.net">GEANT</a></p>
 		</footer>
 

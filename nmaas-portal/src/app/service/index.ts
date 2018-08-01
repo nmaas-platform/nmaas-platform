@@ -7,3 +7,4 @@ export * from './tag.service';
 export * from './user.service';
 export * from './cache.service';
 export * from './changelog.service';
+export * from './configuration.service';
