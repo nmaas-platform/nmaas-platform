@@ -10,11 +10,11 @@ import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstancepr
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
-import {AppRestartModalComponent} from '../../modals/apprestart';
-import {RateComponent} from '../../../shared/rate/rate.component';
+import {AppRestartModalComponent} from "../../modals/apprestart";
+import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
 // import 'rxjs/add/operator/switchMap';
-
+import {RateComponent} from '../../../shared/rate/rate.component';
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -41,6 +41,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public appInstanceId: number;
   public appInstance: AppInstance;
+  public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
 
   public intervalCheckerSubscribtion;
@@ -90,12 +91,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           this.updateAppInstance();
         }
       }
-    )
-
+    );
+     this.appInstanceService.getAppInstanceHistory(this.appInstanceId).subscribe(history => {
+        this.appInstanceStateHistory = history.reverse();
+     });
   }
 
   private updateAppInstance() {
-    console.log('update app instance')
+    console.log('update app instance');
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;

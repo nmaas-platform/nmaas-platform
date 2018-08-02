@@ -71,6 +71,30 @@
 				<p>State: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus.userFriendlyState : 'Something went wrong'}}</p>
 				<p>Details: {{appInstanceStatus?.userFriendlyDetails}}</p>
 			</div>
+
+			<div class="row" *ngIf="this.appInstanceStateHistory">
+                <h3>Deployment history</h3>
+				<hr>
+				<table class="table table-hover table-condensed">
+					<thead>
+						<tr>
+							<th>Timestamp</th>
+                           <th>State transitions</th>
+							<th>&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory" let-isLast="last">
+							<tr>
+								<td>{{history.timestamp | date:'medium'}}</td>
+                                <td *ngIf="history.previousState !== null">{{history.previousState}}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState}}</td>
+                                <td *ngIf="history.previousState === null">{{history.currentState}}</td>
+							</tr>
+						</ng-template>
+					</tbody>
+				</table>
+			</div>
+
 			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
 				<div class="col-xs-12">
 					<h3>Configuration</h3>
