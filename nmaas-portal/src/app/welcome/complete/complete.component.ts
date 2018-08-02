@@ -13,6 +13,7 @@ import {BaseComponent} from "../../shared/common/basecomponent/base.component";
     templateUrl: './complete.component.html',
     styleUrls: ['./complete.component.css'],
 })
+
 export class CompleteComponent extends BaseComponent implements OnInit {
 
     public user:User;
