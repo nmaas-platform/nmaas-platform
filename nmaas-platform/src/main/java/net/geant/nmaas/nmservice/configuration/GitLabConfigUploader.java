@@ -217,7 +217,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabRepoUrl) {
         String[] urlParts = gitLabRepoUrl.split("//");
-        return urlParts[0] + "//" + gitLabUser + "@" + urlParts[1];
+        return "ssh" + "//" + gitLabUser + "@" + urlParts[1];
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
