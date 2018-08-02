@@ -1,7 +1,15 @@
 package net.geant.nmaas.orchestration.entities;
 
-import javax.persistence.*;
 import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 
 @Entity
 @Table(name="app_deployment_history")
@@ -19,7 +27,7 @@ public class AppDeploymentHistory {
     @Column(nullable = false)
     private Date timestamp;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private AppDeploymentState previousState;
 
     @Column(nullable = false)
@@ -58,16 +66,27 @@ public class AppDeploymentHistory {
         this.timestamp = timestamp;
     }
 
-    public AppDeploymentState getPreviousState() {
-        return previousState;
+    public String getPreviousStateString() {
+        if(this.previousState == null){
+            return null;
+        }
+        return this.previousState.lifecycleState().getUserFriendlyState();
+    }
+
+    public AppDeploymentState getPreviousState(){
+        return this.previousState;
     }
 
     public void setPreviousState(AppDeploymentState previousState) {
         this.previousState = previousState;
     }
 
-    public AppDeploymentState getCurrentState() {
-        return currentState;
+    public String getCurrentStateString() {
+        return currentState.lifecycleState().getUserFriendlyState();
+    }
+
+    public AppDeploymentState getCurrentState(){
+        return this.currentState;
     }
 
     public void setCurrentState(AppDeploymentState currentState) {

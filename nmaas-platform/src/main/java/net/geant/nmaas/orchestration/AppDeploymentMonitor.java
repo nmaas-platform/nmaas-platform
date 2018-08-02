@@ -46,7 +46,7 @@ public interface AppDeploymentMonitor {
     AppUiAccessDetails userAccessDetails(Identifier deploymentId) throws InvalidAppStateException, InvalidDeploymentIdException;
 
     /**
-     * Retrieves information about changes in application states.
+     * Retrieves information about application deployment state transitions.
      *
      * @param deploymentId unique identifier of the deployed user application
      * @return all of state changes of the application
