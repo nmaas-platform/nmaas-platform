@@ -14,11 +14,7 @@ import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
 // import 'rxjs/add/operator/switchMap';
-import {AppRestartModalComponent} from '../../modals/apprestart';
 import {RateComponent} from '../../../shared/rate/rate.component';
-
-// import 'rxjs/add/operator/switchMap';
-
 
 @Component({
   selector: 'nmaas-appinstance',
