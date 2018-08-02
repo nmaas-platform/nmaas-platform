@@ -1,9 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -107,10 +105,10 @@ public class UsersController {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
 		return modelMapper.map(user, User.class);
 	}
-	
+
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or is")
 	@Transactional
 	public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) throws ProcessingException, MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.User userMod = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
@@ -149,11 +147,6 @@ public class UsersController {
 							ur.getRole()))
 					.collect(Collectors.toSet());
 
-			if(userMod.getEmail() == null)
-				roles.add(new net.geant.nmaas.portal.persistent.entity.UserRole(userMod,
-						domains.findDomain("GLOBAL").get(), //TODO: will it work?
-						Role.ROLE_INCOMPLETE));
-			
 			userMod.setNewRoles(roles);
 		}
 		try {
@@ -214,7 +207,28 @@ public class UsersController {
 			throw new ProcessingException("Unable to change password");
 		}
 	}
-	
+
+
+	@PostMapping(value="/users/my/complete")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@Transactional
+	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) throws MissingElementException, ProcessingException {
+		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+		try {
+			if(userRequest.getFirstname() != null)
+				user.setFirstname(userRequest.getFirstname());
+			if(userRequest.getLastname() != null)
+				user.setLastname(userRequest.getLastname());
+			if(userRequest.getEmail() != null) {
+				user.setEmail(userRequest.getEmail());
+				user.setEnabled(false);
+				user.setNewRoles(Collections.singleton(new net.geant.nmaas.portal.persistent.entity.UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new ProcessingException()), Role.ROLE_GUEST)));
+			}
+		} catch (ProcessingException e) {
+			throw new ProcessingException("Unable to complete your registration");
+		}
+	}
+
 	@PostMapping("/users/my/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional

@@ -3,6 +3,7 @@
 */build/
 */bin/
 .gradle
+nmaas-platform/src/main/resources/git.properties
 
 ### STS ###
 .apt_generated

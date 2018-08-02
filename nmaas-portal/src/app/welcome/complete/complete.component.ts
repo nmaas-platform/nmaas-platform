@@ -6,13 +6,14 @@ import {Observable} from "rxjs/Observable";
 import {Domain} from "../../model/domain";
 import {RegistrationService} from "../../auth/registration.service";
 import {UserService} from "../../service";
+import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 
 @Component({
     selector: 'app-complete',
     templateUrl: './complete.component.html',
     styleUrls: ['./complete.component.css'],
 })
-export class CompleteComponent implements OnInit {
+export class CompleteComponent extends BaseComponent implements OnInit {
 
     public user:User;
     public registrationForm: FormGroup;
@@ -26,6 +27,7 @@ export class CompleteComponent implements OnInit {
                 private registrationService: RegistrationService,
                 protected profileService:ProfileService,
                 private userService: UserService) {
+        super();
         this.registrationForm = fb.group(
             {
                 username: ['', [Validators.required, Validators.minLength(3)]],

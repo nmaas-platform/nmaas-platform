@@ -18,6 +18,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
 import { HttpClientModule } from '@angular/common/http';
+import {ProfileService} from "./service/profile.service";
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -61,7 +62,8 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
         useFactory: appConfigFactory,
         deps: [ AppConfigService ],
         multi: true
-    }
+    },
+    ProfileService
   ],
   bootstrap: [ AppComponent ]
 })

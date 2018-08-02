@@ -14,6 +14,7 @@ import {RouterModule} from '@angular/router';
 import {ProfileComponent} from './profile/profile.component';
 import {AppMarketModule} from "../appmarket";
 import {UserService} from "../service";
+import {CompleteComponent} from "./complete/complete.component";
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import {UserService} from "../service";
     ChangelogComponent,
     RegistrationComponent,
     ProfileComponent,
+    CompleteComponent
   ],
   imports: [
     FormsModule,
