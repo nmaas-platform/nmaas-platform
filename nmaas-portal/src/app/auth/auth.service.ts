@@ -9,7 +9,6 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import {isUndefined} from 'util';
 import {Authority} from '../model/authority';
-import {ProfileService} from "../service/profile.service";
 
 export class DomainRoles {
   constructor(private domainId: number, private roles: string[] = []) {
@@ -30,7 +29,7 @@ export class DomainRoles {
 
 @Injectable()
 export class AuthService {
-  constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService, private profileService: ProfileService) {}
+  constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
 
   private storeToken(token: string): void {
     localStorage.setItem(this.appConfig.config.tokenName, token);
@@ -246,22 +245,13 @@ export class AuthService {
         const token = response && response['token'];
 
         if (token) {
-            this.storeToken(token);
-          this.profileService.getOne().subscribe((user) => {
-              if (user.email === null) {
-                  //the login is valid but user has no email
-                  console.debug('No email - redirecting to details form');
-                  return false;
-              }
-              else {
-                  console.debug('SSO AUTH | User: ' + this.getUsername());
-                  console.debug('SSO AUTH | Domains: ' + this.getDomains());
-                  console.debug('SSO AUTH | Roles: ' + this.getRoles());
-                  console.debug('SSO AUTH | DomainRoles: ' + this.getDomainRoles());
+          this.storeToken(token);
+          console.debug('SSO AUTH | User: ' + this.getUsername());
+          console.debug('SSO AUTH | Domains: ' + this.getDomains());
+          console.debug('SSO AUTH | Roles: ' + this.getRoles());
+          console.debug('SSO AUTH | DomainRoles: ' + this.getDomainRoles());
 
-                  return true;
-              }
-          });
+          return true;
         } else {
           // return false to indicate failed login
           return false;

@@ -12,6 +12,7 @@ import {BaseComponent} from "../../shared/common/basecomponent/base.component";
     selector: 'app-complete',
     templateUrl: './complete.component.html',
     styleUrls: ['./complete.component.css'],
+    providers:[ProfileService]
 })
 
 export class CompleteComponent extends BaseComponent implements OnInit {
@@ -50,7 +51,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
             this.user.firstname = this.registrationForm.controls['firstname'].value;
             this.user.lastname = this.registrationForm.controls['lastname'].value;
 
-            this.userService.updateUser(this.user.id, this.user).subscribe(
+            this.userService.completeRegistration(this.user).subscribe(
                 (result) => {
                     console.log("Data updated successfully.");
                     this.registrationForm.reset();

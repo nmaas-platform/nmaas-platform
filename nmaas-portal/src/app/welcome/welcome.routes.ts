@@ -22,5 +22,5 @@ export const WelcomeRoutes: Routes = [
     { path: 'logout', component: LogoutComponent },
     { path: 'changelog', component: ChangelogComponent },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: {mode: ComponentMode.PROFILVIEW} },
-    { path: 'complete', component: CompleteComponent }
+    { path: 'complete', component: CompleteComponent, canActivate: [AuthGuard] }
 ];

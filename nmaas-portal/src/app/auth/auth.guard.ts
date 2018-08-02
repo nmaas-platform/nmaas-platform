@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
-import {CanActivate, Router} from '@angular/router';
+import {ActivatedRoute, CanActivate, Router} from '@angular/router';
 import {AuthService} from './auth.service';
 import {ConfigurationService} from '../service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private auth: AuthService, private router: Router, private maintenanceService: ConfigurationService) {}
+  constructor(private auth: AuthService, private router: Router,
+              private maintenanceService: ConfigurationService, private route: ActivatedRoute) {}
 
 
   public canActivate(): boolean {
@@ -19,7 +20,12 @@ export class AuthGuard implements CanActivate {
     });
 
     if (this.auth.isLogged()) {
-      return true;
+      if(this.auth.hasRole('ROLE_INCOMPLETE') && (this.route.snapshot.url.length==0 || this.route.snapshot.url[0].path !== '/complete')) {
+          this.router.navigate(['/complete']);
+          return false;
+      }
+      else
+          return true;
     }
 
     // not logged in so redirect to login page
