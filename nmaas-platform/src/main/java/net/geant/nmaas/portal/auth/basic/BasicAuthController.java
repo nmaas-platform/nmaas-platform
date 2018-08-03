@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.auth.basic;
 
 import io.jsonwebtoken.Claims;
+import net.geant.nmaas.dcn.deployment.AnsibleDcnDeploymentExecutor;
 import net.geant.nmaas.portal.api.auth.UserLogin;
 import net.geant.nmaas.portal.api.auth.UserRefreshToken;
 import net.geant.nmaas.portal.api.auth.UserToken;
@@ -11,6 +12,8 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth/basic")
@@ -28,6 +32,8 @@ public class BasicAuthController {
 
 //	@Autowired
 //	UserRepository users;
+
+	private static final Logger log = LogManager.getLogger(BasicAuthController.class);
 	
 	@Autowired
 	UserService users;
@@ -65,7 +71,8 @@ public class BasicAuthController {
 
 		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
 			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
-
+        log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
+                user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
 	
