@@ -40,6 +40,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
+    private static final String GITLAB_SSH_USER = "git";
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -192,7 +193,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     String getGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
         return kClusterDeployment.getUseInClusterGitLabInstance()
-                        ? generateCompleteGitCloneUrl(gitLabManager.getGitLabRepositoryAccessUsername(), gitLabRepoUrl)
+                        ? generateCompleteGitCloneUrl(gitLabRepoUrl)
                         : generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
     }
 
@@ -215,9 +216,9 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
     }
 
-    private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabRepoUrl) {
+    private String generateCompleteGitCloneUrl(String gitLabRepoUrl) {
         String[] urlParts = gitLabRepoUrl.split("//");
-        return "ssh:" + "//" + gitLabUser + "@" + urlParts[1];
+        return "ssh://" + GITLAB_SSH_USER + "@" + urlParts[1].replaceFirst("/", ":");
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {

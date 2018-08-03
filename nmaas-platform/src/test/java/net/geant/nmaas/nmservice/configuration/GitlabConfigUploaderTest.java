@@ -39,7 +39,7 @@ public class GitlabConfigUploaderTest {
         when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(true);
         when(gitLabManager.getGitLabRepositoryAccessUsername()).thenReturn("test-user");
         String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/group/test.git");
-        assertThat(result, is("ssh://" + "test-user" + "@gitlab.test.pl/group/test.git"));
+        assertThat(result, is("ssh://git@gitlab.test.pl:group/test.git"));
     }
 
     @Test
