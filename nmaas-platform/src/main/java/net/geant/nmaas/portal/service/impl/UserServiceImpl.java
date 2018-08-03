@@ -62,7 +62,12 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	public Optional<User> findById(Long id) {
 		return (id != null ? Optional.ofNullable(userRepo.findOne(id)) : Optional.empty());
 	}
-	
+
+	@Override
+	public Optional<User> findBySamlToken(String token) {
+		return (token != null ? userRepo.findBySamlToken(token) : Optional.empty());
+	}
+
 	@Override
 	public boolean existsByUsername(String username) {
 		checkParam(username);

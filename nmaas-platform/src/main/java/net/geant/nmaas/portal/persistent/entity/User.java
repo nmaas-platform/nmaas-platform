@@ -18,9 +18,9 @@ public class User {
 	@Column(unique = true, nullable = false)
 	private String username;
 	
-	//@NotNull
 	private String password;
 
+	@Column(unique = true, nullable = true)
 	private String samlToken;
 
 	private String email;	

@@ -211,6 +211,7 @@ public class UsersController {
 
 	@PostMapping(value="/users/my/complete")
 	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
 	@Transactional
 	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
@@ -231,7 +232,6 @@ public class UsersController {
 			user.setLastname(userRequest.getLastname());
 		if(userRequest.getEmail() != null) {
 			user.setEmail(userRequest.getEmail());
-			user.setEnabled(false);
 			domains.removeMemberRole(domainId, user.getId(), Role.ROLE_INCOMPLETE);
 		}
 
