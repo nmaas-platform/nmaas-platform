@@ -7,6 +7,8 @@ import {Domain} from "../../model/domain";
 import {RegistrationService} from "../../auth/registration.service";
 import {UserService} from "../../service";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
+import {Router} from "@angular/router";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
     selector: 'app-complete',
@@ -28,7 +30,9 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     constructor(private fb: FormBuilder,
                 private registrationService: RegistrationService,
                 protected profileService:ProfileService,
-                private userService: UserService) {
+                private userService: UserService,
+                private authService: AuthService,
+                private router: Router) {
         super();
         this.registrationForm = fb.group(
             {
@@ -54,7 +58,8 @@ export class CompleteComponent extends BaseComponent implements OnInit {
             this.userService.completeRegistration(this.user).subscribe(
                 (result) => {
                     console.log("Data updated successfully.");
-                    this.registrationForm.reset();
+                    this.authService.logout();
+                    this.router.navigate(['/']);
                 },
                     (err) => {
                         console.log("Unable to finish user registration");

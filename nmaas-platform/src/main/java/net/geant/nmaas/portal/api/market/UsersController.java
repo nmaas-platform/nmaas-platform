@@ -108,7 +108,7 @@ public class UsersController {
 
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or is")
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
 	public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserRequest userRequest) throws ProcessingException, MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.User userMod = users.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
@@ -215,18 +215,27 @@ public class UsersController {
 	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
 		try {
-			if(userRequest.getFirstname() != null)
-				user.setFirstname(userRequest.getFirstname());
-			if(userRequest.getLastname() != null)
-				user.setLastname(userRequest.getLastname());
-			if(userRequest.getEmail() != null) {
-				user.setEmail(userRequest.getEmail());
-				user.setEnabled(false);
-				user.setNewRoles(Collections.singleton(new net.geant.nmaas.portal.persistent.entity.UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new ProcessingException()), Role.ROLE_GUEST)));
-			}
-		} catch (ProcessingException e) {
+			Long domainId = domains.getGlobalDomain().orElseThrow(() -> new ProcessingException()).getId();
+			completeRegistration(userRequest, user, domainId);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
 			throw new ProcessingException("Unable to complete your registration");
 		}
+	}
+
+	public void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) throws net.geant.nmaas.portal.exceptions.ProcessingException {
+		if(userRequest.getUsername() != null)
+			user.setUsername(userRequest.getUsername());
+		if(userRequest.getFirstname() != null)
+			user.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			user.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null) {
+			user.setEmail(userRequest.getEmail());
+			user.setEnabled(false);
+			domains.removeMemberRole(domainId, user.getId(), Role.ROLE_INCOMPLETE);
+		}
+
+		users.update(user);
 	}
 
 	@PostMapping("/users/my/auth/basic/password")

@@ -45,7 +45,7 @@ export class UserService extends GenericDataService {
   }
 
   public completeRegistration(user: User): Observable<any> {
-    return this.post<User, any>('/users/my/complete', user);
+    return this.post<User, any>(this.getUsersUrl()+'my/complete', user);
   }
 
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {

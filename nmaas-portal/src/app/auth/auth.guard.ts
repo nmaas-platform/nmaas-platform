@@ -1,16 +1,15 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRoute, CanActivate, Router} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {AuthService} from './auth.service';
 import {ConfigurationService} from '../service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private auth: AuthService, private router: Router,
-              private maintenanceService: ConfigurationService, private route: ActivatedRoute) {}
+  constructor(private auth: AuthService, private router: Router, private maintenanceService: ConfigurationService) {}
 
 
-  public canActivate(): boolean {
+  public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     this.maintenanceService.getConfiguration().subscribe(value => {
         if (this.auth.isLogged() && !this.auth.hasRole('ROLE_SUPERADMIN') && value.maintenance) {
             this.auth.logout();
@@ -20,9 +19,9 @@ export class AuthGuard implements CanActivate {
     });
 
     if (this.auth.isLogged()) {
-      if(this.auth.hasRole('ROLE_INCOMPLETE') && (this.route.snapshot.url.length==0 || this.route.snapshot.url[0].path !== '/complete')) {
-          this.router.navigate(['/complete']);
-          return false;
+      if(this.auth.hasRole('ROLE_INCOMPLETE') && route.url.toString() !== 'complete') {
+           this.router.navigate(['/complete']);
+           return false;
       }
       else
           return true;
@@ -33,7 +32,7 @@ export class AuthGuard implements CanActivate {
     return false;
   }
 
-  public canActivateChild(): boolean {
-    return this.canActivate();
+  public canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    return this.canActivate(route, state);
   }
 }
