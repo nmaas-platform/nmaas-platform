@@ -1,7 +1,7 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 	<div class="container-fluid">
 		<div class="navbar-header">
-			<img src="assets/images/geant-logo-small.png">
+			<img src="assets/images/geant-logo-small.png" style="margin: 5px">
 		</div>
 
 		<div class="collapse navbar-collapse">
@@ -11,12 +11,12 @@
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_USER']"><a
 					[routerLink]="['/instances']">Instances</a></li>
 				<li class="divider-vertical"></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']"><a
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_OPERATOR']"><a
 					[routerLink]="['/domains']">Domains</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']">
 					<a [routerLink]="['/users']">Users</a>
 				</li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']" class="dropdown">
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']" class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Inventory <b class="caret"></b></a>
 					<ul class="dropdown-menu">
 						<li><a [routerLink]="['/admin/clusters']">Kubernetes</a>
@@ -26,6 +26,8 @@
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
+				<li class="divider-vertical"></li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']"><a [routerLink]="['/admin/configuration']">Configuration</a></li>
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"
 					aria-expanded="false"><span class="glyphicon glyphicon-user"></span>

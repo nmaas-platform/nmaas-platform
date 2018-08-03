@@ -23,7 +23,7 @@ public class KClusterDeployment {
 
     /** Flag indicating whether to use the default template for all deployments */
     @Column(nullable = false)
-    private Boolean useDefaultNamespace;
+    private NamespaceConfigOption namespaceConfigOption;
 
     /** Kubernetes namespace for NMaaS deployments */
     private String defaultNamespace;
@@ -44,12 +44,12 @@ public class KClusterDeployment {
         this.id = id;
     }
 
-    public Boolean getUseDefaultNamespace() {
-        return useDefaultNamespace;
+    public NamespaceConfigOption getNamespaceConfigOption() {
+        return namespaceConfigOption;
     }
 
-    public void setUseDefaultNamespace(Boolean useDefaultNamespace) {
-        this.useDefaultNamespace = useDefaultNamespace;
+    public void setNamespaceConfigOption(NamespaceConfigOption namespaceConfigOption) {
+        this.namespaceConfigOption = namespaceConfigOption;
     }
 
     public String getDefaultNamespace() {

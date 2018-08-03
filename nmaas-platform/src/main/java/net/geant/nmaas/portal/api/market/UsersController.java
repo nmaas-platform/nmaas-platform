@@ -294,7 +294,7 @@ public class UsersController {
 		Domain globalDomain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
 		if(domain.equals(globalDomain)) {
-			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_GUEST))
+			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
 				throw new ProcessingException("Role cannot be assigned.");			
 		} else {
 			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))

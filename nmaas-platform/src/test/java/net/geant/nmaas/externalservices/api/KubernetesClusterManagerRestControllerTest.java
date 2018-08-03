@@ -13,6 +13,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDe
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
@@ -75,7 +76,7 @@ public class KubernetesClusterManagerRestControllerTest {
                         "\"tlsSupported\":false" +
                     "}," +
                     "\"deployment\": {" +
-                        "\"useDefaultNamespace\":true," +
+                        "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
                         "\"defaultNamespace\":\"testNamespace\"," +
                         "\"defaultPersistenceClass\":\"persistenceClass\"," +
                         "\"useInClusterGitLabInstance\":\"false\"" +
@@ -258,7 +259,7 @@ public class KubernetesClusterManagerRestControllerTest {
         ingress.setTlsSupported(false);
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
-        deployment.setUseDefaultNamespace(true);
+        deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultPersistenceClass("persistenceClass");
         deployment.setUseInClusterGitLabInstance(false);

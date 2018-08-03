@@ -46,7 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
 	private final static String APP_LOGO = "/api/apps/{appId:[\\d+]}/logo";
 	private final static String APP_SCREENSHOTS = "/api/apps/{appId:[\\d+]}/screenshots/**";
-	
+
+	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
+
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
     private static final String ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME = "ansible.notification.client.password";
 	private static final String APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.config.download.client.username";
@@ -120,6 +122,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_SIGNUP).permitAll()
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
 				.antMatchers(AUTH_WHITELIST).permitAll()
+				.antMatchers(AUTH_SSO_LOGIN).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
 //				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
@@ -146,6 +149,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/configuration/security"),
 										new AntPathRequestMatcher("/swagger-ui.html"),
 										new AntPathRequestMatcher("/webjars/**"),
+										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
 										new AntPathRequestMatcher("/api/info/**"),
 //										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),

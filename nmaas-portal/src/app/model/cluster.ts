@@ -22,7 +22,7 @@ class ClusterDeployment {
     public defaultNamespace: string="";
     public defaultPersistenceClass: string="";
     public id: number;
-    public useDefaultNamespace: boolean = false;
+    public namespaceConfigOption: string;
     public useInClusterGitLabInstance: boolean = false;
 }
 
@@ -85,4 +85,10 @@ export enum IngressResourceConfigOption{
     NOT_USED = 'NOT_USED',
     DEPLOY_USING_API = 'DEPLOY_USING_API',
     DEPLOY_FROM_CHART = 'DEPLOY_FROM_CHART'
+}
+
+export enum NamespaceConfigOption{
+    USE_DEFAULT_NAMESPACE = 'USE_DEFAULT_NAMESPACE',
+    USE_DOMAIN_NAMESPACE = 'USE_DOMAIN_NAMESPACE',
+    CREATE_NAMESPACE = 'CREATE_NAMESPACE'
 }

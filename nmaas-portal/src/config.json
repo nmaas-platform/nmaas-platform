@@ -6,5 +6,13 @@
 	},
 	"http": {
 		"timeout": 10000
+	},
+
+	"sso": {
+		"name": "SSO service",
+		"loginUrl": "https://shibbolethsp.pllab.internal/cgi-bin/nmaas.php",
+		"logoutUrl": "https://shibbolethsp.pllab.internal/Shibboleth.sso/Logout",
+		"allowsBasic": true
 	}
 }
+

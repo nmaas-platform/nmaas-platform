@@ -7,19 +7,14 @@ import {AppImagesService, AppInstanceService, AppsService} from '../../../servic
 
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 
-import {
-    AppInstance,
-    AppInstanceProgressStage,
-    AppInstanceState,
-    AppInstanceStatus,
-    Application
-} from '../../../model/index';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
+import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
 // import 'rxjs/add/operator/switchMap';
-
+import {RateComponent} from '../../../shared/rate/rate.component';
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -37,12 +32,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
 
+  @ViewChild(RateComponent)
+  public readonly appRate: RateComponent;
+
   app: Application;
 
   public appInstanceStatus: AppInstanceStatus;
 
   public appInstanceId: number;
   public appInstance: AppInstance;
+  public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
 
   public intervalCheckerSubscribtion;
@@ -92,12 +91,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           this.updateAppInstance();
         }
       }
-    )
-
+    );
+     this.appInstanceService.getAppInstanceHistory(this.appInstanceId).subscribe(history => {
+        this.appInstanceStateHistory = history.reverse();
+     });
   }
 
   private updateAppInstance() {
-    console.log('update app instance')
+    console.log('update app instance');
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
@@ -126,6 +127,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   protected getTemplate(template: string): any {
     return template;
+  }
+
+  public onRateChanged(): void {
+        this.appRate.refresh();
   }
 
 }

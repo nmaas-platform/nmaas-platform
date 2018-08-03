@@ -14,7 +14,7 @@
   "ingress": {
     "controllerConfigOption":"USE_EXISTING",
     "supportedIngressClass":"nginx",
-    "controllerChart":"nginx",
+    "controllerChartName":"nginx",
     "controllerChartArchive":"nginx-ingress.tgz",
     "resourceConfigOption":"DEPLOY_FROM_CHART",
     "externalServiceDomain":"nmaas.geant.net",
@@ -23,6 +23,7 @@
   "deployment": {
     "useDefaultNamespace":true,
     "defaultNamespace":"default",
+    "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
     "defaultPersistenceClass":"nmaas-nfs-storage",
     "useInClusterGitLabInstance":true
   },

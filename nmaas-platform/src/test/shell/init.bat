@@ -44,10 +44,27 @@ echo ----------------------
 echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
+echo
+echo Configuration
+curl -X POST %API_URL%/configuration --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\configuration.json
+echo.
 
 echo
 echo Domain1
 curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
+echo.
+
+echo
+echo Register Operator with username operator
+curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3.json
+echo.
+echo
+echo Enable Operator
+curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+echo.
+echo
+echo Set Operator an OPERATOR role on Global Domain
+curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
 echo.
 
 echo.
