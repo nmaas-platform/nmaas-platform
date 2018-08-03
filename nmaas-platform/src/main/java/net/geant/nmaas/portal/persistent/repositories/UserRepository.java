@@ -11,4 +11,5 @@ import net.geant.nmaas.portal.persistent.entity.User;
 public interface UserRepository extends JpaRepository<User, Long>{
 	boolean existsByUsername(String username);
 	Optional<User> findByUsername(String username);
+	Optional<User> findBySamlToken(String token);
 }

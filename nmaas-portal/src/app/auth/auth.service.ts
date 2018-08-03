@@ -245,9 +245,7 @@ export class AuthService {
         const token = response && response['token'];
 
         if (token) {
-          // set token property
           this.storeToken(token);
-
           console.debug('SSO AUTH | User: ' + this.getUsername());
           console.debug('SSO AUTH | Domains: ' + this.getDomains());
           console.debug('SSO AUTH | Roles: ' + this.getRoles());

@@ -1,0 +1,50 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-offset-4 col-lg-4 col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
+            <div class="panel panel-default login-vertical-offset">
+                <div class="panel-heading">
+                    <div class="text-center">
+                        <img src="assets/images/geant-logo-small.png">
+                        <h2 class="panel-title">Please finish your registration</h2>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
+                        <div class="form-group form-group-sm"
+                             [ngClass]="{'has-error':  registrationForm.controls.username.invalid && registrationForm.controls.username.dirty,
+ 					 	'has-success': registrationForm.controls.username.valid && registrationForm.controls.username.dirty}">
+                            <label for="username" class="control-label">Username *</label>
+                            <input id="username" class="form-control" placeholder="Username" formControlName="username">
+                        </div>
+                        <div class="form-group form-group-sm"
+                             [ngClass]="{'has-error':  registrationForm.controls.email.invalid && registrationForm.controls.email.dirty,
+ 					 	'has-success': registrationForm.controls.email.valid && registrationForm.controls.email.dirty}">
+                            <label for="email" class="control-label">Email *</label>
+                            <input id="email" class="form-control" placeholder="E-mail" formControlName="email">
+                        </div>
+
+                        <div class="form-group form-group-sm">
+                            <label for="firstname" class="control-label">First name</label>
+                            <input id="firstname" class="form-control" placeholder="First name" formControlName="firstname">
+                        </div>
+
+                        <div class="form-group form-group-sm">
+                            <label for="lastname" class="control-label">Last name</label>
+                            <input id="lastname" class="form-control" placeholder="Last name" formControlName="lastname">
+                        </div>
+
+                        <div class="form-group form-group-sm">
+                            <button *ngIf="!submitted || sending" class="btn btn-primary btn-block" [disabled]="!registrationForm.valid" type="submit" validate>
+                                Submit
+                                <img *ngIf="sending" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                            </button>
+                            <a *ngIf="submitted && success" class="btn btn-success btn-block" [routerLink]="['/']">Success</a>
+                            <a *ngIf="submitted && !success" class="btn btn-danger btn-block" (click)="refresh()">Failure - {{errorMessage}}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<nmaas-footer></nmaas-footer>

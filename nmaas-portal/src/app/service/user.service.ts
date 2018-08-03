@@ -44,6 +44,10 @@ export class UserService extends GenericDataService {
     return this.put<User, any>(this.getUsersUrl() + userId, user);
   }
 
+  public completeRegistration(user: User): Observable<any> {
+    return this.post<User, any>(this.getUsersUrl()+'my/complete', user);
+  }
+
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {
     const url: string = (isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles';
     const targetDomainId: number = (isUndefined(domainId) ? this.appConfig.getNmaasGlobalDomainId() : domainId);
