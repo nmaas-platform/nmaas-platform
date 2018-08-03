@@ -221,7 +221,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private String generateCompleteGitCloneUrl(String gitLabRepoUrl) {
         String[] urlProtocolAndUrl = gitLabRepoUrl.split("//");
         String[] serverAndPath = urlProtocolAndUrl[1].split("/");
-        return "ssh://" + GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], GITLAB_SSH_SERVER).replaceFirst("/", ":");
+        return GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], GITLAB_SSH_SERVER).replaceFirst("/", ":");
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
