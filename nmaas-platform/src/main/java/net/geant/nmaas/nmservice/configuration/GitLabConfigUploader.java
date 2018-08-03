@@ -40,7 +40,9 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
-    private static final String GITLAB_SSH_USER = "git";
+    static final String GITLAB_SSH_USER = "git";
+    //TODO read this property from GitLab configuration
+    static final String GITLAB_SSH_SERVER = "nmaas-conf-gitlab-shell";
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -217,8 +219,9 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     private String generateCompleteGitCloneUrl(String gitLabRepoUrl) {
-        String[] urlParts = gitLabRepoUrl.split("//");
-        return "ssh://" + GITLAB_SSH_USER + "@" + urlParts[1].replaceFirst("/", ":");
+        String[] urlProtocolAndUrl = gitLabRepoUrl.split("//");
+        String[] serverAndPath = urlProtocolAndUrl[1].split("/");
+        return "ssh://" + GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], GITLAB_SSH_SERVER).replaceFirst("/", ":");
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {

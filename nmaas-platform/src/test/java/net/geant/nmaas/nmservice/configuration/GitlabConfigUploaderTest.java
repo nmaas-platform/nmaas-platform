@@ -11,6 +11,8 @@ import org.gitlab4j.api.models.Project;
 import org.junit.Before;
 import org.junit.Test;
 
+import static net.geant.nmaas.nmservice.configuration.GitLabConfigUploader.GITLAB_SSH_SERVER;
+import static net.geant.nmaas.nmservice.configuration.GitLabConfigUploader.GITLAB_SSH_USER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.anyInt;
@@ -38,15 +40,15 @@ public class GitlabConfigUploaderTest {
     public void shouldGenerateProperRepoCloneUrlForInClusterGitLab() throws InvalidDeploymentIdException {
         when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(true);
         when(gitLabManager.getGitLabRepositoryAccessUsername()).thenReturn("test-user");
-        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/group/test.git");
-        assertThat(result, is("ssh://git@gitlab.test.pl:group/test.git"));
+        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/groups-project/test.git");
+        assertThat(result, is("ssh://" + GITLAB_SSH_USER +  "@" + GITLAB_SSH_SERVER + ":groups-project/test.git"));
     }
 
     @Test
     public void shouldGenerateProperRepoCloneUrlForExternalGitLab() throws InvalidDeploymentIdException {
         when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(false);
-        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/group/test.git");
-        assertThat(result, is("http://user:password@gitlab.test.pl/group/test.git"));
+        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/groups-project/test.git");
+        assertThat(result, is("http://user:password@gitlab.test.pl/groups-project/test.git"));
     }
 
     @Test
