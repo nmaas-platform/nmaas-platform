@@ -39,7 +39,8 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final int DEFAULT_DOMAIN_LIMIT_ON_CREATED_PROJECTS = 100;
     private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
-    private static final int PROJECT_MEMBER_MASTER_ACCESS_LEVEL = 40;
+    private static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
+    private static final int PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL = 30;
     static final String GITLAB_SSH_USER = "git";
     //TODO read this property from GitLab configuration
     static final String GITLAB_SSH_SERVER = "nmaas-conf-gitlab-shell";
@@ -156,7 +157,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     private Integer fullAccessCode() {
-        return PROJECT_MEMBER_MASTER_ACCESS_LEVEL;
+        return PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL;
     }
 
     private Integer createProjectWithinGroupWithMember(Integer groupId, Integer userId, Identifier deploymentId) throws FileTransferException {
@@ -171,7 +172,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private void addRepositoryAccessUserToProject(Integer projectId) throws FileTransferException{
         try{
-            gitlab.getProjectApi().addMember(projectId, getUserIdByUsername(defaultRepositoryAccessUsername()), 10);
+            gitlab.getProjectApi().addMember(projectId, getUserIdByUsername(defaultRepositoryAccessUsername()), PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL);
         } catch(GitLabApiException e){
             throw new FileTransferException("" + e.getMessage() + e.getReason());
         }
