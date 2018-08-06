@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcn
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class ManualDcnDeploymentExecutorWorkflowTest {
     private DomainRepository domainRepository;
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
-    private static final String DOMAIN = "domain";
+    private static final String DOMAIN = "domaintest";
 
     @Test
     public void shouldCompleteDcnWorkflowWithManualExecutor() throws Exception {
