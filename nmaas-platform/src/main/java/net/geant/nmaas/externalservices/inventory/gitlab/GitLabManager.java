@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class GitLabManager {
+
     private GitLabRepository repository;
 
     private ModelMapper modelMapper;
@@ -33,7 +34,7 @@ public class GitLabManager {
 
     public GitLab getGitlabConfigById(Long id) throws GitLabConfigNotFoundException {
         return this.repository.findById(id)
-                .orElseThrow(()->new GitLabConfigNotFoundException("GitLab configuration with id "+id+" not found in repository"));
+                .orElseThrow(()->new GitLabConfigNotFoundException("GitLab configuration with id " + id + " not found in repository"));
     }
 
     public void addGitlabConfig(GitLab gitLabConfig) throws OnlyOneGitLabConfigSupportedException {
@@ -65,17 +66,21 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getToken();
     }
 
-    public String getGitLabApiVersion(){
-        return loadSingleGitlabConfig().getApiVersion();
-    }
-
     public String getGitLabRepositoryAccessUsername(){
         return loadSingleGitlabConfig().getRepositoryAccessUsername();
     }
 
+    public String getGitlabServer() {
+        return loadSingleGitlabConfig().getServer();
+    }
+
+    public int gettGitlabPort() {
+        return loadSingleGitlabConfig().getPort();
+    }
+
     private GitLab loadSingleGitlabConfig(){
         if(repository.count() != 1){
-            throw new IllegalStateException("Found "+repository.count()+" gitlab config instead of one");
+            throw new IllegalStateException("Found " + repository.count() + " gitlab config instead of one");
         }
         return repository.findAll().get(0);
     }

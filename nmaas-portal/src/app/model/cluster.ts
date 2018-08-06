@@ -23,6 +23,7 @@ class ClusterDeployment {
     public defaultPersistenceClass: string="";
     public id: number;
     public namespaceConfigOption: string;
+    public useInClusterGitLabInstance: boolean = false;
 }
 
 export class ClusterExtNetwork {

@@ -4,7 +4,6 @@ public class GitLabView {
 
     private Long id;
     private String server;
-    private String apiVersion;
     private String token;
     private Integer port;
     private String repositoryAccessUsername;
@@ -23,14 +22,6 @@ public class GitLabView {
 
     public void setServer(String server) {
         this.server = server;
-    }
-
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
     }
 
     public String getToken() {

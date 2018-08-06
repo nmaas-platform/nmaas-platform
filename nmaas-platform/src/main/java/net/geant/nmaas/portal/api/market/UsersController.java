@@ -107,7 +107,7 @@ public class UsersController {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
 		return modelMapper.map(user, User.class);
 	}
-	
+
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
@@ -148,7 +148,7 @@ public class UsersController {
 							domains.findDomain(ur.getDomainId()).get(), 
 							ur.getRole()))
 					.collect(Collectors.toSet());
-			
+
 			userMod.setNewRoles(roles);
 		}
 		try {
@@ -209,7 +209,37 @@ public class UsersController {
 			throw new ProcessingException("Unable to change password");
 		}
 	}
-	
+
+
+	@PostMapping(value="/users/my/complete")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
+	@Transactional
+	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) throws MissingElementException, ProcessingException {
+		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+		try {
+			Long domainId = domains.getGlobalDomain().orElseThrow(() -> new ProcessingException()).getId();
+			completeRegistration(userRequest, user, domainId);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
+			throw new ProcessingException("Unable to complete your registration");
+		}
+	}
+
+	public void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) throws net.geant.nmaas.portal.exceptions.ProcessingException {
+		if(userRequest.getUsername() != null)
+			user.setUsername(userRequest.getUsername());
+		if(userRequest.getFirstname() != null)
+			user.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			user.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null) {
+			user.setEmail(userRequest.getEmail());
+			domains.removeMemberRole(domainId, user.getId(), Role.ROLE_INCOMPLETE);
+		}
+
+		users.update(user);
+	}
+
 	@PostMapping("/users/my/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
