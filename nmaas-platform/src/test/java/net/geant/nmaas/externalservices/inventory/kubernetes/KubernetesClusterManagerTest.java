@@ -133,6 +133,7 @@ public class KubernetesClusterManagerTest {
         deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultPersistenceClass("persistenceClass");
+        deployment.setUseInClusterGitLabInstance(false);
         cluster.setDeployment(deployment);
         KClusterAttachPoint attachPoint = new KClusterAttachPoint();
         attachPoint.setRouterName("R1");

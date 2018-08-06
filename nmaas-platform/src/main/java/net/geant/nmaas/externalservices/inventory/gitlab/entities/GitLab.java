@@ -2,27 +2,29 @@ package net.geant.nmaas.externalservices.inventory.gitlab.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="gitlab")
+@Table(name = "gitlab")
 public class GitLab {
 
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String server;
 
-    @Column(nullable=false)
-    private String apiVersion;
-
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String token;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Integer port;
 
     @Column(nullable = false)
@@ -42,14 +44,6 @@ public class GitLab {
 
     public void setServer(String server) {
         this.server = server;
-    }
-
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
     }
 
     public String getToken() {
@@ -78,6 +72,7 @@ public class GitLab {
 
     @JsonIgnore
     public String getApiUrl(){
-        return String.format("http://%s:%d",this.server,this.port);
+        return String.format("http://%s:%d", this.server, this.port);
     }
+
 }

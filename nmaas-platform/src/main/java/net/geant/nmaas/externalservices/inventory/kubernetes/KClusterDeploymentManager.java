@@ -4,4 +4,6 @@ public interface KClusterDeploymentManager {
 
     String getDefaultPersistenceClass();
 
+    Boolean getUseInClusterGitLabInstance();
+
 }
