@@ -44,10 +44,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private ApplicationEventPublisher applicationEventPublisher;
 
-    private AppDeploymentRepository appDeploymentRepository;
-
-    private DomainRepository domainRepository;
-
     @Value("${nmaas.service.deployment.check.interval}")
     int serviceDeploymentCheckInternal;
 
@@ -55,11 +51,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     int serviceDeploymentCheckMaxWaitTime;
 
     @Autowired
-    public NmServiceDeploymentCoordinator(ContainerOrchestrator orchestrator, ApplicationEventPublisher applicationEventPublisher, AppDeploymentRepository appDeploymentRepository, DomainRepository domainRepository) {
+    public NmServiceDeploymentCoordinator(ContainerOrchestrator orchestrator, ApplicationEventPublisher applicationEventPublisher) {
         this.orchestrator = orchestrator;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.appDeploymentRepository = appDeploymentRepository;
-        this.domainRepository = domainRepository;
     }
 
     @Override
@@ -81,15 +75,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException {
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
-            if(getDomain(deploymentId).isDcnConfigured()){
-                orchestrator.prepareDeploymentEnvironment(deploymentId);
-                notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
-            } else{
-                notifyStateChangeListeners(deploymentId, WAITING_FOR_OPERATOR_CONFIRMATION);
-            }
+            orchestrator.prepareDeploymentEnvironment(deploymentId);
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
-                | ContainerOrchestratorInternalErrorException
-                | ProcessingException e) {
+                | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
             throw new CouldNotPrepareEnvironmentException("NM Service deployment environment preparation failed -> " + e.getMessage());
         }
@@ -174,14 +163,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
-    }
-
-    private Domain getDomain(Identifier deploymentId) throws ProcessingException {
-        Optional<AppDeployment> appDeployment = this.appDeploymentRepository.findByDeploymentId(deploymentId);
-        if(appDeployment.isPresent()){
-            return this.domainRepository.findByCodename(appDeployment.get().getDomain()).orElseThrow(() -> new ProcessingException("Domain not found"));
-        }
-        throw new ProcessingException("Domain not found");
     }
 
 }

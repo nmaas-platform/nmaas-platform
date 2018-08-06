@@ -57,8 +57,6 @@ public class AppDeploymentStateChangeManager {
         switch (currentState) {
             case REQUEST_VALIDATED:
                 return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
-            case DEPLOYMENT_OPERATOR_CONFIRMED:
-                return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
             case DEPLOYMENT_ENVIRONMENT_PREPARED:
                 return Optional.of(new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId));
             case APPLICATION_CONFIGURED:

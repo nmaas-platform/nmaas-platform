@@ -272,8 +272,6 @@ public class AppInstanceController extends AppBaseController {
 			appInstanceState = AppInstanceState.VALIDATION;
 			break;
 		case DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS:
-		case WAITING_FOR_OPERATOR_CONFIRMATION:
-		case OPERATOR_CONFIRMED:
 			appInstanceState = AppInstanceState.PREPARATION;
 			break;
 		case DEPLOYMENT_ENVIRONMENT_PREPARED:

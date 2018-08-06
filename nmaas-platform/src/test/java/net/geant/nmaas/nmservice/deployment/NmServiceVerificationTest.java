@@ -25,16 +25,12 @@ public class NmServiceVerificationTest {
     private ContainerOrchestrator orchestrator;
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
-    @Mock
-    private AppDeploymentRepository appDeploymentRepository;
-    @Mock
-    private DomainRepository domainRepository;
 
     private NmServiceDeploymentCoordinator provider;
 
     @Before
     public void setup() {
-        provider = new NmServiceDeploymentCoordinator(orchestrator, applicationEventPublisher, appDeploymentRepository, domainRepository);
+        provider = new NmServiceDeploymentCoordinator(orchestrator, applicationEventPublisher);
         provider.serviceDeploymentCheckMaxWaitTime = 5;
         provider.serviceDeploymentCheckInternal = 1;
     }

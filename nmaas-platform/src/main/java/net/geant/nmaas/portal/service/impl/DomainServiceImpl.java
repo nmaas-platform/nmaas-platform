@@ -5,10 +5,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,17 +46,13 @@ public class DomainServiceImpl implements DomainService {
 	
 	UserRoleRepository userRoleRepo;
 
-	AppDeploymentRepository appDeploymentRepo;
-
 	ApplicationEventPublisher eventPublisher;
-
 	@Autowired
-	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, AppDeploymentRepository appDeploymentRepo, ApplicationEventPublisher eventPublisher){
+	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, ApplicationEventPublisher eventPublisher){
 		this.validator = validator;
 		this.domainRepo = domainRepo;
 		this.users = users;
 		this.userRoleRepo = userRoleRepo;
-		this.appDeploymentRepo = appDeploymentRepo;
 		this.eventPublisher = eventPublisher;
 	}
 	
@@ -149,8 +144,8 @@ public class DomainServiceImpl implements DomainService {
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
 		domainRepo.save(domain);
 		if(domain.isDcnConfigured()){
-			appDeploymentRepo.findByDomainAndState(domain.getCodename(), AppDeploymentState.DEPLOYMENT_WAITING_FOR_OPERATOR_CONFIRMATION)
-					.forEach(appDeployment -> eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, appDeployment.getDeploymentId(), NmServiceDeploymentState.OPERATOR_CONFIRMED)));
+			this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
+			this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
 		}
 	}
 

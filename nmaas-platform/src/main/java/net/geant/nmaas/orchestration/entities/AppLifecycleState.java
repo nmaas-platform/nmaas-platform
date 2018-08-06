@@ -51,14 +51,6 @@ public enum AppLifecycleState {
             return "Deployment environment preparation failed";
         }
     },
-    WAITING_FOR_OPERATOR_CONFIRMATION{
-        @Override
-        public String getUserFriendlyState(){ return "Waiting for operator confirmation"; }
-    },
-    OPERATOR_CONFIRMED{
-        @Override
-        public String getUserFriendlyState(){ return "Operator confirmed"; }
-    },
     MANAGEMENT_VPN_CONFIGURATION_IN_PROGRESS{
         @Override
         public String getUserFriendlyState(){
