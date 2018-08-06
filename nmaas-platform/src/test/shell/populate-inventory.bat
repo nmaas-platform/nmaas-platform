@@ -1,7 +1,5 @@
 @echo off
 setlocal enableDelayedExpansion
-@echo off
-setlocal enableDelayedExpansion
 
 set API_URL=http://localhost:9000/api
 echo %API_URL%
@@ -19,18 +17,25 @@ REM set "LOGIN="
 
 rem echo Output: !LOGIN!
 REM ref: http://stackoverflow.com/questions/36374496/parse-simple-json-string-in-batch
-set LOGIN=!LOGIN:"=!
-rem stage 1 - !LOGIN!
-set "LOGIN=!LOGIN:~2,-2!"
-rem stage 2 - !LOGIN!
-set "LOGIN=!LOGIN: : ==!"
-rem stage 3 - !LOGIN!
-
+set LOGIN=%LOGIN:"=%
+echo stage 1 - %LOGIN%
+echo ---
+set "LOGIN=%LOGIN:~1,-1%"
+echo stage 2 - %LOGIN%
+echo ---
+set "LOGIN=%LOGIN::==%"
+echo stage 3 - !LOGIN!
+echo ---
 
 FOR /F "delims=," %%a in ("!LOGIN!") do (
-rem  echo Found: %%a
+  echo Found: %%a
   set "%%a"
+  echo --
 )
+
+rem echo !LOGIN!
+
+rem set token=%LOGIN%
 
 echo Token:
 echo ----------------------
@@ -61,7 +66,7 @@ curl -X GET %API_URL%/management/network/dockerhosts --header "Authorization: Be
 
 echo.
 echo Adding default network attachment point to default domain testdom1
-curl -X POST %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\domains\test-domain-1-network-attach-point.json
+curl -X POST %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\domains\domain-1-network-attach-point.json
 echo
 curl -X GET %API_URL%/management/domains/testdom1/network --header "Authorization: Bearer %token%"
 echo.
