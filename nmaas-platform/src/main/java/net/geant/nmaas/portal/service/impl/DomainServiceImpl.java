@@ -3,11 +3,15 @@ package net.geant.nmaas.portal.service.impl;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,20 +36,30 @@ public class DomainServiceImpl implements DomainService {
 		boolean valid(String codename);
 	}
 	
-	@Autowired
 	CodenameValidator validator;
 	
 	@Value("${domain.global:GLOBAL}")
 	String GLOBAL_DOMAIN;
 	
-	@Autowired
 	DomainRepository domainRepo;
 	
-	@Autowired
 	UserService users;
 	
-	@Autowired
 	UserRoleRepository userRoleRepo;
+
+	AppDeploymentRepository appDeploymentRepo;
+
+	ApplicationEventPublisher eventPublisher;
+
+	@Autowired
+	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, AppDeploymentRepository appDeploymentRepo, ApplicationEventPublisher eventPublisher){
+		this.validator = validator;
+		this.domainRepo = domainRepo;
+		this.users = users;
+		this.userRoleRepo = userRoleRepo;
+		this.appDeploymentRepo = appDeploymentRepo;
+		this.eventPublisher = eventPublisher;
+	}
 	
 	@Override
 	public List<Domain> getDomains() {		
@@ -134,6 +148,10 @@ public class DomainServiceImpl implements DomainService {
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
 		domainRepo.save(domain);
+		if(domain.isDcnConfigured()){
+			appDeploymentRepo.findByDomainAndState(domain.getCodename(), AppDeploymentState.DEPLOYMENT_WAITING_FOR_OPERATOR_CONFIRMATION)
+					.forEach(appDeployment -> eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, appDeployment.getDeploymentId(), NmServiceDeploymentState.OPERATOR_CONFIRMED)));
+		}
 	}
 
 	@Override

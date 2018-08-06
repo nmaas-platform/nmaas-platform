@@ -1,17 +1,33 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import java.util.Optional;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+
 
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
 
@@ -28,6 +44,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private ApplicationEventPublisher applicationEventPublisher;
 
+    private AppDeploymentRepository appDeploymentRepository;
+
+    private DomainRepository domainRepository;
+
     @Value("${nmaas.service.deployment.check.interval}")
     int serviceDeploymentCheckInternal;
 
@@ -35,9 +55,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     int serviceDeploymentCheckMaxWaitTime;
 
     @Autowired
-    public NmServiceDeploymentCoordinator(ContainerOrchestrator orchestrator, ApplicationEventPublisher applicationEventPublisher) {
+    public NmServiceDeploymentCoordinator(ContainerOrchestrator orchestrator, ApplicationEventPublisher applicationEventPublisher, AppDeploymentRepository appDeploymentRepository, DomainRepository domainRepository) {
         this.orchestrator = orchestrator;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.appDeploymentRepository = appDeploymentRepository;
+        this.domainRepository = domainRepository;
     }
 
     @Override
@@ -59,10 +81,15 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException {
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
-            orchestrator.prepareDeploymentEnvironment(deploymentId);
-            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
+            if(getDomain(deploymentId).isDcnConfigured()){
+                orchestrator.prepareDeploymentEnvironment(deploymentId);
+                notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
+            } else{
+                notifyStateChangeListeners(deploymentId, WAITING_FOR_OPERATOR_CONFIRMATION);
+            }
         } catch (CouldNotPrepareEnvironmentException
-                | ContainerOrchestratorInternalErrorException e) {
+                | ContainerOrchestratorInternalErrorException
+                | ProcessingException e) {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
             throw new CouldNotPrepareEnvironmentException("NM Service deployment environment preparation failed -> " + e.getMessage());
         }
@@ -147,6 +174,14 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
         applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
+    }
+
+    private Domain getDomain(Identifier deploymentId) throws ProcessingException {
+        Optional<AppDeployment> appDeployment = this.appDeploymentRepository.findByDeploymentId(deploymentId);
+        if(appDeployment.isPresent()){
+            return this.domainRepository.findByCodename(appDeployment.get().getDomain()).orElseThrow(() -> new ProcessingException("Domain not found"));
+        }
+        throw new ProcessingException("Domain not found");
     }
 
 }

@@ -4,7 +4,12 @@ import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.events.app.*;
+import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppDeploymentErrorEvent;
+import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
+import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -51,6 +56,8 @@ public class AppDeploymentStateChangeManager {
     private Optional<ApplicationEvent> triggerActionEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
         switch (currentState) {
             case REQUEST_VALIDATED:
+                return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
+            case DEPLOYMENT_OPERATOR_CONFIRMED:
                 return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
             case DEPLOYMENT_ENVIRONMENT_PREPARED:
                 return Optional.of(new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId));

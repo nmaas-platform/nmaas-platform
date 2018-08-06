@@ -60,6 +60,38 @@ public enum AppDeploymentState {
                     return DEPLOYMENT_ENVIRONMENT_PREPARED;
                 case ENVIRONMENT_PREPARATION_FAILED:
                     return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
+                case WAITING_FOR_OPERATOR_CONFIRMATION:
+                    return DEPLOYMENT_WAITING_FOR_OPERATOR_CONFIRMATION;
+                default:
+                    throw new InvalidAppStateException(message(this, state));
+            }
+        }
+    },
+    DEPLOYMENT_WAITING_FOR_OPERATOR_CONFIRMATION {
+        @Override
+        public AppLifecycleState lifecycleState(){return AppLifecycleState.WAITING_FOR_OPERATOR_CONFIRMATION;}
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state){
+                case OPERATOR_CONFIRMED:
+                    return DEPLOYMENT_OPERATOR_CONFIRMED;
+                default:
+                    throw new InvalidAppStateException(message(this,state));
+            }
+        }
+    },
+    DEPLOYMENT_OPERATOR_CONFIRMED {
+        @Override
+        public AppLifecycleState lifecycleState(){return AppLifecycleState.OPERATOR_CONFIRMED;}
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            switch (state) {
+                case ENVIRONMENT_PREPARATION_INITIATED:
+                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS;
+                case ENVIRONMENT_PREPARATION_FAILED:
+                    return DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
                 default:
                     throw new InvalidAppStateException(message(this, state));
             }
