@@ -2,11 +2,11 @@ package net.geant.nmaas.portal.auth.basic;
 
 import java.security.Principal;
 import java.util.Date;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
+import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,35 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 import io.jsonwebtoken.Claims;
 import net.geant.nmaas.portal.api.auth.UserLogin;
 import net.geant.nmaas.portal.api.auth.UserRefreshToken;
-import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 @RestController
 @RequestMapping("/portal/api/auth/basic")
 public class BasicAuthController {
-
-//	@Autowired
-//	UserRepository users;
+    private static final Logger log = LogManager.getLogger(BasicAuthController.class);
 	
 	@Autowired
 	UserService users;
 	
 	@Autowired
-	DomainService domains;
+    DomainService domains;
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
@@ -52,26 +42,14 @@ public class BasicAuthController {
 	@Autowired
 	JWTTokenService jwtTokenService;
 	
-	
-	final long validFor = 60 * 60 * 1000; // 1h
-	
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {
-		if(userLogin == null)
-			throw new AuthenticationException("No credentials.");
-		
-		if(StringUtils.isEmpty(userLogin.getUsername()) || StringUtils.isEmpty(userLogin.getPassword()))
-			throw new AuthenticationException("Missing credentials.");
-		
-		User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found."));
-		
-		if(!user.isEnabled())
-			throw new AuthenticationException("User is not active.");
-		
-		if(!passwordEncoder.matches(userLogin.getPassword(), user.getPassword()))
-			throw new AuthenticationException("Invalid password.");		
-		
-		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
+        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
+        validate(userLogin.getUsername(), userLogin.getPassword(), user);
+
+        log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
+                user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
+        return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
 	
 	@RequestMapping(value="/token", method=RequestMethod.POST)
@@ -94,5 +72,26 @@ public class BasicAuthController {
 	public Pong ping(Principal principal) {
 		return new Pong(new Date(System.currentTimeMillis()), (principal != null ? principal.getName() : null));
 	}
+
+    private void validate(final String userName, final String password, User user) throws AuthenticationException{
+        boolean isValid = true;
+        if(StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)){
+            isValid = validateAndLogMessage("Missing credentials", userName);
+        }
+        if(!user.isEnabled()){
+            isValid = validateAndLogMessage("User is not active", userName);
+        }
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            isValid = validateAndLogMessage("Invalid password", userName);
+        }
+        if(!isValid){
+            throw new AuthenticationException("Invalid Credentials");
+        }
+    }
+
+    private boolean validateAndLogMessage(String message, String userName){
+        log.info(String.format("%s for user name - %s.", message, userName));
+        return false;
+    }
 	
 }
