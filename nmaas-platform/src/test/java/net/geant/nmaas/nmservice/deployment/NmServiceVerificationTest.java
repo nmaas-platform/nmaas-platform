@@ -3,6 +3,8 @@ package net.geant.nmaas.nmservice.deployment;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +25,16 @@ public class NmServiceVerificationTest {
     private ContainerOrchestrator orchestrator;
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
+    @Mock
+    private AppDeploymentRepository appDeploymentRepository;
+    @Mock
+    private DomainRepository domainRepository;
 
     private NmServiceDeploymentCoordinator provider;
 
     @Before
     public void setup() {
-        provider = new NmServiceDeploymentCoordinator(orchestrator, applicationEventPublisher);
+        provider = new NmServiceDeploymentCoordinator(orchestrator, applicationEventPublisher, appDeploymentRepository, domainRepository);
         provider.serviceDeploymentCheckMaxWaitTime = 5;
         provider.serviceDeploymentCheckInternal = 1;
     }
