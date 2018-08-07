@@ -24,13 +24,17 @@ import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.comp
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
+import {ClustersModule} from "./admin/clusters/clusters.module";
+import {ClusterService} from "../service/cluster.service";
+import {GitlabModule} from "./admin/gitlab/gitlab.module";
+import {ConfigurationModule} from "./admin/configuration/configuration.module";
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
     NavbarComponent,
-    AppInstallModalComponent
+    AppInstallModalComponent,
   ],
   imports: [
     FormsModule,
@@ -42,7 +46,10 @@ import {UsersModule} from './users/users.module';
     DomainsModule,
     UsersModule,
     AuthModule,
-    PipesModule
+    PipesModule,
+    ClustersModule,
+      GitlabModule,
+      ConfigurationModule
   ],
   exports: [
     AppMarketComponent,
@@ -53,7 +60,8 @@ import {UsersModule} from './users/users.module';
     DomainService,
     UserService,
     TagService,
-    UserService
+    UserService,
+    ClusterService
   ]
 
 })

@@ -1,4 +1,4 @@
-import {ComponentMode, ComponentModeAware} from '../componentmode';
+import {ComponentMode} from '../componentmode';
 import {Component, Input} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { isUndefined } from 'util';
@@ -7,34 +7,35 @@ import { isUndefined } from 'util';
   selector: 'nmaas-base',
   template: ''
 })
-@ComponentModeAware
 export class BaseComponent {
 
-  @Input()
-  protected mode: ComponentMode = ComponentMode.VIEW;
+  public ComponentMode = ComponentMode;
 
   @Input()
-  protected allowedModes: ComponentMode[] = [ComponentMode.VIEW];
+  public mode: ComponentMode = ComponentMode.VIEW;
+
+  @Input()
+  public allowedModes: ComponentMode[] = [ComponentMode.VIEW];
 
   constructor() {}
 
-  protected isModeAllowed(mode: ComponentMode): boolean {
+  public isModeAllowed(mode: ComponentMode): boolean {
     return this.allowedModes.indexOf(mode) >= 0;
   }
 
-  protected isCurrentModeAllowed(): boolean {
+  public isCurrentModeAllowed(): boolean {
     return this.isModeAllowed(this.mode);
   }
 
-  protected isInMode(mode: ComponentMode): boolean {
+  public isInMode(mode: ComponentMode): boolean {
     return this.mode === mode;
   }
 
-  protected getCurrentMode(): ComponentMode {
+  public getCurrentMode(): ComponentMode {
     return this.mode;
   }
 
-  protected getMode(route: ActivatedRoute): ComponentMode {
+  public getMode(route: ActivatedRoute): ComponentMode {
     if (isUndefined(route) || isUndefined(route.snapshot.data) || isUndefined(route.snapshot.data.mode)) {
       return ComponentMode.VIEW;
     } else {

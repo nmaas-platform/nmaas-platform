@@ -1,17 +1,10 @@
 <div class="row">
 	<h3>Domain details:</h3>
 	<form *ngIf="domain" (submit)="submit()" class="form-horizontal">
-		<div *ngIf="domain.id" class="form-group">
-			<label class="col-sm-2 control-label">Id:</label>
-			<div class="col-sm-10">
-				<p class="form-control-static">{{domain.id}}</p>
-			</div>
-		</div>
-
 		<div class="form-group">
 			<label for="name" class="col-sm-2 control-label">Name:</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="name" name="name"
+				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW) || authService.hasRole('ROLE_OPERATOR')" id="name" name="name"
 					[(ngModel)]="domain.name" #name="ngModel" required>
 				<div *ngIf="name.invalid && (name.dirty || name.touched)"
 					class="alert alert-danger">
@@ -21,7 +14,7 @@
 		</div>
 
 
-		<div class="form-group">
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.EDIT)">
 			<label for="codename" class="col-sm-2 control-label">Codename:</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="codename"
@@ -41,11 +34,72 @@
 		<div class="form-group">
 			<label for="active" class="col-sm-2 control-label">Active:</label>
 			<div class="col-sm-10">
-				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="active"
+				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW) || authService.hasRole('ROLE_OPERATOR')" id="active"
 					name="active" [(ngModel)]="domain.active">
 			</div>
 		</div>
 
+		<hr/>
+
+		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+			<label for="kubernetesNamespace" class="col-sm-2 control-label">Kubernetes namespace:</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesNamespace"
+				name="kubernetesNamespace" [(ngModel)]="domain.kubernetesNamespace">
+			</div>
+		</div>
+
+		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+			<label for="dcnConfigured" class="col-sm-2 control-label">dcn Configured:</label>
+			<div class="col-sm-10">
+				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="dcnConfigured"
+				name="dcnConfigured" [(ngModel)]="domain.dcnConfigured">
+			</div>
+		</div>
+
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SUPERADMIN') || authService.hasRole('ROLE_OPERATOR'))">
+			<label class="col-sm-2 control-label">Id in db:</label>
+			<div class="col-sm-10">
+				<p class="form-control-static">{{domain.id}}</p>
+			</div>
+		</div>
+
+		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW) && !authService.hasRole('ROLE_OPERATOR')">
+			<div class="panel-heading">Domain users</div>
+				<div class="panel-body">
+        			<table class="table table-hover table-condensed">
+            			<thead>
+            				<tr>
+                				<th *ngIf="authService.hasRole('ROLE_SUPERADMIN')">Id</th>
+                				<th>Username</th>
+                				<th>Roles</th>
+                				<th>&nbsp;</th>
+            				</tr>
+            			</thead>
+
+						<tbody>
+							<ng-template ngFor let-user [ngForOf]="users">
+								<tr>
+									<td *ngIf="authService.hasRole('ROLE_SUPERADMIN')">{{user.id}}</td>
+									<td>{{user.username}}</td>
+									<td *ngIf="domainId == domainService.getGlobalDomainId()">
+										<div *ngFor="let role of filterDomainNames(user); last as isLast">
+											<span *ngIf="!isLast" style="float:left;padding-right: 3px">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}, </span>
+											<span *ngIf="isLast" style="float:left">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}</span>
+										</div>
+									</td>
+									<td *ngIf="domainId != domainService.getGlobalDomainId()">
+										<span *ngFor="let role of this.getDomainRoleNames(user.roles)">
+											{{role.role | slice:5}}
+										</span>
+									</td>
+								</tr>
+							</ng-template>
+
+            			</tbody>
+					</table>
+				</div>
+			</div>
 		<button *ngIf="isInMode(ComponentMode.EDIT) || isInMode(ComponentMode.CREATE)" type="submit" class="btn btn-default" valid>Submit</button>
 	</form>
 	<div *ngIf="!domain">Not found.</div>

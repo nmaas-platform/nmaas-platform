@@ -20,7 +20,8 @@ public interface UserService {
 	boolean hasPriviledge(User user, Domain domain, Role role);
 	Optional<User> findByUsername(String username);
 	Optional<User> findById(Long id);
-	
+	Optional<User> findBySamlToken(String token);
+
 	boolean existsByUsername(String username);
 	boolean existsById(Long id);
 	

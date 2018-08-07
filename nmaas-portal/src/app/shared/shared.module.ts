@@ -25,6 +25,8 @@ import { DomainFilterComponent } from './common/domainfilter/domainfilter.compon
 import { AppListComponent } from './applications/list/applist.component';
 import { ApplicationsViewComponent } from './applications/applications.component';
 import { AppElementComponent } from './applications/list/element/appelement.component';
+import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
+import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
 
 @NgModule({
   imports: [
@@ -55,7 +57,9 @@ import { AppElementComponent } from './applications/list/element/appelement.comp
     DomainFilterComponent,
     AppElementComponent,
     AppListComponent,
-    ApplicationsViewComponent
+    ApplicationsViewComponent,
+    ClusterDetailsComponent,
+      GitlabDetailsComponent
   ],
   providers: [
     PasswordValidator,
@@ -77,7 +81,9 @@ import { AppElementComponent } from './applications/list/element/appelement.comp
     SearchComponent,
     TagFilterComponent,
     DomainFilterComponent,
-    ApplicationsViewComponent
+    ApplicationsViewComponent,
+    ClusterDetailsComponent,
+      GitlabDetailsComponent
   ]
 })
 export class SharedModule {}

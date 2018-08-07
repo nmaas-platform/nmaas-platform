@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @Profile("env_kubernetes")
-@RequestMapping(value = "/platform/api/management/apps/{appId}/kubernetes/template")
+@RequestMapping(value = "/api/management/apps/{appId}/kubernetes/template")
 public class KubernetesTemplateAdminRestController {
 
     @Autowired

@@ -6,6 +6,7 @@ import {Component, OnInit, Input} from '@angular/core';
 import {Router, ActivatedRoute, Params} from '@angular/router';
 import {Location} from '@angular/common';
 import {isUndefined} from 'util';
+import {AuthService} from "../../../auth/auth.service";
 
 @Component({
   selector: 'app-userdetails',
@@ -19,7 +20,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   constructor(private userService: UserService, private router: Router,
     private route: ActivatedRoute,
-    private location: Location) {
+    private location: Location, private authService:AuthService) {
     super();
   }
 
@@ -49,5 +50,9 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     } else {     
       this.userService.addUser(user.username).subscribe((id) => this.router.navigate(['/users/view/', id.id]));
     }
+  }
+
+  public remove(userId:number){
+    this.userService.deleteOne(userId).subscribe((value) => this.router.navigate(['/users/']));
   }
 }

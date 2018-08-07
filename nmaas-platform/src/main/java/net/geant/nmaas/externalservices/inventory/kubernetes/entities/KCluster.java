@@ -45,6 +45,12 @@ public class KCluster {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<KClusterExtNetwork> externalNetworks = new ArrayList<>();
 
+    public void validate() {
+        ingress.getControllerConfigOption().validate(ingress);
+        ingress.getResourceConfigOption().validate(ingress);
+        deployment.getNamespaceConfigOption().validate(deployment);
+    }
+
     public Long getId() {
         return id;
     }
@@ -108,4 +114,5 @@ public class KCluster {
     public void setExternalNetworks(List<KClusterExtNetwork> externalNetworks) {
         this.externalNetworks = externalNetworks;
     }
+
 }

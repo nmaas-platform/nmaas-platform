@@ -11,11 +11,13 @@ export class TagFilterComponent implements OnInit {
 
   @Input()
   public value: string;
+
+  public all: string = 'all';
   
   @Output()
-  public change: EventEmitter<string> = new EventEmitter<string>();
+  public changed: EventEmitter<string> = new EventEmitter<string>();
   
-  tags: Observable<string[]>;
+  public tags: Observable<string[]>;
   
   constructor(private tagService: TagService) { }
 
@@ -23,8 +25,8 @@ export class TagFilterComponent implements OnInit {
     this.tags = this.tagService.getTags();
   }
 
-  public onChange($event): void {    
-    this.change.emit(this.value !== 'all' ? this.value : null);
+  public onChange(): void {    
+    this.changed.emit(this.value);
   }
   
 }

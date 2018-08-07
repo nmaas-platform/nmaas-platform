@@ -34,11 +34,11 @@ public class OrchestratorApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/platform/api/orchestration/deployments")
+        mvc.perform(get("/api/orchestration/deployments")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
         when(repository.loadState(any())).thenThrow(new InvalidDeploymentIdException(""));
-        mvc.perform(get("/platform/api/orchestration/deployments/{deploymentId}/state", "id")
+        mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", "id")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
@@ -46,10 +46,10 @@ public class OrchestratorApiSecurityTest extends BaseControllerTest {
     @Test
     public void shouldRejectNonAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/platform/api/orchestration/deployments")
+        mvc.perform(get("/api/orchestration/deployments")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
-        mvc.perform(get("/platform/api/orchestration/deployments/{deploymentId}/state", "id")
+        mvc.perform(get("/api/orchestration/deployments/{deploymentId}/state", "id")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

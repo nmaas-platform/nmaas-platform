@@ -4,7 +4,7 @@ function getToken() {
         python -c "import json,sys;sys.stdout.write(json.dumps(json.load(sys.stdin)['token']))" | sed -e 's/^"//' -e 's/"$//'
 }
 
-API_URL=http://localhost:9001/portal/api
+API_URL=http://localhost:9001/api
 echo $API_URL
 
 TOKEN=`curl -sX POST $API_URL/auth/basic/login --header "Content-Type: application/json" --header "Accept: application/json" -d @data/login.json | getToken`

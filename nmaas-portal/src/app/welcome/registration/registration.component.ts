@@ -15,13 +15,13 @@ import {Observable} from 'rxjs/Observable';
 export class RegistrationComponent implements OnInit {
 
   
-  private sending: boolean = false;
-  private submitted: boolean = false;
-  private success: boolean = false;
-  private errorMessage: string = '';
+  public sending: boolean = false;
+  public submitted: boolean = false;
+  public success: boolean = false;
+  public errorMessage: string = '';
   
-  private registrationForm: FormGroup;
-  private domains: Observable<Domain[]>;
+  public registrationForm: FormGroup;
+  public domains: Observable<Domain[]>;
 
 
   constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService) {

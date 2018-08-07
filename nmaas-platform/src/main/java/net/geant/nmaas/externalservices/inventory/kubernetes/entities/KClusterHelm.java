@@ -1,6 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.net.InetAddress;
 
 /**
@@ -28,6 +33,9 @@ public class KClusterHelm {
     /** Flag indicating whether to use local chart tar.gz files (when set to true) rather than chart repositories */
     @Column(nullable = false)
     private Boolean useLocalChartArchives;
+
+    /** Name of the remote repository from which charts should be downloaded */
+    private String helmChartRepositoryName;
 
     /** Directory on the helm host in which all charts are stored */
     private String helmHostChartsDirectory;
@@ -62,6 +70,14 @@ public class KClusterHelm {
 
     public void setUseLocalChartArchives(Boolean useLocalChartArchives) {
         this.useLocalChartArchives = useLocalChartArchives;
+    }
+
+    public String getHelmChartRepositoryName() {
+        return helmChartRepositoryName;
+    }
+
+    public void setHelmChartRepositoryName(String helmChartRepositoryName) {
+        this.helmChartRepositoryName = helmChartRepositoryName;
     }
 
     public String getHelmHostChartsDirectory() {

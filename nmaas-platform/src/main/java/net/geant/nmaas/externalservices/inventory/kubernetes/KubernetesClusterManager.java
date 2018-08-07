@@ -5,14 +5,13 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.service.DomainService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,11 +32,13 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         KClusterDeploymentManager, KNamespaceService {
 
     private KubernetesClusterRepository repository;
+    private DomainService domainService;
     private ModelMapper modelMapper;
 
     @Autowired
-    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper) {
+    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, DomainService domainService) {
         this.repository = repository;
+        this.domainService = domainService;
         this.modelMapper = modelMapper;
     }
 
@@ -64,13 +65,18 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public String getHelmChartRepositoryName() {
+        return loadSingleCluster().getHelm().getHelmChartRepositoryName();
+    }
+
+    @Override
     public String getHelmHostChartsDirectory() {
         return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
     }
 
     @Override
-    public Boolean getUseExistingController() {
-        return loadSingleCluster().getIngress().getUseExistingController();
+    public IngressControllerConfigOption getControllerConfigOption() {
+        return loadSingleCluster().getIngress().getControllerConfigOption();
     }
 
     @Override
@@ -79,8 +85,8 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public Boolean getTlsSupported() {
-        return loadSingleCluster().getIngress().getTlsSupported();
+    public String getControllerChart() {
+        return loadSingleCluster().getIngress().getControllerChartName();
     }
 
     @Override
@@ -89,13 +95,18 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public Boolean getUseExistingIngress() {
-        return loadSingleCluster().getIngress().getUseExistingIngress();
+    public IngressResourceConfigOption getResourceConfigOption() {
+        return loadSingleCluster().getIngress().getResourceConfigOption();
     }
 
     @Override
     public String getExternalServiceDomain() {
         return loadSingleCluster().getIngress().getExternalServiceDomain();
+    }
+
+    @Override
+    public Boolean getTlsSupported() {
+        return loadSingleCluster().getIngress().getTlsSupported();
     }
 
     @Override
@@ -125,12 +136,29 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public String namespace(String domain) {
         KClusterDeployment clusterDeployment = loadSingleCluster().getDeployment();
-        return (clusterDeployment.getUseDefaultNamespace()) ? clusterDeployment.getDefaultNamespace() : NMAAS_NAMESPACE_PREFIX + domain;
+        switch(clusterDeployment.getNamespaceConfigOption()){
+            case CREATE_NAMESPACE:
+                //dynamic creation of namespace will be added
+                return NMAAS_NAMESPACE_PREFIX + domain;
+            case USE_DEFAULT_NAMESPACE:
+                return clusterDeployment.getDefaultNamespace();
+            case USE_DOMAIN_NAMESPACE:
+                Optional<Domain> foundDomain = this.domainService.findDomain(domain);
+                if(foundDomain.isPresent()){
+                    return foundDomain.get().getKubernetesNamespace();
+                }
+            default: return NMAAS_NAMESPACE_PREFIX + domain;
+        }
     }
 
     @Override
     public String getDefaultPersistenceClass() {
         return loadSingleCluster().getDeployment().getDefaultPersistenceClass();
+    }
+
+    @Override
+    public Boolean getUseInClusterGitLabInstance() {
+        return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
     }
 
     private KCluster loadSingleCluster() {

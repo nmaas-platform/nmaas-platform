@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/orchestration/deployments")
+@RequestMapping(value = "/api/orchestration/deployments")
 public class AppLifecycleManagerRestController {
 
     private AppLifecycleManager lifecycleManager;

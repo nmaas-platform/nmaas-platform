@@ -5,17 +5,17 @@ import {isUndefined} from 'util';
 import {AppConfigService} from '../service/appconfig.service';
 
 import {Id} from '../model/id';
-import {AppInstanceStatus} from '../model/appinstancestatus';
+import {AppInstanceState, AppInstanceStatus} from '../model/appinstancestatus';
 import {AppInstance, AppInstanceRequest} from '../model/appinstance';
-import {AppInstanceState} from '../model/appinstancestatus';
 import {AppInstanceProgressStage} from '../model/appinstanceprogressstage';
-import { GenericDataService } from './genericdata.service';
+import {GenericDataService} from './genericdata.service';
 
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
+import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 
 @Injectable()
 export class AppInstanceService extends GenericDataService {
@@ -38,6 +38,10 @@ export class AppInstanceService extends GenericDataService {
 
   public getAppInstanceState(id: Number, domainId?: number): Observable<AppInstanceStatus> {
     return this.get<AppInstanceStatus>(this.getUrl(domainId) + id + '/state');
+  }
+
+  public getAppInstanceHistory(id:number, domainId?: number): Observable<AppInstanceStateHistory[]>{
+    return this.get<AppInstanceStateHistory[]>(this.getUrl(domainId)+id+ '/state/history');
   }
 
   public createAppInstance(domainId: number, appId: number, name: string): Observable<Id> {
@@ -75,6 +79,10 @@ export class AppInstanceService extends GenericDataService {
       new AppInstanceProgressStage('Undeploying', AppInstanceState.UNDEPLOYING, [AppInstanceState.UNDEPLOYING, AppInstanceState.DONE]),
       new AppInstanceProgressStage('Removed', AppInstanceState.DONE, [AppInstanceState.UNDEPLOYING, AppInstanceState.DONE])
     ];
+  }
+
+  public restartAppInstance(appInstanceId:number, domainId?: number):Observable<any>{
+    return this.post<number,any>((this.getUrl(domainId) +  appInstanceId + '/restart'), appInstanceId);
   }
 
 }

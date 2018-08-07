@@ -4,7 +4,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterApi;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
@@ -43,7 +52,7 @@ public class KubernetesClusterManagerRestControllerTest {
 
     private final static String NEW_KUBERNETES_CLUSTER_NAME = "K8S-NAME-1";
     private final static String DIFFERENT_KUBERNETES_CLUSTER_NAME = "DIFFERENT-K8S-NAME-1";
-    private final static String URL_PREFIX = "/platform/api/management/kubernetes";
+    private final static String URL_PREFIX = "/api/management/kubernetes";
 
     private final static String KUBERNETES_CLUSTER_JSON =
             "{" +
@@ -59,16 +68,18 @@ public class KubernetesClusterManagerRestControllerTest {
                         "\"restApiPort\":9999" +
                     "}," +
                     "\"ingress\": {" +
-                        "\"useExistingController\":false," +
+                        "\"controllerConfigOption\":\"USE_EXISTING\"," +
+                        "\"supportedIngressClass\":\"ingress-class\"," +
                         "\"controllerChartArchive\":\"chart.tgz\"," +
-                        "\"useExistingIngress\":false," +
+                        "\"resourceConfigOption\":\"DEPLOY_FROM_CHART\"," +
                         "\"externalServiceDomain\":\"test.net\"," +
                         "\"tlsSupported\":false" +
                     "}," +
                     "\"deployment\": {" +
-                        "\"useDefaultNamespace\":true," +
+                        "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
                         "\"defaultNamespace\":\"testNamespace\"," +
-                        "\"defaultPersistenceClass\":\"persistenceClass\"" +
+                        "\"defaultPersistenceClass\":\"persistenceClass\"," +
+                        "\"useInClusterGitLabInstance\":\"false\"" +
                     "}," +
                     "\"attachPoint\":{" +
                         "\"routerName\":\"R1\"," +
@@ -240,16 +251,18 @@ public class KubernetesClusterManagerRestControllerTest {
         api.setRestApiPort(9999);
         cluster.setApi(api);
         KClusterIngress ingress = new KClusterIngress();
-        ingress.setUseExistingController(false);
+        ingress.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
+        ingress.setSupportedIngressClass("ingress-class");
         ingress.setControllerChartArchive("chart.tgz");
-        ingress.setUseExistingIngress(false);
+        ingress.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         ingress.setExternalServiceDomain("test.net");
         ingress.setTlsSupported(false);
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
-        deployment.setUseDefaultNamespace(true);
+        deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultPersistenceClass("persistenceClass");
+        deployment.setUseInClusterGitLabInstance(false);
         cluster.setDeployment(deployment);
         KClusterAttachPoint attachPoint = new KClusterAttachPoint();
         attachPoint.setRouterId("172.0.0.1");

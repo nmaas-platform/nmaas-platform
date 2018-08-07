@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/Observable';
 })
 export class DomainsListComponent implements OnInit {
 
-  private domains: Observable<Domain[]>;
+  public domains: Observable<Domain[]>;
 
   constructor(protected domainService: DomainService, protected authService: AuthService) {}
 
@@ -21,8 +21,8 @@ export class DomainsListComponent implements OnInit {
   }
 
   protected update(): void {
-    if(this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {
-      this.domains = this.domainService.getAll();
+    if(this.authService.hasRole(Role[Role.ROLE_SUPERADMIN]) || this.authService.hasRole(Role[Role.ROLE_OPERATOR])) {
+      this.domains = this.domainService.getAll().map((domains) => domains.filter((domain) => domain.id !== this.domainService.getGlobalDomainId()));
     } else {
       this.domains = this.domainService.getAll().map((domains) => domains.filter((domain) => this.authService.hasDomainRole(domain.id, Role[Role.ROLE_DOMAIN_ADMIN])));
     }
@@ -30,6 +30,7 @@ export class DomainsListComponent implements OnInit {
 
   public remove(domainId: number): void {
     this.domainService.remove(domainId).subscribe(() => this.update());
+    this.domainService.setUpdateRequiredFlag(true);
   }
 
 }

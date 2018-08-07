@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Default {@link AppDeploymentMonitor} implementation.
@@ -49,6 +51,13 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
             return retrieveAccessDetails(deploymentId);
         else
             throw new InvalidAppStateException("Application deployment process didn't finish yet.");
+    }
+
+    @Override
+    public List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) throws InvalidDeploymentIdException{
+        return appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
+                .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousStateString(), value.getCurrentStateString()))
+                .collect(Collectors.toList());
     }
 
     private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {

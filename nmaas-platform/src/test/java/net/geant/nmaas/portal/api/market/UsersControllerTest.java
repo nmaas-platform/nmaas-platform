@@ -79,7 +79,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testGetRoles() {
-		assertEquals(5, userController.getRoles().size());
+		assertEquals(7, userController.getRoles().size());
 	}
 
 	@Test

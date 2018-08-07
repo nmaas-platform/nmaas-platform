@@ -11,10 +11,10 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-import {HttpClientModule} from "@angular/common/http";
-import {JwtModule} from '@auth0/angular-jwt';
 import {ProfileComponent} from './profile/profile.component';
 import {AppMarketModule} from "../appmarket";
+import {UserService} from "../service";
+import {CompleteComponent} from "./complete/complete.component";
 
 @NgModule({
   declarations: [
@@ -24,6 +24,7 @@ import {AppMarketModule} from "../appmarket";
     ChangelogComponent,
     RegistrationComponent,
     ProfileComponent,
+    CompleteComponent
   ],
   imports: [
     FormsModule,
@@ -31,8 +32,6 @@ import {AppMarketModule} from "../appmarket";
     CommonModule,
     RouterModule,
     SharedModule,
-    HttpClientModule,
-    JwtModule,
     PipesModule,
       AppMarketModule
   ],
@@ -41,6 +40,7 @@ import {AppMarketModule} from "../appmarket";
   ],
   providers: [
     RegistrationService,
+    UserService,
     ChangelogService
   ]
 })

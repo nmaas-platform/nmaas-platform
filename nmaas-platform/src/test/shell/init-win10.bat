@@ -1,7 +1,7 @@
 @echo off
 setlocal enableDelayedExpansion
 
-set API_URL=http://localhost:9000/portal/api
+set API_URL=http://localhost:9000/api
 echo %API_URL%
 
 set LF=^
@@ -44,6 +44,9 @@ echo ----------------------
 echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
+echo.
+echo Configuration
+curl -X POST %API_URL%/configuration --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\configuration.json
 echo.
 echo App1
 curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app1-librenms.json

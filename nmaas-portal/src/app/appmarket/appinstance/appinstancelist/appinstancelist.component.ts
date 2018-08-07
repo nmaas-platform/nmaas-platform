@@ -1,15 +1,14 @@
-import {Domain} from '../../../model/domain';
 import {Component, OnInit} from '@angular/core';
 
 import {isUndefined} from 'util';
 
 import {AppInstance, AppInstanceState} from '../../../model/index';
 import {DomainService} from '../../../service/domain.service';
-import {AppsService, AppInstanceService} from '../../../service/index';
+import {AppInstanceService, AppsService} from '../../../service/index';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 
 export enum AppInstanceListSelection {
   ALL,
@@ -24,15 +23,15 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
-  private AppInstanceState: typeof AppInstanceState = AppInstanceState;
-  private AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
+  public AppInstanceState: typeof AppInstanceState = AppInstanceState;
+  public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
 
-  private appInstances: Observable<AppInstance[]>;
+  public appInstances: Observable<AppInstance[]>;
 
-  private listSelection: AppInstanceListSelection = AppInstanceListSelection.MY;
+  public listSelection: AppInstanceListSelection = AppInstanceListSelection.MY;
 
-  private selectedUsername: string;
-  private domainId: number = 0;
+  public selectedUsername: string;
+  public domainId: number = 0;
 
   constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private authService: AuthService, private appConfig: AppConfigService) {}
 
@@ -41,7 +40,7 @@ export class AppInstanceListComponent implements OnInit {
 
   }
 
-  protected update(domainId: number): void {
+  public update(domainId: number): void {
     if (isUndefined(domainId) || domainId === 0 || domainId === this.appConfig.getNmaasGlobalDomainId()) {
       this.domainId = undefined;
     } else {
@@ -62,9 +61,12 @@ export class AppInstanceListComponent implements OnInit {
 
   }
 
-  protected onSelectionChange(event) {
-    this.update(this.domainId);
+  public checkPrivileges(app){
+    return app.owner.username === this.authService.getUsername() || this.authService.hasRole("ROLE_SUPERADMIN") || this.authService.hasDomainRole(app.domainId, "ROLE_DOMAIN_ADMIN");
   }
 
+  public onSelectionChange(event) {
+    this.update(this.domainId);
+  }
 
 }

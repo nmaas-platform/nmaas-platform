@@ -58,12 +58,12 @@ public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseC
     @Test
     public void shouldStoreAndLoadTemplate() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(post("/platform/api/management/configurations/templates")
+        mvc.perform(post("/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(templateJson()))
                 .andExpect(status().isCreated());
-        MvcResult result = mvc.perform(get("/platform/api/management/configurations/templates")
+        MvcResult result = mvc.perform(get("/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -73,7 +73,7 @@ public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseC
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/platform/api/management/configurations/templates")
+        mvc.perform(get("/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

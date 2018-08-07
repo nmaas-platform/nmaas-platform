@@ -26,6 +26,11 @@ export class GenericDataService {
       .timeout(this.appConfig.getHttpTimeout())
       .catch(this.handleError);
   }
+  protected patch<S, T>(url: string, entity: S): Observable<T> {
+    return this.http.patch(url, entity)
+       .timeout(this.appConfig.getHttpTimeout())
+       .catch(this.handleError);
+  }
 
   protected delete<T>(url: string): Observable<T> {
     return this.http.delete(url)
@@ -35,7 +40,8 @@ export class GenericDataService {
 
   protected handleError(error: Response | any) {
     const errorMsg = (typeof error.json === 'function' ? error.json().message : error.message || 'Server error');
-    return Observable.throw(errorMsg);
+    console.log(errorMsg)
+    return Observable.throw(error.error);
   }
 
 

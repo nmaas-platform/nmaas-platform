@@ -8,6 +8,8 @@ public interface KClusterHelmManager {
 
     Boolean getUseLocalChartArchives();
 
+    String getHelmChartRepositoryName();
+
     String getHelmHostChartsDirectory();
 
 }

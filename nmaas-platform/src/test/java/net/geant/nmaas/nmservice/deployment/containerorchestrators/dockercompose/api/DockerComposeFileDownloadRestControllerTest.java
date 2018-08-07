@@ -58,7 +58,7 @@ public class DockerComposeFileDownloadRestControllerTest {
 
     @Test
     public void shouldReturnSimpleComposeFile() throws Exception {
-        mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
+        mvc.perform(get("/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", "attachment;filename=" + DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME))
@@ -68,20 +68,20 @@ public class DockerComposeFileDownloadRestControllerTest {
 
     @Test
     public void shouldForbidDownload() throws Exception {
-        mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
+        mvc.perform(get("/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic("testClient", "testPassword")))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentAndMissingComposeFileWithProvidedDeploymentId() throws Exception {
-        mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value() + "invalid-string")
+        mvc.perform(get("/api/dockercompose/files/{deploymentId}", deploymentId.value() + "invalid-string")
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
         Identifier deploymentId = Identifier.newInstance("newDeploymentId");
         DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         repositoryManager.storeService(nmServiceInfo);
-        mvc.perform(get("/platform/api/dockercompose/files/{deploymentId}", deploymentId.value())
+        mvc.perform(get("/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
     }

@@ -1,16 +1,12 @@
-import {Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation, OnDestroy} from '@angular/core';
 
-import {Application} from '../../model/application';
-import { AppSubscription } from '../../model/appsubscription';
 import {AppsService} from '../../service/apps.service';
 import { AppSubscriptionsService } from '../../service/appsubscriptions.service';
 import { UserDataService } from '../../service/userdata.service';
-import { ApplicationsViewComponent } from '../../shared/applications/applications.component';
-import { AppViewTypeAware, AppViewType } from '../../shared/common/viewtype';
+import { AppViewType } from '../../shared/common/viewtype';
 import { Router, ActivatedRoute } from '@angular/router';
 import {Location} from '@angular/common';
 import { Subscription } from 'rxjs/Subscription';
-import { Observable } from 'rxjs/Observable';
 import { isUndefined } from 'util';
 
 @Component({
@@ -20,13 +16,14 @@ import { isUndefined } from 'util';
   encapsulation: ViewEncapsulation.None,
   providers: [AppsService, AppSubscriptionsService]
 })
-@AppViewTypeAware
 export class AppListComponent implements OnInit, OnDestroy {
 
-  protected appsView: AppViewType;
-  protected domainId: number;
+  public AppViewType = AppViewType;
+
+  public appsView: AppViewType;
+  public domainId: number;
   
-  private selectedDomain: Subscription;
+  public selectedDomain: Subscription;
   
   constructor(protected userDataService: UserDataService,
               private router: Router,

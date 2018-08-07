@@ -1,6 +1,8 @@
 package net.geant.nmaas.orchestration.entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Details of single application deployment in the system.
@@ -39,6 +41,10 @@ public class AppDeployment {
     /** Initial application configuration provided by the user. */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AppConfiguration configuration;
+
+    /** Store all of deployment state changes */
+    @OneToMany(mappedBy = "app", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<AppDeploymentHistory> history = new ArrayList<>();
 
     public AppDeployment() { }
 
@@ -105,4 +111,11 @@ public class AppDeployment {
         this.configuration = configuration;
     }
 
+    public List<AppDeploymentHistory> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<AppDeploymentHistory> history) {
+        this.history = history;
+    }
 }

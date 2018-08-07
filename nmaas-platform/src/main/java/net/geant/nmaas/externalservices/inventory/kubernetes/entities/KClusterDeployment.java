@@ -1,6 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Set of properties describing details of service deployment in Kubernetes cluster
@@ -18,7 +23,7 @@ public class KClusterDeployment {
 
     /** Flag indicating whether to use the default template for all deployments */
     @Column(nullable = false)
-    private Boolean useDefaultNamespace;
+    private NamespaceConfigOption namespaceConfigOption;
 
     /** Kubernetes namespace for NMaaS deployments */
     private String defaultNamespace;
@@ -26,6 +31,10 @@ public class KClusterDeployment {
     /** Kubernetes persistence storage class to be used by PVCs */
     @Column(nullable = false)
     private String defaultPersistenceClass;
+
+    /** Flag indicating if a GitLab instance deployed within the cluster should be used for configuration storage */
+    @Column(nullable = false)
+    private Boolean useInClusterGitLabInstance;
 
     public Long getId() {
         return id;
@@ -35,12 +44,12 @@ public class KClusterDeployment {
         this.id = id;
     }
 
-    public Boolean getUseDefaultNamespace() {
-        return useDefaultNamespace;
+    public NamespaceConfigOption getNamespaceConfigOption() {
+        return namespaceConfigOption;
     }
 
-    public void setUseDefaultNamespace(Boolean useDefaultNamespace) {
-        this.useDefaultNamespace = useDefaultNamespace;
+    public void setNamespaceConfigOption(NamespaceConfigOption namespaceConfigOption) {
+        this.namespaceConfigOption = namespaceConfigOption;
     }
 
     public String getDefaultNamespace() {
@@ -57,5 +66,13 @@ public class KClusterDeployment {
 
     public void setDefaultPersistenceClass(String defaultPersistenceClass) {
         this.defaultPersistenceClass = defaultPersistenceClass;
+    }
+
+    public Boolean getUseInClusterGitLabInstance() {
+        return useInClusterGitLabInstance;
+    }
+
+    public void setUseInClusterGitLabInstance(Boolean useInClusterGitLabInstance) {
+        this.useInClusterGitLabInstance = useInClusterGitLabInstance;
     }
 }

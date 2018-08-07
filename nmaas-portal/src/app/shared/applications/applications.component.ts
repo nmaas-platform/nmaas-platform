@@ -4,8 +4,8 @@ import {AppConfigService} from '../../service/appconfig.service';
 import {AppsService} from '../../service/apps.service';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
-import {ListTypeAware, ListType} from '../common/listtype';
-import {AppViewType, AppViewTypeAware} from '../common/viewtype';
+import {ListType} from '../common/listtype';
+import {AppViewType} from '../common/viewtype';
 import {Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {isUndefined} from 'util';
@@ -15,9 +15,11 @@ import {isUndefined} from 'util';
   templateUrl: './applications.component.html',
   styleUrls: ['./applications.component.css']
 })
-@ListTypeAware
-@AppViewTypeAware
+
 export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
+
+    public ListType = ListType;
+    public AppViewType = AppViewType;
 
   @Input()
   public appView: AppViewType = AppViewType.APPLICATION;
@@ -29,14 +31,16 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   public domainId: number;
 
   protected applications: Observable<Application[]>;
+  protected copy_applications: Observable<Application[]>;
   protected selected: Observable<Set<number>>;
 
-  protected searchedAppName: string;
+  protected searchedAppName: string = "";
+  protected searchedTag: string = "all";
 
   constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
 
   ngOnInit() {
-    this.updateDomain();
+    // this.updateDomain();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -44,7 +48,6 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   protected updateDomain(): void {
-
     let domainId: number;
     let applications: Observable<Application[]>;
 
@@ -56,15 +59,15 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (+this.appView) {
       case AppViewType.APPLICATION:
-        applications = this.appsService.getApps();
-        applications.subscribe((apps) => this.updateSelected(apps));
-        break;
+      applications = this.appsService.getApps();
+      applications.subscribe((apps) => this.updateSelected(apps));
+      break;
       case AppViewType.DOMAIN:
-        applications = this.appSubsService.getSubscribedApplications(domainId);
-        break;
+      applications = this.appSubsService.getSubscribedApplications(domainId);
+      break;
       default:
-        applications = Observable.of<Application[]>([]);
-        break;
+      applications = Observable.of<Application[]>([]);
+      break;
     }
 
     this.applications = applications;
@@ -97,8 +100,34 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  public filterAppsByName($event): void {
-
+  protected doSearch():void {
+    if (this.copy_applications == null) {this.copy_applications = this.applications}
+    this.applications = this.copy_applications;
+    let filteredAppsOne: Application[];
+    let filteredAppsTwo: Application[];
+    let tag = this.searchedTag.toLocaleLowerCase();
+    let typed = this.searchedAppName.toLocaleLowerCase();
+    this.applications.subscribe((apps) => {
+      if (tag === "all"){
+        filteredAppsOne = apps;
+      } else {
+        filteredAppsOne = apps.filter(app => app.tags.map(entry => entry.toLocaleLowerCase()).findIndex(function (element) {return element.indexOf(tag) > -1;}) > -1);
+      }
+      filteredAppsTwo = filteredAppsOne.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
+      this.applications = Observable.of(filteredAppsTwo);
+    });
   }
 
+  protected filterAppsByName(typed: string): void {
+
+    this.searchedAppName = typed;
+    this.doSearch();
+  }
+
+  protected filterAppsByTag(tag: string): void {
+
+    this.searchedAppName = "";
+    this.searchedTag = tag;
+    this.doSearch();
+  }
 }

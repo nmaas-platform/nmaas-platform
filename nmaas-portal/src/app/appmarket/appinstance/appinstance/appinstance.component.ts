@@ -1,64 +1,64 @@
-import {Component, OnInit, OnDestroy, Input, ViewChild} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
-// import 'rxjs/add/operator/switchMap';
-
-import {AppsService, AppInstanceService, AppImagesService} from '../../../service/index';
+import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-import {RateComponent} from '../../../shared/rate/rate.component';
 
-import {
-  Application,
-  AppInstance,
-  AppInstanceState,
-  AppInstanceStateAware,
-  AppInstanceStatus,
-  AppInstanceProgressStage
-} from '../../../model/index';
+import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
 
 import {SecurePipe} from '../../../pipe/index';
-import { isNullOrUndefined } from 'util';
+import {AppRestartModalComponent} from "../../modals/apprestart";
+import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
+// import 'rxjs/add/operator/switchMap';
+import {RateComponent} from '../../../shared/rate/rate.component';
 
 @Component({
   selector: 'nmaas-appinstance',
   templateUrl: './appinstance.component.html',
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe]
+  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
 })
-@AppInstanceStateAware
 export class AppInstanceComponent implements OnInit, OnDestroy {
+
+  public AppInstanceState = AppInstanceState;
 
   @ViewChild(AppInstanceProgressComponent)
   public appInstanceProgress: AppInstanceProgressComponent;
 
+  @ViewChild(AppRestartModalComponent)
+  public modal:AppRestartModalComponent;
+
+  @ViewChild(RateComponent)
+  public readonly appRate: RateComponent;
 
   app: Application;
 
-  private appInstanceStatus: AppInstanceStatus; 
+  public appInstanceStatus: AppInstanceStatus;
 
-  private appInstanceId: number;
-  private appInstance: AppInstance;
-  private configurationTemplate: any;
+  public appInstanceId: number;
+  public appInstance: AppInstance;
+  public appInstanceStateHistory: AppInstanceStateHistory[];
+  public configurationTemplate: any;
 
-  private intervalCheckerSubscribtion;
-  
+  public intervalCheckerSubscribtion;
+
   jsonFormOptions: any = {
     addSubmit: false, // Add a submit button if layout does not have one
     debug: false, // Don't show inline debugging information
     loadExternalAssets: false, // Load external css and JavaScript for frameworks
     returnEmptyFields: false, // Don't return values for empty input fields
     setSchemaDefaults: true, // Always use schema defaults for empty fields
-    defautWidgetOptions: { feedback: false }, // Show inline feedback icons
+    defaultWidgetOptions: { feedback: false }, // Show inline feedback icons
     options: {},
     widgetOptions: {}
   };
-  
+
   constructor(private appsService: AppsService,
-    private appImagesService: AppImagesService,
+    public appImagesService: AppImagesService,
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
@@ -76,7 +76,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         });
       });
 
-
       this.updateAppInstanceState();
       this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
     });
@@ -92,12 +91,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           this.updateAppInstance();
         }
       }
-    )
-
+    );
+     this.appInstanceService.getAppInstanceHistory(this.appInstanceId).subscribe(history => {
+        this.appInstanceStateHistory = history.reverse();
+     });
   }
 
   private updateAppInstance() {
-    console.log('update app instance')
+    console.log('update app instance');
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
@@ -120,12 +121,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getStages(): AppInstanceProgressStage[] {
+  public getStages(): AppInstanceProgressStage[] {
     return this.appInstanceService.getProgressStages();
   }
 
   protected getTemplate(template: string): any {
-    let result: any = (!isNullOrUndefined(template) ? JSON.parse(template) : undefined);    
-    return result;
+    return template;
   }
+
+  public onRateChanged(): void {
+        this.appRate.refresh();
+  }
+
 }

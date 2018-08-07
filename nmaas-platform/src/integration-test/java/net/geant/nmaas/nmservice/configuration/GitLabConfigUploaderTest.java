@@ -1,5 +1,8 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabConfigSupportedException;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
@@ -8,18 +11,19 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.Ku
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import org.gitlab4j.api.GitLabApiException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -41,11 +45,14 @@ public class GitLabConfigUploaderTest {
     private KubernetesRepositoryManager repositoryManager;
     @Autowired
     private NmServiceConfigFileRepository configurations;
+    @Autowired
+    private GitLabConfigUploader gitLabConfigUploader;
+    @Autowired
+    private GitLabManager gitLabManager;
 
-    @Value("${gitlab.api.url}")
-    private String gitLabApiUrl;
-    @Value("${gitlab.api.token}")
-    private String gitLabApiToken;
+    private String gitLabApiUrl = "10.134.250.3";
+
+    private String gitLabApiToken = "bZVLnKf8PrwW4YHcBy8b";
 
     private NmServiceConfiguration testConfig1 = new NmServiceConfiguration("1", "fileName1", "fileContent1");
     private NmServiceConfiguration testConfig2 = new NmServiceConfiguration("2", "fileName2", "fileContent2");
@@ -59,6 +66,29 @@ public class GitLabConfigUploaderTest {
     @After
     public void removeAllConfigurations() {
         configurations.deleteAll();
+    }
+
+    @Test
+    @Ignore
+    public void shouldTransferConfigFiles() throws OnlyOneGitLabConfigSupportedException, FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException, GitLabApiException {
+        GitLab gitLab = simpleGitLabInstance();
+        gitLabManager.addGitlabConfig(gitLab);
+        assertThat("Gitlab URL is wrong",gitLabManager.getGitLabApiUrl().equals("http://"+gitLabApiUrl+":80"));
+        Identifier deploymentId = Identifier.newInstance(UUID.randomUUID().toString());
+        String domain = "testDomain";
+        String deploymentName = "testDeploymentName";
+        KubernetesNmServiceInfo service = new KubernetesNmServiceInfo(deploymentId, deploymentName, domain, null);
+        repositoryManager.storeService(service);
+        assertThat("Domain is not returned correctly",repositoryManager.loadDomain(deploymentId).equals(domain));
+        gitLabConfigUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()));
+    }
+
+    private GitLab simpleGitLabInstance(){
+        GitLab gitLab = new GitLab();
+        gitLab.setToken(gitLabApiToken);
+        gitLab.setServer(gitLabApiUrl);
+        gitLab.setPort(80);
+        return gitLab;
     }
 
     @Ignore

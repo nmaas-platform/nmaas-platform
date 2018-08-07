@@ -15,7 +15,14 @@ export class LogoutComponent implements OnInit {
 
   ngOnInit() {
       this.auth.logout();
-      this.router.navigate(['/welcome']);
+      if(this.auth.allowsSSO()) {
+          let url = window.location.origin;
+          window.location.href.replace(/ssoUserId=.+/, '');
+          // Shibboleth SP uses parameter 'target' instead of 'return'
+          window.location.href = this.auth.getSSOLogoutUrl() + '?return=' + url;
+      } else {
+          this.router.navigate(['/welcome']);
+      }
   }
 
 }

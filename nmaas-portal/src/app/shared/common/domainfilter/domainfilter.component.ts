@@ -19,40 +19,43 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   //@Input()
   public domainId: number;
 
-  protected domains: Observable<Domain[]>
-  
-  protected refresh: Subscription;
+  public domains: Observable<Domain[]>;
+
+  public refresh: Subscription;
 
   constructor(protected authService: AuthService, protected domainService: DomainService, protected userData: UserDataService, protected appConfig: AppConfigService) {}
 
   ngOnInit() {
-    
-    this.refresh = Observable.interval(10000).subscribe(() => this.updateDomains()); 
-    
-    this.userData.selectedDomainId.subscribe(id => this.domainId = id);
-    this.updateDomains();
-    
+      if(this.authService.hasRole('ROLE_SUPERADMIN')){
+        this.refresh = Observable.interval(10000).subscribe(next => {
+            if(this.domainService.shouldUpdate()) {
+                this.updateDomains();
+                this.domainService.setUpdateRequiredFlag(false);
+            }
+        });
+      }
+      this.updateDomains();
+      this.domains.subscribe(domain => this.userData.selectDomainId(domain[0].id));
+      this.userData.selectedDomainId.subscribe(id => this.domainId = id);
   }
 
-  protected updateDomains(): void {
+  public updateDomains(): void {
     if (this.authService.hasRole('ROLE_SUPERADMIN')) {
       this.domains = this.domainService.getAll();
     } else {
       this.domains = this.domainService.getMyDomains();
-    }
-    if(!isUndefined(this.domains)) {      
-      this.domains = this.domains.map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
+      if(!isUndefined(this.domains) && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(),'ROLE_TOOL_MANAGER') && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(), 'ROLE_OPERATOR')) {
+           this.domains = this.domains.map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
+      }
     }
   }
   
   ngOnDestroy(): void {
-    if(!isNullOrUndefined(this.refresh)) {
-      this.refresh.unsubscribe();
-    }
-  }  
+
+  }
   
   public onChange($event) {
-    console.log('onChange(domainId)');
+    console.log('onChange(',this.domainId,')');
     this.userData.selectDomainId(Number(this.domainId));
   }
 

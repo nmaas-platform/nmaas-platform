@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
  */
 @RestController
-@RequestMapping(value = "/platform/api/management/dockerhosts")
+@RequestMapping(value = "/api/management/dockerhosts")
 public class DockerHostManagerRestController {
 
     private DockerHostRepositoryManager dockerHostRepositoryManager;

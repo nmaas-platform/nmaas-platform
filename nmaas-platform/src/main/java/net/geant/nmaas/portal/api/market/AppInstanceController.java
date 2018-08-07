@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -18,7 +19,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +30,10 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/portal/api")
+@RequestMapping("/api")
 public class AppInstanceController extends AppBaseController {
 
 	@Autowired
@@ -57,20 +56,22 @@ public class AppInstanceController extends AppBaseController {
 
 	@GetMapping("/apps/instances")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@Transactional
 	public List<AppInstance> getAllInstances(Pageable pageable) throws MissingElementException {				
 		return instances.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
 
 	@GetMapping("/apps/instances/my")
+	@Transactional
 	public List<AppInstance> getMyAllInstances(@NotNull Principal principal, Pageable pageable) throws MissingElementException {
 		User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("User not found"));
 
 		return instances.findAllByOwner(user, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
-	
-	
+
 	@GetMapping("/domains/{domainId}/apps/instances")
-	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
+	@Transactional
 	public List<AppInstance> getAllInstances(@PathVariable Long domainId, Pageable pageable) throws MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
 
@@ -79,6 +80,7 @@ public class AppInstanceController extends AppBaseController {
 
 	@GetMapping(value = "/domains/{domainId}/apps/instances/my")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
+	@Transactional
 	public List<AppInstance> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable)
 			throws MissingElementException {
 		return getUserDomainAppInstances(domainId, principal.getName(), pageable);
@@ -86,6 +88,7 @@ public class AppInstanceController extends AppBaseController {
 
 	@GetMapping("/domains/{domainId}/apps/instances/user/{username}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
+	@Transactional
 	public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable)
 			throws MissingElementException {
 		return getUserDomainAppInstances(domainId, username, pageable);
@@ -104,6 +107,7 @@ public class AppInstanceController extends AppBaseController {
 	
 	@GetMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+	@Transactional
 	public AppInstance getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
@@ -182,6 +186,7 @@ public class AppInstanceController extends AppBaseController {
 
 	@GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+	@Transactional
 	public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
 			@NotNull Principal principal) throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
@@ -189,7 +194,33 @@ public class AppInstanceController extends AppBaseController {
 		return getAppInstanceState(appInstance);
 	}
 
-	private AppInstanceStatus getAppInstanceState(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) throws ProcessingException, MissingElementException {
+	@GetMapping({"/apps/instances/{appInstanceId}/state/history", "/domains/{domainId}/apps/instances/{appInstanceId}/state/history"})
+	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+	@Transactional
+	public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId, @NotNull Principal principal) throws MissingElementException{
+		try{
+			net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+			return appDeploymentMonitor.appDeploymentHistory(appInstance.getInternalId());
+		} catch (InvalidDeploymentIdException e){
+			throw new MissingElementException(e.getMessage());
+		}
+	}
+
+	//domainId is not used in this method.
+    @PostMapping({"/apps/instances/{appInstanceId}/restart", "/domains/{domainId}/apps/instances/{appInstanceId}/restart"})
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+	@Transactional
+    public void restartAppInstance(@PathVariable(value="appInstanceId") Long appInstanceId) throws MissingElementException, ProcessingException{
+        net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+        try{
+            this.appLifecycleManager.restartApplication(appInstance.getInternalId());
+        }
+        catch (InvalidDeploymentIdException e){
+            throw new ProcessingException("Missing app instance");
+        }
+    }
+
+    private AppInstanceStatus getAppInstanceState(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) throws ProcessingException, MissingElementException {
 		if(appInstance == null)
 			throw new MissingElementException("App instance is null");
 		
@@ -219,10 +250,13 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceStatus appInstanceStatus = new AppInstanceStatus();
 		appInstanceStatus.setAppInstanceId(appInstanceId);
 		appInstanceStatus.setDetails(state.name());
+		appInstanceStatus.setUserFriendlyDetails(state.getUserFriendlyState());
 
 		AppInstanceState appInstanceState = mapAppInstanceState(state);
 
 		appInstanceStatus.setState(appInstanceState);
+
+		appInstanceStatus.setUserFriendlyState(appInstanceState.getUserFriendlyState());
 
 		return appInstanceStatus;
 	}
@@ -231,7 +265,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceState appInstanceState;
 		switch (state) {
 		case REQUESTED:
-			appInstanceState = AppInstanceState.SUBSCRIBED;
+			appInstanceState = AppInstanceState.REQUESTED;
 			break;
 		case REQUEST_VALIDATION_IN_PROGRESS:
 		case REQUEST_VALIDATED:
@@ -299,6 +333,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
 		try {
 			ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
+			ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
 			ai.setDomainId(appInstance.getDomain().getId());
 		} catch (Exception e) {
 			ai.setState(AppInstanceState.UNKNOWN);

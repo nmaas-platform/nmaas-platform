@@ -12,7 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
 
 @Entity
 @Table(name="users")
@@ -22,12 +22,13 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull
+	@Column(unique = true, nullable = false)
 	private String username;
 	
-	//@NotNull
 	private String password;
-	
+
+	private String samlToken;
+
 	private String email;	
 	private String firstname;
 	private String lastname;
@@ -112,6 +113,10 @@ public class User {
 	public String getPassword() {
 		return password;
 	}
+
+	public String getSamlToken() { return samlToken; }
+
+	public void setSamlToken(String samlToken) { this.samlToken = samlToken; }
 
 	public String getEmail() {
 		return email;

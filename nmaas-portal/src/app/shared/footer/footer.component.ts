@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { Router } from '@angular/router';
+import {ChangelogService} from "../../service";
+import {ModalComponent} from "../modal";
 
 @Component({
   selector: 'nmaas-footer',
@@ -8,9 +10,19 @@ import { Router } from '@angular/router';
 })
 export class FooterComponent implements OnInit {
 
-  constructor() { }
+  gitInfo:string[];
+
+  @ViewChild(ModalComponent)
+  private modal:ModalComponent;
+
+  constructor(private changelogService:ChangelogService, private router:Router) { }
 
   ngOnInit() {
+    this.changelogService.getGitInfo().subscribe(info => this.gitInfo = info);
+  }
+
+  checkURL():boolean{
+    return this.router.url === "/welcome/login" || this.router.url === "/welcome/registration";
   }
 
 }

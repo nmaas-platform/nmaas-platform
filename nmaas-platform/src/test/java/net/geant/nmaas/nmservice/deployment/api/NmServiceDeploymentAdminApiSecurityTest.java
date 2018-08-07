@@ -42,7 +42,7 @@ public class NmServiceDeploymentAdminApiSecurityTest extends BaseControllerTest 
     @Test
     public void shouldAuthAndCallSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/platform/api/management/services")
+        mvc.perform(get("/api/management/services")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
@@ -50,7 +50,7 @@ public class NmServiceDeploymentAdminApiSecurityTest extends BaseControllerTest 
     @Test
     public void shouldAuthAndForbidSimpleGet() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/platform/api/management/services")
+        mvc.perform(get("/api/management/services")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

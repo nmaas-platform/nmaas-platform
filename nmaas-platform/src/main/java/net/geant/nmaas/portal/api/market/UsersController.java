@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
@@ -43,7 +40,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
 @RestController
-@RequestMapping("/portal/api")
+@RequestMapping("/api")
 public class UsersController {
 
 //	@Autowired
@@ -110,7 +107,7 @@ public class UsersController {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
 		return modelMapper.map(user, User.class);
 	}
-	
+
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
@@ -151,7 +148,7 @@ public class UsersController {
 							domains.findDomain(ur.getDomainId()).get(), 
 							ur.getRole()))
 					.collect(Collectors.toSet());
-			
+
 			userMod.setNewRoles(roles);
 		}
 		try {
@@ -194,6 +191,7 @@ public class UsersController {
 
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
+			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}		
@@ -211,7 +209,37 @@ public class UsersController {
 			throw new ProcessingException("Unable to change password");
 		}
 	}
-	
+
+
+	@PostMapping(value="/users/my/complete")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
+	@Transactional
+	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) throws MissingElementException, ProcessingException {
+		net.geant.nmaas.portal.persistent.entity.User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+		try {
+			Long domainId = domains.getGlobalDomain().orElseThrow(() -> new ProcessingException()).getId();
+			completeRegistration(userRequest, user, domainId);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
+			throw new ProcessingException("Unable to complete your registration");
+		}
+	}
+
+	public void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) throws net.geant.nmaas.portal.exceptions.ProcessingException {
+		if(userRequest.getUsername() != null)
+			user.setUsername(userRequest.getUsername());
+		if(userRequest.getFirstname() != null)
+			user.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			user.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null) {
+			user.setEmail(userRequest.getEmail());
+			domains.removeMemberRole(domainId, user.getId(), Role.ROLE_INCOMPLETE);
+		}
+
+		users.update(user);
+	}
+
 	@PostMapping("/users/my/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
@@ -296,7 +324,7 @@ public class UsersController {
 		Domain globalDomain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
 		if(domain.equals(globalDomain)) {
-			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_GUEST))
+			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
 				throw new ProcessingException("Role cannot be assigned.");			
 		} else {
 			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
@@ -324,8 +352,22 @@ public class UsersController {
 				
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), role);
+			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
+		}
+	}
+
+	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
+		if(domains.getGlobalDomain().isPresent()){
+			Long globalId = domains.getGlobalDomain().get().getId();
+			try{
+				if(domains.getMemberRoles(globalId, userId).isEmpty()){
+					domains.addMemberRole(globalId, userId, Role.ROLE_GUEST);
+				}
+			} catch(ObjectNotFoundException e){
+				throw new MissingElementException(e.getMessage());
+			}
 		}
 	}
 

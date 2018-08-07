@@ -1,16 +1,30 @@
 import {Injectable} from '@angular/core';
-import {Router} from '@angular/router';
-import {CanActivate} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {AuthService} from './auth.service';
+import {ConfigurationService} from '../service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router, private maintenanceService: ConfigurationService) {}
 
-  public canActivate(): boolean {
+
+  public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    this.maintenanceService.getConfiguration().subscribe(value => {
+        if (this.auth.isLogged() && !this.auth.hasRole('ROLE_SUPERADMIN') && value.maintenance) {
+            this.auth.logout();
+            this.router.navigate(['/welcome/login']);
+            return false;
+        }
+    });
+
     if (this.auth.isLogged()) {
-      return true;
+      if(this.auth.hasRole('ROLE_INCOMPLETE') && route.url.toString() !== 'complete') {
+           this.router.navigate(['/complete']);
+           return false;
+      }
+      else
+          return true;
     }
 
     // not logged in so redirect to login page
@@ -18,7 +32,7 @@ export class AuthGuard implements CanActivate {
     return false;
   }
 
-  public canActivateChild(): boolean {
-    return this.canActivate();
+  public canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    return this.canActivate(route, state);
   }
 }

@@ -75,7 +75,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
         throwExceptionIfInInvalidState(appDeployment);
         appDeployment.setConfiguration(configuration);
-        repositoryManager.store(appDeployment);
+        repositoryManager.update(appDeployment);
         eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
     }
 
