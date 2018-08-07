@@ -6,7 +6,12 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
+import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +43,10 @@ public class DomainController extends AppBaseController {
 	
 	@Autowired
 	DomainService domainService;
-	
+
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
+
 	@GetMapping
 	@Transactional(readOnly = true)
 	public List<Domain> getDomains() {
@@ -84,7 +92,6 @@ public class DomainController extends AppBaseController {
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
-		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		try {
 			domainService.updateDomain(domain);
@@ -103,10 +110,33 @@ public class DomainController extends AppBaseController {
 			throw new ProcessingException("Unable to change domain id");
 		}
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
-		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		try {
 			domainService.updateDomain(domain);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+
+		return new Id(domainId);
+	}
+
+	@PatchMapping("/{domainId}/dcn")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SUPERADMIN')")
+	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
+		if(!domainId.equals(domainUpdate.getId())){
+			throw new ProcessingException("Unable to change domain id");
+		}
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
+		try{
+			domainService.updateDomain(domain);
+			if(domain.isDcnConfigured()){
+				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
+				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
+			} else{
+				this.eventPublisher.publishEvent(new DcnRemoveActionEvent(this, domain.getCodename()));
+			}
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}

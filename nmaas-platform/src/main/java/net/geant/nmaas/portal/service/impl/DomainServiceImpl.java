@@ -47,6 +47,7 @@ public class DomainServiceImpl implements DomainService {
 	UserRoleRepository userRoleRepo;
 
 	ApplicationEventPublisher eventPublisher;
+
 	@Autowired
 	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, ApplicationEventPublisher eventPublisher){
 		this.validator = validator;
@@ -143,10 +144,6 @@ public class DomainServiceImpl implements DomainService {
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
 		domainRepo.save(domain);
-		if(domain.isDcnConfigured()){
-			this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
-			this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
-		}
 	}
 
 	@Override

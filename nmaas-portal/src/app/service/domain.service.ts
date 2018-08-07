@@ -50,6 +50,10 @@ export class DomainService extends GenericDataService {
     return this.patch<Domain, Id>(this.url + domain.id, domain)
   }
 
+  public updateDcnConfigured(domain: Domain): Observable<any> {
+    return this.patch<Domain, Id>(this.url + domain.id + '/dcn', domain);
+  }
+
   public remove(domainId: number): Observable<any> {
     return this.delete(this.url + domainId);
   }
