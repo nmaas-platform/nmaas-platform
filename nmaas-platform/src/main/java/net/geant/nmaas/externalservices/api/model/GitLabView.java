@@ -4,6 +4,7 @@ public class GitLabView {
 
     private Long id;
     private String server;
+    private String sshServer;
     private String token;
     private Integer port;
     private String repositoryAccessUsername;
@@ -22,6 +23,14 @@ public class GitLabView {
 
     public void setServer(String server) {
         this.server = server;
+    }
+
+    public String getSshServer() {
+        return sshServer;
+    }
+
+    public void setSshServer(String sshServer) {
+        this.sshServer = sshServer;
     }
 
     public String getToken() {
