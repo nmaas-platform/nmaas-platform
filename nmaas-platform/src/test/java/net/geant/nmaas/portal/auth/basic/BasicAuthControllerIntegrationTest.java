@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +31,7 @@ public class BasicAuthControllerIntegrationTest extends BaseControllerTest {
     @Test
     public void testSuccessfulLogin() throws Exception {
     	
-    	mvc.perform(post("/portal/api/auth/basic/login")
+    	mvc.perform(post("/api/auth/basic/login")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"username\": \"admin\",\"password\": \"admin\"}")
                     .accept(MediaType.APPLICATION_JSON))
