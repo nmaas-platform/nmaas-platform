@@ -27,7 +27,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 @RestController
-@RequestMapping("/portal/api/auth/basic")
+@RequestMapping("/api/auth/basic")
 public class BasicAuthController {
     private static final Logger log = LogManager.getLogger(BasicAuthController.class);
 	

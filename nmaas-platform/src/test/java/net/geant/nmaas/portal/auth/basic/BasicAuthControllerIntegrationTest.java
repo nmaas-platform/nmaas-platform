@@ -41,7 +41,7 @@ public class BasicAuthControllerIntegrationTest extends BaseControllerTest {
     @Test
     public void testUnsuccessfulLoginWithWrongCredentials() throws Exception {
 
-        mvc.perform(post("/portal/api/auth/basic/login")
+        mvc.perform(post("/api/auth/basic/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"admin1\",\"password\": \"admin1\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -52,7 +52,7 @@ public class BasicAuthControllerIntegrationTest extends BaseControllerTest {
     public void testSuccessAuthPing() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_USER);
 
-        mvc.perform(get("/portal/api/auth/basic/ping")
+        mvc.perform(get("/api/auth/basic/ping")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(content().string(containsString(ADMIN_USERNAME)))
                 .andExpect(status().isOk());
@@ -61,7 +61,7 @@ public class BasicAuthControllerIntegrationTest extends BaseControllerTest {
 	
     @Test
     public void testFailedAuthPing() throws Exception {    	
-    	mvc.perform(get("/portal/api/auth/basic/ping"))
+    	mvc.perform(get("/api/auth/basic/ping"))
     				.andExpect(status().is4xxClientError());
     		
     }
