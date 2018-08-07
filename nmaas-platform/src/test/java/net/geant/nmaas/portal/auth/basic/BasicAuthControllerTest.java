@@ -1,67 +1,54 @@
 package net.geant.nmaas.portal.auth.basic;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
+
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import net.geant.nmaas.portal.BaseControllerTest;
-import net.geant.nmaas.portal.persistent.entity.Role;
+import java.util.Optional;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
+public class BasicAuthControllerTest {
+    @InjectMocks
+    private BasicAuthController basicAuthController;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class BasicAuthControllerTest extends BaseControllerTest {
-    
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @Before
-    public void setup() {
-        mvc = createMVC();
-    }
-	
-    @Test
-    public void testSuccessfulLogin() throws Exception {
-    	
-    	mvc.perform(post("/portal/api/auth/basic/login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"username\": \"admin\",\"password\": \"admin\"}")
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk());
+    public void setup(){
+        when(passwordEncoder.matches(any(), any())).thenReturn(true);
     }
 
     @Test
-    public void testUnsuccessfulLoginWithWrongCredentials() throws Exception {
-
-        mvc.perform(post("/portal/api/auth/basic/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\": \"admin1\",\"password\": \"admin1\"}")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
+    public void testValidateWithValidUserNameAndPassword() throws AuthenticationException {
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true);
     }
 
-    @Test
-    public void testSuccessAuthPing() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_USER);
-
-        mvc.perform(get("/portal/api/auth/basic/ping")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(content().string(containsString(ADMIN_USERNAME)))
-                .andExpect(status().isOk());
-
+    @Test(expected = AuthenticationException.class)
+    public void testValidateWithInvalidUserNameAndValidPassword() throws AuthenticationException {
+        basicAuthController.validate(Optional.empty(), Optional.of("TEST"), "TEST",true);
     }
-	
-    @Test
-    public void testFailedAuthPing() throws Exception {    	
-    	mvc.perform(get("/portal/api/auth/basic/ping"))
-    				.andExpect(status().is4xxClientError());
-    		
+
+    @Test(expected = AuthenticationException.class)
+    public void testValidateWithValidUserNameAndInvalidPassword() throws AuthenticationException {
+        basicAuthController.validate(Optional.of("TEST"), Optional.empty(), "TEST",true);
     }
-	
+
+    @Test(expected = AuthenticationException.class)
+    public void testValidateWithInvalidUserNameAndInvalidPassword() throws AuthenticationException {
+        basicAuthController.validate(Optional.empty(), Optional.empty(), "TEST",true);
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false);
+    }
 }

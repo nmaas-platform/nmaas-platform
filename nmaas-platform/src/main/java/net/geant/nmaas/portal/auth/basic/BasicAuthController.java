@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.auth.basic;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import net.geant.nmaas.portal.service.DomainService;
@@ -45,7 +46,7 @@ public class BasicAuthController {
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
-        validate(userLogin.getUsername(), userLogin.getPassword(), user);
+        validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled());
 
         log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
                 user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
@@ -73,16 +74,19 @@ public class BasicAuthController {
 		return new Pong(new Date(System.currentTimeMillis()), (principal != null ? principal.getName() : null));
 	}
 
-    private void validate(final String userName, final String password, User user) throws AuthenticationException{
+    protected void validate(final Optional<String> userName, final Optional<String> password,
+                            String actualPassword, boolean isEnabled) throws AuthenticationException{
         boolean isValid = true;
-        if(StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)){
-            isValid = validateAndLogMessage("Missing credentials", userName);
+        if(!userName.isPresent() || !password.isPresent()){
+            isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
         }
-        if(!user.isEnabled()){
-            isValid = validateAndLogMessage("User is not active", userName);
-        }
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            isValid = validateAndLogMessage("Invalid password", userName);
+        else{
+            if (!isEnabled) {
+                isValid = validateAndLogMessage("User is not active", userName.get());
+            }
+            if (!passwordEncoder.matches(password.get(), actualPassword)) {
+                isValid = validateAndLogMessage("Invalid password", userName.get());
+            }
         }
         if(!isValid){
             throw new AuthenticationException("Invalid Credentials");
