@@ -350,7 +350,7 @@ public class UsersController {
 		}
 	}
 
-    @GetMapping("/users/{userId}")
+    @PutMapping("/users/status/{userId}")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     public void setEnabledFlag(@PathVariable Long userId, @RequestParam("enabled") boolean isEnabledFlag) {
         users.setEnabledFlag(userId, isEnabledFlag);

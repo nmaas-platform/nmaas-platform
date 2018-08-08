@@ -19,6 +19,8 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 
+import javax.transaction.Transactional;
+
 @Service
 public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
 
@@ -123,6 +125,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	}
 
 	@Override
+	@Transactional
 	public void setEnabledFlag(Long userId, boolean isEnabled) {
 		userRepo.setEnabledFlag(userId, isEnabled);
 	}
