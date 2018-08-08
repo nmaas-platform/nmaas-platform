@@ -122,6 +122,11 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 		userRepo.delete(user);
 	}
 
+	@Override
+	public void setEnabledFlag(Long userId, boolean isEnabled) {
+		userRepo.setEnabledFlag(userId, isEnabled);
+	}
+
 	protected void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");

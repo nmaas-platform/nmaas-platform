@@ -13,15 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
@@ -357,6 +349,12 @@ public class UsersController {
 			throw new MissingElementException(e.getMessage());
 		}
 	}
+
+    @GetMapping("/users/{userId}")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    public void setEnabledFlag(@PathVariable Long userId, @RequestParam("enabled") boolean isEnabledFlag) {
+        users.setEnabledFlag(userId, isEnabledFlag);
+    }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
 		if(domains.getGlobalDomain().isPresent()){
