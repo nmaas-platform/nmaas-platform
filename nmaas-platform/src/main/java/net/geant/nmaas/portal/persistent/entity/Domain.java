@@ -58,21 +58,21 @@ public class Domain {
 		this.active = active;
 	}
 
-	public Domain(String name, String codename, String kubernetesNamespace, boolean dcnConfigured){
+	public Domain(String name, String codename, String kubernetesNamespace, boolean dcnConfigured, String persistentClass){
 		this(name,codename);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured, persistentClass);
 	}
 
-	public Domain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) {
+	public Domain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured, String persistentClass) {
 		this(name,codename,active);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured, persistentClass);
 	}
 
-	public Domain(Long id, String name, String codename, String kubernetesNamespace, boolean dcnConfigured) {
+	public Domain(Long id, String name, String codename, String kubernetesNamespace, boolean dcnConfigured, String persistentClass) {
 		this(id,name,codename);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured, persistentClass);
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -116,6 +116,8 @@ public class Domain {
 	public boolean isDcnConfigured(){
 		return this.domainTechDetails.isDcnConfigured();
 	}
+
+	public String getPersistentClass(){return this.domainTechDetails.getPersistentClass();}
 
 	@Override
 	public int hashCode() {

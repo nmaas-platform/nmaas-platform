@@ -10,11 +10,11 @@ public class DomainRequest {
 	@NotNull
 	private String codename;
 
-	@NotNull
 	private String kubernetesNamespace;
 
-	@NotNull
 	private boolean dcnConfigured;
+
+	private String persistentClass;
 	
 	private boolean active = true;
 	
@@ -73,5 +73,13 @@ public class DomainRequest {
 
 	public void setDcnConfigured(boolean dcnConfigured) {
 		this.dcnConfigured = dcnConfigured;
+	}
+
+	public String getPersistentClass() {
+		return persistentClass;
+	}
+
+	public void setPersistentClass(String persistentClass) {
+		this.persistentClass = persistentClass;
 	}
 }

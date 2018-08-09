@@ -8,6 +8,7 @@ public class Domain {
 	boolean active;
 	String kubernetesNamespace;
 	boolean dcnConfigured;
+	String persistentClass;
 	
 	public Long getId() {
 		return id;
@@ -56,5 +57,12 @@ public class Domain {
 	public void setDcnConfigured(boolean dcnConfigured) {
 		this.dcnConfigured = dcnConfigured;
 	}
-	
+
+	public String getPersistentClass() {
+		return persistentClass;
+	}
+
+	public void setPersistentClass(String persistentClass) {
+		this.persistentClass = persistentClass;
+	}
 }

@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
 
 @Embeddable
 public class DomainTechDetails {
@@ -11,9 +9,12 @@ public class DomainTechDetails {
 
     private boolean dcnConfigured;
 
-    public DomainTechDetails(String kubernetesNamespace, boolean dcnConfigured){
+    private String persistentClass;
+
+    public DomainTechDetails(String kubernetesNamespace, boolean dcnConfigured, String persistentClass){
         this.kubernetesNamespace = kubernetesNamespace;
         this.dcnConfigured = dcnConfigured;
+        this.persistentClass = persistentClass;
     }
 
     public DomainTechDetails(){}
@@ -32,5 +33,13 @@ public class DomainTechDetails {
 
     public void setDcnConfigured(boolean dcnConfigured) {
         this.dcnConfigured = dcnConfigured;
+    }
+
+    public String getPersistentClass() {
+        return persistentClass;
+    }
+
+    public void setPersistentClass(String persistentClass) {
+        this.persistentClass = persistentClass;
     }
 }

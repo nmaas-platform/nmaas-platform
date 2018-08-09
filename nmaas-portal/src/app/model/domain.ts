@@ -5,6 +5,7 @@ export class Domain {
   public active: boolean = undefined;
   public kubernetesNamespace = undefined;
   public dcnConfigured = undefined;
+  public persistentClass = undefined;
   
   constructor();  
   constructor(id?: number,
@@ -12,12 +13,14 @@ export class Domain {
               codename?: string,
               active?: boolean,
               kubernetesNamespace?:string,
-              dcnConfigured?:boolean) {
+              dcnConfigured?:boolean,
+              persistentClass?:string) {
     this.id = id;
     this.name = name;
     this.codename = codename;
     this.active = active;
     this.kubernetesNamespace = kubernetesNamespace;
     this.dcnConfigured = dcnConfigured;
+    this.persistentClass = persistentClass;
   }
 }
