@@ -30,6 +30,7 @@
 ##### Local environment
 ---
   + Go to *nmaas-portal* directory in terminal or command line
+  + First run requires typing *npm install* command in order to install all of missing dependencies
   + Type command *npm start*
     - After successful compilation go to *http://localhost:4200* in your browser (do not close terminal or command line)
 
