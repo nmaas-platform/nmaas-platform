@@ -1,0 +1,97 @@
+{
+  "configuration":{
+    "name":"nmaas-platform-logs",
+    "properties":{
+      "property":[
+        {"name":"logsDir", "value":"log"}
+      ]
+    },
+    "ThresholdFilter":{
+      "level": "debug"
+    },
+    "appenders":{
+        "Console": {
+          "name": "nmaas-console",
+          "PatternLayout": {
+            "pattern": "%d [%t] %-5p %c - %m%n"
+          }
+        },
+        "RollingFile": {
+          "name": "nmaas-file",
+          "fileName": "${logsDir}/nmaas.log",
+          "filePattern": "${logsDir}/nmaas.%d{yyyy-MM-dd}.log",
+          "immediateFlush":true,
+          "patternLayout": {
+            "pattern": "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
+          },
+          "TimeBasedTriggeringPolicy": {
+            "interval": "1",
+            "modulate":true
+          },
+          "DefaultRolloverStrategy": {
+            "delete": {
+              "basePath": "${logsDir}",
+              "maxDepth": "1",
+              "IfLastModified": {
+                "age": "90d"
+              }
+            }
+          }
+        }
+    },
+    "loggers": {
+      "logger": [
+        {
+          "name": "net.geant.nmaas.portal.api.security",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.springframework",
+          "level": "debug",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "net.schmizz.sshj",
+          "level": "error",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        }
+      ],
+      "root": {
+        "level": "debug",
+        "AppenderRef": [
+          {
+            "ref": "nmaas-file"
+          },
+          {
+            "ref": "nmaas-console"
+          }
+        ]
+      }
+    }
+  }
+}
