@@ -21,9 +21,8 @@
     "tlsSupported":false
   },
   "deployment": {
-    "useDefaultNamespace":true,
-    "defaultNamespace":"default",
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
+    "defaultNamespace":"default",
     "defaultStorageClass":"nmaas-nfs-storage",
     "useInClusterGitLabInstance":true
   },
