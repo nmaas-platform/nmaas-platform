@@ -36,16 +36,16 @@ public class UsersControllerIntTest extends BaseControllerTest {
     final static String DOMAIN = "DOMAIN";
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Autowired
-    UsersController userController;
+    private UsersController userController;
 
     @Autowired
-    DomainService domains;
+    private DomainService domains;
 
     @Autowired
-    JWTTokenService jwtTokenService;
+    private JWTTokenService jwtTokenService;
 
     private String token;
 
