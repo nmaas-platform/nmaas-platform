@@ -5,16 +5,16 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class DomainTechDetails {
 
-    private String kubernetesNamespace;
-
     private boolean dcnConfigured;
 
-    private String persistentClass;
+    private String kubernetesNamespace;
 
-    public DomainTechDetails(String kubernetesNamespace, boolean dcnConfigured, String persistentClass){
-        this.kubernetesNamespace = kubernetesNamespace;
+    private String kubernetesStorageClass;
+
+    public DomainTechDetails(boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
         this.dcnConfigured = dcnConfigured;
-        this.persistentClass = persistentClass;
+        this.kubernetesNamespace = kubernetesNamespace;
+        this.kubernetesStorageClass = kubernetesStorageClass;
     }
 
     public DomainTechDetails(){}
@@ -35,11 +35,11 @@ public class DomainTechDetails {
         this.dcnConfigured = dcnConfigured;
     }
 
-    public String getPersistentClass() {
-        return persistentClass;
+    public String getKubernetesStorageClass() {
+        return kubernetesStorageClass;
     }
 
-    public void setPersistentClass(String persistentClass) {
-        this.persistentClass = persistentClass;
+    public void setKubernetesStorageClass(String kubernetesStorageClass) {
+        this.kubernetesStorageClass = kubernetesStorageClass;
     }
 }

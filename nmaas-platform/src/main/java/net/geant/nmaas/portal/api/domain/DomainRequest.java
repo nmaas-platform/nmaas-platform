@@ -10,11 +10,11 @@ public class DomainRequest {
 	@NotNull
 	private String codename;
 
-	private String kubernetesNamespace;
-
 	private boolean dcnConfigured;
 
-	private String persistentClass;
+	private String kubernetesNamespace;
+
+	private String kubernetesStorageClass;
 	
 	private boolean active = true;
 	
@@ -59,14 +59,6 @@ public class DomainRequest {
 		this.active = active;
 	}
 
-	public String getKubernetesNamespace() {
-		return kubernetesNamespace;
-	}
-
-	public void setKubernetesNamespace(String kubernetesNamespace) {
-		this.kubernetesNamespace = kubernetesNamespace;
-	}
-
 	public boolean isDcnConfigured() {
 		return dcnConfigured;
 	}
@@ -75,11 +67,19 @@ public class DomainRequest {
 		this.dcnConfigured = dcnConfigured;
 	}
 
-	public String getPersistentClass() {
-		return persistentClass;
+	public String getKubernetesNamespace() {
+		return kubernetesNamespace;
 	}
 
-	public void setPersistentClass(String persistentClass) {
-		this.persistentClass = persistentClass;
+	public void setKubernetesNamespace(String kubernetesNamespace) {
+		this.kubernetesNamespace = kubernetesNamespace;
+	}
+
+	public String getKubernetesStorageClass() {
+		return kubernetesStorageClass;
+	}
+
+	public void setKubernetesStorageClass(String kubernetesStorageClass) {
+		this.kubernetesStorageClass = kubernetesStorageClass;
 	}
 }

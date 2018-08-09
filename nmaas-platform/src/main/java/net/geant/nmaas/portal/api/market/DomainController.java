@@ -66,7 +66,7 @@ public class DomainController extends AppBaseController {
 		
 		net.geant.nmaas.portal.persistent.entity.Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.getKubernetesNamespace(), domainRequest.isDcnConfigured(), domainRequest.getPersistentClass());
+			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass());
 			return new Id(domain.getId());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
@@ -86,7 +86,7 @@ public class DomainController extends AppBaseController {
 		domain.setActive(domainUpdate.isActive());
 		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
-		domain.getDomainTechDetails().setPersistentClass(domainUpdate.getPersistentClass());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
 		try {
 			domainService.updateDomain(domain);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -106,7 +106,7 @@ public class DomainController extends AppBaseController {
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
 		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
-		domain.getDomainTechDetails().setPersistentClass(domainUpdate.getPersistentClass());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
 		try {
 			domainService.updateDomain(domain);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {

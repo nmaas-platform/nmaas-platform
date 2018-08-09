@@ -1,17 +1,16 @@
 package net.geant.nmaas.portal.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface DomainService {
 	
@@ -26,7 +25,7 @@ public interface DomainService {
 	
 	Domain createDomain(String name, String codename) throws ProcessingException;
 	Domain createDomain(String name, String codename, boolean active) throws ProcessingException;
-	Domain createDomain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured, String persistentClass) throws ProcessingException;
+	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) throws ProcessingException;
 	
 	Optional<Domain> findDomain(String name);
 	Optional<Domain> findDomain(Long id);

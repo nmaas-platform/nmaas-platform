@@ -24,7 +24,7 @@
     "useDefaultNamespace":true,
     "defaultNamespace":"default",
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
-    "defaultPersistenceClass":"nmaas-nfs-storage",
+    "defaultStorageClass":"nmaas-nfs-storage",
     "useInClusterGitLabInstance":true
   },
   "attachPoint": {

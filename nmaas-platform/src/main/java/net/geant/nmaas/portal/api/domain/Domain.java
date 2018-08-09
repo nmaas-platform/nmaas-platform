@@ -6,9 +6,9 @@ public class Domain {
 	String name;
 	String codename;
 	boolean active;
-	String kubernetesNamespace;
 	boolean dcnConfigured;
-	String persistentClass;
+	String kubernetesNamespace;
+	String kubernetesStorageClass;
 	
 	public Long getId() {
 		return id;
@@ -58,11 +58,11 @@ public class Domain {
 		this.dcnConfigured = dcnConfigured;
 	}
 
-	public String getPersistentClass() {
-		return persistentClass;
+	public String getKubernetesStorageClass() {
+		return kubernetesStorageClass;
 	}
 
-	public void setPersistentClass(String persistentClass) {
-		this.persistentClass = persistentClass;
+	public void setKubernetesStorageClass(String kubernetesStorageClass) {
+		this.kubernetesStorageClass = kubernetesStorageClass;
 	}
 }
