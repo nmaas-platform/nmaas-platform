@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -352,8 +353,9 @@ public class UsersController {
 
     @PutMapping("/users/status/{userId}")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    public void setEnabledFlag(@PathVariable Long userId, @RequestParam("enabled") boolean isEnabledFlag) {
+    public ResponseEntity setEnabledFlag(@PathVariable Long userId, @RequestParam("enabled") boolean isEnabledFlag) {
         users.setEnabledFlag(userId, isEnabledFlag);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
