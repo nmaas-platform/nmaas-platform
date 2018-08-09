@@ -11,14 +11,13 @@
 				<div *ngIf="instance_name.errors.required">Instance name is required.</div>
 			</div>
 			<div *ngIf="error" class="alert alert-danger">{{error}}</div>
-			<label class="control-label">Domain: </label>
-			<div>
-				<p class="form-control-static">{{domainName}}</p>
+			<div style="padding-top: 15px">
+				<p><b>Domain: </b>{{domainName}}</p>
 			</div>
 		</div>
 	</div>
 	<div class="nmaas-modal-footer">
 		<button type="button" class="btn btn-default" (click)="modal.hide()">Close</button>
-		<button type="button" class="btn btn-primary" (click)="create()">Deploy</button>
+		<button type="button" class="btn btn-primary" (click)="create()" [disabled]="instance_name.invalid">Deploy</button>
 	</div>
 <nmaas-modal>

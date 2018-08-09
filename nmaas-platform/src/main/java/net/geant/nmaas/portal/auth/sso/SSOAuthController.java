@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,24 @@ import java.util.Random;
 @RequestMapping("/api/auth/sso")
 public class SSOAuthController {
 
-	@Autowired
-	UserService users;
+	private UserService users;
+
+	private DomainService domains;
+
+	private SSOSettings ssoSettings;
+
+	private JWTTokenService jwtTokenService;
+
+	private ConfigurationManager configurationManager;
 
 	@Autowired
-	DomainService domains;
-
-	@Autowired
-	SSOSettings ssoSettings;
-
-	@Autowired
-	JWTTokenService jwtTokenService;
+	public SSOAuthController(UserService users, DomainService domains, SSOSettings ssoSettings, JWTTokenService jwtTokenService, ConfigurationManager configurationManager){
+		this.users = users;
+		this.domains = domains;
+		this.ssoSettings = ssoSettings;
+		this.jwtTokenService = jwtTokenService;
+		this.configurationManager = configurationManager;
+	}
 
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException {
@@ -79,6 +87,9 @@ public class SSOAuthController {
 		
 		if(!user.isEnabled())
 			throw new AuthenticationException("User is not active.");
+
+		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
+			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}

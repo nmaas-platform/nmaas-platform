@@ -29,6 +29,8 @@ export class DomainRoles {
 
 @Injectable()
 export class AuthService {
+  public loginUsingSsoService:boolean;
+
   constructor(private http: HttpClient, private appConfig: AppConfigService, private jwtHelper: JwtHelperService) {}
 
   private storeToken(token: string): void {
@@ -190,7 +192,7 @@ export class AuthService {
           console.debug('AUTH | Domains: ' + this.getDomains());
           console.debug('AUTH | Roles: ' + this.getRoles());
           console.debug('AUTH | DomainRoles: ' + this.getDomainRoles());
-          
+          this.loginUsingSsoService = false;
           return true;
         } else {
           // return false to indicate failed login
@@ -250,7 +252,7 @@ export class AuthService {
           console.debug('SSO AUTH | Domains: ' + this.getDomains());
           console.debug('SSO AUTH | Roles: ' + this.getRoles());
           console.debug('SSO AUTH | DomainRoles: ' + this.getDomainRoles());
-
+          this.loginUsingSsoService = true;
           return true;
         } else {
           // return false to indicate failed login
@@ -261,7 +263,7 @@ export class AuthService {
         console.debug('SSO login error: ' + error.error['message']);
           let message : string;
           if(error.error['message'])
-              message = error['status']+' - '+error.error['message'];
+              message = error.error['message'];
           else
               message = 'Server error';
 
