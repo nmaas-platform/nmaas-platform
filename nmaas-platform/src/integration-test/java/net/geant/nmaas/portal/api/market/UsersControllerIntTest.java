@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -24,7 +25,7 @@ import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -69,21 +70,28 @@ public class UsersControllerIntTest extends BaseControllerTest {
     public void testDisableUser() throws Exception {
         User user1 = userRepo.save(new User("user1", true, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
-        mvc.perform(put("/api/users/status/" + user1.getId() + "?enabled=false")
+        MvcResult result = mvc.perform(put("/api/users/status/" + user1.getId() + "?enabled=false")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isAccepted())
+                .andReturn();
+        String content = result.getResponse().getContentAsString();
+        assertEquals(content, "User user1 account has been deactivated by user manager with role ROLE_SUPERADMIN.");
     }
 
     @Test
     public void testEnableUser() throws Exception {
         User user1 = userRepo.save(new User("user1", false, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
-        mvc.perform(put("/api/users/status/" + user1.getId() + "?enabled=true")
+        MvcResult result =  mvc.perform(put("/api/users/status/" + user1.getId() + "?enabled=true")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isAccepted())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        assertEquals(content, "User user1 account has been activated by user manager with role ROLE_SUPERADMIN.");
     }
 }
