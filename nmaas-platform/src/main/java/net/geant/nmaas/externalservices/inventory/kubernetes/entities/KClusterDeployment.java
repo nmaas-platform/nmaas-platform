@@ -29,7 +29,6 @@ public class KClusterDeployment {
     private String defaultNamespace;
 
     /** Kubernetes default storage class to be used by PVCs */
-    @Column(nullable = false)
     private String defaultStorageClass;
 
     /** Flag indicating if a GitLab instance deployed within the cluster should be used for configuration storage */
