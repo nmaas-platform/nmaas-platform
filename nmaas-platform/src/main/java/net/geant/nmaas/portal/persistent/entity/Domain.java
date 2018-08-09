@@ -109,15 +109,15 @@ public class Domain {
 		return this.domainTechDetails;
 	}
 
-	public String getKubernetesNamespace(){
-		return this.domainTechDetails.getKubernetesNamespace();
-	}
-
 	public boolean isDcnConfigured(){
 		return this.domainTechDetails.isDcnConfigured();
 	}
 
-	public String getPersistentClass(){return this.domainTechDetails.getKubernetesStorageClass();}
+	public String getKubernetesNamespace(){
+		return this.domainTechDetails.getKubernetesNamespace();
+	}
+
+	public String getKubernetesStorageClass(){return this.domainTechDetails.getKubernetesStorageClass();}
 
 	@Override
 	public int hashCode() {
