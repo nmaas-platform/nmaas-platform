@@ -22,6 +22,9 @@ public class GitLab {
     private String server;
 
     @Column(nullable = false)
+    private String sshServer;
+
+    @Column(nullable = false)
     private String token;
 
     @Column(nullable = false)
@@ -44,6 +47,14 @@ public class GitLab {
 
     public void setServer(String server) {
         this.server = server;
+    }
+
+    public String getSshServer() {
+        return sshServer;
+    }
+
+    public void setSshServer(String sshServer) {
+        this.sshServer = sshServer;
     }
 
     public String getToken() {
