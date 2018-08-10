@@ -1,10 +1,12 @@
 package net.geant.nmaas.orchestration.tasks;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.*;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -44,7 +46,6 @@ public class AppRequestVerificationTaskTest {
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
-        appDeploymentSpec.setDockerContainerTemplate(oxidizedTemplate());
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);
         application = applications.save(application);
@@ -76,11 +77,4 @@ public class AppRequestVerificationTaskTest {
         assertTrue(10L == Long.valueOf(Identifier.newInstance("10").getValue()));
     }
 
-    private DockerContainerTemplate oxidizedTemplate() {
-        DockerContainerTemplate oxidizedTemplate = new DockerContainerTemplate("oxidized/oxidized:latest");
-        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
-        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
-        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
-        return oxidizedTemplate;
-    }
 }

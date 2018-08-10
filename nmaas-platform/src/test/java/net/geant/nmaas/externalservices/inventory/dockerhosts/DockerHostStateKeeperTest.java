@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.nullValue;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-engine.properties")
+@TestPropertySource("classpath:application-test-compose.properties")
 public class DockerHostStateKeeperTest {
 
     private static final String DOCKER_HOST_NAME_1 = "GN4-DOCKER-1";

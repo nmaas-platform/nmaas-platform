@@ -10,23 +10,9 @@
 	"issuesUrl": "https://github.com/ytti/oxidized/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_ENGINE",
 			"DOCKER_COMPOSE",
 			"KUBERNETES"
-		],
-		"dockerContainerTemplate": {
-			"image": "oxidized/oxidized:latest",
-			"exposedPort": {
-				"protocol": "TCP",
-				"targetPort": 8888
-			},
-			"envVariables": [
-				"CONFIG_RELOAD_INTERVAL=600"
-			],
-			"containerVolumes": [
-				"/root/.config/oxidized"
-			]
-		}
+		]
 	},
 	"configTemplate": {
 		"template": {

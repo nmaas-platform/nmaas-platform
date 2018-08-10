@@ -5,8 +5,9 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerH
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -16,7 +17,13 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.orchestration.tasks.app.*;
+import net.geant.nmaas.orchestration.tasks.app.AppConfigurationTask;
+import net.geant.nmaas.orchestration.tasks.app.AppDcnRequestOrVerificationTask;
+import net.geant.nmaas.orchestration.tasks.app.AppEnvironmentPreparationTask;
+import net.geant.nmaas.orchestration.tasks.app.AppRemovalTask;
+import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
+import net.geant.nmaas.orchestration.tasks.app.AppServiceDeploymentTask;
+import net.geant.nmaas.orchestration.tasks.app.AppServiceVerificationTask;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +37,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -40,7 +46,7 @@ import static org.hamcrest.Matchers.equalTo;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-engine.properties")
+@TestPropertySource("classpath:application-test-compose.properties")
 public class DefaultAppDeploymentMonitorTest {
 
     @MockBean
@@ -63,7 +69,7 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private AppDeploymentMonitor monitor;
     @Autowired
-    private DockerEngineServiceRepositoryManager nmServiceRepositoryManager;
+    private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
     @Autowired
     private ApplicationEventPublisher publisher;
     @Autowired
@@ -78,15 +84,12 @@ public class DefaultAppDeploymentMonitorTest {
     @Before
     public void setup() throws InvalidDeploymentIdException, UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
-        DockerNetworkIpam dockerNetworkIpam = new DockerNetworkIpam("10.10.0.0/24", "10.10.0.254");
-        DockerContainerNetDetails dockerContainerNetDetails = new DockerContainerNetDetails(8080, dockerNetworkIpam);
-        DockerContainerVolumesDetails dockerContainerVolumesDetails = new DockerContainerVolumesDetails("/home/directory");
-        DockerContainer dockerContainer = new DockerContainer();
-        dockerContainer.setNetworkDetails(dockerContainerNetDetails);
-        dockerContainer.setVolumesDetails(dockerContainerVolumesDetails);
-        DockerEngineNmServiceInfo nmServiceInfo = new DockerEngineNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, oxidizedTemplate());
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
         nmServiceRepositoryManager.storeService(nmServiceInfo);
-        nmServiceRepositoryManager.updateDockerContainer(deploymentId, dockerContainer);
+        DockerComposeService dockerComposeService = new DockerComposeService();
+        dockerComposeService.setAttachedVolumeName("testVolumeName");
+        dockerComposeService.setPublicPort(8080);
+        nmServiceRepositoryManager.updateDockerComposeService(deploymentId, dockerComposeService);
         nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
         appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME));
         repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
@@ -163,15 +166,6 @@ public class DefaultAppDeploymentMonitorTest {
     public void shouldBuildProperAccessDetails() throws InvalidAppStateException, InvalidDeploymentIdException {
         repository.updateState(deploymentId, AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         assertThat(monitor.userAccessDetails(deploymentId).getUrl(), equalTo("http://192.168.0.1:8080"));
-    }
-
-    public static DockerContainerTemplate oxidizedTemplate() {
-        DockerContainerTemplate oxidizedTemplate =
-                new DockerContainerTemplate("oxidized/oxidized:latest");
-        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
-        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
-        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
-        return oxidizedTemplate;
     }
 
     public static DockerHost dockerHost() throws UnknownHostException {
