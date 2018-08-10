@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostStateNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
 import org.junit.Before;

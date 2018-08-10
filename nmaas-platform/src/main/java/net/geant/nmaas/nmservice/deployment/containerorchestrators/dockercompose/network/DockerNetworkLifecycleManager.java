@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network;
 
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
@@ -6,8 +6,8 @@ import com.spotify.docker.client.exceptions.NetworkNotFoundException;
 import com.spotify.docker.client.messages.NetworkConfig;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network;
 
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
