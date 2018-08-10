@@ -1,27 +1,23 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
@@ -42,6 +38,7 @@ import net.geant.nmaas.portal.service.UserService;
 @RestController
 @RequestMapping("/api")
 public class UsersController {
+    private static final Logger log = LogManager.getLogger(UsersController.class);
 
 //	@Autowired
 //	UserRepository userRepo;
@@ -357,6 +354,27 @@ public class UsersController {
 			throw new MissingElementException(e.getMessage());
 		}
 	}
+
+    @PutMapping("/users/status/{userId}")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    public ResponseEntity<String> setEnabledFlag(@PathVariable Long userId,
+                                                 @RequestParam("enabled") boolean isEnabledFlag,
+                                                 Principal principal) throws MissingElementException{
+        users.setEnabledFlag(userId, isEnabledFlag);
+
+        net.geant.nmaas.portal.persistent.entity.User user =
+                users.findByUsername(principal.getName()).get();
+        List<Role> rolesList = user.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
+        List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+        String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
+        String message = String.format("User %s account has been %s by user %s with role %s.",
+                getUser(userId).getUsername(),
+                isEnabledFlag ? "activated" : "deactivated",
+                principal.getName(),
+                roleAsString);
+        log.info(message);
+        return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
+    }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
 		if(domains.getGlobalDomain().isPresent()){
