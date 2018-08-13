@@ -1,19 +1,20 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
 
 @Embeddable
 public class DomainTechDetails {
 
-    private String kubernetesNamespace;
-
     private boolean dcnConfigured;
 
-    public DomainTechDetails(String kubernetesNamespace, boolean dcnConfigured){
-        this.kubernetesNamespace = kubernetesNamespace;
+    private String kubernetesNamespace;
+
+    private String kubernetesStorageClass;
+
+    public DomainTechDetails(boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
         this.dcnConfigured = dcnConfigured;
+        this.kubernetesNamespace = kubernetesNamespace;
+        this.kubernetesStorageClass = kubernetesStorageClass;
     }
 
     public DomainTechDetails(){}
@@ -32,5 +33,13 @@ public class DomainTechDetails {
 
     public void setDcnConfigured(boolean dcnConfigured) {
         this.dcnConfigured = dcnConfigured;
+    }
+
+    public String getKubernetesStorageClass() {
+        return kubernetesStorageClass;
+    }
+
+    public void setKubernetesStorageClass(String kubernetesStorageClass) {
+        this.kubernetesStorageClass = kubernetesStorageClass;
     }
 }
