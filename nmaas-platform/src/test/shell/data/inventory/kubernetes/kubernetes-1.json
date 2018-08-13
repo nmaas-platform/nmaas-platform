@@ -24,7 +24,7 @@
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
     "defaultNamespace":"default",
     "defaultStorageClass":"nmaas-nfs-storage",
-    "useInClusterGitLabInstance":true
+    "useInClusterGitLabInstance":false
   },
   "attachPoint": {
     "routerName":"R3",
