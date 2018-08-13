@@ -10,11 +10,11 @@ public class DomainRequest {
 	@NotNull
 	private String codename;
 
-	@NotNull
+	private boolean dcnConfigured;
+
 	private String kubernetesNamespace;
 
-	@NotNull
-	private boolean dcnConfigured;
+	private String kubernetesStorageClass;
 	
 	private boolean active = true;
 	
@@ -59,6 +59,14 @@ public class DomainRequest {
 		this.active = active;
 	}
 
+	public boolean isDcnConfigured() {
+		return dcnConfigured;
+	}
+
+	public void setDcnConfigured(boolean dcnConfigured) {
+		this.dcnConfigured = dcnConfigured;
+	}
+
 	public String getKubernetesNamespace() {
 		return kubernetesNamespace;
 	}
@@ -67,11 +75,11 @@ public class DomainRequest {
 		this.kubernetesNamespace = kubernetesNamespace;
 	}
 
-	public boolean isDcnConfigured() {
-		return dcnConfigured;
+	public String getKubernetesStorageClass() {
+		return kubernetesStorageClass;
 	}
 
-	public void setDcnConfigured(boolean dcnConfigured) {
-		this.dcnConfigured = dcnConfigured;
+	public void setKubernetesStorageClass(String kubernetesStorageClass) {
+		this.kubernetesStorageClass = kubernetesStorageClass;
 	}
 }

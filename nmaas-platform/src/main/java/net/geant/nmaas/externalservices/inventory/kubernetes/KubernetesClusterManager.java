@@ -143,7 +143,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
             case USE_DEFAULT_NAMESPACE:
                 return clusterDeployment.getDefaultNamespace();
             case USE_DOMAIN_NAMESPACE:
-                Optional<Domain> foundDomain = this.domainService.findDomain(domain);
+                Optional<Domain> foundDomain = this.domainService.findDomainByCodename(domain);
                 if(foundDomain.isPresent()){
                     return foundDomain.get().getKubernetesNamespace();
                 }
@@ -152,8 +152,12 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public String getDefaultPersistenceClass() {
-        return loadSingleCluster().getDeployment().getDefaultPersistenceClass();
+    public String getStorageClass(String domain) {
+        Optional <Domain> foundDomain = domainService.findDomainByCodename(domain);
+        if(foundDomain.isPresent() && foundDomain.get().getKubernetesStorageClass() != null && !foundDomain.get().getKubernetesStorageClass().isEmpty()){
+            return foundDomain.get().getKubernetesStorageClass();
+        }
+        return loadSingleCluster().getDeployment().getDefaultStorageClass();
     }
 
     @Override

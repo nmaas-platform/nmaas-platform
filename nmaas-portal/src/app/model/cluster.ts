@@ -20,7 +20,7 @@ class ClusterAttachPoint {
 
 class ClusterDeployment {
     public defaultNamespace: string="";
-    public defaultPersistenceClass: string="";
+    public defaultStorageClass: string="";
     public id: number;
     public namespaceConfigOption: string;
     public useInClusterGitLabInstance: boolean = false;
