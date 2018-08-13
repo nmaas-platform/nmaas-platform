@@ -1,13 +1,13 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Embedded;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -58,21 +58,21 @@ public class Domain {
 		this.active = active;
 	}
 
-	public Domain(String name, String codename, String kubernetesNamespace, boolean dcnConfigured){
-		this(name,codename);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	public Domain(String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
+		this(name, codename);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
 	}
 
-	public Domain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) {
-		this(name,codename,active);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+		this(name, codename, active);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
 	}
 
-	public Domain(Long id, String name, String codename, String kubernetesNamespace, boolean dcnConfigured) {
-		this(id,name,codename);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+		this(id, name, codename);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -109,13 +109,15 @@ public class Domain {
 		return this.domainTechDetails;
 	}
 
+	public boolean isDcnConfigured(){
+		return this.domainTechDetails.isDcnConfigured();
+	}
+
 	public String getKubernetesNamespace(){
 		return this.domainTechDetails.getKubernetesNamespace();
 	}
 
-	public boolean isDcnConfigured(){
-		return this.domainTechDetails.isDcnConfigured();
-	}
+	public String getKubernetesStorageClass(){return this.domainTechDetails.getKubernetesStorageClass();}
 
 	@Override
 	public int hashCode() {

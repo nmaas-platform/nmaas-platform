@@ -78,7 +78,7 @@ public class KubernetesClusterManagerRestControllerTest {
                     "\"deployment\": {" +
                         "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
                         "\"defaultNamespace\":\"testNamespace\"," +
-                        "\"defaultPersistenceClass\":\"persistenceClass\"," +
+                        "\"defaultStorageClass\":\"storageClass\"," +
                         "\"useInClusterGitLabInstance\":\"false\"" +
                     "}," +
                     "\"attachPoint\":{" +
@@ -261,7 +261,7 @@ public class KubernetesClusterManagerRestControllerTest {
         KClusterDeployment deployment = new KClusterDeployment();
         deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("testNamespace");
-        deployment.setDefaultPersistenceClass("persistenceClass");
+        deployment.setDefaultStorageClass("storageClass");
         deployment.setUseInClusterGitLabInstance(false);
         cluster.setDeployment(deployment);
         KClusterAttachPoint attachPoint = new KClusterAttachPoint();

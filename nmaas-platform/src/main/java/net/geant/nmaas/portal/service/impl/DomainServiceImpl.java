@@ -1,19 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -24,6 +10,18 @@ import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DomainServiceImpl implements DomainService {
@@ -92,11 +90,11 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public Domain createDomain(String name, String codename, boolean active) throws ProcessingException{
-		return createDomain(name, codename, active, "", false);
+		return createDomain(name, codename, active, false, null, null);
 	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) throws ProcessingException {
+	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) throws ProcessingException {
 		checkParam(name);
 		checkParam(codename);
 
@@ -106,7 +104,7 @@ public class DomainServiceImpl implements DomainService {
 				.orElseThrow(() -> new ProcessingException("Domain codename is not valid")); 
 		
 		try {
-			return domainRepo.save(new Domain(name, codename, active, kubernetesNamespace, dcnConfigured));
+			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
