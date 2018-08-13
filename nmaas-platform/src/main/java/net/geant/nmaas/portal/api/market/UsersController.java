@@ -174,7 +174,9 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
-	public void removeUserRole(@PathVariable Long userId, @RequestBody UserRole userRole) throws ProcessingException, MissingElementException {
+	public void removeUserRole(@PathVariable final Long userId,
+                               @RequestBody final UserRole userRole,
+                               final Principal principal) throws ProcessingException, MissingElementException {
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
 
@@ -188,6 +190,18 @@ public class UsersController {
 
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
+
+            final net.geant.nmaas.portal.persistent.entity.User adminUser =
+                    users.findByUsername(principal.getName()).get();
+            final List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
+            final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+            final String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
+            log.info(String.format("Admin user - %s with role - %s, has added a role of user - %s.",
+                    principal.getName(),
+                    roleAsString,
+                    user.getUsername()
+            ));
+
 			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
@@ -305,7 +319,10 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
-	public void addUserRole(@PathVariable Long domainId, @PathVariable Long userId, @RequestBody UserRole userRole) throws ProcessingException, MissingElementException {
+	public void addUserRole(@PathVariable final Long domainId,
+							@PathVariable final Long userId,
+							@RequestBody final UserRole userRole,
+							final Principal principal) throws ProcessingException, MissingElementException {
 
 		if(userRole == null)
 			throw new MissingElementException("Empty request");
@@ -317,8 +334,8 @@ public class UsersController {
 		if(!domainId.equals(userRole.getDomainId()))
 			throw new ProcessingException("Invalid request domain");
 								
-		Domain domain = getDomain(domainId);
-		Domain globalDomain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
+		final Domain domain = getDomain(domainId);
+		final Domain globalDomain = domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
 		if(domain.equals(globalDomain)) {
 			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
@@ -328,10 +345,22 @@ public class UsersController {
 				throw new ProcessingException("Role cannot be assigned.");
 		}
 			
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
+		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
 
 		try {
 			domains.addMemberRole(domain.getId(), user.getId(), role);
+
+            final net.geant.nmaas.portal.persistent.entity.User adminUser =
+                    users.findByUsername(principal.getName()).get();
+            final List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
+            final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+            final String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
+
+            log.info(String.format("Admin user - %s with role - %s, has added a role of user - %s.",
+                    principal.getName(),
+                    roleAsString,
+                    user.getUsername()
+            ));
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}		
@@ -341,14 +370,30 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
-	public void removeUserRole(@PathVariable Long domainId, @PathVariable Long userId, @PathVariable String userRole) throws ProcessingException, MissingElementException {
-		Role role = convertRole(userRole);
+	public void removeUserRole(@PathVariable final Long domainId,
+                                                  @PathVariable final Long userId,
+                                                  @PathVariable final String userRole,
+                                                  final Principal principal) throws ProcessingException, MissingElementException {
+		final Role role = convertRole(userRole);
 
-		Domain domain = getDomain(domainId);
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
+		final Domain domain = getDomain(domainId);
+		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
 				
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), role);
+
+            final net.geant.nmaas.portal.persistent.entity.User adminUser =
+                    users.findByUsername(principal.getName()).get();
+            final List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
+            final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+            final String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
+
+            log.info(String.format("Admin user - %s with domainId - %s, role - %s, has removed a role of user - %s.",
+                    principal.getName(),
+                    domainId,
+                    roleAsString,
+                    user.getUsername()
+            ));
 			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());

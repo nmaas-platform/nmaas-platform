@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.exception;
 
-public class MarketException extends Exception {
+public class MarketException extends RuntimeException {
 
 	public MarketException() {
 		super();
