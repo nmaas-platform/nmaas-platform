@@ -3,8 +3,6 @@ package net.geant.nmaas.nmservice.deployment;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

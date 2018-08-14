@@ -62,7 +62,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
         try {
             switch(dcnRepositoryManager.loadCurrentState(domain)){
                 case REQUEST_VERIFIED:
-                    notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYED);
+                    notifyStateChangeListeners(domain, DcnDeploymentState.WAITING_FOR_OPERATOR_CONFIRMATION);
                     break;
                 default:
                     throw new CouldNotDeployDcnException("Exception during DCN deploy. Trying to deploy DCN with state: " + dcnRepositoryManager.loadCurrentState(domain).toString());
