@@ -1,22 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -58,15 +41,12 @@ public class DomainServiceImpl implements DomainService {
 
 	UserRoleRepository userRoleRepo;
 
-	ApplicationEventPublisher eventPublisher;
-
 	@Autowired
-	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, ApplicationEventPublisher eventPublisher){
+	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo){
 		this.validator = validator;
 		this.domainRepo = domainRepo;
 		this.users = users;
 		this.userRoleRepo = userRoleRepo;
-		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -195,8 +175,6 @@ public class DomainServiceImpl implements DomainService {
 		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
 	}
 
-	
-	
 	@Override
 	public void removeMemberRole(Long domainId, Long userId, Role role) throws ObjectNotFoundException {
 		checkParams(domainId, userId);
@@ -219,7 +197,6 @@ public class DomainServiceImpl implements DomainService {
 		
 		userRoleRepo.deleteBy(user, domain);		
 	}
-	
 
 	@Override
 	public Set<Role> getMemberRoles(Long domainId, Long userId) throws ObjectNotFoundException {
