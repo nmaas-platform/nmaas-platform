@@ -32,8 +32,6 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 
-import javax.swing.text.html.Option;
-
 @RestController
 @RequestMapping("/api")
 public class UsersController {
