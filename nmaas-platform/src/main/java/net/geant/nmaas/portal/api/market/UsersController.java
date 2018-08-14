@@ -1,21 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.security.Principal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
@@ -31,16 +15,38 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.swing.text.html.Option;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class UsersController {
     private static final Logger log = LogManager.getLogger(UsersController.class);
-
-//	@Autowired
-//	UserRepository userRepo;
 
 	@Autowired
 	UserService users;
@@ -53,9 +59,7 @@ public class UsersController {
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
-	
-	
+
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<User> getUsers(Pageable pageable) {
@@ -194,12 +198,11 @@ public class UsersController {
                     users.findByUsername(principal.getName()).get();
 
             final String adminRoles = getRoleInString(adminUser.getRoles());
-            final String usersRoles = getRoleInString(user.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
                     adminRoles,
-                    usersRoles,
+					userRole.getRole().authority(),
                     user.getUsername(),
                     userRole.getDomainId()));
 
@@ -355,7 +358,7 @@ public class UsersController {
                     users.findByUsername(principal.getName()).get();
             final String adminRoles = getRoleInString(adminUser.getRoles());
 
-            log.info(String.format("Admin user - %s with role - %s, has added a role - %s to user name - %s. The domain id is - %d.",
+            log.info(String.format("Admin user name - %s with role - %s, has added a role - %s to user name - %s. The domain id is - %d.",
                     principal.getName(),
                     adminRoles,
                     userRole.getRole().authority(),
@@ -387,12 +390,11 @@ public class UsersController {
                     users.findByUsername(principal.getName()).get();
 
             final String adminRoles = getRoleInString(adminUser.getRoles());
-            final String usersRoles = getRoleInString(user.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
                     adminRoles,
-                    usersRoles,
+					role.authority(),
                     user.getUsername(),
                     domainId));
 			addGlobalGuestUserRoleIfMissing(userId);
