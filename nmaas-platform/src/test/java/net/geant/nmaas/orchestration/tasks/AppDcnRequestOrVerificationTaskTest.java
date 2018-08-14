@@ -7,8 +7,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerPortForwarding;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
@@ -39,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-engine.properties")
+@TestPropertySource("classpath:application-test-compose.properties")
 public class AppDcnRequestOrVerificationTaskTest {
 
     @Autowired
@@ -61,8 +59,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     @Before
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_ENGINE));
-        appDeploymentSpec.setDockerContainerTemplate(oxidizedTemplate());
+        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);
         application = applications.save(application);
@@ -104,14 +101,6 @@ public class AppDcnRequestOrVerificationTaskTest {
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", DOMAIN)));
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(nullValue()));
-    }
-
-    private DockerContainerTemplate oxidizedTemplate() {
-        DockerContainerTemplate oxidizedTemplate = new DockerContainerTemplate("oxidized/oxidized:latest");
-        oxidizedTemplate.setEnvVariables(Arrays.asList("CONFIG_RELOAD_INTERVAL=600"));
-        oxidizedTemplate.setExposedPort(new DockerContainerPortForwarding(DockerContainerPortForwarding.Protocol.TCP, 8888));
-        oxidizedTemplate.setContainerVolumes(Arrays.asList("/root/.config/oxidized"));
-        return oxidizedTemplate;
     }
 
 }

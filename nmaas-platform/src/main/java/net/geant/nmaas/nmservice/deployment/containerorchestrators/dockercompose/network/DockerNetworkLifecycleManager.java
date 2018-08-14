@@ -1,19 +1,20 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network;
 
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
 import com.spotify.docker.client.exceptions.NetworkNotFoundException;
-import com.spotify.docker.client.messages.EndpointConfig;
 import com.spotify.docker.client.messages.NetworkConfig;
-import com.spotify.docker.client.messages.NetworkConnection;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotCreateContainerNetworkException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveContainerNetworkException;
+import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
+import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkDetailsVerificationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -127,57 +128,6 @@ public class DockerNetworkLifecycleManager {
             throws DockerNetworkCheckFailedException, DockerException, InterruptedException {
         if (dockerApiClient.listNetworks(apiUrl).stream().noneMatch(id -> id.equals(networkId)))
             throw new DockerNetworkCheckFailedException("Network with given id " + networkId + " not exists on Docker Host");
-    }
-
-    public void connectContainerToNetwork(String domain, DockerContainer container)
-            throws CouldNotConnectContainerToNetworkException, ContainerOrchestratorInternalErrorException {
-        DockerHostNetwork network = null;
-        try {
-            network = repositoryManager.loadNetwork(domain);
-            executeConnectContainerToNetwork(network.getDeploymentId(), container, network.getHost().apiUrl());
-        } catch (DockerTimeoutException dockerTimeoutException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
-        } catch (DockerException dockerException) {
-            throw new CouldNotConnectContainerToNetworkException(
-                    "Could not connect container " + container.getDeploymentId() + " to network " + network.getDeploymentId() + " -> " + dockerException.getMessage(), dockerException);
-        } catch (InterruptedException interruptedException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Internal error -> " + interruptedException.getMessage(), interruptedException);
-        } catch (InvalidDomainException invalidDomainException) {
-            throw new ContainerOrchestratorInternalErrorException(invalidDomainException.getMessage());
-        }
-    }
-
-    private void executeConnectContainerToNetwork(String networkId, DockerContainer container, String apiUrl)
-            throws DockerException, InterruptedException {
-        String containerIpAddress = container.getNetworkDetails().getIpam().getIpAddressOfContainer();
-        final EndpointConfig endpointConfig =
-                EndpointConfig.builder()
-                        .ipamConfig(
-                                EndpointConfig.EndpointIpamConfig.builder()
-                                        .ipv4Address(containerIpAddress)
-                                        .build())
-                        .build();
-        final NetworkConnection networkConnection =
-                NetworkConnection.builder()
-                        .containerId(container.getDeploymentId())
-                        .endpointConfig(endpointConfig)
-                        .build();
-        dockerApiClient.connectToNetwork(apiUrl, networkId, networkConnection);
-    }
-
-    /**
-     * Removes the given container from the list of containers attached to given client's domain network.
-     * No action is triggered on the Docker Host. It is assumed that the container has been already removed
-     * from the Docker Host and thus not attached to the network anymore.
-     *
-     * @param domain Name of the client domain
-     * @param container Container being disconnected
-     * @throws ContainerOrchestratorInternalErrorException if network for given domain not found in repository
-     */
-    public void disconnectContainerFromNetwork(String domain, DockerContainer container)
-            throws ContainerOrchestratorInternalErrorException {
     }
 
     public void removeNetwork(String domain)

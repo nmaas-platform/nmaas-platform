@@ -15,7 +15,7 @@ import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;

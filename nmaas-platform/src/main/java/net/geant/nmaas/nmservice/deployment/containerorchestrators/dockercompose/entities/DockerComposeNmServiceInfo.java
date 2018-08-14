@@ -1,11 +1,13 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 /**
@@ -14,8 +16,21 @@ import javax.persistence.OneToOne;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
-public class DockerComposeNmServiceInfo extends DockerNmServiceInfo {
+public class DockerComposeNmServiceInfo extends NmServiceInfo {
 
+    /**
+     * Target deployment Docker Host on which this service will be or was deployed.
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    private DockerHost host;
+
+    public DockerHost getHost() {
+        return host;
+    }
+
+    public void setHost(DockerHost host) {
+        this.host = host;
+    }
     /**
      * Docker compose file template for this service.
      */

@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
 import javax.persistence.*;
 

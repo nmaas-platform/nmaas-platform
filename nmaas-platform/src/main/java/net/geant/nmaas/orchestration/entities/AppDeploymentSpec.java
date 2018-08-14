@@ -1,16 +1,23 @@
 package net.geant.nmaas.orchestration.entities;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
- * {@link AppDeploymentEnv} and all required templates ({@link DockerContainerTemplate}, {@link DockerComposeFileTemplate}
+ * {@link AppDeploymentEnv} and all required templates {@link DockerComposeFileTemplate}
  * and/or {@link KubernetesTemplate}) according to the supported deployment environments.
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -25,9 +32,6 @@ public class AppDeploymentSpec implements Serializable {
     @ElementCollection(targetClass = AppDeploymentEnv.class)
     @Enumerated(EnumType.STRING)
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DockerContainerTemplate dockerContainerTemplate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DockerComposeFileTemplate dockerComposeFileTemplate;
@@ -49,14 +53,6 @@ public class AppDeploymentSpec implements Serializable {
 
     public void setSupportedDeploymentEnvironments(List<AppDeploymentEnv> supportedDeploymentEnvironments) {
         this.supportedDeploymentEnvironments = supportedDeploymentEnvironments;
-    }
-
-    public DockerContainerTemplate getDockerContainerTemplate() {
-        return dockerContainerTemplate;
-    }
-
-    public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
-        this.dockerContainerTemplate = dockerContainerTemplate;
     }
 
     public DockerComposeFileTemplate getDockerComposeFileTemplate() {

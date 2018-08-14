@@ -5,6 +5,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Profile("env_kubernetes")
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class KubernetesRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
