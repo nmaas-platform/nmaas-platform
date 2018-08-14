@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +31,8 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+
+import javax.swing.text.html.Option;
 
 @RestController
 @RequestMapping("/api")
@@ -193,14 +192,16 @@ public class UsersController {
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     users.findByUsername(principal.getName()).get();
-            final List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
-            final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-            final String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
-            log.info(String.format("Admin user - %s with role - %s, has added a role of user - %s.",
+
+            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String usersRoles = getRoleInString(user.getRoles());
+
+            log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
-                    roleAsString,
-                    user.getUsername()
-            ));
+                    adminRoles,
+                    usersRoles,
+                    user.getUsername(),
+                    userRole.getDomainId()));
 
 			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
@@ -352,14 +353,14 @@ public class UsersController {
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     users.findByUsername(principal.getName()).get();
-            final List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
-            final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-            final String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
+            final String adminRoles = getRoleInString(adminUser.getRoles());
 
-            log.info(String.format("Admin user - %s with role - %s, has added a role of user - %s.",
+            log.info(String.format("Admin user - %s with role - %s, has added a role - %s to user name - %s. The domain id is - %d.",
                     principal.getName(),
-                    roleAsString,
-                    user.getUsername()
+                    adminRoles,
+                    userRole.getRole().authority(),
+                    user.getUsername(),
+                    domain.getId()
             ));
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
@@ -370,30 +371,30 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
-	public void removeUserRole(@PathVariable final Long domainId,
+	public void removeUserRole(@PathVariable final long domainId,
                                                   @PathVariable final Long userId,
                                                   @PathVariable final String userRole,
                                                   final Principal principal) throws ProcessingException, MissingElementException {
 		final Role role = convertRole(userRole);
 
-		final Domain domain = getDomain(domainId);
-		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
+		final Domain domain = Optional.of(getDomain(domainId)).orElseThrow(() -> new MissingElementException("Domain not found"));
+		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 				
 		try {
 			domains.removeMemberRole(domain.getId(), user.getId(), role);
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     users.findByUsername(principal.getName()).get();
-            final List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
-            final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-            final String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
 
-            log.info(String.format("Admin user - %s with domainId - %s, role - %s, has removed a role of user - %s.",
+            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String usersRoles = getRoleInString(user.getRoles());
+
+            log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
-                    domainId,
-                    roleAsString,
-                    user.getUsername()
-            ));
+                    adminRoles,
+                    usersRoles,
+                    user.getUsername(),
+                    domainId));
 			addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
@@ -451,5 +452,11 @@ public class UsersController {
 	protected net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) throws MissingElementException {
 		return users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 	}
+
+	private String getRoleInString(List<net.geant.nmaas.portal.persistent.entity.UserRole> roles){
+        final List<Role> rolesList = roles.stream().map(x-> x.getRole()).collect(Collectors.toList());
+        final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+        return rolesAsStringList.stream().collect(Collectors.joining(","));
+    }
 }
 
