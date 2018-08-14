@@ -25,12 +25,11 @@ public class KClusterDeployment {
     @Column(nullable = false)
     private NamespaceConfigOption namespaceConfigOption;
 
-    /** Kubernetes namespace for NMaaS deployments */
+    /** Kubernetes default namespace for NMaaS deployments */
     private String defaultNamespace;
 
-    /** Kubernetes persistence storage class to be used by PVCs */
-    @Column(nullable = false)
-    private String defaultPersistenceClass;
+    /** Kubernetes default storage class to be used by PVCs */
+    private String defaultStorageClass;
 
     /** Flag indicating if a GitLab instance deployed within the cluster should be used for configuration storage */
     @Column(nullable = false)
@@ -60,12 +59,12 @@ public class KClusterDeployment {
         this.defaultNamespace = defaultNamespace;
     }
 
-    public String getDefaultPersistenceClass() {
-        return defaultPersistenceClass;
+    public String getDefaultStorageClass() {
+        return defaultStorageClass;
     }
 
-    public void setDefaultPersistenceClass(String defaultPersistenceClass) {
-        this.defaultPersistenceClass = defaultPersistenceClass;
+    public void setDefaultStorageClass(String defaultStorageClass) {
+        this.defaultStorageClass = defaultStorageClass;
     }
 
     public Boolean getUseInClusterGitLabInstance() {

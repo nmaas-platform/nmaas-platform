@@ -1,9 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
+import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerNmServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.context.annotation.Profile;
@@ -13,13 +13,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("env_docker-compose")
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class DockerComposeServiceRepositoryManager extends DockerServiceRepositoryManager<DockerComposeNmServiceInfo> implements DockerNmServiceRepositoryManager {
+public class DockerComposeServiceRepositoryManager extends NmServiceRepositoryManager<DockerComposeNmServiceInfo> implements DockerNmServiceRepositoryManager {
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDockerHost(Identifier deploymentId, DockerHost host) throws InvalidDeploymentIdException {
+        DockerComposeNmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        nmServiceInfo.setHost(host);
+        repository.save(nmServiceInfo);
+    }
+
+    public DockerHost loadDockerHost(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId)).getHost();
+    }
+
+    public List<DockerComposeNmServiceInfo> loadAllRunningServicesInDomain(String domain) {
+        return repository.findAllByDomain(domain).stream().filter(service -> service.getState().isRunning()).collect(Collectors.toList());
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateDockerComposeService(Identifier deploymentId, DockerComposeService dockerComposeService) throws InvalidDeploymentIdException {
