@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"env_docker-engine", "dcn_manual", "conf_repo"})
+@ActiveProfiles({"env_docker-compose", "dcn_manual", "conf_repo"})
 public class ManualDcnDeploymentExecutorWorkflowTest {
 
     @Autowired

@@ -8,8 +8,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkLifecycleManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerNetworkLifecycleManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerNetworkResourceManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.*;

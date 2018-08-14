@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerHostNetworkRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;

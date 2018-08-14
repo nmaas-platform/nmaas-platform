@@ -51,7 +51,7 @@ public class ServiceDeploymentWithKubernetesTest {
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE, AppDeploymentEnv.DOCKER_ENGINE));
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
 	}

@@ -21,11 +21,10 @@
     "tlsSupported":false
   },
   "deployment": {
-    "useDefaultNamespace":true,
-    "defaultNamespace":"default",
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
-    "defaultPersistenceClass":"nmaas-nfs-storage",
-    "useInClusterGitLabInstance":true
+    "defaultNamespace":"default",
+    "defaultStorageClass":"nmaas-nfs-storage",
+    "useInClusterGitLabInstance":false
   },
   "attachPoint": {
     "routerName":"R3",

@@ -49,6 +49,14 @@
 			</div>
 		</div>
 
+        <div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+            <label for="kubernetesStorageClass" class="col-sm-2 control-label">Kubernetes storage class:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesStorageClass"
+                       name="kubernetesStorageClass" [(ngModel)]="domain.kubernetesStorageClass">
+            </div>
+        </div>
+
 		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.CREATE)">
 			<label for="dcnConfigured" class="col-sm-2 control-label">dcn Configured:</label>
 			<div class="col-sm-10">

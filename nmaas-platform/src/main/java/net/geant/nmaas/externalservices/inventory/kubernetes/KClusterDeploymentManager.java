@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.inventory.kubernetes;
 
 public interface KClusterDeploymentManager {
 
-    String getDefaultPersistenceClass();
+    String getStorageClass(String domain);
 
     Boolean getUseInClusterGitLabInstance();
 

@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import net.geant.nmaas.portal.PersistentConfig;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,11 +18,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.PortalConfig;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,7 +47,6 @@ public class ApplicationSubscriptionRepositoryTest {
 	Domain domain1, domain2, domain3;
 	ApplicationSubscription appSub1, appSub2, appSub3;
 	
-	
 	@Before
 	public void setUp() {
 
@@ -58,9 +55,9 @@ public class ApplicationSubscriptionRepositoryTest {
 		app3 = appRepo.save(new Application("APP3"));
 		appRepo.flush();
 
-		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1","testnamespace",false));
-		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2","testnamespace",false));
-		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3","testnamespace",false));
+		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false,"testnamespace","teststorageclass"));
+		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2",false,"testnamespace","teststorageclass"));
+		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3",false,"testnamespace","teststorageclass"));
 		domainRepo.flush();
 		
 		appSub1 = appSubRepo.save(new ApplicationSubscription(domain1, app1, true));

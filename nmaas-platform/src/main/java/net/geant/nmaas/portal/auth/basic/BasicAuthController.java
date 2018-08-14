@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,8 +24,8 @@ import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.UserService;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @RestController
 @RequestMapping("/api/auth/basic")
@@ -32,21 +33,27 @@ public class BasicAuthController {
     private static final Logger log = LogManager.getLogger(BasicAuthController.class);
 	
 	@Autowired
-	UserService users;
+	private UserService users;
 	
 	@Autowired
-    DomainService domains;
+    private DomainService domains;
 	
 	@Autowired
-	PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 	
 	@Autowired
-	JWTTokenService jwtTokenService;
+    private JWTTokenService jwtTokenService;
+
+    @Autowired
+    private ConfigurationManager configurationManager;
 	
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
         validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled());
+
+        if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
+            throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
 
         log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
                 user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));

@@ -27,6 +27,18 @@ import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DomainServiceImpl implements DomainService {
@@ -34,16 +46,16 @@ public class DomainServiceImpl implements DomainService {
 	public interface CodenameValidator {
 		boolean valid(String codename);
 	}
-	
+
 	CodenameValidator validator;
 	
 	@Value("${domain.global:GLOBAL}")
 	String GLOBAL_DOMAIN;
-	
+
 	DomainRepository domainRepo;
-	
+
 	UserService users;
-	
+
 	UserRoleRepository userRoleRepo;
 
 	ApplicationEventPublisher eventPublisher;
@@ -56,7 +68,7 @@ public class DomainServiceImpl implements DomainService {
 		this.userRoleRepo = userRoleRepo;
 		this.eventPublisher = eventPublisher;
 	}
-	
+
 	@Override
 	public List<Domain> getDomains() {		
 		return domainRepo.findAll();
@@ -102,11 +114,11 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public Domain createDomain(String name, String codename, boolean active) throws ProcessingException{
-		return createDomain(name, codename, active, "", false);
+		return createDomain(name, codename, active, false, null, null);
 	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) throws ProcessingException {
+	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) throws ProcessingException {
 		checkParam(name);
 		checkParam(codename);
 
@@ -116,7 +128,7 @@ public class DomainServiceImpl implements DomainService {
 				.orElseThrow(() -> new ProcessingException("Domain codename is not valid")); 
 		
 		try {
-			return domainRepo.save(new Domain(name, codename, active, kubernetesNamespace, dcnConfigured));
+			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
