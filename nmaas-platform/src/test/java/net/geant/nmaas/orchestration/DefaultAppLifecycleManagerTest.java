@@ -38,6 +38,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldGenerateProperIdentifier() {
+        when(appDepRepositoryManager.load(Matchers.any())).thenReturn(Optional.empty());
         Identifier id = appLifecycleManager.generateDeploymentId();
         assertThat(id.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?"), is(true));
     }
