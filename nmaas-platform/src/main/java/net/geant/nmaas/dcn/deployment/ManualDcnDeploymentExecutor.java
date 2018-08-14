@@ -60,6 +60,8 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
     @Loggable(LogLevel.INFO)
     public void deployDcn(String domain) throws CouldNotDeployDcnException {
         try {
+            // needs to wait for DCN state change in database
+            Thread.sleep(200);
             switch(dcnRepositoryManager.loadCurrentState(domain)){
                 case REQUEST_VERIFIED:
                     notifyStateChangeListeners(domain, DcnDeploymentState.WAITING_FOR_OPERATOR_CONFIRMATION);
@@ -67,7 +69,8 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
                 default:
                     throw new CouldNotDeployDcnException("Exception during DCN deploy. Trying to deploy DCN with state: " + dcnRepositoryManager.loadCurrentState(domain).toString());
             }
-        } catch (InvalidDomainException e){
+        } catch (InvalidDomainException
+                | InterruptedException e){
             throw new CouldNotDeployDcnException("Exception during DCN deploy " + e.getMessage());
         }
     }
