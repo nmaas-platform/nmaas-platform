@@ -2,11 +2,15 @@ package net.geant.nmaas.portal.api.market;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import net.geant.nmaas.portal.BaseControllerTest;
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -142,6 +143,23 @@ public class UsersControllerTest extends BaseControllerTest {
 		} catch(Exception ex) {
 			
 		}
+	}
+
+	@Test
+	public void testGetRolesAsString(){
+	    Role role1 = Role.ROLE_USER;
+        Role role2 = Role.ROLE_SUPERADMIN;
+        Role role3 = Role.ROLE_DOMAIN_ADMIN;
+		UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), role1);
+        UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), role2);
+        UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), role3);
+
+        List<UserRole> userRoles = new ArrayList<>();
+        userRoles.add(userRole1);
+        userRoles.add(userRole2);
+        userRoles.add(userRole3);
+
+        assertEquals("ROLE_USER, ROLE_SUPERADMIN, ROLE_DOMAIN_ADMIN", userController.getRolesAsString(userRoles));
 	}
 
 }

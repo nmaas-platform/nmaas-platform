@@ -197,7 +197,7 @@ public class UsersController {
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     users.findByUsername(principal.getName()).get();
 
-            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String adminRoles = getRolesAsString(adminUser.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
@@ -356,7 +356,7 @@ public class UsersController {
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     users.findByUsername(principal.getName()).get();
-            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String adminRoles = getRolesAsString(adminUser.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has added a role - %s to user name - %s. The domain id is - %d.",
                     principal.getName(),
@@ -389,7 +389,7 @@ public class UsersController {
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     users.findByUsername(principal.getName()).get();
 
-            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String adminRoles = getRolesAsString(adminUser.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
@@ -455,10 +455,10 @@ public class UsersController {
 		return users.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 	}
 
-	private String getRoleInString(List<net.geant.nmaas.portal.persistent.entity.UserRole> roles){
+	protected String getRolesAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> roles){
         final List<Role> rolesList = roles.stream().map(x-> x.getRole()).collect(Collectors.toList());
         final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-        return rolesAsStringList.stream().collect(Collectors.joining(","));
+        return rolesAsStringList.stream().collect(Collectors.joining(", "));
     }
 }
 
