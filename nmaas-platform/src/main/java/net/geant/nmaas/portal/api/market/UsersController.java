@@ -109,12 +109,12 @@ public class UsersController {
 		return modelMapper.map(user, User.class);
 	}
 
-    @PutMapping(value="/users/{userId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @Transactional
-    public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) throws ProcessingException, MissingElementException {
-        net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
+	@PutMapping(value="/users/{userId}")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@Transactional
+	public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) throws ProcessingException, MissingElementException {
+		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
 
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
         final net.geant.nmaas.portal.persistent.entity.User adminUser =
@@ -122,55 +122,54 @@ public class UsersController {
         final String adminRoles = getRoleAsString(adminUser.getRoles());
         final String userRoles = getRoleAsString(userDetails.getRoles());
 
-        if(userRequest.getUsername() != null && !userDetails.getUsername().equals(userRequest.getUsername())) {
-            if(userService.existsByUsername(userRequest.getUsername()))
-                throw new ProcessingException("Unable to change username.");
-            userDetails.setUsername(userRequest.getUsername());
-        }
+		if(userRequest.getUsername() != null && !userDetails.getUsername().equals(userRequest.getUsername())) {
+			if(userService.existsByUsername(userRequest.getUsername()))
+				throw new ProcessingException("Unable to change username.");
 
-        if(userRequest.getPassword() != null)
-            userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+			userDetails.setUsername(userRequest.getUsername());
+		}
 
-        if(userRequest.getFirstname() != null)
-            userDetails.setFirstname(userRequest.getFirstname());
-        if(userRequest.getLastname() != null)
-            userDetails.setLastname(userRequest.getLastname());
-        if(userRequest.getEmail() != null)
-            userDetails.setEmail(userRequest.getEmail());
-        userDetails.setEnabled(userRequest.isEnabled());
-        if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
-            userDetails.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
-        try {
+		if(userRequest.getPassword() != null)
+			userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+
+		if(userRequest.getFirstname() != null)
+			userDetails.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			userDetails.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null)
+			userDetails.setEmail(userRequest.getEmail());
+		userDetails.setEnabled(userRequest.isEnabled());
+		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
+			userDetails.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
+		try {
             userService.update(userDetails);
-        } catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-            throw new ProcessingException("Unable to modify user");
-        }
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to modify user");
+		}
 
 
-        if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
-            Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
-                    .map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
-                            userDetails,
-                            domains.findDomain(ur.getDomainId()).get(),
-                            ur.getRole()))
-                    .collect(Collectors.toSet());
+		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
+			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
+					.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
+							userDetails,
+							domains.findDomain(ur.getDomainId()).get(),
+							ur.getRole()))
+					.collect(Collectors.toSet());
 
-            userDetails.setNewRoles(roles);
-        }
-        try {
+			userDetails.setNewRoles(roles);
+		}
+		try {
             userService.update(userDetails);
-
             log.info(String.format("Admin user name - %s with role - %s, has updated the user - %s with role - %s. The following changes are - ",
                     principal.getName(),
                     adminRoles,
                     userDetails.getUsername(),
                     userRoles));
             log.info(message);
-
-        } catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-            throw new ProcessingException("Unable to modify roles");
-        }
-    }
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException("Unable to modify roles");
+		}
+	}
 	
 	@DeleteMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
