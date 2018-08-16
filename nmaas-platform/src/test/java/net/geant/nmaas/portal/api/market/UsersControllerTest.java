@@ -2,9 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -153,20 +151,26 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void testGetMessageWhenUserUpdated(){
         Role role1 = Role.ROLE_USER;
         UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
+        List<UserRole> userRoles1 = new ArrayList<>();
+        userRoles1.add(userRole1);
 
-        List<UserRole> userRoles = new ArrayList<>();
-        userRoles.add(userRole1);
+        Role role2 = Role.ROLE_DOMAIN_ADMIN;
+        net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
+        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles2 = new HashSet<>();
+        userRoles2.add(userRole2);
+
         net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
         user.setFirstname("FirstName");
         user.setLastname("Lastname");
         user.setEmail("email@email.com");
-        user.setRoles(userRoles);
+        user.setRoles(userRoles1);
         user.setEnabled(true);
 
         UserRequest userRequest = new UserRequest(2L, "user2", "password");
         userRequest.setEmail("email1@email.com");
         userRequest.setFirstname("FirstName1");
         userRequest.setLastname("LastName1");
+		userRequest.setRoles(userRoles2);
 
         String message = userController.getMessageWhenUserUpdated(user, userRequest);
         assertEquals("\n" +
@@ -175,7 +179,7 @@ public class UsersControllerTest extends BaseControllerTest {
                 "||| First name changed from - FirstName to - FirstName1|||\n" +
                 "||| Last name changed from - Lastname to - LastName1|||\n" +
                 "||| Enabled flag changed from - true to - false|||\n" +
-                "||| Role changed from - ROLE_USER to - |||", message);
+                "||| Role changed from - ROLE_USER to - ROLE_DOMAIN_ADMIN|||", message);
     }
 
 }

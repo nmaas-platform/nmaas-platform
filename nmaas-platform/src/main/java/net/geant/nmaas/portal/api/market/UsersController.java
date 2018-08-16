@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -480,7 +481,10 @@ public class UsersController {
         return rolesAsStringList.stream().collect(Collectors.joining(","));
     }
 
-    private boolean isSame(final String newDetail, final String oldDetail){
+    private boolean isSame(String newDetail, String oldDetail){
+        newDetail  = StringUtils.isEmpty(newDetail) ? "" : newDetail;
+        oldDetail  =  StringUtils.isEmpty(oldDetail) ? "" : oldDetail;
+
         return newDetail.equalsIgnoreCase(oldDetail) ? true : false;
     }
 
