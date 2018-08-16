@@ -160,9 +160,12 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     public Optional<String> getStorageClass(String domain) {
         Optional <Domain> foundDomain = domainService.findDomainByCodename(domain);
         if(foundDomain.isPresent() && foundDomain.get().getKubernetesStorageClass() != null && !foundDomain.get().getKubernetesStorageClass().isEmpty()){
-            return Optional.ofNullable(foundDomain.get().getKubernetesStorageClass());
+            return Optional.of(foundDomain.get().getKubernetesStorageClass());
         }
-        return Optional.ofNullable(loadSingleCluster().getDeployment().getDefaultStorageClass());
+        if (loadSingleCluster().getDeployment().getDefaultStorageClass() != null && !loadSingleCluster().getDeployment().getDefaultStorageClass().isEmpty()) {
+            return Optional.of(loadSingleCluster().getDeployment().getDefaultStorageClass());
+        }
+        return Optional.empty();
     }
 
     @Override
