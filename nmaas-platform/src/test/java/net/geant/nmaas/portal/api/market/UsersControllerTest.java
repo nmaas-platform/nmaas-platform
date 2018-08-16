@@ -1,7 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.security.Principal;
 import java.util.*;
 
 import javax.transaction.Transactional;
@@ -10,6 +13,7 @@ import javax.transaction.Transactional.TxType;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,19 +48,22 @@ public class UsersControllerTest extends BaseControllerTest {
 	final static String DOMAIN = "DOMAIN";
 
 	@Autowired
-	UserRepository userRepo;
+	private UserRepository userRepo;
 
 	@Autowired
-	UsersController userController;
+	private UsersController userController;
 
 	@Autowired
-	DomainService domains;
+	private DomainService domains;
 
-	User user1 = null;
+	private User user1 = null;
+
+	private Principal principal = mock(Principal.class);
 
 	@Before
 	public void setUp() throws Exception {
 		mvc = createMVC();
+        when(principal.getName()).thenReturn("admin");
 
 		domains.createGlobalDomain();
 		domains.createDomain(DOMAIN, DOMAIN);
@@ -105,7 +112,7 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void testSuccessUpdatingWithNonExistingUsername() throws ProcessingException, MissingElementException {
 		String oldUsername = user1.getUsername();
 		String newUsername = "newUser1";
-		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), null);
+		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), principal);
 
 		User modUser1 = userRepo.findOne(user1.getId());
 		assertEquals(newUsername, modUser1.getUsername());
@@ -116,7 +123,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		String oldUsername = user1.getUsername();
 		String newUsername = "admin";
 		try {
-			userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), null);
+			userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), principal);
 			fail("There should not be two users with the same username.");
 		} catch (ProcessingException e) {
 
@@ -127,7 +134,7 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void testUpdateUserPasswordAndRole() throws ProcessingException, MissingElementException {
 		String newPass = "newPass";
 		String oldPass = user1.getPassword();
-		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass), null);
+		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass), principal);
 		User modUser1 = userRepo.findOne(user1.getId());
 
 		assertEquals(user1.getUsername(), modUser1.getUsername());
@@ -156,6 +163,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
         Role role2 = Role.ROLE_DOMAIN_ADMIN;
         net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
+        userRole2.setRole(role2);
         Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles2 = new HashSet<>();
         userRoles2.add(userRole2);
 
@@ -173,13 +181,13 @@ public class UsersControllerTest extends BaseControllerTest {
 		userRequest.setRoles(userRoles2);
 
         String message = userController.getMessageWhenUserUpdated(user, userRequest);
-        assertEquals("\n" +
-                "||| Username changed from - user1 to - user2|||\n" +
-                "||| Email changed from - email@email.com to - email1@email.com|||\n" +
-                "||| First name changed from - FirstName to - FirstName1|||\n" +
-                "||| Last name changed from - Lastname to - LastName1|||\n" +
-                "||| Enabled flag changed from - true to - false|||\n" +
-                "||| Role changed from - ROLE_USER to - ROLE_DOMAIN_ADMIN|||", message);
+        assertEquals(
+                System.lineSeparator() + "||| Username changed from - user1 to - user2|||" +
+                        System.lineSeparator() + "||| Email changed from - email@email.com to - email1@email.com|||" +
+                        System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
+                        System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
+                        System.lineSeparator() + "||| Enabled flag changed from - true to - false|||" +
+                        System.lineSeparator() + "||| Role changed from - ROLE_USER to - ROLE_DOMAIN_ADMIN|||", message);
     }
 
 }

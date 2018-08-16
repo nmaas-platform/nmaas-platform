@@ -469,14 +469,14 @@ public class UsersController {
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 	}
 
-	private String getRoleInString(List<net.geant.nmaas.portal.persistent.entity.UserRole> roles){
-        final List<Role> rolesList = roles.stream().map(x-> x.getRole()).collect(Collectors.toList());
+	private String getRoleInString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
+        final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
         final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
         return rolesAsStringList.stream().collect(Collectors.joining(","));
     }
 
-    private String getRequestedRoleAsString(Set<UserRole> roles){
-        final List<Role> rolesList = roles.stream().map(x-> x.getRole()).collect(Collectors.toList());
+    private String getRequestedRoleAsString(Set<UserRole> userRoles){
+        final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
         final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
         return rolesAsStringList.stream().collect(Collectors.joining(","));
     }
