@@ -119,8 +119,8 @@ public class UsersController {
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
         final net.geant.nmaas.portal.persistent.entity.User adminUser =
                 userService.findByUsername(principal.getName()).get();
-        final String adminRoles = getRoleInString(adminUser.getRoles());
-        final String userRoles = getRoleInString(userDetails.getRoles());
+        final String adminRoles = getRoleAsString(adminUser.getRoles());
+        final String userRoles = getRoleAsString(userDetails.getRoles());
 
         if(userRequest.getUsername() != null && !userDetails.getUsername().equals(userRequest.getUsername())) {
             if(userService.existsByUsername(userRequest.getUsername()))
@@ -211,7 +211,7 @@ public class UsersController {
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     userService.findByUsername(principal.getName()).get();
 
-            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
@@ -370,7 +370,7 @@ public class UsersController {
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     userService.findByUsername(principal.getName()).get();
-            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has added a role - %s to user name - %s. The domain id is - %d.",
                     principal.getName(),
@@ -403,7 +403,7 @@ public class UsersController {
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
                     userService.findByUsername(principal.getName()).get();
 
-            final String adminRoles = getRoleInString(adminUser.getRoles());
+            final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
                     principal.getName(),
@@ -469,7 +469,7 @@ public class UsersController {
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
 	}
 
-	private String getRoleInString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
+	private String getRoleAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
         final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
         return rolesAsStringList.stream().collect(Collectors.joining(","));
@@ -505,8 +505,8 @@ public class UsersController {
         if(!userRequest.isEnabled() == user.isEnabled()){
             message =  message + System.lineSeparator() + "||| Enabled flag changed from - " + user.isEnabled() + " to - " + userRequest.isEnabled() + "|||";
         }
-        if(!isSame(getRequestedRoleAsString(userRequest.getRoles()), getRoleInString(user.getRoles()))){
-            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleInString(user.getRoles()) + " to - " + getRequestedRoleAsString(userRequest.getRoles()) + "|||";
+        if(!isSame(getRequestedRoleAsString(userRequest.getRoles()), getRoleAsString(user.getRoles()))){
+            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + " to - " + getRequestedRoleAsString(userRequest.getRoles()) + "|||";
         }
         return message;
     }
