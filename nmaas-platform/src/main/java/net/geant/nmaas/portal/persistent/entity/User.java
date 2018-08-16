@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="user")
+@Table(name="users")
 public class User {
 
 	@Id
@@ -28,7 +28,7 @@ public class User {
 
 	private String samlToken;
 
-	private String email;	
+	private String email;
 	private String firstname;
 	private String lastname;
 	
