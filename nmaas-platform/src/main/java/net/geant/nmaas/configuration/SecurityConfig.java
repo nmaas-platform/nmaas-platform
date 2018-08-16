@@ -1,9 +1,12 @@
 package net.geant.nmaas.configuration;
 
-import net.geant.nmaas.portal.api.security.*;
+import net.geant.nmaas.portal.api.security.JWTSettings;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
+import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
+import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -74,16 +77,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("conf_download"))) {
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("env_docker-compose"))) {
+			auth.inMemoryAuthentication()
+					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
+						.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+						.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 			auth.inMemoryAuthentication()
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
-		}
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("env_docker-compose"))) {
-			auth.inMemoryAuthentication().withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 		}
 	}
 
