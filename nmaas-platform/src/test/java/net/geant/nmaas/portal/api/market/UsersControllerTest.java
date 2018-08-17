@@ -171,14 +171,19 @@ public class UsersControllerTest extends BaseControllerTest {
 	public void testGetMessageWhenUserUpdated(){
         Role role1 = Role.ROLE_USER;
         UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
+
+		Role role2 = Role.ROLE_TOOL_MANAGER;
+		UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
+
         List<UserRole> userRoles1 = new ArrayList<>();
         userRoles1.add(userRole1);
+		userRoles1.add(userRole2);
 
-        Role role2 = Role.ROLE_DOMAIN_ADMIN;
-        net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole2.setRole(role2);
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles2 = new HashSet<>();
-        userRoles2.add(userRole2);
+        Role role3 = Role.ROLE_DOMAIN_ADMIN;
+        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
+        userRole3.setRole(role3);
+        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles3 = new HashSet<>();
+        userRoles3.add(userRole3);
 
         net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
         user.setFirstname("FirstName");
@@ -191,7 +196,7 @@ public class UsersControllerTest extends BaseControllerTest {
         userRequest.setEmail("email1@email.com");
         userRequest.setFirstname("FirstName1");
         userRequest.setLastname("LastName1");
-		userRequest.setRoles(userRoles2);
+		userRequest.setRoles(userRoles3);
 
         String message = userController.getMessageWhenUserUpdated(user, userRequest);
         assertEquals(
@@ -200,7 +205,53 @@ public class UsersControllerTest extends BaseControllerTest {
                         System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
                         System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
                         System.lineSeparator() + "||| Enabled flag changed from - true to - false|||" +
-                        System.lineSeparator() + "||| Role changed from - ROLE_USER to - ROLE_DOMAIN_ADMIN|||", message);
+                        System.lineSeparator() + "||| Role changed from - ROLE_USER, ROLE_TOOL_MANAGER to - ROLE_DOMAIN_ADMIN|||", message);
+    }
+
+    @Test
+    public void testGetMessageWhenUserUpdatedWithSameRolesInDifferentOrder(){
+        Role role1 = Role.ROLE_USER;
+        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
+
+        Role role2 = Role.ROLE_TOOL_MANAGER;
+        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
+
+        List<UserRole> userRoles1 = new ArrayList<>();
+        userRoles1.add(userRole1);
+        userRoles1.add(userRole2);
+
+        Role role3 = Role.ROLE_TOOL_MANAGER;
+        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
+        userRole3.setRole(role3);
+
+        Role role4 = Role.ROLE_USER;
+        net.geant.nmaas.portal.api.domain.UserRole userRole4 = new net.geant.nmaas.portal.api.domain.UserRole();
+        userRole4.setRole(role4);
+
+        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles2 = new HashSet<>();
+        userRoles2.add(userRole3);
+        userRoles2.add(userRole4);
+
+        net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
+        user.setFirstname("FirstName");
+        user.setLastname("Lastname");
+        user.setEmail("email@email.com");
+        user.setRoles(userRoles1);
+        user.setEnabled(true);
+
+        UserRequest userRequest = new UserRequest(2L, "user2", "password");
+        userRequest.setEmail("email1@email.com");
+        userRequest.setFirstname("FirstName1");
+        userRequest.setLastname("LastName1");
+        userRequest.setRoles(userRoles2);
+
+        String message = userController.getMessageWhenUserUpdated(user, userRequest);
+        assertEquals(
+                System.lineSeparator() + "||| Username changed from - user1 to - user2|||" +
+                        System.lineSeparator() + "||| Email changed from - email@email.com to - email1@email.com|||" +
+                        System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
+                        System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
+                        System.lineSeparator() + "||| Enabled flag changed from - true to - false|||", message);
     }
 
 }

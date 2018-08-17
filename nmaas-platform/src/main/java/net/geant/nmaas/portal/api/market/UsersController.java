@@ -469,15 +469,21 @@ public class UsersController {
 	}
 
 	protected String getRoleAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
+        return getRoleAsList(userRoles).stream().collect(Collectors.joining(", "));
+    }
+	
+	protected List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
-        final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-        return rolesAsStringList.stream().collect(Collectors.joining(", "));
+        return rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
     }
 
     protected String getRequestedRoleAsString(Set<UserRole> userRoles){
+        return getRequestedRoleAsList(userRoles).stream().collect(Collectors.joining(","));
+    }
+    
+    protected List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
-        final List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-        return rolesAsStringList.stream().collect(Collectors.joining(","));
+        return rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
     }
 
     private boolean isSame(String newDetail, String oldDetail){
@@ -486,6 +492,10 @@ public class UsersController {
 
         return newDetail.equalsIgnoreCase(oldDetail) ? true : false;
     }
+
+	private boolean isSame(List<String> requestRoleList, List<String> userRoleList) {
+		return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
+	}
 
     protected String getMessageWhenUserUpdated(final net.geant.nmaas.portal.persistent.entity.User user, final UserRequest userRequest){
         String message = "";
@@ -504,7 +514,7 @@ public class UsersController {
         if(!userRequest.isEnabled() == user.isEnabled()){
             message =  message + System.lineSeparator() + "||| Enabled flag changed from - " + user.isEnabled() + " to - " + userRequest.isEnabled() + "|||";
         }
-        if(!isSame(getRequestedRoleAsString(userRequest.getRoles()), getRoleAsString(user.getRoles()))){
+        if(!isSame(getRequestedRoleAsList(userRequest.getRoles()), getRoleAsList(user.getRoles()))){
             message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + " to - " + getRequestedRoleAsString(userRequest.getRoles()) + "|||";
         }
         return message;
