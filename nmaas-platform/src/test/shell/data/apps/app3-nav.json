@@ -10,7 +10,8 @@
 	"issuesUrl": "https://github.com/UNINETT/nav/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE"
+			"DOCKER_COMPOSE",
+			"KUBERNETES"
 		]
 	},
 	"configTemplate": {
