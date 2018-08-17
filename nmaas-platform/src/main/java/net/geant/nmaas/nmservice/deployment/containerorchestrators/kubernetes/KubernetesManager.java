@@ -37,6 +37,8 @@ import org.springframework.stereotype.Component;
 @Profile("env_kubernetes")
 public class KubernetesManager implements ContainerOrchestrator {
 
+    private final boolean VALIDATE_K_CLUSTER_THROUGH_API = false;
+
     private KubernetesRepositoryManager repositoryManager;
     private KClusterValidator clusterValidator;
     private KServiceLifecycleManager serviceLifecycleManager;
@@ -82,7 +84,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
-            clusterValidator.checkClusterStatusAndPrerequisites();
+            if(VALIDATE_K_CLUSTER_THROUGH_API) {
+                clusterValidator.checkClusterStatusAndPrerequisites();
+            }
         } catch (KClusterCheckException e) {
             throw new ContainerOrchestratorInternalErrorException(e.getMessage());
         }
