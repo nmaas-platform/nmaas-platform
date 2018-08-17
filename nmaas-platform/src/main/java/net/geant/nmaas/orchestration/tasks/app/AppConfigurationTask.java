@@ -12,6 +12,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
@@ -32,6 +33,7 @@ public class AppConfigurationTask {
     }
 
     @EventListener
+    @Transactional
     @Loggable(LogLevel.INFO)
     public void trigger(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException, NmServiceConfigurationFailedException {
         final Identifier deploymentId = event.getRelatedTo();
