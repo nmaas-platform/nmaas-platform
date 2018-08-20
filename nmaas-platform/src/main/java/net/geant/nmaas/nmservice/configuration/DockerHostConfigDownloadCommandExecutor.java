@@ -30,7 +30,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("conf_download")
+@Profile("env_docker-compose")
 public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFileTransferProvider {
 
     @Autowired

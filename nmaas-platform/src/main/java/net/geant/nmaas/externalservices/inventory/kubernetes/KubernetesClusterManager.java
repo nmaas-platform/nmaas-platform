@@ -5,7 +5,12 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
@@ -152,12 +157,15 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public String getStorageClass(String domain) {
+    public Optional<String> getStorageClass(String domain) {
         Optional <Domain> foundDomain = domainService.findDomainByCodename(domain);
         if(foundDomain.isPresent() && foundDomain.get().getKubernetesStorageClass() != null && !foundDomain.get().getKubernetesStorageClass().isEmpty()){
-            return foundDomain.get().getKubernetesStorageClass();
+            return Optional.of(foundDomain.get().getKubernetesStorageClass());
         }
-        return loadSingleCluster().getDeployment().getDefaultStorageClass();
+        if (loadSingleCluster().getDeployment().getDefaultStorageClass() != null && !loadSingleCluster().getDeployment().getDefaultStorageClass().isEmpty()) {
+            return Optional.of(loadSingleCluster().getDeployment().getDefaultStorageClass());
+        }
+        return Optional.empty();
     }
 
     @Override
