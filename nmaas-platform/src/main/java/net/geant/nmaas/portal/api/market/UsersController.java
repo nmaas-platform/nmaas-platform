@@ -486,6 +486,12 @@ public class UsersController {
         return rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
     }
 
+    protected String getRoleWithDomainIdAsString(Set<UserRole> userRoles){
+        return userRoles.stream().map(x-> x.getRole().authority() + "@domain" + x.getDomainId())
+                .collect(Collectors.toList())
+                .stream().collect(Collectors.joining(", "));
+    }
+
     private boolean isSame(String newDetail, String oldDetail){
         newDetail  = StringUtils.isEmpty(newDetail) ? "" : newDetail;
         oldDetail  =  StringUtils.isEmpty(oldDetail) ? "" : oldDetail;
@@ -515,7 +521,7 @@ public class UsersController {
             message =  message + System.lineSeparator() + "||| Enabled flag changed from - " + user.isEnabled() + " to - " + userRequest.isEnabled() + "|||";
         }
         if(!isSame(getRequestedRoleAsList(userRequest.getRoles()), getRoleAsList(user.getRoles()))){
-            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + " to - " + getRequestedRoleAsString(userRequest.getRoles()) + "|||";
+            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + " to - " + getRoleWithDomainIdAsString(userRequest.getRoles()) + "|||";
         }
         return message;
     }

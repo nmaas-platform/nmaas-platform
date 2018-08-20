@@ -182,6 +182,7 @@ public class UsersControllerTest extends BaseControllerTest {
         Role role3 = Role.ROLE_DOMAIN_ADMIN;
         net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
         userRole3.setRole(role3);
+        userRole3.setDomainId(1L);
         Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles3 = new HashSet<>();
         userRoles3.add(userRole3);
 
@@ -205,7 +206,7 @@ public class UsersControllerTest extends BaseControllerTest {
                         System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
                         System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
                         System.lineSeparator() + "||| Enabled flag changed from - true to - false|||" +
-                        System.lineSeparator() + "||| Role changed from - ROLE_USER, ROLE_TOOL_MANAGER to - ROLE_DOMAIN_ADMIN|||", message);
+                        System.lineSeparator() + "||| Role changed from - ROLE_USER, ROLE_TOOL_MANAGER to - ROLE_DOMAIN_ADMIN@domain1|||", message);
     }
 
     @Test
@@ -253,5 +254,25 @@ public class UsersControllerTest extends BaseControllerTest {
                         System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
                         System.lineSeparator() + "||| Enabled flag changed from - true to - false|||", message);
     }
+
+    @Test
+	public void testGetRoleWithDomainIdAsString(){
+        Role role1 = Role.ROLE_USER;
+        net.geant.nmaas.portal.api.domain.UserRole userRole1 = new net.geant.nmaas.portal.api.domain.UserRole();
+        userRole1.setRole(role1);
+        userRole1.setDomainId(1L);
+
+        Role role2 = Role.ROLE_GUEST;
+        net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
+        userRole2.setRole(role2);
+        userRole2.setDomainId(2L);
+
+        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles = new HashSet<>();
+        userRoles.add(userRole1);
+        userRoles.add(userRole2);
+
+        assertEquals("ROLE_USER@domain1, ROLE_GUEST@domain2", userController.getRoleWithDomainIdAsString(userRoles));
+
+	}
 
 }
