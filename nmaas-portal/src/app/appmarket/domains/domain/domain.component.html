@@ -66,10 +66,11 @@
 		</div>
 
 		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
-			<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">Dcn is marked as configured</label>
-			<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">Dcn is marked as not configured</label>
+			<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">DCN status - Configured</label>
+			<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">DCN status - Not configured</label>
 			<div class="col-sm-10">
-				<button id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change value</button>
+				<button *ngIf="domain.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
+				<button *ngIf="!domain.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
 			</div>
 		</div>
 
@@ -123,12 +124,11 @@
 
 <nmaas-modal>
 	<div class="nmaas-modal-header">
-		<h3 style="text-align: center">Warning</h3>
+		<h4 style="text-align: center">DCN status change</h4>
 	</div>
 	<div class="nmaas-modal-body">
 		<div class="form-group text-center">
-			<p *ngIf="domain.dcnConfigured">This action will immediately remove dcn which was configured previously. Do you want to continue?</p>
-			<p *ngIf="!domain.dcnConfigured">This action will immediately set dcn configuration. Do you want to continue?</p>
+			<p>You are about to update the DCN configuration status for domain {{domain.name}}. Do you want to proceed?</p>
 		</div>
 	</div>
 	<div class="nmaas-modal-footer text-center">
