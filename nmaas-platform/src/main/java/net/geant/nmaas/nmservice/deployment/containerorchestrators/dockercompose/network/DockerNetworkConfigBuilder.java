@@ -1,4 +1,4 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network;
 
 import com.spotify.docker.client.messages.Ipam;
 import com.spotify.docker.client.messages.IpamConfig;

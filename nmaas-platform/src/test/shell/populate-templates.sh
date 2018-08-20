@@ -44,3 +44,8 @@ echo Adding default kubernetes template for app2
 curl -X POST $API_URL/management/apps/2/kubernetes/template --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/templates/kubernetes/app2-template1.json
 echo
 curl -X GET $API_URL/management/apps/2/kubernetes/template --header "Authorization: Bearer $TOKEN" | python -m json.tool
+echo
+echo Adding default kubernetes template for app3
+curl -X POST $API_URL/management/apps/3/kubernetes/template --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/templates/kubernetes/app3-template1.json
+echo
+curl -X GET $API_URL/management/apps/3/kubernetes/template --header "Authorization: Bearer $TOKEN" | python -m json.tool

@@ -4,10 +4,6 @@ import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingExce
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Map;
@@ -19,11 +15,9 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class AppConfigurationJsonToMapTest {
 
-    public static final String EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT =
+    static final String EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT =
     "{" +
         "\"oxidizedUsername\": \"testusername\"," +
         "\"oxidizedPassword\": \"testpassword\"," +
@@ -36,7 +30,7 @@ public class AppConfigurationJsonToMapTest {
         "}]" +
     "}";
 
-    public static final String EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT =
+    static final String EXAMPLE_LIBRENMS_CONFIG_FORM_INPUT =
     "{" +
         "\"targets\": [" +
         "{" +
@@ -51,8 +45,7 @@ public class AppConfigurationJsonToMapTest {
         "}]" +
     "}";
 
-    @Autowired
-    private NmServiceConfigurationFilePreparer configurationsPreparer;
+    private NmServiceConfigurationFilePreparer configurationsPreparer = new NmServiceConfigurationFilePreparer();
 
     @Test
     public void shouldMapOxidizedJsonToMap() throws UserConfigHandlingException {

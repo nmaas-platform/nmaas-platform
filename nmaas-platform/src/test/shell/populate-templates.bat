@@ -1,9 +1,7 @@
 @echo off
 setlocal enableDelayedExpansion
-@echo off
-setlocal enableDelayedExpansion
 
-set API_URL=http://localhost:9000/portal/api
+set API_URL=http://localhost:9000/api
 echo %API_URL%
 
 set LF=^
@@ -19,18 +17,25 @@ REM set "LOGIN="
 
 rem echo Output: !LOGIN!
 REM ref: http://stackoverflow.com/questions/36374496/parse-simple-json-string-in-batch
-set LOGIN=!LOGIN:"=!
-rem stage 1 - !LOGIN!
-set "LOGIN=!LOGIN:~2,-2!"
-rem stage 2 - !LOGIN!
-set "LOGIN=!LOGIN: : ==!"
-rem stage 3 - !LOGIN!
-
+set LOGIN=%LOGIN:"=%
+echo stage 1 - %LOGIN%
+echo ---
+set "LOGIN=%LOGIN:~1,-1%"
+echo stage 2 - %LOGIN%
+echo ---
+set "LOGIN=%LOGIN::==%"
+echo stage 3 - !LOGIN!
+echo ---
 
 FOR /F "delims=," %%a in ("!LOGIN!") do (
-rem  echo Found: %%a
+  echo Found: %%a
   set "%%a"
+  echo --
 )
+
+rem echo !LOGIN!
+
+rem set token=%LOGIN%
 
 echo Token:
 echo ----------------------

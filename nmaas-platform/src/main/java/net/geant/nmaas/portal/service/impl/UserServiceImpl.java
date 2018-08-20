@@ -1,13 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -18,8 +10,14 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
@@ -34,7 +32,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	UserRoleRepository userRoleRepo;
 	
 	@Override
-	public boolean hasPriviledge(User user, Domain domain, Role role) {
+	public boolean hasPrivilege(User user, Domain domain, Role role) {
 		if(user == null || domain == null || role == null)
 			return false;
 		
@@ -145,6 +143,4 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 			throw new IllegalArgumentException("user is null");
 	}
 
-	 
-	
 }

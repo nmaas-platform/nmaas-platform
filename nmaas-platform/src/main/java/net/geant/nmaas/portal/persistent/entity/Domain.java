@@ -11,9 +11,9 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table (
-		uniqueConstraints = { @UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})}
-)
+@Table(uniqueConstraints = {
+		@UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})
+})
 public class Domain {
 
 	@Id

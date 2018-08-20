@@ -200,5 +200,11 @@ echo
 echo Create app2 aubscription to Domain One
 curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub2.json
 echo
+echo Create app3 aubscription to Domain One
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub3.json
+echo
+echo Create app3 aubscription to Domain Two
+curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub4.json
+echo
 echo Get all subscriptions
 curl -X GET $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Accept: application/json" | python -m json.tool

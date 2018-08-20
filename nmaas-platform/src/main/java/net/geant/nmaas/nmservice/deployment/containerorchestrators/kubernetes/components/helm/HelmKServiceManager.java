@@ -68,7 +68,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         String serviceExternalURL = serviceInfo.getServiceExternalUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
-        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getStorageClass(domain));
+        if (deploymentManager.getStorageClass(domain).isPresent()) {
+            arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getStorageClass(domain).get());
+        }
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
         arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED,

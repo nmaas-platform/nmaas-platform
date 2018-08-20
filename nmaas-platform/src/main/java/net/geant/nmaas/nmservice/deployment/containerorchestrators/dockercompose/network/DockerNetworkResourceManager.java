@@ -1,8 +1,8 @@
-package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;

@@ -17,8 +17,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription.Id;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRespository;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
@@ -27,7 +26,7 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 public class ApplicationSubscriptionServiceImpl implements ApplicationSubscriptionService {
 
 	@Autowired
-	ApplicationSubscriptionRespository appSubRepo;
+    ApplicationSubscriptionRepository appSubRepo;
 	
 	@Autowired
 	DomainService domains;

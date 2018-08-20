@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +33,7 @@ import net.geant.nmaas.portal.service.UserService;
 @RestController
 @RequestMapping("/api/auth/basic/registration")
 public class RegistrationController {
+	private static final Logger log = LogManager.getLogger(RegistrationController.class);
 	@Autowired
 	UserService users;
 	
@@ -68,6 +71,12 @@ public class RegistrationController {
 		
 		try {
 			users.update(newUser);
+            log.info(String.format("The user with user name - %s, first name - %s, last name - %s, email - %s have signed up with domain id - %s.",
+                    registration.getUsername(),
+                    registration.getFirstname(),
+                    registration.getLastname(),
+                    registration.getEmail(),
+                    registration.getDomainId()));
 			if(registration.getDomainId() != null)
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 		} catch (ObjectNotFoundException e) {

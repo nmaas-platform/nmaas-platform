@@ -7,7 +7,7 @@ import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkLifecycleManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerNetworkLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;

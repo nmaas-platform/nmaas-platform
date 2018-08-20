@@ -111,24 +111,39 @@ public class KubernetesClusterManagerTest {
     }
 
     @Test
+    public void shouldReturnEmptyStorageClassName() throws UnknownHostException {
+        when(repository.count()).thenReturn(1L);
+        KCluster clusterWithoutStorageClass = simpleKubernetesCluster("cluster1");
+        KClusterDeployment deploymentWithoutStorageClass = new KClusterDeployment();
+        deploymentWithoutStorageClass.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
+        deploymentWithoutStorageClass.setDefaultNamespace("testNamespace");
+        deploymentWithoutStorageClass.setDefaultStorageClass(null);
+        deploymentWithoutStorageClass.setUseInClusterGitLabInstance(false);
+        clusterWithoutStorageClass.setDeployment(deploymentWithoutStorageClass);
+        when(repository.findAll()).thenReturn(Arrays.asList(clusterWithoutStorageClass));
+        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
+        assertThat(manager.getStorageClass(DOMAIN).isPresent(), is(false));
+    }
+
+    @Test
     public void shouldReturnProperStorageClassName() throws UnknownHostException {
         when(repository.count()).thenReturn(1L);
         when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster("cluster1")));
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
         KCluster cluster = simpleKubernetesCluster("cluster1");
-        assertThat(manager.getStorageClass(DOMAIN), is(cluster.getDeployment().getDefaultStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
         Domain domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", null);
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
-        assertThat(manager.getStorageClass(DOMAIN), is(cluster.getDeployment().getDefaultStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
         domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "");
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
-        assertThat(manager.getStorageClass(DOMAIN), is(cluster.getDeployment().getDefaultStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
         domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "domainStorageClass");
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
-        assertThat(manager.getStorageClass(DOMAIN), is(domain.getDomainTechDetails().getKubernetesStorageClass()));
+        assertThat(manager.getStorageClass(DOMAIN).get(), is(domain.getDomainTechDetails().getKubernetesStorageClass()));
     }
 
     private KCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {

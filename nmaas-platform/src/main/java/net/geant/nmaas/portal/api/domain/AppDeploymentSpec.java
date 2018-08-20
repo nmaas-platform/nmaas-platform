@@ -10,8 +10,6 @@ public class AppDeploymentSpec {
 
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
-    private DockerServiceTemplate dockerContainerTemplate;
-
     public Long getId() {
         return id;
     }
@@ -26,14 +24,6 @@ public class AppDeploymentSpec {
 
     public void setSupportedDeploymentEnvironments(List<AppDeploymentEnv> supportedDeploymentEnvironments) {
         this.supportedDeploymentEnvironments = supportedDeploymentEnvironments;
-    }
-
-    public DockerServiceTemplate getDockerContainerTemplate() {
-        return dockerContainerTemplate;
-    }
-
-    public void setDockerContainerTemplate(DockerServiceTemplate dockerContainerTemplate) {
-        this.dockerContainerTemplate = dockerContainerTemplate;
     }
 
 }

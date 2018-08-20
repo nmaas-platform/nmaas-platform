@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 
 import javax.persistence.*;
 import java.net.InetAddress;
