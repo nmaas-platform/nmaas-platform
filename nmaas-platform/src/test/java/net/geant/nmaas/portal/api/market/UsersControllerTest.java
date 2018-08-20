@@ -267,7 +267,7 @@ public class UsersControllerTest extends BaseControllerTest {
         userRole2.setRole(role2);
         userRole2.setDomainId(2L);
 
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles = new HashSet<>();
+        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles = new LinkedHashSet<>();
         userRoles.add(userRole1);
         userRoles.add(userRole2);
 
