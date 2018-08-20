@@ -160,12 +160,14 @@ public class UsersController {
 		}
 		try {
             userService.update(userDetails);
-            log.info(String.format("Admin user name - %s with role - %s, has updated the user - %s with role - %s. The following changes are - ",
-                    principal.getName(),
-                    adminRoles,
-                    userDetails.getUsername(),
-                    userRoles));
-            log.info(message);
+            if(!StringUtils.isEmpty(message)) {
+	            log.info(String.format("Admin user name - %s with role - %s, has updated the user - %s with role - %s. The following changes are - ",
+	                    principal.getName(),
+	                    adminRoles,
+	                    userDetails.getUsername(),
+	                    userRoles));
+	            log.info(message);
+            }
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to modify roles");
 		}
