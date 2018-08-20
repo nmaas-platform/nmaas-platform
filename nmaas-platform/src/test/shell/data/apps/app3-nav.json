@@ -18,11 +18,13 @@
 		"template": {
 			"schema": {
 				"type": "object",
-				"title": "All required configuration should be applied using NAV graphical interface",
 				"properties": {	}
 			},
 			"form": [
-				"*",
+				{
+					"type":"help",
+					"helpvalue":"All required configuration should be applied using NAV graphical interface"
+				},
 				{
 					"type": "submit",
 					"title": "Proceed"
