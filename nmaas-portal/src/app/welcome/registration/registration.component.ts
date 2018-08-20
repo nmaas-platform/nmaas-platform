@@ -33,7 +33,8 @@ export class RegistrationComponent implements OnInit {
         email: ['', [Validators.required, Validators.email]],
         firstname: [''],
         lastname: [''],
-        domainId: [null]
+        domainId: [null],
+          touAccept: [''],
       },
       {
         validator: PasswordValidator.match
@@ -56,6 +57,7 @@ export class RegistrationComponent implements OnInit {
         this.registrationForm.controls['firstname'].value,
         this.registrationForm.controls['lastname'].value,
         this.registrationForm.controls['domainId'].value,
+          this.registrationForm.controls['touAccept'].value,
       );
 
       this.registrationService.register(registration).subscribe(

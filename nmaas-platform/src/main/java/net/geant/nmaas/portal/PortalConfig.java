@@ -49,7 +49,7 @@ public class PortalConfig {
 			}
 
 			private void addUser(String username, String password, Role role) {								
-				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role);
+				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true);
 				userRepository.save(user);
 			}
 						

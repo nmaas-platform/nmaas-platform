@@ -50,7 +50,7 @@ public class BasicAuthController {
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
-        validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled());
+        validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled(), user.isTouAccept());
 
         if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
             throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
@@ -82,7 +82,7 @@ public class BasicAuthController {
 	}
 
     protected void validate(final Optional<String> userName, final Optional<String> password,
-                            String actualPassword, boolean isEnabled) throws AuthenticationException{
+                            String actualPassword, boolean isEnabled, boolean isTouAccepted) throws AuthenticationException{
         boolean isValid = true;
         if(!userName.isPresent() || !password.isPresent()){
             isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
@@ -90,6 +90,9 @@ public class BasicAuthController {
         else{
             if (!isEnabled) {
                 isValid = validateAndLogMessage("User is not active", userName.get());
+            }
+            if (!isTouAccepted){
+              isValid = validateAndLogMessage("Terms of Usage were not accepted", userName.get());
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {
                 isValid = validateAndLogMessage("Invalid password", userName.get());

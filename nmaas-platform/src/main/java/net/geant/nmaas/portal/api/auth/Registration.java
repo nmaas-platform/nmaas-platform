@@ -15,6 +15,8 @@ public class Registration {
 	private String lastname;
 	
 	private Long domainId;
+
+	private Boolean touAccept;
 	
 	protected Registration() {
 		
@@ -30,13 +32,15 @@ public class Registration {
 						@JsonProperty(value="email", required=true) String email,
 						@JsonProperty(value="firstname", required=false) String firstname,
 						@JsonProperty(value="lastname", required=false) String lastname,
-						@JsonProperty(value="domainId", required = false) Long domainId) {
+						@JsonProperty(value="domainId", required = false) Long domainId,
+						@JsonProperty(value="touAccept", required=true) Boolean touAccept){
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.domainId = domainId;
+		this.touAccept = touAccept;
 	}
 
 	public String getUsername() {
@@ -63,4 +67,5 @@ public class Registration {
 		return domainId;
 	}
 
+	public Boolean getTouAccept() { return touAccept; }
 }
