@@ -10,18 +10,21 @@
 	"issuesUrl": "https://github.com/UNINETT/nav/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE"
+			"DOCKER_COMPOSE",
+			"KUBERNETES"
 		]
 	},
 	"configTemplate": {
 		"template": {
 			"schema": {
 				"type": "object",
-				"title": "All required configuration should be applied using NAV graphical interface",
 				"properties": {	}
 			},
 			"form": [
-				"*",
+				{
+					"type":"help",
+					"helpvalue":"All required configuration should be applied using NAV graphical interface"
+				},
 				{
 					"type": "submit",
 					"title": "Proceed"
