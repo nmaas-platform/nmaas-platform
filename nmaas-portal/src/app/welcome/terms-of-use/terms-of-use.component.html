@@ -1,0 +1,21 @@
+
+<app-navbar></app-navbar>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-offset-2 col-lg-10 col-md-10 col-md-offset-2 col-sm-10 col-sm-offset-2 col-xs-12 login-vertical-offset">
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 panel panel-default" style="height: calc(100vh - 135px); overflow: auto">
+                <div class="panel-heading text-center" style="background: none">
+                    <img src="assets/images/NMaaSMarket.png" style="width: 250px">
+                </div>
+                <div class="panel-body">
+                    <h1 class="header-panel">{{content?.title}}</h1>
+                    <div [innerHTML]="content?.content"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer text-center" style="background: none">
+            <a routerLink="/welcome" routerLinkActive="active"><img src="assets/images/geant-logo-small.png"></a>
+        </div>
+    </div>
+</div>
+<nmaas-footer></nmaas-footer>
