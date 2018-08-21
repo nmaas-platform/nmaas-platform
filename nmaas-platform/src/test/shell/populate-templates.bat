@@ -1,7 +1,5 @@
 @echo off
 setlocal enableDelayedExpansion
-@echo off
-setlocal enableDelayedExpansion
 
 set API_URL=http://localhost:9000/api
 echo %API_URL%

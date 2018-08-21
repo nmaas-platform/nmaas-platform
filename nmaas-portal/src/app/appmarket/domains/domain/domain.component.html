@@ -49,19 +49,28 @@
 			</div>
 		</div>
 
-		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
-			<label for="kubernetesStorageClass" class="col-sm-2 control-label">Kubernetes storage class:</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesStorageClass"
-					   name="kubernetesStorageClass" [(ngModel)]="domain.kubernetesStorageClass">
-			</div>
-		</div>
+        <div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+            <label for="kubernetesStorageClass" class="col-sm-2 control-label">Kubernetes storage class:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesStorageClass"
+                       name="kubernetesStorageClass" [(ngModel)]="domain.kubernetesStorageClass">
+            </div>
+        </div>
 
-		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.CREATE)">
 			<label for="dcnConfigured" class="col-sm-2 control-label">dcn Configured:</label>
 			<div class="col-sm-10">
 				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="dcnConfigured"
 				name="dcnConfigured" [(ngModel)]="domain.dcnConfigured">
+			</div>
+		</div>
+
+		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
+			<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">DCN status - Configured</label>
+			<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">DCN status - Not configured</label>
+			<div class="col-sm-10">
+				<button *ngIf="domain.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
+				<button *ngIf="!domain.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
 			</div>
 		</div>
 
@@ -112,3 +121,18 @@
 	</form>
 	<div *ngIf="!domain">Not found.</div>
 </div>
+
+<nmaas-modal>
+	<div class="nmaas-modal-header">
+		<h4 style="text-align: center">DCN status change</h4>
+	</div>
+	<div class="nmaas-modal-body">
+		<div class="form-group text-center">
+			<p>You are about to update the DCN configuration status for domain {{domain.name}}. Do you want to proceed?</p>
+		</div>
+	</div>
+	<div class="nmaas-modal-footer text-center">
+		<button class="btn btn-danger" style="display: inline-block" (click)="updateDcnConfigured()">Yes</button>
+		<button class="btn btn-primary" style="display: inline-block" (click)="this.modal.hide()">Cancel</button>
+	</div>
+</nmaas-modal>

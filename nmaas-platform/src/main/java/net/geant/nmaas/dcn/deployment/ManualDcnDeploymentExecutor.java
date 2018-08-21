@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
@@ -46,13 +47,32 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
     @Override
     @Loggable(LogLevel.INFO)
     public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
-        notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
+        try {
+            storeDcnInfoIfNotExists(domain, dcnSpec);
+            notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
+        } catch(InvalidDomainException e){
+            notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
+            throw new DcnRequestVerificationException("Exception during DCN request verification -> " + e.getMessage());
+        }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
     public void deployDcn(String domain) throws CouldNotDeployDcnException {
-        notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYED);
+        try {
+            // needs to wait for DCN state change in database
+            Thread.sleep(200);
+            switch(dcnRepositoryManager.loadCurrentState(domain)){
+                case REQUEST_VERIFIED:
+                    notifyStateChangeListeners(domain, DcnDeploymentState.WAITING_FOR_OPERATOR_CONFIRMATION);
+                    break;
+                default:
+                    throw new CouldNotDeployDcnException("Exception during DCN deploy. Trying to deploy DCN with state: " + dcnRepositoryManager.loadCurrentState(domain).toString());
+            }
+        } catch (InvalidDomainException
+                | InterruptedException e){
+            throw new CouldNotDeployDcnException("Exception during DCN deploy " + e.getMessage());
+        }
     }
 
     @Override
@@ -69,6 +89,12 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     private void notifyStateChangeListeners(String domain, DcnDeploymentState state) {
         applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain, state));
+    }
+
+    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) throws InvalidDomainException {
+        if (!dcnRepositoryManager.exists(domain)) {
+            dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
+        }
     }
 
 }

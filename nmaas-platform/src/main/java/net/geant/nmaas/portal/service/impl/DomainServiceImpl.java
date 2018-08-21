@@ -29,22 +29,26 @@ public class DomainServiceImpl implements DomainService {
 	public interface CodenameValidator {
 		boolean valid(String codename);
 	}
-	
-	@Autowired
+
 	CodenameValidator validator;
 	
 	@Value("${domain.global:GLOBAL}")
 	String GLOBAL_DOMAIN;
-	
-	@Autowired
+
 	DomainRepository domainRepo;
-	
-	@Autowired
+
 	UserService users;
-	
-	@Autowired
+
 	UserRoleRepository userRoleRepo;
-	
+
+	@Autowired
+	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo){
+		this.validator = validator;
+		this.domainRepo = domainRepo;
+		this.users = users;
+		this.userRoleRepo = userRoleRepo;
+	}
+
 	@Override
 	public List<Domain> getDomains() {		
 		return domainRepo.findAll();
@@ -171,8 +175,6 @@ public class DomainServiceImpl implements DomainService {
 		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
 	}
 
-	
-	
 	@Override
 	public void removeMemberRole(Long domainId, Long userId, Role role) throws ObjectNotFoundException {
 		checkParams(domainId, userId);
@@ -195,7 +197,6 @@ public class DomainServiceImpl implements DomainService {
 		
 		userRoleRepo.deleteBy(user, domain);		
 	}
-	
 
 	@Override
 	public Set<Role> getMemberRoles(Long domainId, Long userId) throws ObjectNotFoundException {
