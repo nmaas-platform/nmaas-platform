@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -36,7 +38,9 @@ import net.geant.nmaas.portal.service.FileStorageService;
 public class AppScreenshotsController extends AppBaseController {
 	
 	@Autowired
-	private FileStorageService fileStorage;	
+	private FileStorageService fileStorage;
+
+	private Logger logger = LogManager.getLogger(AppScreenshotsController.class);
 	
 	@RequestMapping(value="/logo", method=RequestMethod.GET)
 	public ResponseEntity<InputStreamResource> getLogo(@PathVariable("appId") Long appId) throws MissingElementException, FileNotFoundException {
@@ -44,8 +48,9 @@ public class AppScreenshotsController extends AppBaseController {
 		
 		if(app.getLogo() != null)
 			return getFile(app.getLogo());
-		
-		throw new MissingElementException("No logo found");
+
+		logger.error("No logo found for app " + app.getId());
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@RequestMapping(value="/logo", method=RequestMethod.POST)
