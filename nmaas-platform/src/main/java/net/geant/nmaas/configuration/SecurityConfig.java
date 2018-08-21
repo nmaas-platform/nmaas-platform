@@ -97,7 +97,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/configuration/security",
 			"/swagger-ui.html",
 			"/api/info/**",
-			"/webjars/**"
+			"/webjars/**",
+			"/api/content/**"
 	};
 	
 	@Override
@@ -132,6 +133,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -157,7 +159,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/configs/**"),
-										new AntPathRequestMatcher("/api/dockercompose/files/**")
+										new AntPathRequestMatcher("/api/dockercompose/files/**"),
+										new AntPathRequestMatcher("/api/content/**")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),

@@ -14,6 +14,8 @@ public class Content {
 
     @Column(unique = true, nullable = false)
     private String name;
+    @Lob
+    @Column
     private String content;
     private String title;
     //private Date lastUpdate;

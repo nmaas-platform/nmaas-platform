@@ -1,16 +1,23 @@
 package net.geant.nmaas.portal;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.servlet.Filter;
 
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.jni.Proc;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -68,13 +75,34 @@ public class PortalConfig {
 			@Autowired
 			private ContentRepository contentRepository;
 
+			@Autowired
+			private ResourceLoader resourceLoader;
 
 			@Override
-			public void afterPropertiesSet() throws Exception {
+			public void afterPropertiesSet() throws ProcessingException {
+
 				Optional<Content> tos = contentRepository.findByName("tos");
 				if(!tos.isPresent()){
-					addTos("tos", "Terms of use", "Lorem ipsum dolor sit amet, consectetur");
+					try {
+						addTos("tos", "Terms of use", readContent("classpath:tos.txt"));
+					}catch (IOException e){
+						throw new ProcessingException("Init error: Terms of use file does not exists.");
+					}
 				}
+
+				Optional<Content> pp = contentRepository.findByName("pp");
+				if(!pp.isPresent()){
+					try {
+						addTos("pp", "Privacy Policy", readContent("classpath:pp.txt"));
+					}catch (IOException e){
+						throw new ProcessingException("Init error: Privacy Policy file does not exists.");
+					}
+				}
+			}
+
+			private String readContent(String file) throws IOException {
+				Resource res = resourceLoader.getResource(file);
+				return new String(IOUtils.toString(res.getInputStream(), "utf-8"));
 			}
 
 			private void addTos(String name, String title, String content){
