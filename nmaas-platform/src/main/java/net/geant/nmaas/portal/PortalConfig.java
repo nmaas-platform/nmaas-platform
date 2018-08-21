@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import javax.servlet.Filter;
 
+import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +39,9 @@ public class PortalConfig {
 			
 			@Autowired
 			private DomainService domains;
-			
+
+
+
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws ProcessingException {
@@ -46,6 +50,7 @@ public class PortalConfig {
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent())
 					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
+
 			}
 
 			private void addUser(String username, String password, Role role) {								
@@ -53,6 +58,29 @@ public class PortalConfig {
 				userRepository.save(user);
 			}
 						
+		};
+	}
+
+	@Bean
+	public InitializingBean insertDefaultTos(){
+		return new InitializingBean() {
+
+			@Autowired
+			private ContentRepository contentRepository;
+
+
+			@Override
+			public void afterPropertiesSet() throws Exception {
+				Optional<Content> tos = contentRepository.findByName("tos");
+				if(!tos.isPresent()){
+					addTos("tos", "Terms of use", "Lorem ipsum dolor sit amet, consectetur");
+				}
+			}
+
+			private void addTos(String name, String title, String content){
+				Content cnt = new Content(name, title, content);
+				contentRepository.save(cnt);
+			}
 		};
 	}
 	

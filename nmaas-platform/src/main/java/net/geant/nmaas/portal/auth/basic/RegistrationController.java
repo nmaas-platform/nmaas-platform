@@ -57,8 +57,9 @@ public class RegistrationController {
 			newUser = users.register(registration.getUsername());
 			if(newUser == null)
 				throw new SignupException("Unable to register new user");
-			if(!registration.getTouAccept()){
-				throw new SignupException("You have to accept Terms of Usage");
+			if(registration.getTouAccept() == false){
+				log.info("Attempt to register new user fails - ToU not accepted");
+				throw new SignupException("You have to accept Terms of Use");
 			}
 		} catch (ObjectAlreadyExistsException e) {
 			throw new SignupException("User already exists.");

@@ -34,7 +34,7 @@ export class RegistrationComponent implements OnInit {
         firstname: [''],
         lastname: [''],
         domainId: [null],
-          touAccept: [''],
+          touAccept: [false],
       },
       {
         validator: PasswordValidator.match
