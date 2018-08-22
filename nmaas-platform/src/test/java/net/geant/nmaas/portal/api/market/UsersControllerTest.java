@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -80,7 +81,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testGetUsers() {
-		assertEquals(4, userController.getUsers(null).size());
+		assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		Id id = userController.addUser(new NewUserRequest("tester"));
 		assertNotNull(id);
 
-		assertEquals(5, userController.getUsers(null).size());
+		assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
 	}
 
 	@Test
