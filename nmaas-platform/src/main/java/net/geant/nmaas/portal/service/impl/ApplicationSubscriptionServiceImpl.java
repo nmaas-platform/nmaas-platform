@@ -170,7 +170,8 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public ApplicationSubscription subscribe(ApplicationSubscription appSub) throws ObjectAlreadyExistsException, ProcessingException {
 		checkParam(appSub);
 		
-		appSub = appSubRepo.findById(appSub.getId()).orElseThrow(() -> new ProcessingException("App subscription nto found"));
+		if(appSubRepo.existsById(appSub.getId()))
+			appSub = appSubRepo.findById(appSub.getId()).get();
 		
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);

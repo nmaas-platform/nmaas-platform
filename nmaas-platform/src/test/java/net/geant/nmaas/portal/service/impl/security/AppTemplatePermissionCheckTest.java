@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.After;
@@ -35,9 +36,9 @@ public class AppTemplatePermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(applications.findById(UsersHelper.APP1.getId()).get()).thenReturn(UsersHelper.APP1);
-		when(applications.findById(UsersHelper.APP2.getId()).get()).thenReturn(UsersHelper.APP2);
-		when(applications.findById(UsersHelper.APP3.getId()).get()).thenReturn(UsersHelper.APP3);
+		when(applications.findById(UsersHelper.APP1.getId())).thenReturn(Optional.of(UsersHelper.APP1));
+		when(applications.findById(UsersHelper.APP2.getId())).thenReturn(Optional.of(UsersHelper.APP2));
+		when(applications.findById(UsersHelper.APP3.getId())).thenReturn(Optional.of(UsersHelper.APP3));
 	}
 
 	@After

@@ -50,13 +50,11 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-devtools')
 
-	compile('org.modelmapper:modelmapper:1.1.0')
-	compile('org.modelmapper.extensions:modelmapper-spring:1.1.0')
+	compile('org.modelmapper:modelmapper:2.2.0')
+	compile('org.modelmapper.extensions:modelmapper-spring:2.2.0')
 	
 	runtime('com.h2database:h2')
-	runtime('mysql:mysql-connector-java')
 	runtime('org.postgresql:postgresql')
-	runtime('org.springframework.boot:spring-boot-properties-migrator')
 
 
 	compile('io.jsonwebtoken:jjwt:0.7.0')
