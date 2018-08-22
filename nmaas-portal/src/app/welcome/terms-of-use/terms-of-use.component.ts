@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Content} from "../../model/content";
-import {httpFactory} from "../../../../node_modules/@angular/platform-server/src/http";
 
 @Component({
   selector: 'app-terms-of-use',
