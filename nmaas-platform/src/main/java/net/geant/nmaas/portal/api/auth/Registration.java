@@ -16,7 +16,7 @@ public class Registration {
 	
 	private Long domainId;
 
-	private Boolean termsOfUseAccept;
+	private Boolean termsOfUseAccepted;
 	
 	protected Registration() {
 		
@@ -33,14 +33,14 @@ public class Registration {
 						@JsonProperty(value="firstname", required=false) String firstname,
 						@JsonProperty(value="lastname", required=false) String lastname,
 						@JsonProperty(value="domainId", required = false) Long domainId,
-						@JsonProperty(value="termsOfUseAccept", required=true) Boolean termsOfUseAccept){
+						@JsonProperty(value="termsOfUseAccepted", required=true) Boolean termsOfUseAccepted){
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.domainId = domainId;
-		this.termsOfUseAccept = termsOfUseAccept;
+		this.termsOfUseAccepted = termsOfUseAccepted;
 	}
 
 	public String getUsername() {
@@ -67,5 +67,5 @@ public class Registration {
 		return domainId;
 	}
 
-	public Boolean getTermsOfUseAcceptFlag() { return termsOfUseAccept; }
+	public Boolean gettermsOfUseAcceptedFlag() { return termsOfUseAccepted; }
 }

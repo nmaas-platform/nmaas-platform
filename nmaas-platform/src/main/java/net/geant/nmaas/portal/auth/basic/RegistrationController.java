@@ -57,7 +57,7 @@ public class RegistrationController {
 			newUser = users.register(registration.getUsername());
 			if(newUser == null)
 				throw new SignupException("Unable to register new user.");
-			if(!registration.getTermsOfUseAcceptFlag()){
+			if(!registration.gettermsOfUseAcceptedFlag()){
 				throw new SignupException("Terms of Use were not accepted.");
 			}
 		} catch (ObjectAlreadyExistsException e) {
@@ -71,7 +71,7 @@ public class RegistrationController {
 		newUser.setFirstname(registration.getFirstname());
 		newUser.setLastname(registration.getLastname());
 		newUser.setEnabled(false);
-		newUser.setTermsOfUseAcceptFlag(registration.getTermsOfUseAcceptFlag());
+		newUser.settermsOfUseAcceptedFlag(registration.gettermsOfUseAcceptedFlag());
 
 
 
