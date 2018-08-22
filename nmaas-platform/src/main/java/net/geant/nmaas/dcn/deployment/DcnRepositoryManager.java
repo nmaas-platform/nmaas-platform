@@ -31,12 +31,7 @@ public class DcnRepositoryManager {
 
     @EventListener
     public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidDomainException {
-        try{
-            updateDcnState(event.getDomain(), event.getState());
-        }catch(Exception ex){
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
-        }
+        updateDcnState(event.getDomain(), event.getState());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
