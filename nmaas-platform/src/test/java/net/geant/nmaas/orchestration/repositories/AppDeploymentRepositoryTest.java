@@ -40,7 +40,7 @@ public class AppDeploymentRepositoryTest {
         appDeployment.setDeploymentName(DEPLOYMENT_NAME_1);
         AppDeployment storedAppDeployment = repository.save(appDeployment);
         assertThat(storedAppDeployment.getId(), is(notNullValue()));
-        appDeployment = repository.findOne(storedAppDeployment.getId());
+        appDeployment = repository.findById(storedAppDeployment.getId()).get();
         appDeployment.setConfiguration(new AppConfiguration("configuration-string"));
         repository.save(appDeployment);
         assertThat(repository.count(), equalTo(1L));

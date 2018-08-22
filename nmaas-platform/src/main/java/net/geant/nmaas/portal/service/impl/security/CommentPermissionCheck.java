@@ -49,7 +49,7 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 		
 		Set<Permissions> resultPerms = new HashSet<Permissions>();
 		
-		Comment comment = (targetId != null ? comments.findOne((Long)targetId) : null); 
+		Comment comment = comments.findById((Long)targetId).orElse(null);
 		
 		if(comment != null && comment.getOwner() != null && comment.getOwner().equals(user))
 			resultPerms.addAll(Arrays.asList(OWNER_DEFAULT_PERMS));

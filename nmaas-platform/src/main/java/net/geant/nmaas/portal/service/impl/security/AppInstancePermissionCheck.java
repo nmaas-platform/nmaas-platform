@@ -1,11 +1,7 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -70,13 +66,13 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 		
 		Set<Permissions> resultPerms = new HashSet<Permissions>();
 		
-		AppInstance appInstance = appInstances.findOne((Long)targetId);
-		if(appInstance == null)
+		Optional<AppInstance> appInstance = appInstances.findById((Long)targetId);
+		if(!appInstance.isPresent())
 			return resultPerms;
+
+		Domain domain = (appInstance.get().getDomain() != null ? appInstance.get().getDomain() : domains.getGlobalDomain().get());
 		
-		Domain domain = (appInstance.getDomain() != null ? appInstance.getDomain() : domains.getGlobalDomain().get());
-		
-		if(appInstance != null && appInstance.getOwner() != null && appInstance.getOwner().equals(user))
+		if(appInstance != null && appInstance.get().getOwner() != null && appInstance.get().getOwner().equals(user))
 			resultPerms.addAll(Arrays.asList(OWNER_DEFAULT_PERMS));
 		else
 			for(UserRole role : user.getRoles())

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.tomcat.jni.Proc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,15 +38,14 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	
 	@Override
 	public boolean isActive(Id id) {
-		boolean isActive = Optional.ofNullable(appSubRepo.findOne(id))
-									.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive()))
-									.orElse(false);
+		boolean isActive = appSubRepo.findById(id)
+				.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive())).orElse(false);
 		return isActive;
 	}
 
 	@Override
 	public boolean isActive(Long applicationId, Long domainId) {
-		boolean isActive = appSubRepo.findOne(domainId, applicationId)
+		boolean isActive = appSubRepo.findByDomainAndApplicationId(domainId, applicationId)
 									.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive()))
 									.orElse(false);
 		return isActive;
@@ -53,7 +53,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 	@Override
 	public boolean isActive(Application application, Domain domain) {
-		boolean isActive = appSubRepo.findOne(domain, application)
+		boolean isActive = appSubRepo.findByDomainAndApplication(domain, application)
 				.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive()))
 				.orElse(false);
 		return isActive;
@@ -62,37 +62,37 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	@Override
 	public boolean existsSubscription(Id id) {
 		checkParam(id);
-		return appSubRepo.exists(id);
+		return appSubRepo.existsById(id);
 	}
 
 	@Override
 	public boolean existsSubscription(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
-		return appSubRepo.exists(domainId, applicationId);
+		return appSubRepo.existsByDomainAndApplicationId(domainId, applicationId);
 	}
 
 	@Override
 	public boolean existsSubscription(Application application, Domain domain) {
 		checkParam(application, domain);
-		return appSubRepo.exists(domain, application);
+		return appSubRepo.existsByDomainAndApplication(domain, application);
 	}
 
 	@Override
 	public Optional<ApplicationSubscription> getSubscription(Id id) {
 		checkParam(id);
-		return Optional.ofNullable(appSubRepo.findOne(id));
+		return appSubRepo.findById(id);
 	}
 
 	@Override
 	public Optional<ApplicationSubscription> getSubscription(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
-		return appSubRepo.findOne(domainId, applicationId);
+		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
 	}
 
 	@Override
 	public Optional<ApplicationSubscription> getSubscription(Application application, Domain domain) {
 		checkParam(application, domain);
-		return appSubRepo.findOne(domain, application);
+		return appSubRepo.findByDomainAndApplication(domain, application);
 	}
 	
 	@Override
@@ -115,7 +115,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		else if(applicationId != null)
 			return appSubRepo.findAllByApplication(applicationId);
 		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domainId, applicationId);
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
 			return Arrays.asList(res.orElse(null));
 		}
 	}
@@ -129,7 +129,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		else if(applicationId != null)
 			return appSubRepo.findAllByApplication(applicationId, pageable);
 		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domainId, applicationId);
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
 			return new PageImpl<ApplicationSubscription>(Arrays.asList(res.orElse(null)), 
 														pageable, 
 														res.isPresent() ? 1 : 0);
@@ -145,7 +145,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		else if(application != null)
 			return appSubRepo.findAllByApplication(application);
 		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domain, application);
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
 			return Arrays.asList(res.orElse(null));
 		}		
 	}
@@ -159,7 +159,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		else if(application != null)
 			return appSubRepo.findAllByApplication(application, pageable);
 		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domain, application);
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
 			return new PageImpl<ApplicationSubscription>(Arrays.asList(res.orElse(null)), 
 														pageable, 
 														res.isPresent() ? 1 : 0);
@@ -170,8 +170,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public ApplicationSubscription subscribe(ApplicationSubscription appSub) throws ObjectAlreadyExistsException, ProcessingException {
 		checkParam(appSub);
 		
-		if(appSubRepo.exists(appSub.getId()))
-			appSub = appSubRepo.findOne(appSub.getId());
+		appSub = appSubRepo.findById(appSub.getId()).orElseThrow(() -> new ProcessingException("App subscription nto found"));
 		
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);
@@ -190,7 +189,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		Domain domain = getDomain(domainId);
 		Application application = getApplication(applicationId);
 
-		ApplicationSubscription appSub = appSubRepo.findOne(domainId, applicationId).orElse(new ApplicationSubscription(domain, application));
+		ApplicationSubscription appSub = appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElse(new ApplicationSubscription(domain, application));
 
 		return subscribe(appSub);
 	}
@@ -199,7 +198,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public ApplicationSubscription subscribe(Application application, Domain domain, boolean active) throws ObjectAlreadyExistsException, ProcessingException {
 		checkParam(application, domain);
 		
-		ApplicationSubscription appSub = appSubRepo.findOne(domain, application).orElse(new ApplicationSubscription(domain, application));
+		ApplicationSubscription appSub = appSubRepo.findByDomainAndApplication(domain, application).orElse(new ApplicationSubscription(domain, application));
 
 		return subscribe(appSub);
 	}
@@ -210,7 +209,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 		if(appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication()))
 			return true;
-		else if(!appSubRepo.exists(appSub.getId()))
+		else if(!appSubRepo.existsById(appSub.getId()))
 			throw new ObjectNotFoundException("Application subscription not found.");
 		
 		appSub.setActive(false);
@@ -253,31 +252,32 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	protected ApplicationSubscription findApplicationSubscription(Id id) throws ObjectNotFoundException {
-		ApplicationSubscription appSub = appSubRepo.findOne(id);
-		if(appSub == null)
-			throw new ObjectNotFoundException("Application subscription not found.");
-		return appSub;			
+		return appSubRepo.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException("Application subscription not found."));
 	}
 	
 	private ApplicationSubscription findApplicationSubscription(Long applicationId, Long domainId)
 			throws ObjectNotFoundException {
-		return appSubRepo.findOne(domainId, applicationId).orElseThrow(() -> new ObjectNotFoundException("Application subscription not found."));
+		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElseThrow(() ->
+                new ObjectNotFoundException("Application subscription not found."));
 	}
 	
 	private ApplicationSubscription findApplicationSubscription(Application application, Domain domain)
 			throws ObjectNotFoundException {		
-		return appSubRepo.findOne(domain, application).orElseThrow(() -> new ObjectNotFoundException("Application subscription not found."));
+		return appSubRepo.findByDomainAndApplication(domain, application).orElseThrow(() ->
+                new ObjectNotFoundException("Application subscription not found."));
 	}
 	
 	protected Domain getDomain(Long domainId) throws ObjectNotFoundException {
 		checkParam(domainId, "domainId");
-		return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain " + domainId + " not found."));
+		return domains.findDomain(domainId).orElseThrow(() ->
+                new ObjectNotFoundException("Domain " + domainId + " not found."));
 	}
 
 	protected Application getApplication(Long applicationId) throws ObjectNotFoundException {
 		checkParam(applicationId, "applicationId");
-		return applications.findApplication(applicationId)
-				.orElseThrow(() -> new ObjectNotFoundException("Application " + applicationId + " not found."));
+		return applications.findApplication(applicationId).orElseThrow(() ->
+                new ObjectNotFoundException("Application " + applicationId + " not found."));
 	}
 
 	

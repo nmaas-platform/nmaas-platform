@@ -36,9 +36,9 @@ public class CommentPermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(comments.findOne(UsersHelper.COMMENT1.getId())).thenReturn(UsersHelper.COMMENT1);
-		when(comments.findOne(UsersHelper.COMMENT2.getId())).thenReturn(UsersHelper.COMMENT2);
-		when(comments.findOne(UsersHelper.COMMENT3.getId())).thenReturn(UsersHelper.COMMENT3);
+		when(comments.findById(UsersHelper.COMMENT1.getId()).get()).thenReturn(UsersHelper.COMMENT1);
+		when(comments.findById(UsersHelper.COMMENT2.getId()).get()).thenReturn(UsersHelper.COMMENT2);
+		when(comments.findById(UsersHelper.COMMENT3.getId()).get()).thenReturn(UsersHelper.COMMENT3);
 	}
 
 	@After

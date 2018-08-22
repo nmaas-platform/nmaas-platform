@@ -35,9 +35,9 @@ public class AppTemplatePermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(applications.findOne(UsersHelper.APP1.getId())).thenReturn(UsersHelper.APP1);
-		when(applications.findOne(UsersHelper.APP2.getId())).thenReturn(UsersHelper.APP2);
-		when(applications.findOne(UsersHelper.APP3.getId())).thenReturn(UsersHelper.APP3);
+		when(applications.findById(UsersHelper.APP1.getId()).get()).thenReturn(UsersHelper.APP1);
+		when(applications.findById(UsersHelper.APP2.getId()).get()).thenReturn(UsersHelper.APP2);
+		when(applications.findById(UsersHelper.APP3.getId()).get()).thenReturn(UsersHelper.APP3);
 	}
 
 	@After

@@ -73,7 +73,7 @@ public class DcnRepositoryManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeDcnInfo(String domain) throws InvalidDomainException {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
-        dcnInfoRepository.delete(dcnInfo.getId());
+        dcnInfoRepository.delete(dcnInfo);
     }
 
     DcnInfo loadNetwork(String domain) throws InvalidDomainException {

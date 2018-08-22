@@ -76,7 +76,7 @@ public class ApplicationRepositoryTest {
 		Comment comment1 = new Comment(app1, "comment1");
 		commentRepo.save(comment1);
 		
-		app1 = appRepo.findOne(app1.getId());
+		app1 = appRepo.findById(app1.getId()).get();
 		Comment subComment1 = new Comment(app1, comment1, "comment2");
 		commentRepo.save(subComment1);
 		

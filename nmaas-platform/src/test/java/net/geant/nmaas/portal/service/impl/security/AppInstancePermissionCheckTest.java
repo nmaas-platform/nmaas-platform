@@ -47,10 +47,10 @@ public class AppInstancePermissionCheckTest {
 		when(domains.findDomain(UsersHelper.DOMAIN1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1));
 		when(domains.findDomain(UsersHelper.DOMAIN2.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN2));
 		
-		when(appInstances.findOne(UsersHelper.DOMAIN1_APP1.getId())).thenReturn(UsersHelper.DOMAIN1_APP1);
-		when(appInstances.findOne(UsersHelper.DOMAIN1_APP2.getId())).thenReturn(UsersHelper.DOMAIN1_APP2);
-		when(appInstances.findOne(UsersHelper.DOMAIN2_APP1.getId())).thenReturn(UsersHelper.DOMAIN2_APP1);
-		when(appInstances.findOne(UsersHelper.DOMAIN2_APP2.getId())).thenReturn(UsersHelper.DOMAIN2_APP1);
+		when(appInstances.findById(UsersHelper.DOMAIN1_APP1.getId()).get()).thenReturn(UsersHelper.DOMAIN1_APP1);
+		when(appInstances.findById(UsersHelper.DOMAIN1_APP2.getId()).get()).thenReturn(UsersHelper.DOMAIN1_APP2);
+		when(appInstances.findById(UsersHelper.DOMAIN2_APP1.getId()).get()).thenReturn(UsersHelper.DOMAIN2_APP1);
+		when(appInstances.findById(UsersHelper.DOMAIN2_APP2.getId()).get()).thenReturn(UsersHelper.DOMAIN2_APP1);
 	}
 
 	@After

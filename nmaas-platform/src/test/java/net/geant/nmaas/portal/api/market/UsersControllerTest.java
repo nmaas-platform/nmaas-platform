@@ -110,7 +110,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		String newUsername = "newUser1";
 		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), principal);
 
-		User modUser1 = userRepo.findOne(user1.getId());
+		User modUser1 = userRepo.findById(user1.getId()).get();
 		assertEquals(newUsername, modUser1.getUsername());
 	}
 
@@ -131,7 +131,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		String newPass = "newPass";
 		String oldPass = user1.getPassword();
 		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass), principal);
-		User modUser1 = userRepo.findOne(user1.getId());
+		User modUser1 = userRepo.findById(user1.getId()).get();
 
 		assertEquals(user1.getUsername(), modUser1.getUsername());
 		assertNotEquals(oldPass, modUser1.getPassword());

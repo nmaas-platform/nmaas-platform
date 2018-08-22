@@ -46,9 +46,8 @@ public class AppRequestVerificationTask {
     public void trigger(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException, NmServiceRequestVerificationException {
         final Identifier deploymentId = event.getRelatedTo();
         final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        final Application application = appRepository.findOne(Long.valueOf(appDeployment.getApplicationId().getValue()));
-        if (application == null)
-            throw new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository");
+        final Application application = appRepository.findById(Long.valueOf(appDeployment.getApplicationId().getValue())).orElseThrow(() ->
+                new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
         serviceDeployment.verifyRequest(
                 deploymentId,
                 appDeployment.getDeploymentName(),

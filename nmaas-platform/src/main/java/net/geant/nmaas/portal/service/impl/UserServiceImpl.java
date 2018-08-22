@@ -60,7 +60,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	
 	@Override
 	public Optional<User> findById(Long id) {
-		return (id != null ? Optional.ofNullable(userRepo.findOne(id)) : Optional.empty());
+		return (id != null ? userRepo.findById(id) : Optional.empty());
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	@Override
 	public boolean existsById(Long id) {
 		checkParam(id);
-		return userRepo.exists(id);
+		return userRepo.existsById(id);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 		checkParam(user);
 		checkParam(user.getId());
 				
-		if(!userRepo.exists(user.getId()))
+		if(!userRepo.existsById(user.getId()))
 			throw new ProcessingException("User (id=" + user.getId() + " does not exists.");
 		
 		userRepo.saveAndFlush(user);

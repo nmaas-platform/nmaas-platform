@@ -51,7 +51,7 @@ public class DockerHostRepositoryManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeDockerHost(String name) throws DockerHostNotFoundException, DockerHostInvalidException {
         DockerHost dockerHost = loadByName(name);
-        repository.delete(dockerHost.getId());
+        repository.delete(dockerHost);
     }
 
     /**
