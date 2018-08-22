@@ -26,8 +26,8 @@
 				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
 				<td class="text-right">
 					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">Details</a>
-					<a (click)="changeStatus(user.id)" *ngIf="user.enabled && authService.hasRole('ROLE_SUPERADMIN')" class="btn btn-sm btn-warning" role="button">Disable</a>
-					<a (click)="changeStatus(user.id)" *ngIf="!user.enabled && authService.hasRole('ROLE_SUPERADMIN')" class="btn btn-sm btn-warning" role="button">Enable</a>
+					<a (click)="changeUserStatus(user.id, 'false')" *ngIf="user.enabled && authService.hasRole('ROLE_SUPERADMIN')" class="btn btn-sm btn-warning" role="button">Disable</a>
+					<a (click)="changeUserStatus(user.id, 'true')" *ngIf="!user.enabled && authService.hasRole('ROLE_SUPERADMIN')" class="btn btn-sm btn-warning" role="button">Enable</a>
 					<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()" (click)="remove(user)" class="btn btn-sm btn-danger" role="button">Remove from domain</a>
 				</td>
 			</tr>

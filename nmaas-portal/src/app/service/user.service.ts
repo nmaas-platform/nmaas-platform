@@ -3,7 +3,7 @@ import {isUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {GenericDataService} from './genericdata.service';
 
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 
 import {Id} from '../model/id';
@@ -11,7 +11,7 @@ import {Password} from '../model/password';
 import {User} from '../model/user';
 import {UserRole, Role} from '../model/userrole';
 import {UserSignup} from '../model/usersignup';
-import {DomainService} from './domain.service';
+import {DomainService} from "./domain.service";
 
 @Injectable()
 export class UserService extends GenericDataService {
@@ -44,12 +44,15 @@ export class UserService extends GenericDataService {
     return this.put<User, any>(this.getUsersUrl() + userId, user);
   }
 
-  public changeUserStatus(userId: number, enabled: boolean): Observable<any, any> {
-    return this.put<any, any>(this.getUsersUrl()  + '/status/' + userId + '?enabled=' + enabled);
+  public changeUserStatus(userId: number, enabled: string): Observable<void> {
+    const params = new HttpParams();
+    params.append('enabled', enabled);
+    debugger;
+    return this.put(this.getEnableOrDisableUsersUrl(userId), {params: params});
   }
 
   public completeRegistration(user: User): Observable<any> {
-    return this.post<User, any>(this.getUsersUrl() + 'my/complete', user);
+    return this.post<User, any>(this.getUsersUrl()+'my/complete', user);
   }
 
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {
@@ -73,6 +76,10 @@ export class UserService extends GenericDataService {
 
   protected getDomainUsersUrl(domainId: number): string {
     return this.appConfig.getApiUrl() + '/domains/' + domainId + '/users/';
+  }
+
+  protected getEnableOrDisableUsersUrl(userId: number): string {
+      return this.appConfig.getApiUrl() + '/users/status/' + userId;
   }
 
 }
