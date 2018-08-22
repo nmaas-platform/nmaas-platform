@@ -81,19 +81,19 @@ public class PortalConfig {
 			@Override
 			public void afterPropertiesSet() throws ProcessingException {
 
-				Optional<Content> tos = contentRepository.findByName("tos");
-				if(!tos.isPresent()){
+				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
+				if(!defaultTermsOfUse.isPresent()){
 					try {
-						addTos("tos", "Terms of use", readContent("classpath:tos.txt"));
+						addContentToDatabase("tos", "Terms of use", readContent("classpath:tos.txt"));
 					}catch (IOException e){
 						throw new ProcessingException("Init error: Terms of use file does not exists.");
 					}
 				}
 
-				Optional<Content> pp = contentRepository.findByName("pp");
-				if(!pp.isPresent()){
+				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("pp");
+				if(!defaultPrivacyPolicy.isPresent()){
 					try {
-						addTos("pp", "Privacy Policy", readContent("classpath:pp.txt"));
+						addContentToDatabase("pp", "Privacy Policy", readContent("classpath:pp.txt"));
 					}catch (IOException e){
 						throw new ProcessingException("Init error: Privacy Policy file does not exists.");
 					}
@@ -101,13 +101,13 @@ public class PortalConfig {
 			}
 
 			private String readContent(String file) throws IOException {
-				Resource res = resourceLoader.getResource(file);
-				return new String(IOUtils.toString(res.getInputStream(), "utf-8"));
+				Resource resource = resourceLoader.getResource(file);
+				return new String(IOUtils.toString(resource.getInputStream(), "utf-8"));
 			}
 
-			private void addTos(String name, String title, String content){
-				Content cnt = new Content(name, title, content);
-				contentRepository.save(cnt);
+			private void addContentToDatabase(String name, String title, String content){
+				Content newContent = new Content(name, title, content);
+				contentRepository.save(newContent);
 			}
 		};
 	}

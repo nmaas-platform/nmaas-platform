@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name="content")
@@ -18,15 +16,8 @@ public class Content {
     @Column
     private String content;
     private String title;
-    //private Date lastUpdate;
 
     public Content(){
-
-    }
-
-    public Content(String name){
-        this.name = name;
-        this.content = "";
     }
 
     public Content(String name, String title, String content){

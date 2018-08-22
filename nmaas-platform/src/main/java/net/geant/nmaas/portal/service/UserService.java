@@ -34,5 +34,5 @@ public interface UserService {
 	void delete(User user) throws MissingElementException, ProcessingException;	
 	void update(User user) throws ProcessingException;
     void setEnabledFlag(Long userId, boolean isEnabled);
-    void setTouAcceptFlag(Long userId, boolean touAccept);
+    void setTermsOfUseAcceptFlag(Long userId, boolean touAccept);
 }

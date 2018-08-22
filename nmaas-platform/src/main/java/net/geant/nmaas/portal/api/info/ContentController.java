@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/content")
 public class ContentController {
-    private static final Logger log = LogManager.getLogger(UsersController.class);
 
     @Autowired
     private ContentRepository contentRepo;
@@ -24,7 +23,6 @@ public class ContentController {
 
     @GetMapping("/{name}")
     public Content getContent(@PathVariable final String name) throws ProcessingException{
-        log.info(String.format("Debug info: %s", name));
         net.geant.nmaas.portal.persistent.entity.Content content = this.getContentByName(name);
         return this.modelMapper.map(content, Content.class);
     }

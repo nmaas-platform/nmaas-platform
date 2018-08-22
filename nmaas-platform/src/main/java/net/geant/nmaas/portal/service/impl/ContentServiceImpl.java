@@ -25,7 +25,7 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
     }
 
     @Override
-    public Content createNew(String name, String content, String title) throws ObjectAlreadyExistsException{
+    public Content createNewContentRecord(String name, String content, String title) throws ObjectAlreadyExistsException{
         checkParam(name);
         Optional<Content> cnt = contentRepo.findByName(name);
         if(cnt.isPresent()){

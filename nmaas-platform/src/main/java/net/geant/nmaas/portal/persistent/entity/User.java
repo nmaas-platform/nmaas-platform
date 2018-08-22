@@ -165,7 +165,7 @@ public class User {
 
 	public boolean isTouAccept(){return touAccept;}
 
-	public void setTouAccept(boolean touAccept){this.touAccept = touAccept;}
+	public void setTermsOfUseAcceptFlag(boolean touAccept){this.touAccept = touAccept;}
 
 	@Override
 	public int hashCode() {
