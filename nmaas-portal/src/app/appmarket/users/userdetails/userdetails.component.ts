@@ -7,6 +7,7 @@ import {Router, ActivatedRoute, Params} from '@angular/router';
 import {Location} from '@angular/common';
 import {isUndefined} from 'util';
 import {AuthService} from "../../../auth/auth.service";
+import {Debugger} from 'inspector';
 
 @Component({
   selector: 'app-userdetails',
@@ -39,6 +40,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   }
 
   public onSave($event) {
+    debugger;
     const user: User = $event;
 
     if (!user) {
@@ -46,6 +48,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     }
 
     if(user.id) {
+        Debugger;
       this.userService.updateUser(user.id, user).subscribe((value) => this.router.navigate(['/users/view/', user.id]));
     } else {     
       this.userService.addUser(user.username).subscribe((id) => this.router.navigate(['/users/view/', id.id]));

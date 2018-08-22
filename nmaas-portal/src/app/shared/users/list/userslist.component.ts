@@ -97,7 +97,14 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
    public submit(user:User): void {
        console.log('submit(' + user.username + ')');
+       debugger;
        this.onSave.emit(user);
    }
+
+    public changeStatus(userId: number, enabled: boolean): void {
+        console.log('changeStatus(' + userId + ')');
+        debugger;
+        this.onSave.emit(userId, enabled);
+    }
 
 }
