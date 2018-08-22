@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class AppRequestVerificationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
@@ -44,16 +46,21 @@ public class AppRequestVerificationTask {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void trigger(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException, NmServiceRequestVerificationException {
-        final Identifier deploymentId = event.getRelatedTo();
-        final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        final Application application = appRepository.findOne(Long.valueOf(appDeployment.getApplicationId().getValue()));
-        if (application == null)
-            throw new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository");
-        serviceDeployment.verifyRequest(
-                deploymentId,
-                appDeployment.getDeploymentName(),
-                appDeployment.getDomain(),
-                application.getAppDeploymentSpec());
+        try{
+            final Identifier deploymentId = event.getRelatedTo();
+            final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+            final Application application = appRepository.findOne(Long.valueOf(appDeployment.getApplicationId().getValue()));
+            if (application == null)
+                throw new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository");
+            serviceDeployment.verifyRequest(
+                    deploymentId,
+                    appDeployment.getDeploymentName(),
+                    appDeployment.getDomain(),
+                    application.getAppDeploymentSpec());
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
 }

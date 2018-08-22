@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class DcnRepositoryManager {
 
     private DcnInfoRepository dcnInfoRepository;
@@ -29,7 +31,12 @@ public class DcnRepositoryManager {
 
     @EventListener
     public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidDomainException {
-        updateDcnState(event.getDomain(), event.getState());
+        try{
+            updateDcnState(event.getDomain(), event.getState());
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -76,7 +83,7 @@ public class DcnRepositoryManager {
         dcnInfoRepository.delete(dcnInfo.getId());
     }
 
-    DcnInfo loadNetwork(String domain) throws InvalidDomainException {
+    protected DcnInfo loadNetwork(String domain) throws InvalidDomainException {
         return dcnInfoRepository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
     }
 
