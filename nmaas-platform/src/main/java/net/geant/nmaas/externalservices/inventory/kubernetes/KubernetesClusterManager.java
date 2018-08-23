@@ -194,6 +194,13 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 , KCluster.class);
     }
 
+    public KCluster getClusterById(Long id) throws KubernetesClusterNotFoundException {
+        return modelMapper.map(
+                repository.findById(id).orElseThrow(() ->
+                        new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."))
+                , KCluster.class);
+    }
+
     public void addNewCluster(KCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
         if(repository.count() > 0)
             throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
@@ -217,20 +224,20 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         return "http://" + cluster.getApi().getRestApiHostAddress().getHostAddress() + ":" + cluster.getApi().getRestApiPort();
     }
 
-    public void updateCluster(String name, KCluster updatedKubernetesCluster) throws KubernetesClusterNotFoundException {
-        Optional<KCluster> existingKubernetesCluster = repository.findByName(name);
+    public void updateCluster(Long id, KCluster updatedKubernetesCluster) throws KubernetesClusterNotFoundException {
+        Optional<KCluster> existingKubernetesCluster = repository.findById(id);
         if (!existingKubernetesCluster.isPresent())
-            throw new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository.");
+            throw new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository.");
         else {
-            updatedKubernetesCluster.setId(existingKubernetesCluster.get().getId());
+            updatedKubernetesCluster.setId(id);
             repository.save(updatedKubernetesCluster);
         }
     }
 
-    public void removeCluster(String name) throws KubernetesClusterNotFoundException {
-        KCluster cluster = repository.findByName(name).
-                orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + name + " not found in repository."));
-        repository.delete(cluster.getId());
+    public void removeCluster(Long id) throws KubernetesClusterNotFoundException {
+        KCluster cluster = repository.findById(id).
+                orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."));
+        repository.delete(id);
     }
 
 }

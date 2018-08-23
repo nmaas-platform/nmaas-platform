@@ -50,16 +50,16 @@ public class KubernetesClusterManagerRestController {
     }
 
     /**
-     * Fetch {@link KCluster} instance by name
-     * @param name Unique {@link KCluster} name
+     * Fetch {@link KCluster} instance by id
+     * @param id Unique {@link KCluster} id
      * @return {@link KCluster} instance
-     * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
+     * @throws KubernetesClusterNotFoundException when cluster with given id does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
-    @GetMapping(value = "/{name}")
-    public KCluster getKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
-        return clusterManager.getClusterByName(name);
+    @GetMapping(value = "/{id}")
+    public KCluster getKubernetesCluster(@PathVariable("id") Long id) throws KubernetesClusterNotFoundException {
+        return clusterManager.getClusterById(id);
     }
 
     /**
@@ -79,32 +79,30 @@ public class KubernetesClusterManagerRestController {
 
     /**
      * Update {@link KCluster} instance
-     * @param name Unique {@link KCluster} name
+     * @param id Unique {@link KCluster} id
      * @param cluster {@link KCluster} instance pass to update
-     * @throws KubernetesClusterNotFoundException when cluster with given name does not exist (HttpStatus.NOT_FOUND)
+     * @throws KubernetesClusterNotFoundException when cluster with given id does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
-    @PutMapping(
-            value = "/{name}",
-            consumes = "application/json")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("name") String name, @RequestBody KCluster cluster)
+    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KCluster cluster)
             throws KubernetesClusterNotFoundException {
         cluster.validate();
-        clusterManager.updateCluster(name, cluster);
+        clusterManager.updateCluster(id, cluster);
     }
 
     /**
      * Remove {@link KCluster} instance
-     * @param name Unique {@link KCluster} name
+     * @param id Unique {@link KCluster} id
      * @throws KubernetesClusterNotFoundException when Kubernetes cluster does not exists (HttpStatus.NOT_FOUND)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
-    @DeleteMapping(value = "/{name}")
+    @DeleteMapping(value = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeKubernetesCluster(@PathVariable("name") String name) throws KubernetesClusterNotFoundException {
-        clusterManager.removeCluster(name);
+    public void removeKubernetesCluster(@PathVariable("id") Long id) throws KubernetesClusterNotFoundException {
+        clusterManager.removeCluster(id);
     }
 
     @ExceptionHandler(KubernetesClusterNotFoundException.class)
