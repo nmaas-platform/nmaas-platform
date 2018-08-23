@@ -30,9 +30,8 @@ public class DockerComposeFileTemplateAdminRestController {
     @Transactional
     public DockerComposeFileTemplate getDockerComposeFileTemplate(@PathVariable(value = "appId") Long appId)
             throws MissingElementException, InternalErrorException, DockerComposeFileTemplateNotFoundException {
-        Application app = applications.findOne(appId);
-        if(app == null)
-            throw new MissingElementException("Application with id " + appId + " not found.");
+        Application app = applications.findById(appId).orElseThrow(() ->
+                new MissingElementException("Application with id " + appId + " not found."));
         AppDeploymentSpec appDeploymentSpec = app.getAppDeploymentSpec();
         if (appDeploymentSpec == null)
             throw new InternalErrorException("Application deployment spec for application with id " + appId + " is not set.");
@@ -53,9 +52,8 @@ public class DockerComposeFileTemplateAdminRestController {
     public void setDockerComposeFileTemplate(@PathVariable(value = "appId") Long appId,
             @RequestBody DockerComposeFileTemplate dockerComposeFileTemplate)
             throws MissingElementException, InternalErrorException {
-        Application app = applications.findOne(appId);
-        if(app == null)
-            throw new MissingElementException("Application with id " + appId + " not found.");
+        Application app = applications.findById(appId).orElseThrow(() ->
+                new MissingElementException("Application with id " + appId + " not found."));
         AppDeploymentSpec appDeploymentSpec = app.getAppDeploymentSpec();
         if (appDeploymentSpec == null)
             throw new InternalErrorException("Application deployment spec for application with id " + appId + " is not set.");

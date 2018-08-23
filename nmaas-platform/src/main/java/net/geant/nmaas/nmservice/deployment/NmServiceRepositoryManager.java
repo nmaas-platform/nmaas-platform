@@ -31,8 +31,8 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeService(Identifier deploymentId) throws InvalidDeploymentIdException {
-        NmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        repository.delete(nmServiceInfo.getId());
+        T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+        repository.delete(nmServiceInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

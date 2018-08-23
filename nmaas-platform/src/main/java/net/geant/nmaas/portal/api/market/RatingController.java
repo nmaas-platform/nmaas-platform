@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.security.Principal;
+import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 
@@ -51,9 +52,8 @@ public class RatingController extends AppBaseController {
 		User user = getUser(userId);
 		
 		net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId appRateId = new net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId(app.getId(), user.getId());
-		net.geant.nmaas.portal.persistent.entity.AppRate appRate = ratingRepo.findOne(appRateId);
-		
-		return (appRate != null ? new AppRate(appRate.getRate()) : new AppRate());
+		Optional<net.geant.nmaas.portal.persistent.entity.AppRate> appRate = ratingRepo.findById(appRateId);
+		return appRate.isPresent() ? new AppRate(appRate.get().getRate()) : new AppRate();
 	}
 
 	
@@ -65,9 +65,8 @@ public class RatingController extends AppBaseController {
 		User user = getUser(principal.getName());
 		
 		net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId appRatingId = new net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId(app.getId(), user.getId());
-		net.geant.nmaas.portal.persistent.entity.AppRate appRate = ratingRepo.findOne(appRatingId);
-		if(appRate == null)
-			appRate = new net.geant.nmaas.portal.persistent.entity.AppRate(appRatingId);
+		net.geant.nmaas.portal.persistent.entity.AppRate appRate = ratingRepo.findById(appRatingId)
+				.orElse(new net.geant.nmaas.portal.persistent.entity.AppRate(appRatingId));
 		
 		appRate.setRate(normalizeRate(rate));
 		

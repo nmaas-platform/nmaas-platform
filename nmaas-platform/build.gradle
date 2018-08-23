@@ -1,5 +1,6 @@
 apply from: '../reactor/build.gradle'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: "com.gorylenko.gradle-git-properties"
 
 buildscript {
@@ -10,7 +11,7 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 	}
 }
@@ -19,8 +20,8 @@ gitProperties {
 	gitPropertiesDir = "src/main/resources"
 }
 
-jar {
-	baseName = 'nmaas-platform'
+bootJar {
+	mainClassName = 'net.geant.nmaas.NmaasPlatform'
 }
 
 sourceSets {
@@ -49,13 +50,13 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-devtools')
 
-	compile('org.modelmapper:modelmapper:1.1.0')
-	compile('org.modelmapper.extensions:modelmapper-spring:1.1.0')
+	compile('org.modelmapper:modelmapper:2.2.0')
+	compile('org.modelmapper.extensions:modelmapper-spring:2.2.0')
 	
 	runtime('com.h2database:h2')
-	runtime('mysql:mysql-connector-java')
 	runtime('org.postgresql:postgresql')
-	
+
+
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 	compile('com.spotify:docker-client:8.8.0')
 	compile('org.freemarker:freemarker:2.3.20')
@@ -72,7 +73,7 @@ dependencies {
 
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.security:spring-security-test:4.2.1.RELEASE')
+	testCompile('org.springframework.security:spring-security-test')
 }
 
 task integrationTest(type: Test) {

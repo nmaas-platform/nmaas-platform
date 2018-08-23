@@ -56,7 +56,7 @@ public class DockerHostNetworkRepositoryManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeNetwork(String domain) throws InvalidDomainException {
         DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
-        repository.delete(dockerHostNetwork.getId());
+        repository.delete(dockerHostNetwork);
     }
 
     public boolean checkNetwork(String domain) {

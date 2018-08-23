@@ -81,7 +81,7 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Override
 	public Optional<AppInstance> find(Long appInstanceId) {
 		checkParam(appInstanceId);
-		return Optional.ofNullable(appInstanceRepo.findOne(appInstanceId));
+		return appInstanceRepo.findById(appInstanceId);
 	}
 
 	@Override
