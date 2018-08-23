@@ -45,7 +45,7 @@ public class DummyDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
         notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
     }
 

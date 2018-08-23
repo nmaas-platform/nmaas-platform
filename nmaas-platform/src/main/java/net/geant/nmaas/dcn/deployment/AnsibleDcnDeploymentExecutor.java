@@ -82,8 +82,9 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
         try {
+            storeDcnInfoIfNotExists(domain, dcnSpec);
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUESTED);
             final DockerHostNetwork dockerHostNetwork = dockerHostNetworkRepository
                     .findByDomain(domain)
@@ -111,6 +112,11 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
             throw new DcnRequestVerificationException("Exception during DCN request verification -> " + e.getMessage());
         }
+    }
+
+    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) throws InvalidDomainException {
+        if (!dcnRepositoryManager.exists(domain))
+            dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
     }
 
     @Override
