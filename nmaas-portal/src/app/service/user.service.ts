@@ -3,7 +3,7 @@ import {isUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {GenericDataService} from './genericdata.service';
 
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 
 import {Id} from '../model/id';
