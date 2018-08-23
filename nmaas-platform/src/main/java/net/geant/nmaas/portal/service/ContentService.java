@@ -12,7 +12,7 @@ public interface ContentService {
     Optional<Content> findByName(String username);
     Optional<Content> findById(Long id);
 
-    Content createNew(String name, String content, String title) throws ObjectAlreadyExistsException;
+    Content createNewContentRecord(String name, String content, String title) throws ObjectAlreadyExistsException;
 
     void update(Content content) throws ProcessingException;
     void delete(Content content) throws MissingElementException, ProcessingException;

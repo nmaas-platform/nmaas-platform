@@ -82,7 +82,7 @@ public class BasicAuthController {
 	}
 
     protected void validate(final Optional<String> userName, final Optional<String> password,
-                            String actualPassword, boolean isEnabled, boolean isTouAccepted) throws AuthenticationException{
+                            String actualPassword, boolean isEnabled, boolean istermsOfUseAccepteded) throws AuthenticationException{
         boolean isValid = true;
         if(!userName.isPresent() || !password.isPresent()){
             isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
@@ -91,8 +91,8 @@ public class BasicAuthController {
             if (!isEnabled) {
                 isValid = validateAndLogMessage("User is not active", userName.get());
             }
-            if (!isTouAccepted){
-              isValid = validateAndLogMessage("Terms of Usage were not accepted", userName.get());
+            if (!istermsOfUseAccepteded){
+              isValid = validateAndLogMessage("Terms of Use were not accepted", userName.get());
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {
                 isValid = validateAndLogMessage("Invalid password", userName.get());

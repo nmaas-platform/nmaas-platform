@@ -5,16 +5,16 @@ export class Registration {
     public firstname: string = undefined;
     public lastname: string = undefined;
     public domainId: number = undefined;
-    public touAccept: boolean = undefined;
+    public termsOfUseAccepted: boolean = undefined;
   
 
-    constructor(username: string, password: string, email: string, firstname?: string, lastname?:string, domainId?: number, touAccept?: boolean) {
+    constructor(username: string, password: string, email: string, firstname?: string, lastname?:string, domainId?: number, termsOfUseAccepted?: boolean) {
       this.username = username;
       this.password = password;
       this.email = email;
       this.firstname = firstname;
       this.lastname = lastname;
       this.domainId = domainId;
-      this.touAccept = touAccept;
+      this.termsOfUseAccepted = termsOfUseAccepted;
     }
 }
