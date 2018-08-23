@@ -86,7 +86,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public remove(user:User) {
+  public remove(user: User) {
     this.onDelete.emit(user);
   }
 
@@ -100,8 +100,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
        this.onSave.emit(user);
    }
 
-    public changeUserStatus(userId: number, enabled: string): void {
-      this.userService.changeUserStatus(userId, enabled);
+    public changeUserStatus(user: User, enabled: boolean): void {
+      this.userService.changeUserStatus(user.id, enabled).subscribe();
+      user.enabled = enabled;
     }
 
 }

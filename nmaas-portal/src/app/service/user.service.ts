@@ -44,11 +44,8 @@ export class UserService extends GenericDataService {
     return this.put<User, any>(this.getUsersUrl() + userId, user);
   }
 
-  public changeUserStatus(userId: number, enabled: string): Observable<void> {
-    const params = new HttpParams();
-    params.append('enabled', enabled);
-    debugger;
-    return this.put(this.getEnableOrDisableUsersUrl(userId), {params: params});
+  public changeUserStatus(userId: number, enabled: boolean): Observable<any> {
+    return this.put(this.getEnableOrDisableUsersUrl(userId, enabled), {params: null});
   }
 
   public completeRegistration(user: User): Observable<any> {
@@ -78,8 +75,7 @@ export class UserService extends GenericDataService {
     return this.appConfig.getApiUrl() + '/domains/' + domainId + '/users/';
   }
 
-  protected getEnableOrDisableUsersUrl(userId: number): string {
-      return this.appConfig.getApiUrl() + '/users/status/' + userId;
+  protected getEnableOrDisableUsersUrl(userId: number, enabled: boolean): string {
+      return this.appConfig.getApiUrl() + '/users/status/' + userId + '?enabled=' + enabled;
   }
-
 }
