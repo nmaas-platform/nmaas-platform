@@ -1,11 +1,18 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name="content")
 public class Content {
 
+    @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     Long id;
@@ -17,30 +24,10 @@ public class Content {
     private String content;
     private String title;
 
-    public Content(){
-    }
-
     public Content(String name, String title, String content){
         this.name = name;
         this.title = title;
         this.content = content;
     }
 
-    public void setTitle(String title){ this.title = title;}
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getName(){return this.name;}
-
-    public String getContent(){return this.content;}
-
-    public String getTitle(){return this.title;}
-
-    public Long getId(){return this.id;}
 }
