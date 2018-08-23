@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerHostNetworkRepositoryManager;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class AppDcnRemovalIfRequiredTask {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
@@ -34,9 +36,15 @@ public class AppDcnRemovalIfRequiredTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(AppRemoveDcnIfRequiredEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getRelatedTo();
-        final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
-        return dockerHostNetworkRepositoryManager.checkNetwork(domain) ? null : new DcnRemoveActionEvent(this, domain);
+        try {
+            final Identifier deploymentId = event.getRelatedTo();
+            final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+            return dockerHostNetworkRepositoryManager.checkNetwork(domain) ? null : new DcnRemoveActionEvent(this, domain);
+        } catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+            return null;
+        }
     }
 
 }

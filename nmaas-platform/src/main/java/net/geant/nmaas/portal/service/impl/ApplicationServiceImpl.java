@@ -34,13 +34,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public void delete(Long id) {
 		checkParam(id);
-		Optional.ofNullable(appRepo.findOne(id)).ifPresent((app) -> { app.setDeleted(true); appRepo.save(app); });
+		appRepo.findById(id).ifPresent((app) -> { app.setDeleted(true); appRepo.save(app); });
 	}
 
 	@Override
 	public Optional<Application> findApplication(Long applicationId) {
-		if (applicationId != null) 
-			return Optional.ofNullable(appRepo.findOne(applicationId));
+		if (applicationId != null)
+			return appRepo.findById(applicationId);
 		else
 			throw new IllegalArgumentException("applicationId is null");
 	}

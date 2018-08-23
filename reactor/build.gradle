@@ -13,11 +13,6 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
-	testCompile('junit:junit:4.12')
-	testCompile('org.mockito:mockito-core:1.10.19')
-}
-
 test {
     systemProperties 'property': 'value'    
     afterTest { desc, result ->

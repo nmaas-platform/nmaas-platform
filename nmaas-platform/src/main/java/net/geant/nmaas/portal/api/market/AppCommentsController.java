@@ -72,12 +72,11 @@ public class AppCommentsController extends AppBaseController {
 		if(persistentComment.getId() != null)
 			throw new IllegalStateException("New comment cannot have id.");
 		
-		Optional<User> user = userRepo.findByUsername(principal.getName());
-		if(!user.isPresent())
-			throw new MissingElementException("User not found.");
-		
+		User user = userRepo.findByUsername(principal.getName()).orElseThrow(() ->
+				new MissingElementException("User not found."));
+
 		persistentComment.setApplication(app);
-		persistentComment.setOwner(user.get());
+		persistentComment.setOwner(user);
 
 //		if(persistentParentComment != null) 
 //			commentRepo.save(persistentParentComment);
@@ -119,9 +118,8 @@ public class AppCommentsController extends AppBaseController {
 	private net.geant.nmaas.portal.persistent.entity.Comment getComment(Long commentId) throws MissingElementException {
 		if (commentId == null)
 			throw new MissingElementException("Missing comment id." );
-		net.geant.nmaas.portal.persistent.entity.Comment comment = commentRepo.findOne(commentId);
-		if (comment == null)
-			throw new MissingElementException("Comment id=" + commentId + " not found.");
+		net.geant.nmaas.portal.persistent.entity.Comment comment = commentRepo.findById(commentId).orElseThrow(() ->
+				new MissingElementException("Comment id=" + commentId + " not found."));
 		
 		return comment;
 	}

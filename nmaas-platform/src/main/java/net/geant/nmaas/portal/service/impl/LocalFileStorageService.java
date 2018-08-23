@@ -66,7 +66,7 @@ public class LocalFileStorageService implements FileStorageService {
 
 	@Override
 	public boolean remove(FileInfo fileInfo) throws MissingElementException, StorageException {
-		if(fileInfo != null && fileRepo.exists(fileInfo.getId())) {
+		if(fileInfo != null && fileRepo.existsById(fileInfo.getId())) {
 			fileRepo.delete(fileInfo);
 		
 			try {

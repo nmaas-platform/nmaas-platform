@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class AppEnvironmentPreparationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
@@ -27,6 +29,11 @@ public class AppEnvironmentPreparationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(AppPrepareEnvironmentActionEvent event) throws InvalidDeploymentIdException, CouldNotPrepareEnvironmentException {
-        serviceDeployment.prepareDeploymentEnvironment(event.getRelatedTo());
+        try {
+            serviceDeployment.prepareDeploymentEnvironment(event.getRelatedTo());
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 }

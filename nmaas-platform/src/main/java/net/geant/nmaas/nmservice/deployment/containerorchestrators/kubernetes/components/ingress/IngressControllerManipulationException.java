@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class IngressControllerManipulationException extends Exception {
+public class IngressControllerManipulationException extends RuntimeException {
 
     public IngressControllerManipulationException(String message) {
         super(message);

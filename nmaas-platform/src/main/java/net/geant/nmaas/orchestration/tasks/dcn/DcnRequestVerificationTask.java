@@ -10,18 +10,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class DcnRequestVerificationTask extends BaseDcnTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void trigger(DcnVerifyRequestActionEvent event) throws DcnRequestVerificationException {
-        final String domain = event.getRelatedTo();
-        dcnDeployment.verifyRequest(domain, constructDcnSpec(domain));
+    	try{
+	        final String domain = event.getRelatedTo();
+	        dcnDeployment.verifyRequest(domain, constructDcnSpec(domain));
+    	} catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
     private DcnSpec constructDcnSpec(String domain) {

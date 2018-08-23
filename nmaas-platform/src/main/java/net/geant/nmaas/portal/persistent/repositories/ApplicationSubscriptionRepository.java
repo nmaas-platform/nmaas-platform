@@ -22,10 +22,10 @@ public interface ApplicationSubscriptionRepository extends JpaRepository<Applica
 	 */
 	
 	@Query("SELECT CASE WHEN COUNT(appSub) > 0 THEN true ELSE false END FROM ApplicationSubscription appSub WHERE appSub.id.domain = ?1 AND appSub.id.application = ?2")
-	boolean exists(Domain domain, Application application);
+	boolean existsByDomainAndApplication(Domain domain, Application application);
 
 	@Query("SELECT CASE WHEN COUNT(appSub) > 0 THEN true ELSE false END FROM ApplicationSubscription appSub WHERE appSub.id.domain.id = ?1 AND appSub.id.application.id = ?2")
-	boolean exists(Long domainId, Long applicationId);
+	boolean existsByDomainAndApplicationId(Long domainId, Long applicationId);
 
 	/*
 	 * Is deleted
@@ -45,10 +45,10 @@ public interface ApplicationSubscriptionRepository extends JpaRepository<Applica
 	 */
 	
 	@Query("SELECT appSub FROM ApplicationSubscription appSub WHERE appSub.id.domain = :domain AND appSub.id.application = :application")
-	Optional<ApplicationSubscription> findOne(@Param("domain") Domain domain, @Param("application") Application application);
+	Optional<ApplicationSubscription> findByDomainAndApplication(@Param("domain") Domain domain, @Param("application") Application application);
 	
 	@Query("SELECT appSub FROM ApplicationSubscription appSub WHERE appSub.id.domain.id = :domainId AND appSub.id.application.id = :applicationId")
-	Optional<ApplicationSubscription> findOne(@Param("domainId") Long domainId, @Param("applicationId") Long applicationId);
+	Optional<ApplicationSubscription> findByDomainAndApplicationId(@Param("domainId") Long domainId, @Param("applicationId") Long applicationId);
 
 	/*
 	 * Get all by domain

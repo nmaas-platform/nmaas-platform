@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -36,9 +37,9 @@ public class CommentPermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(comments.findOne(UsersHelper.COMMENT1.getId())).thenReturn(UsersHelper.COMMENT1);
-		when(comments.findOne(UsersHelper.COMMENT2.getId())).thenReturn(UsersHelper.COMMENT2);
-		when(comments.findOne(UsersHelper.COMMENT3.getId())).thenReturn(UsersHelper.COMMENT3);
+		when(comments.findById(UsersHelper.COMMENT1.getId())).thenReturn(Optional.of(UsersHelper.COMMENT1));
+		when(comments.findById(UsersHelper.COMMENT2.getId())).thenReturn(Optional.of(UsersHelper.COMMENT2));
+		when(comments.findById(UsersHelper.COMMENT3.getId())).thenReturn(Optional.of(UsersHelper.COMMENT3));
 	}
 
 	@After

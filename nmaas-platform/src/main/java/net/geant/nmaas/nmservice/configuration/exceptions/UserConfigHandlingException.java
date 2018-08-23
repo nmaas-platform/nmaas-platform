@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration.exceptions;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class UserConfigHandlingException extends Exception {
+public class UserConfigHandlingException extends RuntimeException {
 
     public UserConfigHandlingException(String message) {
         super(message);

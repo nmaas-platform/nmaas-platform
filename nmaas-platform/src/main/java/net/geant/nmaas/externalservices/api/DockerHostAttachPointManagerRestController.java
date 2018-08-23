@@ -75,11 +75,10 @@ public class DockerHostAttachPointManagerRestController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeDockerHostAttachPoint(
             @PathVariable("name") String name) throws DataAccessException, AttachPointNotFoundException {
-        Long id = dockerHostAttachPointRepository
+        DockerHostAttachPoint dhap = dockerHostAttachPointRepository
                 .findByDockerHostName(name)
-                .orElseThrow(() -> new AttachPointNotFoundException(name))
-                .getId();
-        dockerHostAttachPointRepository.delete(id);
+                .orElseThrow(() -> new AttachPointNotFoundException(name));
+        dockerHostAttachPointRepository.delete(dhap);
     }
 
     @ExceptionHandler(AttachPointNotFoundException.class)
