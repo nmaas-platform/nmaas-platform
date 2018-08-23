@@ -20,7 +20,7 @@ export const WelcomeRoutes: Routes = [
         { path: 'registration', component: RegistrationComponent }
       ]
     },
-    { path: 'terms-of-use', component: TermsOfUseComponent },
+    //{ path: 'terms-of-use', component: TermsOfUseComponent },
     { path: 'logout', component: LogoutComponent },
     { path: 'changelog', component: ChangelogComponent },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: {mode: ComponentMode.PROFILVIEW} },

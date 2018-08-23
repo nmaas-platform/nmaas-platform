@@ -17,7 +17,6 @@ import {UserService} from "../service";
 import {CompleteComponent} from "./complete/complete.component";
 import {TermsOfUseComponent} from './terms-of-use/terms-of-use.component';
 import {ContentDisplayService} from "../service/content-display.service";
-import { NmaasModalTermsComponent } from './nmaas-modal-terms/nmaas-modal-terms.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +28,6 @@ import { NmaasModalTermsComponent } from './nmaas-modal-terms/nmaas-modal-terms.
     ProfileComponent,
     CompleteComponent,
     TermsOfUseComponent,
-    NmaasModalTermsComponent,
   ],
   imports: [
     FormsModule,

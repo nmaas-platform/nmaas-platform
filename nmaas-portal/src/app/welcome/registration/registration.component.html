@@ -44,7 +44,7 @@
 
 	<div class="form-group form-group-sm">
 		<input id="touAccept" type="checkbox" class="checkbox-inline" formControlName="touAccept">
-        <label class="control-label">I agree to <a (click)="terms.show()">Terms of use</a>*</label>
+        <label class="control-label">I agree to <a (click)="nmaasModalInfoTerms.show()">Terms of use</a>*</label>
 	</div>
 	
 	<div class="form-group form-group-sm">
@@ -56,3 +56,4 @@
 		<a *ngIf="submitted && !success" class="btn btn-danger btn-block" (click)="refresh()">Failure - {{errorMessage}}</a>
 	</div>
 </form>
+<nmaas-modal-info-terms></nmaas-modal-info-terms>

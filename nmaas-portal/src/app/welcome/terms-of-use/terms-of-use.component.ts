@@ -1,5 +1,4 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Content} from "../../model/content";
 import {ModalComponent} from "../../shared/modal";
@@ -15,9 +14,6 @@ export class TermsOfUseComponent implements OnInit {
   constructor(protected contentDisplayService: ContentDisplayService) {}
 
   public content: Content;
-
-  @ViewChild(ModalComponent)
-  public readonly terms: ModalComponent;
 
   getContent(): void{
     this.contentDisplayService.getContent("tos".toString()).subscribe(content=> this.content = content);
