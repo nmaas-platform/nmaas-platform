@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.e
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class KubernetesTemplateNotFoundException extends Exception {
+public class KubernetesTemplateNotFoundException extends RuntimeException {
 
     public KubernetesTemplateNotFoundException(String message) {
         super(message);

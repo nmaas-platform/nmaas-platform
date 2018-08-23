@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -63,17 +62,6 @@ public class LoggingAspect {
 		} else {
 			logger.log(level, MessageFormat.format(BEFORE_WITH_PARAMS_STRING, name, constructArgumentsString(joinPoint.getArgs())));
 		}
-	}
-
-	@AfterThrowing(
-			value = "@annotation(net.geant.nmaas.utils.logging.Loggable)",
-			throwing = "throwable",
-			argNames = "joinPoint, throwable")
-	public void afterThrowing(JoinPoint joinPoint, Throwable throwable) {
-		Class<? extends Object> clazz = joinPoint.getTarget().getClass();
-		Logger logger = LogManager.getLogger(clazz);
-		String name = joinPoint.getSignature().getName();
-		logger.log(Level.ERROR, MessageFormat.format(AFTER_THROWING, name, throwable.getMessage(), constructArgumentsString(joinPoint.getArgs())));
 	}
 
 	@AfterReturning(

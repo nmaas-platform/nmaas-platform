@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
@@ -17,12 +18,19 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
+@Slf4j
 public class DcnDeploymentStateChangeManager {
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent triggerActionOnStateChange(DcnDeploymentStateChangeEvent event) {
-        return triggerActionEventIfRequired(event.getDomain(), event.getState()).orElse(null);
+        try{
+            return triggerActionEventIfRequired(event.getDomain(), event.getState()).orElse(null);
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+            return null;
+        }
     }
 
     private Optional<ApplicationEvent> triggerActionEventIfRequired(String domain, DcnDeploymentState currentState) {

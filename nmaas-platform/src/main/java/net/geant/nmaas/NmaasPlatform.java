@@ -24,5 +24,4 @@ public class NmaasPlatform {
         eventMulticaster.setTaskExecutor(new SimpleAsyncTaskExecutor());
         return eventMulticaster;
     }
-
 }
