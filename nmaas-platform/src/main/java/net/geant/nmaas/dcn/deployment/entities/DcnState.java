@@ -12,6 +12,8 @@ public enum DcnState {
 
     public static DcnState fromDcnDeploymentState(DcnDeploymentState deploymentState) {
         switch (deploymentState) {
+            case NONE:
+                return NONE;
             case VERIFIED:
                 return DEPLOYED;
             case REMOVED:

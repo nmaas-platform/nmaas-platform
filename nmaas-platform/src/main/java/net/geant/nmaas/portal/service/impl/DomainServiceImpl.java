@@ -1,5 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -41,12 +45,15 @@ public class DomainServiceImpl implements DomainService {
 
 	UserRoleRepository userRoleRepo;
 
+	DcnRepositoryManager dcnRepositoryManager;
+
 	@Autowired
-	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo){
+	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, DcnRepositoryManager dcnRepositoryManager){
 		this.validator = validator;
 		this.domainRepo = domainRepo;
 		this.users = users;
 		this.userRoleRepo = userRoleRepo;
+		this.dcnRepositoryManager = dcnRepositoryManager;
 	}
 
 	@Override
@@ -112,6 +119,19 @@ public class DomainServiceImpl implements DomainService {
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
+	}
+
+	@Override
+	public void storeDcnInfo(String domain) throws InvalidDomainException {
+		this.dcnRepositoryManager.storeDcnInfo(new DcnInfo(constructDcnSpec(domain)));
+	}
+
+	private DcnSpec constructDcnSpec(String domain) {
+		return new DcnSpec(buildDcnName(domain), domain);
+	}
+
+	private String buildDcnName(String domain) {
+		return domain + "-" + System.nanoTime();
 	}
 	
 	@Override

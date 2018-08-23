@@ -21,15 +21,7 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void trigger(DcnVerifyRequestActionEvent event) throws DcnRequestVerificationException {
         final String domain = event.getRelatedTo();
-        dcnDeployment.verifyRequest(domain, constructDcnSpec(domain));
-    }
-
-    private DcnSpec constructDcnSpec(String domain) {
-        return new DcnSpec(buildDcnName(domain), domain);
-    }
-
-    private String buildDcnName(String domain) {
-        return domain + "-" + System.nanoTime();
+        dcnDeployment.verifyRequest(domain);
     }
 
 }

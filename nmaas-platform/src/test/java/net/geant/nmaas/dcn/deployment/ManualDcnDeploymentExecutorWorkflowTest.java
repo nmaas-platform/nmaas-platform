@@ -4,6 +4,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
+import net.geant.nmaas.portal.service.DomainService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ public class ManualDcnDeploymentExecutorWorkflowTest {
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
+    @Autowired
+    private DomainService domainService;
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
     private static final String DOMAIN = "domain";
@@ -38,6 +41,7 @@ public class ManualDcnDeploymentExecutorWorkflowTest {
     @Test
     public void shouldProceedDcnWorkflowToWaitingForOperatorState() throws Exception {
         when(appDeploymentRepositoryManager.loadDomainByDeploymentId(DEPLOYMENT_ID)).thenReturn(DOMAIN);
+        domainService.storeDcnInfo(DOMAIN);
         eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));
         Thread.sleep(500);
         assertThat(dcnRepositoryManager.loadCurrentState(DOMAIN), is(DcnDeploymentState.WAITING_FOR_OPERATOR_CONFIRMATION));

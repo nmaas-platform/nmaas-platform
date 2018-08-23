@@ -26,10 +26,9 @@ public interface DcnDeploymentProvider {
      * Verifies if the requested DCN for given domain can be deployed.
      *
      * @param domain name of the domain
-     * @param dcnSpec specification of the DCN
      * @throws DcnRequestVerificationException if request verification failed
      */
-    void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException;
+    void verifyRequest(String domain) throws DcnRequestVerificationException;
 
     /**
      * Performs actual deployment of the DCN for given domain.

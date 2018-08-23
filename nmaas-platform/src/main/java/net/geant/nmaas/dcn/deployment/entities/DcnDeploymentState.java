@@ -5,6 +5,7 @@ package net.geant.nmaas.dcn.deployment.entities;
  */
 public enum DcnDeploymentState {
 
+    NONE,
     INIT,
     REQUESTED,
     REQUEST_VERIFIED,

@@ -1,8 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
-import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
@@ -46,14 +44,12 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
-        try {
-            storeDcnInfoIfNotExists(domain, dcnSpec);
-            notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
-        } catch(InvalidDomainException e){
+    public void verifyRequest(String domain) throws DcnRequestVerificationException {
+        if(!dcnRepositoryManager.exists(domain)){
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFICATION_FAILED);
-            throw new DcnRequestVerificationException("Exception during DCN request verification -> " + e.getMessage());
+            throw new DcnRequestVerificationException("Exception during DCN request verification -> dcnInfo doesn't exist for " + domain);
         }
+        notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
     }
 
     @Override
@@ -89,12 +85,6 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     private void notifyStateChangeListeners(String domain, DcnDeploymentState state) {
         applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain, state));
-    }
-
-    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) throws InvalidDomainException {
-        if (!dcnRepositoryManager.exists(domain)) {
-            dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
-        }
     }
 
 }
