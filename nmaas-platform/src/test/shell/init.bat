@@ -55,6 +55,37 @@ curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header
 echo.
 
 echo
+echo Domain2
+curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain2.json
+echo.
+
+echo
+echo Register User First with username user1
+curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
+echo.
+echo
+echo Enable User First
+curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+echo.
+echo
+echo Set User First an ADMIN role on Domain One
+curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
+echo.
+
+echo
+echo Register User Second with username user2
+curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2.json
+echo.
+echo
+echo Enable User Second
+curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+echo.
+echo
+echo Set User Second an USER role on Domain One
+curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
+echo.
+
+echo
 echo Register Operator with username operator
 curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3.json
 echo.
@@ -201,28 +232,19 @@ echo ---------------------
 echo By tag:
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
-rem echo.
-rem echo ---------------------
-rem echo Create app2 instance
-rem curl -X POST %API_URL%/domains/2/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
-rem echo.
-rem echo ---------------------
-rem echo Get app instance 1 state
-rem curl -X GET %API_URL%/domains/2/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
-rem echo.
-rem echo ---------------------
-rem echo Get app instance 1
-rem curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
-rem echo.
-rem echo ---------------------
-rem echo Send configuration to instance 1
-rem curl -X POST %API_URL%/domains/2/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
-rem echo.
-rem echo ---------------------
-rem echo Get app instance 1
-rem curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
-
 echo.
 echo ---------------------
-echo Get app 1 logo without token
-curl -X GET %API_URL%/apps/1/logo
+echo Create app1 aubscription to Domain One
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub1.json
+echo
+echo Create app2 aubscription to Domain One
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub2.json
+echo
+echo Create app3 aubscription to Domain One
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub3.json
+echo
+echo Create app3 aubscription to Domain Two
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub4.json
+echo
+echo Get all subscriptions
+curl -X GET %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Accept: application/json"

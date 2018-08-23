@@ -73,7 +73,7 @@ export class RegistrationComponent implements OnInit {
           this.sending = false;
           this.submitted = true;          
           this.success = false;          
-          this.errorMessage = err;
+          this.errorMessage = this.getMessage(err);
         },
         () => {
           this.sending = false;
@@ -90,6 +90,10 @@ export class RegistrationComponent implements OnInit {
     this.submitted = false;
     this.success = false;
     this.errorMessage = '';    
+  }
+
+  public getMessage(err:string){
+      return err.match("409")?"Invalid input data":"Service is unavailable. Please try again later";
   }
 
 }

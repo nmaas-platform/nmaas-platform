@@ -11,6 +11,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.utils.logging.LogLevel;
+import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -53,6 +55,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void deployService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
         try {
             installHelmChart(deploymentId, repositoryManager.loadService(deploymentId));
@@ -91,6 +94,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public boolean checkServiceDeployed(Identifier deploymentId) throws KServiceManipulationException {
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
@@ -101,6 +105,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void deleteService(Identifier deploymentId) throws KServiceManipulationException  {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
@@ -110,6 +115,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
     public void upgradeService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
