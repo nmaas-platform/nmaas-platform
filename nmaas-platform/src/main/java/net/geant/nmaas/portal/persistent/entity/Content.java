@@ -15,7 +15,7 @@ public class Content {
     @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String name;
