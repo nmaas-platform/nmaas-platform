@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.exceptions;
 
-public class PortalException extends Exception {
+public class PortalException extends RuntimeException {
 
 	public PortalException() {
 		super();

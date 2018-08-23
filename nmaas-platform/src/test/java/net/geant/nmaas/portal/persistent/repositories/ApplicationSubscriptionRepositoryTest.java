@@ -73,14 +73,14 @@ public class ApplicationSubscriptionRepositoryTest {
 	
 	@Test
 	public void testExistsDomainApplication() {
-		assertTrue(appSubRepo.exists(domain1, app1));
-		assertFalse(appSubRepo.exists(domain1, app3));
+		assertTrue(appSubRepo.existsByDomainAndApplication(domain1, app1));
+		assertFalse(appSubRepo.existsByDomainAndApplication(domain1, app3));
 	}
 
 	@Test
 	public void testFindOneDomainApplication() {
-		assertTrue(appSubRepo.findOne(domain1, app2).isPresent());
-		assertFalse(appSubRepo.findOne(domain1, app3).isPresent());
+		assertTrue(appSubRepo.findByDomainAndApplication(domain1, app2).isPresent());
+		assertFalse(appSubRepo.findByDomainAndApplication(domain1, app3).isPresent());
 	}
 
 	@Test

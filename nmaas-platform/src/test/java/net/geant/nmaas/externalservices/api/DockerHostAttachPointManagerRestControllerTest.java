@@ -184,10 +184,10 @@ public class DockerHostAttachPointManagerRestControllerTest {
     @Test
     public void shouldRemoveDockerHostAttachPoint() throws Exception {
         Long id = dockerHostAttachPointRepository.save(dockerHostAttachPoint(FIRST_DOCKER_HOST_NAME)).getId();
-        assertThat(dockerHostAttachPointRepository.exists(id), is(true));
+        assertThat(dockerHostAttachPointRepository.existsById(id), is(true));
         mvc.perform(delete(URL_PREFIX + "/dockerhosts/{name}", FIRST_DOCKER_HOST_NAME))
                 .andExpect(status().isNoContent());
-        assertThat(dockerHostAttachPointRepository.exists(id), is(false));
+        assertThat(dockerHostAttachPointRepository.existsById(id), is(false));
     }
 
     @Test

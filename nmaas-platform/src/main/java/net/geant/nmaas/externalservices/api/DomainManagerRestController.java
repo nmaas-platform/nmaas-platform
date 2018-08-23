@@ -50,11 +50,10 @@ public class DomainManagerRestController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeDomainNetworkAttachPoint(
             @PathVariable("domainName") String domainName) throws AttachPointNotFoundException, DataAccessException {
-        Long id = attachPointRepository
+        DomainNetworkAttachPoint dnap = attachPointRepository
                 .findByDomain(domainName)
-                .orElseThrow(() -> new AttachPointNotFoundException(String.valueOf(domainName)))
-                .getId();
-        attachPointRepository.delete(id);
+                .orElseThrow(() -> new AttachPointNotFoundException(String.valueOf(domainName)));
+        attachPointRepository.delete(dnap);
     }
 
     @ExceptionHandler(AttachPointNotFoundException.class)

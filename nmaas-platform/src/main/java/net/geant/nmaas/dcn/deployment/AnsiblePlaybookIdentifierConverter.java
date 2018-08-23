@@ -46,7 +46,7 @@ public class AnsiblePlaybookIdentifierConverter {
         return new String(DatatypeConverter.parseBase64Binary(encodedString));
     }
 
-    public static class AnsiblePlaybookIdentifierConverterException extends Exception {
+    public static class AnsiblePlaybookIdentifierConverterException extends RuntimeException {
         public AnsiblePlaybookIdentifierConverterException(String message) {
             super(message);
         }
