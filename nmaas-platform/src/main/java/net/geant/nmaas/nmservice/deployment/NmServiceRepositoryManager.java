@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Slf4j
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @Autowired
@@ -44,7 +46,12 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @EventListener
     public void notifyStateChange(NmServiceDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
-        updateServiceState(event.getDeploymentId(), event.getState());
+        try{
+            updateServiceState(event.getDeploymentId(), event.getState());
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

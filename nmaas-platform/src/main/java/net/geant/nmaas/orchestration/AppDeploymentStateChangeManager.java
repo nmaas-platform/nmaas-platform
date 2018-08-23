@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -29,10 +30,8 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
+@Slf4j
 public class AppDeploymentStateChangeManager {
-
-    private final static Logger log = LogManager.getLogger(AppDeploymentStateChangeManager.class);
-
     @Autowired
     private AppDeploymentRepositoryManager deploymentRepositoryManager;
 
@@ -73,15 +72,25 @@ public class AppDeploymentStateChangeManager {
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyGenericError(AppDeploymentErrorEvent event) throws InvalidDeploymentIdException {
-        deploymentRepositoryManager.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
+        try{
+            deploymentRepositoryManager.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized void notifyDcnDeployed(DcnDeployedEvent event) {
-        deploymentRepositoryManager.loadAllWaitingForDcn(event.getRelatedTo())
-                .forEach(d -> eventPublisher.publishEvent(
-                        new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT)));
+        try{
+            deploymentRepositoryManager.loadAllWaitingForDcn(event.getRelatedTo())
+                    .forEach(d -> eventPublisher.publishEvent(
+                            new NmServiceDeploymentStateChangeEvent(this, d.getDeploymentId(), NmServiceDeploymentState.READY_FOR_DEPLOYMENT)));
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
 }

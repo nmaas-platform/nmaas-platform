@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class DockerComposeFileTemplateHandlingException extends Exception {
+public class DockerComposeFileTemplateHandlingException extends RuntimeException {
 
     public DockerComposeFileTemplateHandlingException(String message) {
         super(message);

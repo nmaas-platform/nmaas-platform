@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.exceptions;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class CouldNotVerifyNmServiceException extends Exception {
+public class CouldNotVerifyNmServiceException extends RuntimeException {
 
     public CouldNotVerifyNmServiceException(String message) {
         super(message);

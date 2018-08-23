@@ -354,7 +354,7 @@ public class AnsiblePlaybookVpnConfig {
         REMOVE
     }
 
-    public class AnsiblePlaybookVpnConfigInvalidException extends Exception {
+    public class AnsiblePlaybookVpnConfigInvalidException extends RuntimeException {
 
         public AnsiblePlaybookVpnConfigInvalidException(String message) {
             super(message);
