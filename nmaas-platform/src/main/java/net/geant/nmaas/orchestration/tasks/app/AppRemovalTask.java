@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class AppRemovalTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
@@ -25,7 +27,12 @@ public class AppRemovalTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public void trigger(AppRemoveActionEvent event) throws CouldNotRemoveNmServiceException {
-        serviceDeployment.removeNmService(event.getRelatedTo());
+        try{
+            serviceDeployment.removeNmService(event.getRelatedTo());
+        }catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
     }
 
 }

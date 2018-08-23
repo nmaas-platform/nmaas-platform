@@ -78,7 +78,7 @@ public class DockerComposeFileTemplateAdminRestControllerTest extends BaseContro
                 .content(templateJson()))
                 .andExpect(status().isCreated());
         assertThat(templateRepository.count(), equalTo(1L));
-        assertThat(applicationRepository.findOne(appId).getAppDeploymentSpec().getDockerComposeFileTemplate().getComposeFileTemplateContent(),
+        assertThat(applicationRepository.findById(appId).get().getAppDeploymentSpec().getDockerComposeFileTemplate().getComposeFileTemplateContent(),
                 equalTo(templateContent));
         MvcResult result = mvc.perform(get("/api/management/apps/{appId}/dockercompose/template", appId)
                 .header("Authorization", "Bearer " + token))

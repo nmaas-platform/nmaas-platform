@@ -77,11 +77,11 @@ public class KubernetesTemplateAdminRestControllerTest extends BaseControllerTes
                 .content(templateJson()))
                 .andExpect(status().isCreated());
         assertThat(templateRepository.count(), equalTo(1L));
-        assertThat(applicationRepository.findOne(appId).getAppDeploymentSpec().getKubernetesTemplate().getArchive(),
+        assertThat(applicationRepository.findById(appId).get().getAppDeploymentSpec().getKubernetesTemplate().getArchive(),
                 equalTo("testapp-1.0.0.tgz"));
-        assertThat(applicationRepository.findOne(appId).getAppDeploymentSpec().getKubernetesTemplate().getChart().getName(),
+        assertThat(applicationRepository.findById(appId).get().getAppDeploymentSpec().getKubernetesTemplate().getChart().getName(),
                 equalTo("testapp"));
-        assertThat(applicationRepository.findOne(appId).getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
+        assertThat(applicationRepository.findById(appId).get().getAppDeploymentSpec().getKubernetesTemplate().getChart().getVersion(),
                 equalTo("1.0.0"));
         MvcResult result = mvc.perform(get("/api/management/apps/{appId}/kubernetes/template", appId)
                 .header("Authorization", "Bearer " + token))

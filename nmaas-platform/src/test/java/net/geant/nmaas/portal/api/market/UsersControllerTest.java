@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -80,7 +81,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testGetUsers() {
-		assertEquals(4, userController.getUsers(null).size());
+		assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
 	}
 
 	@Test
@@ -93,7 +94,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		Id id = userController.addUser(new NewUserRequest("tester"));
 		assertNotNull(id);
 
-		assertEquals(5, userController.getUsers(null).size());
+		assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
 	}
 
 	@Test
@@ -110,7 +111,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		String newUsername = "newUser1";
 		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), principal);
 
-		User modUser1 = userRepo.findOne(user1.getId());
+		User modUser1 = userRepo.findById(user1.getId()).get();
 		assertEquals(newUsername, modUser1.getUsername());
 	}
 
@@ -131,7 +132,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		String newPass = "newPass";
 		String oldPass = user1.getPassword();
 		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass), principal);
-		User modUser1 = userRepo.findOne(user1.getId());
+		User modUser1 = userRepo.findById(user1.getId()).get();
 
 		assertEquals(user1.getUsername(), modUser1.getUsername());
 		assertNotEquals(oldPass, modUser1.getPassword());
