@@ -21,7 +21,7 @@ public class DcnInfo {
     private String domain;
 
     @Column(nullable=false)
-    private DcnDeploymentState state = DcnDeploymentState.NONE;
+    private DcnDeploymentState state = DcnDeploymentState.INIT;
 
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
     private DcnCloudEndpointDetails cloudEndpointDetails;
