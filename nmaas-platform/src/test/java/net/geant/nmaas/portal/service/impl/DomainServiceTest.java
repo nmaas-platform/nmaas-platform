@@ -36,7 +36,7 @@ public class DomainServiceTest {
 
     DcnRepositoryManager dcnRepositoryManager = mock(DcnRepositoryManager.class);
 
-    DomainService domainService = mock(DomainService.class);
+    DomainService domainService;
 
     @Before
     public void setup(){
