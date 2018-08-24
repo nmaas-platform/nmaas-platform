@@ -23,7 +23,7 @@ export class RegistrationComponent implements OnInit {
   public errorMessage: string = '';
 
     @ViewChild(ModalInfoTermsComponent)
-    public readonly nmaasModalInfoTerms: ModalInfoTermsComponent;
+    public readonly modalInfoTerms: ModalInfoTermsComponent;
 
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;

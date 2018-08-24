@@ -13,10 +13,10 @@ export class ContentDisplayService extends GenericDataService {
     }
 
     public getContent(name: String): Observable<Content>{
-        return this.http.get<Content>(this.getProfileUrl()+name.toString());
+        return this.http.get<Content>(this.getContentUrl()+name.toString());
     }
 
-    protected getProfileUrl(): string{
+    protected getContentUrl(): string{
         return this.appConfig.getApiUrl()+'/content/'
     }
 }
