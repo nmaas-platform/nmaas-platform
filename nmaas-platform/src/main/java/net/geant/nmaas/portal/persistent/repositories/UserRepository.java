@@ -22,4 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     @Modifying
     @Query("update User u set u.touAccept = ?2 where u.id = ?1")
     void settermsOfUseAcceptedFlag(Long userId, boolean touAcceptFlag);
+
+    @Modifying
+    @Query("update User u set u.privacyPolicyAccept = ?2 where u.id = ?1")
+    void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
 }

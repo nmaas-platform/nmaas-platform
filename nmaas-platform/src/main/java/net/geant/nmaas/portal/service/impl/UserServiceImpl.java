@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import lombok.Builder;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -133,6 +134,10 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	@Override
 	@Transactional
 	public void settermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.settermsOfUseAcceptedFlag(userId, touAccept);}
+
+	@Override
+	@Transactional
+	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepo.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
 
 	protected void checkParam(Long id) {
 		if(id == null)

@@ -60,6 +60,9 @@ public class RegistrationController {
 			if(!registration.getTermsOfUseAccepted()){
 				throw new SignupException("Terms of Use were not accepted.");
 			}
+			if(!registration.getPrivacyPolicyAccepted()){
+				throw new SignupException("Privacy Policy were not accepted.");
+			}
 		} catch (ObjectAlreadyExistsException e) {
 			throw new SignupException("User already exists.");
 		} catch (MissingElementException e) {
@@ -72,6 +75,7 @@ public class RegistrationController {
 		newUser.setLastname(registration.getLastname());
 		newUser.setEnabled(false);
 		newUser.settermsOfUseAcceptedFlag(registration.getTermsOfUseAccepted());
+		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
 
 
 

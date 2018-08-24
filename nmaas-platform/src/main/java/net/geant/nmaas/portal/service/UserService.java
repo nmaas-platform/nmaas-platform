@@ -35,4 +35,5 @@ public interface UserService {
 	void update(User user) throws ProcessingException;
     void setEnabledFlag(Long userId, boolean isEnabled);
     void settermsOfUseAcceptedFlag(Long userId, boolean touAccept);
+    void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
 }
