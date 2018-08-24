@@ -6,17 +6,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.jsonwebtoken.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
 import net.geant.nmaas.portal.persistent.entity.User;
 
 @Service("jwtTokenService")
@@ -61,15 +56,6 @@ public class JWTTokenService {
 					.compact();
 	}
 	
-	public boolean validateToken(String token) {
-		try {
-			getClaims(token);
-			return true;
-		} catch(JwtException e) {
-			return false;
-		}
-	}
-	
 	public boolean validateRefreshToken(String token) {
 		try {
 			Claims claims = getClaims(token);
@@ -85,7 +71,7 @@ public class JWTTokenService {
 		
 	}
 	
-	public Claims getClaims(String token) {
+	public Claims getClaims(String token) throws ExpiredJwtException {
 		return Jwts.parser().setSigningKey(jwtSettings.getSigningKey()).parseClaimsJws(token).getBody();
 	}
 	
