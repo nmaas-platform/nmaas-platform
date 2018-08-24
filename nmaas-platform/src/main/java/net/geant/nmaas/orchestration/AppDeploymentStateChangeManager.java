@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -16,8 +16,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +28,7 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-@Slf4j
+@Log4j2
 public class AppDeploymentStateChangeManager {
     @Autowired
     private AppDeploymentRepositoryManager deploymentRepositoryManager;

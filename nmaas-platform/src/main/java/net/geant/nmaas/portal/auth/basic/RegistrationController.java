@@ -4,8 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.portal.api.auth.Registration;
@@ -32,8 +30,8 @@ import net.geant.nmaas.portal.service.UserService;
 
 @RestController
 @RequestMapping("/api/auth/basic/registration")
+@Log4j2
 public class RegistrationController {
-	private static final Logger log = LogManager.getLogger(RegistrationController.class);
 	@Autowired
 	UserService users;
 	

@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Slf4j
+@Log4j2
 public class AppConfigurationTask {
 
     private NmServiceConfigurationProvider serviceConfiguration;

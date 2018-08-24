@@ -1,10 +1,9 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +17,8 @@ import java.nio.charset.Charset;
  */
 @RestController
 @RequestMapping(value = "/api/configs")
+@Log4j2
 public class NmServiceConfigDownloadRestController {
-
-    private final static Logger log = LogManager.getLogger(NmServiceConfigDownloadRestController.class);
 
     @Autowired
     private NmServiceConfigFileRepository configurations;

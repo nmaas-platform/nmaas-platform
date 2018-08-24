@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
@@ -7,8 +8,6 @@ import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +24,8 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
+@Log4j2
 public class AppDeploymentMonitorRestController {
-
-    private final static Logger log = LogManager.getLogger(AppDeploymentMonitorRestController.class);
 
     private AppDeploymentMonitor deploymentMonitor;
 

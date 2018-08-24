@@ -1,13 +1,12 @@
 package net.geant.nmaas.portal.api.market;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.ApiError;
 import net.geant.nmaas.portal.api.exception.*;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
 import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
 import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,9 +16,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
+@Log4j2
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-	final static Logger log = LogManager.getLogger(ApiExceptionHandler.class);
-	
+
 	@ExceptionHandler(value = { AuthenticationException.class,
 								BasicAuthenticationException.class,
 								AuthenticationMethodNotSupportedException.class,
