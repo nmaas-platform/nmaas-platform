@@ -22,7 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class DomainServiceTest {
 
@@ -120,7 +122,9 @@ public class DomainServiceTest {
     public void shouldUpdateDomain() throws ProcessingException{
         String name = "testdomain";
         String codename = "testdom";
-        this.domainService.updateDomain(new Domain(1L, name, codename));
+        Domain domain = new Domain(1L, name, codename);
+        this.domainService.updateDomain(domain);
+        verify(domainRepository, times(1)).save(domain);
     }
 
     @Test (expected = ProcessingException.class)
@@ -147,6 +151,7 @@ public class DomainServiceTest {
         Domain domain = new Domain(1L, "testdom", "testdom");
         when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         assertTrue(this.domainService.removeDomain(1L));
+        verify(domainRepository, times(1)).delete(domain);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -194,6 +199,7 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMemberRole(domainId, userId, role);
+        verify(userRoleRepo, times(1)).deleteBy(user, domain, role);
     }
 
     @Test
@@ -205,6 +211,7 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMember(domainId, userId);
+        verify(userRoleRepo, times(1)).deleteBy(user, domain);
     }
 
     @Test
@@ -271,7 +278,6 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Set<Domain> result = this.domainService.getUserDomains(userId);
         assertThat("Result mismatch", result.contains(domain));
-
     }
 
 }
