@@ -1,10 +1,12 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -70,9 +72,9 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping("/apps/{appId}/domains/{domainId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	@Transactional(readOnly=true)
-	public ApplicationSubscription getSubscription(@PathVariable Long domainId, @PathVariable Long appId) throws MissingElementException {
-		return appSubscriptions.getSubscription(appId, domainId).map(appSub -> modelMapper.map(appSub, ApplicationSubscription.class))
-				.orElseThrow(() -> new MissingElementException("Subscription not found"));
+	public ResponseEntity<ApplicationSubscription> getSubscription(@PathVariable Long domainId, @PathVariable Long appId) throws MissingElementException {
+		Optional<ApplicationSubscription> appSub = appSubscriptions.getSubscription(appId, domainId).map(sub -> modelMapper.map(sub, ApplicationSubscription.class));
+		return appSub.map(applicationSubscription -> new ResponseEntity<>(applicationSubscription, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 	
 	@GetMapping

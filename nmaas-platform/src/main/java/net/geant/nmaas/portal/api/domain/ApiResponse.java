@@ -1,5 +1,10 @@
 package net.geant.nmaas.portal.api.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ApiResponse {
 	boolean success;
 	
@@ -7,12 +12,4 @@ public class ApiResponse {
 		super();
 		this.success = success;
 	}
-
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}	
 }

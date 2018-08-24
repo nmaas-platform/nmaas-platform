@@ -15,5 +15,5 @@ public class UserToken {
 		this.token = token;
 		this.refreshToken = refreshToken;
 	}
-	
+
 }

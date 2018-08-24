@@ -13,8 +13,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AppRate implements Serializable {
 	
 	@Embeddable
@@ -66,30 +73,10 @@ public class AppRate implements Serializable {
 	AppRateId appRateId;
 	
 	Integer rate;
-
-	protected AppRate() {
-		
-	}
 	
 	public AppRate(AppRateId appRateId) {
 		super();
 		this.appRateId = appRateId;
-	}
-
-	public AppRateId getAppRateId() {
-		return appRateId;
-	}
-
-	public void setAppRateId(AppRateId appRatingId) {
-		this.appRateId = appRatingId;
-	}
-
-	public Integer getRate() {
-		return rate;
-	}
-
-	public void setRate(Integer rate) {
-		this.rate = rate;
 	}
 	
 }

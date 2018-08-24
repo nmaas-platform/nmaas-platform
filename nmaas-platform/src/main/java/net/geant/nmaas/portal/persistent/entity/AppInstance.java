@@ -13,6 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,6 +25,9 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class AppInstance extends DomainAware implements Serializable {
 
 	@Id
@@ -47,10 +54,6 @@ public class AppInstance extends DomainAware implements Serializable {
 	@Basic
 	Identifier internalId;
 	
-	protected AppInstance() {
-		
-	}
-	
 	public AppInstance(Application application, Domain domain, String name) {
 		this.application = application;
 		this.domain = domain;
@@ -71,65 +74,4 @@ public class AppInstance extends DomainAware implements Serializable {
 		this(application, name, domain, owner);
 		this.id = id;
 	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public User getOwner() {
-		return owner;
-	}
-
-	public void setOwner(User owner) {
-		this.owner = owner;
-	}
-
-	public Application getApplication() {
-		return application;
-	}
-
-	public void setApplication(Application application) {
-		this.application = application;
-	}
-
-	public String getConfiguration() {
-		return configuration;
-	}
-
-	public void setConfiguration(String configuration) {
-		this.configuration = configuration;
-	}
-
-	public Long getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Long createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Identifier getInternalId() {
-		return internalId;
-	}
-
-	public void setInternalId(Identifier internalId) {
-		this.internalId = internalId;
-	}
-	
-	
-	
 }

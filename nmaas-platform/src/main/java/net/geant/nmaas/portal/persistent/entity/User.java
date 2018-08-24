@@ -12,9 +12,16 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class User {
 
 	@Id
@@ -38,9 +45,6 @@ public class User {
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
 	private List<UserRole> roles = new ArrayList<UserRole>();
-
-	protected User() {
-	}
 	
 	public User(String username) {
 		this.username = username;
@@ -88,79 +92,12 @@ public class User {
 		this.roles = roles;
 	}
 
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public void clearRoles() {
 		this.roles.clear();
 	}
 
 	public void setNewRoles(Set<UserRole> roles) {
 		this.roles.addAll(roles);
-	}
-	
-	public void setRoles(List<UserRole> roles) {
-		this.roles = roles;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getSamlToken() { return samlToken; }
-
-	public void setSamlToken(String samlToken) { this.samlToken = samlToken; }
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getFirstname() {
-		return firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public List<UserRole> getRoles() {
-		return roles;
 	}
 
 	public boolean isTouAccept(){return touAccept;}
