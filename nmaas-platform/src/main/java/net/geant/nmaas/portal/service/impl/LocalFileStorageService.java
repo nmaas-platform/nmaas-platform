@@ -28,7 +28,6 @@ public class LocalFileStorageService implements FileStorageService {
 	
 	@Override
 	public FileInfo store(MultipartFile file) throws StorageException {
-		Path path = null;
 		try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
@@ -37,7 +36,7 @@ public class LocalFileStorageService implements FileStorageService {
             FileInfo fileInfo = new FileInfo(file.getOriginalFilename(), file.getContentType());
             fileInfo = fileRepo.save(fileInfo);
 
-            Paths.get(uploadDir + File.separator + fileInfo.getId());
+            Path path = Paths.get(uploadDir + File.separator + fileInfo.getId());
             Files.copy(file.getInputStream(), getPath(fileInfo.getId()));
             
             return fileInfo;
