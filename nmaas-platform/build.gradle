@@ -1,7 +1,8 @@
 apply from: '../reactor/build.gradle'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: "com.gorylenko.gradle-git-properties"
+apply plugin: 'com.gorylenko.gradle-git-properties'
+apply plugin: 'org.sonarqube'
 
 buildscript {
 	repositories {
@@ -13,6 +14,7 @@ buildscript {
 	dependencies {
 		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
+		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
 	}
 }
 
@@ -78,7 +80,7 @@ dependencies {
 }
 
 task integrationTest(type: Test) {
-	testClassesDir = sourceSets.integrationTest.output.classesDir
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
 	afterTest { desc, result ->
