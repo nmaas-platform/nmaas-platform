@@ -121,7 +121,7 @@ public class DomainServiceImpl implements DomainService {
 	
 	@Override
 	public Optional<Domain> findDomain(Long id) {		
-		return Optional.ofNullable(domainRepo.findOne(id));
+		return domainRepo.findById(id);
 	}
 	
 	@Override

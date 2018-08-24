@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -73,16 +74,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("dcn_ansible"))) {
 			auth.inMemoryAuthentication()
+					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("env_docker-compose"))) {
 			auth.inMemoryAuthentication()
+					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-						.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-						.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
+					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 			auth.inMemoryAuthentication()
+					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);

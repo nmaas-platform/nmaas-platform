@@ -22,8 +22,8 @@ export class ClusterService extends GenericDataService {
         return this.get<ClusterInfo[]>(this.url);
     }
 
-    public getOne(clusterName: string): Observable<Cluster> {
-        return this.get<Cluster>(this.url + clusterName);
+    public getOne(clusterId: number): Observable<Cluster> {
+        return this.get<Cluster>(this.url + clusterId);
     }
 
     public add(cluster: Cluster): Observable<any> {
@@ -31,10 +31,10 @@ export class ClusterService extends GenericDataService {
     }
 
     public update(cluster: Cluster): Observable<any> {
-        return this.put(this.url + cluster.name, cluster);
+        return this.put(this.url + cluster.id, cluster);
     }
 
-    public remove(clusterName: string): Observable<any> {
-        return this.http.delete(this.url + clusterName);
+    public remove(clusterId: number): Observable<any> {
+        return this.http.delete(this.url + clusterId);
     }
 }

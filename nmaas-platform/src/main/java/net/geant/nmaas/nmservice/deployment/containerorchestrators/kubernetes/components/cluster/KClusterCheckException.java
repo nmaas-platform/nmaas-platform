@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class KClusterCheckException extends Exception {
+public class KClusterCheckException extends RuntimeException {
 
     public KClusterCheckException(String message) {
         super(message);

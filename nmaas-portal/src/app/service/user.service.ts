@@ -3,7 +3,7 @@ import {isUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {GenericDataService} from './genericdata.service';
 
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 
 import {Id} from '../model/id';
@@ -44,6 +44,10 @@ export class UserService extends GenericDataService {
     return this.put<User, any>(this.getUsersUrl() + userId, user);
   }
 
+  public changeUserStatus(userId: number, enabled: boolean): Observable<any> {
+    return this.put(this.getEnableOrDisableUsersUrl(userId, enabled), {params: null});
+  }
+
   public completeRegistration(user: User): Observable<any> {
     return this.post<User, any>(this.getUsersUrl()+'my/complete', user);
   }
@@ -71,4 +75,7 @@ export class UserService extends GenericDataService {
     return this.appConfig.getApiUrl() + '/domains/' + domainId + '/users/';
   }
 
+  protected getEnableOrDisableUsersUrl(userId: number, enabled: boolean): string {
+      return this.appConfig.getApiUrl() + '/users/status/' + userId + '?enabled=' + enabled;
+  }
 }

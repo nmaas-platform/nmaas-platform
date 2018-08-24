@@ -4,7 +4,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Configuration
@@ -35,7 +36,7 @@ public class PersistentConfig {
 
 	@Bean
 	@Profile("db_memory")
-	@ConfigurationProperties("db.in_memory")
+	@ConfigurationProperties("db.inmemory")
 	public DataSource inMemoryDataSource() {
 		return DataSourceBuilder.create().build();
 	}
@@ -55,7 +56,7 @@ public class PersistentConfig {
 			
 			@Override
 			@Transactional(propagation=Propagation.REQUIRES_NEW)
-			public User getCurrentAuditor() {
+			public Optional<User> getCurrentAuditor() {
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				if(auth == null)
 					throw new UsernameNotFoundException("Authentication object not found.");
@@ -63,15 +64,12 @@ public class PersistentConfig {
 				String username = auth.getName();
 				if(username == null)
 					throw new UsernameNotFoundException("Username is null.");
+
+				User user = userRepo.findByUsername(username).orElseThrow(()
+						-> new UsernameNotFoundException("User " + username + " not found."));
 				
-				Optional<User> user = userRepo.findByUsername(username);
-				if(!user.isPresent())
-					throw new UsernameNotFoundException("User " + username + " not found.");
-				
-				return user.get();
+				return Optional.of(user);
 			}
-			
 		};
 	}
-	
 }

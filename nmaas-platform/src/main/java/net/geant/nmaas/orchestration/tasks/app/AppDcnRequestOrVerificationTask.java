@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class AppDcnRequestOrVerificationTask {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
@@ -44,16 +46,21 @@ public class AppDcnRequestOrVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getRelatedTo();
-        final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
-        switch(dcnDeployment.checkState(domain)) {
-            case NONE:
-            case REMOVED:
-                return dcnDeploymentEvent(domain);
-            case DEPLOYED:
-                return dcnReadyNotificationEvent(deploymentId);
-            case PROCESSED:
-                return noEvent();
+        try{
+            final Identifier deploymentId = event.getRelatedTo();
+            final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+            switch(dcnDeployment.checkState(domain)) {
+                case NONE:
+                case REMOVED:
+                    return dcnDeploymentEvent(domain);
+                case DEPLOYED:
+                    return dcnReadyNotificationEvent(deploymentId);
+                case PROCESSED:
+                    return noEvent();
+            }
+        } catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
         }
         return noEvent();
     }

@@ -2,7 +2,10 @@ package net.geant.nmaas.portal.api.auth;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+
+@Getter
 public class UserLogin {
 	
 	private String username;
@@ -14,11 +17,4 @@ public class UserLogin {
 		this.password = password;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
 }

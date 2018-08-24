@@ -2,7 +2,11 @@ package net.geant.nmaas.portal.api.auth;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@Getter
 public class Registration {
 	private String username;
 	
@@ -17,10 +21,6 @@ public class Registration {
 	private Long domainId;
 
 	private Boolean termsOfUseAccepted;
-	
-	protected Registration() {
-		
-	}
 	
 	public Registration(String username) {
 		this.username = username;
@@ -43,29 +43,4 @@ public class Registration {
 		this.termsOfUseAccepted = termsOfUseAccepted;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getFirstname() {
-		return firstname;
-	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public Long getDomainId() {
-		return domainId;
-	}
-
-	public Boolean gettermsOfUseAcceptedFlag() { return termsOfUseAccepted; }
 }
