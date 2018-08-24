@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.api;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
@@ -7,8 +8,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -24,9 +23,8 @@ import java.nio.charset.Charset;
 @RestController
 @Profile("env_docker-compose")
 @RequestMapping(value = "/api/dockercompose/files")
+@Log4j2
 public class DockerComposeFileDownloadRestController {
-
-    private final static Logger log = LogManager.getLogger(DockerComposeFileDownloadRestController.class);
 
     @Autowired
     private DockerComposeServiceRepositoryManager repositoryManager;

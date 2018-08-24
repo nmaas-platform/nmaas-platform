@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -7,13 +8,11 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Slf4j
+@Log4j2
 public class DcnDeploymentTask extends BaseDcnTask {
 
     @EventListener

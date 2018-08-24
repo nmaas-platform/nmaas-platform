@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
@@ -10,13 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Slf4j
+@Log4j2
 public class DcnRequestVerificationTask extends BaseDcnTask {
 
     @EventListener
@@ -39,5 +38,4 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
     private String buildDcnName(String domain) {
         return domain + "-" + System.nanoTime();
     }
-
 }

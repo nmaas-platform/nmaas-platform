@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.domain.NewUserRequest;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
@@ -15,8 +16,6 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -46,8 +45,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
+@Log4j2
 public class UsersController {
-    private static final Logger log = LogManager.getLogger(UsersController.class);
 
 	@Autowired
 	UserService userService;

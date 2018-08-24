@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-@Slf4j
+@Log4j2
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @Autowired

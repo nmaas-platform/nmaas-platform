@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -26,7 +27,9 @@ public interface DomainService {
 	Domain createDomain(String name, String codename) throws ProcessingException;
 	Domain createDomain(String name, String codename, boolean active) throws ProcessingException;
 	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) throws ProcessingException;
-	
+
+	void storeDcnInfo(String domain) throws InvalidDomainException;
+
 	Optional<Domain> findDomain(String name);
 	Optional<Domain> findDomain(Long id);
 	Optional<Domain> findDomainByCodename(String codename);

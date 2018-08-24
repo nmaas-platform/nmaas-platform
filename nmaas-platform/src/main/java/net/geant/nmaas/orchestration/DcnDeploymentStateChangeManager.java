@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
@@ -18,7 +18,7 @@ import java.util.Optional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
-@Slf4j
+@Log4j2
 public class DcnDeploymentStateChangeManager {
 
     @EventListener

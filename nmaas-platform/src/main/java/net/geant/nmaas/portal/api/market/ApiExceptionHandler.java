@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.ApiError;
@@ -8,8 +9,6 @@ import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSup
 import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
 import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-@Slf4j
+@Log4j2
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(value = { AuthenticationException.class,
 								BasicAuthenticationException.class,
