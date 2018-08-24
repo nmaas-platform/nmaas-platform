@@ -20,7 +20,10 @@ public class Registration {
 	private String lastname;
 	
 	private Long domainId;
-	
+
+
+	private Boolean termsOfUseAccepted;
+
 	public Registration(String username) {
 		this.username = username;
 	}
@@ -31,13 +34,15 @@ public class Registration {
 						@JsonProperty(value="email", required=true) String email,
 						@JsonProperty(value="firstname", required=false) String firstname,
 						@JsonProperty(value="lastname", required=false) String lastname,
-						@JsonProperty(value="domainId", required = false) Long domainId) {
+						@JsonProperty(value="domainId", required = false) Long domainId,
+						@JsonProperty(value="termsOfUseAccepted", required=true) Boolean termsOfUseAccepted){
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.domainId = domainId;
+		this.termsOfUseAccepted = termsOfUseAccepted;
 	}
 
 }
