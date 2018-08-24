@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.e
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
-public class KServiceManipulationException extends Exception {
+public class KServiceManipulationException extends RuntimeException {
 
     public KServiceManipulationException(String message) {
         super(message);

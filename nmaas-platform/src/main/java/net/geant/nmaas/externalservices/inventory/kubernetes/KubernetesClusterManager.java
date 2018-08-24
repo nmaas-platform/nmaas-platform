@@ -237,7 +237,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     public void removeCluster(Long id) throws KubernetesClusterNotFoundException {
         KCluster cluster = repository.findById(id).
                 orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."));
-        repository.delete(id);
+        repository.delete(cluster);
     }
 
 }

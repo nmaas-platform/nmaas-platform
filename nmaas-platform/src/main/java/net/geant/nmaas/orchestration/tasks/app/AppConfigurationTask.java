@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
+@Slf4j
 public class AppConfigurationTask {
 
     private NmServiceConfigurationProvider serviceConfiguration;
@@ -36,12 +38,17 @@ public class AppConfigurationTask {
     @Transactional
     @Loggable(LogLevel.INFO)
     public void trigger(AppApplyConfigurationActionEvent event) throws InvalidDeploymentIdException, NmServiceConfigurationFailedException {
-        final Identifier deploymentId = event.getRelatedTo();
-        final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        serviceConfiguration.configureNmService(
-                deploymentId,
-                appDeployment.getApplicationId(),
-                appDeployment.getConfiguration());
+        try {
+            final Identifier deploymentId = event.getRelatedTo();
+            final AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
+            serviceConfiguration.configureNmService(
+                    deploymentId,
+                    appDeployment.getApplicationId(),
+                    appDeployment.getConfiguration());
+        } catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
+        }
 }
 
 }
