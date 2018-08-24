@@ -145,14 +145,14 @@ public class DomainServiceTest {
     @Test
     public void shouldRemoveDomain(){
         Domain domain = new Domain(1L, "testdom", "testdom");
-        when(domainRepository.findOne(1L)).thenReturn(domain);
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         assertTrue(this.domainService.removeDomain(1L));
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void shouldNotRemoveGlobalDomain(){
         Domain domain = new Domain(1L, "GLOBAL", "GLOBAL");
-        when(domainRepository.findOne(1L)).thenReturn(domain);
+        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
         assertFalse(this.domainService.removeDomain(1L));
     }
 
@@ -165,7 +165,7 @@ public class DomainServiceTest {
         User user = new User("user");
         when(userRoleRepo.findByDomainAndUserAndRole(domain, user, role)).thenReturn(null);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.addMemberRole(domainId, userId, role);
     }
 
@@ -192,7 +192,7 @@ public class DomainServiceTest {
         Domain domain = new Domain(domainId, "testdom", "testdom");
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMemberRole(domainId, userId, role);
     }
 
@@ -203,7 +203,7 @@ public class DomainServiceTest {
         Domain domain = new Domain(domainId, "testdom", "testdom");
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMember(domainId, userId);
     }
 
@@ -214,7 +214,7 @@ public class DomainServiceTest {
         Domain domain = new Domain(domainId, "testdom", "testdom");
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         when(userRoleRepo.findRolesByDomainAndUser(domain, user)).thenReturn(ImmutableSet.of(Role.ROLE_SUPERADMIN));
         Set<Role> roleSet = this.domainService.getMemberRoles(domainId, userId);
         assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SUPERADMIN)));
@@ -227,7 +227,7 @@ public class DomainServiceTest {
         Domain domain = new Domain(domainId, "testdom", "testdom");
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         when(userRoleRepo.findDomainMember(domain, user)).thenReturn(user);
         this.domainService.getMember(domainId, userId);
     }
@@ -239,7 +239,7 @@ public class DomainServiceTest {
         Domain domain = new Domain(domainId, "testdom", "testdom");
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         when(userRoleRepo.findDomainMember(domain, user)).thenReturn(null);
         this.domainService.getMember(domainId, userId);
     }
@@ -249,7 +249,7 @@ public class DomainServiceTest {
         Long domainId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom");
         when(userService.findById(1L)).thenReturn(Optional.empty());
-        when(domainRepository.findOne(domainId)).thenReturn(domain);
+        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.getMember(domainId, 1L);
     }
 
@@ -258,7 +258,7 @@ public class DomainServiceTest {
         Long userId = 1L;
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findOne(1L)).thenReturn(null);
+        when(domainRepository.findById(1L)).thenReturn(Optional.empty());
         this.domainService.getMember(1L, userId);
     }
 
