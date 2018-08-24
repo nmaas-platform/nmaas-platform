@@ -19,9 +19,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name="tag")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class Tag implements Serializable {
 	
 	@Id
@@ -38,41 +45,13 @@ public class Tag implements Serializable {
 //	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns=@JoinColumn(name="application_id"))
 	Set<Application> applications = new HashSet<Application>();
 	
-	protected Tag() {
-		
-	}
-	
 	public Tag(Long id, String name) {
 		this(name);
 		this.id = id;
 	}
-	
+
 	public Tag(String name) {
 		this.name = name;
-	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Set<Application> getApplications() {
-		return applications;
-	}
-
-	public void setApplications(Set<Application> applications) {
-		this.applications = applications;
 	}
 
 	@Override

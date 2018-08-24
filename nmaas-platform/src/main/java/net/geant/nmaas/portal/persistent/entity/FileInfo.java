@@ -6,8 +6,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class FileInfo implements Serializable {
 
 	@Id
@@ -19,33 +26,10 @@ public class FileInfo implements Serializable {
 
 	private String contentType;
 	
-	protected FileInfo() {
-	}
-	
 	public FileInfo(String userFilename, String contentType) {
 		super();
 		this.filename = userFilename;
 		this.contentType = contentType;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	public Long getId() {
-		return id;
 	}
 
 }

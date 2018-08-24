@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import java.util.Optional;
 
+import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,7 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 
+@NoArgsConstructor
 public class AppBaseController {
 
 	@Autowired
@@ -22,10 +24,6 @@ public class AppBaseController {
 
 	@Autowired
 	protected UserService users;
-	
-	public AppBaseController() {
-		super();
-	}
 
 	protected net.geant.nmaas.portal.persistent.entity.Application getApp(Long appId) throws MissingElementException {
 		if(appId == null)

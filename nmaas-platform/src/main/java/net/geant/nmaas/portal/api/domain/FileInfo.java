@@ -1,5 +1,12 @@
 package net.geant.nmaas.portal.api.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
 public class FileInfo {
 	private Id id;
 	
@@ -7,33 +14,4 @@ public class FileInfo {
 
 	private String contentType;
 
-	public FileInfo() {
-	}
-	
-	public String getFilename() {
-		return filename;
-	}
-
-	public Id getId() {
-		return id;
-	}
-
-	public void setId(Id id) {
-		this.id = id;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-	
-	
-	
 }

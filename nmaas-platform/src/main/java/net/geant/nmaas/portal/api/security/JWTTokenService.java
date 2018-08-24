@@ -7,6 +7,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.jsonwebtoken.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,18 +18,13 @@ import org.springframework.stereotype.Service;
 import net.geant.nmaas.portal.persistent.entity.User;
 
 @Service("jwtTokenService")
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class JWTTokenService {
 
 	@Autowired
 	JWTSettings jwtSettings;
-	
-	public JWTTokenService() {
-	}
-	
-	protected JWTTokenService(JWTSettings jwtSettings) {
-		this.jwtSettings = jwtSettings;
-	}
-	
+
 	public String getToken(User user) {
 		if(user == null || StringUtils.isEmpty(user.getUsername())) 
 			throw new IllegalArgumentException("User or username is not set");

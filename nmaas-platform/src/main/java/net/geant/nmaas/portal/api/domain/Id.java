@@ -1,23 +1,16 @@
 package net.geant.nmaas.portal.api.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Id {
 
 	Long id;
-	
-	public Id() {
-		super();
-	}
-	
-	public Id(Long id) {
-		super();
-		this.id = id;
-	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 }
