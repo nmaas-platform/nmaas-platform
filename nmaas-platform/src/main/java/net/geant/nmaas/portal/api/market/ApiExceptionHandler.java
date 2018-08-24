@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.extern.log4j.Log4j2;
+import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.ApiError;
 import net.geant.nmaas.portal.api.exception.*;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
@@ -18,13 +20,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 @Log4j2
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-
 	@ExceptionHandler(value = { AuthenticationException.class,
 								BasicAuthenticationException.class,
 								AuthenticationMethodNotSupportedException.class,
 								MissingTokenException.class,
 								TokenAuthenticationException.class,
-			                    AccessDeniedException.class })
+			                    AccessDeniedException.class,
+								ExpiredJwtException.class})
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public ApiError handleAuthenticationException(WebRequest req, Exception ex) {
 		return createApiError(ex, HttpStatus.UNAUTHORIZED);

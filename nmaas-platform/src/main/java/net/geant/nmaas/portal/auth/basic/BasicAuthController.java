@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.extern.log4j.Log4j2;
+import io.jsonwebtoken.ExpiredJwtException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,19 +61,21 @@ public class BasicAuthController {
 	}
 	
 	@RequestMapping(value="/token", method=RequestMethod.POST)
-	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) throws AuthenticationException {
-		if(userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken()))
-			throw new AuthenticationException("Missing token.");
-		
-		if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
-			Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
-			User user = users.findByUsername(claims.getSubject()).orElseThrow(() -> new AuthenticationException("User in token not found."));
-			if(user != null) {
-				return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
-			}
-		}
-				
-		throw new AuthenticationException("Unable to generate new tokens");
+	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) throws AuthenticationException, ExpiredJwtException{
+	    UserToken userToken = null;
+        if(userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken()))
+        throw new AuthenticationException("Missing token.");
+
+        if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
+            final Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
+            final User user = users.findByUsername(claims.getSubject()).orElseThrow(() -> new AuthenticationException("User in token not found."));
+            if(user != null) {
+                userToken = new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
+            }
+        } else {
+            throw new AuthenticationException("Unable to generate new tokens");
+        }
+        return userToken;
 	}
 	
 	@RequestMapping(value="/ping", method=RequestMethod.GET)
