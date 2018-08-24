@@ -61,15 +61,6 @@ public class JWTTokenService {
 					.compact();
 	}
 	
-	public boolean validateToken(String token) {
-		try {
-			getClaims(token);
-			return true;
-		} catch(JwtException e) {
-			return false;
-		}
-	}
-	
 	public boolean validateRefreshToken(String token) {
 		try {
 			Claims claims = getClaims(token);
