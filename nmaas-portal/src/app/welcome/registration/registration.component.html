@@ -35,11 +35,16 @@
 	</div>
 	
 	<div class="form-group form-group-sm">
-		<label for="domainId" class="control-label">Domain</label> 
+		<label for="domainId" class="control-label">Domain</label>
 		<select id="domainId" class="form-control" formControlName="domainId">
 			<option [value]="null" [selected]="true">Not selected</option>
 			<option *ngFor="let domain of domains | async" [value]="domain?.id">{{domain?.codename}} - {{domain?.name}}</option>
 		</select>
+	</div>
+
+	<div class="form-group form-group-sm">
+		<input id="termsOfUseAccepted" type="checkbox" class="checkbox-inline" formControlName="termsOfUseAccepted">
+        <label for="termsOfUseAccepted" class="control-label">I agree to the <a routerLink="/terms-of-usage" routerLinkActive="active">Terms of Use</a>*</label>
 	</div>
 	
 	<div class="form-group form-group-sm">

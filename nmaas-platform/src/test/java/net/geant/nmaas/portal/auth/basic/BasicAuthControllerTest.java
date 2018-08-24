@@ -29,26 +29,31 @@ public class BasicAuthControllerTest {
 
     @Test
     public void testValidateWithValidUserNameAndPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true);
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithInvalidUserNameAndValidPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.empty(), Optional.of("TEST"), "TEST",true);
+        basicAuthController.validate(Optional.empty(), Optional.of("TEST"), "TEST",true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithValidUserNameAndInvalidPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.empty(), "TEST",true);
+        basicAuthController.validate(Optional.of("TEST"), Optional.empty(), "TEST",true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithInvalidUserNameAndInvalidPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.empty(), Optional.empty(), "TEST",true);
+        basicAuthController.validate(Optional.empty(), Optional.empty(), "TEST",true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false);
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false, true);
+    }
+
+    @Test(expected = AuthenticationException.class)
+    public void testValidateWithValidUserNameAndValidPasswordAndEnabledUserAndTouNotAccepted() throws AuthenticationException {
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, false);
     }
 }

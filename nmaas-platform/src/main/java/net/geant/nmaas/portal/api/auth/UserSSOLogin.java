@@ -15,8 +15,10 @@ import io.jsonwebtoken.impl.TextCodec;
 import io.jsonwebtoken.impl.crypto.DefaultJwtSigner;
 import io.jsonwebtoken.impl.crypto.DefaultSignerFactory;
 import io.jsonwebtoken.impl.crypto.Signer;
+import lombok.Getter;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 
+@Getter
 public class UserSSOLogin {
 
 	private String username;
@@ -53,7 +55,4 @@ public class UserSSOLogin {
 			throw new AuthenticationException("Login data already expired");
 	}
 
-	public String getUsername() {
-		return username;
-	}
 }

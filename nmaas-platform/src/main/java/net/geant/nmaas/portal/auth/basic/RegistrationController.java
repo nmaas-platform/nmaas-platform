@@ -54,7 +54,10 @@ public class RegistrationController {
 		try {
 			newUser = users.register(registration.getUsername());
 			if(newUser == null)
-				throw new SignupException("Unable to register new user");
+				throw new SignupException("Unable to register new user.");
+			if(!registration.getTermsOfUseAccepted()){
+				throw new SignupException("Terms of Use were not accepted.");
+			}
 		} catch (ObjectAlreadyExistsException e) {
 			throw new SignupException("User already exists.");
 		} catch (MissingElementException e) {
@@ -66,7 +69,10 @@ public class RegistrationController {
 		newUser.setFirstname(registration.getFirstname());
 		newUser.setLastname(registration.getLastname());
 		newUser.setEnabled(false);
-		
+		newUser.settermsOfUseAcceptedFlag(registration.getTermsOfUseAccepted());
+
+
+
 		try {
 			users.update(newUser);
             log.info(String.format("The user with user name - %s, first name - %s, last name - %s, email - %s have signed up with domain id - %s.",

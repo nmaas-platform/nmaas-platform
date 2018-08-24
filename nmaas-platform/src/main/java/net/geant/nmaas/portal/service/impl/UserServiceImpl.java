@@ -88,6 +88,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	public User register(String username, boolean enabled, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException {
+
 		checkParam(username);
 		
 		Domain domain = (domainId != null ? domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found")) 
@@ -122,11 +123,16 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 		userRepo.delete(user);
 	}
 
+
 	@Override
 	@Transactional
 	public void setEnabledFlag(Long userId, boolean isEnabled) {
 		userRepo.setEnabledFlag(userId, isEnabled);
 	}
+
+	@Override
+	@Transactional
+	public void settermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.settermsOfUseAcceptedFlag(userId, touAccept);}
 
 	protected void checkParam(Long id) {
 		if(id == null)

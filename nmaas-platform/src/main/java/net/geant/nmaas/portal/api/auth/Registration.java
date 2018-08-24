@@ -2,7 +2,11 @@ package net.geant.nmaas.portal.api.auth;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@Getter
 public class Registration {
 	private String username;
 	
@@ -15,10 +19,8 @@ public class Registration {
 	private String lastname;
 	
 	private Long domainId;
-	
-	protected Registration() {
-		
-	}
+
+	private Boolean termsOfUseAccepted;
 	
 	public Registration(String username) {
 		this.username = username;
@@ -30,37 +32,15 @@ public class Registration {
 						@JsonProperty(value="email", required=true) String email,
 						@JsonProperty(value="firstname", required=false) String firstname,
 						@JsonProperty(value="lastname", required=false) String lastname,
-						@JsonProperty(value="domainId", required = false) Long domainId) {
+						@JsonProperty(value="domainId", required = false) Long domainId,
+						@JsonProperty(value="termsOfUseAccepted", required=true) Boolean termsOfUseAccepted){
 		this.username = username;
 		this.password = password;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.domainId = domainId;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getFirstname() {
-		return firstname;
-	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public Long getDomainId() {
-		return domainId;
+		this.termsOfUseAccepted = termsOfUseAccepted;
 	}
 
 }
