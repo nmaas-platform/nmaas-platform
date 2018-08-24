@@ -6,13 +6,13 @@ import {PasswordValidator} from '../../shared/common/password/password.component
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
-import {NmaasModalInfoTermsComponent} from "../../shared/modal/nmaas-modal-info-terms/nmaas-modal-info-terms.component";
+import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 
 @Component({
   selector: 'nmaas-registration',
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.css'],
-    providers: [NmaasModalInfoTermsComponent]
+    providers: [ModalInfoTermsComponent]
 })
 export class RegistrationComponent implements OnInit {
 
@@ -22,8 +22,8 @@ export class RegistrationComponent implements OnInit {
   public success: boolean = false;
   public errorMessage: string = '';
 
-    @ViewChild(NmaasModalInfoTermsComponent)
-    public readonly nmaasModalInfoTerms: NmaasModalInfoTermsComponent;
+    @ViewChild(ModalInfoTermsComponent)
+    public readonly nmaasModalInfoTerms: ModalInfoTermsComponent;
 
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
