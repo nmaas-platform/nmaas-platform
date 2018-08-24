@@ -1,4 +1,5 @@
 export class ClusterInfo {
+    public id: number;
     public helmHostAddress: string;
     public name: string;
     public restApiHostAddress: string;

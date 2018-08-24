@@ -124,13 +124,16 @@ public class KubernetesClusterManagerRestControllerTest {
     @Test
     public void shouldAddAndRemoveNewKubernetesCluster() throws Exception {
         long sizeBefore = clusterManager.getAllClusters().size();
-        mvc.perform(post(URL_PREFIX)
+        MvcResult result = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated()).andReturn();
+
+        Long newId = Long.parseLong(result.getResponse().getContentAsString());
+
         assertEquals(sizeBefore + 1, clusterManager.getAllClusters().size());
-        mvc.perform(delete(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME))
+        mvc.perform(delete(URL_PREFIX + "/{id}", newId))
                 .andExpect(status().isNoContent());
         assertEquals(sizeBefore, clusterManager.getAllClusters().size());
     }
@@ -162,26 +165,29 @@ public class KubernetesClusterManagerRestControllerTest {
 
     @Test
     public void shouldNotRemoveNotExistingKubernetesCluster() throws Exception {
-        mvc.perform(delete(URL_PREFIX + "/{name}", DIFFERENT_KUBERNETES_CLUSTER_NAME))
+        mvc.perform(delete(URL_PREFIX + "/{id}", -1))
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
 
     @Test
     public void shouldUpdateKubernetesCluster() throws Exception {
-        mvc.perform(post(URL_PREFIX)
+        MvcResult createResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated()).andReturn();
+
+        Long clusterId = Long.parseLong(createResult.getResponse().getContentAsString());
+
         KCluster updated = initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME);
         updated.getApi().setRestApiPort(350);
-        mvc.perform(put(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME)
+        mvc.perform(put(URL_PREFIX + "/{id}", clusterId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(updated))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-        MvcResult result = mvc.perform(get(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME))
+        MvcResult result = mvc.perform(get(URL_PREFIX + "/{id}", clusterId))
                 .andExpect(status().isOk())
                 .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("350"));
@@ -189,7 +195,7 @@ public class KubernetesClusterManagerRestControllerTest {
 
     @Test
     public void shouldNotUpdateNotExistingKubernetesCluster() throws Exception {
-        mvc.perform(put(URL_PREFIX + "/{name}", DIFFERENT_KUBERNETES_CLUSTER_NAME)
+        mvc.perform(put(URL_PREFIX + "/{id}", -1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(DIFFERENT_KUBERNETES_CLUSTER_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
@@ -207,13 +213,16 @@ public class KubernetesClusterManagerRestControllerTest {
     }
 
     @Test
-    public void shouldFetchKubernetesClusterByName() throws Exception {
-        mvc.perform(post(URL_PREFIX)
+    public void shouldFetchKubernetesClusterById() throws Exception {
+        MvcResult createResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        MvcResult result = mvc.perform(get(URL_PREFIX + "/{name}", NEW_KUBERNETES_CLUSTER_NAME))
+                .andExpect(status().isCreated()).andReturn();
+
+        Long newId = Long.parseLong(createResult.getResponse().getContentAsString());
+
+        MvcResult result = mvc.perform(get(URL_PREFIX + "/{id}", newId))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
@@ -222,8 +231,8 @@ public class KubernetesClusterManagerRestControllerTest {
     }
 
     @Test
-    public void shouldNotFetchNotExistingKubernetesClusterByName() throws Exception {
-        mvc.perform(get(URL_PREFIX + "/{name}", DIFFERENT_KUBERNETES_CLUSTER_NAME))
+    public void shouldNotFetchNotExistingKubernetesClusterById() throws Exception {
+        mvc.perform(get(URL_PREFIX + "/{id}", -1))
                 .andExpect(status().isNotFound());
     }
 
