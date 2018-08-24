@@ -14,4 +14,5 @@ public interface KubernetesClusterRepository extends JpaRepository<KCluster, Lon
 
     Optional<KCluster> findByName(String name);
 
+    Optional<KCluster> findById(Long id);
 }

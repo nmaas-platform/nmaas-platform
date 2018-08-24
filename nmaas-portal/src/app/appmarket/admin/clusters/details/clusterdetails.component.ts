@@ -12,7 +12,7 @@ import {ComponentMode} from "../../../../shared";
     styleUrls: ['./clusterdetails.component.css']
 })
 export class ClusterDetailsComponent extends BaseComponent implements OnInit{
-    public clusterName: string;
+    public clusterId: number;
     public cluster: Cluster;
 
     @Output()
@@ -25,11 +25,11 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     ngOnInit() {
         this.clusterService.getAll().subscribe(clusters => {
             if(clusters.length > 0){
-                this.clusterName = clusters[0].name;
-                this.clusterService.getOne(this.clusterName).subscribe(cluster => {
+                this.clusterId = clusters[0].id;
+                this.clusterService.getOne(this.clusterId).subscribe(cluster => {
                     this.cluster = cluster;
                 });
-                this.router.navigate(['/admin/clusters/',this.clusterName])
+                this.router.navigate(['/admin/clusters/',this.clusterId])
             } else{
                 this.cluster = new Cluster();
                 this.mode = ComponentMode.CREATE;
@@ -40,7 +40,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     public onSave($event) {
         const upCluster: Cluster = $event;
         if (!upCluster) return;
-        if(this.clusterName) {
+        if(this.clusterId) {
             this.clusterService.update(upCluster)
                 .subscribe((e) => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
         } else {
