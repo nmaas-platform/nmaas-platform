@@ -72,9 +72,10 @@ public class KubernetesClusterManagerRestController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addKubernetesCluster(@RequestBody KCluster cluster) throws OnlyOneKubernetesClusterSupportedException {
+    public Long addKubernetesCluster(@RequestBody KCluster cluster) throws OnlyOneKubernetesClusterSupportedException {
         cluster.validate();
         clusterManager.addNewCluster(cluster);
+        return cluster.getId();
     }
 
     /**
