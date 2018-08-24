@@ -107,62 +107,62 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 	@Override
 	public List<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId) {
-		if(domainId == null && applicationId == null)
-			return appSubRepo.findAll();
+		if(domainId != null && applicationId != null) {
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
+			return Arrays.asList(res.orElse(null));
+		}
 		else if(domainId != null)
 			return appSubRepo.findAllByDomain(domainId);
 		else if(applicationId != null)
 			return appSubRepo.findAllByApplication(applicationId);
-		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
-			return Arrays.asList(res.orElse(null));
-		}
+		else
+			return appSubRepo.findAll();
 	}
 
 	@Override
 	public Page<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId, Pageable pageable) {
-		if(domainId == null && applicationId == null)
-			return appSubRepo.findAll(pageable);
-		else if(domainId != null)
-			return appSubRepo.findAllByDomain(domainId, pageable);
-		else if(applicationId != null)
-			return appSubRepo.findAllByApplication(applicationId, pageable);
-		else {
+		if(domainId != null && applicationId != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
 			return new PageImpl<ApplicationSubscription>(Arrays.asList(res.orElse(null)), 
 														pageable, 
 														res.isPresent() ? 1 : 0);
 		}
+		else if(domainId != null)
+			return appSubRepo.findAllByDomain(domainId, pageable);
+		else if(applicationId != null)
+			return appSubRepo.findAllByApplication(applicationId, pageable);
+		else
+			return appSubRepo.findAll(pageable);
 	}
 
 	@Override
 	public List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application) {
-		if(domain == null && application == null)
-			return appSubRepo.findAll();
+		if(domain != null && application != null) {
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
+			return Arrays.asList(res.orElse(null));
+		}
 		else if(domain != null)
 			return appSubRepo.findAllByDomain(domain);
 		else if(application != null)
 			return appSubRepo.findAllByApplication(application);
-		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
-			return Arrays.asList(res.orElse(null));
-		}		
+		else
+			return appSubRepo.findAll();
 	}
 
 	@Override
 	public Page<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application, Pageable pageable) {
-		if(domain == null && application == null)
-			return appSubRepo.findAll(pageable);
-		else if(domain != null)
-			return appSubRepo.findAllByDomain(domain, pageable);
-		else if(application != null)
-			return appSubRepo.findAllByApplication(application, pageable);
-		else {
+		if(domain != null && application != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
 			return new PageImpl<ApplicationSubscription>(Arrays.asList(res.orElse(null)), 
 														pageable, 
 														res.isPresent() ? 1 : 0);
 		}
+		else if(domain != null)
+			return appSubRepo.findAllByDomain(domain, pageable);
+		else if(application != null)
+			return appSubRepo.findAllByApplication(application, pageable);
+		else
+			return appSubRepo.findAll(pageable);
 	}
 
 	@Override

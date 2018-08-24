@@ -28,13 +28,14 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException, IOException, ServletException {
-		log.debug("Request: " + request.getRequestURI());
+			throws AuthenticationException {
+		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
+		log.debug("Request: " + reqText);
 		try {
 			return tokenService.getAuthentication(request);
 		} catch(Exception ex) {
-			log.error("Token is not valid for " + (request != null ? request.getRequestURL() : " empty request."), ex);
-			throw new TokenAuthenticationException("Token is not valid"  + (request != null ? request.getRequestURL() : " empty request."));
+			log.error("Token is not valid for " + (request.getRequestURL() != null ? request.getRequestURL() : " empty request."), ex);
+			throw new TokenAuthenticationException("Token is not valid"  + (request.getRequestURL() != null ? request.getRequestURL() : " empty request."));
 		}
 	}
 

@@ -37,7 +37,7 @@ public class LocalFileStorageService implements FileStorageService {
             FileInfo fileInfo = new FileInfo(file.getOriginalFilename(), file.getContentType());
             fileInfo = fileRepo.save(fileInfo);
 
-            Paths.get(uploadDir + File.separator + fileInfo.getId());
+            path = Paths.get(uploadDir + File.separator + fileInfo.getId());
             Files.copy(file.getInputStream(), getPath(fileInfo.getId()));
             
             return fileInfo;
