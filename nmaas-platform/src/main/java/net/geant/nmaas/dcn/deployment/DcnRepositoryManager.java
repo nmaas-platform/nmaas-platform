@@ -1,6 +1,5 @@
 package net.geant.nmaas.dcn.deployment;
 
-import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
@@ -19,7 +18,6 @@ import java.util.List;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Slf4j
 public class DcnRepositoryManager {
 
     private DcnInfoRepository dcnInfoRepository;

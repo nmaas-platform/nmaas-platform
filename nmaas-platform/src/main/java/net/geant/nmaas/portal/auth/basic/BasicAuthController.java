@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
@@ -25,14 +26,12 @@ import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.UserService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @RestController
 @RequestMapping("/api/auth/basic")
+@Log4j2
 public class BasicAuthController {
-    private static final Logger log = LogManager.getLogger(BasicAuthController.class);
-	
+
 	@Autowired
 	private UserService users;
 	

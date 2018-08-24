@@ -96,11 +96,4 @@ public class AppDcnRequestOrVerificationTaskTest {
         assertThat(resultEvent instanceof NmServiceDeploymentStateChangeEvent, is(true));
     }
 
-    @Test
-    public void shouldNotGenerateAnyAction() throws InvalidDeploymentIdException, InvalidDomainException {
-        dcnRepositoryManager.storeDcnInfo(new DcnInfo(new DcnSpec("dcn", DOMAIN)));
-        ApplicationEvent resultEvent = task.trigger(event);
-        assertThat(resultEvent, is(nullValue()));
-    }
-
 }

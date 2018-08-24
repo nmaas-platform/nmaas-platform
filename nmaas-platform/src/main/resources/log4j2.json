@@ -7,7 +7,7 @@
       ]
     },
     "ThresholdFilter":{
-      "level": "debug"
+      "level": "info"
     },
     "appenders":{
         "Console": {
@@ -56,7 +56,59 @@
         },
         {
           "name": "org.springframework",
-          "level": "debug",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.hibernate",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "sun.rmi",
+          "level": "error",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.apache",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "springfox.documentation",
+          "level": "info",
           "additivity": "false",
           "AppenderRef": [
             {
@@ -82,7 +134,7 @@
         }
       ],
       "root": {
-        "level": "debug",
+        "level": "info",
         "AppenderRef": [
           {
             "ref": "nmaas-file"

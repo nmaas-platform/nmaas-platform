@@ -61,7 +61,6 @@ public class AnsibleDcnDeploymentExecutorTest {
     @Test
     public void shouldCheckCurrentDcnState() throws InvalidDomainException {
         String domain = "domain";
-        assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
         DcnInfo dcnInfo = new DcnInfo();
         dcnInfo.setDomain("domain2");
         dcnInfo.setName("name");
@@ -70,7 +69,7 @@ public class AnsibleDcnDeploymentExecutorTest {
         dcnInfo.setDomain(domain);
         dcnInfo.setName("name2");
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
-        assertThat(executor.checkState(domain), equalTo(DcnState.PROCESSED));
+        assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, domain, DcnDeploymentState.VERIFIED));
         assertThat(executor.checkState(domain), equalTo(DcnState.DEPLOYED));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, domain, DcnDeploymentState.REMOVED));

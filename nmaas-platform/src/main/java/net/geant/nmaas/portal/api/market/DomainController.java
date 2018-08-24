@@ -10,6 +10,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -75,8 +76,9 @@ public class DomainController extends AppBaseController {
 		net.geant.nmaas.portal.persistent.entity.Domain domain;
 		try {
 			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass());
+			this.domainService.storeDcnInfo(domain.getCodename());
 			return new Id(domain.getId());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException | InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
 		}
 	}

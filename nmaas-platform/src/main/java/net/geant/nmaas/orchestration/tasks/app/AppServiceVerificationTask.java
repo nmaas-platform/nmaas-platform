@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Slf4j
+@Log4j2
 public class AppServiceVerificationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
