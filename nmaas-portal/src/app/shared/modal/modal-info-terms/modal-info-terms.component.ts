@@ -2,7 +2,7 @@ import {Component, OnInit, Input, ViewChild} from '@angular/core';
 import {ModalComponent} from '../index';
 import {Content} from "../../../model/content";
 import {ContentDisplayService} from "../../../service/content-display.service";
-import {isUndefined} from "util";
+import {isNullOrUndefined, isUndefined} from "util";
 
 @Component({
     selector: 'modal-info-terms',
@@ -25,8 +25,8 @@ export class ModalInfoTermsComponent implements OnInit {
     }
 
     getContent(): void{
-        this.contentDisplayService.getContent("tos".toString()).subscribe(content=> this.content = content);
-        if(!isUndefined(this.content) || this.content == null){
+        this.contentDisplayService.getContent("sos").subscribe(content=> this.content = content);
+        if(isNullOrUndefined(this.content)){
             this.modal.hide();
         }
     }

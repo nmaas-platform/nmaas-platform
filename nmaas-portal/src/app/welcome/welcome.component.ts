@@ -1,5 +1,5 @@
 import { AppConfigService } from '../service/appconfig.service';
-import {Component, ComponentFactoryResolver, NgModule, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-welcome',

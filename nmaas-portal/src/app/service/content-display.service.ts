@@ -12,8 +12,8 @@ export class ContentDisplayService extends GenericDataService {
         super(http, appConfig);
     }
 
-    public getContent(name: String): Observable<Content>{
-        return this.http.get<Content>(this.getContentUrl()+name.toString());
+    public getContent(name: string): Observable<Content>{
+        return this.http.get<Content>(this.getContentUrl()+name);
     }
 
     protected getContentUrl(): string{
