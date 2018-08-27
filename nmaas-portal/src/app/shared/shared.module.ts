@@ -27,7 +27,7 @@ import { ApplicationsViewComponent } from './applications/applications.component
 import { AppElementComponent } from './applications/list/element/appelement.component';
 import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
 import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
-import { NmaasModalInfoTermsComponent } from './modal/nmaas-modal-info-terms/nmaas-modal-info-terms.component';
+import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 
 @NgModule({
   imports: [
@@ -61,7 +61,7 @@ import { NmaasModalInfoTermsComponent } from './modal/nmaas-modal-info-terms/nma
     ApplicationsViewComponent,
     ClusterDetailsComponent,
       GitlabDetailsComponent,
-      NmaasModalInfoTermsComponent
+      ModalInfoTermsComponent
   ],
   providers: [
     PasswordValidator,
@@ -86,7 +86,7 @@ import { NmaasModalInfoTermsComponent } from './modal/nmaas-modal-info-terms/nma
     ApplicationsViewComponent,
     ClusterDetailsComponent,
       GitlabDetailsComponent,
-      NmaasModalInfoTermsComponent
+      ModalInfoTermsComponent
   ]
 })
 export class SharedModule {}

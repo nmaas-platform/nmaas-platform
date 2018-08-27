@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.UserService;
 
 @Component
+@NoArgsConstructor
 public class ApiPermissionEvaluator implements PermissionEvaluator {
 	
 	@Autowired
@@ -22,10 +24,6 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 	
 	@Autowired
 	AclService aclService;
-	
-	public ApiPermissionEvaluator() {
-		
-	}
 
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {

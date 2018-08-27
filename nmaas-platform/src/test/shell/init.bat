@@ -69,7 +69,7 @@ curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header 
 echo.
 echo
 echo Set User First an ADMIN role on Domain One
-curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
+curl -X POST %API_URL%/domains/2/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
 echo.
 
 echo
@@ -82,7 +82,7 @@ curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header 
 echo.
 echo
 echo Set User Second an USER role on Domain One
-curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
+curl -X POST %API_URL%/domains/2/users/3/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
 echo.
 
 echo

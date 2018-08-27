@@ -73,9 +73,6 @@ public class SSOAuthController {
 				user.setSamlToken(userSSOLoginData.getUsername()); //Check user ID TODO: check if it's truly unique!
 				user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_INCOMPLETE)));
 				users.update(user);
-				if(user == null)
-					throw new SignupException("Unable to register new user");
-
 			} catch (ObjectAlreadyExistsException e) {
 				throw new SignupException("User already exists");
 			} catch (MissingElementException e) {

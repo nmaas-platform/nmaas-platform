@@ -1,8 +1,16 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import javax.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class DomainTechDetails {
 
     private boolean dcnConfigured;
@@ -11,35 +19,4 @@ public class DomainTechDetails {
 
     private String kubernetesStorageClass;
 
-    public DomainTechDetails(boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
-        this.dcnConfigured = dcnConfigured;
-        this.kubernetesNamespace = kubernetesNamespace;
-        this.kubernetesStorageClass = kubernetesStorageClass;
-    }
-
-    public DomainTechDetails(){}
-
-    public String getKubernetesNamespace() {
-        return kubernetesNamespace;
-    }
-
-    public void setKubernetesNamespace(String kubernetesNamespace) {
-        this.kubernetesNamespace = kubernetesNamespace;
-    }
-
-    public boolean isDcnConfigured() {
-        return dcnConfigured;
-    }
-
-    public void setDcnConfigured(boolean dcnConfigured) {
-        this.dcnConfigured = dcnConfigured;
-    }
-
-    public String getKubernetesStorageClass() {
-        return kubernetesStorageClass;
-    }
-
-    public void setKubernetesStorageClass(String kubernetesStorageClass) {
-        this.kubernetesStorageClass = kubernetesStorageClass;
-    }
 }

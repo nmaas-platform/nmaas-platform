@@ -1,5 +1,9 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
 import javax.persistence.Basic;
@@ -28,6 +32,9 @@ import java.util.Set;
 @Table(uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"name", "version"})
 })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class Application implements Serializable {
 
 	@Id
@@ -70,8 +77,6 @@ public class Application implements Serializable {
 	private AppDeploymentSpec appDeploymentSpec;
 	
 	private boolean deleted;
-	
-	protected Application() {}
 
 	public Application(String name) {
 		this.name = name;
@@ -80,127 +85,6 @@ public class Application implements Serializable {
 	protected Application(Long id, String name) {
 		this(name);
 		this.id = id;
-	}
-	
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-	
-	public void setLogo(FileInfo logo) {
-		this.logo = logo;
-	}
-
-	public FileInfo getLogo() {
-		return logo;
-	}
-
-	public List<FileInfo> getScreenshots() {
-		return screenshots;
-	}
-
-	public String getBriefDescription() {
-		return briefDescription;
-	}
-
-	public void setBriefDescription(String briefDescription) {
-		this.briefDescription = briefDescription;
-	}
-
-	public String getFullDescription() {
-		return fullDescription;
-	}
-
-	public void setFullDescription(String fullDescription) {
-		this.fullDescription = fullDescription;
-	}
-
-	public ConfigTemplate getConfigTemplate() {
-		return configTemplate;
-	}
-
-	public void setConfigTemplate(ConfigTemplate configTemplate) {
-		this.configTemplate = configTemplate;
-	}
-
-	public Set<Tag> getTags() {
-		return tags;
-	}
-	
-	public void setTags(Set<Tag> tags) {
-		this.tags = tags;
-	}
-
-	public List<Comment> getComments() {
-		return comments;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public String getLicense() {
-		return license;
-	}
-
-	public void setLicense(String license) {
-		this.license = license;
-	}
-
-	public String getWwwUrl() {
-		return wwwUrl;
-	}
-
-	public void setWwwUrl(String wwwUrl) {
-		this.wwwUrl = wwwUrl;
-	}
-
-	public String getSourceUrl() {
-		return sourceUrl;
-	}
-
-	public void setSourceUrl(String sourceUrl) {
-		this.sourceUrl = sourceUrl;
-	}
-
-	public String getIssuesUrl() {
-		return issuesUrl;
-	}
-
-	public void setIssuesUrl(String issuesUrl) {
-		this.issuesUrl = issuesUrl;
-	}
-
-	public AppDeploymentSpec getAppDeploymentSpec() {
-		return appDeploymentSpec;
-	}
-
-	public void setAppDeploymentSpec(AppDeploymentSpec appDeploymentSpec) {
-		this.appDeploymentSpec = appDeploymentSpec;
-	}
-	
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
 	}
 
 	@Override

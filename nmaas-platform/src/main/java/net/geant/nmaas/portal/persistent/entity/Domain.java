@@ -9,11 +9,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(uniqueConstraints = {
 		@UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})
 })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class Domain {
 
 	@Id
@@ -32,9 +39,6 @@ public class Domain {
 	DomainTechDetails domainTechDetails;
 	
 	boolean active;
-	
-	protected Domain() {		
-	}
 
 	public Domain(String name, String codename) {
 		super();
@@ -71,42 +75,6 @@ public class Domain {
 	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
 		this(id, name, codename);
 		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getCodename() {
-		return codename;
-	}
-
-	public void setCodename(String codename) {
-		this.codename = codename;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	public DomainTechDetails getDomainTechDetails(){
-		return this.domainTechDetails;
 	}
 
 	public boolean isDcnConfigured(){

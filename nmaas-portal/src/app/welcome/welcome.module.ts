@@ -15,7 +15,6 @@ import {ProfileComponent} from './profile/profile.component';
 import {AppMarketModule} from "../appmarket";
 import {UserService} from "../service";
 import {CompleteComponent} from "./complete/complete.component";
-import {TermsOfUseComponent} from './terms-of-use/terms-of-use.component';
 import {ContentDisplayService} from "../service/content-display.service";
 
 @NgModule({
@@ -27,7 +26,6 @@ import {ContentDisplayService} from "../service/content-display.service";
     RegistrationComponent,
     ProfileComponent,
     CompleteComponent,
-    TermsOfUseComponent,
   ],
   imports: [
     FormsModule,

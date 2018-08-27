@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TermsOfUseComponent } from './terms-of-use.component';
+import { ModalInfoTermsComponent } from './modal-info-terms.component';
 
-describe('TermsOfUseComponent', () => {
-  let component: TermsOfUseComponent;
-  let fixture: ComponentFixture<TermsOfUseComponent>;
+describe('ModalInfoTermsComponent', () => {
+  let component: ModalInfoTermsComponent;
+  let fixture: ComponentFixture<ModalInfoTermsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TermsOfUseComponent ]
+      declarations: [ ModalInfoTermsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TermsOfUseComponent);
+    fixture = TestBed.createComponent(ModalInfoTermsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

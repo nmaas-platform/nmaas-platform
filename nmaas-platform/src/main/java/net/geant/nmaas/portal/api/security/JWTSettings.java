@@ -1,11 +1,13 @@
 package net.geant.nmaas.portal.api.security;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
 @Component
+@Getter
 public class JWTSettings {
 
 	public enum Scopes {
@@ -23,21 +25,5 @@ public class JWTSettings {
 	
 	@Value("${jwt.refreshTokenValidFor}")
 	private Long refreshTokenExpTime;
-
-	public Long getTokenValidFor() {
-		return tokenValidFor;
-	}
-
-	public String getIssuer() {
-		return issuer;
-	}
-
-	public String getSigningKey() {
-		return signingKey;
-	}
-
-	public Long getRefreshTokenExpTime() {
-		return refreshTokenExpTime;
-	}
 	
 }

@@ -48,8 +48,10 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 			throw new IllegalArgumentException("user is missing");
 		
 		Set<Permissions> resultPerms = new HashSet<Permissions>();
-		
-		Comment comment = comments.findById((Long)targetId).orElse(null);
+
+		Comment comment = null;
+		if(targetId != null)
+			comment = comments.findById((Long)targetId).orElse(null);
 		
 		if(comment != null && comment.getOwner() != null && comment.getOwner().equals(user))
 			resultPerms.addAll(Arrays.asList(OWNER_DEFAULT_PERMS));
