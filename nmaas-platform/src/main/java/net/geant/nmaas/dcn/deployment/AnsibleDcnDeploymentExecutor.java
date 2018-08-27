@@ -6,7 +6,12 @@ import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
-import net.geant.nmaas.dcn.deployment.entities.*;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
@@ -30,13 +35,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
-import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForClientSideRouterConfig;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForClientSideRouterConfigRemoval;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForCloudSideRouterConfig;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForCloudSideRouterConfigRemoval;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.AnsiblePlaybookIdentifierConverterException;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.decode;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.wasEncodedForClientSideRouter;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.wasEncodedForCloudSideRouter;
 
 /**
  * Executor used when DCN should be configured by Ansible playbooks.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("dcn_ansible")

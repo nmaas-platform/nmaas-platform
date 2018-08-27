@@ -9,8 +9,6 @@ import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException
 
 /**
  * Defines a set of methods to manage DCN deployment lifecycle.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface DcnDeploymentProvider {
 
