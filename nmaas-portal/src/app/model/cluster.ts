@@ -6,6 +6,7 @@ class ClusterApi {
     public id: number;
     public restApiHostAddress: string;
     public restApiPort: number;
+    public useKClusterApi: boolean = false;
 }
 
 class ClusterAttachPoint {
