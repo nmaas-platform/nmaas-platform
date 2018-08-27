@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
@@ -28,6 +29,7 @@ public class KubernetesManagerCheckServiceTest {
     private KClusterIngressManager clusterIngressManager = mock(KClusterIngressManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
+    private KClusterApiManager kClusterApiManager = mock(KClusterApiManager.class);
 
     @Before
     public void setup() {
@@ -37,7 +39,8 @@ public class KubernetesManagerCheckServiceTest {
                 serviceOperationsManager,
                 clusterIngressManager,
                 ingressControllerManager,
-                ingressResourceManager);
+                ingressResourceManager,
+                kClusterApiManager);
     }
 
     @Test

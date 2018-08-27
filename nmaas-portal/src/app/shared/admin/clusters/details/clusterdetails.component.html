@@ -66,25 +66,34 @@
                     </div>
                 </div>
             </div>
-
             <div class="panel-default panel-heading">API host:</div>
             <div class="panel-body">
                 <div class="form-group">
+                    <label for="useKClusterApi" class="col-sm-2 control-label">Use KCluster API:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="useKClusterApi" name="useKClusterApi"
+                               [(ngModel)]="cluster.api.useKClusterApi" [checked]="cluster.api.useKClusterApi == true" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group" *ngIf="cluster.api.useKClusterApi">
                     <label for="apihostaddress" class="col-sm-2 control-label">Address:</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="apihostaddress" name="apihostaddress"
                                [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #restaddress="ngModel">
                         <div class="alert alert-danger" *ngIf="restaddress.invalid && (restaddress.dirty || restaddress.touched)">
-                        <div *ngIf="restaddress.errors.required">Rest api host address is required</div>
-                        <div *ngIf="restaddress.errors.pattern">Rest api host address must contain only numbers and dots</div>
-                    </div>
+                            <div *ngIf="restaddress.errors.required">Rest api host address is required</div>
+                            <div *ngIf="restaddress.errors.pattern">Rest api host address must contain only numbers and dots</div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" *ngIf="cluster.api.useKClusterApi">
                     <label for="apihostport" class="col-sm-2 control-label">Port:</label>
                     <div class="col-sm-10">
                         <input type="number" class="form-control no-spin" id="apihostport" name="apihostport"
-                               [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)">
+                               [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)" required #apiport="ngModel">
+                        <div class="alert alert-danger" *ngIf="apiport.invalid && (apiport.dirty || apiport.touched)">
+                            <div *ngIf="apiport.errors.required">Rest api host address is required</div>
+                        </div>
                     </div>
                 </div>
             </div>

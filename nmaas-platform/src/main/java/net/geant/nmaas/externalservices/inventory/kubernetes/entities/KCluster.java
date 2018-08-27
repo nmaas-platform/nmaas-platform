@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,10 @@ public class KCluster {
         ingress.getControllerConfigOption().validate(ingress);
         ingress.getResourceConfigOption().validate(ingress);
         deployment.getNamespaceConfigOption().validate(deployment);
+        if(api.isUseKClusterApi()){
+            checkArgument(api.getRestApiPort() != null, "When using KCluster Api the rest api port can't be empty");
+            checkArgument(api.getRestApiHostAddress() != null, "When using KCluster Api the rest api host address can't be empty");
+        }
     }
 
     public Long getId() {
