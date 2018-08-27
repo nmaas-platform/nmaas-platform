@@ -6,8 +6,8 @@ import java.util.Optional;
 import javax.servlet.Filter;
 
 import net.geant.nmaas.portal.persistent.entity.Content;
-import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,13 +114,19 @@ public class PortalConfig {
 	public InitializingBean addConfigurationProperties(){
 		return new InitializingBean() {
 			@Autowired
-			ConfigurationRepository configurationRepo;
+			ConfigurationManager configurationManager;
 
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws Exception {
-				if(configurationRepo.count() < 1){
-					configurationRepo.save(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+				try {
+					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
+					if(configuration.isMaintenance()){
+						configuration.setMaintenance(false);
+					}
+				} catch(IllegalStateException e){
+					configurationManager.deleteAllConfigurations();
+					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
 				}
 			}
 		};
