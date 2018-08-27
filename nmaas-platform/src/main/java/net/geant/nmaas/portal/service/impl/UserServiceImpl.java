@@ -133,7 +133,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	@Transactional
-	public void settermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.settermsOfUseAcceptedFlag(userId, touAccept);}
+	public void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.setTermsOfUseAcceptedFlag(userId, touAccept);}
 
 	@Override
 	@Transactional

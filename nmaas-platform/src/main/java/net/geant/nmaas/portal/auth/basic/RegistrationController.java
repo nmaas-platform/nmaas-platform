@@ -72,7 +72,7 @@ public class RegistrationController {
 		newUser.setFirstname(registration.getFirstname());
 		newUser.setLastname(registration.getLastname());
 		newUser.setEnabled(false);
-		newUser.settermsOfUseAcceptedFlag(registration.getTermsOfUseAccepted());
+		newUser.setTouAccept(registration.getTermsOfUseAccepted());
 		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
 
 

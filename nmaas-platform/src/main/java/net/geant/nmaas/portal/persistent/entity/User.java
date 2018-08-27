@@ -109,14 +109,6 @@ public class User {
 		this.roles.addAll(roles);
 	}
 
-	public boolean isTouAccept(){return touAccept;}
-
-	public void settermsOfUseAcceptedFlag(boolean touAccept){this.touAccept = touAccept;}
-
-	public boolean isPrivacyPolicyAccepted(){return privacyPolicyAccepted;}
-
-	public void setPrivacyPolicyAccepted(boolean privacyPolicyAccept){this.privacyPolicyAccepted = privacyPolicyAccept;}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
