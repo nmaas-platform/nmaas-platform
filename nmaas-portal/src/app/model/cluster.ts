@@ -1,9 +1,5 @@
 export class ClusterInfo {
     public id: number;
-    public helmHostAddress: string;
-    public name: string;
-    public restApiHostAddress: string;
-    public restApiPort: number;
 }
 
 class ClusterApi {
@@ -65,7 +61,6 @@ export class Cluster {
     public helm: ClusterHelm;
     public id: number;
     public ingress: ClusterIngress;
-    public name: string;
     constructor(){
         this.api = new ClusterApi();
         this.attachPoint = new ClusterAttachPoint();

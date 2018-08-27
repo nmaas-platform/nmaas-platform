@@ -55,7 +55,7 @@ public class KubernetesClusterManagerTest {
     @Test
     public void shouldRetrieveClusterDetails() throws UnknownHostException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster("cluster1")));
+        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
         assertThat(manager.getHelmHostChartsDirectory(), equalTo(HELM_HOST_CHARTS_DIRECTORY));
         assertThat(manager.getHelmHostAddress(), equalTo(HELM_HOST_ADDRESS));
         assertThat(manager.getHelmHostSshUsername(), equalTo(HELM_HOST_SSH_USERNAME));
@@ -70,14 +70,14 @@ public class KubernetesClusterManagerTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionOnTooManyClusters() throws UnknownHostException {
         when(repository.count()).thenReturn(2L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster("cluster1"), simpleKubernetesCluster("cluster2")));
+        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster(), simpleKubernetesCluster()));
         manager.getHelmHostAddress();
     }
 
     @Test
     public void shouldReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster("cluster1")));
+        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
         String domain10 = "domain10";
         KClusterExtNetworkView network10 = manager.reserveExternalNetwork(domain10);
         String domain20 = "domain20";
@@ -88,7 +88,7 @@ public class KubernetesClusterManagerTest {
     @Test(expected = ExternalNetworkNotFoundException.class)
     public void shouldFailToReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster("cluster1")));
+        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
         manager.reserveExternalNetwork("domain10");
         manager.reserveExternalNetwork("domain20");
         manager.reserveExternalNetwork("domain30");
@@ -96,7 +96,7 @@ public class KubernetesClusterManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionDuringIngressControllerConfigValidation() throws UnknownHostException {
-        KClusterIngress ingress1 = simpleKubernetesCluster("cluster1").getIngress();
+        KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
         ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
         ingress1.setControllerChartArchive(null);
         ingress1.getControllerConfigOption().validate(ingress1);
@@ -104,7 +104,7 @@ public class KubernetesClusterManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionDuringIngressResourceConfigValidation() throws UnknownHostException {
-        KClusterIngress ingress1 = simpleKubernetesCluster("cluster1").getIngress();
+        KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
         ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         ingress1.setExternalServiceDomain(null);
         ingress1.getResourceConfigOption().validate(ingress1);
@@ -113,7 +113,7 @@ public class KubernetesClusterManagerTest {
     @Test
     public void shouldReturnEmptyStorageClassName() throws UnknownHostException {
         when(repository.count()).thenReturn(1L);
-        KCluster clusterWithoutStorageClass = simpleKubernetesCluster("cluster1");
+        KCluster clusterWithoutStorageClass = simpleKubernetesCluster();
         KClusterDeployment deploymentWithoutStorageClass = new KClusterDeployment();
         deploymentWithoutStorageClass.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deploymentWithoutStorageClass.setDefaultNamespace("testNamespace");
@@ -128,9 +128,9 @@ public class KubernetesClusterManagerTest {
     @Test
     public void shouldReturnProperStorageClassName() throws UnknownHostException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster("cluster1")));
+        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
-        KCluster cluster = simpleKubernetesCluster("cluster1");
+        KCluster cluster = simpleKubernetesCluster();
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
         Domain domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", null);
@@ -146,9 +146,8 @@ public class KubernetesClusterManagerTest {
         assertThat(manager.getStorageClass(DOMAIN).get(), is(domain.getDomainTechDetails().getKubernetesStorageClass()));
     }
 
-    private KCluster simpleKubernetesCluster(String clusterName) throws UnknownHostException {
+    private KCluster simpleKubernetesCluster() throws UnknownHostException {
         KCluster cluster = new KCluster();
-        cluster.setName(clusterName);
         KClusterHelm helm = new KClusterHelm();
         helm.setHelmHostAddress(InetAddress.getByName(HELM_HOST_ADDRESS));
         helm.setHelmHostSshUsername(HELM_HOST_SSH_USERNAME);

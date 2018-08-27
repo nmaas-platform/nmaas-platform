@@ -8,12 +8,13 @@ import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
+import {ModalComponent} from "../../shared/modal";
 
 @Component({
   selector: 'nmaas-registration',
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.css'],
-    providers: [ModalInfoTermsComponent, ModalInfoPolicyComponent]
+    providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 export class RegistrationComponent implements OnInit {
 
@@ -23,8 +24,11 @@ export class RegistrationComponent implements OnInit {
   public success: boolean = false;
   public errorMessage: string = '';
 
-    @ViewChild(ModalInfoTermsComponent)
-    public readonly modalInfoTerms: ModalInfoTermsComponent;
+  @ViewChild(ModalComponent)
+  public readonly  modal: ModalComponent;
+
+  @ViewChild(ModalInfoTermsComponent)
+  public readonly modalInfoTerms: ModalInfoTermsComponent;
 
     @ViewChild(ModalInfoPolicyComponent)
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
@@ -76,27 +80,28 @@ export class RegistrationComponent implements OnInit {
                 this.registrationForm.controls['privacyPolicyAccepted'].value,
             );
 
-            this.registrationService.register(registration).subscribe(
-                (result) => {
-                    console.log("User registred successfully.");
-                    this.registrationForm.reset();
-                    this.sending = false;
-                    this.submitted = true;
-                    this.success = true;
-                },
-                (err) => {
-                    console.log("Unable to register user.");
-                    this.sending = false;
-                    this.submitted = true;
-                    this.success = false;
-                    this.errorMessage = this.getMessage(err);
-                },
-                () => {
-                    this.sending = false;
-                    this.submitted = true;
-                    console.log("Hmmm...");
-                }
-            );
+      this.registrationService.register(registration).subscribe(
+        (result) => {
+          console.log("User registred successfully.");
+          this.registrationForm.reset();
+          this.sending = false;
+          this.submitted = true;
+          this.success = true;
+          this.modal.show();
+        },
+        (err) => {
+          console.log("Unable to register user.");
+          this.sending = false;
+          this.submitted = true;          
+          this.success = false;          
+          this.errorMessage = this.getMessage(err);
+        },
+        () => {
+          this.sending = false;
+          this.submitted = true;          
+          console.log("Hmmm...");
+        }
+      );
 
         }
     }

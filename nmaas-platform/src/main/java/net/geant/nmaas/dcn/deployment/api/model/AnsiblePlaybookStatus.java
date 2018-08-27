@@ -1,27 +1,19 @@
 package net.geant.nmaas.dcn.deployment.api.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Arrays;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class AnsiblePlaybookStatus {
 
     private String status;
-
-    public AnsiblePlaybookStatus() {}
-
-    public AnsiblePlaybookStatus(String status) {
-        this.status = status;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public Status convertedStatus() {
         return Status.fromValue(status);
