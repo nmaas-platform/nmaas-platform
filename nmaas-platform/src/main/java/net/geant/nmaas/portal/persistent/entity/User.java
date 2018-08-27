@@ -45,7 +45,7 @@ public class User {
 	private boolean privacyPolicyAccepted;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
-	private List<UserRole> roles = new ArrayList<UserRole>();
+	private List<UserRole> roles = new ArrayList<>();
 	
 	public User(String username) {
 		this.username = username;
@@ -129,8 +129,9 @@ public class User {
 		if (username == null) {
 			if (other.username != null)
 				return false;
-		} else if (!username.equals(other.username))
-			return false;
+		} else if (!username.equals(other.username)) {
+            return false;
+        }
 		return true;
 	}	
 	
