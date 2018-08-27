@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ProfileService} from "../../service/profile.service";
 import {User} from "../../model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -9,6 +9,8 @@ import {UserService} from "../../service";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {Router} from "@angular/router";
 import {AuthService} from "../../auth/auth.service";
+import {ModalComponent} from "../../shared/modal";
+import {isNullOrUndefined} from "util";
 
 @Component({
     selector: 'app-complete',
@@ -26,6 +28,9 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     public sending: boolean = false;
     public submitted: boolean = false;
     public success: boolean = false;
+
+    @ViewChild(ModalComponent)
+    public readonly modal: ModalComponent;
 
     constructor(private fb: FormBuilder,
                 private registrationService: RegistrationService,
@@ -58,15 +63,16 @@ export class CompleteComponent extends BaseComponent implements OnInit {
             this.userService.completeRegistration(this.user).subscribe(
                 (result) => {
                     console.log("Data updated successfully.");
+                    this.success = true;
                     this.authService.logout();
-                    this.router.navigate(['/']);
+                    this.modal.show();
                 },
                     (err) => {
                         console.log("Unable to finish user registration");
                         this.sending = false;
                         this.submitted = true;
                         this.success = false;
-                        this.errorMessage = err;
+                        this.errorMessage = isNullOrUndefined(err.message)?'Service is unavailable. Please try again later':'Invalid input data';
                     },
                     () => {
                         this.sending = false;
@@ -77,6 +83,10 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
 
         }
+    }
+
+    public hide(): void{
+        this.router.navigate(['/']);
     }
 
 }
