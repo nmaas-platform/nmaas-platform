@@ -50,8 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource("classpath:application-test-k8s.properties")
 public class KubernetesClusterManagerRestControllerTest {
 
-    private final static String NEW_KUBERNETES_CLUSTER_NAME = "K8S-NAME-1";
-    private final static String DIFFERENT_KUBERNETES_CLUSTER_NAME = "DIFFERENT-K8S-NAME-1";
     private final static String URL_PREFIX = "/api/management/kubernetes";
 
     private final static String KUBERNETES_CLUSTER_JSON =
@@ -126,7 +124,7 @@ public class KubernetesClusterManagerRestControllerTest {
         long sizeBefore = clusterManager.getAllClusters().size();
         MvcResult result = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -153,12 +151,12 @@ public class KubernetesClusterManagerRestControllerTest {
     public void shouldNotAddExistingKubernetesCluster() throws Exception {
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());
     }
@@ -174,13 +172,13 @@ public class KubernetesClusterManagerRestControllerTest {
     public void shouldUpdateKubernetesCluster() throws Exception {
         MvcResult createResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         Long clusterId = Long.parseLong(createResult.getResponse().getContentAsString());
 
-        KCluster updated = initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME);
+        KCluster updated = initNewKubernetesCluster();
         updated.getApi().setRestApiPort(350);
         mvc.perform(put(URL_PREFIX + "/{id}", clusterId)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -197,7 +195,7 @@ public class KubernetesClusterManagerRestControllerTest {
     public void shouldNotUpdateNotExistingKubernetesCluster() throws Exception {
         mvc.perform(put(URL_PREFIX + "/{id}", -1)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(DIFFERENT_KUBERNETES_CLUSTER_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -216,7 +214,7 @@ public class KubernetesClusterManagerRestControllerTest {
     public void shouldFetchKubernetesClusterById() throws Exception {
         MvcResult createResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster(NEW_KUBERNETES_CLUSTER_NAME)))
+                .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
@@ -226,8 +224,8 @@ public class KubernetesClusterManagerRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
-                NEW_KUBERNETES_CLUSTER_NAME,
-                ((KCluster) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<KCluster>() {})).getName());
+                "testNamespace",
+                ((KCluster) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<KCluster>() {})).getDeployment().getDefaultNamespace());
     }
 
     @Test
@@ -238,17 +236,15 @@ public class KubernetesClusterManagerRestControllerTest {
 
     @Test
     public void shouldMapKubernetesClusterToKubernetesClusterView() throws UnknownHostException {
-        KCluster source = initNewKubernetesCluster("k8s1");
+        KCluster source = initNewKubernetesCluster();
         KubernetesClusterView output = modelMapper.map(source, KubernetesClusterView.class);
-        assertThat(output.getName(), equalTo(source.getName()));
         assertThat(output.getHelmHostAddress().getHostAddress(), equalTo(source.getHelm().getHelmHostAddress().getHostAddress()));
         assertThat(output.getRestApiHostAddress().getHostAddress(), equalTo(source.getApi().getRestApiHostAddress().getHostAddress()));
         assertThat(output.getRestApiPort(), equalTo(source.getApi().getRestApiPort()));
     }
 
-    private KCluster initNewKubernetesCluster(String name) throws UnknownHostException {
+    private KCluster initNewKubernetesCluster() throws UnknownHostException {
         KCluster cluster = new KCluster();
-        cluster.setName(name);
         KClusterHelm helm = new KClusterHelm();
         helm.setHelmHostAddress(InetAddress.getByName("192.168.0.1"));
         helm.setHelmHostSshUsername("testuser");
