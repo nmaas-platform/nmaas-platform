@@ -11,8 +11,5 @@ import java.util.Optional;
  */
 @Repository
 public interface KubernetesClusterRepository extends JpaRepository<KCluster, Long> {
-
-    Optional<KCluster> findByName(String name);
-
     Optional<KCluster> findById(Long id);
 }

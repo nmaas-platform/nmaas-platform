@@ -2,17 +2,6 @@
     <div class="panel-heading">Kubernetes cluster configuration</div>
     <div class="panel-body">
         <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #clusterForm="ngForm">
-            <div class="form-group">
-                <label for="clusterName" class="col-sm-2 control-label">Name:</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="clusterName" name="clusterName"
-                           [(ngModel)]="cluster.name" [disabled]="!isInMode(ComponentMode.CREATE)" required #name="ngModel">
-                    <div class="alert alert-danger" *ngIf="name.invalid && (name.dirty || name.touched)">
-                        <div *ngIf="name.errors.required">Name is required</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="panel-default panel-heading">Helm:</div>
             <div class="panel-body">
                 <div class="form-group">

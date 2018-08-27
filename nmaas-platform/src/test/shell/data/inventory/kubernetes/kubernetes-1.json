@@ -1,5 +1,4 @@
 {
-  "name":"K8S-NAME-1",
   "helm": {
     "helmHostAddress":"10.134.241.6",
     "helmHostSshUsername":"nmaas",
