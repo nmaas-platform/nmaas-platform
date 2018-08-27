@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
@@ -31,8 +32,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("env_kubernetes")
@@ -45,7 +44,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterIngressManager clusterIngressManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
-    private KClusterApiManager kClusterApiManager;
+    private KClusterApiManager clusterApiManager;
 
     @Autowired
     public KubernetesManager(KubernetesRepositoryManager repositoryManager,
@@ -55,7 +54,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                              KClusterIngressManager clusterIngressManager,
                              IngressControllerManager ingressControllerManager,
                              IngressResourceManager ingressResourceManager,
-                             KClusterApiManager kClusterApiManager) {
+                             KClusterApiManager clusterApiManager) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
         this.serviceLifecycleManager = serviceLifecycleManager;
@@ -63,7 +62,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         this.clusterIngressManager = clusterIngressManager;
         this.ingressControllerManager = ingressControllerManager;
         this.ingressResourceManager = ingressResourceManager;
-        this.kClusterApiManager = kClusterApiManager;
+        this.clusterApiManager = clusterApiManager;
     }
 
     @Override
@@ -86,7 +85,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
             throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
         try {
-            if(this.kClusterApiManager.getUseKClusterApi()) {
+            if(this.clusterApiManager.getUseClusterApi()) {
                 clusterValidator.checkClusterStatusAndPrerequisites();
             }
         } catch (KClusterCheckException e) {

@@ -6,6 +6,6 @@ public interface KClusterApiManager {
 
     KubernetesClient getApiClient();
 
-    boolean getUseKClusterApi();
+    boolean getUseClusterApi();
 
 }

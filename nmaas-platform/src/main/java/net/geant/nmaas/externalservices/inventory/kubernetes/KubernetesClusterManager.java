@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 /**
  * Manages the information about Kubernetes clusters available in the system.
  * At this point it is assumed that exactly one cluster should exist.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class KubernetesClusterManager implements KClusterApiManager, KClusterHelmManager, KClusterIngressManager,
@@ -55,7 +53,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public boolean getUseKClusterApi(){
+    public boolean getUseClusterApi(){
         return this.loadSingleCluster().getApi().isUseKClusterApi();
     }
 
@@ -210,11 +208,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
      * Initializes Kubernetes REST API client based on cluster information read from database.
      */
     private void initApiClient() {
-        if (client == null && this.getUseKClusterApi()) {
+        if (client == null && this.getUseClusterApi()) {
             String kubernetesApiUrl = getKubernetesApiUrl();
             Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
             client = new DefaultKubernetesClient(config);
-        } else if(client != null && this.getUseKClusterApi()){
+        } else if(client != null && this.getUseClusterApi()){
             String kubernetesApiUrl = getKubernetesApiUrl();
             if(!this.client.getMasterUrl().toString().contains(kubernetesApiUrl)){
                 Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();

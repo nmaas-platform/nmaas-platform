@@ -16,9 +16,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class KubernetesManagerCheckServiceTest {
 
     private KubernetesManager manager;
@@ -29,7 +26,7 @@ public class KubernetesManagerCheckServiceTest {
     private KClusterIngressManager clusterIngressManager = mock(KClusterIngressManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
-    private KClusterApiManager kClusterApiManager = mock(KClusterApiManager.class);
+    private KClusterApiManager clusterApiManager = mock(KClusterApiManager.class);
 
     @Before
     public void setup() {
@@ -40,7 +37,7 @@ public class KubernetesManagerCheckServiceTest {
                 clusterIngressManager,
                 ingressControllerManager,
                 ingressResourceManager,
-                kClusterApiManager);
+                clusterApiManager);
     }
 
     @Test
