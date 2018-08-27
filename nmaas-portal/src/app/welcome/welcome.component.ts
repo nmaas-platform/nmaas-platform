@@ -1,5 +1,5 @@
 import { AppConfigService } from '../service/appconfig.service';
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-welcome',
@@ -11,6 +11,8 @@ export class WelcomeComponent implements OnInit {
   constructor(private appConfig: AppConfigService) { }
 
   ngOnInit() {
+
   }
+
   
 }

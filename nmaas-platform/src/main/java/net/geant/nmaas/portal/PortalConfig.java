@@ -1,16 +1,16 @@
 package net.geant.nmaas.portal;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Optional;
-
-import javax.servlet.Filter;
-
+import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.FileStorageService;
+import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.apache.commons.io.IOUtils;
-import org.apache.tomcat.jni.Proc;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.FileStorageService;
-import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
+import javax.servlet.Filter;
+import java.io.IOException;
+import java.util.Optional;
 
 @Configuration
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
@@ -47,21 +43,19 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
-
-
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws ProcessingException {
 				domains.createGlobalDomain();				
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
-				if(!admin.isPresent())
+				if(!admin.isPresent()) {
 					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
-
+				}
 			}
 
 			private void addUser(String username, String password, Role role) {								
-				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true);
+				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true, true);
 				userRepository.save(user);
 			}
 						
@@ -79,7 +73,7 @@ public class PortalConfig {
 			private ResourceLoader resourceLoader;
 
 			@Override
-			public void afterPropertiesSet() throws ProcessingException {
+			public void afterPropertiesSet() {
 
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
 				if(!defaultTermsOfUse.isPresent()){
@@ -111,13 +105,34 @@ public class PortalConfig {
 			}
 		};
 	}
-	
+
+	@Bean
+	public InitializingBean addConfigurationProperties(){
+		return new InitializingBean() {
+			@Autowired
+			ConfigurationManager configurationManager;
+
+			@Override
+			@Transactional
+			public void afterPropertiesSet() throws Exception {
+				try {
+					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
+					if(configuration.isMaintenance()){
+						configuration.setMaintenance(false);
+					}
+				} catch(IllegalStateException e){
+					configurationManager.deleteAllConfigurations();
+					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+				}
+			}
+		};
+	}
+
 	@Bean
 	public FileStorageService localFileStorageService() {
 		return new LocalFileStorageService();
 	}
-	
-	
+
 	@Bean
 	public Filter characterEncodingFilter() {
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
@@ -125,6 +140,5 @@ public class PortalConfig {
 		characterEncodingFilter.setForceEncoding(true);
 		return characterEncodingFilter;
 	}
-	
 
 }

@@ -50,4 +50,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
         return repository.findAll().get(0);
     }
+
+    @Override
+    public void deleteAllConfigurations(){
+        if(this.repository.count() > 0)
+            this.repository.deleteAll();
+    }
 }

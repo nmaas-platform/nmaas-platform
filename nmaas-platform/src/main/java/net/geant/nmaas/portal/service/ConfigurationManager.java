@@ -9,4 +9,5 @@ public interface ConfigurationManager {
     void addConfiguration(Configuration configuration) throws OnlyOneConfigurationSupportedException;
     Configuration getConfiguration();
     void updateConfiguration(Long id, Configuration updatedConfiguration) throws ConfigurationNotFoundException;
+    void deleteAllConfigurations();
 }

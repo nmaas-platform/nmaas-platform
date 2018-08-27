@@ -44,9 +44,13 @@
 
 	<div class="form-group form-group-sm">
 		<input id="termsOfUseAccepted" type="checkbox" class="checkbox-inline" formControlName="termsOfUseAccepted">
-        <label for="termsOfUseAccepted" class="control-label">I agree to the <a routerLink="/terms-of-usage" routerLinkActive="active">Terms of Use</a>*</label>
+		<label class="control-label">I agree to the <a (click)="modalInfoTerms.show()">Terms of Use</a>*</label>
 	</div>
-	
+	<div class="form-group form-group-sm">
+		<input id="privacyPolicyAccepted" type="checkbox" class="checkbox-inline" formControlName="privacyPolicyAccepted">
+		<label class="control-label">I agree to the <a (click)="modalInfoPolicy.show()">Privacy Policy</a>*</label>
+	</div>
+
 	<div class="form-group form-group-sm">
 		<button class="btn btn-primary btn-block" [disabled]="!registrationForm.valid" type="submit" validate>
 			Submit
@@ -58,3 +62,18 @@
 		{{errorMessage}}
 	</div>
 </form>
+<nmaas-modal>
+	<div class="nmaas-modal-header">
+		<h4 style="text-align: center">Registration form submission</h4>
+	</div>
+	<div class="nmaas-modal-body">
+		<div class="form-group text-left">
+			<p class="text-center">Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.</p>
+		</div>
+	</div>
+	<div class="nmaas-modal-footer">
+		<button class="btn btn-danger center-block" [routerLink]="['/welcome/login']">Done</button>
+	</div>
+</nmaas-modal>
+<modal-info-terms></modal-info-terms>
+<modal-info-policy></modal-info-policy>

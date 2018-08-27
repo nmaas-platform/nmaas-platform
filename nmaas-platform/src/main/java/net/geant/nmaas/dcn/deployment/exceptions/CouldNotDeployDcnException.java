@@ -1,8 +1,5 @@
 package net.geant.nmaas.dcn.deployment.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class CouldNotDeployDcnException extends RuntimeException {
 
     public CouldNotDeployDcnException(String message) {
