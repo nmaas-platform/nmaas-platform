@@ -7,12 +7,13 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
+import {ModalComponent} from "../../shared/modal";
 
 @Component({
   selector: 'nmaas-registration',
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.css'],
-    providers: [ModalInfoTermsComponent]
+    providers: [ModalInfoTermsComponent, ModalComponent]
 })
 export class RegistrationComponent implements OnInit {
 
@@ -22,8 +23,11 @@ export class RegistrationComponent implements OnInit {
   public success: boolean = false;
   public errorMessage: string = '';
 
-    @ViewChild(ModalInfoTermsComponent)
-    public readonly modalInfoTerms: ModalInfoTermsComponent;
+  @ViewChild(ModalComponent)
+  public readonly  modal: ModalComponent;
+
+  @ViewChild(ModalInfoTermsComponent)
+  public readonly modalInfoTerms: ModalInfoTermsComponent;
 
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
@@ -71,6 +75,7 @@ export class RegistrationComponent implements OnInit {
           this.sending = false;
           this.submitted = true;
           this.success = true;
+          this.modal.show();
         },
         (err) => {
           console.log("Unable to register user.");

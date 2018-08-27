@@ -58,4 +58,17 @@
 		{{errorMessage}}
 	</div>
 </form>
+<nmaas-modal>
+	<div class="nmaas-modal-header">
+		<h4 style="text-align: center">Registration form submission</h4>
+	</div>
+	<div class="nmaas-modal-body">
+		<div class="form-group text-left">
+			<p class="text-center">Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.</p>
+		</div>
+	</div>
+	<div class="nmaas-modal-footer">
+		<button class="btn btn-danger center-block" [routerLink]="['/welcome/login']">Done</button>
+	</div>
+</nmaas-modal>
 <modal-info-terms></modal-info-terms>
