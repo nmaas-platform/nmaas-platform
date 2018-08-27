@@ -1,8 +1,5 @@
 package net.geant.nmaas.dcn.deployment.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class CouldNotPrepareDcnException extends RuntimeException {
 
     public CouldNotPrepareDcnException(String message) {

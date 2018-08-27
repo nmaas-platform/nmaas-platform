@@ -45,7 +45,9 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
                 .subscribe((e) => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
         } else {
             this.clusterService.add(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/', upCluster.name]),err => this.error=err.message);
+                .subscribe((e) => {
+                    this.router.navigate(['/admin/clusters/', e]),err => this.error=err.message
+                });
         }
     }
 

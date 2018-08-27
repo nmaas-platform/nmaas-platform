@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.transaction.Transactional;
+
 @RestController
 @RequestMapping("/api/content")
 public class ContentController {
@@ -20,6 +22,7 @@ public class ContentController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Transactional
     @GetMapping("/{name}")
     public Content getContent(@PathVariable final String name) throws ProcessingException{
         net.geant.nmaas.portal.persistent.entity.Content content = this.getContentByName(name);

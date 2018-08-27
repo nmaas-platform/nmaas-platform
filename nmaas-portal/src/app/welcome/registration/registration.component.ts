@@ -7,12 +7,14 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
+import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
+import {ModalComponent} from "../../shared/modal";
 
 @Component({
   selector: 'nmaas-registration',
   templateUrl: './registration.component.html',
   styleUrls: ['./registration.component.css'],
-    providers: [ModalInfoTermsComponent]
+    providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 export class RegistrationComponent implements OnInit {
 
@@ -22,8 +24,14 @@ export class RegistrationComponent implements OnInit {
   public success: boolean = false;
   public errorMessage: string = '';
 
-    @ViewChild(ModalInfoTermsComponent)
-    public readonly modalInfoTerms: ModalInfoTermsComponent;
+  @ViewChild(ModalComponent)
+  public readonly  modal: ModalComponent;
+
+  @ViewChild(ModalInfoTermsComponent)
+  public readonly modalInfoTerms: ModalInfoTermsComponent;
+
+    @ViewChild(ModalInfoPolicyComponent)
+    public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
@@ -39,6 +47,7 @@ export class RegistrationComponent implements OnInit {
         lastname: [''],
         domainId: [null],
           termsOfUseAccepted: [false],
+          privacyPolicyAccepted: [false],
       },
       {
         validator: PasswordValidator.match
@@ -51,18 +60,25 @@ export class RegistrationComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    if (this.registrationForm.valid) {
-      this.sending = true;
-      
-      const registration: Registration = new Registration(
-        this.registrationForm.controls['username'].value,
-        this.registrationForm.controls['password'].value,
-        this.registrationForm.controls['email'].value,
-        this.registrationForm.controls['firstname'].value,
-        this.registrationForm.controls['lastname'].value,
-        this.registrationForm.controls['domainId'].value,
-          this.registrationForm.controls['termsOfUseAccepted'].value,
-      );
+    if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value){
+      this.sending = false;
+      this.submitted = true;
+      this.success = false;
+      this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
+    }else {
+        if (this.registrationForm.valid) {
+            this.sending = true;
+
+            const registration: Registration = new Registration(
+                this.registrationForm.controls['username'].value,
+                this.registrationForm.controls['password'].value,
+                this.registrationForm.controls['email'].value,
+                this.registrationForm.controls['firstname'].value,
+                this.registrationForm.controls['lastname'].value,
+                this.registrationForm.controls['domainId'].value,
+                this.registrationForm.controls['termsOfUseAccepted'].value,
+                this.registrationForm.controls['privacyPolicyAccepted'].value,
+            );
 
       this.registrationService.register(registration).subscribe(
         (result) => {
@@ -71,6 +87,7 @@ export class RegistrationComponent implements OnInit {
           this.sending = false;
           this.submitted = true;
           this.success = true;
+          this.modal.show();
         },
         (err) => {
           console.log("Unable to register user.");
@@ -86,6 +103,7 @@ export class RegistrationComponent implements OnInit {
         }
       );
 
+        }
     }
   }
 

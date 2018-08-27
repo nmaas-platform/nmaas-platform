@@ -192,13 +192,6 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 .collect(Collectors.toList());
     }
 
-    public KCluster getClusterByName(String clusterName) throws KubernetesClusterNotFoundException {
-        return modelMapper.map(
-                repository.findByName(clusterName)
-                        .orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with name " + clusterName + " not found in repository."))
-                , KCluster.class);
-    }
-
     public KCluster getClusterById(Long id) throws KubernetesClusterNotFoundException {
         return modelMapper.map(
                 repository.findById(id).orElseThrow(() ->
