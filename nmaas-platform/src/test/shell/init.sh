@@ -18,9 +18,6 @@ echo Ping
 curl -X GET $API_URL/auth/basic/ping --header "Authorization: Bearer $TOKEN"
 
 echo
-echo Configuration
-curl -X POST $API_URL/configuration --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/configuration.json
-echo
 echo Add Domain One with codename domain1
 curl -X POST $API_URL/domains --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/domains/domain1.json
 echo Add Domain Two with codename domain2
