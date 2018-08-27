@@ -1,16 +1,14 @@
 package net.geant.nmaas.portal;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.servlet.Filter;
 
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.apache.commons.io.IOUtils;
-import org.apache.tomcat.jni.Proc;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -108,6 +106,22 @@ public class PortalConfig {
 			private void addContentToDatabase(String name, String title, String content){
 				Content newContent = new Content(name, title, content);
 				contentRepository.save(newContent);
+			}
+		};
+	}
+
+	@Bean
+	public InitializingBean addConfigurationProperties(){
+		return new InitializingBean() {
+			@Autowired
+			ConfigurationRepository configurationRepo;
+
+			@Override
+			@Transactional
+			public void afterPropertiesSet() throws Exception {
+				if(configurationRepo.count() < 1){
+					configurationRepo.save(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+				}
 			}
 		};
 	}
