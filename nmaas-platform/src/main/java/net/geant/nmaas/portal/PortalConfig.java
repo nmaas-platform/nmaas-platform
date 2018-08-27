@@ -73,6 +73,7 @@ public class PortalConfig {
 			private ResourceLoader resourceLoader;
 
 			@Override
+			@Transactional
 			public void afterPropertiesSet() {
 
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
