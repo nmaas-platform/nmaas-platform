@@ -72,7 +72,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                         this.sending = false;
                         this.submitted = true;
                         this.success = false;
-                        this.errorMessage = isNullOrUndefined(err.message)?'Service is unavailable. Please try again later':'Invalid input data';
+                        this.errorMessage = err.statusCode==406?'Invalid input data':'Service is unavailable. Please try again later';
                     },
                     () => {
                         this.sending = false;
