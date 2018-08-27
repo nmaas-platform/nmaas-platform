@@ -18,8 +18,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Executor used when DCN is being configured by network operator.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("dcn_manual")

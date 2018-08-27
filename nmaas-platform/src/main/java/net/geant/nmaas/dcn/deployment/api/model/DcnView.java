@@ -1,18 +1,19 @@
 package net.geant.nmaas.dcn.deployment.api.model;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
+@Getter
+@Setter
 public class DcnView {
 
     private String domain;
     private String state;
     private int vlanNumber;
     private String subnet;
-
-    public DcnView() {}
 
     public DcnView(DcnInfo dcnInfo) {
         this.domain = dcnInfo.getDomain();
@@ -21,35 +22,4 @@ public class DcnView {
         this.subnet = dcnInfo.getCloudEndpointDetails().getSubnet();
     }
 
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public int getVlanNumber() {
-        return vlanNumber;
-    }
-
-    public void setVlanNumber(int vlanNumber) {
-        this.vlanNumber = vlanNumber;
-    }
-
-    public String getSubnet() {
-        return subnet;
-    }
-
-    public void setSubnet(String subnet) {
-        this.subnet = subnet;
-    }
 }

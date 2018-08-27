@@ -48,8 +48,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
 	private final static String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
 	private final static String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
-	private final static String APP_LOGO = "/api/apps/{appId:[\\d+]}/logo";
-	private final static String APP_SCREENSHOTS = "/api/apps/{appId:[\\d+]}/screenshots/**";
 
 	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
@@ -72,14 +70,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("dcn_ansible"))) {
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "dcn_ansible".equals(p))) {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("env_docker-compose"))) {
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
@@ -130,8 +128,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(AUTH_SSO_LOGIN).permitAll()
-//				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
-//				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
@@ -159,8 +155,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/webjars/**"),
 										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
 										new AntPathRequestMatcher("/api/info/**"),
-//										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
-//										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/configs/**"),
 										new AntPathRequestMatcher("/api/dockercompose/files/**"),
