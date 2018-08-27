@@ -1,8 +1,5 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public enum DcnState {
 
     PROCESSED,

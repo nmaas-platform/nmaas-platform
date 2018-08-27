@@ -1,11 +1,9 @@
 package net.geant.nmaas.portal;
 
-import java.io.IOException;
-import java.util.Optional;
-
-import javax.servlet.Filter;
-
+import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.apache.commons.io.IOUtils;
@@ -20,13 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.FileStorageService;
-import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
+import javax.servlet.Filter;
+import java.io.IOException;
+import java.util.Optional;
 
 @Configuration
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
@@ -45,17 +39,15 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
-
-
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws ProcessingException {
 				domains.createGlobalDomain();				
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
-				if(!admin.isPresent())
+				if(!admin.isPresent()) {
 					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
-
+				}
 			}
 
 			private void addUser(String username, String password, Role role) {								
@@ -77,7 +69,7 @@ public class PortalConfig {
 			private ResourceLoader resourceLoader;
 
 			@Override
-			public void afterPropertiesSet() throws ProcessingException {
+			public void afterPropertiesSet() {
 
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
 				if(!defaultTermsOfUse.isPresent()){
@@ -131,13 +123,12 @@ public class PortalConfig {
 			}
 		};
 	}
-	
+
 	@Bean
 	public FileStorageService localFileStorageService() {
 		return new LocalFileStorageService();
 	}
-	
-	
+
 	@Bean
 	public Filter characterEncodingFilter() {
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
@@ -145,6 +136,5 @@ public class PortalConfig {
 		characterEncodingFilter.setForceEncoding(true);
 		return characterEncodingFilter;
 	}
-	
 
 }

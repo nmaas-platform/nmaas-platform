@@ -3,9 +3,6 @@ package net.geant.nmaas.dcn.deployment;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import org.springframework.context.ApplicationEvent;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class DcnDeploymentStateChangeEvent extends ApplicationEvent {
 
     private String domain;
