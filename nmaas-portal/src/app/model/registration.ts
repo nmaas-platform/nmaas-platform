@@ -6,9 +6,10 @@ export class Registration {
     public lastname: string = undefined;
     public domainId: number = undefined;
     public termsOfUseAccepted: boolean = undefined;
+    public privacyPolicyAccepted: boolean = undefined;
   
 
-    constructor(username: string, password: string, email: string, firstname?: string, lastname?:string, domainId?: number, termsOfUseAccepted?: boolean) {
+    constructor(username: string, password: string, email: string, firstname?: string, lastname?:string, domainId?: number, termsOfUseAccepted?: boolean, privacyPolicyAccepted?: boolean) {
       this.username = username;
       this.password = password;
       this.email = email;
@@ -16,5 +17,6 @@ export class Registration {
       this.lastname = lastname;
       this.domainId = domainId;
       this.termsOfUseAccepted = termsOfUseAccepted;
+      this.privacyPolicyAccepted = privacyPolicyAccepted;
     }
 }

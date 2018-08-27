@@ -2,11 +2,9 @@ package net.geant.nmaas.portal.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -34,5 +32,6 @@ public interface UserService {
 	void delete(User user) throws MissingElementException, ProcessingException;	
 	void update(User user) throws ProcessingException;
     void setEnabledFlag(Long userId, boolean isEnabled);
-    void settermsOfUseAcceptedFlag(Long userId, boolean touAccept);
+    void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept);
+    void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
 }

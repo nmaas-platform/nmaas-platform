@@ -42,9 +42,10 @@ public class User {
 	private boolean enabled;
 
 	private boolean touAccept;
+	private boolean privacyPolicyAccepted;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
-	private List<UserRole> roles = new ArrayList<UserRole>();
+	private List<UserRole> roles = new ArrayList<>();
 	
 	public User(String username) {
 		this.username = username;
@@ -76,6 +77,14 @@ public class User {
     this.touAccept = touAccept;
     this.roles.add(new UserRole(this, domain, role));
   }
+
+    public User(String username, boolean enabled, String password, Domain domain, Role role, boolean touAccept, boolean privacyPolicyAccepted) {
+        this(username, enabled);
+        this.password = password;
+        this.touAccept = touAccept;
+        this.privacyPolicyAccepted = privacyPolicyAccepted;
+        this.roles.add(new UserRole(this, domain, role));
+    }
 	
 	protected User(Long id, String username, boolean enabled, Domain domain, Role role) {
 		this.id = id;
@@ -100,10 +109,6 @@ public class User {
 		this.roles.addAll(roles);
 	}
 
-	public boolean isTouAccept(){return touAccept;}
-
-	public void settermsOfUseAcceptedFlag(boolean touAccept){this.touAccept = touAccept;}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -124,8 +129,9 @@ public class User {
 		if (username == null) {
 			if (other.username != null)
 				return false;
-		} else if (!username.equals(other.username))
-			return false;
+		} else if (!username.equals(other.username)) {
+            return false;
+        }
 		return true;
 	}	
 	
