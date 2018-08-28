@@ -59,8 +59,8 @@ export class UserService extends GenericDataService {
     return this.delete<void>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles/' + role);
   }
 
-  public changePassword(userId: number, password: string): Observable<void> {
-    return this.post<Password, void>(this.getUsersUrl() + userId + '/auth/basic/password', new Password(password));
+  public changePassword(passwordChange:Password): Observable<void> {
+    return this.post<Password, void>(this.getUsersUrl() + 'my/auth/basic/password', passwordChange);
   }
 
   protected getUsersUrl(): string {

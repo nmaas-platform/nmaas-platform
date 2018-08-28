@@ -1,3 +1,3 @@
 export class Password {
-  constructor(public password: string) {}
+  constructor(public password: string, public newPassword:string) {}
 }

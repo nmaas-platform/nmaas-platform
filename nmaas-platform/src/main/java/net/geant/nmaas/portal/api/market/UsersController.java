@@ -196,20 +196,6 @@ public class UsersController {
 		}		
 	}
 
-	@PostMapping("/users/{userId}/auth/basic/password")
-	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	@Transactional
-	public void changePassword(@PathVariable Long userId, @RequestBody PasswordChange passwordChange) throws ProcessingException, MissingElementException {
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
-		try {
-			changePassword(user, passwordChange.getPassword());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to change password");
-		}
-	}
-
-
 	@PostMapping(value="/users/my/complete")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
@@ -248,10 +234,16 @@ public class UsersController {
 	public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) throws ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
 		try {
-			changePassword(user, passwordChange.getPassword());
+			checkPassword(user, passwordChange.getPassword());
+			changePassword(user, passwordChange.getNewPassword());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to change password");
 		}
+	}
+
+	private void checkPassword(net.geant.nmaas.portal.persistent.entity.User user, String password) throws net.geant.nmaas.portal.exceptions.ProcessingException{
+		if(!passwordEncoder.matches(password, user.getPassword()))
+			throw new net.geant.nmaas.portal.exceptions.ProcessingException("Password mismatch");
 	}
 	
 	private void changePassword(net.geant.nmaas.portal.persistent.entity.User user, String password) throws net.geant.nmaas.portal.exceptions.ProcessingException {
