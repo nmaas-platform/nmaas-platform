@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKServiceOperationsManager;
@@ -15,9 +16,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class KubernetesManagerCheckServiceTest {
 
     private KubernetesManager manager;
@@ -28,6 +26,7 @@ public class KubernetesManagerCheckServiceTest {
     private KClusterIngressManager clusterIngressManager = mock(KClusterIngressManager.class);
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
+    private KClusterApiManager clusterApiManager = mock(KClusterApiManager.class);
 
     @Before
     public void setup() {
@@ -37,7 +36,8 @@ public class KubernetesManagerCheckServiceTest {
                 serviceOperationsManager,
                 clusterIngressManager,
                 ingressControllerManager,
-                ingressResourceManager);
+                ingressResourceManager,
+                clusterApiManager);
     }
 
     @Test

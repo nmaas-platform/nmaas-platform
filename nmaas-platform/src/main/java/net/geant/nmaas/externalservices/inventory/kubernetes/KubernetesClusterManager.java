@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 /**
  * Manages the information about Kubernetes clusters available in the system.
  * At this point it is assumed that exactly one cluster should exist.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class KubernetesClusterManager implements KClusterApiManager, KClusterHelmManager, KClusterIngressManager,
@@ -52,6 +50,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public KubernetesClient getApiClient() {
         return client;
+    }
+
+    @Override
+    public boolean getUseClusterApi(){
+        return this.loadSingleCluster().getApi().isUseKClusterApi();
     }
 
     @Override
@@ -205,10 +208,18 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
      * Initializes Kubernetes REST API client based on cluster information read from database.
      */
     private void initApiClient() {
-        if (client == null) {
+        if (client == null && this.getUseClusterApi()) {
             String kubernetesApiUrl = getKubernetesApiUrl();
             Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
             client = new DefaultKubernetesClient(config);
+        } else if(client != null && this.getUseClusterApi()){
+            String kubernetesApiUrl = getKubernetesApiUrl();
+            if(!this.client.getMasterUrl().toString().contains(kubernetesApiUrl)){
+                Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
+                client = new DefaultKubernetesClient(config);
+            }
+        } else{
+            client = null;
         }
     }
 
@@ -223,7 +234,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
             throw new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository.");
         else {
             updatedKubernetesCluster.setId(id);
+            updatedKubernetesCluster.validate();
             repository.save(updatedKubernetesCluster);
+            initApiClient();
         }
     }
 

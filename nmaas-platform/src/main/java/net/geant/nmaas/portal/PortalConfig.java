@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.FileStorageService;
 import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
@@ -80,6 +81,7 @@ public class PortalConfig {
 			private ResourceLoader resourceLoader;
 
 			@Override
+			@Transactional
 			public void afterPropertiesSet() {
 
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
@@ -112,12 +114,34 @@ public class PortalConfig {
 			}
 		};
 	}
-	
+
+	@Bean
+	public InitializingBean addConfigurationProperties(){
+		return new InitializingBean() {
+			@Autowired
+			ConfigurationManager configurationManager;
+
+			@Override
+			@Transactional
+			public void afterPropertiesSet() throws Exception {
+				try {
+					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
+					if(configuration.isMaintenance()){
+						configuration.setMaintenance(false);
+					}
+				} catch(IllegalStateException e){
+					configurationManager.deleteAllConfigurations();
+					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+				}
+			}
+		};
+	}
+
 	@Bean
 	public FileStorageService localFileStorageService() {
 		return new LocalFileStorageService();
 	}
-	
+
 	@Bean
 	public Filter characterEncodingFilter() {
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
@@ -125,5 +149,5 @@ public class PortalConfig {
 		characterEncodingFilter.setForceEncoding(true);
 		return characterEncodingFilter;
 	}
-	
+
 }

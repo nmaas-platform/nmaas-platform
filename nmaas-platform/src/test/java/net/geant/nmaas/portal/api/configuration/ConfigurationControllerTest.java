@@ -43,10 +43,8 @@ public class ConfigurationControllerTest extends BaseControllerTest {
     public void init(){
         mvc = createMVC();
         user = UsersHelper.ADMIN;
+        repository.deleteAll();
     }
-
-    @After
-    public void cleanup(){repository.deleteAll();}
 
     @Test
     public void shouldAddNewConfiguration() throws Exception {

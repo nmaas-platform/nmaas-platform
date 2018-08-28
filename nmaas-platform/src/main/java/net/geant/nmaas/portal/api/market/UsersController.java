@@ -254,9 +254,12 @@ public class UsersController {
 		}
 	}
 
-	public void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) throws net.geant.nmaas.portal.exceptions.ProcessingException {
-		if(userRequest.getUsername() != null)
+	private void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) throws net.geant.nmaas.portal.exceptions.ProcessingException {
+		if(userService.existsByUsername(userRequest.getUsername())) {
+			throw new net.geant.nmaas.portal.exceptions.ProcessingException("User with same username already exists");
+		} else {
 			user.setUsername(userRequest.getUsername());
+		}
 		if(userRequest.getFirstname() != null)
 			user.setFirstname(userRequest.getFirstname());
 		if(userRequest.getLastname() != null)
