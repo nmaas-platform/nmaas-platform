@@ -41,7 +41,7 @@ public class User {
 	
 	private boolean enabled;
 
-	private boolean touAccept;
+	private boolean termsOfUseAccepted;
 	private boolean privacyPolicyAccepted;
 	
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
@@ -71,17 +71,17 @@ public class User {
 		}	
 	}
 
-  public User(String username, boolean enabled, String password, Domain domain, Role role, boolean touAccept) {
+  public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted) {
     this(username, enabled);
     this.password = password;
-    this.touAccept = touAccept;
+    this.termsOfUseAccepted = termsOfUseAccepted;
     this.roles.add(new UserRole(this, domain, role));
   }
 
-    public User(String username, boolean enabled, String password, Domain domain, Role role, boolean touAccept, boolean privacyPolicyAccepted) {
+    public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted, boolean privacyPolicyAccepted) {
         this(username, enabled);
         this.password = password;
-        this.touAccept = touAccept;
+        this.termsOfUseAccepted = termsOfUseAccepted;
         this.privacyPolicyAccepted = privacyPolicyAccepted;
         this.roles.add(new UserRole(this, domain, role));
     }

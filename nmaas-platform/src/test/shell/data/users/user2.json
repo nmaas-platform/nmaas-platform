@@ -4,5 +4,7 @@
   "email": "user2@domain1.nmaas.net",
   "firstname": "User",
   "lastname": "Second",
-  "domainId": "2"
+  "domainId": "2",
+  "termsOfUseAccepted": true,
+  "privacyPolicyAccepted" : true
 }
