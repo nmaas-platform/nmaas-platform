@@ -3,7 +3,7 @@ import { BaseComponent } from '../../common/basecomponent/base.component';
 import {ComponentMode} from '../../common/componentmode';
 import {Component, Input, Output, EventEmitter, OnInit, ViewChild} from '@angular/core';
 import {AuthService} from "../../../auth/auth.service";
-import {PasswordComponent} from "../..";
+import {PasswordComponent} from "../../common/password/password.component";
 
 @Component({
   selector: 'nmaas-userdetails',
