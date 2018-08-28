@@ -1,12 +1,16 @@
 package net.geant.nmaas.portal.auth.basic;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
+import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,11 +97,11 @@ public class BasicAuthController {
             if (!isEnabled) {
                 isValid = validateAndLogMessage("User is not active", userName.get());
             }
-            if (!istermsOfUseAccepteded){
-              isValid = validateAndLogMessage("Terms of Use were not accepted", userName.get());
-            }
-            if(!isPrivacyPolicyAccepted){
-                isValid = validateAndLogMessage("Privacy Policy were not accepted", userName.get());
+            if (!istermsOfUseAccepteded || !isPrivacyPolicyAccepted){
+              isValid = validateAndLogMessage("Terms of Use or Privacy Policy were not accepted", userName.get());
+              User user = users.findByUsername(userName.get()).orElse(null);
+              user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_INCOMPLETE)));
+              users.update(user);
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {
                 isValid = validateAndLogMessage("Invalid password", userName.get());
