@@ -33,10 +33,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
     this.mode = this.getMode(this.route);
   }
 
-  public onPasswordSubmit($event): void {
-    this.userService.changePassword(this.user.id, $event).subscribe(() => {});
-  }
-
   public onSave($event) {
     const user: User = $event;
 

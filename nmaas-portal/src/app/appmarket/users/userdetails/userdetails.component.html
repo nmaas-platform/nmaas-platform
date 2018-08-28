@@ -2,7 +2,5 @@
 	<h3>User {{user?.username}}  <a *ngIf="authService.hasRole('ROLE_SUPERADMIN')" (click)="remove(user?.id)" class="btn btn-sm btn-danger" role="button">Remove</a></h3>
 </div>
 <nmaas-userdetails [user]="user" [mode]="getCurrentMode()" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" (onSave)="onSave($event)"></nmaas-userdetails>
-
-<nmaas-password (passwordSubmit)="onPasswordSubmit($event)"></nmaas-password>
 <nmaas-userprivileges [allowedModes]="[ComponentMode.VIEW, ComponentMode.CREATE]" [user]="user"></nmaas-userprivileges>
 
