@@ -384,7 +384,8 @@ public class UsersController {
 
     @PutMapping("/users/status/{userId}")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    public ResponseEntity<String> setEnabledFlag(@PathVariable Long userId,
+	@ResponseStatus(HttpStatus.ACCEPTED)
+    public void setEnabledFlag(@PathVariable Long userId,
                                                  @RequestParam("enabled") boolean isEnabledFlag,
                                                  Principal principal) throws MissingElementException{
         userService.setEnabledFlag(userId, isEnabledFlag);
@@ -400,7 +401,6 @@ public class UsersController {
                 principal.getName(),
                 roleAsString);
         log.info(message);
-        return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{

@@ -7,7 +7,6 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +24,6 @@ import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -76,13 +74,11 @@ public class UsersControllerIntTest extends BaseControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andReturn();
-        String content = result.getResponse().getContentAsString();
-        assertEquals(content, "User user1 account has been deactivated by user manager with role ROLE_SUPERADMIN.");
     }
 
     @Test
     public void testEnableUser() throws Exception {
-        User user1 = userRepo.save(new User("user1", false, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+        User user1 = userRepo.save(new User("user1", false, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_SUPERADMIN)));
 
         MvcResult result =  mvc.perform(put("/api/users/status/" + user1.getId() + "?enabled=true")
                 .header("Authorization", "Bearer " + token)
@@ -90,8 +86,5 @@ public class UsersControllerIntTest extends BaseControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        assertEquals(content, "User user1 account has been activated by user manager with role ROLE_SUPERADMIN.");
     }
 }
