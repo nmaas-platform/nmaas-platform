@@ -14,6 +14,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -137,7 +138,23 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	@Transactional
+	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean touAccept) throws UsernameNotFoundException{
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setTermsOfUseAcceptedFlag(user.getId(), touAccept);
+	}
+
+	@Override
+	@Transactional
 	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepo.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
+
+	@Override
+	@Transactional
+	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws UsernameNotFoundException{
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
+	}
 
 	protected void checkParam(Long id) {
 		if(id == null)

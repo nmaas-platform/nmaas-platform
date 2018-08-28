@@ -33,5 +33,7 @@ public interface UserService {
 	void update(User user) throws ProcessingException;
     void setEnabledFlag(Long userId, boolean isEnabled);
     void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept);
+    void setTermsOfUseAcceptedFlagByUsername(String username, boolean touAccept);
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
+    void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
 }

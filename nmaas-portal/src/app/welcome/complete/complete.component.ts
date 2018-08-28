@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import {ProfileService} from "../../service/profile.service";
 import {User} from "../../model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -11,12 +11,14 @@ import {Router} from "@angular/router";
 import {AuthService} from "../../auth/auth.service";
 import {ModalComponent} from "../../shared/modal";
 import {isNullOrUndefined} from "util";
+import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
+import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 
 @Component({
     selector: 'app-complete',
     templateUrl: './complete.component.html',
     styleUrls: ['./complete.component.css'],
-    providers:[ProfileService]
+    providers:[ProfileService, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 
 export class CompleteComponent extends BaseComponent implements OnInit {
@@ -32,6 +34,12 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     @ViewChild(ModalComponent)
     public readonly modal: ModalComponent;
 
+    @ViewChild(ModalInfoTermsComponent)
+    public readonly modalInfoTerms: ModalInfoTermsComponent;
+
+    @ViewChild(ModalInfoPolicyComponent)
+    public readonly modalInfoPolicy: ModalInfoPolicyComponent;
+
     constructor(private fb: FormBuilder,
                 private registrationService: RegistrationService,
                 protected profileService:ProfileService,
@@ -44,7 +52,9 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 username: ['', [Validators.required, Validators.minLength(3)]],
                 email: ['', [Validators.required, Validators.email]],
                 firstname: [''],
-                lastname: ['']
+                lastname: [''],
+                termsOfUseAccepted: [false],
+                privacyPolicyAccepted: [false]
             });
     }
 
@@ -53,12 +63,20 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     }
 
     public onSubmit(): void {
+        if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value){
+            this.sending = false;
+            this.submitted = true;
+            this.success = false;
+            this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
+        }
         if (this.registrationForm.valid) {
             this.user.enabled = false;
             this.user.username = this.registrationForm.controls['username'].value;
             this.user.email = this.registrationForm.controls['email'].value;
             this.user.firstname = this.registrationForm.controls['firstname'].value;
             this.user.lastname = this.registrationForm.controls['lastname'].value;
+            this.user.touAccept = this.registrationForm.controls['termsOfUseAccepted'].value;
+            this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
 
             this.userService.completeRegistration(this.user).subscribe(
                 (result) => {

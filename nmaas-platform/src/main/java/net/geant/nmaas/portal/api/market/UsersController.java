@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -36,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.swing.text.html.Option;
+import javax.validation.constraints.Null;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -271,6 +274,29 @@ public class UsersController {
 
 		userService.update(user);
 	}
+
+	@PutMapping(value="/users/verify/{username}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_NOT_ACCEPTED')")
+	public void setAcceptance(@PathVariable String username, Principal principal) throws MissingElementException{
+	    try {
+            this.setAcceptanceFlags(username);
+            String message = String.format("User %s accepted Terms of Use and Privacy Policy", username);
+            log.info(message);
+        }catch(ProcessingException err){
+	        throw new MissingElementException(err.getMessage());
+        }
+	}
+
+	private void setAcceptanceFlags(String username) throws ProcessingException{
+	    try {
+            userService.setTermsOfUseAcceptedFlagByUsername(username, true);
+            userService.setPrivacyPolicyAcceptedFlagByUsername(username, true);
+        }catch(UsernameNotFoundException err){
+	        throw new ProcessingException(err.getMessage());
+        }
+	}
+
 
 	@PostMapping("/users/my/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)

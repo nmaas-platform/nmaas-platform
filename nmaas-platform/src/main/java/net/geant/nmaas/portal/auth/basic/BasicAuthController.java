@@ -98,10 +98,9 @@ public class BasicAuthController {
                 isValid = validateAndLogMessage("User is not active", userName.get());
             }
             if (!istermsOfUseAccepteded || !isPrivacyPolicyAccepted){
-              isValid = validateAndLogMessage("Terms of Use or Privacy Policy were not accepted", userName.get());
               User user = users.findByUsername(userName.get()).orElse(null);
-              user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_INCOMPLETE)));
-              users.update(user);
+              log.info("Terms of Use or Privacy Policy were not accepted for %s", userName.get());
+              user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_NOT_ACCEPTED)));
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {
                 isValid = validateAndLogMessage("Invalid password", userName.get());
