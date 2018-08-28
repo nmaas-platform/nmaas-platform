@@ -52,8 +52,6 @@ public class PortalConfig {
 				if(!admin.isPresent()) {
 					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
 					addBlockedUser("admin1", "admin", true, false);
-					addBlockedUser("admin2", "admin", false, true);
-					addBlockedUser("admin3", "admin", false, false);
 				}
 			}
 
