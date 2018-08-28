@@ -90,14 +90,6 @@ public class UsersControllerTest extends BaseControllerTest {
 	}
 
 	@Test
-	public void testAddUser() throws SignupException {
-		Id id = userController.addUser(new NewUserRequest("tester"));
-		assertNotNull(id);
-
-		assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
-	}
-
-	@Test
 	public void testGetUser() throws MissingElementException {
 		net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
 		assertEquals(new Long(1), user.getId());

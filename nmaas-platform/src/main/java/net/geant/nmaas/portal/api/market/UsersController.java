@@ -70,36 +70,6 @@ public class UsersController {
 	public List<Role> getRoles() {
 		return Arrays.asList(Role.values());
 	}
-	
-	@PostMapping(value="/users")
-	@ResponseStatus(HttpStatus.CREATED)
-	@PreAuthorize("hasPermission(#newUserRequest.domainId, 'domain', 'OWNER')")
-	@Transactional
-	public Id addUser(@RequestBody NewUserRequest newUserRequest) throws SignupException {
-		net.geant.nmaas.portal.persistent.entity.User user = null;
-		try {
-			user = userService.register(newUserRequest.getUsername());
-		} catch(ObjectAlreadyExistsException ex) {
-			throw new SignupException("User already exists.");
-		} catch (MissingElementException e) {			
-			throw new SignupException("Domain not found.");
-		}
-
-		if(user == null)
-			throw new SignupException("Unable to register new user");
-
-		user.setPassword(null);
-		user.setEnabled(true);
-		
-		try {
-			userService.update(user);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException ex) {
-			throw new SignupException("Unable to update newly registered user.");
-		}
-		
-		return new Id(user.getId());
-	}
-	
 		
 	@GetMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")

@@ -28,6 +28,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   public submit(): void {
     console.log('submit(' + this.user.username + ')');
     this.onSave.emit(this.user);
+    this.onModeChange();
   }
 
   public onModeChange(): void {

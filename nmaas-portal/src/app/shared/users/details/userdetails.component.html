@@ -1,7 +1,7 @@
 <div class="panel panel-default">
 	<div class="panel-heading">Information</div>
 	<div class="panel-body">
-		<form *ngIf="!isInMode(ComponentMode.CREATE) && user"
+		<form *ngIf="user"
 			(submit)="submit()"
 			class="form-horizontal">
 
@@ -56,16 +56,5 @@
 				type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
 		</form>
 
-		<form *ngIf="isInMode(ComponentMode.CREATE)" (submit)="submit()"
-			class="form-horizontal">
-			<div class="form-group">
-				<label for="username" class="col-sm-2 control-label">Username:</label>
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="username"
-						name="username" [(ngModel)]="user.username">
-				</div>
-			</div>
-			<button type="submit" class="btn btn-danger">Create</button>
-		</form>
 	</div>
 </div>

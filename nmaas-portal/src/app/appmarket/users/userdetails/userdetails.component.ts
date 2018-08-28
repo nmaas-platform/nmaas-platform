@@ -1,9 +1,8 @@
 import {User} from '../../../model/user';
 import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
-import {ComponentMode} from '../../../shared/common/componentmode';
-import {Component, OnInit, Input} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {isUndefined} from 'util';
 import {AuthService} from "../../../auth/auth.service";
@@ -47,8 +46,6 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
     if(user.id) {
       this.userService.updateUser(user.id, user).subscribe((value) => this.router.navigate(['/users/view/', user.id]));
-    } else {     
-      this.userService.addUser(user.username).subscribe((id) => this.router.navigate(['/users/view/', id.id]));
     }
   }
 
