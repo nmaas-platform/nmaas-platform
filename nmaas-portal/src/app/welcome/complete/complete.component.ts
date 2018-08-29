@@ -75,7 +75,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
             this.user.email = this.registrationForm.controls['email'].value;
             this.user.firstname = this.registrationForm.controls['firstname'].value;
             this.user.lastname = this.registrationForm.controls['lastname'].value;
-            this.user.touAccept = this.registrationForm.controls['termsOfUseAccepted'].value;
+            this.user.termsOfUseAccepted = this.registrationForm.controls['termsOfUseAccepted'].value;
             this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
 
             this.userService.completeRegistration(this.user).subscribe(

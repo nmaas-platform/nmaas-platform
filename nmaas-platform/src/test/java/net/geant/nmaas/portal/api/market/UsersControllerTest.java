@@ -81,7 +81,7 @@ public class UsersControllerTest extends BaseControllerTest {
 
 	@Test
 	public void testGetUsers() {
-		assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
+		assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class UsersControllerTest extends BaseControllerTest {
 		Id id = userController.addUser(new NewUserRequest("tester"));
 		assertNotNull(id);
 
-		assertEquals(6, userController.getUsers(Pageable.unpaged()).size());
+		assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
 	}
 
 	@Test

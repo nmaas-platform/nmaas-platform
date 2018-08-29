@@ -8,7 +8,7 @@ export class User {
   public lastname: string = undefined;
   public email: string = undefined;
   public roles: UserRole[] = [];
-  public touAccept: boolean = undefined;
+  public termsOfUseAccepted: boolean = undefined;
   public privacyPolicyAccepted: boolean = undefined;
   
   public getDomainIds(): number[] {

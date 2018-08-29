@@ -1,11 +1,11 @@
 package net.geant.nmaas.portal.auth.basic;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -88,7 +88,7 @@ public class BasicAuthController {
 	}
 
     protected void validate(final Optional<String> userName, final Optional<String> password,
-                            String actualPassword, boolean isEnabled, boolean istermsOfUseAccepteded, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
+                            String actualPassword, boolean isEnabled, boolean istTermsOfUseAccepted, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
         boolean isValid = true;
         if(!userName.isPresent() || !password.isPresent()){
             isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
@@ -97,10 +97,10 @@ public class BasicAuthController {
             if (!isEnabled) {
                 isValid = validateAndLogMessage("User is not active", userName.get());
             }
-            if (!istermsOfUseAccepteded || !isPrivacyPolicyAccepted){
-              User user = users.findByUsername(userName.get()).orElse(null);
+            if (!istTermsOfUseAccepted || !isPrivacyPolicyAccepted){
+              User user = users.findByUsername(userName.get()).orElseThrow(SignupException::new);
               log.info("Terms of Use or Privacy Policy were not accepted for %s", userName.get());
-              user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_NOT_ACCEPTED)));
+              user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {
                 isValid = validateAndLogMessage("Invalid password", userName.get());

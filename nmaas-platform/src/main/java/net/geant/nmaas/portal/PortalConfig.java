@@ -51,17 +51,11 @@ public class PortalConfig {
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
 					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
-					addBlockedUser("admin1", "admin", true, false);
 				}
 			}
 
 			private void addUser(String username, String password, Role role) {								
 				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true, true);
-				userRepository.save(user);
-			}
-
-			private void addBlockedUser(String username, String password, Boolean termsOfUseAccept, Boolean privacyPolicyAccept){
-				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), Role.ROLE_USER, termsOfUseAccept, privacyPolicyAccept);
 				userRepository.save(user);
 			}
 						
