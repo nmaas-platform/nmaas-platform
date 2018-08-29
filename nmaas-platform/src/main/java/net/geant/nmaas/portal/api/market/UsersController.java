@@ -37,8 +37,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.swing.text.html.Option;
-import javax.validation.constraints.Null;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;

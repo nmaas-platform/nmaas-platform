@@ -88,7 +88,7 @@ public class BasicAuthController {
 	}
 
     protected void validate(final Optional<String> userName, final Optional<String> password,
-                            String actualPassword, boolean isEnabled, boolean istTermsOfUseAccepted, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
+                            String actualPassword, boolean isEnabled, boolean isTermsOfUseAccepted, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
         boolean isValid = true;
         if(!userName.isPresent() || !password.isPresent()){
             isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
@@ -97,7 +97,7 @@ public class BasicAuthController {
             if (!isEnabled) {
                 isValid = validateAndLogMessage("User is not active", userName.get());
             }
-            if (!istTermsOfUseAccepted || !isPrivacyPolicyAccepted){
+            if (!isTermsOfUseAccepted || !isPrivacyPolicyAccepted){
               User user = users.findByUsername(userName.get()).orElseThrow(SignupException::new);
               log.info("Terms of Use or Privacy Policy were not accepted for %s", userName.get());
               user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
