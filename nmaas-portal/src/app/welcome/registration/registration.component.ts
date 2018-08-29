@@ -10,6 +10,8 @@ import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {ModalComponent} from "../../shared/modal";
 
+import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
+
 @Component({
   selector: 'nmaas-registration',
   templateUrl: './registration.component.html',
@@ -17,12 +19,13 @@ import {ModalComponent} from "../../shared/modal";
     providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 export class RegistrationComponent implements OnInit {
-
-
   public sending: boolean = false;
   public submitted: boolean = false;
   public success: boolean = false;
   public errorMessage: string = '';
+
+  @ViewChild(ReCaptchaComponent)
+  captcha: ReCaptchaComponent;
 
   @ViewChild(ModalComponent)
   public readonly  modal: ModalComponent;
@@ -60,51 +63,60 @@ export class RegistrationComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value){
-      this.sending = false;
-      this.submitted = true;
-      this.success = false;
-      this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
-    }else {
-        if (this.registrationForm.valid) {
-            this.sending = true;
-
-            const registration: Registration = new Registration(
-                this.registrationForm.controls['username'].value,
-                this.registrationForm.controls['password'].value,
-                this.registrationForm.controls['email'].value,
-                this.registrationForm.controls['firstname'].value,
-                this.registrationForm.controls['lastname'].value,
-                this.registrationForm.controls['domainId'].value,
-                this.registrationForm.controls['termsOfUseAccepted'].value,
-                this.registrationForm.controls['privacyPolicyAccepted'].value,
-            );
-
-      this.registrationService.register(registration).subscribe(
-        (result) => {
-          console.log("User registred successfully.");
-          this.registrationForm.reset();
+      let token = this.captcha.getResponse();
+      if(token.length < 1){
           this.sending = false;
           this.submitted = true;
-          this.success = true;
-          this.modal.show();
-        },
-        (err) => {
-          console.log("Unable to register user.");
-          this.sending = false;
-          this.submitted = true;          
-          this.success = false;          
-          this.errorMessage = this.getMessage(err);
-        },
-        () => {
-          this.sending = false;
-          this.submitted = true;          
-          console.log("Hmmm...");
-        }
-      );
+          this.success = false;
+          this.errorMessage = "You have to prove that you're not a robot!";
+      }
+      else {
+          if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
+              this.sending = false;
+              this.submitted = true;
+              this.success = false;
+              this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
+          } else {
+              if (this.registrationForm.valid) {
+                  this.sending = true;
 
-        }
-    }
+                  const registration: Registration = new Registration(
+                      this.registrationForm.controls['username'].value,
+                      this.registrationForm.controls['password'].value,
+                      this.registrationForm.controls['email'].value,
+                      this.registrationForm.controls['firstname'].value,
+                      this.registrationForm.controls['lastname'].value,
+                      this.registrationForm.controls['domainId'].value,
+                      this.registrationForm.controls['termsOfUseAccepted'].value,
+                      this.registrationForm.controls['privacyPolicyAccepted'].value,
+                  );
+
+                  this.registrationService.register(registration).subscribe(
+                      (result) => {
+                          console.log("User registred successfully.");
+                          this.registrationForm.reset();
+                          this.sending = false;
+                          this.submitted = true;
+                          this.success = true;
+                          this.modal.show();
+                      },
+                      (err) => {
+                          console.log("Unable to register user.");
+                          this.sending = false;
+                          this.submitted = true;
+                          this.success = false;
+                          this.errorMessage = this.getMessage(err);
+                      },
+                      () => {
+                          this.sending = false;
+                          this.submitted = true;
+                          console.log("Hmmm...");
+                      }
+                  );
+
+              }
+          }
+      }
   }
 
   public refresh(): void {

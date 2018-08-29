@@ -51,6 +51,10 @@
 		<label class="control-label">I agree to the <a (click)="modalInfoPolicy.show()">Privacy Policy</a>*</label>
 	</div>
 
+	<div class="form-group-sm form-group">
+		<jhi-re-captcha language="en" site_key="6Lf7BGwUAAAAACDGrAQDDqI7RQ-2hJu60esAXnMb"></jhi-re-captcha>
+	</div>
+
 	<div class="form-group form-group-sm">
 		<button class="btn btn-primary btn-block" [disabled]="!registrationForm.valid" type="submit" validate>
 			Submit

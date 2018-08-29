@@ -16,6 +16,7 @@ import {AppMarketModule} from "../appmarket";
 import {UserService} from "../service";
 import {CompleteComponent} from "./complete/complete.component";
 import {ContentDisplayService} from "../service/content-display.service";
+import  {ReCaptchaModule} from "angular5-recaptcha";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {ContentDisplayService} from "../service/content-display.service";
     RouterModule,
     SharedModule,
     PipesModule,
-      AppMarketModule
+      AppMarketModule,
+      ReCaptchaModule
   ],
   exports: [
     WelcomeComponent
