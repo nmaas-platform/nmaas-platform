@@ -23,7 +23,7 @@ import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/mod
 
 export class CompleteComponent extends BaseComponent implements OnInit {
 
-    public user:User;
+    public user: User;
     public registrationForm: FormGroup;
     public domains: Observable<Domain[]>;
     public errorMessage: string = '';
@@ -42,7 +42,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
     constructor(private fb: FormBuilder,
                 private registrationService: RegistrationService,
-                protected profileService:ProfileService,
+                protected profileService: ProfileService,
                 private userService: UserService,
                 private authService: AuthService,
                 private router: Router) {
@@ -59,47 +59,48 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.profileService.getOne().subscribe((user)=>this.user = user)
+        this.profileService.getOne().subscribe((user) => this.user = user)
     }
 
     public onSubmit(): void {
-        if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value){
+        if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
             this.sending = false;
             this.submitted = true;
             this.success = false;
             this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
         }
-        if (this.registrationForm.valid) {
-            this.user.enabled = false;
-            this.user.username = this.registrationForm.controls['username'].value;
-            this.user.email = this.registrationForm.controls['email'].value;
-            this.user.firstname = this.registrationForm.controls['firstname'].value;
-            this.user.lastname = this.registrationForm.controls['lastname'].value;
-            this.user.termsOfUseAccepted = this.registrationForm.controls['termsOfUseAccepted'].value;
-            this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
+        else {
+            if (this.registrationForm.valid) {
+                this.user.enabled = false;
+                this.user.username = this.registrationForm.controls['username'].value;
+                this.user.email = this.registrationForm.controls['email'].value;
+                this.user.firstname = this.registrationForm.controls['firstname'].value;
+                this.user.lastname = this.registrationForm.controls['lastname'].value;
+                this.user.termsOfUseAccepted = this.registrationForm.controls['termsOfUseAccepted'].value;
+                this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
 
-            this.userService.completeRegistration(this.user).subscribe(
-                (result) => {
-                    console.log("Data updated successfully.");
-                    this.success = true;
-                    this.authService.logout();
-                    this.modal.show();
-                },
+                this.userService.completeRegistration(this.user).subscribe(
+                    (result) => {
+                        console.log("Data updated successfully.");
+                        this.success = true;
+                        this.authService.logout();
+                        this.modal.show();
+                    },
                     (err) => {
                         console.log("Unable to finish user registration");
                         this.sending = false;
                         this.submitted = true;
                         this.success = false;
-                        this.errorMessage = err.statusCode==406?'Invalid input data':'Service is unavailable. Please try again later';
+                        this.errorMessage = err.statusCode == 406 ? 'Invalid input data' : 'Service is unavailable. Please try again later';
                     },
                     () => {
                         this.sending = false;
                         this.submitted = true;
                     }
-            );
+                );
 
 
-
+            }
         }
     }
 
