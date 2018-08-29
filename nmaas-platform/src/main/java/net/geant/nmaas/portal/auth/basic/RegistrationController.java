@@ -52,7 +52,7 @@ public class RegistrationController {
 							
 		User newUser = null;
 		try {
-			newUser = users.register(registration.getUsername());
+			newUser = users.register(registration.getUsername(), domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 			if(newUser == null)
 				throw new SignupException("Unable to register new user.");
 			if(!registration.getTermsOfUseAccepted()){

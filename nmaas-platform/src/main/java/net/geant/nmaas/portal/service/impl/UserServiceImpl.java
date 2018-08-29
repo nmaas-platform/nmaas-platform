@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import lombok.Builder;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -10,7 +9,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +20,16 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
-
-	@Autowired
-	DomainService domains;
 	
-	@Autowired
 	UserRepository userRepo;
 	
-	@Autowired
 	UserRoleRepository userRoleRepo;
+
+	@Autowired
+	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo){
+		this.userRepo = userRepo;
+		this.userRoleRepo = userRoleRepo;
+	}
 	
 	@Override
 	public boolean hasPrivilege(User user, Domain domain, Role role) {
@@ -82,18 +81,15 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	}
 
 	@Override
-	public User register(String username) throws ObjectAlreadyExistsException, MissingElementException {
+	public User register(String username, Domain domain) throws ObjectAlreadyExistsException, MissingElementException {
 		checkParam(username);
-		return register(username, false, null, null);				
+		return register(username, false, null, domain);
 	}
 
 	@Override
-	public User register(String username, boolean enabled, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException {
+	public User register(String username, boolean enabled, String password, Domain domain) throws ObjectAlreadyExistsException, MissingElementException {
 
 		checkParam(username);
-		
-		Domain domain = (domainId != null ? domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found")) 
-											: domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")));
 
 		// check if user already exists
 		Optional<User> user = userRepo.findByUsername(username);
