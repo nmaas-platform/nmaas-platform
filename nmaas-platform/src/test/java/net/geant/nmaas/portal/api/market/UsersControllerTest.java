@@ -1,271 +1,322 @@
 package net.geant.nmaas.portal.api.market;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.security.Principal;
-import java.util.*;
-
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import net.geant.nmaas.portal.BaseControllerTest;
-import net.geant.nmaas.portal.api.domain.Id;
-import net.geant.nmaas.portal.api.domain.NewUserRequest;
+import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
+import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@EnableAutoConfiguration
-@Transactional(value=TxType.REQUIRES_NEW)
-@Rollback
-public class UsersControllerTest extends BaseControllerTest {
+@Log4j2
+public class UsersControllerTest {
 
-	final static String DOMAIN = "DOMAIN";
+	private static final Domain GLOBAL_DOMAIN = new Domain(1L,"global", "global", true);
 
-	@Autowired
-	private UserRepository userRepo;
+	private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true);
 
-	@Autowired
-	private UsersController userController;
+	private UserService userService = mock(UserService.class);
 
-	@Autowired
-	private DomainService domains;
+	private DomainService domainService = mock(DomainService.class);
 
-	private User user1 = null;
+	private ModelMapper modelMapper = new ModelMapper();
+
+	private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+
+	private UsersController usersController;
+
+	private List<User> userList;
 
 	private Principal principal = mock(Principal.class);
 
 	@Before
-	public void setUp() throws Exception {
-		mvc = createMVC();
-        when(principal.getName()).thenReturn("admin");
+	public void setup(){
+		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder);
+		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
+		tester.setId(1L);
+		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SUPERADMIN);
+		admin.setId(2L);
+		userList = Arrays.asList(tester, admin);
 
-		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN, DOMAIN);
-
-		//Add extra users, default admin is already there
-		userRepo.save(new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_TOOL_MANAGER)));
-		user1 = userRepo.save(new User("user1", true, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
-		userRepo.save(new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
-
-
-		prepareSecurity();
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		user1 = null;
+		when(principal.getName()).thenReturn(admin.getUsername());
+		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
+		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
+		when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
+		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 	}
 
 	@Test
-	public void testGetUsers() {
-		assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
+	public void shouldReturnRoles(){
+		List<Role> roles = usersController.getRoles();
+		assertThat("Number of roles mismatch", roles.size() == 7);
 	}
 
 	@Test
-	public void testGetRoles() {
-		assertEquals(7, userController.getRoles().size());
+	public void shouldRetrieveUser(){
+		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
+		UserRole userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRole.class);
+		net.geant.nmaas.portal.api.domain.User user = usersController.retrieveUser(userList.get(0).getId());
+		assertThat("Wrong username", user.getUsername().equals(userList.get(0).getUsername()));
+		assertThat("Wrong role", user.getRoles().iterator().next().getRole().equals(userRole.getRole()));
+	}
+
+	@Test(expected = MissingElementException.class)
+	public void shouldNotRetrieveNonExistingUser(){
+		Long userId = 5L;
+		when(userService.findById(userId)).thenReturn(Optional.empty());
+		usersController.retrieveUser(userId);
 	}
 
 	@Test
-	public void testGetUser() throws MissingElementException {
-		net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
-		assertEquals(new Long(1), user.getId());
-		assertEquals("admin", user.getUsername());
+	public void shouldUpdateUser(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail("test@nmaas.net");
+		userRequest.setFirstname("test");
+		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
+		verify(userService, times(2)).update(userList.get(0));
+	}
 
+	@Test(expected = MissingElementException.class)
+	public void shouldNotUpdateNonExistingUser(){
+		Long userId = 5L;
+		when(userService.findById(userId)).thenReturn(Optional.empty());
+		UserRequest userRequest = new UserRequest(userId, "test", "pass");
+		usersController.updateUser(userId, userRequest, principal);
+	}
+
+	@Test(expected = MissingElementException.class)
+	public void shouldNotUpdateWithNullId(){
+		Long userId = null;
+		UserRequest userRequest = new UserRequest(userId, userList.get(0).getUsername(), userList.get(0).getPassword());
+		when(userService.findById(userId)).thenReturn(Optional.empty());
+		usersController.updateUser(userId, userRequest, principal);
+	}
+
+	@Test(expected = MissingElementException.class)
+	public void shouldNotUpdateWithNullUserRequest(){
+		Long userId = 1L;
+		usersController.updateUser(userId, null, principal);
 	}
 
 	@Test
-	public void testSuccessUpdatingWithNonExistingUsername() throws ProcessingException, MissingElementException {
-		String oldUsername = user1.getUsername();
-		String newUsername = "newUser1";
-		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), principal);
-
-		User modUser1 = userRepo.findById(user1.getId()).get();
-		assertEquals(newUsername, modUser1.getUsername());
-	}
-
-	@Test
-	public void testFailureUpdatingWithExistingUsername() throws MissingElementException {
-		String oldUsername = user1.getUsername();
-		String newUsername = "admin";
-		try {
-			userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, newUsername, null), principal);
-			fail("There should not be two users with the same username.");
-		} catch (ProcessingException e) {
-
-		}
-	}
-
-	@Test
-	public void testUpdateUserPasswordAndRole() throws ProcessingException, MissingElementException {
-		String newPass = "newPass";
-		String oldPass = user1.getPassword();
-		userController.updateUser(user1.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, user1.getUsername(), newPass), principal);
-		User modUser1 = userRepo.findById(user1.getId()).get();
-
-		assertEquals(user1.getUsername(), modUser1.getUsername());
-		assertNotEquals(oldPass, modUser1.getPassword());
-		assertEquals(1, modUser1.getRoles().size());
-		//assertEquals(Role.TOOL_MANAGER, modUser1.getRoles().get(0).getRole());
-	}
-
-	@Test
-	public void testDeleteUser() {
+	@Ignore
+	public void shouldDeleteUser(){
 		//Update test when user delete is supported
-		try {
-			userController.deleteUser(user1.getId());
-			fail();
-		} catch(Exception ex) {
-
-		}
 	}
 
-    @Test
-    public void testGetRolesAsString(){
-        Role role1 = Role.ROLE_USER;
-        Role role2 = Role.ROLE_SUPERADMIN;
-        Role role3 = Role.ROLE_DOMAIN_ADMIN;
-        UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), role1);
-        UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), role2);
-        UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), role3);
+	@Test
+	public void shouldGetUserRoles(){
+		Set<UserRole> result = usersController.getUserRoles(userList.get(0).getId());
+		UserRole userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRole.class);
+		assertThat("Wrong roles set", result.iterator().next().getRole().equals(userRole.getRole()));
+	}
 
-        List<UserRole> userRoles = new ArrayList<>();
-        userRoles.add(userRole1);
-        userRoles.add(userRole2);
-        userRoles.add(userRole3);
-
-        assertEquals("ROLE_USER, ROLE_SUPERADMIN, ROLE_DOMAIN_ADMIN", userController.getRoleAsString(userRoles));
-    }
+	@Test(expected = MissingElementException.class)
+	public void shouldNotGetUserRolesForNonExistingUser(){
+		Long userId = 5L;
+		when(userService.findById(userId)).thenReturn(Optional.empty());
+		Set<UserRole> result = usersController.getUserRoles(userId);
+	}
 
 	@Test
-	public void testGetMessageWhenUserUpdated(){
-        Role role1 = Role.ROLE_USER;
-        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
+	public void shouldRemoveUserRoleWithGlobalDomainAndAddGuestRole(){
+		UserRole userRole = new UserRole();
+		userRole.setRole(Role.ROLE_OPERATOR);
+		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
+		verify(domainService, times(1)).removeMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_OPERATOR);
+		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
+	}
 
-		Role role2 = Role.ROLE_TOOL_MANAGER;
-		UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
+	@Test
+	public void shouldRemoveUserRoleWithNonGlobalDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setRole(Role.ROLE_OPERATOR);
+		userRole.setDomainId(DOMAIN.getId());
+		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
+		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_OPERATOR);
+	}
 
-        List<UserRole> userRoles1 = new ArrayList<>();
-        userRoles1.add(userRole1);
-		userRoles1.add(userRole2);
+	@Test(expected = MissingElementException.class)
+	public void shouldNotRemoveUserRoleWhenUserIdIsNull(){
+		Long userId = null;
+		UserRole userRole = new UserRole();
+		userRole.setRole(Role.ROLE_OPERATOR);
+		when(userService.findById(userId)).thenReturn(Optional.empty());
+		usersController.removeUserRole(userId, userRole, principal);
+	}
 
-        Role role3 = Role.ROLE_DOMAIN_ADMIN;
-        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole3.setRole(role3);
-        userRole3.setDomainId(1L);
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles3 = new HashSet<>();
-        userRoles3.add(userRole3);
+	@Test(expected = MissingElementException.class)
+	public void shouldNotRemoveUserRoleWhenUserRoleIsNull(){
+		UserRole userRole = null;
+		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
+	}
 
-        net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
-        user.setFirstname("FirstName");
-        user.setLastname("Lastname");
-        user.setEmail("email@email.com");
-        user.setRoles(userRoles1);
-        user.setEnabled(true);
+	@Test(expected = MissingElementException.class)
+	public void shouldNotRemoveUserRoleWithoutDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setRole(Role.ROLE_OPERATOR);
+		when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
+		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
+	}
 
-        UserRequest userRequest = new UserRequest(2L, "user2", "password");
-        userRequest.setEmail("email1@email.com");
-        userRequest.setFirstname("FirstName1");
-        userRequest.setLastname("LastName1");
-		userRequest.setRoles(userRoles3);
+	@Test
+	public void shouldCompleteRegistration(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		usersController.completeRegistration(principal, userRequest);
+		verify(userService, times(1)).update(userList.get(0));
+	}
 
-        String message = userController.getMessageWhenUserUpdated(user, userRequest);
-        assertEquals(
-                System.lineSeparator() + "||| Username changed from - user1 to - user2|||" +
-                        System.lineSeparator() + "||| Email changed from - email@email.com to - email1@email.com|||" +
-                        System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
-                        System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
-                        System.lineSeparator() + "||| Enabled flag changed from - true to - false|||" +
-                        System.lineSeparator() + "||| Role changed from - ROLE_USER, ROLE_TOOL_MANAGER to - ROLE_DOMAIN_ADMIN@domain1|||", message);
-    }
+	@Test
+	public void shouldCompleteRegistrationAndRemoveIncompleteRole(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail("test@nmaas.net");
+		when(principal.getName()).thenReturn(userList.get(0).getUsername());
+		when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		usersController.completeRegistration(principal, userRequest);
+		verify(domainService, times(1)).removeMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_INCOMPLETE);
+		verify(userService, times(1)).update(userList.get(0));
+	}
 
-    @Test
-    public void testGetMessageWhenUserUpdatedWithSameRolesInDifferentOrder(){
-        Role role1 = Role.ROLE_USER;
-        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
+	@Test
+	public void shouldChangePassword(){
+		when(principal.getName()).thenReturn(userList.get(0).getUsername());
+		when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
+		PasswordChange passwordChange = new PasswordChange(userList.get(0).getPassword(), "test1234");
+		when(passwordEncoder.matches(userList.get(0).getPassword(), passwordChange.getPassword())).thenReturn(true);
+		usersController.changePassword(principal, passwordChange);
+		verify(userService, times(1)).update(userList.get(0));
+	}
 
-        Role role2 = Role.ROLE_TOOL_MANAGER;
-        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
+	@Test(expected = ProcessingException.class)
+	public void shouldNotChangePasswordOnPreviousPasswordMismatch(){
+		when(principal.getName()).thenReturn(userList.get(0).getUsername());
+		when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
+		PasswordChange passwordChange = new PasswordChange("wrongpass", "test1234");
+		when(passwordEncoder.matches(userList.get(0).getPassword(), passwordChange.getPassword())).thenReturn(false);
+		usersController.changePassword(principal, passwordChange);
+		verify(userService, times(1)).update(userList.get(0));
+	}
 
-        List<UserRole> userRoles1 = new ArrayList<>();
-        userRoles1.add(userRole1);
-        userRoles1.add(userRole2);
+	@Test
+	public void shouldGetDomainUsers(){
+		Long domainId = 1L;
+		when(domainService.getMembers(domainId)).thenReturn(userList);
+		List<net.geant.nmaas.portal.api.domain.User> users = usersController.getDomainUsers(domainId);
+		assertThat("List size mismatch", users.size() == userList.size());
+	}
 
-        Role role3 = Role.ROLE_TOOL_MANAGER;
-        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole3.setRole(role3);
+	@Test
+	public void shouldGetDomainUser(){
+		Long domainId = 1L;
+		Long userId = 1L;
+		when(domainService.getMember(domainId, userId)).thenReturn(userList.get(0));
+		net.geant.nmaas.portal.api.domain.User user = usersController.getDomainUser(domainId, userId);
+		assertThat("User mismatch", user.getUsername().equals(userList.get(0).getUsername()));
+	}
 
-        Role role4 = Role.ROLE_USER;
-        net.geant.nmaas.portal.api.domain.UserRole userRole4 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole4.setRole(role4);
+	@Test(expected = MissingElementException.class)
+	public void shouldNotGetDomainUserWhenDomainNotExists(){
+		Long domainId = 5L;
+		Long userId = 1L;
+		when(domainService.getMember(domainId, userId)).thenThrow(ObjectNotFoundException.class);
+		net.geant.nmaas.portal.api.domain.User user = usersController.getDomainUser(domainId, userId);
+	}
 
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles2 = new HashSet<>();
-        userRoles2.add(userRole3);
-        userRoles2.add(userRole4);
+	@Test(expected = ProcessingException.class)
+	public void shouldNotGetDomainUserWhenUserNotExist(){
+		Long domainId = 1L;
+		Long userId = 8L;
+		when(domainService.getMember(domainId, userId)).thenThrow(net.geant.nmaas.portal.exceptions.ProcessingException.class);
+		net.geant.nmaas.portal.api.domain.User user = usersController.getDomainUser(domainId, userId);
+	}
 
-        net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
-        user.setFirstname("FirstName");
-        user.setLastname("Lastname");
-        user.setEmail("email@email.com");
-        user.setRoles(userRoles1);
-        user.setEnabled(true);
+	@Test
+	public void shouldRemoveDomainUser(){
+		usersController.removeDomainUser(DOMAIN.getId(), userList.get(0).getId());
+		verify(domainService, times(1)).removeMember(DOMAIN.getId(), userList.get(0).getId());
+	}
 
-        UserRequest userRequest = new UserRequest(2L, "user2", "password");
-        userRequest.setEmail("email1@email.com");
-        userRequest.setFirstname("FirstName1");
-        userRequest.setLastname("LastName1");
-        userRequest.setRoles(userRoles2);
+	@Test
+	public void shouldGetUserDomainRoles(){
+		Set<Role> roles = usersController.getUserRoles(DOMAIN.getId(), userList.get(0).getId());
+		verify(domainService, times(1)).getMemberRoles(DOMAIN.getId(), userList.get(0).getId());
+	}
 
-        String message = userController.getMessageWhenUserUpdated(user, userRequest);
-        assertEquals(
-                System.lineSeparator() + "||| Username changed from - user1 to - user2|||" +
-                        System.lineSeparator() + "||| Email changed from - email@email.com to - email1@email.com|||" +
-                        System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
-                        System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
-                        System.lineSeparator() + "||| Enabled flag changed from - true to - false|||", message);
-    }
+	@Test
+	public void shouldAddUserRoleToCustomDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(DOMAIN.getId());
+		userRole.setRole(Role.ROLE_USER);
+		usersController.addUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+		verify(domainService, times(1)).addMemberRole(DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
+	}
 
-    @Test
-	public void testGetRoleWithDomainIdAsString(){
-        Role role1 = Role.ROLE_USER;
-        net.geant.nmaas.portal.api.domain.UserRole userRole1 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole1.setRole(role1);
-        userRole1.setDomainId(1L);
+	@Test
+	public void shouldAddUserRoleToGlobalDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(GLOBAL_DOMAIN.getId());
+		userRole.setRole(Role.ROLE_OPERATOR);
+		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
+	}
 
-        Role role2 = Role.ROLE_GUEST;
-        net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole2.setRole(role2);
-        userRole2.setDomainId(2L);
+	@Test(expected = ProcessingException.class)
+	public void shouldNotAddNonGlobalRoleToGlobalDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(GLOBAL_DOMAIN.getId());
+		userRole.setRole(Role.ROLE_DOMAIN_ADMIN);
+		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+	}
 
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles = new LinkedHashSet<>();
-        userRoles.add(userRole1);
-        userRoles.add(userRole2);
+	@Test(expected = ProcessingException.class)
+	public void shouldNotAddGlobalRoleToCustomDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(DOMAIN.getId());
+		userRole.setRole(Role.ROLE_SUPERADMIN);
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+	}
 
-        assertEquals("ROLE_USER@domain1, ROLE_GUEST@domain2", userController.getRoleWithDomainIdAsString(userRoles));
+	@Test
+	public void shouldRemoveUserRole(){
+		String userRole = "ROLE_SUPERADMIN";
+		usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SUPERADMIN);
+	}
 
+	@Test(expected = MissingElementException.class)
+	public void shouldNotConvertIncorrectStringWhenRemovingUserRole(){
+		String userRole = "ROLE_WRONG";
+		usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+	}
+
+	@Test
+	public void shouldSetEnabledFlag(){
+		usersController.setEnabledFlag(userList.get(0).getId(), true, principal);
+		verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), true);
 	}
 
 }

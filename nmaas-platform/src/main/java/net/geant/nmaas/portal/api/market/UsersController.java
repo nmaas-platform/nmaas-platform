@@ -48,17 +48,21 @@ import java.util.stream.Collectors;
 @Log4j2
 public class UsersController {
 
-	@Autowired
 	UserService userService;
 	
-	@Autowired
 	DomainService domains;
 
-	@Autowired
 	ModelMapper modelMapper;
 	
-	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public UsersController(UserService userService, DomainService domains, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
+		this.userService = userService;
+		this.domains = domains;
+		this.modelMapper = modelMapper;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
@@ -85,18 +89,14 @@ public class UsersController {
 	public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) throws ProcessingException, MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
 
+		if(userRequest == null)
+			throw new MissingElementException("User request is null");
+
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
         final net.geant.nmaas.portal.persistent.entity.User adminUser =
                 userService.findByUsername(principal.getName()).get();
         final String adminRoles = getRoleAsString(adminUser.getRoles());
         final String userRoles = getRoleAsString(userDetails.getRoles());
-
-		if(userRequest.getUsername() != null && !userDetails.getUsername().equals(userRequest.getUsername())) {
-			if(userService.existsByUsername(userRequest.getUsername()))
-				throw new ProcessingException("Unable to change username.");
-
-			userDetails.setUsername(userRequest.getUsername());
-		}
 
 		if(userRequest.getPassword() != null)
 			userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
@@ -164,6 +164,9 @@ public class UsersController {
 	public void removeUserRole(@PathVariable final Long userId,
                                @RequestBody final UserRole userRole,
                                final Principal principal) throws ProcessingException, MissingElementException {
+		if(userRole == null)
+			throw new MissingElementException("userRole is null");
+
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
 
@@ -359,7 +362,7 @@ public class UsersController {
                                                   final Principal principal) throws ProcessingException, MissingElementException {
 		final Role role = convertRole(userRole);
 
-		final Domain domain = Optional.of(getDomain(domainId)).orElseThrow(() -> new MissingElementException("Domain not found"));
+		final Domain domain = getDomain(domainId);
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 				
 		try {
