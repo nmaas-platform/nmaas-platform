@@ -23,8 +23,8 @@ public interface UserService {
 	boolean existsByUsername(String username);
 	boolean existsById(Long id);
 	
-	User register(String username) throws ObjectAlreadyExistsException, MissingElementException;
-	User register(String username, boolean enabled, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException;
+	User register(String username, Domain domain) throws ObjectAlreadyExistsException, MissingElementException;
+	User register(String username, boolean enabled, String password, Domain domain) throws ObjectAlreadyExistsException, MissingElementException;
 	
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);

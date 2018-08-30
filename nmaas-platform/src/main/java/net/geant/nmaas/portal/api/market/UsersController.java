@@ -48,17 +48,21 @@ import java.util.stream.Collectors;
 @Log4j2
 public class UsersController {
 
-	@Autowired
 	UserService userService;
 	
-	@Autowired
 	DomainService domains;
 
-	@Autowired
 	ModelMapper modelMapper;
 	
-	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public UsersController(UserService userService, DomainService domains, ModelMapper modelMapper, PasswordEncoder passwordEncoder){
+		this.userService = userService;
+		this.domains = domains;
+		this.modelMapper = modelMapper;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
@@ -70,36 +74,6 @@ public class UsersController {
 	public List<Role> getRoles() {
 		return Arrays.asList(Role.values());
 	}
-	
-	@PostMapping(value="/users")
-	@ResponseStatus(HttpStatus.CREATED)
-	@PreAuthorize("hasPermission(#newUserRequest.domainId, 'domain', 'OWNER')")
-	@Transactional
-	public Id addUser(@RequestBody NewUserRequest newUserRequest) throws SignupException {
-		net.geant.nmaas.portal.persistent.entity.User user = null;
-		try {
-			user = userService.register(newUserRequest.getUsername());
-		} catch(ObjectAlreadyExistsException ex) {
-			throw new SignupException("User already exists.");
-		} catch (MissingElementException e) {			
-			throw new SignupException("Domain not found.");
-		}
-
-		if(user == null)
-			throw new SignupException("Unable to register new user");
-
-		user.setPassword(null);
-		user.setEnabled(true);
-		
-		try {
-			userService.update(user);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException ex) {
-			throw new SignupException("Unable to update newly registered user.");
-		}
-		
-		return new Id(user.getId());
-	}
-	
 		
 	@GetMapping(value="/users/{userId}")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
@@ -115,18 +89,14 @@ public class UsersController {
 	public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) throws ProcessingException, MissingElementException {
 		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
 
+		if(userRequest == null)
+			throw new MissingElementException("User request is null");
+
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
         final net.geant.nmaas.portal.persistent.entity.User adminUser =
                 userService.findByUsername(principal.getName()).get();
         final String adminRoles = getRoleAsString(adminUser.getRoles());
         final String userRoles = getRoleAsString(userDetails.getRoles());
-
-		if(userRequest.getUsername() != null && !userDetails.getUsername().equals(userRequest.getUsername())) {
-			if(userService.existsByUsername(userRequest.getUsername()))
-				throw new ProcessingException("Unable to change username.");
-
-			userDetails.setUsername(userRequest.getUsername());
-		}
 
 		if(userRequest.getPassword() != null)
 			userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
@@ -194,6 +164,9 @@ public class UsersController {
 	public void removeUserRole(@PathVariable final Long userId,
                                @RequestBody final UserRole userRole,
                                final Principal principal) throws ProcessingException, MissingElementException {
+		if(userRole == null)
+			throw new MissingElementException("userRole is null");
+
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
 
@@ -225,20 +198,6 @@ public class UsersController {
 			throw new MissingElementException(e.getMessage());
 		}		
 	}
-
-	@PostMapping("/users/{userId}/auth/basic/password")
-	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	@Transactional
-	public void changePassword(@PathVariable Long userId, @RequestBody PasswordChange passwordChange) throws ProcessingException, MissingElementException {
-		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
-		try {
-			changePassword(user, passwordChange.getPassword());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to change password");
-		}
-	}
-
 
 	@PostMapping(value="/users/my/complete")
 	@ResponseStatus(HttpStatus.ACCEPTED)
@@ -278,10 +237,16 @@ public class UsersController {
 	public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) throws ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
 		try {
-			changePassword(user, passwordChange.getPassword());
+			checkPassword(user, passwordChange.getPassword());
+			changePassword(user, passwordChange.getNewPassword());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to change password");
 		}
+	}
+
+	private void checkPassword(net.geant.nmaas.portal.persistent.entity.User user, String password) throws net.geant.nmaas.portal.exceptions.ProcessingException{
+		if(!passwordEncoder.matches(password, user.getPassword()))
+			throw new net.geant.nmaas.portal.exceptions.ProcessingException("Password mismatch");
 	}
 	
 	private void changePassword(net.geant.nmaas.portal.persistent.entity.User user, String password) throws net.geant.nmaas.portal.exceptions.ProcessingException {
@@ -397,7 +362,7 @@ public class UsersController {
                                                   final Principal principal) throws ProcessingException, MissingElementException {
 		final Role role = convertRole(userRole);
 
-		final Domain domain = Optional.of(getDomain(domainId)).orElseThrow(() -> new MissingElementException("Domain not found"));
+		final Domain domain = getDomain(domainId);
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 				
 		try {
@@ -422,7 +387,8 @@ public class UsersController {
 
     @PutMapping("/users/status/{userId}")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    public ResponseEntity<String> setEnabledFlag(@PathVariable Long userId,
+	@ResponseStatus(HttpStatus.ACCEPTED)
+    public void setEnabledFlag(@PathVariable Long userId,
                                                  @RequestParam("enabled") boolean isEnabledFlag,
                                                  Principal principal) throws MissingElementException{
         userService.setEnabledFlag(userId, isEnabledFlag);
@@ -438,7 +404,6 @@ public class UsersController {
                 principal.getName(),
                 roleAsString);
         log.info(message);
-        return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{

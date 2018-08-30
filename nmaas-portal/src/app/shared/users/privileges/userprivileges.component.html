@@ -4,11 +4,6 @@
 	<div class="panel-body">
 		<div *ngIf="isModeAllowed(ComponentMode.CREATE)">
 			<form *ngIf="user" [formGroup]="newPrivilegeForm" (submit)="add()" class="form-inline row">
-				<div *ngIf="user?.id" class="form-group col-lg-2">
-					<label>User:</label>
-					<p class="form-control-static">{{user.username}}</p>
-				</div>
-
 				<div class="form-group col-lg-3">
 					<label for="domainId">Domain:</label>
 					<select class="form-control" [formGroup]="newPrivilegeForm"

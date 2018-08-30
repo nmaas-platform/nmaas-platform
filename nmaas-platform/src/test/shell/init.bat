@@ -73,7 +73,7 @@ curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: applicati
 echo.
 echo
 echo Enable User Second
-curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+curl -X PUT %API_URL%/users/3 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
 echo.
 echo
 echo Set User Second an USER role on Domain One
@@ -86,11 +86,11 @@ curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: applicati
 echo.
 echo
 echo Enable Operator
-curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+curl -X PUT %API_URL%/users/4 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
 echo.
 echo
 echo Set Operator an OPERATOR role on Global Domain
-curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
+curl -X POST %API_URL%/domains/1/users/4/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
 echo.
 
 echo.
