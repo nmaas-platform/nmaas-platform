@@ -46,9 +46,14 @@
 		<input id="termsOfUseAccepted" type="checkbox" class="checkbox-inline" formControlName="termsOfUseAccepted">
 		<label class="control-label">I agree to the <a (click)="modalInfoTerms.show()">Terms of Use</a>*</label>
 	</div>
+
 	<div class="form-group form-group-sm">
 		<input id="privacyPolicyAccepted" type="checkbox" class="checkbox-inline" formControlName="privacyPolicyAccepted">
 		<label class="control-label">I agree to the <a (click)="modalInfoPolicy.show()">Privacy Policy</a>*</label>
+	</div>
+
+	<div class="form-group-sm form-group">
+		<jhi-re-captcha language="en" site_key="6Lf7BGwUAAAAACDGrAQDDqI7RQ-2hJu60esAXnMb"></jhi-re-captcha>
 	</div>
 
 	<div class="form-group form-group-sm">
