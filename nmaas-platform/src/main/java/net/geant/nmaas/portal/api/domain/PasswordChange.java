@@ -11,5 +11,6 @@ import lombok.Setter;
 @Setter
 public class PasswordChange {
 	private String password;
+	private String newPassword;
 
 }

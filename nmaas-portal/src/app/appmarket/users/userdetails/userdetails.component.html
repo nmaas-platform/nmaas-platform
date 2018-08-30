@@ -1,10 +1,6 @@
 <div class="page-header">
-	<h3 *ngIf="!isInMode(ComponentMode.CREATE)">User {{user?.username}}  <a *ngIf="authService.hasRole('ROLE_SUPERADMIN')" (click)="remove(user?.id)" class="btn btn-sm btn-danger" role="button">Remove</a></h3>
-	<h3 *ngIf="isInMode(ComponentMode.CREATE)">Create user</h3>
+	<h3>User {{user?.username}}  <a *ngIf="authService.hasRole('ROLE_SUPERADMIN')" (click)="remove(user?.id)" class="btn btn-sm btn-danger" role="button">Remove</a></h3>
 </div>
-<nmaas-userdetails *ngIf="!isInMode(ComponentMode.CREATE)" [user]="user" [mode]="getCurrentMode()" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" (onSave)="onSave($event)"></nmaas-userdetails>
-<nmaas-userdetails *ngIf="isInMode(ComponentMode.CREATE)" [mode]="getCurrentMode()" (onSave)="onSave($event)"></nmaas-userdetails>
-
-<nmaas-password *ngIf="!isInMode(ComponentMode.CREATE)" (passwordSubmit)="onPasswordSubmit($event)"></nmaas-password>
-<nmaas-userprivileges *ngIf="!isInMode(ComponentMode.CREATE)" [allowedModes]="[ComponentMode.VIEW, ComponentMode.CREATE]" [user]="user"></nmaas-userprivileges>
+<nmaas-userdetails [user]="user" [mode]="getCurrentMode()" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" (onSave)="onSave($event)"></nmaas-userdetails>
+<nmaas-userprivileges [allowedModes]="[ComponentMode.VIEW, ComponentMode.CREATE]" [user]="user"></nmaas-userprivileges>
 
