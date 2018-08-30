@@ -44,9 +44,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName) {
+    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean gitLabRequired) {
         Identifier deploymentId = generateDeploymentId();
-        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName, gitLabRequired);
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;

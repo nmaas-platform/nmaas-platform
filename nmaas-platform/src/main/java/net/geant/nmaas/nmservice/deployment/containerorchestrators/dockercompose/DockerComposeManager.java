@@ -109,7 +109,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void prepareDeploymentEnvironment(Identifier deploymentId)
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean gitLabRequired)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
         try {
             final DockerComposeNmServiceInfo service = loadService(deploymentId);

@@ -1,10 +1,13 @@
 package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +40,8 @@ public class OrchestratorManagerRestControllerTest {
     @Mock
     private AppLifecycleManager lifecycleManager;
 
+    private ApplicationRepository appRepo = mock(ApplicationRepository.class);
+
     private MockMvc mvc;
 
     private static final String DOMAIN = "domain";
@@ -47,16 +52,19 @@ public class OrchestratorManagerRestControllerTest {
 
     @Before
     public void setup() {
-        applicationId = Identifier.newInstance("15L");
+        applicationId = Identifier.newInstance(15L);
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
-        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
+        Application application = new Application("testapp");
+        application.setGitLabRequired(true);
+        when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }
 
     @Test
     public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
-        when(lifecycleManager.deployApplication(any(), any(), any())).thenReturn(deploymentId);
+        when(lifecycleManager.deployApplication(any(), any(), any(), anyBoolean())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);

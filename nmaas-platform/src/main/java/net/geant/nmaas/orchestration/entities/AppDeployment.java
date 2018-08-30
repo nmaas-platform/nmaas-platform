@@ -3,6 +3,8 @@ package net.geant.nmaas.orchestration.entities;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Details of single application deployment in the system.
@@ -11,6 +13,8 @@ import java.util.List;
  */
 @Entity
 @Table(name="app_deployment")
+@Getter
+@Setter
 public class AppDeployment {
 
     @Id
@@ -46,76 +50,17 @@ public class AppDeployment {
     @OneToMany(mappedBy = "app", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<AppDeploymentHistory> history = new ArrayList<>();
 
+    /** Indicates if GitLab instance is required during deployment */
+    @Column(nullable = false)
+    private boolean gitLabRequired;
+
     public AppDeployment() { }
 
-    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName) {
+    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean gitLabRequired) {
         this.deploymentId = deploymentId;
         this.domain = domain;
         this.applicationId = applicationId;
         this.deploymentName = deploymentName;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Identifier getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(Identifier deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    public Identifier getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(Identifier applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public String getDeploymentName() {
-        return deploymentName;
-    }
-
-    public void setDeploymentName(String deploymentName) {
-        this.deploymentName = deploymentName;
-    }
-
-    public AppDeploymentState getState() {
-        return state;
-    }
-
-    public void setState(AppDeploymentState state) {
-        this.state = state;
-    }
-
-    public AppConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(AppConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    public List<AppDeploymentHistory> getHistory() {
-        return history;
-    }
-
-    public void setHistory(List<AppDeploymentHistory> history) {
-        this.history = history;
+        this.gitLabRequired = gitLabRequired;
     }
 }

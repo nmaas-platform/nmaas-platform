@@ -38,16 +38,17 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
      * @param deploymentId unique identifier of service deployment
      * @param applicationId identifier of the application / service
      * @param appConfiguration application instance configuration data provided by the user
+     * @param gitLabRequired indicates if GitLab instance is required during deployment
      * @throws NmServiceConfigurationFailedException if any error condition occurs
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
+    public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean gitLabRequired)
             throws NmServiceConfigurationFailedException {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
-            fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers);
+            fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers, gitLabRequired);
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);

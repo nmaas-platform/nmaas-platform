@@ -13,6 +13,7 @@
 			"DOCKER_COMPOSE"
 		]
 	},
+	"gitLabRequired":true,
 	"configTemplate": {
 		"template": {
 			"schema": {

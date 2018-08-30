@@ -44,7 +44,8 @@ public class AppConfigurationTask {
             serviceConfiguration.configureNmService(
                     deploymentId,
                     appDeployment.getApplicationId(),
-                    appDeployment.getConfiguration());
+                    appDeployment.getConfiguration(),
+                    appDeployment.isGitLabRequired());
         } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

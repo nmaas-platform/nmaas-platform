@@ -4,6 +4,7 @@ import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,12 @@ public class AppLifecycleManagerRestController {
 
     private AppLifecycleManager lifecycleManager;
 
+    private ApplicationRepository appRepo;
+
     @Autowired
-    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager) {
+    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager, ApplicationRepository appRepo) {
         this.lifecycleManager = lifecycleManager;
+        this.appRepo = appRepo;
     }
 
     /**
@@ -39,7 +43,8 @@ public class AppLifecycleManagerRestController {
             @RequestParam("domain") String domain,
             @RequestParam("applicationid") String applicationId,
             @RequestParam("deploymentname") String deploymentName) {
-        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName);
+        boolean gitLabRequired = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found")).isGitLabRequired();
+        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, gitLabRequired);
     }
 
     /**

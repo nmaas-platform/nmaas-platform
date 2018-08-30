@@ -12,6 +12,7 @@ import lombok.Setter;
 public class Application extends ApplicationBrief {
 
 	String fullDescription;
+	boolean gitLabRequired;
 	ConfigTemplate configTemplate;
 	
 	//List<Comment> comments = new ArrayList<Comment>();

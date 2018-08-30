@@ -63,7 +63,7 @@ public class AnsiblePlaybookStatusNotificationTest {
 
     @Before
     public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidDomainException {
-        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME));
+        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME, true));
         DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
