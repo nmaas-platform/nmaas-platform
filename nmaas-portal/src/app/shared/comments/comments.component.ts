@@ -3,6 +3,7 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {AppsService} from '../../service/index';
 import {Comment, Id} from '../../model/index';
 import {AuthService} from '../../auth/auth.service';
+import {isNullOrUndefined} from "util";
 
 @Component({
     selector: 'comments',
@@ -28,6 +29,10 @@ export class CommentsComponent implements OnInit {
 
     active:boolean = false;
 
+    replyErrorMsg: string;
+
+    commentErrorMsg: string;
+
     constructor(private appsService: AppsService, private authService:AuthService) { }
 
     ngOnInit() {
@@ -39,22 +44,32 @@ export class CommentsComponent implements OnInit {
     }
 
     public addComment(): void {
-        this.appsService.addAppCommentByUrl(this.pathUrl, this.newComment)
-                        .subscribe(id => {
-                            this.newComment = new Comment();
-                            this.refresh();
-                            });
+        if(isNullOrUndefined(this.newComment.comment) || this.newComment.comment === ''){
+            this.commentErrorMsg = 'Comment cannot be empty';
+        } else{
+            this.appsService.addAppCommentByUrl(this.pathUrl, this.newComment)
+                .subscribe(id => {
+                    this.newComment = new Comment();
+                    this.commentErrorMsg = undefined;
+                    this.refresh();
+                }, err=> this.commentErrorMsg = err.message);
+        }
+
 
     }
 
     public addReply(parentId:number):void{
-        this.newReply.parentId = parentId;
-        this.appsService.addAppCommentByUrl(this.pathUrl, this.newReply)
-            .subscribe(id => {
-                this.newReply = new Comment();
-                this.refresh();
-            });
-        this.active = false;
+        if(isNullOrUndefined(this.newReply.comment) || this.newReply.comment === ''){
+            this.replyErrorMsg = 'Comment cannot be empty';
+        } else{
+            this.newReply.parentId = parentId;
+            this.appsService.addAppCommentByUrl(this.pathUrl, this.newReply)
+                .subscribe(id => {
+                    this.newReply = new Comment();
+                    this.refresh();
+                    this.active = false;
+                }, err=> this.replyErrorMsg = err.message);
+        }
     }
 
     public deleteComment(id: Number): void {
@@ -68,5 +83,6 @@ export class CommentsComponent implements OnInit {
         this.subComment = subComment;
         this.newReply.comment = "";
         this.active = true;
+        this.replyErrorMsg = undefined;
     }
 }
