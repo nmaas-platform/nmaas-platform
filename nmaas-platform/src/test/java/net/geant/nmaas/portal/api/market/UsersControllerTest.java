@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
@@ -28,7 +27,6 @@ import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Log4j2
 public class UsersControllerTest {
 
 	private static final Domain GLOBAL_DOMAIN = new Domain(1L,"global", "global", true);
