@@ -235,7 +235,7 @@ public class UsersController {
 	@PutMapping(value="/users/verify/{username}")
     @ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_NOT_ACCEPTED')")
-	public void setAcceptance(@PathVariable String username, Principal principal) throws MissingElementException{
+	public void setAcceptance(@PathVariable String username) throws MissingElementException{
 	    try {
             this.setAcceptanceFlags(username);
             String message = String.format("User %s accepted Terms of Use and Privacy Policy", username);

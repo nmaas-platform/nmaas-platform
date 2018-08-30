@@ -130,14 +130,14 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	@Transactional
-	public void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.setTermsOfUseAcceptedFlag(userId, touAccept);}
+	public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag){ userRepo.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);}
 
 	@Override
 	@Transactional
-	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean touAccept) throws UsernameNotFoundException{
+	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) throws MissingElementException{
 		User user = userRepo.findByUsername(username).orElseThrow(()
 				-> new UsernameNotFoundException("User " + username + " not found."));
-		userRepo.setTermsOfUseAcceptedFlag(user.getId(), touAccept);
+		userRepo.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	@Transactional
-	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws UsernameNotFoundException{
+	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws MissingElementException{
 		User user = userRepo.findByUsername(username).orElseThrow(()
 				-> new UsernameNotFoundException("User " + username + " not found."));
 		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);

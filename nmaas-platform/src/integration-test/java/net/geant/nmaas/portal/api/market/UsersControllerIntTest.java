@@ -110,6 +110,16 @@ public class UsersControllerIntTest extends BaseControllerTest {
     }
 
     @Test
+    public void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
+        MvcResult result =  mvc.perform(put("/users/verify/" + user1.getId())
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andReturn();
+    }
+
+    @Test
     public void testGetUsers() {
         assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
     }
@@ -275,4 +285,6 @@ public class UsersControllerIntTest extends BaseControllerTest {
         assertEquals("ROLE_USER@domain1, ROLE_GUEST@domain2", userController.getRoleWithDomainIdAsString(userRoles));
 
     }
+
+
 }

@@ -32,8 +32,8 @@ public interface UserService {
 	void delete(User user) throws MissingElementException, ProcessingException;	
 	void update(User user) throws ProcessingException;
     void setEnabledFlag(Long userId, boolean isEnabled);
-    void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept);
-    void setTermsOfUseAcceptedFlagByUsername(String username, boolean touAccept);
+    void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag);
+    void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag);
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
 }
