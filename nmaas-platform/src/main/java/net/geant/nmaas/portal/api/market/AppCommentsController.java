@@ -62,6 +62,9 @@ public class AppCommentsController extends AppBaseController {
 	@Transactional
 	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) throws MissingElementException, ProcessingException {
 		Application app = getApp(appId);
+
+		if(comment.getComment() == null || comment.getComment().isEmpty())
+			throw new IllegalArgumentException("Comment cannot be empty");
 		
 		Long parentId = comment.getParentId();
 		
