@@ -104,13 +104,13 @@ public class UserRepositoryTest {
 
 		Optional<User> termsOfUseAcceptedTestUserFalse = userRepository.findByUsername("termsTest");
 		assertNotNull(termsOfUseAcceptedTestUserFalse.get());
-		assertFalse(termsOfUseAcceptedTestUserFalse.get().isTouAccept());
+		assertFalse(termsOfUseAcceptedTestUserFalse.get().isTermsOfUseAccepted());
 
 		userRepository.setTermsOfUseAcceptedFlag(termsOfUseAcceptedTestUserFalse.get().getId(), true);
 
 		Optional<User> termsOfUseAcceptedTestUserTrue = userRepository.findByUsername("termsTest");
 		assertNotNull(termsOfUseAcceptedTestUserTrue.get());
-		assertTrue(termsOfUseAcceptedTestUserTrue.get().isTouAccept());
+		assertTrue(termsOfUseAcceptedTestUserTrue.get().isTermsOfUseAccepted());
 
 		userRepository.delete(termsOfUseAcceptedTestUserTrue.get());
 	}
