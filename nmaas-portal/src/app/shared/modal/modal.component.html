@@ -1,15 +1,15 @@
 <div class="modal fade" tabindex="-1"
 	[ngClass]="{'in': visibleAnimate}"
 	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
-	<div class="modal-dialog">
+	<div class="modal-dialog" >
 		<div class="modal-content">
-			<div class="modal-header">
-				<ng-content select=".nmaas-modal-header"></ng-content>
+			<div class="modal-header text-center" [ngClass]="{'alert-info': isInfo, 'alert-warning': isWarning, 'alert-danger': isError, 'alert-success': isSuccess}">
+				<h2><ng-content select=".nmaas-modal-header"></ng-content></h2>
 			</div>
 			<div class="modal-body">
 				<ng-content select=".nmaas-modal-body"></ng-content>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer" [ngClass]="{'alert-info': isInfo, 'alert-warning': isWarning, 'alert-danger': isError, 'alert-success': isSuccess}">
 				<ng-content select=".nmaas-modal-footer"></ng-content>
 			</div>
 		</div>
