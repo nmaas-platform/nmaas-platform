@@ -7,8 +7,6 @@ import { ComponentMode } from '../../shared/common/componentmode';
 export const UsersRoutes: Route[] = [
     { path: 'users', component: UsersListComponent, canActivate: [AuthGuard, RoleGuard],
                       data: {roles: ['ROLE_SUPERADMIN', 'ROLE_DOMAIN_ADMIN']}},
-    { path: 'users/add', component: UserDetailsComponent, canActivate: [AuthGuard, RoleGuard],
-                      data: {mode: ComponentMode.CREATE, roles: ['ROLE_SUPERADMIN']} },
     { path: 'users/view/:id', component: UserDetailsComponent, canActivate: [AuthGuard, RoleGuard],
                       data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN', 'ROLE_DOMAIN_ADMIN']} }
 ];

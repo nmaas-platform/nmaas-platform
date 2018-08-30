@@ -19,6 +19,8 @@ import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
     providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 export class RegistrationComponent implements OnInit {
+
+
   public sending: boolean = false;
   public submitted: boolean = false;
   public success: boolean = false;
@@ -43,7 +45,7 @@ export class RegistrationComponent implements OnInit {
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
-        password: ['', Validators.required],
+        newPassword: ['', Validators.required],
         confirmPassword: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         firstname: [''],
@@ -82,7 +84,7 @@ export class RegistrationComponent implements OnInit {
 
                   const registration: Registration = new Registration(
                       this.registrationForm.controls['username'].value,
-                      this.registrationForm.controls['password'].value,
+                      this.registrationForm.controls['newPassword'].value,
                       this.registrationForm.controls['email'].value,
                       this.registrationForm.controls['firstname'].value,
                       this.registrationForm.controls['lastname'].value,

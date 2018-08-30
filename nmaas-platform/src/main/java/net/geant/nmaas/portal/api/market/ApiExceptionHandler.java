@@ -59,18 +59,23 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(value = { MarketException.class })
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ApiError handleMarketException(WebRequest req, MarketException ex) {
-		return createApiError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+		return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(value = { Exception.class })
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public ApiError handleException(WebRequest req, Exception ex) {
-		return createApiError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+		return createApiErrorAndLogStacktrace(ex, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	private ApiError createApiError(Exception ex, HttpStatus status) {
+	private ApiError createApiErrorAndLogStacktrace(Exception ex, HttpStatus status) {
 		long timestamp = System.currentTimeMillis();
 		log.error("Error reported at " + timestamp, ex);
+		return new ApiError(ex.getMessage(), timestamp, status);
+	}
+
+	private ApiError createApiError(Exception ex, HttpStatus status){
+		long timestamp = System.currentTimeMillis();
 		return new ApiError(ex.getMessage(), timestamp, status);
 	}
 

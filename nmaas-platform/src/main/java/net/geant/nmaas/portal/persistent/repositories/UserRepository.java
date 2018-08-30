@@ -20,8 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     void setEnabledFlag(Long userId,  boolean isEnabledFlag);
 
     @Modifying
-    @Query("update User u set u.touAccept = ?2 where u.id = ?1")
-    void setTermsOfUseAcceptedFlag(Long userId, boolean touAcceptFlag);
+    @Query("update User u set u.termsOfUseAccepted = ?2 where u.id = ?1")
+    void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag);
 
     @Modifying
     @Query("update User u set u.privacyPolicyAccepted = ?2 where u.id = ?1")

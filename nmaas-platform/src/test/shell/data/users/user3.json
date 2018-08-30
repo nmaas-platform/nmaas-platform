@@ -4,5 +4,7 @@
   "email": "operator@domain1.nmaas.net",
   "firstname": "Operator",
   "lastname": "First",
-  "domainId": "1"
+  "domainId": "1",
+  "termsOfUseAccepted": true,
+  "privacyPolicyAccepted" : true
 }

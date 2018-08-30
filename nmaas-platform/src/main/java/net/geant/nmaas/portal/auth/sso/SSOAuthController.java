@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.Charset;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
@@ -69,7 +68,7 @@ public class SSOAuthController {
 				byte[] array = new byte[16]; // random password
 				new Random().nextBytes(array);
 				String generatedString = new String(array, Charset.forName("UTF-8"));
-				user = users.register("thirdparty-"+String.valueOf(System.currentTimeMillis()), true, generatedString, null);
+				user = users.register("thirdparty-"+String.valueOf(System.currentTimeMillis()), true, generatedString, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 				user.setSamlToken(userSSOLoginData.getUsername()); //Check user ID TODO: check if it's truly unique!
 				user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_INCOMPLETE)));
 				users.update(user);
