@@ -118,12 +118,14 @@ public class PortalConfig {
 			public void afterPropertiesSet() throws Exception {
 				try {
 					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
-					if(configuration.isMaintenance()){
+					if(configuration.isMaintenance())
 						configuration.setMaintenance(false);
-					}
+					if(configuration.isAllowsSSO())
+						configuration.setAllowsSSO(true);
+
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false, false));
 				}
 			}
 		};

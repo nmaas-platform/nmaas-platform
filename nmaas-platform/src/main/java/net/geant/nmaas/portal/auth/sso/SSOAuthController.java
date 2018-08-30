@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.SSOSettings;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -51,6 +52,10 @@ public class SSOAuthController {
 
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException {
+		Configuration configuration = this.configurationManager.getConfiguration();
+		if(!configuration.isAllowsSSO())
+			throw new AuthenticationException("SSO login method is not enabled");
+
 		if(userSSOLoginData == null)
 			throw new AuthenticationException("Received user SSO login data is empty");
 
@@ -80,11 +85,11 @@ public class SSOAuthController {
 				throw new SignupException("Internal server error");
 			}
 		}
-		
+
 		if(!user.isEnabled())
 			throw new AuthenticationException("User is not active.");
 
-		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
+		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configuration.isMaintenance())
 			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
