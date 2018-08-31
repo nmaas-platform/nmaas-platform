@@ -49,7 +49,7 @@ export class UserService extends GenericDataService {
   }
 
   public completeAcceptance(username: string): Observable<any>{
-    return this.put<string, any>(this.getUserAcceptanceUrl() + username,username);
+    return this.put<any ,any>(this.getUserAcceptanceUrl() + username, {});
   }
 
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {
