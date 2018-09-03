@@ -45,7 +45,7 @@ public class AppConfigurationTask {
                     deploymentId,
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
-                    appDeployment.isGitLabRequired());
+                    appDeployment.isConfigFileRepositoryRequired());
         } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

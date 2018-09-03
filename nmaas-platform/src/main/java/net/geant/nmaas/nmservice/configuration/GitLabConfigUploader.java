@@ -75,9 +75,9 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean gitLabRequired)
+    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired)
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
-        if(gitLabRequired){
+        if(configFileRepositoryRequired){
             String domain = serviceRepositoryManager.loadDomain(deploymentId);
             gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
             String gitLabPassword = generateRandomPassword();

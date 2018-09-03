@@ -62,7 +62,7 @@ public class Application implements Serializable {
 	@Lob
 	private String fullDescription;
 
-	private boolean gitLabRequired;
+	private boolean configFileRepositoryRequired;
 	
 	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
 	private ConfigTemplate configTemplate;

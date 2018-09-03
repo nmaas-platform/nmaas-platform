@@ -47,11 +47,11 @@ public interface ContainerOrchestrator {
      * Executes all initial configuration steps in order to enable further deployment of the NM service.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param gitLabRequired indicates if GitLab instance is required during deployment
+     * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      * @throws CouldNotPrepareEnvironmentException if any of the environment preparation steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void prepareDeploymentEnvironment(Identifier deploymentId, boolean gitLabRequired)
+    void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException;
 
     /**

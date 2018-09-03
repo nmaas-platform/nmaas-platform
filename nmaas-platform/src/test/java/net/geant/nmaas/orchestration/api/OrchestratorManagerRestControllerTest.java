@@ -58,7 +58,7 @@ public class OrchestratorManagerRestControllerTest {
         appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
         Application application = new Application("testapp");
-        application.setGitLabRequired(true);
+        application.setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }
 

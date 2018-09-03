@@ -33,8 +33,8 @@ public class AppEnvironmentPreparationTask {
     @Loggable(LogLevel.INFO)
     public void trigger(AppPrepareEnvironmentActionEvent event) throws InvalidDeploymentIdException, CouldNotPrepareEnvironmentException {
         try {
-            boolean gitLabRequired = repository.findByDeploymentId(event.getRelatedTo()).orElseThrow(InvalidDeploymentIdException::new).isGitLabRequired();
-            serviceDeployment.prepareDeploymentEnvironment(event.getRelatedTo(), gitLabRequired);
+            boolean configFileRepositoryRequired = repository.findByDeploymentId(event.getRelatedTo()).orElseThrow(InvalidDeploymentIdException::new).isConfigFileRepositoryRequired();
+            serviceDeployment.prepareDeploymentEnvironment(event.getRelatedTo(), configFileRepositoryRequired);
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

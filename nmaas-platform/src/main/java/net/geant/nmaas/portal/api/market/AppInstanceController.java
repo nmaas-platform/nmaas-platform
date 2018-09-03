@@ -136,7 +136,7 @@ public class AppInstanceController extends AppBaseController {
 				domain.getCodename(),
 				Identifier.newInstance(appInstance.getApplication().getId()),
 				appInstance.getName(),
-				app.isGitLabRequired());
+				app.isConfigFileRepositoryRequired());
 		appInstance.setInternalId(internalId);
 
 		instances.update(appInstance);

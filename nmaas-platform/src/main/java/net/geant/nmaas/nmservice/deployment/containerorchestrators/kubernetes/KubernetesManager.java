@@ -100,10 +100,10 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean gitLabRequired)
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
         try {
-            if(gitLabRequired){
+            if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
             if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {

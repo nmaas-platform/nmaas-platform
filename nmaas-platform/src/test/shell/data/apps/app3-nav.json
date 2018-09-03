@@ -14,7 +14,7 @@
 			"KUBERNETES"
 		]
 	},
-	"gitLabRequired":false,
+	"configFileRepositoryRequired":false,
 	"configTemplate": {
 		"template": {
 			"schema": {

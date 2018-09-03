@@ -52,15 +52,15 @@ public class AppDeployment {
 
     /** Indicates if GitLab instance is required during deployment */
     @Column(nullable = false)
-    private boolean gitLabRequired;
+    private boolean configFileRepositoryRequired;
 
     public AppDeployment() { }
 
-    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean gitLabRequired) {
+    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired) {
         this.deploymentId = deploymentId;
         this.domain = domain;
         this.applicationId = applicationId;
         this.deploymentName = deploymentName;
-        this.gitLabRequired = gitLabRequired;
+        this.configFileRepositoryRequired = configFileRepositoryRequired;
     }
 }

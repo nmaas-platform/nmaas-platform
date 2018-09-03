@@ -48,7 +48,7 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean gitLabRequired)
+    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired)
             throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
         DockerHost host = serviceRepositoryManager.loadDockerHost(deploymentId);
         String attachedVolumeName = serviceRepositoryManager.loadAttachedVolumeName(deploymentId);

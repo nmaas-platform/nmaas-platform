@@ -66,10 +66,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean gitLabRequired) throws CouldNotPrepareEnvironmentException {
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) throws CouldNotPrepareEnvironmentException {
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
-            orchestrator.prepareDeploymentEnvironment(deploymentId, gitLabRequired);
+            orchestrator.prepareDeploymentEnvironment(deploymentId, configFileRepositoryRequired);
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {

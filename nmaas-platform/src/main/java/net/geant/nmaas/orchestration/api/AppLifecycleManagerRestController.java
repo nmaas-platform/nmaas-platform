@@ -43,8 +43,8 @@ public class AppLifecycleManagerRestController {
             @RequestParam("domain") String domain,
             @RequestParam("applicationid") String applicationId,
             @RequestParam("deploymentname") String deploymentName) {
-        boolean gitLabRequired = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found")).isGitLabRequired();
-        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, gitLabRequired);
+        boolean configFileRepositoryRequired = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found")).isConfigFileRepositoryRequired();
+        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, configFileRepositoryRequired);
     }
 
     /**
