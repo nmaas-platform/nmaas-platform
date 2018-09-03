@@ -135,6 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -148,6 +149,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
 										new AntPathRequestMatcher("/api/configuration/**", "GET"),
+										new AntPathRequestMatcher("/api/management/shibboleth/", "GET"),
 										new AntPathRequestMatcher("/v2/api-docs"),
 										new AntPathRequestMatcher("/swagger-resources"),
 										new AntPathRequestMatcher("/swagger-resources/**"),

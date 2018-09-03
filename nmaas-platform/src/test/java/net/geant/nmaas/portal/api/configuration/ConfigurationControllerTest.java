@@ -48,7 +48,7 @@ public class ConfigurationControllerTest extends BaseControllerTest {
 
     @Test
     public void shouldAddNewConfiguration() throws Exception {
-        Configuration configuration = new Configuration(true, true);
+        Configuration configuration = new Configuration(true, false);
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
@@ -71,7 +71,7 @@ public class ConfigurationControllerTest extends BaseControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         Long id = Long.parseLong(mvcPostResult.getResponse().getContentAsString());
-        Configuration configuration = new Configuration(true, true);
+        Configuration configuration = new Configuration(true, false);
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX+"/{id}",id)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -24,7 +24,7 @@ public class Configuration {
     private boolean maintenance = false;
 
     @Column(nullable = false)
-    private boolean allowsSSO = true;
+    private boolean allowsSSO = false;
 
     public Configuration(boolean maintenance, boolean allowsSSO){
         this.maintenance = maintenance;

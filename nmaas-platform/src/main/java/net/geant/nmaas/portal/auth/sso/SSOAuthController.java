@@ -1,12 +1,13 @@
 package net.geant.nmaas.portal.auth.sso;
 
+import net.geant.nmaas.externalservices.api.model.ShibbolethView;
+import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.api.security.SSOSettings;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -35,17 +36,17 @@ public class SSOAuthController {
 
 	private DomainService domains;
 
-	private SSOSettings ssoSettings;
+	private ShibbolethManager shibbolethManager;
 
 	private JWTTokenService jwtTokenService;
 
 	private ConfigurationManager configurationManager;
 
 	@Autowired
-	public SSOAuthController(UserService users, DomainService domains, SSOSettings ssoSettings, JWTTokenService jwtTokenService, ConfigurationManager configurationManager){
+	public SSOAuthController(UserService users, DomainService domains, ShibbolethManager shibbolethManager, JWTTokenService jwtTokenService, ConfigurationManager configurationManager){
 		this.users = users;
 		this.domains = domains;
-		this.ssoSettings = ssoSettings;
+		this.shibbolethManager = shibbolethManager;
 		this.jwtTokenService = jwtTokenService;
 		this.configurationManager = configurationManager;
 	}
@@ -62,7 +63,8 @@ public class SSOAuthController {
 		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
 			throw new AuthenticationException("Missing username");
 
-		userSSOLoginData.validate(ssoSettings.getKey(), ssoSettings.getTimeout());
+		ShibbolethView shibboleth = shibbolethManager.getOneShibbolethConfig();
+		userSSOLoginData.validate(shibboleth.getKey(), shibboleth.getTimeout());
 
 		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
 		User user = maybeUser.orElse(null);

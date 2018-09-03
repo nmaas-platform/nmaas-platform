@@ -6,6 +6,9 @@ import { FooterComponent } from '../../shared/index';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ConfigurationService} from "../../service";
 import {Configuration} from "../../model/configuration";
+import {isNullOrUndefined} from "util";
+import {ShibbolethService} from "../../service/shibboleth.service";
+import {ShibbolethConfig} from "../../model/shibboleth";
 
 @Component({
   selector: 'nmaas-login',
@@ -18,25 +21,23 @@ export class LoginComponent implements OnInit {
     loading: boolean = false;
     error:string = '';
     configuration:Configuration;
+    shibboleth:ShibbolethConfig;
   
 
     ssoLoading: boolean = false;
     ssoError:string = '';
 
-    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService) { }
+    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService) { }
 
     ngOnInit() {
         this.configService.getConfiguration().subscribe(config=>{
             this.configuration = config;
-            if(this.auth.getUsername() && config.allowsSSO) {
-                window.location.href = this.auth.getSSOLogoutUrl();
-                this.auth.logout();
-                return;
-            }
-            this.auth.logout();
-            if(config.allowsSSO) {
-                this.checkSSO();
-            }
+            this.shibbolethService.getOne().subscribe(shibboleth => {
+                this.shibboleth = shibboleth;
+                if(config.allowsSSO) {
+                    this.checkSSO();
+                }
+            });
         });
     }
 
@@ -85,15 +86,10 @@ export class LoginComponent implements OnInit {
                     this.ssoLoading = false;
                     this.ssoError = err;
                 });
-
-      } else if(!this.configuration.allowsSSO) {
-        this.triggerSSO();
       }
     }
 
   public triggerSSO() {
-    // Need to start login process
-    let url = window.location.href.replace(/ssoUserId=.+/, '');
-    // Shibboleth SP uses parameter 'target' instead of 'return'
-    window.location.href = this.auth.getSSOLoginUrl() + '?return=' + url;
+        let url = window.location.href.replace(/ssoUserId=.+/, '');
+        window.location.href = this.shibboleth.loginUrl + '?return=' + url;
   }}
