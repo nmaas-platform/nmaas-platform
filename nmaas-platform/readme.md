@@ -20,7 +20,7 @@
  * Lombok (1.18.2)
  * Gitlab4j (4.8.30)
 
-#### Prerequisites
+### Prerequisites
 ---
   + Install java 8 jdk ([http://www.oracle.com](http://www.oracle.com/technetwork/java/javase/downloads))
   
