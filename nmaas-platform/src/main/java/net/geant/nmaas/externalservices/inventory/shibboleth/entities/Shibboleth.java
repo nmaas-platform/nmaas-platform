@@ -34,14 +34,6 @@ public class Shibboleth {
     private String key;
 
     @Column(nullable = false)
-    private int timeout;
-
-    public Shibboleth(String loginUrl, String logoutUrl, boolean allowsBasic, String key, int timeout){
-        this.loginUrl = loginUrl;
-        this.logoutUrl = logoutUrl;
-        this.allowsBasic = allowsBasic;
-        this.key = key;
-        this.timeout = timeout;
-    }
+    private int timeout = 10;
 
 }

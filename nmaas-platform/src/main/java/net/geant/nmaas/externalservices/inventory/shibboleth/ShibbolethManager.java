@@ -44,6 +44,7 @@ public class ShibbolethManager {
         if(shibbolethRepository.count() > 0){
             throw new OnlyOneShibbolethConfigSupportedException("Shibboleth config already exists. It can be updated");
         }
+        checkParam(shibbolethView);
         this.shibbolethRepository.save(modelMapper.map(shibbolethView, Shibboleth.class));
         return loadSingleShibbolethConfig().getId();
     }
@@ -53,6 +54,7 @@ public class ShibbolethManager {
         if(!shibboleth.isPresent()){
             throw new ShibbolethConfigNotFoundException("Shibboleth config with id "+id+" not found in repository");
         }
+        checkParam(shibbolethView);
         shibbolethRepository.save(modelMapper.map(shibbolethView, Shibboleth.class));
     }
 
@@ -79,5 +81,14 @@ public class ShibbolethManager {
             throw new IllegalStateException("Found " + shibbolethRepository.count() + " instead of one");
         }
         return shibbolethRepository.findAll().get(0);
+    }
+
+    private void checkParam(ShibbolethView shibboleth){
+        if(shibboleth.getLoginUrl() == null || shibboleth.getLoginUrl().isEmpty())
+            throw new IllegalStateException("Login url cannot be null or empty");
+        if(shibboleth.getLogoutUrl() == null || shibboleth.getLogoutUrl().isEmpty())
+            throw new IllegalStateException("Logout url cannot be null or empty");
+        if(shibboleth.getKey() == null || shibboleth.getKey().isEmpty())
+            throw new IllegalStateException("Key cannot be null or empty");
     }
 }

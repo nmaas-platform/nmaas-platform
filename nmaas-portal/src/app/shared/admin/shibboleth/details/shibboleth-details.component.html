@@ -1,21 +1,27 @@
 <div class="panel panel-default">
   <div class="panel-heading">Shibboleth configuration</div>
   <div class="panel-body">
-    <form *ngIf="shibbolethConfig" (submit)="submit()" class="form-horizontal">
+    <form *ngIf="shibbolethConfig" (submit)="submit()" class="form-horizontal" #configForm="ngForm">
 
       <div class="form-group">
         <label for="loginUrl" class="col-sm-2 control-label">Login url:</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="loginUrl" name="loginUrl"
+          <input type="text" class="form-control" id="loginUrl" name="loginUrl" required #loginUrl="ngModel"
                  [(ngModel)]="shibbolethConfig.loginUrl" [disabled]="isInMode(ComponentMode.VIEW)"/>
+          <div class="alert alert-danger" *ngIf="loginUrl.invalid && (loginUrl.dirty || loginUrl.touched)">
+            <div *ngIf="loginUrl.errors.required">Login url is required</div>
+          </div>
         </div>
       </div>
 
       <div class="form-group">
         <label for="logoutUrl" class="col-sm-2 control-label">Logout url:</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="logoutUrl" name="logoutUrl"
+          <input type="text" class="form-control" id="logoutUrl" name="logoutUrl" required #logoutUrl="ngModel"
                  [(ngModel)]="shibbolethConfig.logoutUrl" [disabled]="isInMode(ComponentMode.VIEW)"/>
+          <div class="alert alert-danger" *ngIf="logoutUrl.invalid && (logoutUrl.dirty || logoutUrl.touched)">
+            <div *ngIf="logoutUrl.errors.required">Logout url is required</div>
+          </div>
         </div>
       </div>
 
@@ -31,7 +37,10 @@
         <label for="SSOKey" class="col-sm-2 control-label">SSO key:</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" id="SSOKey" name="SSOKey" [(ngModel)]="shibbolethConfig.key"
-                 [disabled]="isInMode(ComponentMode.VIEW)"/>
+                 [disabled]="isInMode(ComponentMode.VIEW)" required #ssoKey="ngModel"/>
+          <div class="alert alert-danger" *ngIf="ssoKey.invalid && (ssoKey.dirty || ssoKey.touched)">
+            <div *ngIf="ssoKey.errors.required">SSO key is required</div>
+          </div>
         </div>
       </div>
 
@@ -39,14 +48,17 @@
         <label for="timeout" class="col-sm-2 control-label">Timeout:</label>
         <div class="col-sm-10">
           <input type="number" class="form-control no-spin" id="timeout" name="timeout" [(ngModel)]="shibbolethConfig.timeout"
-                 [disabled]="isInMode(ComponentMode.VIEW)"/>
+                 [disabled]="isInMode(ComponentMode.VIEW)" required #timeout="ngModel"/>
+          <div class="alert alert-danger" *ngIf="timeout.invalid && (timeout.dirty || timeout.touched)">
+            <div *ngIf="timeout.errors.required">Timeout is required</div>
+          </div>
         </div>
       </div>
 
       <button *ngIf="!isInMode(ComponentMode.VIEW) && !isInMode(ComponentMode.CREATE)" type="button"
               class="btn btn-default" (click)="onModeChange()">View</button>
       <button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit"
-              class="btn btn-primary">Submit</button>
+              class="btn btn-primary" [disabled]="!configForm.form.valid">Submit</button>
       <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
               type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
 
