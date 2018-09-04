@@ -406,6 +406,13 @@ public class UsersController {
         log.info(message);
     }
 
+    @PostMapping("/isAdmin")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @Transactional
+    public ResponseEntity isAdmin(){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
 		if(domains.getGlobalDomain().isPresent()){
 			Long globalId = domains.getGlobalDomain().get().getId();
