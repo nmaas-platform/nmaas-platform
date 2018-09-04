@@ -408,7 +408,6 @@ public class UsersController {
 
     @PostMapping("/isAdmin")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @Transactional
     public ResponseEntity isAdmin(){
         return new ResponseEntity<>(HttpStatus.OK);
     }
