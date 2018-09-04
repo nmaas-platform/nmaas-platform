@@ -61,6 +61,8 @@ public class Application implements Serializable {
 	@Basic(fetch=FetchType.LAZY)
 	@Lob
 	private String fullDescription;
+
+	private boolean configFileRepositoryRequired;
 	
 	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
 	private ConfigTemplate configTemplate;

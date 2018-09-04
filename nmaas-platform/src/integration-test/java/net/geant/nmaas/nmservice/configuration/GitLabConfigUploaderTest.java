@@ -80,7 +80,7 @@ public class GitLabConfigUploaderTest {
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo(deploymentId, deploymentName, domain, null);
         repositoryManager.storeService(service);
         assertThat("Domain is not returned correctly",repositoryManager.loadDomain(deploymentId).equals(domain));
-        gitLabConfigUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()));
+        gitLabConfigUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()), true);
     }
 
     private GitLab simpleGitLabInstance(){
@@ -99,7 +99,7 @@ public class GitLabConfigUploaderTest {
         String deploymentName = "testDeploymentName";
         KubernetesNmServiceInfo service = new KubernetesNmServiceInfo(deploymentId, deploymentName, domain, null);
         repositoryManager.storeService(service);
-        gitLabUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()));
+        gitLabUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()), true);
         KubernetesNmServiceInfo serviceWithGitLabProject = repositoryManager.loadService(deploymentId);
         assertThat(serviceWithGitLabProject.getGitLabProject(), is(notNullValue()));
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUser(), containsString(domain));

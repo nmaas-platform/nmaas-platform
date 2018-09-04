@@ -135,7 +135,8 @@ public class AppInstanceController extends AppBaseController {
 		Identifier internalId = appLifecycleManager.deployApplication(
 				domain.getCodename(),
 				Identifier.newInstance(appInstance.getApplication().getId()),
-				appInstance.getName());
+				appInstance.getName(),
+				app.isConfigFileRepositoryRequired());
 		appInstance.setInternalId(internalId);
 
 		instances.update(appInstance);

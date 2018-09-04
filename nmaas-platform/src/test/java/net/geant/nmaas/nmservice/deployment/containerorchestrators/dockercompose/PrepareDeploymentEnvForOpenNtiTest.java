@@ -34,7 +34,7 @@ public class PrepareDeploymentEnvForOpenNtiTest extends BasePrepareDeploymentEnv
 
     @Test
     public void shouldBuildAndStoreComposeFileFromOpenNtiComposeTemplateXml() throws Exception {
-        manager.prepareDeploymentEnvironment(deploymentId);
+        manager.prepareDeploymentEnvironment(deploymentId, true);
         assertThat(contentOfGeneratedComposeFile(), allOf(
                         containsString("1000:"),
                         containsString("/volume"),

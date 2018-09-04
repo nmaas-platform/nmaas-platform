@@ -12,6 +12,7 @@ import lombok.Setter;
 public class Application extends ApplicationBrief {
 
 	String fullDescription;
+	boolean configFileRepositoryRequired;
 	ConfigTemplate configTemplate;
 	
 	//List<Comment> comments = new ArrayList<Comment>();

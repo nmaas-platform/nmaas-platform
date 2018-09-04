@@ -1,6 +1,8 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
@@ -45,6 +47,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
     private KClusterApiManager clusterApiManager;
+    private GitLabManager gitLabManager;
 
     @Autowired
     public KubernetesManager(KubernetesRepositoryManager repositoryManager,
@@ -54,7 +57,8 @@ public class KubernetesManager implements ContainerOrchestrator {
                              KClusterIngressManager clusterIngressManager,
                              IngressControllerManager ingressControllerManager,
                              IngressResourceManager ingressResourceManager,
-                             KClusterApiManager clusterApiManager) {
+                             KClusterApiManager clusterApiManager,
+                             GitLabManager gitLabManager) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
         this.serviceLifecycleManager = serviceLifecycleManager;
@@ -63,6 +67,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         this.ingressControllerManager = ingressControllerManager;
         this.ingressResourceManager = ingressResourceManager;
         this.clusterApiManager = clusterApiManager;
+        this.gitLabManager = gitLabManager;
     }
 
     @Override
@@ -95,9 +100,12 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(Identifier deploymentId)
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired)
             throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
         try {
+            if(configFileRepositoryRequired){
+                gitLabManager.validateGitLabInstance();
+            }
             if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
@@ -105,7 +113,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Service not found in repository -> Invalid deployment id " + idie.getMessage());
-        } catch (IngressControllerManipulationException icme) {
+        } catch (IngressControllerManipulationException | GitLabInvalidConfigurationException icme) {
             throw new CouldNotPrepareEnvironmentException(icme.getMessage());
         }
     }

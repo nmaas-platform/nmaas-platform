@@ -34,7 +34,7 @@ public class PrepareDeploymentEnvForNavTest extends BasePrepareDeploymentEnvTest
 
     @Test
     public void shouldBuildAndStoreComposeFileFromNavComposeTemplateXml() throws Exception {
-        manager.prepareDeploymentEnvironment(deploymentId);
+        manager.prepareDeploymentEnvironment(deploymentId, true);
         assertThat(contentOfGeneratedComposeFile(), allOf(
                         containsString("1000:"),
                         containsString("/volume"),
