@@ -23,6 +23,15 @@
 #### Prerequisites
 ---
   + Install java 8 jdk ([http://www.oracle.com](http://www.oracle.com/technetwork/java/javase/downloads))
+  
+#### Local environment setup
+---
+  + Build and run the Platform with *gradlew bootRun* in reactor directory.
+  + Please be advised that terminal or command line must be opened while using Platform.
+  + To add pre-defined set of applications to the Platform run *nmaas-platform/src/test/shell/init.sh* script that will load NMaaS-compatible application definitions included in the *nmaas-platform/src/test/shell/data/apps* directory.
+  + After running the initialisation script in the previous step, the *nmaas-platform/src/test/shell/populate-templates.sh* should be run to add configuration file and Docker Compose file templates for previously added applications.
+  + Initial deployment environment data/configuration may be applied by running *nmaas-platform/src/test/shell/populate-inventory.sh* script that will load Docker Host and customer network definitions included in the *nmaas-platform/src/test/shell/data/inventory* directory.
+
     
 #### Build and run
 ---
