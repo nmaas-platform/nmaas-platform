@@ -55,17 +55,17 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
         contentRepo.delete(content);
     }
 
-    protected void checkParam(Long id) {
+    public void checkParam(Long id) {
         if(id == null)
             throw new IllegalArgumentException("id is null");
     }
 
-    protected void checkParam(String name) {
+    public void checkParam(String name) {
         if(name == null)
             throw new IllegalArgumentException("name is null");
     }
 
-    protected void checkParam(Content content) {
+    public void checkParam(Content content) {
         if(content == null)
             throw new IllegalArgumentException("content is null");
     }
