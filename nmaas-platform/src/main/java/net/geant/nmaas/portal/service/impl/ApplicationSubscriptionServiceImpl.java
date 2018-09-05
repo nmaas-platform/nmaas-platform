@@ -25,14 +25,19 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 @Service
 public class ApplicationSubscriptionServiceImpl implements ApplicationSubscriptionService {
 
-	@Autowired
     ApplicationSubscriptionRepository appSubRepo;
 	
-	@Autowired
 	DomainService domains;
 	
-	@Autowired
 	ApplicationService applications;
+
+	@Autowired
+	public ApplicationSubscriptionServiceImpl(ApplicationSubscriptionRepository appSubRepo,
+											  DomainService domains, ApplicationService applications) {
+		this.appSubRepo = appSubRepo;
+		this.domains = domains;
+		this.applications = applications;
+	}
 	
 	
 	@Override
