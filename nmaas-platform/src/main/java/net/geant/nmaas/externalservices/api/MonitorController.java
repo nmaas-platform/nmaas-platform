@@ -42,11 +42,11 @@ public class MonitorController {
         this.monitorManager.updateMonitorEntry(monitorEntryView);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
-    public void deleteMonitorEntry(@RequestBody MonitorEntryView monitorEntryView){
-        this.monitorManager.deleteMonitorEntry(monitorEntryView);
+    public void deleteMonitorEntry(@PathVariable String serviceName){
+        this.monitorManager.deleteMonitorEntry(serviceName);
     }
 
     @GetMapping("/all")
@@ -60,6 +60,6 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     public MonitorEntryView getMonitorEntry(@PathVariable String serviceName){
-        return this.monitorManager.getMonitorEntries(ServiceType.valueOf(serviceName));
+        return this.monitorManager.getMonitorEntries(serviceName);
     }
 }

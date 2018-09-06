@@ -34,7 +34,12 @@ public class GitLabMonitorServiceImpl implements MonitorService {
 
     @Override
     public void checkStatus(){
-        this.gitLabManager.validateGitLabInstance();
+        try {
+            this.gitLabManager.validateGitLabInstance();
+            this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);
+        } catch(GitLabInvalidConfigurationException | IllegalStateException e){
+            this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.FAILURE);
+        }
     }
 
     @Override
@@ -43,12 +48,7 @@ public class GitLabMonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException{
-        try {
-            this.checkStatus();
-            this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);
-        } catch (GitLabInvalidConfigurationException e){
-            this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.FAILURE);
-        }
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+        this.checkStatus();
     }
 }

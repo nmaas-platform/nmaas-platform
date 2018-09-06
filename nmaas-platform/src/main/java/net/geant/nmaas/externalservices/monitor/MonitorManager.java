@@ -48,9 +48,9 @@ public class MonitorManager {
         this.repository.save(monitorEntry);
     }
 
-    public void deleteMonitorEntry(MonitorEntryView monitorEntryView){
-        if(this.repository.existsByServiceName(monitorEntryView.getServiceName()))
-            this.repository.deleteByServiceName(monitorEntryView.getServiceName());
+    public void deleteMonitorEntry(String serviceName){
+        if(this.repository.existsByServiceName(ServiceType.valueOf(serviceName.toUpperCase())))
+            this.repository.deleteByServiceName(ServiceType.valueOf(serviceName.toUpperCase()));
     }
 
     public List<MonitorEntryView> getAllMonitorEntries(){
@@ -59,10 +59,10 @@ public class MonitorManager {
                 .collect(Collectors.toList());
     }
 
-    public MonitorEntryView getMonitorEntries(ServiceType serviceType){
-        return this.repository.findByServiceName(serviceType)
+    public MonitorEntryView getMonitorEntries(String serviceName){
+        return this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
                 .map(entity -> this.modelMapper.map(entity, MonitorEntryView.class))
-                .orElseThrow(() -> new MonitorEntryNotFound(String.format("Monitor entry for %s cannot be found", serviceType.getName())));
+                .orElseThrow(() -> new MonitorEntryNotFound(String.format("Monitor entry for %s cannot be found", serviceName)));
     }
 
     private void validateMonitorEntryUpdate(Date lastCheck, MonitorStatus status){

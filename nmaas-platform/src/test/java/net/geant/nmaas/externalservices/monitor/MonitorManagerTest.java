@@ -3,7 +3,6 @@ package net.geant.nmaas.externalservices.monitor;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -106,13 +105,13 @@ public class MonitorManagerTest {
     @Test
     public void shouldDeleteMonitorEntry(){
         when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(true);
-        this.monitorManager.deleteMonitorEntry(monitorEntryView);
+        this.monitorManager.deleteMonitorEntry("GITLAB");
         verify(repository, times(1)).deleteByServiceName(ServiceType.GITLAB);
     }
 
     @Test
     public void shouldNotDeleteMonitorEntryWhenEntryCannotBeFoundInRepo(){
-        this.monitorManager.deleteMonitorEntry(monitorEntryView);
+        this.monitorManager.deleteMonitorEntry("GITLAB");
         verify(repository, times(0)).deleteByServiceName(any());
     }
 
@@ -127,14 +126,14 @@ public class MonitorManagerTest {
     @Test
     public void shouldGetMonitorEntries(){
         when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.of(monitorEntry));
-        MonitorEntryView monitorEntryView = this.monitorManager.getMonitorEntries(ServiceType.GITLAB);
+        MonitorEntryView monitorEntryView = this.monitorManager.getMonitorEntries("GITLAB");
         assertThat("ServiceType mismatch",monitorEntryView.getServiceName().equals(ServiceType.GITLAB));
     }
 
     @Test(expected = MonitorEntryNotFound.class)
     public void shouldNotGetNonExistingService(){
         when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.empty());
-        this.monitorManager.getMonitorEntries(ServiceType.GITLAB);
+        this.monitorManager.getMonitorEntries("GITLAB");
     }
 
 }
