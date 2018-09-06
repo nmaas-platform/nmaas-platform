@@ -4,9 +4,7 @@ import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
-import net.geant.nmaas.portal.service.ContentService;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,11 +13,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +36,30 @@ public class ContentServiceImplTest {
     }
 
     @Test
+    public void shouldReturnEmptyWhenIdIsNullAtFindById(){
+        assertEquals(Optional.empty(), contentService.findById(null));
+    }
+
+    @Test
+    public void shouldReturnContentWhenIdIsNotNullAtFindById(){
+        Content testContent = new Content("test", "test", "test");
+        when(contentRepository.findById(anyLong())).thenReturn(Optional.of(testContent));
+        assertTrue(contentService.findById((long) 0).isPresent());
+    }
+
+    @Test
+    public void shouldReturnEmptyWhenNameIsNullAtFindByName(){
+        assertEquals(Optional.empty(), contentService.findByName(null));
+    }
+
+    @Test
+    public void shouldReturnContentWhenIdIsNotNullAtFindByName(){
+        Content testContent = new Content("test", "test", "test");
+        when(contentRepository.findByName(anyString())).thenReturn(Optional.of(testContent));
+        assertTrue(contentService.findByName("test").isPresent());
+    }
+
+    @Test
     public void shouldCreateNewContentRecord(){
         when(contentRepository.findByName(anyString())).thenReturn(Optional.empty());
         Content testContent = new Content((long) 0,"testName", "Lorem ipsum", "testTitle");
@@ -52,6 +74,11 @@ public class ContentServiceImplTest {
         contentService.createNewContentRecord("test", "lorem ipsum", "test");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotCreateNewContentRecordDueToInvalidName(){
+        contentService.createNewContentRecord(null, "Lorem ipsum", "testTitle");
+    }
+
     @Test
     public void shouldUpdateContentRecord(){
         Content testContent = new Content((long)0, "testName", "Lorem", "testTitle");
@@ -59,11 +86,6 @@ public class ContentServiceImplTest {
         Optional<Content> testUpdateContent = contentService.findByName("test");
         if(testUpdateContent.isPresent()){
             testUpdateContent.get().setContent("Lorem ipsum dolor sit");
-            //        if(!contentRepo.existsById(content.getId())){
-            //            throw new ProcessingException("Content (id=" + content.getId() + ") does not exists.");
-            //        }
-            //
-            //        contentRepo.saveAndFlush(content);
             when(contentRepository.existsById(anyLong())).thenReturn(true);
             when(contentRepository.saveAndFlush(testUpdateContent.get())).thenReturn(testUpdateContent.get());
             contentService.update(testUpdateContent.get());
@@ -76,6 +98,17 @@ public class ContentServiceImplTest {
         //when(contentRepository.findByName(anyString())).thenThrow(net.geant.nmaas.portal.api.exception.ProcessingException.class);
         Content testContent = new Content((long)0, "testName", "Lorem", "testTitle");
         contentService.update(testContent);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowToUpdateDueToInvalidId(){
+        Content testContent = new Content(null, "testName", "Lorem ipsum", "testTitle");
+        contentService.update(testContent);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowToUpdateDueToEmptyContent(){
+        contentService.update(null);
     }
 
     @Test
