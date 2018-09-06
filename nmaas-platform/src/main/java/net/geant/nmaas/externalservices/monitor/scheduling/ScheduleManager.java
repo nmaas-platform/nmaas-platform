@@ -47,6 +47,13 @@ public class ScheduleManager {
         return jobDescriptor;
     }
 
+    public void executeJob(String name){
+        String serviceName = name.toUpperCase();
+        MonitorService service = monitorServices.stream().filter(s->s.getServiceType().getName().equals(serviceName))
+                .findAny().orElseThrow(() -> new MonitorServiceNotFound(String.format("Monitor service for %s not found", serviceName)));
+        service.checkStatus();
+    }
+
     public void updateJob(JobDescriptor jobDescriptor){
         try{
             Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()));

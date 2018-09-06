@@ -32,6 +32,13 @@ public class ScheduleController {
         scheduleManager.createJob(jobDescriptor);
     }
 
+    @PostMapping("/{name}/execute")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    public void executeJobNow(@PathVariable String name){
+        scheduleManager.executeJob(name);
+    }
+
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")

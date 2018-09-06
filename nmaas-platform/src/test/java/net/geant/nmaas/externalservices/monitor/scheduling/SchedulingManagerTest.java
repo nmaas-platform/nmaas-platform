@@ -7,6 +7,7 @@ import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorServiceImp
 import net.geant.nmaas.externalservices.monitor.MonitorManager;
 import net.geant.nmaas.externalservices.monitor.MonitorService;
 import net.geant.nmaas.externalservices.monitor.ServiceType;
+import net.geant.nmaas.externalservices.monitor.exceptions.MonitorServiceNotFound;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,21 @@ public class SchedulingManagerTest {
     }
 
     @Test
+    public void shouldExecuteJobWithCorrectName(){
+        this.scheduleManager.executeJob("GITLAB");
+    }
+
+    @Test
+    public void shouldExecuteJobWhenNameIsCorrectButIsNotUpperCase(){
+        this.scheduleManager.executeJob("GiTLaB");
+    }
+
+    @Test(expected = MonitorServiceNotFound.class)
+    public void shouldNotExecuteJobWhenServiceCannotBeFound(){
+        this.scheduleManager.executeJob("GITHUB");
+    }
+
+    @Test
     public void shouldUpdateJob() throws Exception{
         when(scheduler.getTrigger(TriggerKey.triggerKey(ServiceType.GITLAB.getName()))).thenReturn(jobDescriptor.buildTrigger());
         this.scheduleManager.updateJob(jobDescriptor);
@@ -73,7 +89,5 @@ public class SchedulingManagerTest {
         this.scheduleManager.updateJob(jobDescriptor);
         verify(scheduler, times(0)).rescheduleJob(any(), any());
     }
-
-
 
 }
