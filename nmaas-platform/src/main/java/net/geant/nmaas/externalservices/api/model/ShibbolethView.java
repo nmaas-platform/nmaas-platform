@@ -13,7 +13,6 @@ public class ShibbolethView {
     private Long id;
     private String loginUrl;
     private String logoutUrl;
-    private boolean allowsBasic;
-    private String key;
+    private String keyFilePath;
     private int timeout;
 }

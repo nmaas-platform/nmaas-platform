@@ -88,7 +88,7 @@ public class ShibbolethManager {
             throw new IllegalStateException("Login url cannot be null or empty");
         if(shibboleth.getLogoutUrl() == null || shibboleth.getLogoutUrl().isEmpty())
             throw new IllegalStateException("Logout url cannot be null or empty");
-        if(shibboleth.getKey() == null || shibboleth.getKey().isEmpty())
-            throw new IllegalStateException("Key cannot be null or empty");
+        if(shibboleth.getKeyFilePath() == null || shibboleth.getKeyFilePath().isEmpty())
+            throw new IllegalStateException("Key file path cannot be null or empty");
     }
 }

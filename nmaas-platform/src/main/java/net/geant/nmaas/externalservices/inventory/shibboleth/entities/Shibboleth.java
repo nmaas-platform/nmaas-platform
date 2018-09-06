@@ -28,10 +28,7 @@ public class Shibboleth {
     private String logoutUrl;
 
     @Column(nullable = false)
-    private boolean allowsBasic = true;
-
-    @Column(nullable = false)
-    private String key;
+    private String keyFilePath;
 
     @Column(nullable = false)
     private int timeout = 10;

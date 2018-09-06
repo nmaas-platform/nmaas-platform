@@ -64,7 +64,7 @@ public class SSOAuthController {
 			throw new AuthenticationException("Missing username");
 
 		ShibbolethView shibboleth = shibbolethManager.getOneShibbolethConfig();
-		userSSOLoginData.validate(shibboleth.getKey(), shibboleth.getTimeout());
+		userSSOLoginData.validate(shibboleth.getKeyFilePath(), shibboleth.getTimeout());
 
 		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
 		User user = maybeUser.orElse(null);
