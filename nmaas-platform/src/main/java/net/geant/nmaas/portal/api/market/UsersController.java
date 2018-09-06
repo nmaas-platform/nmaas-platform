@@ -406,10 +406,11 @@ public class UsersController {
         log.info(message);
     }
 
-    @PostMapping("/isAdmin")
+    @GetMapping("users/isAdmin")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    public ResponseEntity isAdmin(){
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void isAdmin(final Principal principal){
+        log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
