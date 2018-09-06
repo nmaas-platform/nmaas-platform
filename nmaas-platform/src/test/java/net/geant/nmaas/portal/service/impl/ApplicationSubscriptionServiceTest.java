@@ -12,6 +12,8 @@ import net.geant.nmaas.portal.service.impl.ApplicationSubscriptionServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -121,7 +123,6 @@ public class ApplicationSubscriptionServiceTest {
                         !appSubSrv.getSubscription(applicationId, domainId).isPresent() &&
                         !appSubSrv.getSubscription(app1, domain1).isPresent());
     }
-
 
 
 }
