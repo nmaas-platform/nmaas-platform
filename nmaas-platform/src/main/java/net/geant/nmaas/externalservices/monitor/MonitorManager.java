@@ -53,13 +53,13 @@ public class MonitorManager {
             this.repository.deleteByServiceName(monitorEntryView.getServiceName());
     }
 
-    public List<MonitorEntryView> getAllMonitorEntities(){
+    public List<MonitorEntryView> getAllMonitorEntries(){
         return this.repository.findAll().stream()
                 .map(entity -> this.modelMapper.map(entity, MonitorEntryView.class))
                 .collect(Collectors.toList());
     }
 
-    public MonitorEntryView getMonitorEntity(ServiceType serviceType){
+    public MonitorEntryView getMonitorEntries(ServiceType serviceType){
         return this.repository.findByServiceName(serviceType)
                 .map(entity -> this.modelMapper.map(entity, MonitorEntryView.class))
                 .orElseThrow(() -> new MonitorEntryNotFound(String.format("Monitor entry for %s cannot be found", serviceType.getName())));

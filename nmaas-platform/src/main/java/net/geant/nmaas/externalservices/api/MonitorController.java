@@ -53,13 +53,13 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     public List<MonitorEntryView> getAllMonitorEntries(){
-        return this.monitorManager.getAllMonitorEntities();
+        return this.monitorManager.getAllMonitorEntries();
     }
 
     @GetMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     public MonitorEntryView getMonitorEntry(@PathVariable String serviceName){
-        return this.monitorManager.getMonitorEntity(ServiceType.valueOf(serviceName));
+        return this.monitorManager.getMonitorEntries(ServiceType.valueOf(serviceName));
     }
 }
