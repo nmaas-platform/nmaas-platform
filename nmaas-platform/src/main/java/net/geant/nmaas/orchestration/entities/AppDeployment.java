@@ -54,6 +54,9 @@ public class AppDeployment {
     @Column(nullable = false)
     private boolean configFileRepositoryRequired;
 
+    /** Contains information about deployment fails */
+    private String errorMessage;
+
     public AppDeployment() { }
 
     public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired) {
