@@ -406,6 +406,13 @@ public class UsersController {
         log.info(message);
     }
 
+    @GetMapping("/users/isAdmin")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void isAdmin(final Principal principal){
+        log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
+    }
+
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{
 		if(domains.getGlobalDomain().isPresent()){
 			Long globalId = domains.getGlobalDomain().get().getId();
