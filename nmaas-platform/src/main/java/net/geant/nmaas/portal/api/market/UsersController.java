@@ -232,7 +232,7 @@ public class UsersController {
 		userService.update(user);
 	}
 
-	@PutMapping(value="/users/verify/{username}")
+	@PostMapping(value="/users/terms/{username}")
     @ResponseStatus(HttpStatus.ACCEPTED)
 	@PreAuthorize("hasRole('ROLE_NOT_ACCEPTED')")
 	public void setAcceptance(@PathVariable String username) throws MissingElementException{

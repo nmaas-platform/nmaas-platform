@@ -25,19 +25,14 @@ import static org.junit.Assert.assertNotNull;
 @EnableAutoConfiguration
 @Transactional
 @Rollback
-public class ContentRepositoryTest {
+public class ContentRepositoryIntTest {
 
     @Autowired
     ContentRepository contentRepository;
 
-
     @Before
     public void setUp() throws Exception {
         contentRepository.deleteAll();
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test

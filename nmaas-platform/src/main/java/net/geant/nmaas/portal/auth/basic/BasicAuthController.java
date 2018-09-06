@@ -99,7 +99,7 @@ public class BasicAuthController {
             }
             if (!isTermsOfUseAccepted || !isPrivacyPolicyAccepted){
               User user = users.findByUsername(userName.get()).orElseThrow(SignupException::new);
-              log.info("Terms of Use or Privacy Policy were not accepted for %s", userName.get());
+              log.error("Terms of Use or Privacy Policy were not accepted by %s", userName.get());
               user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {

@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="panel-body">
-      <h5 class="text-center">To access portal you have to accept the following documents:</h5>
+      <h5 class="text-center">Please read and accept the following documents before accessing the system:</h5>
       <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
 
         <div class="form-group form-group-sm">
@@ -36,7 +36,7 @@
 
 <nmaas-modal>
   <div class="nmaas-modal-header">
-    <h4 style="text-align: center">Registration completed</h4>
+    <h4 style="text-align: center">Missing approvals provided</h4>
   </div>
   <div class="nmaas-modal-body">
     <div class="form-group text-left">
@@ -44,7 +44,7 @@
     </div>
   </div>
   <div class="nmaas-modal-footer">
-    <button class="btn btn-danger center-block" (click)="hide()">Return to login page</button>
+    <button class="btn btn-danger center-block" (click)="hide()">Close</button>
   </div>
 </nmaas-modal>
 <modal-info-terms></modal-info-terms>

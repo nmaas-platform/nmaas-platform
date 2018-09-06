@@ -49,7 +49,7 @@ export class UserService extends GenericDataService {
   }
 
   public completeAcceptance(username: string): Observable<any>{
-    return this.put<any ,any>(this.getUserAcceptanceUrl() + username, {});
+    return this.post(this.getUserAcceptanceUrl() + username, {});
   }
 
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {
@@ -76,7 +76,7 @@ export class UserService extends GenericDataService {
   }
 
   protected getUserAcceptanceUrl(): string{
-    return this.appConfig.getApiUrl() + '/users/verify/';
+    return this.appConfig.getApiUrl() + '/users/terms/';
   }
 
   protected getEnableOrDisableUsersUrl(userId: number, enabled: boolean): string {
