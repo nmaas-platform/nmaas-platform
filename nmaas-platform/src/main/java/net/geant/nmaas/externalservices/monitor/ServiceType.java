@@ -4,7 +4,7 @@ public enum ServiceType {
     GITLAB{
         @Override
         public String getName(){
-            return "GitLab";
+            return "GITLAB";
         }
     };
 
