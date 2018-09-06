@@ -406,7 +406,7 @@ public class UsersController {
         log.info(message);
     }
 
-    @GetMapping("users/isAdmin")
+    @GetMapping("/users/isAdmin")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void isAdmin(final Principal principal){
