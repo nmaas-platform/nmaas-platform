@@ -95,7 +95,6 @@ public class ContentServiceImplTest {
 
     @Test(expected = net.geant.nmaas.portal.api.exception.ProcessingException.class)
     public void shouldNotAllowToUpdateDueToContentDoNotExist(){
-        //when(contentRepository.findByName(anyString())).thenThrow(net.geant.nmaas.portal.api.exception.ProcessingException.class);
         Content testContent = new Content((long)0, "testName", "Lorem", "testTitle");
         contentService.update(testContent);
     }
@@ -122,7 +121,6 @@ public class ContentServiceImplTest {
     @Test(expected = ProcessingException.class)
     public void shouldNotRemoveContentRecordDueToContentDoNotExist(){
         Content testContent = new Content((long)0, "testName", "Lorem", "testTitle");
-        //when(contentRepository.existsByName(anyString())).thenThrow(net.geant.nmaas.portal.api.exception.ProcessingException.class);
         contentService.delete(testContent);
         verify(contentRepository).delete(testContent);
     }

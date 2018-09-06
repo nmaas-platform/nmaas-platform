@@ -6,13 +6,16 @@ import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class ContentServiceImpl implements net.geant.nmaas.portal.service.ContentService {
 
     ContentRepository contentRepo;
 
+    @Autowired
     public ContentServiceImpl(ContentRepository repository){
         this.contentRepo = repository;
     }
