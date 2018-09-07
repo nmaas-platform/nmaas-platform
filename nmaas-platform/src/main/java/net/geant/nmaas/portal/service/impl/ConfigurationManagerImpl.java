@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
@@ -15,12 +16,15 @@ import java.util.Optional;
 @Component
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
-    @Autowired
-    public ConfigurationManagerImpl(ConfigurationRepository repository){
-        this.repository = repository;
-    }
-
     private ConfigurationRepository repository;
+
+    private ShibbolethManager shibbolethManager;
+
+    @Autowired
+    public ConfigurationManagerImpl(ConfigurationRepository repository, ShibbolethManager shibbolethManager){
+        this.repository = repository;
+        this.shibbolethManager = shibbolethManager;
+    }
 
     @Override
     public Configuration getConfiguration(){
@@ -32,6 +36,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         if(repository.count() > 0){
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
+        if(configuration.isSsoLoginAllowed() && !this.shibbolethManager.shibbolethConfigExist()){
+            throw new IllegalStateException("Shibboleth configuration is not set up");
+        }
         this.repository.save(configuration);
     }
 
@@ -40,6 +47,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         Optional<Configuration> configuration = repository.findById(id);
         if(!configuration.isPresent()){
             throw new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository");
+        }
+        if(updatedConfiguration.isSsoLoginAllowed() && !this.shibbolethManager.shibbolethConfigExist()){
+            throw new IllegalStateException("Shibboleth configuration is not set up");
         }
         repository.save(updatedConfiguration);
     }
