@@ -10,6 +10,8 @@ import net.geant.nmaas.externalservices.monitor.repositories.MonitorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class MonitorManager {
@@ -48,6 +50,7 @@ public class MonitorManager {
         this.repository.save(monitorEntry);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteMonitorEntry(String serviceName){
         if(this.repository.existsByServiceName(ServiceType.valueOf(serviceName.toUpperCase())))
             this.repository.deleteByServiceName(ServiceType.valueOf(serviceName.toUpperCase()));
