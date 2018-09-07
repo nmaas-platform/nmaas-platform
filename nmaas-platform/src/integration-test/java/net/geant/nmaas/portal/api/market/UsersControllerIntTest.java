@@ -18,7 +18,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
-import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
@@ -65,8 +64,10 @@ public class UsersControllerIntTest extends BaseControllerTest {
     private JWTTokenService jwtTokenService;
 
     private String token;
+    private String tokenForUserWithNotAcceptedTermsAndPolicy;
 
     private User user1;
+    private User user3;
 
     private Principal principal = mock(Principal.class);
 
@@ -83,8 +84,13 @@ public class UsersControllerIntTest extends BaseControllerTest {
         user1 = userRepo.save(new User("user1", true, "user1", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
         userRepo.save(new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
+        user3 = userRepo.save(new User("user3", true, "user3", domains.getGlobalDomain().get(), Role.ROLE_NOT_ACCEPTED, false, false));
+
         UserToken userToken = new UserToken(jwtTokenService.getToken(admin), jwtTokenService.getRefreshToken(admin));
         token = userToken.getToken();
+
+        UserToken userNotAcceptedTermsAndPolicyToken = new UserToken(jwtTokenService.getToken(user3), jwtTokenService.getRefreshToken(user3));
+        tokenForUserWithNotAcceptedTermsAndPolicy = userNotAcceptedTermsAndPolicyToken.getToken();
 
         prepareSecurity();
     }
@@ -110,13 +116,23 @@ public class UsersControllerIntTest extends BaseControllerTest {
     }
 
     @Test
+    public void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
+        MvcResult result =  mvc.perform(put("/api/users/verify/" + user3.getUsername())
+                .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andReturn();
+    }
+
+    @Test
     public void testGetUsers() {
-        assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
+        assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
     }
 
     @Test
     public void testGetRoles() {
-        assertEquals(7, userController.getRoles().size());
+        assertEquals(8, userController.getRoles().size());
     }
 
     @Test
@@ -124,7 +140,6 @@ public class UsersControllerIntTest extends BaseControllerTest {
         net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
         assertEquals(new Long(1), user.getId());
         assertEquals("admin", user.getUsername());
-
     }
 
     @Test
@@ -275,4 +290,6 @@ public class UsersControllerIntTest extends BaseControllerTest {
         assertEquals("ROLE_USER@domain1, ROLE_GUEST@domain2", userController.getRoleWithDomainIdAsString(userRoles));
 
     }
+
+
 }
