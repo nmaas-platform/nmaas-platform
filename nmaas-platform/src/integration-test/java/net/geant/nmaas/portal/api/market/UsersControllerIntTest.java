@@ -39,6 +39,7 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import java.util.Arrays;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -117,7 +118,7 @@ public class UsersControllerIntTest extends BaseControllerTest {
 
     @Test
     public void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
-        MvcResult result =  mvc.perform(put("/api/users/verify/" + user3.getUsername())
+        MvcResult result =  mvc.perform(post("/api/users/terms/" + user3.getUsername())
                 .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
