@@ -15,15 +15,15 @@ export class MonitorService extends GenericDataService{
     this.url = this.appConfig.getApiUrl() + '/monitor/'
   }
 
-  public createMonitorEntry(monitorEntry: MonitorEntry):Observable<any>{
+  public createMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
     return this.post(this.url, monitorEntry);
   }
 
-  public updateMonitorEntry(monitorEntry: MonitorEntry):Observable<any>{
+  public updateMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
     return this.put(this.url, monitorEntry);
   }
 
-  public deleteMonitorEntry(serviceName: string):Observable<any>{
+  public deleteMonitorEntryAndJob(serviceName: string):Observable<any>{
     return this.delete(this.url + serviceName);
   }
 
@@ -33,6 +33,18 @@ export class MonitorService extends GenericDataService{
 
   public getOneMonitorEntry(serviceName: string):Observable<MonitorEntry>{
     return this.get(this.url + serviceName);
+  }
+
+  public executeJob(serviceName: string):Observable<any>{
+    return this.http.post(this.url + serviceName + '/execute', null);
+  }
+
+  public resumeJob(serviceName: string): Observable<any>{
+    return this.http.patch(this.url + serviceName + '/resume', null);
+  }
+
+  public pauseJob(serviceName: string): Observable<any> {
+    return this.http.patch(this.url + serviceName + '/pause', null);
   }
 
 }

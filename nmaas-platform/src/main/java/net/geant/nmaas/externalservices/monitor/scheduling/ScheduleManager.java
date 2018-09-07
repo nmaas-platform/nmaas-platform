@@ -33,6 +33,7 @@ public class ScheduleManager {
     }
 
     public JobDescriptor createJob(JobDescriptor jobDescriptor){
+        validateJobDescriptor(jobDescriptor);
         try{
             if(scheduler.checkExists(jobKey(jobDescriptor.getServiceName().getName())))
                 throw new IllegalStateException(String.format("Job with name %s already exists", jobDescriptor.getServiceName()));
@@ -55,6 +56,7 @@ public class ScheduleManager {
     }
 
     public void updateJob(JobDescriptor jobDescriptor){
+        validateJobDescriptor(jobDescriptor);
         try{
             Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()));
             if(trigger != null){
@@ -97,6 +99,13 @@ public class ScheduleManager {
         } catch(SchedulerException e){
             throw new IllegalStateException(String.format("Resuming job %s failed due to %s", name, e.getMessage()));
         }
+    }
+
+    private void validateJobDescriptor(JobDescriptor jobDescriptor){
+        if(jobDescriptor.getServiceName() == null)
+            throw new IllegalStateException("Service name cannot be null");
+        if(jobDescriptor.getCheckInterval() == null || jobDescriptor.getCheckInterval() <= 0)
+            throw new IllegalStateException("Check interval cannot be less or equal 0");
     }
 
 }

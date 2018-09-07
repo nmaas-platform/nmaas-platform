@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { MonitorDetailsComponent } from './details/monitor-details.component';
 import { MonitorListComponent } from './list/monitor-list.component';
 import {RouterModule} from "@angular/router";
-import {ScheduleService} from "../../../service/schedule.service";
 import {MonitorService} from "../../../service/monitor.service";
 import {AuthModule} from "../../../auth/auth.module";
 import {PipesModule} from "../../../pipe/pipes.module";
@@ -20,7 +19,6 @@ import {SharedModule} from "../../../shared";
         SharedModule
     ],
     providers: [
-        ScheduleService,
         MonitorService
     ],
 

@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {ScheduleService} from "../../../../service/schedule.service";
 import {MonitorService} from "../../../../service/monitor.service";
 import {Router} from "@angular/router";
 import {MonitorEntry} from "../../../../model/monitorentry";
-import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-montiorlist',
@@ -14,7 +12,7 @@ export class MonitorListComponent implements OnInit {
 
   private monitorEntries: MonitorEntry[] = [];
 
-  constructor(private scheduleService: ScheduleService, private monitorService: MonitorService, private router: Router) {}
+  constructor(private monitorService: MonitorService, private router: Router) {}
 
   ngOnInit() {
     this.update();
@@ -25,12 +23,11 @@ export class MonitorListComponent implements OnInit {
   }
 
   public executeJob(serviceName: string){
-    this.scheduleService.executeJob(serviceName).subscribe(val => this.update());
+    this.monitorService.executeJob(serviceName).subscribe(val => this.update());
   }
 
   public removeJob(serviceName: string){
-    this.scheduleService.deleteJob(serviceName);
-    this.monitorService.deleteMonitorEntry(serviceName).subscribe(val => this.update());
+    this.monitorService.deleteMonitorEntryAndJob(serviceName).subscribe(val => this.update());
   }
 
   public getIntervalCheck(checkInterval: number):string{
