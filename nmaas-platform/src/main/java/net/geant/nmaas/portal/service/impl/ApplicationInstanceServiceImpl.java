@@ -25,17 +25,17 @@ import net.geant.nmaas.portal.service.UserService;
 @Service
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
-	final AppInstanceRepository appInstanceRepo;
+	private final AppInstanceRepository appInstanceRepo;
 	
-	final ApplicationService applications;
+	private final ApplicationService applications;
 	
-	final DomainService domains;
+	private final DomainService domains;
 	
-	final UserService users;
+	private final UserService users;
 	
-	final ApplicationSubscriptionService applicationSubscriptions;
+	private final ApplicationSubscriptionService applicationSubscriptions;
 
-	final DomainServiceImpl.CodenameValidator validator;
+	private final DomainServiceImpl.CodenameValidator validator;
 
 	@Autowired
 	public ApplicationInstanceServiceImpl(AppInstanceRepository appInstanceRepo, ApplicationService applications, DomainService domains, UserService users, ApplicationSubscriptionService applicationSubscriptions, @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator) {
@@ -82,9 +82,14 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 
 
 	@Override
-	public Optional<AppInstance> find(Long appInstanceId) {
+	public Optional<AppInstance> find(Long appInstanceId) throws ObjectNotFoundException {
 		checkParam(appInstanceId);
-		return appInstanceRepo.findById(appInstanceId);
+		Optional<AppInstance> result = appInstanceRepo.findById(appInstanceId);
+		if(result.isPresent()){
+		    return result;
+        }else{
+		    throw new ObjectNotFoundException("Application instance not found");
+        }
 	}
 
 	@Override
@@ -180,41 +185,42 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		return appInstanceRepo.findAllByDomain(domain, pageable);
 	}
 	
-	protected void checkParam(AppInstance appInstance) {
+	private void checkParam(AppInstance appInstance) {
 		if(appInstance == null)
 			throw new IllegalArgumentException("appInstance is null");
 		checkParam(appInstance.getId());
 	}
 	
-	protected void checkParam(Long id) {
+	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
 	
-	protected void checkParam(Application application) {
+	private void checkParam(Application application) {
 		if(application == null)
 			throw new IllegalArgumentException("application is null");
 		checkParam(application.getId());
 	}
 	
-	protected void checkParam(Domain domain) {
+	private void checkParam(Domain domain) {
 		if(domain == null)
 			throw new IllegalArgumentException("domain is null");
 		checkParam(domain.getId());		
 	}
 	
-	protected void checkParam(User user) {
+	private void checkParam(User user) {
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
+		checkParam(user.getId())    ;
 	}
 
-	protected void checkNameUniqueness(Domain domain, String name){
+	private void checkNameUniqueness(Domain domain, String name){
 		if(findAllByDomain(domain).stream().anyMatch(s -> s.getName().equalsIgnoreCase(name))){
 			throw new IllegalArgumentException("Name is already taken");
 		}
 	}
 
-	protected void checkNameCharacters(String name){
+	private void checkNameCharacters(String name){
 		Optional.ofNullable(validator)
 				.map(v -> v.valid(name))
 				.filter(result -> result)
