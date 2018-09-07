@@ -12,6 +12,7 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -129,13 +130,30 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	@Transactional
-	public void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.setTermsOfUseAcceptedFlag(userId, touAccept);}
+	public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag){ userRepo.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);}
+
+	@Override
+	@Transactional
+	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) throws MissingElementException{
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
+	}
 
 	@Override
 	@Transactional
 	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepo.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
 
 	private void checkParam(Long id) {
+	@Override
+	@Transactional
+	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws MissingElementException{
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
+	}
+
+	protected void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
