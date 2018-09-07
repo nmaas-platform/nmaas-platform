@@ -152,17 +152,17 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
 	}
 
-	protected void checkParam(Long id) {
+	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
 	
-	protected void checkParam(String username) {
+	private void checkParam(String username) {
 		if(username == null)
 			throw new IllegalArgumentException("username is null");
 	}
 	
-	protected void checkParam(User user) {
+	private void checkParam(User user) {
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
 	}
