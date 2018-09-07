@@ -3,9 +3,12 @@
 	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
 	<div class="modal-dialog" >
 		<div class="modal-content">
-			<div class="modal-header text-center" [ngClass]="{'info-modal': isInfo, 'alert-warning': isWarning, 'error-modal': isError, 'success-modal': isSuccess}">
+			<div class="modal-header text-center" [ngClass]="{'modal-header-none-display':[isInfo, isSuccess, isError, isWarning]">
 				<h2><ng-content select=".nmaas-modal-header"></ng-content></h2>
 			</div>
+            <div class="modal-header" [ngClass]="{'modal-header-none-display':![isInfo, isSuccess, isError, isWarning]">
+                <ng-content select=".nmaas-modal-header"></ng-content>
+            </div>
 			<div class="modal-body">
 				<ng-content select=".nmaas-modal-body"></ng-content>
 			</div>

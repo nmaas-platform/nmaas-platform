@@ -16,3 +16,7 @@
   background: rgba(92,184,92, 6);
   color: white;
 }
+
+.modal-header-none-display{
+  display: none;
+}
