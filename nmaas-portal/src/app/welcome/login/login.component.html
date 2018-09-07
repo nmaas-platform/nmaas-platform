@@ -20,7 +20,7 @@
 							</fieldset>
 						</form>
 						<div class="form-group">
-							<button type="submit" (click)="triggerSSO()" class="btn btn-primary btn-block" [disabled]="!this.configuration?.allowsSSO || loading || ssoLoading">
+							<button type="submit" (click)="triggerSSO()" class="btn btn-primary btn-block" [disabled]="!this.configuration?.ssoLoginAllowed || loading || ssoLoading">
 								Login using SSO service
 							</button>
 							<img *ngIf="ssoLoading" src="data:"/>

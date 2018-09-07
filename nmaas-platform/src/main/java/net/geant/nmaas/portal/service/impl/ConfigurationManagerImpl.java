@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -37,7 +36,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         if(repository.count() > 0){
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
-        if(configuration.isAllowsSSO() && !this.shibbolethManager.shibbolethConfigExist()){
+        if(configuration.isSsoLoginAllowed() && !this.shibbolethManager.shibbolethConfigExist()){
             throw new IllegalStateException("Shibboleth configuration is not set up");
         }
         this.repository.save(configuration);
@@ -49,7 +48,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         if(!configuration.isPresent()){
             throw new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository");
         }
-        if(updatedConfiguration.isAllowsSSO() && !this.shibbolethManager.shibbolethConfigExist()){
+        if(updatedConfiguration.isSsoLoginAllowed() && !this.shibbolethManager.shibbolethConfigExist()){
             throw new IllegalStateException("Shibboleth configuration is not set up");
         }
         repository.save(updatedConfiguration);

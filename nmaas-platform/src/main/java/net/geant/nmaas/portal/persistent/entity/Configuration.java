@@ -24,11 +24,11 @@ public class Configuration {
     private boolean maintenance = false;
 
     @Column(nullable = false)
-    private boolean allowsSSO = false;
+    private boolean ssoLoginAllowed = false;
 
-    public Configuration(boolean maintenance, boolean allowsSSO){
+    public Configuration(boolean maintenance, boolean ssoLoginAllowed){
         this.maintenance = maintenance;
-        this.allowsSSO = allowsSSO;
+        this.ssoLoginAllowed = ssoLoginAllowed;
     }
 
 }

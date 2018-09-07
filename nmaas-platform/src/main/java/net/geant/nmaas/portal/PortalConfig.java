@@ -120,8 +120,8 @@ public class PortalConfig {
 					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
 					if(configuration.isMaintenance())
 						configuration.setMaintenance(false);
-					if(configuration.isAllowsSSO())
-						configuration.setAllowsSSO(true);
+					if(configuration.isSsoLoginAllowed())
+						configuration.setSsoLoginAllowed(true);
 
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();

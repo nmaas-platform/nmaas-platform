@@ -32,12 +32,13 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         this.configService.getConfiguration().subscribe(config=>{
             this.configuration = config;
-            this.shibbolethService.getOne().subscribe(shibboleth => {
-                this.shibboleth = shibboleth;
-                if(config.allowsSSO) {
+            if(config.ssoLoginAllowed){
+                this.shibbolethService.getOne().subscribe(shibboleth => {
+                    this.shibboleth = shibboleth;
                     this.checkSSO();
-                }
-            });
+                });
+            }
+
         });
     }
 

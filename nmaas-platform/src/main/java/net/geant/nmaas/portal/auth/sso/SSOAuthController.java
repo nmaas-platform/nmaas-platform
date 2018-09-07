@@ -54,7 +54,7 @@ public class SSOAuthController {
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException {
 		Configuration configuration = this.configurationManager.getConfiguration();
-		if(!configuration.isAllowsSSO())
+		if(!configuration.isSsoLoginAllowed())
 			throw new AuthenticationException("SSO login method is not enabled");
 
 		if(userSSOLoginData == null)

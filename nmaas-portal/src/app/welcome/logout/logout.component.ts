@@ -18,7 +18,7 @@ export class LogoutComponent implements OnInit {
   ngOnInit() {
       this.auth.logout();
       this.configService.getConfiguration().subscribe(config =>{
-          if(config.allowsSSO && this.auth.loginUsingSsoService){
+          if(config.ssoLoginAllowed && this.auth.loginUsingSsoService){
               let url = window.location.origin;
               this.shibbolethService.getOne().subscribe(shibboleth =>{
                   window.location.href.replace(/ssoUserId=.+/, '');
