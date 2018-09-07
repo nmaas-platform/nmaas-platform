@@ -65,10 +65,13 @@ public class PortalConfig {
 	@Bean
 	public InitializingBean insertDefaultTos(){
 		return new InitializingBean() {
+
 			@Autowired
 			private ContentRepository contentRepository;
+
 			@Autowired
 			private ResourceLoader resourceLoader;
+
 			@Override
 			@Transactional
 			public void afterPropertiesSet() {
@@ -76,22 +79,24 @@ public class PortalConfig {
 				if(!defaultTermsOfUse.isPresent()){
 					try {
 						addContentToDatabase("tos", "Terms of use", readContent("classpath:tos.txt"));
-					}catch (IOException e){
-						throw new ProcessingException(e);
+					}catch (IOException err){
+						throw new ProcessingException(err.getMessage());
 					}
 				}
 				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("pp");
 				if(!defaultPrivacyPolicy.isPresent()){
 					try {
 						addContentToDatabase("pp", "Privacy Policy", readContent("classpath:pp.txt"));
-					}catch (IOException e){
-						throw new ProcessingException(e);
+					}catch (IOException err){
+						throw new ProcessingException(err.getMessage());
 					}
 				}
 			}
+
 			private String readContent(String file) throws IOException {
-				return new String(IOUtils.toString(resourceLoader.getResource(file).getInputStream(), "utf-8"));
+				return IOUtils.toString(resourceLoader.getResource(file).getInputStream(), "utf-8");
 			}
+
 			private void addContentToDatabase(String name, String title, String content){
 				Content newContent = new Content(name, title, content);
 				contentRepository.save(newContent);
