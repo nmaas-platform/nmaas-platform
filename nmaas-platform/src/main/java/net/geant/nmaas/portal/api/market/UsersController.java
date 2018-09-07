@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -231,6 +232,29 @@ public class UsersController {
 		userService.update(user);
 	}
 
+	@PostMapping(value="/users/terms/{username}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_NOT_ACCEPTED')")
+	public void setAcceptance(@PathVariable String username) throws MissingElementException{
+	    try {
+            this.setAcceptanceFlags(username);
+            String message = String.format("User %s accepted Terms of Use and Privacy Policy", username);
+            log.info(message);
+        }catch(ProcessingException err){
+	        throw new MissingElementException(err.getMessage());
+        }
+	}
+
+	private void setAcceptanceFlags(String username) throws ProcessingException{
+	    try {
+            userService.setTermsOfUseAcceptedFlagByUsername(username, true);
+            userService.setPrivacyPolicyAcceptedFlagByUsername(username, true);
+        }catch(UsernameNotFoundException err){
+	        throw new ProcessingException(err.getMessage());
+        }
+	}
+
+
 	@PostMapping("/users/my/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
@@ -404,6 +428,13 @@ public class UsersController {
                 principal.getName(),
                 roleAsString);
         log.info(message);
+    }
+
+    @GetMapping("/users/isAdmin")
+    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void isAdmin(final Principal principal){
+        log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) throws MissingElementException{

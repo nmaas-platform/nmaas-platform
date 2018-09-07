@@ -48,6 +48,10 @@ export class UserService extends GenericDataService {
     return this.post<User, any>(this.getUsersUrl()+'my/complete', user);
   }
 
+  public completeAcceptance(username: string): Observable<any>{
+    return this.post(this.getUserAcceptanceUrl() + username, {});
+  }
+
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {
     const url: string = (isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles';
     const targetDomainId: number = (isUndefined(domainId) ? this.appConfig.getNmaasGlobalDomainId() : domainId);
@@ -69,6 +73,10 @@ export class UserService extends GenericDataService {
 
   protected getDomainUsersUrl(domainId: number): string {
     return this.appConfig.getApiUrl() + '/domains/' + domainId + '/users/';
+  }
+
+  protected getUserAcceptanceUrl(): string{
+    return this.appConfig.getApiUrl() + '/users/terms/';
   }
 
   protected getEnableOrDisableUsersUrl(userId: number, enabled: boolean): string {

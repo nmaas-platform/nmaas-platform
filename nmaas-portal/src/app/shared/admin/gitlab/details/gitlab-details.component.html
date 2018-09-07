@@ -1,52 +1,67 @@
 <div class="panel panel-default">
     <div class="panel-heading">GitLab configuration</div>
     <div class="panel-body">
-        <form *ngIf="gitLabConfig" (submit)="submit()" class="form-horizontal">
+        <form *ngIf="gitLabConfig" (submit)="submit()" class="form-horizontal" #gitLabForm="ngForm">
 
             <div class="form-group">
                 <label for="server" class="col-sm-2 control-label">Server address:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="server" name="server"
+                    <input type="text" class="form-control" id="server" name="server" required #server="ngModel"
                            [(ngModel)]="gitLabConfig.server" [disabled]="isInMode(ComponentMode.VIEW)">
+                    <div class="alert alert-danger" *ngIf="server.invalid && (server.dirty || server.touched)">
+                        <div *ngIf="server.errors.required">Server address is required</div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="port" class="col-sm-2 control-label">Port:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="port" name="port"
+                    <input type="text" class="form-control" id="port" name="port" required #port="ngModel"
                            [(ngModel)]="gitLabConfig.port" [disabled]="isInMode(ComponentMode.VIEW)">
+                    <div class="alert alert-danger" *ngIf="port.invalid && (port.dirty || port.touched)">
+                        <div *ngIf="port.errors.required">Port is required</div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="sshServer" class="col-sm-2 control-label">Ssh server:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="sshServer" name="sshServer"
+                    <input type="text" class="form-control" id="sshServer" name="sshServer" required #sshServer="ngModel"
                         [(ngModel)]="gitLabConfig.sshServer" [disabled]="isInMode(ComponentMode.VIEW)">
+                    <div class="alert alert-danger" *ngIf="sshServer.invalid && (sshServer.dirty || sshServer.touched)">
+                        <div *ngIf="sshServer.errors.required">Ssh server is required</div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="token" class="col-sm-2 control-label">Token:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="token" name="token"
+                    <input type="text" class="form-control" id="token" name="token" required #token="ngModel"
                            [(ngModel)]="gitLabConfig.token" [disabled]="isInMode(ComponentMode.VIEW)">
+                    <div class="alert alert-danger" *ngIf="token.invalid && (token.dirty || token.touched)">
+                        <div *ngIf="token.errors.required">Token is required</div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="repositoryAccessUsername" class="col-sm-2 control-label">Repository access username</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="repositoryAccessUsername" name="repositoryAccessUsername"
+                    <input type="text" class="form-control" id="repositoryAccessUsername" name="repositoryAccessUsername" required #repositoryAccessUsername="ngModel"
                         [(ngModel)]="gitLabConfig.repositoryAccessUsername" [disabled]="isInMode(ComponentMode.VIEW)">
+                    <div class="alert alert-danger" *ngIf="repositoryAccessUsername.invalid && (repositoryAccessUsername.dirty || repositoryAccessUsername.touched)">
+                        <div *ngIf="repositoryAccessUsername.errors.required">Repository access username is required</div>
+                    </div>
                 </div>
             </div>
 
             <button *ngIf="!isInMode(ComponentMode.VIEW) && !isInMode(ComponentMode.CREATE)" type="button"
                     class="btn btn-default" (click)="onModeChange()">View</button>
             <button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit"
-                    class="btn btn-primary">Submit</button>
+                    class="btn btn-primary" [disabled]="!gitLabForm.form.valid">Submit</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
             <!--<button *ngIf="isInMode(ComponentMode.VIEW)" type="button"

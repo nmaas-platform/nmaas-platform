@@ -21,7 +21,7 @@ public class ConfigurationController {
     }
 
     @GetMapping
-    public Configuration getMaintenance(){
+    public Configuration getConfiguration(){
         return this.configurationManager.getConfiguration();
     }
 

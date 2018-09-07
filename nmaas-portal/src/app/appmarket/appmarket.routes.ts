@@ -12,6 +12,7 @@ import {ClustersRoutes} from "./admin/clusters/clusters.routes";
 import {GitlabRoutes} from "./admin/gitlab/gitlab.routes";
 import {ConfigurationRoutes} from "./admin/configuration/configuration.routes";
 import {MonitorRoutes} from "./admin/monitor/monitor.routes";
+import {ShibbolethRoutes} from "./admin/shibboleth/shibboleth.routes";
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -27,6 +28,7 @@ export const AppMarketRoutes: Route[] = [
         ...ClustersRoutes,
           ...ConfigurationRoutes,
           ...GitlabRoutes,
+          ...ShibbolethRoutes,
           ...MonitorRoutes,
           { path: 'apps/:id', component: AppDetailsComponent },
 

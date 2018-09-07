@@ -8,6 +8,7 @@ import {ProfileComponent} from "./profile/profile.component";
 import {AuthGuard} from "../auth/auth.guard";
 import {ComponentMode} from "../shared";
 import {CompleteComponent} from "./complete/complete.component";
+import {TermsAcceptanceComponent} from "./terms-acceptance/terms-acceptance.component";
 
 export const WelcomeRoutes: Routes = [
     {
@@ -22,5 +23,6 @@ export const WelcomeRoutes: Routes = [
     { path: 'logout', component: LogoutComponent },
     { path: 'changelog', component: ChangelogComponent },
     { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: {mode: ComponentMode.PROFILVIEW} },
-    { path: 'complete', component: CompleteComponent, canActivate: [AuthGuard] }
+    { path: 'complete', component: CompleteComponent, canActivate: [AuthGuard] },
+    { path: 'terms-acceptance', component: TermsAcceptanceComponent, canActivate: [AuthGuard]}
 ];
