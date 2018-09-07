@@ -76,17 +76,19 @@ public class MonitorManager {
     }
 
     private void validateMonitorEntryUpdate(MonitorEntryView monitorEntryView){
+        if(monitorEntryView.getServiceName() == null)
+            throw new IllegalStateException("Service name cannot be null");
         if(monitorEntryView.getCheckInterval() == null || monitorEntryView.getCheckInterval() <= 0)
             throw new IllegalStateException("Check interval cannot be less or equal 0");
-        if(monitorEntryView.getStatus() == null)
-            throw new IllegalStateException("Status cannot be null");
-        if(monitorEntryView.getLastCheck() == null || monitorEntryView.getLastCheck().after(new Date()))
-            throw new IllegalStateException("Last check date cannot be null or from future");
+        if(monitorEntryView.getTimeFormat() == null)
+            throw new IllegalStateException("Time format cannot be null");
     }
 
     private void validateMonitorEntryCreation(MonitorEntryView monitorEntryView){
         if(monitorEntryView.getCheckInterval() == null || monitorEntryView.getCheckInterval() <= 0)
             throw new IllegalStateException("Check interval cannot be less or equal 0");
+        if(monitorEntryView.getTimeFormat() == null)
+            throw new IllegalStateException("Time format cannot be null");
         if(monitorEntryView.getServiceName() == null || repository.existsByServiceName(monitorEntryView.getServiceName()))
             throw new IllegalStateException("Service name is null or already created");
     }

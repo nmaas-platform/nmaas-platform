@@ -7,6 +7,12 @@ export enum MonitorStatus{
     FAILURE
 }
 
+export enum TimeFormat {
+    MIN,
+    H
+}
+
+
 export class MonitorEntry {
     public id: number;
     public serviceName: ServiceType;
@@ -14,4 +20,5 @@ export class MonitorEntry {
     public lastCheck: Date;
     public lastSuccess: Date;
     public checkInterval: number;
+    public timeFormat: TimeFormat = TimeFormat.MIN;
 }

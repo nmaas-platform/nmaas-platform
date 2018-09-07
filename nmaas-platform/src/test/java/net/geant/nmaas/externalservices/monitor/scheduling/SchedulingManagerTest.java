@@ -7,6 +7,7 @@ import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorServiceImp
 import net.geant.nmaas.externalservices.monitor.MonitorManager;
 import net.geant.nmaas.externalservices.monitor.MonitorService;
 import net.geant.nmaas.externalservices.monitor.ServiceType;
+import net.geant.nmaas.externalservices.monitor.TimeFormat;
 import net.geant.nmaas.externalservices.monitor.exceptions.MonitorServiceNotFound;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class SchedulingManagerTest {
 
     @Before
     public void setup() throws Exception{
-        jobDescriptor = new JobDescriptor(ServiceType.GITLAB, 3L);
+        jobDescriptor = new JobDescriptor(ServiceType.GITLAB, 3L, TimeFormat.MIN);
         GitLabMonitorServiceImpl gitLabMonitorService = new GitLabMonitorServiceImpl();
         gitLabMonitorService.setGitLabManager(gitLabManager);
         gitLabMonitorService.setMonitorManager(monitorManager);

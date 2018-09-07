@@ -37,7 +37,7 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
-        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval());
+        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         this.scheduleManager.createJob(jobDescriptor);
         this.monitorManager.createMonitorEntry(monitorEntryView);
     }
@@ -53,7 +53,7 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
-        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval());
+        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         this.scheduleManager.updateJob(jobDescriptor);
         this.monitorManager.updateMonitorEntry(monitorEntryView);
     }

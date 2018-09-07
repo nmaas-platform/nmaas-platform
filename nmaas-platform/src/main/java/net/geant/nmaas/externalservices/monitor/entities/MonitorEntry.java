@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.externalservices.monitor.MonitorStatus;
 import net.geant.nmaas.externalservices.monitor.ServiceType;
+import net.geant.nmaas.externalservices.monitor.TimeFormat;
 
 @Entity
 @Getter
@@ -37,4 +38,7 @@ public class MonitorEntry {
 
     @Column(nullable = false)
     private Long checkInterval;
+
+    @Enumerated
+    private TimeFormat timeFormat;
 }

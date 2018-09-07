@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.externalservices.monitor.ServiceType;
+import net.geant.nmaas.externalservices.monitor.TimeFormat;
 import org.quartz.Trigger;
 
 @Getter
@@ -16,7 +17,9 @@ public class JobDescriptor {
 
     private Long checkInterval;
 
+    private TimeFormat timeFormat;
+
     Trigger buildTrigger(){
-        return new TriggerDescriptor(serviceName, checkInterval).buildTrigger();
+        return new TriggerDescriptor(serviceName, checkInterval, timeFormat).buildTrigger();
     }
 }

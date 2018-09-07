@@ -35,8 +35,8 @@ public class MonitorManagerTest {
     @Before
     public void setup(){
         this.monitorManager = new MonitorManager(repository, modelMapper);
-        this.monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L);
-        this.monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L);
+        this.monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN);
+        this.monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN);
         when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(false);
         when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.of(monitorEntry));
     }
@@ -49,19 +49,19 @@ public class MonitorManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotCreateMonitorEntryWithNullCheckInterval(){
-        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null);
+        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN);
         this.monitorManager.createMonitorEntry(wrongMonitorEntry);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldNotCreateMontiorEntryWithCheckIntervalLessThanZero(){
-        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L);
+    public void shouldNotCreateMonitorEntryWithCheckIntervalLessThanZero(){
+        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN);
         this.monitorManager.createMonitorEntry(wrongMonitorEntry);
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldNotCreateMonitorEntryWithNullServiceName(){
-        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L);
+        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN);
         this.monitorManager.createMonitorEntry(wrongMonitorEntry);
     }
 
@@ -78,15 +78,8 @@ public class MonitorManagerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectWhenLastCheckDateIsFuture(){
-        LocalDate localDate = LocalDate.now().plusDays(5);
-        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), new Date(), 5L);
-        this.monitorManager.updateMonitorEntry(wrongMonitorEntry);
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectWhenStatusIsNull(){
-        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L);
+    public void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectTimeFormatIsNull(){
+        MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null);
         this.monitorManager.updateMonitorEntry(wrongMonitorEntry);
     }
 

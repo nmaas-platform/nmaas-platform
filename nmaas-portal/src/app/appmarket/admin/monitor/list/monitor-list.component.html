@@ -25,7 +25,7 @@
                         <span *ngIf="entry.lastSuccess">{{entry.lastSuccess | date:'medium'}}</span>
                         <span *ngIf="!entry.lastSuccess">---</span>
                     </td>
-                    <td>{{getIntervalCheck(entry.checkInterval)}}</td>
+                    <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td class="text-right">
                         <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">View settings</a>
                         <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">Check now</a>
@@ -43,7 +43,7 @@
                         <span *ngIf="entry.lastSuccess">{{entry.lastSuccess | date:'medium'}}</span>
                         <span *ngIf="!entry.lastSuccess">---</span>
                     </td>
-                    <td>{{getIntervalCheck(entry.checkInterval)}}</td>
+                    <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td class="text-right">
                         <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">View settings</a>
                         <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">Check now</a>

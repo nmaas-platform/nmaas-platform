@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.externalservices.monitor.MonitorStatus;
 import net.geant.nmaas.externalservices.monitor.ServiceType;
+import net.geant.nmaas.externalservices.monitor.TimeFormat;
 
 @Getter
 @Setter
@@ -19,4 +20,5 @@ public class MonitorEntryView {
     private Date lastCheck;
     private Date lastSuccess;
     private Long checkInterval;
+    private TimeFormat timeFormat;
 }

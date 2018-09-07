@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MonitorService} from "../../../../service/monitor.service";
 import {Router} from "@angular/router";
-import {MonitorEntry} from "../../../../model/monitorentry";
+import {MonitorEntry, TimeFormat} from "../../../../model/monitorentry";
+import {Time} from "@angular/common";
 
 @Component({
   selector: 'app-montiorlist',
@@ -30,13 +31,13 @@ export class MonitorListComponent implements OnInit {
     this.monitorService.deleteMonitorEntryAndJob(serviceName).subscribe(val => this.update());
   }
 
-  public getIntervalCheck(checkInterval: number):string{
-    if(checkInterval === 1){
-      return checkInterval + " minute";
-    } else if(checkInterval === 60){
+  public getIntervalCheck(checkInterval:number, timeFormat:TimeFormat):string{
+    if(checkInterval === 1 && timeFormat.toString() === TimeFormat[TimeFormat.MIN]){
+      return "1 minute";
+    } else if(checkInterval === 1 && timeFormat.toString() === TimeFormat[TimeFormat.H]){
       return "1 hour";
     }
-    return (checkInterval%60) === 0?(checkInterval/60)+ " hours":checkInterval + " minutes";
+    return timeFormat.toString() === TimeFormat[TimeFormat.MIN]? checkInterval + " minutes": checkInterval + " hours";
   }
 
 }
