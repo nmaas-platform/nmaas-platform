@@ -25,24 +25,27 @@ import net.geant.nmaas.portal.service.UserService;
 @Service
 public class ApplicationInstanceServiceImpl implements ApplicationInstanceService {
 
-	@Autowired
-	AppInstanceRepository appInstanceRepo;
+	final AppInstanceRepository appInstanceRepo;
 	
-	@Autowired
-	ApplicationService applications;
+	final ApplicationService applications;
 	
-	@Autowired
-	DomainService domains;
+	final DomainService domains;
 	
-	@Autowired
-	UserService users;
+	final UserService users;
 	
-	@Autowired
-	ApplicationSubscriptionService applicationSubscriptions;
+	final ApplicationSubscriptionService applicationSubscriptions;
+
+	final DomainServiceImpl.CodenameValidator validator;
 
 	@Autowired
-	@Qualifier("InstanceNameValidator")
-	DomainServiceImpl.CodenameValidator validator;
+	public ApplicationInstanceServiceImpl(AppInstanceRepository appInstanceRepo, ApplicationService applications, DomainService domains, UserService users, ApplicationSubscriptionService applicationSubscriptions, @Qualifier("InstanceNameValidator") DomainServiceImpl.CodenameValidator validator) {
+		this.appInstanceRepo = appInstanceRepo;
+		this.applications = applications;
+		this.domains = domains;
+		this.users = users;
+		this.applicationSubscriptions = applicationSubscriptions;
+		this.validator = validator;
+	}
 
 	@Override
 	public AppInstance create(Long domainId, Long applicationId, String name) throws ObjectNotFoundException, ApplicationSubscriptionNotActiveException {
