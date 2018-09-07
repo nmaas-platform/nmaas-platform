@@ -144,7 +144,6 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	@Transactional
 	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepo.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
 
-	private void checkParam(Long id) {
 	@Override
 	@Transactional
 	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws MissingElementException{
@@ -153,7 +152,7 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
 	}
 
-	protected void checkParam(Long id) {
+	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
