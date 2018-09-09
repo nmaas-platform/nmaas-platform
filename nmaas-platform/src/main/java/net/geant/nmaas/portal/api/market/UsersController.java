@@ -416,7 +416,7 @@ public class UsersController {
             emailConfirmation.setTemplateName("user-deactivate-notification");
         }
 
-        notificationService.sendEmail(emailConfirmation, token);
+        notificationService.sendEmailWithToken(emailConfirmation, token);
         log.info(message);
     }
 

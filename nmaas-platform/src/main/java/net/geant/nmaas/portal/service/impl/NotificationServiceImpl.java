@@ -17,18 +17,33 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notification.port}")
     private String port;
 
-    @Value("${notification.path}")
-    private String path;
+    @Value("${notification.path.withToken}")
+    private String pathWithToken;
+
+    @Value("${notification.path.withoutToken}")
+    private String pathWithoutToken;
 
     @Override
-    public void sendEmail(EmailConfirmation emailConfirmation, String token) {
-        final String uri = String.format("%s:%s%s", url, port, path);
+    public void sendEmailWithToken(EmailConfirmation emailConfirmation, String token) {
+        final String uri = String.format("%s:%s%s", url, port, pathWithToken);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Authorization", token);
         HttpEntity<EmailConfirmation> entity = new HttpEntity<EmailConfirmation>(emailConfirmation, headers);
+
+        restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+    }
+
+    @Override
+    public void sendEmailWithoutToken(EmailConfirmation emailConfirmation) {
+        final String uri = String.format("%s:%s%s", url, port, pathWithoutToken);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<EmailConfirmation> entity = new HttpEntity<EmailConfirmation>(emailConfirmation);
 
         restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
     }
