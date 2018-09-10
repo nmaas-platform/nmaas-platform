@@ -1,20 +1,25 @@
 .modal {
-  background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.6);
 }
 
 .info-modal{
-  background: rgba(66,139,202,6);
-  color: white;
+      background: rgba(66,139,202,10);
+      color: white;
 }
 
 .error-modal{
-  background: rgba(217,83,79, 6);
-  color: white;
+      background: rgb(217, 33, 10);
+      color: white;
 }
 
 .success-modal{
-  background: rgba(92,184,92, 6);
-  color: white;
+      background: rgba(92,184,92, 10);
+      color: white;
+}
+
+.alert-modal{
+    background: rgb(255, 196, 10);
+    color: white;
 }
 
 .modal-header-none-display{

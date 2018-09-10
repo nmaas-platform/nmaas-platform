@@ -21,7 +21,7 @@ export class ModalInfoPolicyComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.modal.setModalType("error");
+        this.modal.setModalType("success");
         this.getContent();
     }
 

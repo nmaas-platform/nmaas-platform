@@ -3,11 +3,20 @@
 	[ngStyle]="{'display': visible ? 'block' : 'none', 'opacity': visibleAnimate ? 1 : 0}">
 	<div class="modal-dialog" >
 		<div class="modal-content">
-			<div class="modal-header text-center" [ngClass]="{'modal-header-none-display':[isInfo, isSuccess, isError, isWarning]">
+			<div [hidden]="!isDefault" class="modal-header text-center">
 				<h2><ng-content select=".nmaas-modal-header"></ng-content></h2>
 			</div>
-            <div class="modal-header" [ngClass]="{'modal-header-none-display':![isInfo, isSuccess, isError, isWarning]">
-                <ng-content select=".nmaas-modal-header"></ng-content>
+            <div [hidden]="!isInfo" class="modal-header text-center alert-info">
+                <img src="../../../assets/images/info.png" class="center-block" alt="Information">
+            </div>
+            <div [hidden]="!isError" class="modal-header text-center alert-danger">
+                <img src="../../../assets/images/error.png" class="center-block" alt="Error">
+            </div>
+            <div  [hidden]="!isSuccess" class="modal-header text-center alert-success" >
+                <img src="../../../assets/images/success.png" class="center-block" alt="Success">
+            </div>
+            <div [hidden]="!isWarning" class="modal-header text-center alert-warning">
+                <img src="../../../assets/images/alert.png" class="center-block" alt="Warning">
             </div>
 			<div class="modal-body">
 				<ng-content select=".nmaas-modal-body"></ng-content>

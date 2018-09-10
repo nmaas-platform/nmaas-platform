@@ -13,6 +13,7 @@ export class ModalComponent implements OnInit {
     public isWarning = false;
     public isSuccess = false;
     public visibleAnimate = false;
+    public isDefault = true;
     constructor() { 
     }
 
@@ -39,6 +40,7 @@ export class ModalComponent implements OnInit {
 
     public setModalType(typeOfModal: string): void{
         this.resetModalStyle();
+        this.isDefault = false;
         switch(typeOfModal){
             case 'info':
                 this.isInfo = true;
