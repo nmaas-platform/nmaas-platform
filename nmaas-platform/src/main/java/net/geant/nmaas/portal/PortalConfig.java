@@ -75,29 +75,26 @@ public class PortalConfig {
 			@Override
 			@Transactional
 			public void afterPropertiesSet() {
-
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
 				if(!defaultTermsOfUse.isPresent()){
 					try {
 						addContentToDatabase("tos", "Terms of use", readContent("classpath:tos.txt"));
-					}catch (IOException e){
-						throw new ProcessingException("Init error: Terms of use file does not exists.");
+					}catch (IOException err){
+						throw new ProcessingException(err.getMessage());
 					}
 				}
-
 				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("pp");
 				if(!defaultPrivacyPolicy.isPresent()){
 					try {
 						addContentToDatabase("pp", "Privacy Policy", readContent("classpath:pp.txt"));
-					}catch (IOException e){
-						throw new ProcessingException("Init error: Privacy Policy file does not exists.");
+					}catch (IOException err){
+						throw new ProcessingException(err.getMessage());
 					}
 				}
 			}
 
 			private String readContent(String file) throws IOException {
-				Resource resource = resourceLoader.getResource(file);
-				return new String(IOUtils.toString(resource.getInputStream(), "utf-8"));
+				return IOUtils.toString(resourceLoader.getResource(file).getInputStream(), "utf-8");
 			}
 
 			private void addContentToDatabase(String name, String title, String content){
@@ -118,12 +115,14 @@ public class PortalConfig {
 			public void afterPropertiesSet() throws Exception {
 				try {
 					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
-					if(configuration.isMaintenance()){
+					if(configuration.isMaintenance())
 						configuration.setMaintenance(false);
-					}
+					if(configuration.isSsoLoginAllowed())
+						configuration.setSsoLoginAllowed(true);
+
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false, false));
 				}
 			}
 		};

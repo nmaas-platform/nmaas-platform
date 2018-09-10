@@ -1,11 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.UserRequest;
@@ -18,15 +12,9 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,8 +26,13 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
-import java.util.Arrays;
+import java.security.Principal;
+import java.util.*;
 
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,8 +58,10 @@ public class UsersControllerIntTest extends BaseControllerTest {
     private JWTTokenService jwtTokenService;
 
     private String token;
+    private String tokenForUserWithNotAcceptedTermsAndPolicy;
 
     private User userEntity;
+    private User user3;
 
     private Principal principal = mock(Principal.class);
 
@@ -88,8 +83,13 @@ public class UsersControllerIntTest extends BaseControllerTest {
         userEntity = userRepo.save(userStub);
         userRepo.save(new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
 
+        user3 = userRepo.save(new User("user3", true, "user3", domains.getGlobalDomain().get(), Role.ROLE_NOT_ACCEPTED, false, false));
+
         UserToken userToken = new UserToken(jwtTokenService.getToken(admin), jwtTokenService.getRefreshToken(admin));
         token = userToken.getToken();
+
+        UserToken userNotAcceptedTermsAndPolicyToken = new UserToken(jwtTokenService.getToken(user3), jwtTokenService.getRefreshToken(user3));
+        tokenForUserWithNotAcceptedTermsAndPolicy = userNotAcceptedTermsAndPolicyToken.getToken();
 
         prepareSecurity();
     }
@@ -115,13 +115,23 @@ public class UsersControllerIntTest extends BaseControllerTest {
     }
 
     @Test
+    public void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
+        MvcResult result =  mvc.perform(post("/api/users/terms/" + user3.getUsername())
+                .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andReturn();
+    }
+
+    @Test
     public void testGetUsers() {
-        assertEquals(4, userController.getUsers(Pageable.unpaged()).size());
+        assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
     }
 
     @Test
     public void testGetRoles() {
-        assertEquals(7, userController.getRoles().size());
+        assertEquals(8, userController.getRoles().size());
     }
 
     @Test
@@ -129,7 +139,6 @@ public class UsersControllerIntTest extends BaseControllerTest {
         net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
         assertEquals(new Long(1), user.getId());
         assertEquals("admin", user.getUsername());
-
     }
 
     @Test
@@ -280,4 +289,6 @@ public class UsersControllerIntTest extends BaseControllerTest {
         assertEquals("ROLE_USER@domain1, ROLE_GUEST@domain2", userController.getRoleWithDomainIdAsString(userRoles));
 
     }
+
+
 }

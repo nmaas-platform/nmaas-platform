@@ -63,7 +63,7 @@ public class DockerNmServiceConfigurationTest {
     @Before
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
         configuration = new AppConfiguration("");
-        appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, "domain", applicationId, "deploymentName"));
+        appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, "domain", applicationId, "deploymentName", true));
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
     }
 
@@ -76,7 +76,7 @@ public class DockerNmServiceConfigurationTest {
     @Test
     public void shouldExecuteConfigurationWorkflow() throws NmServiceConfigurationFailedException, InvalidDeploymentIdException, InterruptedException, UserConfigHandlingException, ConfigTemplateHandlingException {
         when(configurationsPreparer.generateAndStoreConfigFiles(any(), any(), any())).thenAnswer((invocationOnMock) -> {Thread.sleep(500); return new ArrayList<String>();});
-        configurationProvider.configureNmService(deploymentId, applicationId, configuration);
+        configurationProvider.configureNmService(deploymentId, applicationId, configuration, true);
         Thread.sleep(200);
         assertThat(appDeploymentMonitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_CONFIGURED));
     }

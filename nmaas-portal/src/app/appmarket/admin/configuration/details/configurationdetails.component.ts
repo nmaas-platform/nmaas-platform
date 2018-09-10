@@ -11,6 +11,7 @@ import {Configuration} from '../../../../model/configuration';
 })
 export class ConfigurationDetailsComponent extends BaseComponent implements OnInit {
 
+  public errorMsg:string;
   public configuration:Configuration;
 
   constructor(private router:Router, private configurationService:ConfigurationService) {
@@ -22,11 +23,11 @@ export class ConfigurationDetailsComponent extends BaseComponent implements OnIn
   }
 
   public update():void{
-      this.configurationService.getConfiguration().subscribe(value => this.configuration = value);
+      this.configurationService.getConfiguration().subscribe(value => this.configuration = value,err=>this.errorMsg = err.message);
   }
 
   public save():void{
-      this.configurationService.updateConfiguration(this.configuration).subscribe(() => this.update());
+      this.configurationService.updateConfiguration(this.configuration).subscribe(() => this.update(), err => this.errorMsg = err.message);
   }
 
 

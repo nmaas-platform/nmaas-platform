@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import java.util.Optional;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
@@ -13,14 +12,9 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmService
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +66,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(Identifier deploymentId) throws CouldNotPrepareEnvironmentException {
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) throws CouldNotPrepareEnvironmentException {
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
-            orchestrator.prepareDeploymentEnvironment(deploymentId);
+            orchestrator.prepareDeploymentEnvironment(deploymentId, configFileRepositoryRequired);
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {
