@@ -26,7 +26,7 @@ public class RegistrationControllerIntTest extends BaseControllerTest {
     }
 	
     @Test
-    public void testSuccessfulLogin() throws Exception {
+    public void testSuccessfulRegistration() throws Exception {
         String randomUsername = "\"" + RandomStringUtils.random(10, true, false) + "\"";
         String randomPassword = "\"" + RandomStringUtils.random(10, true, false) + "\"";
         String randomFirstName = "\"" + RandomStringUtils.random(10, true, false) + "\"";
