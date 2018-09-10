@@ -429,7 +429,6 @@ public class UsersController {
                 .firstName(user.getFirstname())
                 .lastName(user.getLastname())
                 .toEmail(user.getEmail())
-                .adminFirstName(principal.getName())
                 .userName(user.getUsername())
                 .build();
         if(isEnabledFlag) {
