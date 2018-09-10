@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.auth.sso;
 
+import java.io.IOException;
 import net.geant.nmaas.externalservices.api.model.ShibbolethView;
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
@@ -52,7 +53,7 @@ public class SSOAuthController {
 	}
 
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException {
+	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException, IOException {
 		Configuration configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
 			throw new AuthenticationException("SSO login method is not enabled");
@@ -64,7 +65,7 @@ public class SSOAuthController {
 			throw new AuthenticationException("Missing username");
 
 		ShibbolethView shibboleth = shibbolethManager.getOneShibbolethConfig();
-		userSSOLoginData.validate(shibboleth.getKeyFilePath(), shibboleth.getTimeout());
+		userSSOLoginData.validate(shibbolethManager.getKey(shibboleth.getKeyFilePath()), shibboleth.getTimeout());
 
 		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
 		User user = maybeUser.orElse(null);
