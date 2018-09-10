@@ -14,6 +14,7 @@ export class ShibbolethDetailsComponent extends BaseComponent implements OnInit 
 
   private config_id:number;
   private shibbolethConfig:ShibbolethConfig;
+  private errMsg:string;
 
   constructor(private shibbolethService:ShibbolethService, private route:ActivatedRoute, private router:Router) {
     super();
@@ -43,10 +44,12 @@ export class ShibbolethDetailsComponent extends BaseComponent implements OnInit 
       return;
     }
     if(newConfig.id){
-      this.shibbolethService.update(newConfig).subscribe(e=>this.router.navigate(['/admin/shibboleth']));
+      this.shibbolethService.update(newConfig).subscribe(e=>this.router.navigate(['/admin/shibboleth']),
+          err=> this.errMsg = err.message);
     } else{
       newConfig.id = this.config_id;
-      this.shibbolethService.add(newConfig).subscribe(id=>this.router.navigate(['/admin/shibboleth/', id]));
+      this.shibbolethService.add(newConfig).subscribe(id=>this.router.navigate(['/admin/shibboleth/', id]),
+          err=> this.errMsg=err.message);
     }
   }
 

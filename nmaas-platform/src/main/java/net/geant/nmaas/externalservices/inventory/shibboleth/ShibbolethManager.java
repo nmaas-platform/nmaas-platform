@@ -100,7 +100,7 @@ public class ShibbolethManager {
             throw new IllegalStateException("Logout url cannot be null or empty");
         if(shibboleth.getKeyFilePath() == null || shibboleth.getKeyFilePath().isEmpty())
             throw new IllegalStateException("Key file path cannot be null or empty");
-        if(!new File(shibboleth.getKeyFilePath()).exists())
-            throw new IllegalStateException("Key file does not exist");
+        if(!new File(shibboleth.getKeyFilePath()).isFile() || !shibboleth.getKeyFilePath().contains(".json"))
+            throw new IllegalStateException("Key file path does not point to json file");
     }
 }
