@@ -1,13 +1,13 @@
-package net.geant.nmaas.externalservices.api.model;
+package net.geant.nmaas.monitor.model;
 
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.monitor.MonitorStatus;
-import net.geant.nmaas.externalservices.monitor.ServiceType;
-import net.geant.nmaas.externalservices.monitor.TimeFormat;
+import net.geant.nmaas.monitor.MonitorStatus;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.TimeFormat;
 
 @Getter
 @Setter

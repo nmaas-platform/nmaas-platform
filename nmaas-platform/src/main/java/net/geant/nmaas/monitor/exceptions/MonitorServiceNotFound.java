@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.monitor.exceptions;
+package net.geant.nmaas.monitor.exceptions;
 
 public class MonitorServiceNotFound extends RuntimeException {
     public MonitorServiceNotFound(String message){

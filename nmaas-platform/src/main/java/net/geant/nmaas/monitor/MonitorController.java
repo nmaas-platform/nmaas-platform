@@ -1,10 +1,10 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.monitor;
 
 import java.util.List;
-import net.geant.nmaas.externalservices.api.model.MonitorEntryView;
-import net.geant.nmaas.externalservices.monitor.MonitorManager;
-import net.geant.nmaas.externalservices.monitor.scheduling.JobDescriptor;
-import net.geant.nmaas.externalservices.monitor.scheduling.ScheduleManager;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.MonitorManager;
+import net.geant.nmaas.monitor.scheduling.JobDescriptor;
+import net.geant.nmaas.monitor.scheduling.ScheduleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

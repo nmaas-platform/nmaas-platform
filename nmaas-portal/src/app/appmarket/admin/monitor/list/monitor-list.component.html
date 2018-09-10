@@ -40,8 +40,8 @@
                         <span *ngIf="!entry.lastCheck">---</span>
                     </td>
                     <td>
-                        <span *ngIf="entry.lastSuccess">{{entry.lastSuccess | date:'medium'}}</span>
-                        <span *ngIf="!entry.lastSuccess">---</span>
+                        <span *ngIf="entry.lastSuccess && entry.status.toString() === 'FAILURE'">{{entry.lastSuccess | date:'medium'}}</span>
+                        <span *ngIf="!entry.lastSuccess || entry.status.toString() === 'SUCCESS'"></span>
                     </td>
                     <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td class="text-right">

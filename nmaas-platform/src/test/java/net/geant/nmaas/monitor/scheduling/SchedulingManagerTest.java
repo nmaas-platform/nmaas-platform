@@ -1,14 +1,14 @@
-package net.geant.nmaas.externalservices.monitor.scheduling;
+package net.geant.nmaas.monitor.scheduling;
 
 import java.util.Arrays;
 import java.util.List;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorServiceImpl;
-import net.geant.nmaas.externalservices.monitor.MonitorManager;
-import net.geant.nmaas.externalservices.monitor.MonitorService;
-import net.geant.nmaas.externalservices.monitor.ServiceType;
-import net.geant.nmaas.externalservices.monitor.TimeFormat;
-import net.geant.nmaas.externalservices.monitor.exceptions.MonitorServiceNotFound;
+import net.geant.nmaas.monitor.MonitorManager;
+import net.geant.nmaas.monitor.MonitorService;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.TimeFormat;
+import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;

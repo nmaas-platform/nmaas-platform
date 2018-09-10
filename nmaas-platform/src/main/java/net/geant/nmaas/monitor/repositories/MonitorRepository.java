@@ -1,8 +1,8 @@
-package net.geant.nmaas.externalservices.monitor.repositories;
+package net.geant.nmaas.monitor.repositories;
 
 import java.util.Optional;
-import net.geant.nmaas.externalservices.monitor.ServiceType;
-import net.geant.nmaas.externalservices.monitor.entities.MonitorEntry;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.entities.MonitorEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MonitorRepository extends JpaRepository <MonitorEntry, Long> {

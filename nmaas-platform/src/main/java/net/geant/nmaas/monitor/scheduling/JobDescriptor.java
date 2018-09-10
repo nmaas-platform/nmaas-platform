@@ -1,11 +1,11 @@
-package net.geant.nmaas.externalservices.monitor.scheduling;
+package net.geant.nmaas.monitor.scheduling;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.monitor.ServiceType;
-import net.geant.nmaas.externalservices.monitor.TimeFormat;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.TimeFormat;
 import org.quartz.Trigger;
 
 @Getter

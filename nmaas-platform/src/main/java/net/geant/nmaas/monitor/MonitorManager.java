@@ -1,12 +1,12 @@
-package net.geant.nmaas.externalservices.monitor;
+package net.geant.nmaas.monitor;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import net.geant.nmaas.externalservices.api.model.MonitorEntryView;
-import net.geant.nmaas.externalservices.monitor.entities.MonitorEntry;
-import net.geant.nmaas.externalservices.monitor.exceptions.MonitorEntryNotFound;
-import net.geant.nmaas.externalservices.monitor.repositories.MonitorRepository;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.entities.MonitorEntry;
+import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
+import net.geant.nmaas.monitor.repositories.MonitorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,12 +1,12 @@
-package net.geant.nmaas.externalservices.monitor.scheduling;
+package net.geant.nmaas.monitor.scheduling;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.monitor.MonitorService;
-import net.geant.nmaas.externalservices.monitor.exceptions.MonitorServiceNotFound;
+import net.geant.nmaas.monitor.MonitorService;
+import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;

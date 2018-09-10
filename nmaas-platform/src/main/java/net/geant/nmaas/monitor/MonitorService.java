@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.monitor;
+package net.geant.nmaas.monitor;
 
 import org.quartz.Job;
 

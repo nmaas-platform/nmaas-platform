@@ -1,10 +1,10 @@
-package net.geant.nmaas.externalservices.monitor.scheduling;
+package net.geant.nmaas.monitor.scheduling;
 
 import java.time.ZoneId;
 import java.util.TimeZone;
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.externalservices.monitor.ServiceType;
-import net.geant.nmaas.externalservices.monitor.TimeFormat;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.TimeFormat;
 import static org.quartz.CronExpression.isValidExpression;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import org.quartz.Trigger;

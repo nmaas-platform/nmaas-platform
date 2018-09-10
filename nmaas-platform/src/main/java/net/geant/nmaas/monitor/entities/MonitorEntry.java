@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.monitor.entities;
+package net.geant.nmaas.monitor.entities;
 
 import java.util.Date;
 import javax.persistence.Column;
@@ -11,9 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.externalservices.monitor.MonitorStatus;
-import net.geant.nmaas.externalservices.monitor.ServiceType;
-import net.geant.nmaas.externalservices.monitor.TimeFormat;
+import net.geant.nmaas.monitor.MonitorStatus;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.TimeFormat;
 
 @Entity
 @Getter

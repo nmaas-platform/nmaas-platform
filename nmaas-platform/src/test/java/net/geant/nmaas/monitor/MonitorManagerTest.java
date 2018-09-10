@@ -1,15 +1,13 @@
-package net.geant.nmaas.externalservices.monitor;
+package net.geant.nmaas.monitor;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import net.geant.nmaas.externalservices.api.model.MonitorEntryView;
-import net.geant.nmaas.externalservices.monitor.entities.MonitorEntry;
-import net.geant.nmaas.externalservices.monitor.exceptions.MonitorEntryNotFound;
-import net.geant.nmaas.externalservices.monitor.repositories.MonitorRepository;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.entities.MonitorEntry;
+import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
+import net.geant.nmaas.monitor.repositories.MonitorRepository;
 import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
