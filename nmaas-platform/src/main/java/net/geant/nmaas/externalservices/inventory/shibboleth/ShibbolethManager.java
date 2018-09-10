@@ -1,5 +1,8 @@
 package net.geant.nmaas.externalservices.inventory.shibboleth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,10 +22,13 @@ public class ShibbolethManager {
 
     private ModelMapper modelMapper;
 
+    private ObjectMapper objectMapper;
+
     @Autowired
     public ShibbolethManager(ShibbolethRepository shibbolethRepository, ModelMapper modelMapper){
         this.shibbolethRepository = shibbolethRepository;
         this.modelMapper = modelMapper;
+        this.objectMapper = new ObjectMapper();
     }
 
     public List<ShibbolethView> getAllShibbolethConfig(){
@@ -83,6 +89,10 @@ public class ShibbolethManager {
         return shibbolethRepository.findAll().get(0);
     }
 
+    public String getKey(String path) throws IOException {
+        return objectMapper.readTree(new File(path)).get("key").asText();
+    }
+
     private void checkParam(ShibbolethView shibboleth){
         if(shibboleth.getLoginUrl() == null || shibboleth.getLoginUrl().isEmpty())
             throw new IllegalStateException("Login url cannot be null or empty");
@@ -90,5 +100,7 @@ public class ShibbolethManager {
             throw new IllegalStateException("Logout url cannot be null or empty");
         if(shibboleth.getKeyFilePath() == null || shibboleth.getKeyFilePath().isEmpty())
             throw new IllegalStateException("Key file path cannot be null or empty");
+        if(!new File(shibboleth.getKeyFilePath()).exists())
+            throw new IllegalStateException("Key file does not exist");
     }
 }

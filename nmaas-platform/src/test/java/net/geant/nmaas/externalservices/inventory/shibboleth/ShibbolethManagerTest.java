@@ -26,10 +26,13 @@ public class ShibbolethManagerTest {
 
     private ShibbolethManager shibbolethManager;
 
+    private String path;
+
     @Before
     public void setup(){
         shibbolethManager = new ShibbolethManager(repo, modelMapper);
-        Shibboleth shibboleth = new Shibboleth(1L, "login-url", "logout-url", "secret-key",10);
+        path = getClass().getClassLoader().getResource("shibboleth-key.json").getPath();
+        Shibboleth shibboleth = new Shibboleth(1L, "login-url", "logout-url", path,10);
         when(repo.findAll()).thenReturn(Arrays.asList(shibboleth));
         when(repo.findById(1L)).thenReturn(Optional.of(shibboleth));
         when(repo.findById(2L)).thenReturn(Optional.empty());
@@ -71,7 +74,7 @@ public class ShibbolethManagerTest {
     @Test
     public void shouldAddShibbolethConfig(){
         when(repo.count()).thenReturn(0L).thenReturn(1L);
-        ShibbolethView shibboleth = new ShibbolethView(5L, "login-url", "logout-url", "secret-key",10);
+        ShibbolethView shibboleth = new ShibbolethView(5L, "login-url", "logout-url", path,10);
         Shibboleth shibbolethEntity = modelMapper.map(shibboleth, Shibboleth.class);
         when(repo.findAll()).thenReturn(Arrays.asList(shibbolethEntity));
         Long id = this.shibbolethManager.addShibbolethConfig(shibboleth);
@@ -81,26 +84,26 @@ public class ShibbolethManagerTest {
 
     @Test(expected = OnlyOneShibbolethConfigSupportedException.class)
     public void shouldNotAddShibbolethConfigWhenConfigAlreadyExists(){
-        ShibbolethView shibboleth = new ShibbolethView(5L, "login-url", "logout-url", "secret-key",10);
+        ShibbolethView shibboleth = new ShibbolethView(5L, "login-url", "logout-url", path,10);
         this.shibbolethManager.addShibbolethConfig(shibboleth);
     }
 
     @Test
     public void shouldUpdateShibbolethConfig(){
-        ShibbolethView shibboleth = new ShibbolethView(1L, "login-url", "logout-url", "secret-key",10);
+        ShibbolethView shibboleth = new ShibbolethView(1L, "login-url", "logout-url", path,10);
         this.shibbolethManager.updateShibbolethConfig(shibboleth.getId(), shibboleth);
         verify(repo, times(1)).save(any());
     }
 
     @Test(expected = ShibbolethConfigNotFoundException.class)
     public void shouldNotUpdateShibbolethConfigWithWrongId(){
-        ShibbolethView shibboleth = new ShibbolethView(2L, "login-url", "logout-url", "secret-key",10);
+        ShibbolethView shibboleth = new ShibbolethView(2L, "login-url", "logout-url", path,10);
         this.shibbolethManager.updateShibbolethConfig(shibboleth.getId(), shibboleth);
     }
 
     @Test
     public void shouldRemoveShibbolethConfig(){
-        Shibboleth shibboleth = new Shibboleth(1L, "login-url", "logout-url", "secret-key",10);
+        Shibboleth shibboleth = new Shibboleth(1L, "login-url", "logout-url", path,10);
         when(repo.findById(shibboleth.getId())).thenReturn(Optional.of(shibboleth));
         this.shibbolethManager.removeShibbolethConfig(1L);
         verify(repo, times(1)).delete(shibboleth);
