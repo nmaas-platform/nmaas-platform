@@ -16,7 +16,7 @@
         <tbody>
             <ng-template ngFor let-entry [ngForOf]="monitorEntries">
                 <tr *ngIf="entry.status === null || entry.status === undefined">
-                    <td>{{entry.serviceName.toString()}}</td>
+                    <td>{{services[entry.serviceName]}}</td>
                     <td>
                         <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
                         <span *ngIf="!entry.lastCheck">---</span>
@@ -34,7 +34,7 @@
                     </td>
                 </tr>
                 <tr *ngIf="entry.status !== null && entry.status !== undefined" [style.background-color]="entry.status.toString() === 'SUCCESS'?'#99ff99':'#FF6651'">
-                    <td>{{entry.serviceName.toString()}}</td>
+                    <td>{{services[entry.serviceName]}}</td>
                     <td>
                         <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
                         <span *ngIf="!entry.lastCheck">---</span>

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MonitorService} from "../../../../service/monitor.service";
 import {Router} from "@angular/router";
-import {MonitorEntry, TimeFormat} from "../../../../model/monitorentry";
+import {MonitorEntry, ServiceType, TimeFormat} from "../../../../model/monitorentry";
 import {Time} from "@angular/common";
 
 @Component({
@@ -12,6 +12,8 @@ import {Time} from "@angular/common";
 export class MonitorListComponent implements OnInit {
 
   private monitorEntries: MonitorEntry[] = [];
+
+  private services: typeof ServiceType = ServiceType;
 
   constructor(private monitorService: MonitorService, private router: Router) {}
 

@@ -5,9 +5,9 @@
             <label for="serviceName" class="col-sm-2 control-label">Service name:</label>
             <div class="col-sm-10">
                 <select *ngIf="isInMode(ComponentMode.CREATE)" class="form-control" id="serviceName" name="serviceName" [(ngModel)]="monitorEntry.serviceName" required>
-                    <option *ngFor="let service of services | keys" [value]="service.key">{{service.value}}</option>
+                    <option *ngFor="let service of keys(services)" [value]="service">{{services[service]}}</option>
                 </select>
-                <p class="control-label" style="float: left" *ngIf="!isInMode(ComponentMode.CREATE)">{{monitorEntry.serviceName}}</p>
+                <p class="control-label" style="float: left" *ngIf="!isInMode(ComponentMode.CREATE)">{{services[monitorEntry.serviceName]}}</p>
             </div>
         </div>
 

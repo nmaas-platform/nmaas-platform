@@ -13,6 +13,8 @@ import {isNullOrUndefined} from "util";
 })
 export class MonitorDetailsComponent extends BaseComponent implements OnInit {
 
+  private keys: any = Object.keys;
+
   private services: typeof ServiceType = ServiceType;
 
   private formats: typeof TimeFormat = TimeFormat;
