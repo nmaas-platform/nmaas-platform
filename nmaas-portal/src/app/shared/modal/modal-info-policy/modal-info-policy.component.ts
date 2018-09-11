@@ -23,6 +23,9 @@ export class ModalInfoPolicyComponent implements OnInit {
     ngOnInit() {
         this.modal.setModalType("success");
         this.getContent();
+        if(typeof this.content.content != 'undefined' && this.content.content){
+            this.content.content = "Default content";
+        }
     }
 
     getContent(): void{
