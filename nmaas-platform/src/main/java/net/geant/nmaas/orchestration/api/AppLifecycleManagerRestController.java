@@ -1,9 +1,11 @@
 package net.geant.nmaas.orchestration.api;
 
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,8 +45,8 @@ public class AppLifecycleManagerRestController {
             @RequestParam("domain") String domain,
             @RequestParam("applicationid") String applicationId,
             @RequestParam("deploymentname") String deploymentName) {
-        boolean configFileRepositoryRequired = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found")).isConfigFileRepositoryRequired();
-        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, configFileRepositoryRequired);
+        Application app = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found"));
+        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, app.isConfigFileRepositoryRequired(), app.getAppDeploymentSpec().getDefaultStorageSpace());
     }
 
     /**
@@ -59,8 +61,8 @@ public class AppLifecycleManagerRestController {
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
-            @RequestBody String configuration) throws InvalidDeploymentIdException {
-        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), new AppConfiguration(configuration));
+            @RequestBody AppConfigurationView configuration) throws InvalidDeploymentIdException {
+        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), new AppConfiguration(configuration.getJsonInput()), configuration.getStorageSpace());
     }
 
     /**

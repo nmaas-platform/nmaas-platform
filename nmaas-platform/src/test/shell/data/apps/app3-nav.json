@@ -12,7 +12,8 @@
 		"supportedDeploymentEnvironments": [
 			"DOCKER_COMPOSE",
 			"KUBERNETES"
-		]
+		],
+		"defaultStorageSpace":20
 	},
 	"configFileRepositoryRequired":false,
 	"configTemplate": {
@@ -25,10 +26,6 @@
 				{
 					"type":"help",
 					"helpvalue":"All required configuration should be applied using NAV graphical interface"
-				},
-				{
-					"type": "submit",
-					"title": "Proceed"
 				}
 			]
 		}

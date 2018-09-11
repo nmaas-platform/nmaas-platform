@@ -47,9 +47,9 @@ public class DefaultAppLifecycleManagerTest {
     public void shouldFailToDeployApplicationInstance() throws InterruptedException {
         when(appRepository.findById(1L)).thenReturn(Optional.of(new Application("appName")));
         when(appDepRepository.findByDeploymentId(Matchers.any())).thenReturn(Optional.of(
-                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true)));
+                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true, 20.0)));
         when(appDepRepositoryManager.load(Matchers.any())).thenReturn(Optional.empty());
-        appLifecycleManager.deployApplication("domain1", Identifier.newInstance(1L), "deploymentName", true);
+        appLifecycleManager.deployApplication("domain1", Identifier.newInstance(1L), "deploymentName", true, 20.0);
         Thread.sleep(200);
     }
 

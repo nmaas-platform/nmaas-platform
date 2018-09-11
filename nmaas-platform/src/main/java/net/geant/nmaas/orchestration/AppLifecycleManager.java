@@ -21,17 +21,19 @@ public interface AppLifecycleManager {
      * @param applicationId unique identifier of the application to be deployed
      * @param deploymentName name of application instance provided by the user
      * @param configFileRepositoryRequired flag which indicates if GitLab instance is required during deployment
+     * @param storageSpace required storage space to be allocated for this particular instance in GB
      * @return unique identifier of the deployed user application
      */
-    Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired);
+    Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Double storageSpace);
 
     /**
      * Applies custom configuration for the NMaaS application being deployed once provided by the user.
      *
      * @param deploymentId unique identifier of the deployed user application
      * @param configuration application configuration provided by the user
+     * @param storageSpace required storage space to be allocated for this particular instance in GB
      */
-    void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException;
+    void applyConfiguration(Identifier deploymentId, AppConfiguration configuration, Double storageSpace) throws InvalidDeploymentIdException;
 
     /**
      * Removes deployed application from the system.

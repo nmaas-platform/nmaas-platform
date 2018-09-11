@@ -11,7 +11,8 @@
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"DOCKER_COMPOSE"
-		]
+		],
+		"defaultStorageSpace":20
 	},
 	"configFileRepositoryRequired":true,
 	"configTemplate": {
@@ -59,10 +60,6 @@
 						"targets[]",
 						"targets[].ipAddress"
 					]
-				},
-				{
-					"type": "submit",
-					"title": "Apply configuration"
 				}
 			]
 		}

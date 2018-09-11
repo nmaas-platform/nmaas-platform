@@ -12,7 +12,8 @@
 		"supportedDeploymentEnvironments": [
 			"DOCKER_COMPOSE",
 			"KUBERNETES"
-		]
+		],
+		"defaultStorageSpace":20
 	},
 	"configFileRepositoryRequired":true,
 	"configTemplate": {
@@ -60,10 +61,6 @@
 						"targets[]",
 						"targets[].ipAddress"
 					]
-				},
-				{
-					"type": "submit",
-					"title": "Apply configuration"
 				}
 			]
 		}

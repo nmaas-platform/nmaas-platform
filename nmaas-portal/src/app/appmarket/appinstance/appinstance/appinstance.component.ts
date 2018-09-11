@@ -15,6 +15,7 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
 // import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
+import {AppConfiguration} from "../../../model/appconfiguration";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -43,6 +44,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
+  public appConfiguration: AppConfiguration;
 
   public intervalCheckerSubscribtion;
 
@@ -65,6 +67,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private location: Location) {}
 
   ngOnInit() {
+    this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
 
@@ -111,8 +114,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  public applyConfiguration(configuration: string): void {
-    this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
+  public changeConfiguration(configuration: string): void{
+    this.appConfiguration.jsonInput = configuration;
+  }
+
+  public applyConfiguration(): void {
+    this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => console.log('Configuration applied'));
   }
 
   public undeploy(): void {

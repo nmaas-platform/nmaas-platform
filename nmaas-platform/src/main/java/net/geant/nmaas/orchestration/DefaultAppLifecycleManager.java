@@ -44,9 +44,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired) {
+    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Double storageSpace) {
         Identifier deploymentId = generateDeploymentId();
-        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName, configFileRepositoryRequired);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName, configFileRepositoryRequired, storageSpace);
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
@@ -71,10 +71,15 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
+    public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration, Double storageSpace) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
         throwExceptionIfInInvalidState(appDeployment);
         appDeployment.setConfiguration(configuration);
+        if(storageSpace != null){
+            appDeployment.setStorageSpace(storageSpace);
+        } else{
+            appDeployment.setStorageSpace(appDeployment.getStorageSpace());
+        }
         repositoryManager.update(appDeployment);
         eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
     }
