@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.gitlab.model;
+package net.geant.nmaas.externalservices.inventory.shibboleth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,9 +10,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShibbolethView {
+
     private Long id;
     private String loginUrl;
     private String logoutUrl;
     private String keyFilePath;
     private int timeout;
+
 }

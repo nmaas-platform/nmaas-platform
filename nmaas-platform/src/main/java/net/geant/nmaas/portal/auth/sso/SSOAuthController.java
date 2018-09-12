@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.auth.sso;
 
 import java.io.IOException;
-import net.geant.nmaas.externalservices.inventory.gitlab.model.ShibbolethView;
+import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.auth.UserToken;

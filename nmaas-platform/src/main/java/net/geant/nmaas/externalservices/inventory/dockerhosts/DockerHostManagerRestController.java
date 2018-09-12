@@ -1,8 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.model.DockerHostDetails;
-import net.geant.nmaas.externalservices.inventory.gitlab.model.DockerHostView;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostDetails;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;

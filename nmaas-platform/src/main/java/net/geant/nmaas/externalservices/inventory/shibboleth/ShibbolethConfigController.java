@@ -1,8 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.shibboleth;
 
 import java.util.List;
-import net.geant.nmaas.externalservices.inventory.gitlab.model.ShibbolethView;
-import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
+import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
 import net.geant.nmaas.externalservices.inventory.shibboleth.exceptions.OnlyOneShibbolethConfigSupportedException;
 import net.geant.nmaas.externalservices.inventory.shibboleth.exceptions.ShibbolethConfigNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
