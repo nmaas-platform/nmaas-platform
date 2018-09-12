@@ -1,6 +1,5 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
@@ -14,9 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")

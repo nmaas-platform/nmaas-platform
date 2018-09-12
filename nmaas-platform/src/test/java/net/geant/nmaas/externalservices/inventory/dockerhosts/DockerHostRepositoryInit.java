@@ -5,9 +5,6 @@ import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class DockerHostRepositoryInit {
 
     public static void addDefaultDockerHost(DockerHostRepositoryManager repositoryManager) {

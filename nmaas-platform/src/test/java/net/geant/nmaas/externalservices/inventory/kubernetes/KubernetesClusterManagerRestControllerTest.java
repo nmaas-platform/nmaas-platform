@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.inventory.kubernetes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
