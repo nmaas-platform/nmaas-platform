@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.gitlab.DockerHostManagerRestController;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostManagerRestController;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.DockerHostDetails;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;

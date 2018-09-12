@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.inventory.shibboleth;
 
 import java.util.List;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.ShibbolethView;

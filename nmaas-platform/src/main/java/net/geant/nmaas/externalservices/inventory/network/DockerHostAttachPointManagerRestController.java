@@ -1,6 +1,6 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.inventory.network;
 
-import net.geant.nmaas.externalservices.inventory.network.DockerHostAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DockerHostAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.model.DockerHostDetails;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.DockerHostView;
