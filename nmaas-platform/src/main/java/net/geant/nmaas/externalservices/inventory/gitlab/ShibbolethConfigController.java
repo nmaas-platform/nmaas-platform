@@ -1,7 +1,7 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import java.util.List;
-import net.geant.nmaas.externalservices.api.model.ShibbolethView;
+import net.geant.nmaas.externalservices.inventory.gitlab.model.ShibbolethView;
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.externalservices.inventory.shibboleth.exceptions.OnlyOneShibbolethConfigSupportedException;
 import net.geant.nmaas.externalservices.inventory.shibboleth.exceptions.ShibbolethConfigNotFoundException;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.api.model;
+package net.geant.nmaas.externalservices.inventory.gitlab.model;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>

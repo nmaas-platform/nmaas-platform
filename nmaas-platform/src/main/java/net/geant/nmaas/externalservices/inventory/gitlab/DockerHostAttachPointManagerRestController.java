@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import net.geant.nmaas.externalservices.inventory.network.DockerHostAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;

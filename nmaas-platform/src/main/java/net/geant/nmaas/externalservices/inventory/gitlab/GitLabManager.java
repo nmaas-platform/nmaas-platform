@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.api.model.GitLabView;
+import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabConfigNotFoundException;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;

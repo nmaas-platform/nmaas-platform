@@ -1,6 +1,6 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.gitlab;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
@@ -14,34 +14,31 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class KubernetesClusterManagerApiSecurityTest extends BaseControllerTest {
+public class GitLabConfigApiSecurityTest extends BaseControllerTest {
+
+    @MockBean
+    private GitLabRepository repository;
 
     @Before
-    public void setup() {
+    public void setup(){
         mvc = createMVC();
     }
 
-    @MockBean
-    private KubernetesClusterRepository repository;
-
     @Test
-    public void shouldAuthorizeAdminProperUser() throws Exception {
+    public void shouldAuthorizeAdminProperUser() throws Exception{
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/api/management/kubernetes")
+        mvc.perform(get("/api/management/gitlab")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void shouldRejectNonAdminProperUser() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_USER);
-        mvc.perform(get("/api/management/kubernetes")
+    public void shouldRejectNonAdminProperUser() throws Exception{
+        String token = getValidUserTokenFor(Role.ROLE_DOMAIN_ADMIN);
+        mvc.perform(get("/api/management/gitlab")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

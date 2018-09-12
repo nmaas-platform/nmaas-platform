@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.api.model;
+package net.geant.nmaas.externalservices.inventory.gitlab.model;
 
 import java.net.InetAddress;
 import lombok.Getter;
