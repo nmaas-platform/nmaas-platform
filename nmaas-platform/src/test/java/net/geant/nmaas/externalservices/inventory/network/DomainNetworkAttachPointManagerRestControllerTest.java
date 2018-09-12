@@ -1,9 +1,10 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.network;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkMonitoredEquipment;
+import net.geant.nmaas.externalservices.inventory.network.DomainManagerRestController;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import org.junit.After;
 import org.junit.Before;

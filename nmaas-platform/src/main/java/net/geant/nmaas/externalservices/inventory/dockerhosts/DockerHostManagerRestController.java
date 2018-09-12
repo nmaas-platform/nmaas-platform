@@ -1,8 +1,7 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.externalservices.api.model.DockerHostDetails;
-import net.geant.nmaas.externalservices.api.model.DockerHostView;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostDetails;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
@@ -10,7 +9,6 @@ import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

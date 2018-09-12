@@ -1,9 +1,10 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.api.model.DockerHostDetails;
-import net.geant.nmaas.externalservices.api.model.DockerHostView;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostManagerRestController;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostDetails;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
@@ -31,9 +32,6 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")

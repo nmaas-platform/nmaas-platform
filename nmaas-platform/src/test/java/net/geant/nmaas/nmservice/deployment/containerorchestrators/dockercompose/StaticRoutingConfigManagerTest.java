@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkMonitoredEquipment;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;

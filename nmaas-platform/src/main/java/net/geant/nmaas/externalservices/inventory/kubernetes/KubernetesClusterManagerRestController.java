@@ -1,7 +1,6 @@
-package net.geant.nmaas.externalservices.api;
+package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.api.model.KubernetesClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;

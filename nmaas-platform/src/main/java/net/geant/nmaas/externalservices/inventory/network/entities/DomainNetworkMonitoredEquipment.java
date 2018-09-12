@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.network;
+package net.geant.nmaas.externalservices.inventory.network.entities;
 
 import javax.persistence.*;
 import java.util.ArrayList;

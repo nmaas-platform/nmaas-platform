@@ -1,12 +1,10 @@
-package net.geant.nmaas.externalservices.api.model;
+package net.geant.nmaas.externalservices.inventory.kubernetes.model;
 
-import java.net.InetAddress;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+import java.net.InetAddress;
+
 @Getter
 @Setter
 public class KubernetesClusterView {

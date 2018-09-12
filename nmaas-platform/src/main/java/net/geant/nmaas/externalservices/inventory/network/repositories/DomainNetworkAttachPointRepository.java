@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.network.repositories;
 
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

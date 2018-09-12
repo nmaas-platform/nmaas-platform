@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import net.geant.nmaas.externalservices.api.model.ShibbolethView;
+import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
 import net.geant.nmaas.externalservices.inventory.shibboleth.entities.Shibboleth;
 import net.geant.nmaas.externalservices.inventory.shibboleth.exceptions.OnlyOneShibbolethConfigSupportedException;
 import net.geant.nmaas.externalservices.inventory.shibboleth.exceptions.ShibbolethConfigNotFoundException;

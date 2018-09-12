@@ -1,4 +1,6 @@
-package net.geant.nmaas.externalservices.inventory.network;
+package net.geant.nmaas.externalservices.inventory.network.entities;
+
+import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 
 import javax.persistence.*;
 
