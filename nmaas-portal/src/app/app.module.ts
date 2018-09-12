@@ -50,7 +50,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     AppMarketModule,
     SharedModule,
     WelcomeModule,
-    routing
+    routing,
   ],
   providers: [
     AuthGuard,
@@ -60,8 +60,8 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
         provide: APP_INITIALIZER,
         useFactory: appConfigFactory,
         deps: [ AppConfigService ],
-        multi: true
-    }
+        multi: true,
+    },
   ],
   bootstrap: [ AppComponent ]
 })

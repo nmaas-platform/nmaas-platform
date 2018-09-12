@@ -66,6 +66,10 @@ echo
 curl -X GET %API_URL%/management/gitlab --header "Authorization: Bearer %token%"
 
 echo.
+echo Adding default Shibboleth configuration
+curl -X POST %API_URL%/management/shibboleth --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\shibboleth\shibboleth-config.json
+
+echo.
 echo Adding default Docker Host attachment points
 curl -X POST %API_URL%/management/network/dockerhosts --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\dockerhosts\docker-host-1-attach-point.json
 echo

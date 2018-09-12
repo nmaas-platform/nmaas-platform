@@ -67,7 +67,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) throws CommandExecutionException {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         String domain = serviceInfo.getDomain();
-        String repoUrl = serviceInfo.getGitLabProject().getCloneUrl();
         String serviceExternalURL = serviceInfo.getServiceExternalUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
@@ -75,7 +74,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getStorageClass(domain).get());
         }
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
-        arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, repoUrl);
+        if(serviceInfo.getGitLabProject() != null)
+            arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, serviceInfo.getGitLabProject().getCloneUrl());
         arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED,
                 String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
         if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {

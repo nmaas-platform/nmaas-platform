@@ -29,6 +29,7 @@ import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails
 import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
+import { ShibbolethDetailsComponent } from './admin/shibboleth/details/shibboleth-details.component';
 
 @NgModule({
   imports: [
@@ -60,10 +61,11 @@ import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-p
     AppElementComponent,
     AppListComponent,
     ApplicationsViewComponent,
-    ClusterDetailsComponent,
+      ShibbolethDetailsComponent,
+      ClusterDetailsComponent,
       GitlabDetailsComponent,
       ModalInfoTermsComponent,
-      ModalInfoPolicyComponent
+      ModalInfoPolicyComponent,
   ],
   providers: [
     PasswordValidator,
@@ -88,6 +90,7 @@ import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-p
     ApplicationsViewComponent,
     ClusterDetailsComponent,
       GitlabDetailsComponent,
+      ShibbolethDetailsComponent,
       ModalInfoTermsComponent,
       ModalInfoPolicyComponent
   ]

@@ -92,7 +92,7 @@ public class ConfigDownloadCommandExecutionTest {
 
     @Test
     public void shouldPrepareConfigDownloadCommandString() throws FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException, SshConnectionException, CommandExecutionException {
-        configDownloadCommandExecutor.transferConfigFiles(deploymentId, Arrays.asList(configId1));
+        configDownloadCommandExecutor.transferConfigFiles(deploymentId, Arrays.asList(configId1),true);
         ArgumentCaptor<Command> commandArgumentCaptor = ArgumentCaptor.forClass(Command.class);
         verify(executor, times(1)).executeSingleCommand(commandArgumentCaptor.capture());
         assertThat(commandArgumentCaptor.getValue().asString(), equalTo(CORRECT_CONFIG_DOWNLOAD_COMMAND));

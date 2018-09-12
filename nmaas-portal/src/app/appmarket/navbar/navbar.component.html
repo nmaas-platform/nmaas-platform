@@ -21,12 +21,14 @@
 					<ul class="dropdown-menu">
 						<li><a [routerLink]="['/admin/clusters']">Kubernetes</a>
 							<a [routerLink]="['/admin/gitlab']">GitLab</a>
+							<a [routerLink]="['/admin/shibboleth']">SAML Proxy</a>
 					</ul>
 				</li>
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
 				<li class="divider-vertical"></li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/monitor']">Monitor</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']"><a [routerLink]="['/admin/configuration']">Configuration</a></li>
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"

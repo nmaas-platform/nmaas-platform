@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.DefaultKClusterValidator;
@@ -27,6 +28,7 @@ public class KubernetesManagerCheckServiceTest {
     private IngressControllerManager ingressControllerManager = mock(DefaultIngressControllerManager.class);
     private IngressResourceManager ingressResourceManager = mock(DefaultIngressResourceManager.class);
     private KClusterApiManager clusterApiManager = mock(KClusterApiManager.class);
+    private GitLabManager gitLabManager = mock(GitLabManager.class);
 
     @Before
     public void setup() {
@@ -37,7 +39,8 @@ public class KubernetesManagerCheckServiceTest {
                 clusterIngressManager,
                 ingressControllerManager,
                 ingressResourceManager,
-                clusterApiManager);
+                clusterApiManager,
+                gitLabManager);
     }
 
     @Test

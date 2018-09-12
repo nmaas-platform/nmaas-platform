@@ -13,6 +13,7 @@
 			"DOCKER_COMPOSE"
 		]
 	},
+	"configFileRepositoryRequired":true,
 	"configTemplate": {
 		"template": {
 			"schema": {

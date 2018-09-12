@@ -61,7 +61,7 @@ public class GitlabConfigUploaderTest {
         when(project.getHttpUrlToRepo())
                 .thenReturn("http://example.gitlab.com/group/project.git");
         when(gitLabManager.getGitlabServer()).thenReturn("test-server");
-        when(gitLabManager.gettGitlabPort()).thenReturn(80);
+        when(gitLabManager.getGitlabPort()).thenReturn(80);
         uploader.setGitlab(gitLabApi);
         String result = uploader.getHttpUrlToRepo(1);
         assertThat(result, is("http://test-server:80/group/project.git"));
