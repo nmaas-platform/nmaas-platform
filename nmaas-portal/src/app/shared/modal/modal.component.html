@@ -18,7 +18,8 @@
             <div [hidden]="!isWarning" class="modal-header text-center alert-warning">
                 <img src="../../../assets/images/alert.png" class="center-block" alt="Warning">
             </div>
-			<div class="modal-body">
+			<div class="modal-body text-center">
+                <h2 [hidden]="isDefault"><ng-content select=".nmaas-modal-header"></ng-content></h2>
 				<ng-content select=".nmaas-modal-body"></ng-content>
 			</div>
 			<div class="modal-footer">
