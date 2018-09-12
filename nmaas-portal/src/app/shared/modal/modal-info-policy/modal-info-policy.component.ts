@@ -22,8 +22,7 @@ export class ModalInfoPolicyComponent implements OnInit {
 
     ngOnInit() {
         this.modal.setModalType("info");
-        //this.getContent();
-        this.fakeContent();
+        this.getContent();
     }
 
     fakeContent(): void{

@@ -21,9 +21,8 @@ export class ModalInfoTermsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.modal.setModalType("warning");
-        //this.getContent();
-        this.fakeContent();
+        this.modal.setModalType("info");
+        this.getContent();
     }
 
     fakeContent(): void{
