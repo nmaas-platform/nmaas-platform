@@ -226,13 +226,15 @@ public class AppInstanceController extends AppBaseController {
 			throw new MissingElementException("App instance is null");
 		
 		AppLifecycleState state = AppLifecycleState.UNKNOWN;
+		AppLifecycleState previousState = AppLifecycleState.UNKNOWN;
 		try {
 			state = appDeploymentMonitor.state(appInstance.getInternalId());
+			previousState = appDeploymentMonitor.previousState(appInstance.getInternalId());
 		} catch (InvalidDeploymentIdException e) {
 			throw new ProcessingException("Missing app instance");
 		}
 
-		return prepareAppInstanceStatus(appInstance.getId(), state);
+		return prepareAppInstanceStatus(appInstance.getId(), state, previousState);
 	}
 
 	private boolean validJSON(String json) {
@@ -247,7 +249,7 @@ public class AppInstanceController extends AppBaseController {
 		}
 	}
 
-	private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state) {
+	private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state, AppLifecycleState previousState) {
 		AppInstanceStatus appInstanceStatus = new AppInstanceStatus();
 		appInstanceStatus.setAppInstanceId(appInstanceId);
 		appInstanceStatus.setDetails(state.name());
@@ -256,7 +258,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceState appInstanceState = mapAppInstanceState(state);
 
 		appInstanceStatus.setState(appInstanceState);
-
+		appInstanceStatus.setPreviousState(mapAppInstanceState(previousState));
 		appInstanceStatus.setUserFriendlyState(appInstanceState.getUserFriendlyState());
 
 		return appInstanceStatus;
