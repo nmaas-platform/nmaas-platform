@@ -51,14 +51,4 @@ public class BasicAuthControllerTest {
     public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
         basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false, true, true);
     }
-
-    @Test(expected = AuthenticationException.class)
-    public void testValidateWithValidUserNameAndValidPasswordAndEnabledUserAndTouNotAccepted() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, false, true);
-    }
-
-    @Test(expected = AuthenticationException.class)
-    public void testValidateWithValidUserNameAndValidPasswordAndEnabledUserAndTouAcceptedAndPrivacyPolicyNotAccepted() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, true, false);
-    }
 }

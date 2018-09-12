@@ -19,8 +19,12 @@ export class AuthGuard implements CanActivate {
          }
       });
       if(this.auth.hasRole('ROLE_INCOMPLETE') && route.url.toString() !== 'complete') {
-           this.router.navigate(['/complete']);
-           return false;
+          this.router.navigate(['/complete']);
+          return false;
+      }
+      if(this.auth.hasRole("ROLE_NOT_ACCEPTED") && route.url.toString() !== 'terms-acceptance'){
+          this.router.navigate(['/terms-acceptance']);
+          return false;
       }
       else
           return true;

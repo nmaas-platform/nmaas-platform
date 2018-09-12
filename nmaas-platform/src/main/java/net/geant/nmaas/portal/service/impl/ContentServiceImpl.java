@@ -6,13 +6,19 @@ import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class ContentServiceImpl implements net.geant.nmaas.portal.service.ContentService {
 
-    @Autowired
     ContentRepository contentRepo;
+
+    @Autowired
+    public ContentServiceImpl(ContentRepository repository){
+        this.contentRepo = repository;
+    }
 
     @Override
     public Optional<Content> findByName(String name){
@@ -45,6 +51,7 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
         }
 
         contentRepo.saveAndFlush(content);
+
     }
 
     @Override
@@ -52,20 +59,23 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
         checkParam(content);
         checkParam(content.getId());
 
+        if(!contentRepo.existsById(content.getId())){
+            throw new ProcessingException("Content (id=" + content.getId() + ") does not exists.");
+        }
         contentRepo.delete(content);
     }
 
-    protected void checkParam(Long id) {
+    private void checkParam(Long id) {
         if(id == null)
             throw new IllegalArgumentException("id is null");
     }
 
-    protected void checkParam(String name) {
+    private void checkParam(String name) {
         if(name == null)
             throw new IllegalArgumentException("name is null");
     }
 
-    protected void checkParam(Content content) {
+    private void checkParam(Content content) {
         if(content == null)
             throw new IllegalArgumentException("content is null");
     }

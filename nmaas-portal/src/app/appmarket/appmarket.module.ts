@@ -28,6 +28,8 @@ import {ClustersModule} from "./admin/clusters/clusters.module";
 import {ClusterService} from "../service/cluster.service";
 import {GitlabModule} from "./admin/gitlab/gitlab.module";
 import {ConfigurationModule} from "./admin/configuration/configuration.module";
+import {MonitorModule} from "./admin/monitor/monitor.module";
+import {ShibbolethModule} from "./admin/shibboleth/shibboleth.module";
 
 @NgModule({
   declarations: [
@@ -49,6 +51,8 @@ import {ConfigurationModule} from "./admin/configuration/configuration.module";
     PipesModule,
     ClustersModule,
       GitlabModule,
+      ShibbolethModule,
+      MonitorModule,
       ConfigurationModule
   ],
   exports: [

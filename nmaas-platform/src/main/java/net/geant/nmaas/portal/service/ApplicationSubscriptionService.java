@@ -37,13 +37,13 @@ public interface ApplicationSubscriptionService {
 	List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application);	
 	Page<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application, Pageable pageable);
 	
-	ApplicationSubscription subscribe(ApplicationSubscription appSub) throws ObjectAlreadyExistsException, ProcessingException;
-	ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active) throws ObjectAlreadyExistsException, ProcessingException, ObjectNotFoundException;
-	ApplicationSubscription subscribe(Application application, Domain domain, boolean active) throws ObjectAlreadyExistsException, ProcessingException;
+	ApplicationSubscription subscribe(ApplicationSubscription appSub);
+	ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active);
+	ApplicationSubscription subscribe(Application application, Domain domain, boolean active);
 	
-	boolean unsubscribe(ApplicationSubscription appSub) throws ProcessingException, ObjectNotFoundException;
-	boolean unsubscribe(Long applicationId, Long domainId) throws ProcessingException, ObjectNotFoundException;
-	boolean unsubscribe(Application application, Domain domain) throws ProcessingException, ObjectNotFoundException;
+	boolean unsubscribe(ApplicationSubscription appSub);
+	boolean unsubscribe(Long applicationId, Long domainId);
+	boolean unsubscribe(Application application, Domain domain);
 		
 	List<Application> getSubscribedApplications();
 	List<Application> getSubscribedApplications(Long domainId);
