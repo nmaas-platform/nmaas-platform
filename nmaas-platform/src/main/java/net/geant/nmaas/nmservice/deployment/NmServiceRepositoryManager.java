@@ -55,7 +55,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void updateServiceState(Identifier deploymentId, NmServiceDeploymentState state) throws InvalidDeploymentIdException {
+    public void updateServiceState(Identifier deploymentId, NmServiceDeploymentState state) throws InvalidDeploymentIdException {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setState(state);
         repository.save(nmServiceInfo);
