@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -49,6 +51,7 @@ public class OrchestratorManagerRestControllerTest {
     private Identifier applicationId;
     private Identifier deploymentId;
     private AppConfiguration appConfiguration;
+    private ModelMapper modelMapper;
 
     private static final String CONFIGURATION_JSON = "" +
             "{" +
@@ -58,21 +61,22 @@ public class OrchestratorManagerRestControllerTest {
 
     @Before
     public void setup() {
+        modelMapper = new ModelMapper();
         applicationId = Identifier.newInstance(15L);
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
-        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, modelMapper)).build();
         Application application = new Application("testapp");
-        application.setConfigFileRepositoryRequired(true);
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.getAppDeploymentSpec().setDefaultStorageSpace(20.0);
+        application.getAppDeploymentSpec().setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }
 
     @Test
     public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
-        when(lifecycleManager.deployApplication(any(), any(), any(), anyBoolean(), any())).thenReturn(deploymentId);
+        when(lifecycleManager.deployApplication(any(), any(), any(), any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);
@@ -94,16 +98,16 @@ public class OrchestratorManagerRestControllerTest {
                 .andExpect(status().isOk());
 
         ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
-        ArgumentCaptor<AppConfiguration> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfiguration.class);
+        ArgumentCaptor<AppConfigurationView> appConfigurationCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
 
-        verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture(), any());
+        verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture());
         assertThat(deploymentIdCaptor.getValue(), equalTo(deploymentId));
         assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
     }
 
     @Test
     public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Exception {
-        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any(), any());
+        doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CONFIGURATION_JSON)

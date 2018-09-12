@@ -13,9 +13,9 @@
 			"DOCKER_COMPOSE",
 			"KUBERNETES"
 		],
-		"defaultStorageSpace":20
+		"defaultStorageSpace":20,
+		"configFileRepositoryRequired":false
 	},
-	"configFileRepositoryRequired":false,
 	"configTemplate": {
 		"template": {
 			"schema": {

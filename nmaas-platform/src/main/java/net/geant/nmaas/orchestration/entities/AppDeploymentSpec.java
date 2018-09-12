@@ -46,4 +46,6 @@ public class AppDeploymentSpec implements Serializable {
 
     @Column(nullable = false)
     private Double defaultStorageSpace;
+
+    private boolean configFileRepositoryRequired;
 }

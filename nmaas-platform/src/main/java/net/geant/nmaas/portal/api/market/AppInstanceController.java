@@ -6,7 +6,6 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -143,8 +142,7 @@ public class AppInstanceController extends AppBaseController {
 				domain.getCodename(),
 				Identifier.newInstance(appInstance.getApplication().getId()),
 				appInstance.getName(),
-				app.isConfigFileRepositoryRequired(),
-				app.getAppDeploymentSpec().getDefaultStorageSpace());
+				modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
 		appInstance.setInternalId(internalId);
 
 		instances.update(appInstance);
@@ -187,7 +185,7 @@ public class AppInstanceController extends AppBaseController {
 		instances.update(appInstance);
 
 		try {
-			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), new AppConfiguration(configuration.getJsonInput()), configuration.getStorageSpace());
+			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
 		} catch (InvalidDeploymentIdException e) {
 			throw new ProcessingException("Missing app instance");
 		}

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -9,6 +10,7 @@ import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
@@ -44,9 +46,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Double storageSpace) {
+    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, AppDeploymentSpec appDeploymentSpec) {
         Identifier deploymentId = generateDeploymentId();
-        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName, configFileRepositoryRequired, storageSpace);
+        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName, appDeploymentSpec.isConfigFileRepositoryRequired(), appDeploymentSpec.getDefaultStorageSpace());
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;
@@ -71,12 +73,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void applyConfiguration(Identifier deploymentId, AppConfiguration configuration, Double storageSpace) throws InvalidDeploymentIdException {
+    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
         throwExceptionIfInInvalidState(appDeployment);
-        appDeployment.setConfiguration(configuration);
-        if(storageSpace != null){
-            appDeployment.setStorageSpace(storageSpace);
+        appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
+        if(configuration.getStorageSpace() != null){
+            appDeployment.setStorageSpace(configuration.getStorageSpace());
         } else{
             appDeployment.setStorageSpace(appDeployment.getStorageSpace());
         }

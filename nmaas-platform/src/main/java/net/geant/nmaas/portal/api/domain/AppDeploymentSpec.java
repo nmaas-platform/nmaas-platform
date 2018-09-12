@@ -16,4 +16,6 @@ public class AppDeploymentSpec {
 
     private Double defaultStorageSpace;
 
+    private boolean configFileRepositoryRequired;
+
 }
