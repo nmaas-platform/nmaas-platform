@@ -60,6 +60,8 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
     ngOnInit() {
         this.profileService.getOne().subscribe((user) => this.user = user)
+        this.modal.setStatusOfIcons(false);
+        this.modal.setModalType("success");
     }
 
     public onSubmit(): void {

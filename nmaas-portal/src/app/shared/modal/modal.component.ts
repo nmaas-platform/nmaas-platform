@@ -14,6 +14,7 @@ export class ModalComponent implements OnInit {
     public isSuccess = false;
     public visibleAnimate = false;
     public isDefault = true;
+    public isIconsEnabled = true;
     constructor() { 
     }
 
@@ -38,6 +39,10 @@ export class ModalComponent implements OnInit {
         this.isWarning = false;
     }
 
+    public setStatusOfIcons(isIconsEnabled: boolean): void{
+        this.isIconsEnabled = isIconsEnabled;
+    }
+
     public setModalType(typeOfModal: string): void{
         this.resetModalStyle();
         this.isDefault = false;
@@ -53,6 +58,9 @@ export class ModalComponent implements OnInit {
                 break;
             case 'success':
                 this.isSuccess = true;
+                break;
+            case 'default':
+                this.isDefault = true;
                 break;
             default:
                 console.log("Invalid choice of modal type");

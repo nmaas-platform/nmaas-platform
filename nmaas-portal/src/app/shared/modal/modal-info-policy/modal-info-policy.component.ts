@@ -22,15 +22,8 @@ export class ModalInfoPolicyComponent implements OnInit {
 
     ngOnInit() {
         this.modal.setModalType("info");
+        this.modal.setStatusOfIcons(false);
         this.getContent();
-    }
-
-    fakeContent(): void{
-        this.content = new Content();
-        this.content.title = "Registration done"
-        this.content.name = "Error occured";
-        this.content.id = 0;
-        this.content.content = "Default information";
     }
 
     getContent(): void{

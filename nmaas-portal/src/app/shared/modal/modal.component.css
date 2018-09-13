@@ -25,3 +25,9 @@
 .modal-header-none-display{
   display: none;
 }
+.modal-img{
+    height: auto;
+    width: auto;
+    max-width: 100px;
+    max-height: 100px;
+}
