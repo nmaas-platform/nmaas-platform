@@ -26,8 +26,10 @@
   display: none;
 }
 .modal-img{
+    display: inline-block;
     height: auto;
     width: auto;
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 45px;
+    max-height: 45px;
+    padding-bottom: 10px;
 }

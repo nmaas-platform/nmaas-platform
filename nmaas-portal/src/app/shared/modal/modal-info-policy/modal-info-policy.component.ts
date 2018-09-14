@@ -22,7 +22,7 @@ export class ModalInfoPolicyComponent implements OnInit {
 
     ngOnInit() {
         this.modal.setModalType("info");
-        this.modal.setStatusOfIcons(false);
+        this.modal.setStatusOfIcons(true);
         this.getContent();
     }
 
