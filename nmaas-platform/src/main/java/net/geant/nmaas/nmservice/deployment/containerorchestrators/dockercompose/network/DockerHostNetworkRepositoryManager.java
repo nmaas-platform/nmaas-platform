@@ -29,12 +29,12 @@ public class DockerHostNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void updateNetwork(DockerHostNetwork dockerHostNetwork) {
+    public void updateNetwork(DockerHostNetwork dockerHostNetwork) {
         repository.save(dockerHostNetwork);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void updateNetworkIdAndNetworkName(String domain, String networkId, String networkName) throws InvalidDomainException {
+    public void updateNetworkIdAndNetworkName(String domain, String networkId, String networkName) throws InvalidDomainException {
         DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         dockerHostNetwork.setDeploymentId(networkId);
         dockerHostNetwork.setDeploymentName(networkName);
@@ -42,7 +42,7 @@ public class DockerHostNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void updateAssignedAddresses(String domain, List<String> assignedAddresses) throws InvalidDomainException {
+    public void updateAssignedAddresses(String domain, List<String> assignedAddresses) throws InvalidDomainException {
         DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         dockerHostNetwork.setAssignedAddresses(assignedAddresses);
         repository.save(dockerHostNetwork);

@@ -299,7 +299,7 @@ public class DockerHostStateKeeper {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void removeAllAssignments(String dockerHostName) {
+    public void removeAllAssignments(String dockerHostName) {
         try {
             if (stateForDockerHostNotExists(dockerHostName))
                 throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
