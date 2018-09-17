@@ -1,4 +1,4 @@
 export class AppConfiguration{
-    public jsonInput:string;
+    public jsonInput:any;
     public storageSpace:number;
 }
