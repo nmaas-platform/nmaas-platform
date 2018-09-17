@@ -25,6 +25,8 @@ public interface AppLifecycleManager {
      */
     Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired);
 
+    void redeployApplication(Identifier deploymentId);
+
     /**
      * Applies custom configuration for the NMaaS application being deployed once provided by the user.
      *

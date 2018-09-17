@@ -35,6 +35,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case ENVIRONMENT_PREPARED:
+                    return DEPLOYMENT_ENVIRONMENT_PREPARED;
                 case ENVIRONMENT_PREPARATION_INITIATED:
                     return DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS;
                 case ENVIRONMENT_PREPARATION_FAILED:
@@ -47,6 +49,13 @@ public enum AppDeploymentState {
     REQUEST_VALIDATION_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.REQUEST_VALIDATION_FAILED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            if(state.equals(NmServiceDeploymentState.INIT))
+                return REQUESTED;
+            throw new InvalidAppStateException(message(this, state));
+        }
 
     },
     DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS {
@@ -72,6 +81,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case CONFIGURED:
+                    return APPLICATION_CONFIGURED;
                 case READY_FOR_DEPLOYMENT:
                     return MANAGEMENT_VPN_CONFIGURED;
                 default:
@@ -88,6 +99,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case INIT:
+                    return REQUESTED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -154,6 +167,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case INIT:
+                    return REQUESTED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -220,6 +235,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case INIT:
+                    return REQUESTED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -258,6 +275,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case INIT:
+                    return REQUESTED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -294,6 +313,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case INIT:
+                    return REQUESTED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -310,10 +331,24 @@ public enum AppDeploymentState {
     APPLICATION_REMOVAL_FAILED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVAL_FAILED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            if(state.equals(NmServiceDeploymentState.INIT))
+                return REQUESTED;
+            throw new InvalidAppStateException(message(this, state));
+        }
     },
     UNKNOWN {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.UNKNOWN; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            if(state.equals(NmServiceDeploymentState.INIT))
+                return REQUESTED;
+            throw new InvalidAppStateException(message(this, state));
+        }
     },
     INTERNAL_ERROR {
         @Override
@@ -322,6 +357,8 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
             switch (state) {
+                case INIT:
+                    return REQUESTED;
                 case REMOVED:
                     return APPLICATION_REMOVED;
                 case REMOVAL_FAILED:
@@ -333,6 +370,13 @@ public enum AppDeploymentState {
     }, GENERIC_ERROR {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.GENERIC_ERROR; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
+            if(state.equals(NmServiceDeploymentState.INIT))
+                return REQUESTED;
+            throw new InvalidAppStateException(message(this, state));
+        }
     };
 
     public abstract AppLifecycleState lifecycleState();

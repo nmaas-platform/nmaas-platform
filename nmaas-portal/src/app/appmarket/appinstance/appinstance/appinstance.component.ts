@@ -112,6 +112,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
+  public redeploy(): void{
+    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log("Redeployed"));
+  }
+
   public applyConfiguration(configuration: string): void {
     this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
   }
