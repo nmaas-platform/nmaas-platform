@@ -6,12 +6,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  * @author Michal Giertych <mikus@man.poznan.pl>
  */
 @SpringBootApplication
+@EnableScheduling
 public class NmaasPlatform {
 
     public static void main(String[] args) {

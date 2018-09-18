@@ -28,6 +28,15 @@ public interface AppDeploymentMonitor {
     AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException;
 
     /**
+     * Retrieves the previous state of deployed application.
+     *
+     * @param deploymentId unique identifier of the deployed user application
+     * @return previous state of the application
+     * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
+     */
+    AppLifecycleState previousState(Identifier deploymentId) throws InvalidDeploymentIdException;
+
+    /**
      * Retrieves information on all deployments in the system.
      *
      * @return identifiers of all deployments

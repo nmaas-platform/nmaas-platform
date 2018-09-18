@@ -20,6 +20,9 @@ export class ShibbolethDetailsComponent extends BaseComponent implements OnInit 
   @Output()
   onDelete:EventEmitter<number> = new EventEmitter<number>();
 
+  @Input()
+  private errMsg: string;
+
   constructor(private router:Router) { super(); }
 
   ngOnInit() {

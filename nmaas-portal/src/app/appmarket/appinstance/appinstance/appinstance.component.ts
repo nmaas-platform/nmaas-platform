@@ -93,6 +93,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
+        this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
         if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
           this.updateAppInstance();
         }

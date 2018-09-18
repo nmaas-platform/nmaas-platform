@@ -71,6 +71,12 @@
 				<p>State: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus.userFriendlyState : 'Something went wrong'}}</p>
 				<p>Details: {{appInstanceStatus?.userFriendlyDetails}}</p>
 			</div>
+			
+			<div class="row" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+				<div class="alert alert-danger">
+					Please contact support
+				</div>
+			</div>
 
 			<div class="row" *ngIf="this.appInstanceStateHistory">
                 <h3>Deployment history</h3>
