@@ -39,6 +39,13 @@
 			</div>
 		</div>
 
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SUPERADMIN') || authService.hasRole('ROLE_OPERATOR'))">
+			<label class="col-sm-2 control-label">Id in db:</label>
+			<div class="col-sm-10">
+				<p class="form-control-static">{{domain.id}}</p>
+			</div>
+		</div>
+
 		<hr/>
 
 		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
@@ -62,22 +69,6 @@
 			<div class="col-sm-10">
 				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="dcnConfigured"
 				name="dcnConfigured" [(ngModel)]="domain.dcnConfigured">
-			</div>
-		</div>
-
-		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
-			<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">DCN status - Configured</label>
-			<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">DCN status - Not configured</label>
-			<div class="col-sm-10">
-				<button *ngIf="domain.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
-				<button *ngIf="!domain.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
-			</div>
-		</div>
-
-		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SUPERADMIN') || authService.hasRole('ROLE_OPERATOR'))">
-			<label class="col-sm-2 control-label">Id in db:</label>
-			<div class="col-sm-10">
-				<p class="form-control-static">{{domain.id}}</p>
 			</div>
 		</div>
 
@@ -118,7 +109,19 @@
 				</div>
 			</div>
 		<button *ngIf="isInMode(ComponentMode.EDIT) || isInMode(ComponentMode.CREATE)" type="submit" class="btn btn-default" valid>Submit</button>
+
 	</form>
+
+	<hr/>
+
+	<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
+		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">DCN status - Configured</label>
+		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">DCN status - Not configured</label>
+		<div class="col-sm-10">
+			<button *ngIf="domain.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
+			<button *ngIf="!domain.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
+		</div>
+	</div>
 	<div *ngIf="!domain">Not found.</div>
 </div>
 
