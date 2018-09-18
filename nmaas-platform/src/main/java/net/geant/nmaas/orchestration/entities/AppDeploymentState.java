@@ -214,7 +214,7 @@ public enum AppDeploymentState {
     },
     APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_IN_PROGRESS; }
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) throws InvalidAppStateException {
