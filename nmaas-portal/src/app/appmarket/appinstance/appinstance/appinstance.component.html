@@ -115,7 +115,7 @@
 						</div>
 						<div id="advanced" class="tab-pane fade" style="padding-bottom: 10px">
 							<label class="control-label" for="storageSpace">Storage space (GB):</label>
-							<input class="form-control no-spin" [(ngModel)]="appConfiguration.storageSpace" id="storageSpace"
+							<input class="form-control no-spin" placeholder="Default value: {{app?.appDeploymentSpec.defaultStorageSpace}}" [(ngModel)]="appConfiguration.storageSpace" id="storageSpace"
 								   name="storageSpace" type="number" />
 						</div>
 						<p *ngIf="requiredFields"><strong class="text-danger">*</strong> = required fields</p>
