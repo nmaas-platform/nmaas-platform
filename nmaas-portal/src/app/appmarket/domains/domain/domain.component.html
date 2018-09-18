@@ -109,11 +109,8 @@
 				</div>
 			</div>
 		<button *ngIf="isInMode(ComponentMode.EDIT) || isInMode(ComponentMode.CREATE)" type="submit" class="btn btn-default" valid>Submit</button>
-
 	</form>
-
 	<hr/>
-
 	<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
 		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain?.dcnConfigured">DCN status - Configured</label>
 		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain?.dcnConfigured">DCN status - Not configured</label>
