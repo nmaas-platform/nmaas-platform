@@ -114,12 +114,12 @@
 
 	<hr/>
 
-	<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
-		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">DCN status - Configured</label>
-		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">DCN status - Not configured</label>
+	<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
+		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain?.dcnConfigured">DCN status - Configured</label>
+		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain?.dcnConfigured">DCN status - Not configured</label>
 		<div class="col-sm-10">
-			<button *ngIf="domain.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
-			<button *ngIf="!domain.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
+			<button *ngIf="domain?.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
+			<button *ngIf="!domain?.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
 		</div>
 	</div>
 	<div *ngIf="!domain">Not found.</div>
@@ -131,7 +131,7 @@
 	</div>
 	<div class="nmaas-modal-body">
 		<div class="form-group text-center">
-			<p>You are about to update the DCN configuration status for domain {{domain.name}}. Do you want to proceed?</p>
+			<p>You are about to update the DCN configuration status for domain {{domain?.name}}. Do you want to proceed?</p>
 		</div>
 	</div>
 	<div class="nmaas-modal-footer text-center">
