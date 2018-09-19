@@ -55,6 +55,8 @@ public class AppDeploymentStateChangeManager {
                     newDeploymentState == AppDeploymentState.INTERNAL_ERROR){
                 deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(),
                         deploymentRepositoryManager.loadStateErrorMessage(event.getDeploymentId()));
+                log.warn("Application deployment failed state detected. Saving error message: " +
+                        deploymentRepositoryManager.loadStateErrorMessage(event.getDeploymentId()));
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
