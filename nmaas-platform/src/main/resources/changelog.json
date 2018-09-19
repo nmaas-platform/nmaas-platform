@@ -1,6 +1,32 @@
 
 {"versions" : [
-	
+
+	{
+		"verNo" : "0.4.0",
+		"date" : "(2018/08/09)",
+		"topic" : [
+			{
+				"title" : "* Application deployment in Kubernetes cluster.",
+				"tags" : "[New Feature] [NMAAS-161] [nmaas-platform]",
+				"description" : "Implemented support for deployment of NMaaS tools in Kubernetes cluster - production-grade container orchestrator."
+			},
+			{
+				"title" : "* GitLab for tool instance config file storage.",
+				"tags" : "[New Feature] [NMAAS-231, NMAAS-232] [nmaas-platform]",
+				"description" : "A dedicated GitLab repository is created to store deployed tool instance configuration files."
+			},
+			{
+				"title" : "* Helm chart for Oxidized application.",
+				"tags" : "[New Feature] [NMAAS-147, NMAAS-162] [nmaas-platform]",
+				"description" : "Prepared Helm chart for Oxidized application for deployment in the Kubernetes cluster."
+			},
+			{
+				"title" : "* NMaaS Portal enhancements.",
+				"tags" : "[New Feature] [] [nmaas-portal]",
+				"description" : "Added administrator panel."
+			}]
+	},
+
 	{
 		"verNo" : "0.3.0",
 		"date" : "(2017/10/06)",
