@@ -29,14 +29,12 @@ public class DcnRepositoryManager {
         updateDcnState(event.getDomain(), event.getState());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void updateDcnState(String domain, DcnDeploymentState state) throws InvalidDomainException {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setState(state);
         dcnInfoRepository.save(dcnInfo);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void updateAnsiblePlaybookForClientSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
             throws InvalidDomainException {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
@@ -44,7 +42,6 @@ public class DcnRepositoryManager {
         dcnInfoRepository.save(dcnInfo);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void updateAnsiblePlaybookForCloudSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
             throws InvalidDomainException {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
@@ -52,7 +49,6 @@ public class DcnRepositoryManager {
         dcnInfoRepository.save(dcnInfo);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void updateDcnCloudEndpointDetails(String domain, DcnCloudEndpointDetails dcnCloudEndpointDetails)
             throws InvalidDomainException {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);

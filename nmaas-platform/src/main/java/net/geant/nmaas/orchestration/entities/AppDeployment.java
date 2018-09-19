@@ -57,13 +57,17 @@ public class AppDeployment {
     /** Contains information about deployment fails */
     private String errorMessage;
 
+    /** Required storage space to be allocated for this particular instance in GB */
+    private Double storageSpace;
+
     public AppDeployment() { }
 
-    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired) {
+    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Double storageSpace) {
         this.deploymentId = deploymentId;
         this.domain = domain;
         this.applicationId = applicationId;
         this.deploymentName = deploymentName;
         this.configFileRepositoryRequired = configFileRepositoryRequired;
+        this.storageSpace = storageSpace;
     }
 }

@@ -104,7 +104,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                     notifyStateChangeListeners(deploymentId, VERIFIED, "");
                     return;
                 } catch(ContainerCheckFailedException e) {
-                    Thread.sleep(serviceDeploymentCheckInternal * 1000);
+                    Thread.sleep(serviceDeploymentCheckInternal * 1000L);
                     currentWaitTime += serviceDeploymentCheckInternal;
                 }
             }

@@ -15,6 +15,8 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 
 // import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
+import {AppConfiguration} from "../../../model/appconfiguration";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -43,6 +45,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
+  public appConfiguration: AppConfiguration;
+  public requiredFields: any[];
 
   public intervalCheckerSubscribtion;
 
@@ -65,6 +69,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private location: Location) {}
 
   ngOnInit() {
+    this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
 
@@ -73,6 +78,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
+          this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
 
@@ -87,6 +93,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
+        this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
         if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
           this.updateAppInstance();
         }
@@ -111,8 +118,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  public applyConfiguration(configuration: string): void {
-    this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
+  public changeConfiguration(configuration: string): void{
+    this.appConfiguration.jsonInput = configuration;
+  }
+
+  public applyConfiguration(): void {
+    if(this.isValid()){
+        this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => console.log('Configuration applied'));
+    }
   }
 
   public undeploy(): void {
@@ -131,6 +144,24 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public onRateChanged(): void {
         this.appRate.refresh();
+  }
+
+  private isValid(): boolean {
+    if(isNullOrUndefined(this.requiredFields)){
+      return true;
+    }
+    for(let value of this.requiredFields){
+      if(!this.appConfiguration.jsonInput.hasOwnProperty(value)){
+          return false;
+      } else if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items) && this.configurationTemplate.schema.properties[value].items.properties.hasOwnProperty("ipAddress")){
+        for(let val of this.appConfiguration.jsonInput[value]){
+            if(!val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])){
+                return false;
+            }
+        }
+      }
+    }
+    return true;
   }
 
 }

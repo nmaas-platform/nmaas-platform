@@ -1,10 +1,14 @@
 package net.geant.nmaas.orchestration.api;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Log4j2
 @RestController
 @RequestMapping(value = "/api/orchestration/deployments")
 public class AppLifecycleManagerRestController {
@@ -23,10 +28,13 @@ public class AppLifecycleManagerRestController {
 
     private ApplicationRepository appRepo;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager, ApplicationRepository appRepo) {
+    AppLifecycleManagerRestController(AppLifecycleManager lifecycleManager, ApplicationRepository appRepo, ModelMapper modelMapper) {
         this.lifecycleManager = lifecycleManager;
         this.appRepo = appRepo;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -43,8 +51,8 @@ public class AppLifecycleManagerRestController {
             @RequestParam("domain") String domain,
             @RequestParam("applicationid") String applicationId,
             @RequestParam("deploymentname") String deploymentName) {
-        boolean configFileRepositoryRequired = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found")).isConfigFileRepositoryRequired();
-        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, configFileRepositoryRequired);
+        Application app = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found"));
+        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
     }
 
     /**
@@ -59,8 +67,8 @@ public class AppLifecycleManagerRestController {
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
-            @RequestBody String configuration) throws InvalidDeploymentIdException {
-        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), new AppConfiguration(configuration));
+            @RequestBody AppConfigurationView configuration) throws InvalidDeploymentIdException {
+        lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), configuration);
     }
 
     /**
@@ -80,7 +88,7 @@ public class AppLifecycleManagerRestController {
     @ExceptionHandler(InvalidDeploymentIdException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleInvalidDeploymentIdException(InvalidDeploymentIdException ex) {
-        System.out.println("Requested deployment not found -> " + ex.getMessage());
+        log.error("Requested deployment not found -> " + ex.getMessage());
         return ex.getMessage();
     }
 

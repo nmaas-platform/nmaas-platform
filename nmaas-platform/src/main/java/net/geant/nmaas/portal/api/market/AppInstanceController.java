@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
+import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
-import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -36,23 +36,29 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class AppInstanceController extends AppBaseController {
 
-	@Autowired
-	AppLifecycleManager appLifecycleManager;
+	private AppLifecycleManager appLifecycleManager;
 
-	@Autowired
-	AppDeploymentMonitor appDeploymentMonitor;
+	private AppDeploymentMonitor appDeploymentMonitor;
 
-	@Autowired
-	ApplicationInstanceService instances;
+	private ApplicationInstanceService instances;
 
-	@Autowired
-	UserService users;
+	private UserService users;
 
-	@Autowired
 	ModelMapper modelMapper;
 	
+	private DomainService domains;
+
 	@Autowired
-	DomainService domains;
+	public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
+								 ApplicationInstanceService applicationInstanceService, UserService userService,
+								 ModelMapper modelMapper, DomainService domains){
+		this.appLifecycleManager = appLifecycleManager;
+		this.appDeploymentMonitor = appDeploymentMonitor;
+		this.instances = applicationInstanceService;
+		this.users = userService;
+		this.modelMapper = modelMapper;
+		this.domains = domains;
+	}
 
 	@GetMapping("/apps/instances")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
@@ -136,7 +142,7 @@ public class AppInstanceController extends AppBaseController {
 				domain.getCodename(),
 				Identifier.newInstance(appInstance.getApplication().getId()),
 				appInstance.getName(),
-				app.isConfigFileRepositoryRequired());
+				modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
 		appInstance.setInternalId(internalId);
 
 		instances.update(appInstance);
@@ -163,7 +169,7 @@ public class AppInstanceController extends AppBaseController {
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
 	@Transactional
 	public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
-			@RequestBody String configuration, @NotNull Principal principal)
+								   @RequestBody AppConfigurationView configuration, @NotNull Principal principal)
 			throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
 
@@ -171,15 +177,15 @@ public class AppInstanceController extends AppBaseController {
 		if (status.getState() != AppInstanceState.CONFIGURATION_AWAITING)
 			throw new ProcessingException("App instance configuration cannot be applied in state " + status.getState());
 
-		boolean valid = validJSON(configuration);
+		boolean valid = validJSON(configuration.getJsonInput());
 		if (!valid)
 			throw new ProcessingException("Configuration is not in valid JSON format");
 
-		appInstance.setConfiguration(configuration);
+		appInstance.setConfiguration(configuration.getJsonInput());
 		instances.update(appInstance);
 
 		try {
-			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), new AppConfiguration(configuration));
+			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
 		} catch (InvalidDeploymentIdException e) {
 			throw new ProcessingException("Missing app instance");
 		}
@@ -226,13 +232,15 @@ public class AppInstanceController extends AppBaseController {
 			throw new MissingElementException("App instance is null");
 		
 		AppLifecycleState state = AppLifecycleState.UNKNOWN;
+		AppLifecycleState previousState = AppLifecycleState.UNKNOWN;
 		try {
 			state = appDeploymentMonitor.state(appInstance.getInternalId());
+			previousState = appDeploymentMonitor.previousState(appInstance.getInternalId());
 		} catch (InvalidDeploymentIdException e) {
 			throw new ProcessingException("Missing app instance");
 		}
 
-		return prepareAppInstanceStatus(appInstance.getId(), state);
+		return prepareAppInstanceStatus(appInstance.getId(), state, previousState);
 	}
 
 	private boolean validJSON(String json) {
@@ -247,7 +255,7 @@ public class AppInstanceController extends AppBaseController {
 		}
 	}
 
-	private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state) {
+	private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state, AppLifecycleState previousState) {
 		AppInstanceStatus appInstanceStatus = new AppInstanceStatus();
 		appInstanceStatus.setAppInstanceId(appInstanceId);
 		appInstanceStatus.setDetails(state.name());
@@ -256,7 +264,7 @@ public class AppInstanceController extends AppBaseController {
 		AppInstanceState appInstanceState = mapAppInstanceState(state);
 
 		appInstanceStatus.setState(appInstanceState);
-
+		appInstanceStatus.setPreviousState(mapAppInstanceState(previousState));
 		appInstanceStatus.setUserFriendlyState(appInstanceState.getUserFriendlyState());
 
 		return appInstanceStatus;

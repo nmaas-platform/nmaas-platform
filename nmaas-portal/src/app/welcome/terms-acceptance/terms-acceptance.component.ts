@@ -47,7 +47,8 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
 
 
     ngOnInit() {
-
+        this.modal.setModalType("success");
+        this.modal.setStatusOfIcons(false);
     }
 
     public onSubmit(): void {
