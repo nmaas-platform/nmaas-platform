@@ -64,6 +64,14 @@
             </div>
         </div>
 
+		<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.VIEW)">
+			<label class="col-sm-2 control-label text-right" for="configured-status">DCN status:</label>
+			<div class="col-sm-10" id="configured-status">
+				<p *ngIf="domain?.dcnConfigured">Configured</p>
+				<p *ngIf="!domain?.dcnConfigured">Not configured</p>
+			</div>
+		</div>
+
 		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.CREATE)">
 			<label for="dcnConfigured" class="col-sm-2 control-label">dcn Configured:</label>
 			<div class="col-sm-10">
@@ -80,6 +88,8 @@
             				<tr>
                 				<th *ngIf="authService.hasRole('ROLE_SUPERADMIN')">Id</th>
                 				<th>Username</th>
+								<th>First name</th>
+								<th>Last name</th>
                 				<th>Roles</th>
                 				<th>&nbsp;</th>
             				</tr>
@@ -90,6 +100,8 @@
 								<tr>
 									<td *ngIf="authService.hasRole('ROLE_SUPERADMIN')">{{user.id}}</td>
 									<td>{{user.username}}</td>
+									<td> {{user.firstname}}</td>
+									<td> {{user.lastname}}</td>
 									<td *ngIf="domainId == domainService.getGlobalDomainId()">
 										<div *ngFor="let role of filterDomainNames(user); last as isLast">
 											<span *ngIf="!isLast" style="float:left;padding-right: 3px">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}, </span>
@@ -111,7 +123,7 @@
 		<button *ngIf="isInMode(ComponentMode.EDIT) || isInMode(ComponentMode.CREATE)" type="submit" class="btn btn-default" valid>Submit</button>
 	</form>
 	<hr/>
-	<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
+	<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.EDIT)">
 		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain?.dcnConfigured">DCN status - Configured</label>
 		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain?.dcnConfigured">DCN status - Not configured</label>
 		<div class="col-sm-10">
