@@ -8,7 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "gitlab")
 public class GitLab {
@@ -32,54 +36,6 @@ public class GitLab {
 
     @Column(nullable = false)
     private String repositoryAccessUsername;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getServer() {
-        return server;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public String getSshServer() {
-        return sshServer;
-    }
-
-    public void setSshServer(String sshServer) {
-        this.sshServer = sshServer;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public String getRepositoryAccessUsername() {
-        return repositoryAccessUsername;
-    }
-
-    public void setRepositoryAccessUsername(String repositoryAccessUsername) {
-        this.repositoryAccessUsername = repositoryAccessUsername;
-    }
 
     @JsonIgnore
     public String getApiUrl(){

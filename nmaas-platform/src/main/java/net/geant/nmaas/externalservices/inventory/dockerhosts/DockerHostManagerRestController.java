@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 
 /**
  * RESTful API for managing Docker Host instances.
- *
- * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
  */
 @RestController
 @RequestMapping(value = "/api/management/dockerhosts")

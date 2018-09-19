@@ -3,10 +3,11 @@ package net.geant.nmaas.externalservices.inventory.network.entities;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Getter
+@Setter
 @Entity
 @Table(name="domain_network_monitored_equipment")
 public class DomainNetworkMonitoredEquipment {
@@ -21,28 +22,4 @@ public class DomainNetworkMonitoredEquipment {
 
     @ElementCollection
     private List<String> networks = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<String> getAddresses() {
-        return addresses;
-    }
-
-    public void setAddresses(List<String> addresses) {
-        this.addresses = addresses;
-    }
-
-    public List<String> getNetworks() {
-        return networks;
-    }
-
-    public void setNetworks(List<String> networks) {
-        this.networks = networks;
-    }
 }
