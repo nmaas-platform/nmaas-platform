@@ -42,7 +42,7 @@ class DockerComposeFilePreparer {
             Template template = convertToTemplate(dockerComposeFileTemplate);
             DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
             nmServiceInfo.setDockerComposeFile(composeFile);
-            repositoryManager.storeService(nmServiceInfo);
+            repositoryManager.updateService(nmServiceInfo);
         } catch (InvalidDeploymentIdException e) {
             throw new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found");
         }

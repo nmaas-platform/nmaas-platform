@@ -1,5 +1,7 @@
 package net.geant.nmaas.orchestration;
 
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -68,6 +70,13 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
         return repositoryManager.load(generatedId).isPresent();
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void redeployApplication(Identifier deploymentId){
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT));
+        eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
     @Override
