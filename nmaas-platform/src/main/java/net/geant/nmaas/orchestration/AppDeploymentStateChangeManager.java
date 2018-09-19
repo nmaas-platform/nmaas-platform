@@ -43,6 +43,7 @@ public class AppDeploymentStateChangeManager {
     public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
+            deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
             if(newDeploymentState == AppDeploymentState.REQUEST_VALIDATION_FAILED ||
                     newDeploymentState == AppDeploymentState.APPLICATION_REMOVAL_FAILED ||
                     newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_FAILED ||
@@ -55,7 +56,6 @@ public class AppDeploymentStateChangeManager {
                 deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(),
                         deploymentRepositoryManager.loadStateErrorMessage(event.getDeploymentId()));
             }
-            deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
