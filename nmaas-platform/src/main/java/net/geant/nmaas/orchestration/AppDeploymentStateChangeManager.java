@@ -50,13 +50,12 @@ public class AppDeploymentStateChangeManager {
                     newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED ||
                     newDeploymentState == AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED ||
                     newDeploymentState == AppDeploymentState.APPLICATION_RESTART_FAILED ||
-                    newDeploymentState == AppDeploymentState.REQUEST_VALIDATION_FAILED ||
                     newDeploymentState == AppDeploymentState.APPLICATION_CONFIGURATION_FAILED ||
-                    newDeploymentState == AppDeploymentState.INTERNAL_ERROR){
-                deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(),
-                        deploymentRepositoryManager.loadStateErrorMessage(event.getDeploymentId()));
+                    newDeploymentState == AppDeploymentState.INTERNAL_ERROR ||
+                    newDeploymentState == AppDeploymentState.REQUEST_VALIDATED){
                 log.warn("Application deployment failed state detected. Saving error message: " +
-                        deploymentRepositoryManager.loadStateErrorMessage(event.getDeploymentId()));
+                        event.getErrorMessage());
+                deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(), event.getErrorMessage());
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {

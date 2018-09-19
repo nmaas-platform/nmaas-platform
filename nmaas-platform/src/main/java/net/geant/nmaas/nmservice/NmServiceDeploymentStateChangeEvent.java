@@ -30,6 +30,8 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
         return state;
     }
 
+    public String getErrorMessage(){return errorMessage;}
+
     @Override
     public String toString() {
         return "NmServiceDeploymentStateChangeEvent{" +
