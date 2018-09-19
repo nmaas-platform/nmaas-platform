@@ -10,6 +10,7 @@ import net.geant.nmaas.orchestration.events.app.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
+import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -30,11 +31,16 @@ import java.util.Optional;
 @Service
 @Log4j2
 public class AppDeploymentStateChangeManager {
-    @Autowired
+
     private AppDeploymentRepositoryManager deploymentRepositoryManager;
 
-    @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager, ApplicationEventPublisher eventPublisher){
+        this.deploymentRepositoryManager = deploymentRepositoryManager;
+        this.eventPublisher = eventPublisher;
+    }
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -56,6 +62,8 @@ public class AppDeploymentStateChangeManager {
                 return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
             case DEPLOYMENT_ENVIRONMENT_PREPARED:
                 return Optional.of(new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId));
+            case MANAGEMENT_VPN_CONFIGURED:
+                return Optional.of(new AppVerifyConfigurationActionEvent(this, deploymentId));
             case APPLICATION_CONFIGURED:
                 return Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
             case APPLICATION_DEPLOYED:
