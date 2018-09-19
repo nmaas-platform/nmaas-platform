@@ -26,6 +26,12 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void storeService(T serviceInfo) {
+        if(!repository.findByDeploymentId(serviceInfo.getDeploymentId()).isPresent())
+            repository.save(serviceInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateService(T serviceInfo) {
         repository.save(serviceInfo);
     }
 

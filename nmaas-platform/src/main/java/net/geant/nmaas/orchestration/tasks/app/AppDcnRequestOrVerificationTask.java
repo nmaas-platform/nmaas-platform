@@ -5,6 +5,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
@@ -70,6 +71,10 @@ public class AppDcnRequestOrVerificationTask {
     }
 
     private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {
+        AppDeployment appDeployment = appDeploymentRepositoryManager.load(deploymentId).orElseThrow(InvalidDeploymentIdException::new);
+        if(appDeployment.getConfiguration() != null){
+            return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURED, "");
+        }
         return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "");
     }
 

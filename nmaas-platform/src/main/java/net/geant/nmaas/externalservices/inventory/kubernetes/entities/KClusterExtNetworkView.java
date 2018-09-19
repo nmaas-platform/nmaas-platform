@@ -1,10 +1,9 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
 import java.net.InetAddress;
+import lombok.Getter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Getter
 public class KClusterExtNetworkView {
 
     /**
@@ -27,17 +26,4 @@ public class KClusterExtNetworkView {
         this.externalNetwork = networkSpec.getExternalNetwork();
         this.externalNetworkMaskLength = networkSpec.getExternalNetworkMaskLength();
     }
-
-    public InetAddress getExternalIp() {
-        return externalIp;
-    }
-
-    public InetAddress getExternalNetwork() {
-        return externalNetwork;
-    }
-
-    public int getExternalNetworkMaskLength() {
-        return externalNetworkMaskLength;
-    }
-
 }

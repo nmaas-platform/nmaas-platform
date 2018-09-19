@@ -14,14 +14,16 @@ import java.util.List;
 
 /**
  * Manages the persistence of Docker Hosts available in the system.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DockerHostRepositoryManager {
 
-    @Autowired
     private DockerHostRepository repository;
+
+    @Autowired
+    public DockerHostRepositoryManager(DockerHostRepository repository){
+        this.repository = repository;
+    }
 
     /**
      * Store {@link DockerHost} instance in the repository

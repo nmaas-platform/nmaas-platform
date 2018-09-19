@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @RequestMapping(value = "/api/management/domains")
 public class DomainManagerRestController {
