@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class GitLabConfigUploaderTest {
+public class GitLabConfigUploaderIntTest {
 
     @Autowired
     private ConfigurationFileTransferProvider gitLabUploader;
