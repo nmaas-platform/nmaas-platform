@@ -75,7 +75,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void redeployApplication(Identifier deploymentId){
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT, ""));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
