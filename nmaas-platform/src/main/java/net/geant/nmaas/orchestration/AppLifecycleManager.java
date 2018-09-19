@@ -28,6 +28,14 @@ public interface AppLifecycleManager {
     Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, AppDeploymentSpec appDeploymentSpec);
 
     /**
+     * Triggers the NMaaS application redeployment process which may take some time.This process is executed asynchronously
+     * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
+     * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
+     * @param deploymentId unique identifier of the user application
+     */
+    void redeployApplication(Identifier deploymentId);
+
+    /**
      * Applies custom configuration for the NMaaS application being deployed once provided by the user.
      *
      * @param deploymentId unique identifier of the deployed user application

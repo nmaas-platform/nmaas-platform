@@ -150,6 +150,18 @@ public class AppInstanceController extends AppBaseController {
 		return new Id(appInstance.getId());
 	}
 
+	@PostMapping({"/apps/instances/{appInstanceId}/redeploy", "/domains/{domainId}/apps/instances/{appInstanceId}/redeploy"})
+	@PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
+	@Transactional
+	public void redeployAppInstance(@PathVariable Long appInstanceId){
+		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+		try{
+			this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
+		}
+		catch (InvalidDeploymentIdException e){
+			throw new ProcessingException("Missing app instance");
+		}
+	}
 	
 	@DeleteMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
 	@PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")

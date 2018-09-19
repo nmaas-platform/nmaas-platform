@@ -7,8 +7,6 @@ import lombok.Setter;
 
 /**
  * Set of properties describing a Kubernetes cluster REST API details
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
 @Table(name="k_cluster_api")

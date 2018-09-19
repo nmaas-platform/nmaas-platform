@@ -3,10 +3,11 @@ package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 import javax.persistence.*;
 import java.net.InetAddress;
 import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Getter
+@Setter
 @Entity
 @Table(name="k_cluster_ext_network")
 public class KClusterExtNetwork {
@@ -47,60 +48,4 @@ public class KClusterExtNetwork {
      * Name of the domain
      */
     private String assignedTo;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public InetAddress getExternalIp() {
-        return externalIp;
-    }
-
-    public void setExternalIp(InetAddress externalIp) {
-        this.externalIp = externalIp;
-    }
-
-    public InetAddress getExternalNetwork() {
-        return externalNetwork;
-    }
-
-    public void setExternalNetwork(InetAddress externalNetwork) {
-        this.externalNetwork = externalNetwork;
-    }
-
-    public int getExternalNetworkMaskLength() {
-        return externalNetworkMaskLength;
-    }
-
-    public void setExternalNetworkMaskLength(int externalNetworkMaskLength) {
-        this.externalNetworkMaskLength = externalNetworkMaskLength;
-    }
-
-    public boolean isAssigned() {
-        return assigned;
-    }
-
-    public void setAssigned(boolean assigned) {
-        this.assigned = assigned;
-    }
-
-    public Date getAssignedSince() {
-        return assignedSince;
-    }
-
-    public void setAssignedSince(Date assignedSince) {
-        this.assignedSince = assignedSince;
-    }
-
-    public String getAssignedTo() {
-        return assignedTo;
-    }
-
-    public void setAssignedTo(String assignedTo) {
-        this.assignedTo = assignedTo;
-    }
 }

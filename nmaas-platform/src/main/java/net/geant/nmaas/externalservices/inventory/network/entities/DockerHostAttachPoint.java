@@ -1,12 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.network.entities;
 
+import lombok.Setter;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 
 import javax.persistence.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Setter
 @Entity
 @Table(name="docker_host_attach_point")
 public class DockerHostAttachPoint implements CloudAttachPoint {
@@ -32,16 +31,8 @@ public class DockerHostAttachPoint implements CloudAttachPoint {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getDockerHostName() {
         return dockerHostName;
-    }
-
-    public void setDockerHostName(String dockerHostName) {
-        this.dockerHostName = dockerHostName;
     }
 
     @Override
@@ -49,26 +40,14 @@ public class DockerHostAttachPoint implements CloudAttachPoint {
         return routerName;
     }
 
-    public void setRouterName(String routerName) {
-        this.routerName = routerName;
-    }
-
     @Override
     public String getRouterId() {
         return routerId;
     }
 
-    public void setRouterId(String routerId) {
-        this.routerId = routerId;
-    }
-
     @Override
     public String getRouterInterfaceName() {
         return routerInterfaceName;
-    }
-
-    public void setRouterInterfaceName(String routerInterfaceName) {
-        this.routerInterfaceName = routerInterfaceName;
     }
 
 }

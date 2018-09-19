@@ -1,12 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
+import lombok.Setter;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 
 import javax.persistence.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Setter
 @Entity
 @Table(name="k_cluster_attach_point")
 public class KClusterAttachPoint implements CloudAttachPoint {
@@ -29,17 +28,9 @@ public class KClusterAttachPoint implements CloudAttachPoint {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public String getRouterName() {
         return routerName;
-    }
-
-    public void setRouterName(String routerName) {
-        this.routerName = routerName;
     }
 
     @Override
@@ -47,16 +38,9 @@ public class KClusterAttachPoint implements CloudAttachPoint {
         return routerId;
     }
 
-    public void setRouterId(String routerId) {
-        this.routerId = routerId;
-    }
-
     @Override
     public String getRouterInterfaceName() {
         return routerInterfaceName;
     }
 
-    public void setRouterInterfaceName(String routerInterfaceName) {
-        this.routerInterfaceName = routerInterfaceName;
-    }
 }
