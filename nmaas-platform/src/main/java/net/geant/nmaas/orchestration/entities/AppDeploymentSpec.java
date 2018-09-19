@@ -1,5 +1,8 @@
 package net.geant.nmaas.orchestration.entities;
 
+import javax.persistence.Column;
+import lombok.Getter;
+import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 
@@ -22,6 +25,8 @@ import java.util.List;
  *
  * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 public class AppDeploymentSpec implements Serializable {
 
@@ -39,35 +44,8 @@ public class AppDeploymentSpec implements Serializable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesTemplate kubernetesTemplate;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(nullable = false)
+    private Double defaultStorageSpace;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<AppDeploymentEnv> getSupportedDeploymentEnvironments() {
-        return supportedDeploymentEnvironments;
-    }
-
-    public void setSupportedDeploymentEnvironments(List<AppDeploymentEnv> supportedDeploymentEnvironments) {
-        this.supportedDeploymentEnvironments = supportedDeploymentEnvironments;
-    }
-
-    public DockerComposeFileTemplate getDockerComposeFileTemplate() {
-        return dockerComposeFileTemplate;
-    }
-
-    public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
-        this.dockerComposeFileTemplate = dockerComposeFileTemplate;
-    }
-
-    public KubernetesTemplate getKubernetesTemplate() {
-        return kubernetesTemplate;
-    }
-
-    public void setKubernetesTemplate(KubernetesTemplate kubernetesTemplate) {
-        this.kubernetesTemplate = kubernetesTemplate;
-    }
+    private boolean configFileRepositoryRequired;
 }

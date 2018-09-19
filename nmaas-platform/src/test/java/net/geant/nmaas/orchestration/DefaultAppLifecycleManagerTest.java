@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.Test;
@@ -47,9 +48,12 @@ public class DefaultAppLifecycleManagerTest {
     public void shouldFailToDeployApplicationInstance() throws InterruptedException {
         when(appRepository.findById(1L)).thenReturn(Optional.of(new Application("appName")));
         when(appDepRepository.findByDeploymentId(Matchers.any())).thenReturn(Optional.of(
-                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true)));
+                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true, 20.0)));
         when(appDepRepositoryManager.load(Matchers.any())).thenReturn(Optional.empty());
-        appLifecycleManager.deployApplication("domain1", Identifier.newInstance(1L), "deploymentName", true);
+        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+        appDeploymentSpec.setConfigFileRepositoryRequired(true);
+        appDeploymentSpec.setDefaultStorageSpace(20.0);
+        appLifecycleManager.deployApplication("domain1", Identifier.newInstance(1L), "deploymentName", appDeploymentSpec);
         Thread.sleep(200);
     }
 
