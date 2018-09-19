@@ -59,6 +59,7 @@ public class DockerComposeFileTemplateAdminRestControllerTest extends BaseContro
                 .build();
         Application application = new Application("testApp");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.getAppDeploymentSpec().setDefaultStorageSpace(20.0);
         appId = applicationRepository.save(application).getId();
     }
 
@@ -102,6 +103,7 @@ public class DockerComposeFileTemplateAdminRestControllerTest extends BaseContro
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isInternalServerError());
         application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.getAppDeploymentSpec().setDefaultStorageSpace(20.0);
         applicationRepository.save(application);
         mvc.perform(get("/api/management/apps/{appId}/dockercompose/template", appId)
                 .header("Authorization", "Bearer " + token))

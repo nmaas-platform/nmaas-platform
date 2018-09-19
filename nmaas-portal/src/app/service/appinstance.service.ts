@@ -16,6 +16,7 @@ import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
+import {AppConfiguration} from "../model/appconfiguration";
 
 @Injectable()
 export class AppInstanceService extends GenericDataService {
@@ -56,8 +57,8 @@ export class AppInstanceService extends GenericDataService {
     return this.get<AppInstance>(this.getUrl(domainId) + appInstanceId);
   }
 
-  public applyConfiguration(appInstanceId: Number, configuration: string, domainId?: number): Observable<void> {
-    return this.post<String, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);                
+  public applyConfiguration(appInstanceId: Number, configuration: AppConfiguration, domainId?: number): Observable<void> {
+    return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);
   }
 
   public redeployAppInstance(appInstanceId: number, domainId?: number): Observable<void> {
