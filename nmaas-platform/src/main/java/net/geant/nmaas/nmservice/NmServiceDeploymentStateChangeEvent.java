@@ -13,10 +13,13 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
 
     private NmServiceDeploymentState state;
 
-    public NmServiceDeploymentStateChangeEvent(Object source, Identifier deploymentId, NmServiceDeploymentState state) {
+    private String errorMessage;
+
+    public NmServiceDeploymentStateChangeEvent(Object source, Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
         super(source);
         this.deploymentId = deploymentId;
         this.state = state;
+        this.errorMessage = errorMessage;
     }
 
     public Identifier getDeploymentId() {

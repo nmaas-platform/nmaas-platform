@@ -70,7 +70,7 @@ public class AppDcnRequestOrVerificationTask {
     }
 
     private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {
-        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT);
+        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "");
     }
 
     private ApplicationEvent noEvent() {

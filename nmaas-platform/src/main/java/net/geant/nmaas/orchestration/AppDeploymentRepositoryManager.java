@@ -57,6 +57,12 @@ public class AppDeploymentRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public String loadStateErrorMessage(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.getErrorMessageByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         appDeployment.setConfiguration(configuration);

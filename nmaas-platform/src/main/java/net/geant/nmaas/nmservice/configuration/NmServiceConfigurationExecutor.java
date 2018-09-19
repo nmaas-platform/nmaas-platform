@@ -57,7 +57,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }
 
 }
