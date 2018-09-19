@@ -9,8 +9,6 @@ import lombok.Setter;
 
 /**
  * Set of properties describing a Kubernetes cluster deployed in the system
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
 @Table(name="k_cluster")

@@ -8,12 +8,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Set of properties describing a Kubernetes cluster ingress handling
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 @Table(name="k_cluster_ingress")
 public class KClusterIngress {
