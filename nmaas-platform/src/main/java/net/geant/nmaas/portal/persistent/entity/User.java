@@ -21,6 +21,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+
 public class User {
 
 	@Id

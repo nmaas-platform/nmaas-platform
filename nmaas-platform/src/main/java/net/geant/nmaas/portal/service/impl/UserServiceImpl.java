@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
         for(User user: findAll()){
             for(UserRole userRole: user.getRoles()){
                 if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SUPERADMIN.name())){
-                    emails = emails + ", " + userRole.getUser().getEmail();
+                    emails = emails + userRole.getUser().getEmail() + ",";
                 }
             }
         }

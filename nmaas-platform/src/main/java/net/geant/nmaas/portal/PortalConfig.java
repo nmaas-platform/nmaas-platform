@@ -50,12 +50,13 @@ public class PortalConfig {
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
-					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
+					addUser("admin", "admin", "geant.notification@gmail.com", Role.ROLE_SUPERADMIN);
 				}
 			}
 
-			private void addUser(String username, String password, Role role) {								
+			private void addUser(String username, String password, String email, Role role) {
 				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true, true);
+				user.setEmail(email);
 				userRepository.save(user);
 			}
 						

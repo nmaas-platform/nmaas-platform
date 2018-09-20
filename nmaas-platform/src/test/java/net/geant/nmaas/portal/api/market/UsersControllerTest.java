@@ -64,8 +64,7 @@ public class UsersControllerTest {
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
 		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
         doNothing().when(notificationService).sendEmailWithToken(any(EmailConfirmation.class), any(String.class));
-        doNothing().when(notificationService).sendEmailWithoutToken(any(EmailConfirmation.class));
-		when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
+        when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 	}
 
