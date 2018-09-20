@@ -55,6 +55,7 @@ public class AppDeployment {
     private boolean configFileRepositoryRequired;
 
     /** Contains information about deployment fails */
+    @Enumerated(EnumType.STRING)
     private String errorMessage;
 
     /** Required storage space to be allocated for this particular instance in GB */

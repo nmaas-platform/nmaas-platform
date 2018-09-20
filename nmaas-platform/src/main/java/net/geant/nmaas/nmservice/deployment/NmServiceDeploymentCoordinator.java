@@ -57,7 +57,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
         try {
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, deploymentName, domain, deploymentSpec);
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
-            notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED, "");
+            notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (Exception e) {
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, e.getMessage());
             throw new NmServiceRequestVerificationException(e.getMessage());
@@ -68,9 +68,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) throws CouldNotPrepareEnvironmentException {
         try {
-            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED, "");
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
             orchestrator.prepareDeploymentEnvironment(deploymentId, configFileRepositoryRequired);
-            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED, "");
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED, e.getMessage());
@@ -82,9 +82,9 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void deployNmService(Identifier deploymentId) throws CouldNotDeployNmServiceException {
         try {
-            notifyStateChangeListeners(deploymentId, DEPLOYMENT_INITIATED, "");
+            notifyStateChangeListeners(deploymentId, DEPLOYMENT_INITIATED);
             orchestrator.deployNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, DEPLOYED, "");
+            notifyStateChangeListeners(deploymentId, DEPLOYED);
         } catch (CouldNotDeployNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED, e.getMessage());
@@ -96,7 +96,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException {
         try {
-            notifyStateChangeListeners(deploymentId, VERIFICATION_INITIATED, "");
+            notifyStateChangeListeners(deploymentId, VERIFICATION_INITIATED);
             int currentWaitTime = 0;
             while (currentWaitTime <= serviceDeploymentCheckMaxWaitTime) {
                 try {
@@ -133,7 +133,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     public void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException {
         try {
             orchestrator.removeNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, REMOVED, "");
+            notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, REMOVAL_FAILED, e.getMessage());
@@ -145,14 +145,18 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException {
         try {
-            notifyStateChangeListeners(deploymentId, RESTART_INITIATED, "");
+            notifyStateChangeListeners(deploymentId, RESTART_INITIATED);
             orchestrator.restartNmService(deploymentId);
-            notifyStateChangeListeners(deploymentId, RESTARTED, "");
+            notifyStateChangeListeners(deploymentId, RESTARTED);
         } catch (CouldNotRestartNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
             throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
         }
+    }
+
+    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
+        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
