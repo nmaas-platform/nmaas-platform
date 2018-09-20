@@ -185,10 +185,6 @@ public class AppInstanceController extends AppBaseController {
 			throws MissingElementException, ProcessingException {
 		net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
 
-		AppInstanceStatus status = getState(appInstanceId, principal);
-		if (status.getState() != AppInstanceState.CONFIGURATION_AWAITING)
-			throw new ProcessingException("App instance configuration cannot be applied in state " + status.getState());
-
 		boolean valid = validJSON(configuration.getJsonInput());
 		if (!valid)
 			throw new ProcessingException("Configuration is not in valid JSON format");

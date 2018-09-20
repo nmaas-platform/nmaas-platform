@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration.entities;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Type;
 
 /**
  * Application configuration in Json format provided by the user.
@@ -18,6 +19,7 @@ public class AppConfiguration {
 
     @Basic(fetch=FetchType.EAGER)
     @Lob
+    @Type(type = "text")
     @Column(nullable = false)
     private String jsonInput;
 
