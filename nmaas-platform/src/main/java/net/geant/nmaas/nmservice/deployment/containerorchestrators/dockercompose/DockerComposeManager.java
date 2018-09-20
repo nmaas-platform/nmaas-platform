@@ -94,6 +94,9 @@ public class DockerComposeManager implements ContainerOrchestrator {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.DOCKER_COMPOSE))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
+        if(appDeploymentSpec.getDockerComposeFileTemplate() == null){
+            throw new NmServiceRequestVerificationException("File template cannot be null");
+        }
         DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(
                 deploymentId,
                 deploymentName,
