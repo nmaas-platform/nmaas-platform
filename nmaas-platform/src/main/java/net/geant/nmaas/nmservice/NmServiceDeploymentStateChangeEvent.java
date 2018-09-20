@@ -1,9 +1,11 @@
 package net.geant.nmaas.nmservice;
 
+import lombok.Getter;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
 public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
 
     private Identifier deploymentId;
@@ -18,16 +20,6 @@ public class NmServiceDeploymentStateChangeEvent extends ApplicationEvent {
         this.state = state;
         this.errorMessage = errorMessage;
     }
-
-    public Identifier getDeploymentId() {
-        return deploymentId;
-    }
-
-    public NmServiceDeploymentState getState() {
-        return state;
-    }
-
-    public String getErrorMessage(){return errorMessage;}
 
     @Override
     public String toString() {
