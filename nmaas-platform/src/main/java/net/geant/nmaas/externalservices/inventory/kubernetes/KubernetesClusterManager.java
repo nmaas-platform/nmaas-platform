@@ -15,6 +15,10 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import org.modelmapper.ModelMapper;
@@ -36,12 +40,15 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
 
     private KubernetesClusterRepository repository;
     private DomainService domainService;
+    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
     private ModelMapper modelMapper;
 
     @Autowired
-    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, DomainService domainService) {
+    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper,
+                                    DomainService domainService, AppDeploymentRepositoryManager appDeploymentRepositoryManager) {
         this.repository = repository;
         this.domainService = domainService;
+        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
         this.modelMapper = modelMapper;
     }
 
@@ -169,6 +176,12 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
             return Optional.of(loadSingleCluster().getDeployment().getDefaultStorageClass());
         }
         return Optional.empty();
+    }
+
+    @Override
+    public String getStorageSpace(Identifier deploymentId){
+        AppDeployment app = appDeploymentRepositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        return app.getStorageSpace().toString() + "Gi";
     }
 
     @Override

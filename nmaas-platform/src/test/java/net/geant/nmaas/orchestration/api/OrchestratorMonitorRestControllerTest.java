@@ -56,18 +56,18 @@ public class OrchestratorMonitorRestControllerTest {
                 deploymentId,
                 "domain1",
                 Identifier.newInstance("applicationId1"),
-                "deploymentName1",true, 20.0);
+                "deploymentName1",true, 20);
         AppDeployment deployment2 = new AppDeployment(
                 Identifier.newInstance("deploymentId2"),
                 "domain2",
                 Identifier.newInstance("applicationId2"),
-                "deploymentName2", true, 20.0);
+                "deploymentName2", true, 20);
         deployment2.setState(AppDeploymentState.APPLICATION_DEPLOYED);
         AppDeployment deployment3 = new AppDeployment(
                 Identifier.newInstance("deploymentId3"),
                 "domain3",
                 Identifier.newInstance("applicationId3"),
-                "deploymentName3", true, 20.0);
+                "deploymentName3", true, 20);
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails("http://testurl:8080");
@@ -131,7 +131,7 @@ public class OrchestratorMonitorRestControllerTest {
                 Identifier.newInstance("deploymentId"),
                 "domain1",
                 Identifier.newInstance("2"),
-                "deploymentName", true, 20.0);
+                "deploymentName", true, 20);
         AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);
         assertThat(output.getDeploymentId(), equalTo(source.getDeploymentId().value()));
         assertThat(output.getDomain(), equalTo(source.getDomain()));

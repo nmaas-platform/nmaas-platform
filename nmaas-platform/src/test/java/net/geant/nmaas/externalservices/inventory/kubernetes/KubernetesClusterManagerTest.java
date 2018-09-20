@@ -13,6 +13,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIn
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.Before;
@@ -44,12 +45,13 @@ public class KubernetesClusterManagerTest {
 
     private KubernetesClusterRepository repository = mock(KubernetesClusterRepository.class);
     private DomainService domainService = mock(DomainService.class);
+    private AppDeploymentRepositoryManager appDeploymentRepositoryManager = mock(AppDeploymentRepositoryManager.class);
 
     private KubernetesClusterManager manager;
 
     @Before
     public void setup() {
-        manager = new KubernetesClusterManager(repository, null, domainService);
+        manager = new KubernetesClusterManager(repository, null, domainService, appDeploymentRepositoryManager);
     }
 
     @Test

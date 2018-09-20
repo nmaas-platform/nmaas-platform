@@ -45,7 +45,7 @@ public class AppRequestVerificationTaskTest {
     @Before
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setDefaultStorageSpace(20.0);
+        appDeploymentSpec.setDefaultStorageSpace(20);
         appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);

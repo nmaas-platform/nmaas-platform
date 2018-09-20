@@ -14,7 +14,7 @@ public class AppDeploymentSpec {
 
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
-    private Double defaultStorageSpace;
+    private Integer defaultStorageSpace;
 
     private boolean configFileRepositoryRequired;
 

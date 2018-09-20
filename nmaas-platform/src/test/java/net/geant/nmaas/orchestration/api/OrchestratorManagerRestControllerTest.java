@@ -69,7 +69,7 @@ public class OrchestratorManagerRestControllerTest {
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, modelMapper)).build();
         Application application = new Application("testapp");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
-        application.getAppDeploymentSpec().setDefaultStorageSpace(20.0);
+        application.getAppDeploymentSpec().setDefaultStorageSpace(20);
         application.getAppDeploymentSpec().setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }
