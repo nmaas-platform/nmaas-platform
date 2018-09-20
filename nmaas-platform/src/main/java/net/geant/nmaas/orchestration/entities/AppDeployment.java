@@ -40,6 +40,7 @@ public class AppDeployment {
 
     /** Current deployment state. */
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AppDeploymentState state = AppDeploymentState.REQUESTED;
 
     /** Initial application configuration provided by the user. */
@@ -55,7 +56,6 @@ public class AppDeployment {
     private boolean configFileRepositoryRequired;
 
     /** Contains information about deployment fails */
-    @Enumerated(EnumType.STRING)
     private String errorMessage;
 
     /** Required storage space to be allocated for this particular instance in GB */
