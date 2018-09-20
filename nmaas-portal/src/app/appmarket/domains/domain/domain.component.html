@@ -39,6 +39,13 @@
 			</div>
 		</div>
 
+		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SUPERADMIN') || authService.hasRole('ROLE_OPERATOR'))">
+			<label class="col-sm-2 control-label">Id in db:</label>
+			<div class="col-sm-10">
+				<p class="form-control-static">{{domain.id}}</p>
+			</div>
+		</div>
+
 		<hr/>
 
 		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId()">
@@ -57,27 +64,19 @@
             </div>
         </div>
 
+		<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.VIEW)">
+			<label class="col-sm-2 control-label text-right" for="configured-status">DCN status:</label>
+			<div class="col-sm-10" id="configured-status">
+				<p *ngIf="domain?.dcnConfigured">Configured</p>
+				<p *ngIf="!domain?.dcnConfigured">Not configured</p>
+			</div>
+		</div>
+
 		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.CREATE)">
 			<label for="dcnConfigured" class="col-sm-2 control-label">dcn Configured:</label>
 			<div class="col-sm-10">
 				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="dcnConfigured"
 				name="dcnConfigured" [(ngModel)]="domain.dcnConfigured">
-			</div>
-		</div>
-
-		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.CREATE)">
-			<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain.dcnConfigured">DCN status - Configured</label>
-			<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain.dcnConfigured">DCN status - Not configured</label>
-			<div class="col-sm-10">
-				<button *ngIf="domain.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
-				<button *ngIf="!domain.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
-			</div>
-		</div>
-
-		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SUPERADMIN') || authService.hasRole('ROLE_OPERATOR'))">
-			<label class="col-sm-2 control-label">Id in db:</label>
-			<div class="col-sm-10">
-				<p class="form-control-static">{{domain.id}}</p>
 			</div>
 		</div>
 
@@ -89,6 +88,8 @@
             				<tr>
                 				<th *ngIf="authService.hasRole('ROLE_SUPERADMIN')">Id</th>
                 				<th>Username</th>
+								<th>First name</th>
+								<th>Last name</th>
                 				<th>Roles</th>
                 				<th>&nbsp;</th>
             				</tr>
@@ -99,6 +100,8 @@
 								<tr>
 									<td *ngIf="authService.hasRole('ROLE_SUPERADMIN')">{{user.id}}</td>
 									<td>{{user.username}}</td>
+									<td> {{user.firstname}}</td>
+									<td> {{user.lastname}}</td>
 									<td *ngIf="domainId == domainService.getGlobalDomainId()">
 										<div *ngFor="let role of filterDomainNames(user); last as isLast">
 											<span *ngIf="!isLast" style="float:left;padding-right: 3px">{{role.role | slice:5}}@{{this.getDomainName(role.domainId)|async}}, </span>
@@ -119,6 +122,15 @@
 			</div>
 		<button *ngIf="isInMode(ComponentMode.EDIT) || isInMode(ComponentMode.CREATE)" type="submit" class="btn btn-default" valid>Submit</button>
 	</form>
+	<hr/>
+	<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.EDIT)">
+		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain?.dcnConfigured">DCN status - Configured</label>
+		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain?.dcnConfigured">DCN status - Not configured</label>
+		<div class="col-sm-10">
+			<button *ngIf="domain?.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Not configured</button>
+			<button *ngIf="!domain?.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">Change to Configured</button>
+		</div>
+	</div>
 	<div *ngIf="!domain">Not found.</div>
 </div>
 
@@ -128,7 +140,7 @@
 	</div>
 	<div class="nmaas-modal-body">
 		<div class="form-group text-center">
-			<p>You are about to update the DCN configuration status for domain {{domain.name}}. Do you want to proceed?</p>
+			<p>You are about to update the DCN configuration status for domain {{domain?.name}}. Do you want to proceed?</p>
 		</div>
 	</div>
 	<div class="nmaas-modal-footer text-center">

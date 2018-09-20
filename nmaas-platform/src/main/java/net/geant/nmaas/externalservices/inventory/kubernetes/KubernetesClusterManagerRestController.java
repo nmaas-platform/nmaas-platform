@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * RESTful API for managing Kubernetes cluster instances.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RestController
 @RequestMapping(value = "/api/management/kubernetes")

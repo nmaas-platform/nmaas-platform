@@ -30,6 +30,7 @@ import {GitlabModule} from "./admin/gitlab/gitlab.module";
 import {ConfigurationModule} from "./admin/configuration/configuration.module";
 import {MonitorModule} from "./admin/monitor/monitor.module";
 import {ShibbolethModule} from "./admin/shibboleth/shibboleth.module";
+import {StorageServiceModule} from "ngx-webstorage-service";
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import {ShibbolethModule} from "./admin/shibboleth/shibboleth.module";
   ],
   imports: [
     FormsModule,
+    StorageServiceModule,
     CommonModule,
     RouterModule,
     SharedModule,

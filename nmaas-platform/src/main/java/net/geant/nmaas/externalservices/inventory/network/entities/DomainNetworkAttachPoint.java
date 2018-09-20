@@ -1,12 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.network.entities;
 
+import lombok.Setter;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 
 import javax.persistence.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Setter
 @Entity
 @Table(name="domain_network_attach_point")
 public class DomainNetworkAttachPoint implements NetworkAttachPoint {
@@ -51,16 +50,8 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getDomain() {
         return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
     }
 
     @Override
@@ -68,17 +59,9 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
         return routerName;
     }
 
-    public void setRouterName(String routerName) {
-        this.routerName = routerName;
-    }
-
     @Override
     public String getRouterId() {
         return routerId;
-    }
-
-    public void setRouterId(String routerId) {
-        this.routerId = routerId;
     }
 
     @Override
@@ -86,17 +69,9 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
         return asNumber;
     }
 
-    public void setAsNumber(String asNumber) {
-        this.asNumber = asNumber;
-    }
-
     @Override
     public String getRouterInterfaceName() {
         return routerInterfaceName;
-    }
-
-    public void setRouterInterfaceName(String routerInterfaceName) {
-        this.routerInterfaceName = routerInterfaceName;
     }
 
     @Override
@@ -104,17 +79,9 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
         return routerInterfaceUnit;
     }
 
-    public void setRouterInterfaceUnit(String routerInterfaceUnit) {
-        this.routerInterfaceUnit = routerInterfaceUnit;
-    }
-
     @Override
     public String getRouterInterfaceVlan() {
         return routerInterfaceVlan;
-    }
-
-    public void setRouterInterfaceVlan(String routerInterfaceVlan) {
-        this.routerInterfaceVlan = routerInterfaceVlan;
     }
 
     @Override
@@ -122,25 +89,13 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
         return bgpLocalIp;
     }
 
-    public void setBgpLocalIp(String bgpLocalIp) {
-        this.bgpLocalIp = bgpLocalIp;
-    }
-
     @Override
     public String getBgpNeighborIp() {
         return bgpNeighborIp;
     }
 
-    public void setBgpNeighborIp(String bgpNeighborIp) {
-        this.bgpNeighborIp = bgpNeighborIp;
-    }
-
     public DomainNetworkMonitoredEquipment getMonitoredEquipment() {
         return monitoredEquipment;
-    }
-
-    public void setMonitoredEquipment(DomainNetworkMonitoredEquipment monitoredEquipment) {
-        this.monitoredEquipment = monitoredEquipment;
     }
 
     public DomainNetworkAttachPoint update(DomainNetworkAttachPoint domainNetworkAttachPoint) {

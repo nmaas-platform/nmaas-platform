@@ -1,9 +1,12 @@
 package net.geant.nmaas.orchestration;
 
+import java.util.Comparator;
+import java.util.Optional;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -27,15 +30,24 @@ import java.util.stream.Collectors;
 @Component
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
-    @Autowired
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
-    @Autowired
     private NmServiceDeploymentProvider serviceDeployment;
+
+    @Autowired
+    public DefaultAppDeploymentMonitor(AppDeploymentRepositoryManager appDeploymentRepositoryManager, NmServiceDeploymentProvider serviceDeployment){
+        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
+        this.serviceDeployment = serviceDeployment;
+    }
 
     @Override
     public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
         return retrieveCurrentState(deploymentId);
+    }
+
+    @Override
+    public AppLifecycleState previousState(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return retrievePreviousState(deploymentId);
     }
 
     @Override
@@ -58,6 +70,15 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
         return appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
                 .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousStateString(), value.getCurrentStateString()))
                 .collect(Collectors.toList());
+    }
+
+    private AppLifecycleState retrievePreviousState(Identifier deploymentId) throws InvalidDeploymentIdException{
+        Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
+                .max(Comparator.comparing(AppDeploymentHistory::getTimestamp));
+        if(history.isPresent() && history.get().getPreviousState() != null){
+            return history.get().getPreviousState().lifecycleState();
+        }
+        return AppLifecycleState.UNKNOWN;
     }
 
     private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {

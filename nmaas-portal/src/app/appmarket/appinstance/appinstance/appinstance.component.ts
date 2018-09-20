@@ -1,20 +1,18 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
-
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
-
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-
 // import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
+import {AppConfiguration} from "../../../model/appconfiguration";
+import {isNullOrUndefined} from "util";
+import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -43,6 +41,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
+  public appConfiguration: AppConfiguration;
+  public requiredFields: any[];
 
   public intervalCheckerSubscribtion;
 
@@ -62,9 +62,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location) {}
+    private location: Location,
+    @Inject(SESSION_STORAGE) private storage: StorageService) {}
 
   ngOnInit() {
+    this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
 
@@ -73,6 +75,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
+          this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
 
@@ -87,6 +90,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
+        this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
         if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
           this.updateAppInstance();
         }
@@ -111,8 +115,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  public applyConfiguration(configuration: string): void {
-    this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
+  public redeploy(): void{
+    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log("Redeployed"));
+  }
+
+  public changeConfiguration(configuration: string): void{
+    this.appConfiguration.jsonInput = configuration;
+  }
+
+  public applyConfiguration(): void {
+    if(this.isValid()){
+        this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+          console.log('Configuration applied');
+          this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
+        });
+    }
   }
 
   public undeploy(): void {
@@ -131,6 +148,24 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public onRateChanged(): void {
         this.appRate.refresh();
+  }
+
+  private isValid(): boolean {
+    if(isNullOrUndefined(this.requiredFields)){
+      return true;
+    }
+    for(let value of this.requiredFields){
+      if(!this.appConfiguration.jsonInput.hasOwnProperty(value)){
+          return false;
+      } else if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items) && this.configurationTemplate.schema.properties[value].items.properties.hasOwnProperty("ipAddress")){
+        for(let val of this.appConfiguration.jsonInput[value]){
+            if(!val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])){
+                return false;
+            }
+        }
+      }
+    }
+    return true;
   }
 
 }
