@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -20,6 +21,7 @@ public class Content {
     @Column(unique = true, nullable = false)
     private String name;
     @Lob
+    @Type(type= "text")
     @Column
     private String content;
     private String title;

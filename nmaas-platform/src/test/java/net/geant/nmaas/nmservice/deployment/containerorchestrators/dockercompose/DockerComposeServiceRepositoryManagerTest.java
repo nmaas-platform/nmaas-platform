@@ -37,7 +37,7 @@ public class DockerComposeServiceRepositoryManagerTest {
         assertThat(storedInfo, is(notNullValue()));
         assertThat(storedInfo.getDockerComposeFileTemplate(), is(nullValue()));
         storedInfo.setDockerComposeFileTemplate(new DockerComposeFileTemplate("testContent"));
-        manager.storeService(storedInfo);
+        manager.updateService(storedInfo);
         storedInfo = manager.loadService(deploymentId);
         assertThat(storedInfo.getDockerComposeFileTemplate(), is(notNullValue()));
         manager.removeAllServices();

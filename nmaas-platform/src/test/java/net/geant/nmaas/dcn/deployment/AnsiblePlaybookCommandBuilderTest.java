@@ -2,10 +2,10 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.DockerHostAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DockerHostAttachPoint;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 

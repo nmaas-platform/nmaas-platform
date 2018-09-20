@@ -50,12 +50,15 @@
 							</p>
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<div class = "btn-group pull-right">
+							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE]">
 								<a *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
 								<button class = "btn btn-danger" (click)="undeploy()">Undeploy</button>
 							</div>
-							<div class="btn-group pull-right">
+							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<button class="btn btn-primary" (click)="this.modal.show()">Restart</button>
+							</div>
+							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+								<button class="btn btn-primary" (click)="redeploy()">Redeploy</button>
 							</div>
 						</div>
 					</div>
@@ -70,6 +73,12 @@
 				</div>
 				<p>State: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus.userFriendlyState : 'Something went wrong'}}</p>
 				<p>Details: {{appInstanceStatus?.userFriendlyDetails}}</p>
+			</div>
+			
+			<div class="row" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+				<div class="alert alert-danger">
+					Please contact support
+				</div>
 			</div>
 
 			<div class="row" *ngIf="this.appInstanceStateHistory">
@@ -95,20 +104,37 @@
 				</table>
 			</div>
 
-			<div class="row" [ngClass]="{'collapse': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.CONFIGURATION_AWAITING]}" >
+			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString())}" >
 				<div class="col-xs-12">
 					<h3>Configuration</h3>
 					<hr>
-					<json-schema-form *ngIf="configurationTemplate"
-									  [form]="configurationTemplate"
-									  [options]="jsonFormOptions"
-									  [framework]="bootstrap-3"
-									  [language]="en"
-									  (onSubmit)="applyConfiguration($event)">
-					</json-schema-form>
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#configForm">Configuration</a> </li>
+						<li> <a data-toggle="tab" href="#advanced">Advanced</a> </li>
+					</ul>
+					<div class="tab-content" style="padding-top: 10px">
+						<div id="configForm" class="tab-pane fade in active">
+							<json-schema-form *ngIf="configurationTemplate"
+											  [form]="configurationTemplate"
+											  [options]="jsonFormOptions"
+											  [framework]="bootstrap-3"
+											  [language]="en"
+											  (onChanges)="changeConfiguration($event)">
+							</json-schema-form>
+						</div>
+						<div id="advanced" class="tab-pane fade" style="padding-bottom: 10px">
+							<label class="control-label" for="storageSpace">Storage space (GB):</label>
+							<input class="form-control no-spin" placeholder="Default value: {{app?.appDeploymentSpec.defaultStorageSpace}}" [(ngModel)]="appConfiguration.storageSpace" id="storageSpace"
+								   name="storageSpace" type="number" />
+						</div>
+						<p *ngIf="requiredFields"><strong class="text-danger">*</strong> = required fields</p>
+						<button type="button" class="btn btn-success" [disabled]="!isValid()" (click)="applyConfiguration()">Apply configuration</button>
+					</div>
 				</div>
 			</div>
 			<hr>
 			<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
 		</div>
+
+
 	

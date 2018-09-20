@@ -12,8 +12,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,10 +27,13 @@ import java.util.Map;
 @Profile("env_docker-compose")
 class DockerComposeFilePreparer {
 
-    @Autowired
     private DockerComposeServiceRepositoryManager repositoryManager;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Autowired
+    DockerComposeFilePreparer(DockerComposeServiceRepositoryManager repositoryManager){
+        this.repositoryManager = repositoryManager;
+    }
+
     void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate)
             throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
         final Map<String, Object> model = buildModel(input);
@@ -41,7 +42,7 @@ class DockerComposeFilePreparer {
             Template template = convertToTemplate(dockerComposeFileTemplate);
             DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
             nmServiceInfo.setDockerComposeFile(composeFile);
-            repositoryManager.storeService(nmServiceInfo);
+            repositoryManager.updateService(nmServiceInfo);
         } catch (InvalidDeploymentIdException e) {
             throw new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found");
         }

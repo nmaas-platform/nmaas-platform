@@ -52,11 +52,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME = "ansible.notification.client.password";
+    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
 	private static final String APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.config.download.client.username";
-	private static final String APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.config.download.client.password";
+	private static final String APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME = "app.config.download.client.password";
 	private static final String APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.compose.download.client.username";
-	private static final String APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.compose.download.client.password";
+	private static final String APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME = "app.compose.download.client.password";
 
 	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
 	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
@@ -74,19 +74,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
+					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME))
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME))
 					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
 		}
 	}

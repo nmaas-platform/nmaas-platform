@@ -11,9 +11,10 @@
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
 			"DOCKER_COMPOSE"
-		]
+		],
+		"defaultStorageSpace":20,
+		"configFileRepositoryRequired":true
 	},
-	"configFileRepositoryRequired":true,
 	"configTemplate": {
 		"template": {
 			"schema": {
@@ -46,11 +47,7 @@
 				}
 			},
 			"form": [
-				"*",
-				{
-					"type": "submit",
-					"title": "Apply configuration"
-				}
+				"*"
 			]
 		}
 	}

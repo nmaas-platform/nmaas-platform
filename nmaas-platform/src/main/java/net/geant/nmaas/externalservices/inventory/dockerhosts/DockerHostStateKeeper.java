@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 
 /**
  * Manages the assignment and persistence of Docker Host network related resources, namely ports, VLANs and IP addresses.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DockerHostStateKeeper {
@@ -31,11 +29,15 @@ public class DockerHostStateKeeper {
     private static final int ADDRESS_POOL_DEFAULT_GATEWAY = 254;
     private static final int ADDRESS_POOL_DEFAULT_MASK_LENGTH = 24;
 
-    @Autowired
     private DockerHostStateRepository stateRepository;
 
-    @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
+
+    @Autowired
+    public DockerHostStateKeeper(DockerHostStateRepository stateRepository, DockerHostRepositoryManager dockerHostRepositoryManager){
+        this.stateRepository = stateRepository;
+        this.dockerHostRepositoryManager = dockerHostRepositoryManager;
+    }
 
     /**
      * Checks {@link DockerHostState} of given Docker Host for currently assigned ports on the host, assigns a new port
@@ -299,7 +301,7 @@ public class DockerHostStateKeeper {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void removeAllAssignments(String dockerHostName) {
+    public void removeAllAssignments(String dockerHostName) {
         try {
             if (stateForDockerHostNotExists(dockerHostName))
                 throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
