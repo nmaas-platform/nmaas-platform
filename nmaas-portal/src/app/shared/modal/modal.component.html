@@ -9,7 +9,7 @@
 				<img *ngIf="isInfo && isIconsEnabled" src="../../../assets/images/info.png" class="modal-img" alt="Error">
 				<img *ngIf="isSuccess && isIconsEnabled" src="../../../assets/images/success.png" class="modal-img" alt="Error">
 				<img *ngIf="isWarning && isIconsEnabled" src="../../../assets/images/alert.png" class="modal-img" alt="Error">
-				<h3 style="display: inline-block; padding-left: 6px;" ><ng-content select=".nmaas-modal-header"></ng-content></h3>
+				<h4 style="display: inline-block; padding-left: 6px;" ><ng-content select=".nmaas-modal-header"></ng-content></h4>
             </div>
 			<div class="modal-body">
 				<ng-content select=".nmaas-modal-body"></ng-content>

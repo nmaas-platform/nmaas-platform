@@ -40,3 +40,7 @@ html, body {
 	max-height: 150px;
 	max-width: 200px;
 }
+
+.landing-block-padding{
+	padding-top: 8vh;
+}
