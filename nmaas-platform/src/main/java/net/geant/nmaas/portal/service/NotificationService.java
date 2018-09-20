@@ -6,5 +6,4 @@ import org.springframework.stereotype.Service;
 
 public interface NotificationService {
     void sendEmailWithToken(EmailConfirmation emailConfirmation, String token);
-    void sendEmailWithoutToken(EmailConfirmation emailConfirmation);
 }

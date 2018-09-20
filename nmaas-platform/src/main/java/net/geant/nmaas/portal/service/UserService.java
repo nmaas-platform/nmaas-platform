@@ -14,7 +14,6 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 
 public interface UserService {
-	
 	boolean hasPrivilege(User user, Domain domain, Role role);
 	Optional<User> findByUsername(String username);
 	Optional<User> findById(Long id);
@@ -36,4 +35,5 @@ public interface UserService {
     void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag);
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
+    String findAllUsersEmailWithAdminRole();
 }

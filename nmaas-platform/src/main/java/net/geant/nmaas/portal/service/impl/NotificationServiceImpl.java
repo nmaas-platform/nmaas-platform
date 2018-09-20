@@ -35,16 +35,4 @@ public class NotificationServiceImpl implements NotificationService {
 
         restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
     }
-
-    @Override
-    public void sendEmailWithoutToken(EmailConfirmation emailConfirmation) {
-        final String uri = String.format("%s:%s%s", url, port, pathWithoutToken);
-
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        HttpEntity<EmailConfirmation> entity = new HttpEntity<EmailConfirmation>(emailConfirmation);
-
-        restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
-    }
 }

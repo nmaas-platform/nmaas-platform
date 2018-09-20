@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import lombok.Builder;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -13,6 +15,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Builder
 public class UserRole {
 
 	@Embeddable

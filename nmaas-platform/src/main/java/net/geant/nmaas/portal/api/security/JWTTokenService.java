@@ -23,7 +23,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 public class JWTTokenService {
 
 	@Autowired
-	JWTSettings jwtSettings;
+	private JWTSettings jwtSettings;
 
 	public String getToken(User user) {
 		if(user == null || StringUtils.isEmpty(user.getUsername())) 

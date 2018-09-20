@@ -45,6 +45,9 @@ public class RegistrationController {
 
 	@Autowired
 	private NotificationService notificationService;
+
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
 	
 	@PostMapping
 	@Transactional
@@ -92,12 +95,12 @@ public class RegistrationController {
                     .builder()
                     .firstName(newUser.getFirstname())
                     .lastName(newUser.getLastname())
-                    .toEmail(newUser.getEmail())
+                    .toEmail(usersService.findAllUsersEmailWithAdminRole())
                     .userName(newUser.getUsername())
                     .subject("NMaaS: New account registration request")
                     .templateName("admin-notification")
                     .build();
-            notificationService.sendEmailWithoutToken(emailConfirmation);
+			notificationService.sendEmailWithToken(emailConfirmation, tokenAuthenticationService.getAnonymousAccessToken());
 
 			if(registration.getDomainId() != null)
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
