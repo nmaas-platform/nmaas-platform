@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 
 /**
  * Default {@link AppDeploymentMonitor} implementation.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {

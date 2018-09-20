@@ -1,5 +1,6 @@
 package net.geant.nmaas.utils.ssh;
 
+import lombok.NoArgsConstructor;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -7,9 +8,7 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
 public class SshConnector {
 
 	private SSHClient ssh;
@@ -20,8 +19,6 @@ public class SshConnector {
 			authenticate(credentials);
 	}
 
-	public SshConnector() {}
-	
 	private void connect(String hostname, int port) throws SshConnectionException {
 		try {
 			ssh = new SSHClient();

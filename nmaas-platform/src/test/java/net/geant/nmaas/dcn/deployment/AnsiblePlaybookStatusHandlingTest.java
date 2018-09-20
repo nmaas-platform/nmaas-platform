@@ -6,9 +6,6 @@ import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class AnsiblePlaybookStatusHandlingTest {
 
     @Test

@@ -5,19 +5,25 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileT
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @RequestMapping(value = "/api/management/configurations/templates")
 public class NmServiceConfigTemplateAdminRestController {
 
-    @Autowired
     private NmServiceConfigFileTemplatesRepository templates;
+
+    @Autowired
+    public NmServiceConfigTemplateAdminRestController(NmServiceConfigFileTemplatesRepository templates){
+        this.templates = templates;
+    }
 
     /**
      * Lists all {@link NmServiceConfigurationTemplate} stored in repository.

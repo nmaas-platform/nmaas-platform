@@ -6,22 +6,28 @@ import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundExce
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @RequestMapping(value = "/api/configs")
 @Log4j2
 public class NmServiceConfigDownloadRestController {
 
-    @Autowired
     private NmServiceConfigFileRepository configurations;
+
+    @Autowired
+    public NmServiceConfigDownloadRestController(NmServiceConfigFileRepository configurations){
+        this.configurations = configurations;
+    }
 
     @GetMapping(value = "/{configId}")
     public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)

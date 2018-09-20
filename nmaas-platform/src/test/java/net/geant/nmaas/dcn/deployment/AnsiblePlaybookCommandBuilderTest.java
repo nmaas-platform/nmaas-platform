@@ -14,9 +14,6 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class AnsiblePlaybookCommandBuilderTest {
 
     private static final String PLAIN_DCN_NAME = "3vnhgwcn95ngcj5eogx";

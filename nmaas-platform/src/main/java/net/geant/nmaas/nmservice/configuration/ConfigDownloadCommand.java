@@ -6,8 +6,6 @@ import java.util.function.Predicate;
 
 /**
  * Represents the configuration file download command to be executed on remote machine.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public class ConfigDownloadCommand implements Command {
 

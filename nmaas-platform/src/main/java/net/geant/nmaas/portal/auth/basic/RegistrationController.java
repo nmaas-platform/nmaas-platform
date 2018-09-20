@@ -32,17 +32,22 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/auth/basic/registration")
 @Log4j2
 public class RegistrationController {
-	@Autowired
+
 	UserService users;
 	
-	@Autowired
 	DomainService domains;
 	
-	@Autowired
 	PasswordEncoder passwordEncoder;
 	
-	@Autowired
 	ModelMapper modelMapper;
+
+	@Autowired
+	public RegistrationController(UserService users, DomainService domains, PasswordEncoder passwordEncoder, ModelMapper modelMapper){
+		this.users = users;
+		this.domains = domains;
+		this.passwordEncoder = passwordEncoder;
+		this.modelMapper = modelMapper;
+	}
 	
 	@PostMapping
 	@Transactional

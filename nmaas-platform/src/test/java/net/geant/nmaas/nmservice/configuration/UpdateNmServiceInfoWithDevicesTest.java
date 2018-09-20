@@ -21,9 +21,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")

@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Repository
 public interface NmServiceConfigFileTemplatesRepository extends JpaRepository<NmServiceConfigurationTemplate, Long> {
 

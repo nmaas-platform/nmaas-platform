@@ -5,8 +5,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 
 /**
  * Application deployment states.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public enum AppDeploymentState {
 

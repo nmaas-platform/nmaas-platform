@@ -30,9 +30,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class KubernetesClusterManagerTest {
 
     private static final String REST_API_HOST_ADDRESS = "10.10.1.1";

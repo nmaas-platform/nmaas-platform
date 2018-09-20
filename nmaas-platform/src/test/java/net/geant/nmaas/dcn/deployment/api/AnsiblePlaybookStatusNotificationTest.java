@@ -2,7 +2,11 @@ package net.geant.nmaas.dcn.deployment.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.dcn.deployment.*;
+import net.geant.nmaas.dcn.deployment.AnsibleDcnDeploymentExecutor;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookExecutionStateListener;
+import net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
@@ -34,9 +38,6 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")

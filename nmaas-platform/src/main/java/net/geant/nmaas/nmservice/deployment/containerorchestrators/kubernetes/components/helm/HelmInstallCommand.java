@@ -4,9 +4,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class HelmInstallCommand extends HelmCommand {
 
     private static final String INSTALL = "install";

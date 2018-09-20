@@ -18,9 +18,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles({"env_docker-compose", "dcn_manual"})

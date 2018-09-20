@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Repository
 public interface NmServiceConfigFileRepository extends JpaRepository<NmServiceConfiguration, Long> {
 

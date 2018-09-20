@@ -1,18 +1,30 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Table(name="docker_host_network")
 public class DockerHostNetwork {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -59,8 +71,6 @@ public class DockerHostNetwork {
      */
     private String deploymentName;
 
-    public DockerHostNetwork() { }
-
     public DockerHostNetwork(String domain, DockerHost dockerHost) {
         this.domain = domain;
         this.host = dockerHost;
@@ -72,77 +82,5 @@ public class DockerHostNetwork {
         this.vlanNumber = vlanNumber;
         this.subnet = subnet;
         this.gateway = gateway;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public DockerHost getHost() {
-        return host;
-    }
-
-    public void setHost(DockerHost host) {
-        this.host = host;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    public int getVlanNumber() {
-        return vlanNumber;
-    }
-
-    public void setVlanNumber(int vlanNumber) {
-        this.vlanNumber = vlanNumber;
-    }
-
-    public String getSubnet() {
-        return subnet;
-    }
-
-    public void setSubnet(String subnet) {
-        this.subnet = subnet;
-    }
-
-    public String getGateway() {
-        return gateway;
-    }
-
-    public void setGateway(String gateway) {
-        this.gateway = gateway;
-    }
-
-    public List<String> getAssignedAddresses() {
-        return assignedAddresses;
-    }
-
-    public void setAssignedAddresses(List<String> assignedAddresses) {
-        this.assignedAddresses = assignedAddresses;
-    }
-
-    public String getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
-    public String getDeploymentName() {
-        return deploymentName;
-    }
-
-    public void setDeploymentName(String deploymentName) {
-        this.deploymentName = deploymentName;
     }
 }

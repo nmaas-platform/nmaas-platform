@@ -12,9 +12,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class AppConfigurationJsonToMapTest {
 
     static final String EXAMPLE_OXIDIZED_CONFIG_FORM_INPUT =

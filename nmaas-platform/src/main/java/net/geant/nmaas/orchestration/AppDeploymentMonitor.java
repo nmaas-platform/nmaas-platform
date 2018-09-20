@@ -7,14 +7,11 @@ import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-
 import java.util.List;
 
 /**
  * Declares a method to retrieve the current state of application being deployed using {@link AppLifecycleManager} API
  * and another one to retrieve user access details to deployed application once available.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface AppDeploymentMonitor {
 

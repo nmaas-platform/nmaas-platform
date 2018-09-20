@@ -2,7 +2,7 @@ package net.geant.nmaas.portal.api.exception;
 
 public class ProcessingException extends MarketException {
 
-	public ProcessingException() {
+	public ProcessingException() { super();
 	}
 
 	public ProcessingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
