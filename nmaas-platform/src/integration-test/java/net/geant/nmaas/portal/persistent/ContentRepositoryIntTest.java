@@ -1,10 +1,10 @@
 package net.geant.nmaas.portal.persistent;
 
-
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

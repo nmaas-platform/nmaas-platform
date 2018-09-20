@@ -1,8 +1,10 @@
 package net.geant.nmaas.utils.ssh;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class BasicCredentials {
 
     private final String username;
@@ -12,18 +14,5 @@ public class BasicCredentials {
     public BasicCredentials(String username) {
         this.username = username;
         this.password = null;
-    }
-
-    public BasicCredentials(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }

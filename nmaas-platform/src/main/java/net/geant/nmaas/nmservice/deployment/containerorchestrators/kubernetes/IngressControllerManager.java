@@ -4,8 +4,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 
 /**
  * Methods for ingress controller manipulation.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface IngressControllerManager {
 

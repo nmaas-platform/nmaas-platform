@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import java.io.Serializable;
-import java.security.acl.Permission;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;

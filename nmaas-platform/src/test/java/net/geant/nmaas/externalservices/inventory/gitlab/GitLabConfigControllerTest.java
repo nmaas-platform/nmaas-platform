@@ -2,9 +2,7 @@ package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabConfigController;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.junit.After;

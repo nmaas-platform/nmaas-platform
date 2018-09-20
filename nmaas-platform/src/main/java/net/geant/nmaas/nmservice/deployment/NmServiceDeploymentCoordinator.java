@@ -28,8 +28,6 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 /**
  * Default implementation of the {@link NmServiceDeploymentProvider}. Coordinates NM service deployment workflow and
  * delegates particular tasks to currently used {@link ContainerOrchestrator}.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvider {

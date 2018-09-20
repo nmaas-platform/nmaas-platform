@@ -14,9 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Service
 @Log4j2
 public class DcnDeploymentStateChangeManager {

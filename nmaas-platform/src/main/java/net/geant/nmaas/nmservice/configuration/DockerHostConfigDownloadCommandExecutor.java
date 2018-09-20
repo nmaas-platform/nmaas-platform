@@ -26,19 +26,23 @@ import java.util.List;
 /**
  * Implementation of the {@link ConfigurationFileTransferProvider} interface tailored for deployments for which
  * configuration files should be put in a shared volume directory on a Docker Host.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("env_docker-compose")
 public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFileTransferProvider {
 
-    @Autowired
     private Environment env;
-    @Autowired
+
     private DockerNmServiceRepositoryManager serviceRepositoryManager;
-    @Autowired
+
     private NmServiceConfigFileRepository configurations;
+
+    @Autowired
+    public DockerHostConfigDownloadCommandExecutor(Environment env, DockerNmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations){
+        this.env = env;
+        this.serviceRepositoryManager = serviceRepositoryManager;
+        this.configurations = configurations;
+    }
 
     private String authorizationHash;
     @Value("${app.config.download.url}")

@@ -1,13 +1,9 @@
 package net.geant.nmaas.portal.api.domain;
 
-import java.util.List;
-
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.portal.persistent.entity.Role;
 
 @Getter
 @Setter

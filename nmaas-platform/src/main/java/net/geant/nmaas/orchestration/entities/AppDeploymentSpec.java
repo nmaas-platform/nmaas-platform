@@ -22,8 +22,6 @@ import java.util.List;
  * Application deployment specification. Contains information about supported deployment options represented by
  * {@link AppDeploymentEnv} and all required templates {@link DockerComposeFileTemplate}
  * and/or {@link KubernetesTemplate}) according to the supported deployment environments.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Getter
 @Setter

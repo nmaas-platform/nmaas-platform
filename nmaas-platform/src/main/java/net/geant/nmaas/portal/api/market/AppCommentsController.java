@@ -30,11 +30,15 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 @RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
-	@Autowired
 	CommentRepository commentRepo;
 	
-	@Autowired
 	UserRepository userRepo;
+
+	@Autowired
+	public AppCommentsController(CommentRepository commentRepo, UserRepository userRepo){
+		this.commentRepo = commentRepo;
+		this.userRepo = userRepo;
+	}
 			
 	@RequestMapping(method=RequestMethod.GET)
 	@PreAuthorize("hasPermission(null, 'comment', 'READ')")

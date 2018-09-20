@@ -2,11 +2,8 @@ package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostManagerRestController;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostDetails;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostView;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryInit;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.junit.After;
 import org.junit.Before;

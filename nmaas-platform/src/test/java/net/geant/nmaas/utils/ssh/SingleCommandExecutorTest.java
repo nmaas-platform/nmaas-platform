@@ -4,9 +4,6 @@ import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommand;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class SingleCommandExecutorTest {
 
     private ConfigDownloadCommand command;

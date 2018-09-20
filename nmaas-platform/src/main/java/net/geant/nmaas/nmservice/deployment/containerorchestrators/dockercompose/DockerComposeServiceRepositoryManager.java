@@ -16,9 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Profile("env_docker-compose")
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)

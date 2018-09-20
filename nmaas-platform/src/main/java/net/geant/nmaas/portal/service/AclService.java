@@ -2,8 +2,6 @@ package net.geant.nmaas.portal.service;
 
 import java.io.Serializable;
 
-import org.springframework.security.access.PermissionEvaluator;
-
 public interface AclService {
 	
 	public enum Permissions {

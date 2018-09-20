@@ -1,10 +1,19 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
+import java.util.HashSet;
+import java.util.List;
 import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.service.DomainService;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +28,8 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)

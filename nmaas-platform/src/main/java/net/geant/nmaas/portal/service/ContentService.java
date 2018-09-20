@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service;
 
-
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;

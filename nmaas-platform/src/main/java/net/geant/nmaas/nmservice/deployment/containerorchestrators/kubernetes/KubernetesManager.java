@@ -77,6 +77,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
+        if(appDeploymentSpec.getKubernetesTemplate() == null){
+            throw new NmServiceRequestVerificationException("Kubernetes template cannot be null");
+        }
         repositoryManager.storeService(new KubernetesNmServiceInfo(
                 deploymentId,
                 deploymentName,

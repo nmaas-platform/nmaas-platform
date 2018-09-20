@@ -1,10 +1,18 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name="dcn_attached_container")
 public class DcnAttachedContainer {
@@ -20,26 +28,8 @@ public class DcnAttachedContainer {
     @Column(nullable = false)
     private String description;
 
-    public DcnAttachedContainer() { }
-
     public DcnAttachedContainer(String name, String description) {
         this.name = name;
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 }

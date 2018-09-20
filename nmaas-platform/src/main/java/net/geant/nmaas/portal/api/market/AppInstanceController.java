@@ -10,7 +10,12 @@ import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.*;
+import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.AppInstance;
+import net.geant.nmaas.portal.api.domain.AppInstanceState;
+import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
+import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
+import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
@@ -24,13 +29,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
@@ -63,7 +74,7 @@ public class AppInstanceController extends AppBaseController {
 	@GetMapping("/apps/instances")
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@Transactional
-	public List<AppInstance> getAllInstances(Pageable pageable) throws MissingElementException {				
+	public List<AppInstance> getAllInstances(Pageable pageable) throws MissingElementException {
 		return instances.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
 	}
 
@@ -125,7 +136,7 @@ public class AppInstanceController extends AppBaseController {
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
 	@Transactional
 	public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
-			@NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException, ProcessingException {
+								@NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException, ProcessingException {
 		Application app = getApp(appInstanceSubscription.getApplicationId());
 		User user = getUser(principal.getName());
 

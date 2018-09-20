@@ -1,21 +1,21 @@
 package net.geant.nmaas.orchestration.entities;
 
 import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Common class for storing various types of identifiers.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Identifier implements Serializable {
 
     private String value;
-
-    public Identifier() {}
-
-    public Identifier(String value) {
-        this.value = value;
-    }
 
     public static Identifier newInstance(String value) {
         return new Identifier(value);
@@ -51,13 +51,5 @@ public class Identifier implements Serializable {
 
     public Long longValue() {
         return Long.valueOf(value);
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }

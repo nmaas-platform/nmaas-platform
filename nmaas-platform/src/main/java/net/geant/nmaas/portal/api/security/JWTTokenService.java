@@ -1,12 +1,15 @@
 package net.geant.nmaas.portal.api.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import io.jsonwebtoken.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -19,11 +22,14 @@ import net.geant.nmaas.portal.persistent.entity.User;
 
 @Service("jwtTokenService")
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class JWTTokenService {
 
-	@Autowired
 	JWTSettings jwtSettings;
+
+	@Autowired
+	public JWTTokenService(JWTSettings jwtSettings){
+		this.jwtSettings = jwtSettings;
+	}
 
 	public String getToken(User user) {
 		if(user == null || StringUtils.isEmpty(user.getUsername())) 
