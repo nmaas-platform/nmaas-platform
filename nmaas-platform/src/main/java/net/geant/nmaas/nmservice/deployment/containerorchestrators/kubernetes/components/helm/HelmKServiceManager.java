@@ -21,9 +21,6 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Profile("env_kubernetes")
 public class HelmKServiceManager implements KServiceLifecycleManager {

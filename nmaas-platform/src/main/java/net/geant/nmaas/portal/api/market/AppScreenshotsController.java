@@ -35,8 +35,12 @@ import net.geant.nmaas.portal.service.FileStorageService;
 @Log4j2
 public class AppScreenshotsController extends AppBaseController {
 	
-	@Autowired
 	private FileStorageService fileStorage;
+
+	@Autowired
+	public AppScreenshotsController(FileStorageService fileStorage){
+		this.fileStorage = fileStorage;
+	}
 
 	@RequestMapping(value="/logo", method=RequestMethod.GET)
 	public ResponseEntity<InputStreamResource> getLogo(@PathVariable("appId") Long appId) throws MissingElementException, FileNotFoundException {

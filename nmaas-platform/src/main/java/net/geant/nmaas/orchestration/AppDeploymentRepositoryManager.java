@@ -16,9 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Service
 public class AppDeploymentRepositoryManager {
 

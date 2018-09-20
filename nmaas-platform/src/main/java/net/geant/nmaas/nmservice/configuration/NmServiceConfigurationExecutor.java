@@ -15,8 +15,6 @@ import java.util.List;
 
 /**
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class NmServiceConfigurationExecutor implements NmServiceConfigurationProvider {

@@ -1,12 +1,20 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@Getter
+@Setter
 @Entity
 @Table(name="docker_compose_service")
 public class DockerComposeService {
@@ -38,52 +46,4 @@ public class DockerComposeService {
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<DockerComposeServiceComponent> serviceComponents = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDcnNetworkName() {
-        return dcnNetworkName;
-    }
-
-    public void setDcnNetworkName(String dcnNetworkName) {
-        this.dcnNetworkName = dcnNetworkName;
-    }
-
-    public String getExternalAccessNetworkName() {
-        return externalAccessNetworkName;
-    }
-
-    public void setExternalAccessNetworkName(String externalAccessNetworkName) {
-        this.externalAccessNetworkName = externalAccessNetworkName;
-    }
-
-    public int getPublicPort() {
-        return publicPort;
-    }
-
-    public void setPublicPort(int publicPort) {
-        this.publicPort = publicPort;
-    }
-
-    public String getAttachedVolumeName() {
-        return attachedVolumeName;
-    }
-
-    public void setAttachedVolumeName(String attachedVolumeName) {
-        this.attachedVolumeName = attachedVolumeName;
-    }
-
-    public List<DockerComposeServiceComponent> getServiceComponents() {
-        return serviceComponents;
-    }
-
-    public void setServiceComponents(List<DockerComposeServiceComponent> serviceComponents) {
-        this.serviceComponents = serviceComponents;
-    }
 }

@@ -9,8 +9,6 @@ import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 
 /**
  * Declares methods to be used by the NMaaS Portal to manage NMaaS applications lifecycle.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface AppLifecycleManager {
 

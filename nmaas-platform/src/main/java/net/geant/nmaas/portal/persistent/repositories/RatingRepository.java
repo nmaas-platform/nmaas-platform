@@ -2,10 +2,8 @@ package net.geant.nmaas.portal.persistent.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
 import net.geant.nmaas.portal.persistent.entity.AppRate;
 import net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId;
-import net.geant.nmaas.portal.persistent.entity.Application;
 
 public interface RatingRepository extends JpaRepository<AppRate, AppRateId> {
 

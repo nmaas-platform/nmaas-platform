@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
-import io.jsonwebtoken.impl.crypto.DefaultJwtSigner;
 import io.jsonwebtoken.impl.crypto.DefaultSignerFactory;
 import io.jsonwebtoken.impl.crypto.Signer;
 import lombok.Getter;

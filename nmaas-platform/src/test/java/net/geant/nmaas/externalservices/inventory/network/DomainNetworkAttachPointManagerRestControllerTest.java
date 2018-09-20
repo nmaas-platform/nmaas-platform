@@ -2,7 +2,6 @@ package net.geant.nmaas.externalservices.inventory.network;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.network.DomainManagerRestController;
 import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
@@ -28,10 +27,6 @@ import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")

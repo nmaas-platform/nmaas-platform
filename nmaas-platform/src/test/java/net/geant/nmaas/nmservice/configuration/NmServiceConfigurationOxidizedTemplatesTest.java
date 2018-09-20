@@ -1,6 +1,11 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
@@ -15,15 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class NmServiceConfigurationOxidizedTemplatesTest {

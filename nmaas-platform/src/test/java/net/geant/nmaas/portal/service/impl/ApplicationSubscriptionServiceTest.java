@@ -1,4 +1,4 @@
-package test.java.net.geant.nmaas.portal.service.impl;
+package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
@@ -8,12 +8,9 @@ import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRep
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
-import net.geant.nmaas.portal.service.impl.ApplicationSubscriptionServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -21,9 +21,6 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public abstract class BasePrepareDeploymentEnvTest {
 
     @Autowired

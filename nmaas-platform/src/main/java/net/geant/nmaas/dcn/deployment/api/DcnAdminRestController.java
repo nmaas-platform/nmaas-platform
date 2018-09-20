@@ -15,8 +15,12 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/api/management/dcns")
 public class DcnAdminRestController {
 
-    @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
+
+    @Autowired
+    public DcnAdminRestController(DcnRepositoryManager dcnRepositoryManager){
+        this.dcnRepositoryManager = dcnRepositoryManager;
+    }
 
     /**
      * Lists all DCN instances represented by {@link DcnView} objects.

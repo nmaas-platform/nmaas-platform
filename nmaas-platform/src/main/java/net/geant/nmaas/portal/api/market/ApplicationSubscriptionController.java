@@ -29,8 +29,12 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 @RequestMapping("/api/subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 	
-	@Autowired
 	ApplicationSubscriptionService appSubscriptions;
+
+	@Autowired
+	public ApplicationSubscriptionController(ApplicationSubscriptionService appSubscriptions){
+		this.appSubscriptions = appSubscriptions;
+	}
 	
 	@PostMapping
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'OWNER')")
