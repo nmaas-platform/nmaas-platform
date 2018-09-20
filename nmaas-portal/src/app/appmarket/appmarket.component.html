@@ -1,7 +1,5 @@
-
-		<nmaas-navbar></nmaas-navbar>		
-		<div class="container">
-			<router-outlet></router-outlet>	
-		</div>
-		
-		<nmaas-footer></nmaas-footer>
+<nmaas-navbar></nmaas-navbar>
+<div class="container" id="appmarket-container" (window:resize)="onResize()">
+	<router-outlet></router-outlet>
+</div>
+<nmaas-footer></nmaas-footer>

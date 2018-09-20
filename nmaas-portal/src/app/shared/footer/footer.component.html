@@ -2,11 +2,11 @@
 			<div class="container-fluid">
 				<div class="col-lg-4 col-md-4"></div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-center" >
-                    <p style="text-align:center; vertical-align: text-bottom;"><a href="http://geant.org"><img class="img-footer" src="assets/images/geant-logo-small.png" alt="GEANT"></a></p>
+                    <p style="text-align:center; vertical-align: text-bottom;"><a href="http://geant.org" target="_blank" rel="nofollow"><img class="img-footer" src="assets/images/geant-logo-small.png" alt="GEANT"></a></p>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="global-footer-version">
-                    NMaaS AppMarket (c) 2017-2018<br>
                     <a (click)="modal.show()" class="text-right">Version {{gitInfo?.buildVersion}}</a>
+					<br *ngIf="!checkURL()">
                     <a (click)="router.navigate(['/changelog'])" *ngIf="!checkURL()">Changelog</a>
                 </div>
 			</div>
