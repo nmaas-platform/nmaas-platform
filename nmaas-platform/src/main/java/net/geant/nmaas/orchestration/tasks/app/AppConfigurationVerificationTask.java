@@ -46,7 +46,7 @@ public class AppConfigurationVerificationTask {
     }
 
     private NmServiceDeploymentStateChangeEvent applyConfigurationEvent(Identifier deploymentId){
-        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
+        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED, "");
     }
 
 }
