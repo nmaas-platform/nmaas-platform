@@ -20,9 +20,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notification.path.withToken}")
     private String pathWithToken;
 
-    @Value("${notification.path.withoutToken}")
-    private String pathWithoutToken;
-
     @Override
     public void sendEmailWithToken(EmailConfirmation emailConfirmation, String token) {
         final String uri = String.format("%s:%s%s", url, port, pathWithToken);
