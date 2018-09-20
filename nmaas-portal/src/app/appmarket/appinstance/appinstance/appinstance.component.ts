@@ -1,22 +1,18 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
-
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-
 import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
-
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-
 // import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
+import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -66,7 +62,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location) {}
+    private location: Location,
+    @Inject(SESSION_STORAGE) private storage: StorageService) {}
 
   ngOnInit() {
     this.appConfiguration = new AppConfiguration();
@@ -128,7 +125,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public applyConfiguration(): void {
     if(this.isValid()){
-        this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => console.log('Configuration applied'));
+        this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+          console.log('Configuration applied');
+          this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
+        });
     }
   }
 

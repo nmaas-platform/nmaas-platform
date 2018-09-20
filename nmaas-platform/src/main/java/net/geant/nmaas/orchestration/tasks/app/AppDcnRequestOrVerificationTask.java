@@ -70,9 +70,9 @@ public class AppDcnRequestOrVerificationTask {
     private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {
         AppDeployment appDeployment = appDeploymentRepositoryManager.load(deploymentId).orElseThrow(InvalidDeploymentIdException::new);
         if(appDeployment.getConfiguration() != null){
-            return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURED);
+            return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURED, "");
         }
-        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT);
+        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "");
     }
 
     private ApplicationEvent noEvent() {

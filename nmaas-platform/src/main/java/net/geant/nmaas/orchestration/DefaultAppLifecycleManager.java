@@ -73,7 +73,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     public void redeployApplication(Identifier deploymentId){
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.INIT, ""));
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
     }
 
@@ -82,7 +82,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
-        throwExceptionIfInInvalidState(appDeployment);
         appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
             appDeployment.setStorageSpace(configuration.getStorageSpace());
@@ -90,12 +89,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             appDeployment.setStorageSpace(appDeployment.getStorageSpace());
         }
         repositoryManager.update(appDeployment);
-        eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
-    }
-
-    private void throwExceptionIfInInvalidState(AppDeployment appDeployment) throws InvalidDeploymentIdException {
-        if (!appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED))
-            throw new InvalidDeploymentIdException("Not able to apply configuration in current application deployment state -> " + appDeployment.getState());
+        if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
+            eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
+        }
     }
 
     @Override

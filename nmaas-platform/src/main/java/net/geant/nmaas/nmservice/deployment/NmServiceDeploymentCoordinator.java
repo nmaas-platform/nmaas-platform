@@ -57,7 +57,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED);
+            notifyStateChangeListeners(deploymentId, REQUEST_VERIFICATION_FAILED, e.getMessage());
             throw new NmServiceRequestVerificationException(e.getMessage());
         }
     }
@@ -71,7 +71,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARED);
         } catch (CouldNotPrepareEnvironmentException
                 | ContainerOrchestratorInternalErrorException e) {
-            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED);
+            notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_FAILED, e.getMessage());
             throw new CouldNotPrepareEnvironmentException("NM Service deployment environment preparation failed -> " + e.getMessage());
         }
     }
@@ -85,7 +85,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, DEPLOYED);
         } catch (CouldNotDeployNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED);
+            notifyStateChangeListeners(deploymentId, DEPLOYMENT_FAILED, e.getMessage());
             throw new CouldNotDeployNmServiceException("NM Service deployment failed -> " + e.getMessage());
         }
     }
@@ -99,7 +99,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             while (currentWaitTime <= serviceDeploymentCheckMaxWaitTime) {
                 try {
                     orchestrator.checkService(deploymentId);
-                    notifyStateChangeListeners(deploymentId, VERIFIED);
+                    notifyStateChangeListeners(deploymentId, VERIFIED, "");
                     return;
                 } catch(ContainerCheckFailedException e) {
                     Thread.sleep(serviceDeploymentCheckInternal * 1000L);
@@ -111,7 +111,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                 | DockerNetworkCheckFailedException
                 | ContainerOrchestratorInternalErrorException
                 | InterruptedException e) {
-            notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED);
+            notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
         }
     }
@@ -134,7 +134,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            notifyStateChangeListeners(deploymentId, REMOVAL_FAILED);
+            notifyStateChangeListeners(deploymentId, REMOVAL_FAILED, e.getMessage());
             throw new CouldNotRemoveNmServiceException("NM Service removal failed -> " + e.getMessage());
         }
     }
@@ -148,13 +148,17 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             notifyStateChangeListeners(deploymentId, RESTARTED);
         } catch (CouldNotRestartNmServiceException
                 | ContainerOrchestratorInternalErrorException e) {
-            notifyStateChangeListeners(deploymentId, RESTART_FAILED);
+            notifyStateChangeListeners(deploymentId, RESTART_FAILED, e.getMessage());
             throw new CouldNotRestartNmServiceException("NM Service restart failed -> " + e.getMessage());
         }
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
-        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
+        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
+    }
+
+    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
+        applicationEventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
 
 }
