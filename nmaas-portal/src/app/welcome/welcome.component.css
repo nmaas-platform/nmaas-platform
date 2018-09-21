@@ -5,9 +5,45 @@ html, body {
 .container-fluid {
 	min-height: 100vh;
     background-repeat: no-repeat;
-    background-image: linear-gradient(#406081, #004041);
+    background-color: rgb(255, 255, 255);
+}
+
+.vertical-offset {
+	margin-top: 50px;
 }
 
 .login-vertical-offset {
-	margin-top: 80px;
+}
+
+.landing-img-sm{
+	width: 100%;
+	height: 100%;
+	max-width: 200px;
+	max-height: 160px;
+}
+
+.landing-img-lg{
+	width: 100%;
+	height: 100%;
+	max-width: 500px;
+	max-height: 400px;
+}
+
+.landing-img-left{
+	padding-left: 15px;
+}
+
+.landing-img-right{
+	padding-right: 15px;
+}
+
+.landing-img-logo{
+	width: 100%;
+	height: 100%;
+	max-height: 150px;
+	max-width: 200px;
+}
+
+.landing-block-padding{
+	padding-top: 8vh;
 }
