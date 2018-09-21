@@ -48,6 +48,16 @@ public class RegistrationController {
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
+
+	private UserService users;
+
+	@Autowired
+	public RegistrationController(UserService users, DomainService domains, PasswordEncoder passwordEncoder, ModelMapper modelMapper){
+		this.users = users;
+		this.domains = domains;
+		this.passwordEncoder = passwordEncoder;
+		this.modelMapper = modelMapper;
+	}
 	
 	@PostMapping
 	@Transactional

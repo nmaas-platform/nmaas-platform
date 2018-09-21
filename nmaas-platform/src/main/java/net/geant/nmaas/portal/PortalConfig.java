@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +29,12 @@ import java.util.Optional;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
 public class PortalConfig {
 
-	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public PortalConfig(PasswordEncoder passwordEncoder){
+		this.passwordEncoder = passwordEncoder;
+	}
 	
 	@Bean
 	public InitializingBean insertDefaultUsers() {

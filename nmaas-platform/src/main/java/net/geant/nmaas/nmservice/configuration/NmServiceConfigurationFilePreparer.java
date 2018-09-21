@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import lombok.NoArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
@@ -28,23 +29,25 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
+@NoArgsConstructor
 class NmServiceConfigurationFilePreparer {
 
     private static final String DEFAULT_MANAGED_DEVICE_KEY = "targets";
     private static final String DEFAULT_MANAGED_DEVICE_IP_ADDRESS_KEY = "ipAddress";
 
-    @Autowired
     private NmServiceConfigFileRepository configurations;
 
-    @Autowired
     private NmServiceConfigFileTemplatesRepository templates;
 
-    @Autowired
     private NmServiceRepositoryManager nmServiceRepositoryManager;
+
+    @Autowired
+    NmServiceConfigurationFilePreparer(NmServiceConfigFileRepository configurations, NmServiceConfigFileTemplatesRepository templates, NmServiceRepositoryManager nmServiceRepositoryManager){
+        this.configurations = configurations;
+        this.templates = templates;
+        this.nmServiceRepositoryManager = nmServiceRepositoryManager;
+    }
 
     List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
             throws ConfigTemplateHandlingException, UserConfigHandlingException, InvalidDeploymentIdException {

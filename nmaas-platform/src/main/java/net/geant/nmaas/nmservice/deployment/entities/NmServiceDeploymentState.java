@@ -2,8 +2,6 @@ package net.geant.nmaas.nmservice.deployment.entities;
 
 /**
  * NM service deployment states.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public enum NmServiceDeploymentState {
 

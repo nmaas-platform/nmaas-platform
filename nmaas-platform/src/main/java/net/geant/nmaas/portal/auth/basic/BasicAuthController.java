@@ -36,20 +36,26 @@ import net.geant.nmaas.portal.service.UserService;
 @Log4j2
 public class BasicAuthController {
 
-	@Autowired
 	private UserService users;
 	
-	@Autowired
     private DomainService domains;
 	
-	@Autowired
     private PasswordEncoder passwordEncoder;
 	
-	@Autowired
     private JWTTokenService jwtTokenService;
 
-    @Autowired
     private ConfigurationManager configurationManager;
+
+    @Autowired
+    public BasicAuthController(UserService users, DomainService domains,
+                               PasswordEncoder passwordEncoder, JWTTokenService jwtTokenService,
+                               ConfigurationManager configurationManager){
+        this.users = users;
+        this.domains = domains;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
+        this.configurationManager = configurationManager;
+    }
 	
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {

@@ -4,9 +4,6 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.function.Predicate;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Log4j2
 public class SingleCommandExecutor {
 

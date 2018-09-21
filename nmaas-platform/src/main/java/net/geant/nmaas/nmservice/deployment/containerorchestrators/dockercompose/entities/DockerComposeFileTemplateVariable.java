@@ -1,8 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public enum DockerComposeFileTemplateVariable {
 
     CONTAINER_NAME("container_name"),

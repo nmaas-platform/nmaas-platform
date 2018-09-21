@@ -1,8 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class KServiceManipulationException extends RuntimeException {
 
     public KServiceManipulationException(String message) {

@@ -8,9 +8,6 @@ import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.T
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
- */
 public class AnsiblePlaybookVpnConfigTest {
     private static final String TOO_LONG_VALUE = "1234567890123456789012345678901234567890123456789012345678901";
 

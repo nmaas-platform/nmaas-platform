@@ -1,15 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.util.Optional;
-
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 

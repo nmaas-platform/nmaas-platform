@@ -19,11 +19,15 @@ import net.geant.nmaas.portal.persistent.entity.User;
 
 @Service("jwtTokenService")
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class JWTTokenService {
 
 	@Autowired
 	private JWTSettings jwtSettings;
+
+	@Autowired
+	public JWTTokenService(JWTSettings jwtSettings){
+		this.jwtSettings = jwtSettings;
+	}
 
 	public String getToken(User user) {
 		if(user == null || StringUtils.isEmpty(user.getUsername())) 

@@ -14,8 +14,6 @@ import java.text.MessageFormat;
 
 /**
  * Aspect responsible for logging information when entering and leaving methods annotated with {@link Loggable}.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Aspect
 @Component

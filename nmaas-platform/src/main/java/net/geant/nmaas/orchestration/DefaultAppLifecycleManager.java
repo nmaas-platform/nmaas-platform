@@ -28,8 +28,6 @@ import java.util.UUID;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)

@@ -6,8 +6,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * Defines a method to be used to apply custom configuration for NM service being deployed.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface NmServiceConfigurationProvider {
 

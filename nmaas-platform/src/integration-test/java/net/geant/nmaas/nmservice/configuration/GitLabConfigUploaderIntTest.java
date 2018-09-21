@@ -31,8 +31,6 @@ import static org.hamcrest.Matchers.*;
 /**
  * Set of integration tests verifying correct communication with real standalone GitLab repository instance.
  * Note: All test must be ignored.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest

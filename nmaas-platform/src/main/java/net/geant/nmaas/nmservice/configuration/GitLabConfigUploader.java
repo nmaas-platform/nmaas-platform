@@ -28,8 +28,6 @@ import java.util.List;
  * Interacts with a remote GitLab repository instance through a REST API in order to upload a set of application
  * configuration files prepared for new application/tool deployment.
  * It is assumed that valid address and credentials of the repository API are provided through properties file.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("env_kubernetes")
