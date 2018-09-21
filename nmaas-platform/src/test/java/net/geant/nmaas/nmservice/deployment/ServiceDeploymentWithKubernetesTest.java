@@ -45,7 +45,7 @@ public class ServiceDeploymentWithKubernetesTest {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("1"), null, null, appDeploymentSpec);
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("1"), null, appDeploymentSpec);
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
@@ -53,7 +53,7 @@ public class ServiceDeploymentWithKubernetesTest {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, appDeploymentSpec);
 	}
 
 }

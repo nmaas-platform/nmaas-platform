@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -209,7 +208,7 @@ public class AppInstanceController extends AppBaseController {
 
 		try {
 			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
-		} catch (InvalidDeploymentIdException e) {
+		} catch (Throwable e) {
 			throw new ProcessingException("Missing app instance");
 		}
 	}

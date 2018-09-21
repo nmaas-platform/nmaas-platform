@@ -81,7 +81,7 @@ public class DefaultAppDeploymentMonitorTest {
     @Before
     public void setup() throws InvalidDeploymentIdException, UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         nmServiceRepositoryManager.storeService(nmServiceInfo);
         DockerComposeService dockerComposeService = new DockerComposeService();
         dockerComposeService.setAttachedVolumeName("testVolumeName");

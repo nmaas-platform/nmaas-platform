@@ -49,7 +49,7 @@ public class DockerComposeFilePreparerTest {
         template = new DockerComposeFileTemplate();
         template.setDcnAttachedContainers(Arrays.asList(new DcnAttachedContainer("container", "test container")));
         template.setComposeFileTemplateContent(composeFileTemplateContent);
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         nmServiceRepositoryManager.storeService(nmServiceInfo);
     }
 

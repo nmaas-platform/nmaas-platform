@@ -71,7 +71,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         if (deploymentManager.getStorageClass(domain).isPresent()) {
             arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getStorageClass(domain).get());
         }
-        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, deploymentManager.getStorageSpace(deploymentId));
+        arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         if(serviceInfo.getGitLabProject() != null)
             arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, serviceInfo.getGitLabProject().getCloneUrl());
@@ -90,6 +90,10 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                 template,
                 arguments
         );
+    }
+
+    private String getStorageSpaceString(Integer storageSpace){
+        return storageSpace.toString() + "Gi";
     }
 
     @Override

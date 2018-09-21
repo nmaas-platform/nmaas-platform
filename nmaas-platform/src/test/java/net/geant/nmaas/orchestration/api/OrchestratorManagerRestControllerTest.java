@@ -87,7 +87,7 @@ public class OrchestratorManagerRestControllerTest {
     }
 
     @Test
-    public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
+    public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CONFIGURATION_JSON)
@@ -103,7 +103,7 @@ public class OrchestratorManagerRestControllerTest {
     }
 
     @Test
-    public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Exception {
+    public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
         doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
                 .contentType(MediaType.APPLICATION_JSON)
