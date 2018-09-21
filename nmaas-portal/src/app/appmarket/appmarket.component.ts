@@ -9,6 +9,7 @@ import {AfterContentChecked, AfterViewChecked, Component, OnInit, ViewEncapsulat
 export class AppMarketComponent implements OnInit, AfterViewChecked, AfterContentChecked {
 
   private height = 0;
+  private navHeight = 0;
 
   constructor() { }
 
@@ -26,8 +27,9 @@ export class AppMarketComponent implements OnInit, AfterViewChecked, AfterConten
 
     onResize() {
         this.height = document.getElementById("global-footer").offsetHeight;
-        //console.log(`Footer h: ${this.height}`);
+        this.navHeight = document.getElementById("navbar-appmarket").offsetHeight;
         document.getElementById("appmarket-container").style.marginBottom = `${this.height}px`;
+        document.getElementById("appmarket-container").style.paddingTop = `${this.navHeight + 10}px`;
         if(this.height > 90){
             document.getElementById("global-footer").style.textAlign = "center";
             document.getElementById("global-footer-version").style.lineHeight = `inherit`;
