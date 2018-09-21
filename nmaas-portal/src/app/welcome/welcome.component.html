@@ -1,10 +1,10 @@
 <app-navbar></app-navbar>
 <div class="container-fluid" (window:resize)="onResize()" (window:onload)="onResize()" style="margin-bottom: 20px;">
 	<div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 login-vertical-offset" id="welcome-container">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 vertical-offset" id="welcome-container">
 			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12" >
 				<div style="display: block;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel-body">
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 landing-block-padding">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px;">
 						<h3><b>Network Management as a Service</b> (<a href="https://www.geant.org/Services/Connectivity_and_network/NMaaS/Pages/Home.aspx" rel="nofollow" target="_blank">NMaaS</a>) provides a portfolio of network management
 							applications run on a per-user, secured network monitoring infrastructure. </h3>
 					</div>
@@ -153,8 +153,8 @@
                     </div>
                 </div>
 			</div>
-			<div id="login-register-panel" class="col-lg-3 col-md-5 col-sm-6 col-xs-12 collapse pull-right"
-				 style="z-index: 800; position: fixed; right: 1vh;">
+			<div id="login-register-panel" class="col-lg-3 col-md-5 col-sm-6 col-xs-12 collapse pull-right login-vertical-offset"
+				 style="z-index: 800; position: fixed; right: 1vh; padding-top: 15px;">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 					</div>

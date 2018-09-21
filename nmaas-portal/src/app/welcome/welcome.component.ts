@@ -1,12 +1,21 @@
 import { AppConfigService } from '../service/appconfig.service';
-import {AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {
+    AfterContentChecked,
+    AfterViewChecked,
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    OnInit,
+    ViewChild
+} from '@angular/core';
 
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
   styleUrls: ['./welcome.component.css']
 })
-export class WelcomeComponent implements OnInit, AfterViewChecked{
+export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentChecked{
 
   private height = 0;
 
@@ -14,6 +23,10 @@ export class WelcomeComponent implements OnInit, AfterViewChecked{
 
   ngOnInit() {
     this.onResize();
+  }
+
+  ngAfterContentChecked(){
+      this.onResize();
   }
 
   ngAfterViewChecked(){
@@ -24,12 +37,12 @@ export class WelcomeComponent implements OnInit, AfterViewChecked{
       this.height = document.getElementById("global-footer").offsetHeight;
       console.log(`Footer h: ${this.height}`);
       document.getElementById("welcome-container").style.marginBottom = `${this.height + 15}px`;
-      if(this.height > 60){
+      if(this.height > 90){
         document.getElementById("global-footer").style.textAlign = "center";
-          document.getElementById("global-footer-version").style.lineHeight = `inherit`;
+        document.getElementById("global-footer-version").style.lineHeight = `inherit`;
       }else{
         document.getElementById("global-footer").style.textAlign = "right";
-        document.getElementById("global-footer-version").style.lineHeight = `${this.height}px`;
+        document.getElementById("global-footer-version").style.lineHeight = `${this.height-4}px`;
       }
   }
 

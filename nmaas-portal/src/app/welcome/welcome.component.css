@@ -8,8 +8,11 @@ html, body {
     background-color: rgb(255, 255, 255);
 }
 
+.vertical-offset {
+	margin-top: 50px;
+}
+
 .login-vertical-offset {
-	margin-top: 80px;
 }
 
 .landing-img-sm{
