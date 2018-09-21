@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -188,6 +189,9 @@ public class AppInstanceController extends AppBaseController {
 		boolean valid = validJSON(configuration.getJsonInput());
 		if (!valid)
 			throw new ProcessingException("Configuration is not in valid JSON format");
+
+		if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0)
+			throw new ProcessingException("Storage space cannot be less or equal 0");
 
 		appInstance.setConfiguration(configuration.getJsonInput());
 		instances.update(appInstance);
