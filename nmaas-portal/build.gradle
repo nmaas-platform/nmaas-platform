@@ -26,6 +26,18 @@ task dist(type: Zip) {
 }
 buildGUI.doLast { tasks.dist.execute() }
 
+task testCoverage(type: Exec) {
+	println 'Testing with code coverage analysis'
+
+	if ( OperatingSystem.current().isWindows() ) {
+		commandLine 'cmd', '/c', 'ng', 'test', '--watch=false', '/', '-cc'
+	} else {
+		commandLine 'ng', 'test', '--watch=false', '/' '-cc'
+	}
+
+}
+testCoverage.dependsOn(npm_install)
+
 build.dependsOn(buildGUI)
 build.dependsOn(npm_install)
 
