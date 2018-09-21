@@ -8,9 +8,6 @@ import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkDetailsVerif
 
 import java.util.Arrays;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class DockerNetworkConfigBuilder {
 
     private static final String DOCKER_NETWORK_DRIVER = "macvlan";

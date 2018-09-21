@@ -2,9 +2,7 @@ package net.geant.nmaas.portal.api.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter

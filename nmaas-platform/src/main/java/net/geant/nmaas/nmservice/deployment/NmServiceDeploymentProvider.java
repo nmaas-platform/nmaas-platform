@@ -7,8 +7,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * Defines a set of methods to manage NM service deployment lifecycle.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface NmServiceDeploymentProvider {
 

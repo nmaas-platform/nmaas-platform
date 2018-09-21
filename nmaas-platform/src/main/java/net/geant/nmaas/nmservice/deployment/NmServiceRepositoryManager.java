@@ -15,9 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Log4j2
 public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
 

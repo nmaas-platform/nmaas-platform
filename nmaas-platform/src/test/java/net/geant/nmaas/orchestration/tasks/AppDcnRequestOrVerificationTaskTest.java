@@ -32,7 +32,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)

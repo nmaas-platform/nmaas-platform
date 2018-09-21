@@ -2,9 +2,7 @@ package net.geant.nmaas.externalservices.inventory.kubernetes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManagerRestController;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KubernetesClusterManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
@@ -43,9 +41,6 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")

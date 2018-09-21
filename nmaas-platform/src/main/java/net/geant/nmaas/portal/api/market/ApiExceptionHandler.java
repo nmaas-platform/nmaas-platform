@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.extern.slf4j.Slf4j;
 import net.geant.nmaas.portal.api.domain.ApiError;
 import net.geant.nmaas.portal.api.exception.*;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;

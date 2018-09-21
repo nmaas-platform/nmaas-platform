@@ -15,8 +15,6 @@ import java.util.List;
 
 /**
  * Uses the Kubernetes REST API to verify if configured cluster is in proper state and meets all requirements.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DefaultKClusterValidator implements KClusterValidator {

@@ -8,9 +8,6 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Log4j2
 public class DcnDeploymentTask extends BaseDcnTask {

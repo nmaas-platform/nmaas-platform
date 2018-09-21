@@ -25,11 +25,15 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 @RequestMapping("/api/apps/{appId}/rate")
 public class RatingController extends AppBaseController {
 	
-	@Autowired
 	RatingRepository ratingRepo;
 	
-	@Autowired
 	UserRepository userRepo;
+
+	@Autowired
+	public RatingController(RatingRepository ratingRepo, UserRepository userRepo){
+		this.ratingRepo = ratingRepo;
+		this.userRepo = userRepo;
+	}
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public AppRate getAppRating(@PathVariable("appId") Long appId) throws MissingElementException {

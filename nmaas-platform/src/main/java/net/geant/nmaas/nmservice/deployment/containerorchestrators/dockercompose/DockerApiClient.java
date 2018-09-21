@@ -6,15 +6,18 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.ExecCreateParam;
 import com.spotify.docker.client.DockerClient.ListContainersParam;
 import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.*;
+import com.spotify.docker.client.messages.Container;
+import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.ExecCreation;
+import com.spotify.docker.client.messages.Network;
+import com.spotify.docker.client.messages.NetworkConfig;
+import com.spotify.docker.client.messages.NetworkConnection;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 public class DockerApiClient {
 

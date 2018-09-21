@@ -2,9 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import java.util.function.Predicate;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class HelmListCommand extends HelmCommand {
 
     private static final String LIST = "list";

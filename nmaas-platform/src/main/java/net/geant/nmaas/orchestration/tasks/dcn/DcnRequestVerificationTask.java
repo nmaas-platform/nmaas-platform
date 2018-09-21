@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Log4j2
 public class DcnRequestVerificationTask extends BaseDcnTask {

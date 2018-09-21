@@ -3,7 +3,12 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplateVariable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
@@ -20,9 +25,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+
 @Component
 @Profile("env_docker-compose")
 class DockerComposeFilePreparer {

@@ -11,9 +11,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class HelmCommandPreparationTest {
 
     private static final String NAMESPACE = "nmaas";

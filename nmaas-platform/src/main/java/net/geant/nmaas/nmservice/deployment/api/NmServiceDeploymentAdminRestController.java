@@ -5,9 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl/>
- */
 @RestController
 @RequestMapping(value = "/api/management/services")
 public class NmServiceDeploymentAdminRestController {

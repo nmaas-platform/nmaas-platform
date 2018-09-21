@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.info;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
 
 @RestController
 @RequestMapping("/api/info")

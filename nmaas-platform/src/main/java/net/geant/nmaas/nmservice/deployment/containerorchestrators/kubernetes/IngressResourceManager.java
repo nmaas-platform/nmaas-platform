@@ -5,8 +5,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * Methods for ingress resource manipulation.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface IngressResourceManager {
 

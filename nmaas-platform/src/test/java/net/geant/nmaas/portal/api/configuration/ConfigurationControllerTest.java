@@ -7,7 +7,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

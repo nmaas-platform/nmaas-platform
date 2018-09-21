@@ -1,10 +1,18 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name="docker_network_ipam_spec")
 public class DockerNetworkIpam {
@@ -13,7 +21,7 @@ public class DockerNetworkIpam {
     private static final String ADDRESS_POOL_DEFAULT_MASK_LENGTH = "24";
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable=false)
@@ -27,8 +35,6 @@ public class DockerNetworkIpam {
 
     @Column(nullable=false)
     private String ipAddressOfContainer;
-
-    public DockerNetworkIpam() { }
 
     public DockerNetworkIpam(String subnetWithMask, String gateway) {
         this.subnetWithMask = subnetWithMask;
@@ -66,46 +72,6 @@ public class DockerNetworkIpam {
 
     public static boolean notValidIpNetworkAddress(String ipRangeWithMask) {
         return !ipRangeWithMask.endsWith(".0/" + ADDRESS_POOL_DEFAULT_MASK_LENGTH);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSubnetWithMask() {
-        return subnetWithMask;
-    }
-
-    public void setSubnetWithMask(String subnetWithMask) {
-        this.subnetWithMask = subnetWithMask;
-    }
-
-    public String getIpRangeWithMask() {
-        return ipRangeWithMask;
-    }
-
-    public void setIpRangeWithMask(String ipRangeWithMask) {
-        this.ipRangeWithMask = ipRangeWithMask;
-    }
-
-    public String getGateway() {
-        return gateway;
-    }
-
-    public void setGateway(String gateway) {
-        this.gateway = gateway;
-    }
-
-    public String getIpAddressOfContainer() {
-        return ipAddressOfContainer;
-    }
-
-    public void setIpAddressOfContainer(String ipAddressOfContainer) {
-        this.ipAddressOfContainer = ipAddressOfContainer;
     }
 
     @Override

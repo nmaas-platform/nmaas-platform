@@ -9,8 +9,6 @@ import java.util.List;
 
 /**
  * Defines a method to be used to transfer a list of configuration files for a given deployment to destination storage.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface ConfigurationFileTransferProvider {
 

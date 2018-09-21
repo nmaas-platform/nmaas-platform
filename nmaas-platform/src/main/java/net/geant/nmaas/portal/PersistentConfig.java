@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Configuration

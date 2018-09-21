@@ -10,9 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 public class DockerHostNetworkRepositoryManager {
 

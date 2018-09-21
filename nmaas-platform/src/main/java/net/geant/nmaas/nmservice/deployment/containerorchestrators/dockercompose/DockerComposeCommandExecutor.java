@@ -13,14 +13,15 @@ import org.springframework.stereotype.Component;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 public class DockerComposeCommandExecutor {
 
-    @Autowired
     private Environment env;
+
+    @Autowired
+    public DockerComposeCommandExecutor(Environment env){
+        this.env = env;
+    }
 
     void executeComposeFileDownloadCommand(Identifier deploymentId, DockerHost host) throws CommandExecutionException {
         try {

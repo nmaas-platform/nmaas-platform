@@ -39,14 +39,18 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
-	@Autowired
 	UserService userService;
 	
-	@Autowired
 	DomainService domainService;
 
-	@Autowired
 	ApplicationEventPublisher eventPublisher;
+
+	@Autowired
+	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher){
+		this.userService = userService;
+		this.domainService = domainService;
+		this.eventPublisher = eventPublisher;
+	}
 
 	@GetMapping
 	@Transactional(readOnly = true)

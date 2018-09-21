@@ -19,12 +19,15 @@ import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 @RequestMapping("/api/tags")
 public class TagController {
 
-	@Autowired
 	TagRepository tagRepo;
 	
-	@Autowired
 	ModelMapper modelMapper;
-	
+
+	@Autowired
+	public TagController(TagRepository tagRepo, ModelMapper modelMapper){
+		this.tagRepo = tagRepo;
+		this.modelMapper = modelMapper;
+	}
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public Set<String> getAll() {
