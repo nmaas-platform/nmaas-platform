@@ -25,7 +25,6 @@ export class AppMarketComponent implements OnInit, AfterViewChecked {
         console.log(`Footer h: ${this.height}`);
         let headerHeight = document.getElementById("navbar-welcome").offsetHeight;
         document.getElementById("appmarket-container").style.marginBottom = `${this.height}px`;
-        document.getElementById("login-register-panel").style.paddingBottom = `${this.height + 100}px`;
         if(this.height > 90){
             document.getElementById("global-footer").style.textAlign = "center";
             document.getElementById("global-footer-version").style.lineHeight = `inherit`;

@@ -154,11 +154,11 @@
                 </div>
 			</div>
 			<div id="login-register-panel" class="col-lg-3 col-md-5 col-sm-6 col-xs-12 collapse pull-right login-vertical-offset"
-				 style="z-index: 800; position: fixed; right: 1vh; padding-top: 15px;">
+				 style="z-index: 800; position: fixed; right: 1px; padding-top: 15px; max-height: 50vh;">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 					</div>
-					<div class="panel-body" style="max-height: calc(90vh - 45px); overflow-y: auto;">
+					<div class="panel-body" id="login-out" style="overflow-y: auto;">
 						<ul class="nav nav-tabs nav-justified">
 							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['login']">Login</a></li>
 							<li role="registration" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['registration']">Register</a></li>
