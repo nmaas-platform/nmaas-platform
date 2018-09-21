@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {AfterContentChecked, AfterViewChecked, Component, OnInit, ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'app-appmarket',
@@ -6,7 +6,7 @@ import {AfterViewChecked, Component, OnInit, ViewEncapsulation} from '@angular/c
   styleUrls: [ '../../assets/css/main.css', './appmarket.component.css' ]
 //  encapsulation: ViewEncapsulation.None
 })
-export class AppMarketComponent implements OnInit, AfterViewChecked {
+export class AppMarketComponent implements OnInit, AfterViewChecked, AfterContentChecked {
 
   private height = 0;
 
@@ -16,14 +16,17 @@ export class AppMarketComponent implements OnInit, AfterViewChecked {
       this.onResize();
   }
 
-    ngAfterViewChecked(){
-        this.onResize();
-    }
+  ngAfterViewChecked(){
+      this.onResize();
+  }
+
+  ngAfterContentChecked(){
+      this.onResize();
+  }
 
     onResize() {
         this.height = document.getElementById("global-footer").offsetHeight;
-        console.log(`Footer h: ${this.height}`);
-        let headerHeight = document.getElementById("navbar-welcome").offsetHeight;
+        //console.log(`Footer h: ${this.height}`);
         document.getElementById("appmarket-container").style.marginBottom = `${this.height}px`;
         if(this.height > 90){
             document.getElementById("global-footer").style.textAlign = "center";
