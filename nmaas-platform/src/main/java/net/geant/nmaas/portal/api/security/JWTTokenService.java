@@ -21,7 +21,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 @NoArgsConstructor
 public class JWTTokenService {
 
-	@Autowired
 	private JWTSettings jwtSettings;
 
 	@Autowired
