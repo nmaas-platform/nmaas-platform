@@ -21,7 +21,7 @@ public class NotificationServiceImpl implements NotificationService {
     private String pathWithToken;
 
     @Override
-    public void sendEmailWithToken(EmailConfirmation emailConfirmation, String token) {
+    public void sendEmail(EmailConfirmation emailConfirmation, String token) {
         final String uri = String.format("%s:%s%s", url, port, pathWithToken);
 
         RestTemplate restTemplate = new RestTemplate();

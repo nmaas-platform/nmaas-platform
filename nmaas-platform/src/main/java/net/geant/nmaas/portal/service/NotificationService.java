@@ -5,5 +5,5 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.stereotype.Service;
 
 public interface NotificationService {
-    void sendEmailWithToken(EmailConfirmation emailConfirmation, String token);
+    void sendEmail(EmailConfirmation emailConfirmation, String token);
 }
