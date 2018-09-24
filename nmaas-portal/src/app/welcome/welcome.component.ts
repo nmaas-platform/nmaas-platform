@@ -38,6 +38,7 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
       //console.log(`Footer h: ${this.height}`);
       let navHeight = document.getElementById("navbar-welcome").offsetHeight;
       document.getElementById("welcome-container").style.marginBottom = `${this.height + 15}px`;
+      document.getElementById("welcome-container").style.marginTop = `${navHeight + 10}px`;
       document.getElementById("login-out").style.maxHeight = `calc(95vh - ${this.height + navHeight + (navHeight-50)}px)`;
       document.getElementById("login-out").style.paddingTop = `${this.height - 50}`;
       if(this.height > 90){
