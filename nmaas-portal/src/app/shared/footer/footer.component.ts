@@ -22,6 +22,8 @@ export class FooterComponent implements OnInit {
   constructor(private changelogService:ChangelogService, private router:Router) { }
 
   ngOnInit() {
+    this.modal.setModalType("info");
+    this.modal.setStatusOfIcons(true);
     this.changelogService.getGitInfo().subscribe(info => this.gitInfo = info);
   }
 
