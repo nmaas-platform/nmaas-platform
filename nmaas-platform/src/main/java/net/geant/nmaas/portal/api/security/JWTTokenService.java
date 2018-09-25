@@ -1,15 +1,12 @@
 package net.geant.nmaas.portal.api.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import io.jsonwebtoken.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,7 +21,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 @NoArgsConstructor
 public class JWTTokenService {
 
-	JWTSettings jwtSettings;
+	private JWTSettings jwtSettings;
 
 	@Autowired
 	public JWTTokenService(JWTSettings jwtSettings){

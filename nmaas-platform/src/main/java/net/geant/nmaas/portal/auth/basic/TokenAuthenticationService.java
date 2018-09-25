@@ -1,7 +1,12 @@
 package net.geant.nmaas.portal.auth.basic;
 
+import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,10 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class TokenAuthenticationService {
@@ -22,10 +24,10 @@ public class TokenAuthenticationService {
 	private final static String AUTH_METHOD="Bearer";
 	
 	@Autowired
-	JWTTokenService tokenService;
+	private JWTTokenService jwtTokenService;
 	
 	public TokenAuthenticationService(JWTTokenService jwtTokenService) {
-		this.tokenService = jwtTokenService;
+		this.jwtTokenService = jwtTokenService;
 	}
 
 	public Authentication getAuthentication(HttpServletRequest httpRequest) {
@@ -35,8 +37,8 @@ public class TokenAuthenticationService {
 
 		String token = authHeader.substring(AUTH_METHOD.length() + 1);
 
-		String username = tokenService.getClaims(token).getSubject();
-		Object scopes = tokenService.getClaims(token).get("scopes");
+		String username = jwtTokenService.getClaims(token).getSubject();
+		Object scopes = jwtTokenService.getClaims(token).get("scopes");
 
 		Set<SimpleGrantedAuthority> authorities = null;
 
@@ -51,5 +53,14 @@ public class TokenAuthenticationService {
 
 		return authentication;
 	}
+
+	public String getAnonymousAccessToken(){
+        User user = User.builder().firstname("anonymous")
+                .lastname("anonymous")
+                .username("anonymous")
+                .roles(Arrays.asList(new UserRole(new User("anonymous"), new Domain("anonymous", "anonymous"), Role.ROLE_SUPERADMIN)))
+                .build();
+        return jwtTokenService.getToken(user);
+    }
 
 }

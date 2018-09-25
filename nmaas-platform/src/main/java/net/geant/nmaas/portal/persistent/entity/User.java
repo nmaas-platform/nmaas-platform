@@ -12,16 +12,17 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Table(name="users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+
 public class User {
 
 	@Id
