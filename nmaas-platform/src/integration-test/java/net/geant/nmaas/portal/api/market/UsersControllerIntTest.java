@@ -13,6 +13,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,16 @@ import org.springframework.test.web.servlet.MvcResult;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -94,6 +102,7 @@ public class UsersControllerIntTest extends BaseControllerTest {
         prepareSecurity();
     }
 
+    @Ignore
     @Test
     public void testDisableUser() throws Exception {
         MvcResult result = mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
@@ -104,6 +113,7 @@ public class UsersControllerIntTest extends BaseControllerTest {
                 .andReturn();
     }
 
+    @Ignore
     @Test
     public void testEnableUser() throws Exception {
         MvcResult result =  mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
