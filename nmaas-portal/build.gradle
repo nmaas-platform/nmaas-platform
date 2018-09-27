@@ -30,9 +30,9 @@ task testCoverage(type: Exec) {
 	println 'Testing with code coverage analysis'
 
 	if ( OperatingSystem.current().isWindows() ) {
-		commandLine 'cmd', '/c', 'ng', 'test', '--watch=false', '/', '-cc'
+		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '/', '-cc'
 	} else {
-		commandLine 'ng', 'test', '--watch=false', '/' '-cc'
+		commandLine 'ng', 'test', '--watch=false', '--browser', 'ChromeHeadless', '/' '-cc'
 	}
 
 }
@@ -40,4 +40,3 @@ testCoverage.dependsOn(npm_install)
 
 build.dependsOn(buildGUI)
 build.dependsOn(npm_install)
-
