@@ -17,12 +17,18 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
     return config.load();
   }
+}
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+    return new TranslateHttpLoader(httpClient);
 }
 
 export const jwtOptionsFactory = (appConfig: AppConfigService) => ({

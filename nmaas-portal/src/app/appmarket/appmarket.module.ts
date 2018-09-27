@@ -31,6 +31,11 @@ import {ConfigurationModule} from "./admin/configuration/configuration.module";
 import {MonitorModule} from "./admin/monitor/monitor.module";
 import {ShibbolethModule} from "./admin/shibboleth/shibboleth.module";
 import {StorageServiceModule} from "ngx-webstorage-service";
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {BrowserModule} from '@angular/platform-browser';
+import {HttpLoaderFactory} from '../app.module';
 
 @NgModule({
   declarations: [
@@ -52,10 +57,19 @@ import {StorageServiceModule} from "ngx-webstorage-service";
     AuthModule,
     PipesModule,
     ClustersModule,
-      GitlabModule,
-      ShibbolethModule,
-      MonitorModule,
-      ConfigurationModule
+    GitlabModule,
+    ShibbolethModule,
+    MonitorModule,
+    ConfigurationModule,
+    BrowserModule,
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    }),
   ],
   exports: [
     AppMarketComponent,

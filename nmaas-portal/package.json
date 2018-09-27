@@ -25,6 +25,8 @@
     "@angular/platform-server": "^5.2.0",
     "@angular/router": "^5.2.0",
     "@auth0/angular-jwt": "^1.0.0",
+    "@ngx-translate/core": "^10.0.2",
+    "@ngx-translate/http-loader": "^3.0.1",
     "ajv": "^6.0.1",
     "angular2-json-schema-form": "0.7.0-alpha.1",
     "angular5-recaptcha": "0.0.2",
