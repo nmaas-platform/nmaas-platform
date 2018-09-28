@@ -10,9 +10,9 @@ import { AuthService } from '../../auth/auth.service';
 
 describe('Component: Login', () => {
         
-  it('should create an instance', () => {
+  //it('should create an instance', () => {
 //      
 //    let component = new LoginComponent(new Router(), new AuthService());
 //    expect(component).toBeTruthy();
-  });
+ // });
 });
