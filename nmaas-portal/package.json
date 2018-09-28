@@ -61,7 +61,6 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-remap-istanbul": "^0.6.0",
     "karma-webpack": "^3.0.5",
-    "phantomjs-prebuilt": "^2.1.16",
     "protractor": "~5.2.2",
     "ts-node": "4.1.0",
     "tslint": "^5.9.1",
