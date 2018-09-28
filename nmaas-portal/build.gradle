@@ -39,4 +39,5 @@ task testCoverage(type: Exec) {
 testCoverage.dependsOn(npm_install)
 
 build.dependsOn(buildGUI)
+build.dependsOn(testCoverage)
 build.dependsOn(npm_install)
