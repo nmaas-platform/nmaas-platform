@@ -73,7 +73,7 @@ public class AppLifecycleManagerRestController {
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
             @PathVariable("deploymentId") String deploymentId,
-            @RequestBody AppConfigurationView configuration) throws InvalidDeploymentIdException {
+            @RequestBody AppConfigurationView configuration) throws Throwable {
         lifecycleManager.applyConfiguration(Identifier.newInstance(deploymentId), configuration);
     }
 

@@ -39,7 +39,7 @@ public interface AppLifecycleManager {
      * @param deploymentId unique identifier of the deployed user application
      * @param configuration configuration provided by user in application deployment wizard
      */
-    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws InvalidDeploymentIdException;
+    void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable;
 
     /**
      * Removes deployed application from the system.

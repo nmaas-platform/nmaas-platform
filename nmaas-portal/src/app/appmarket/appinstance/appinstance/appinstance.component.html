@@ -123,12 +123,17 @@
 							</json-schema-form>
 						</div>
 						<div id="advanced" class="tab-pane fade" style="padding-bottom: 10px">
-							<label class="control-label" for="storageSpace">Storage space (GB):</label>
-							<input class="form-control no-spin" placeholder="Default value: {{app?.appDeploymentSpec.defaultStorageSpace}}" [(ngModel)]="appConfiguration.storageSpace" id="storageSpace"
-								   name="storageSpace" type="number" />
+							<form [formGroup]="configAdvancedTab">
+								<div class="form-group" [ngClass]="{'has-error': configAdvancedTab.controls.storageSpace.invalid && configAdvancedTab.controls.storageSpace.dirty,
+																	'has-success': configAdvancedTab.controls.storageSpace.valid && configAdvancedTab.controls.storageSpace.dirty}">
+									<label class="control-label" for="storageSpace">Storage space (GB):</label>
+									<input type="text" class="form-control" placeholder="Default value: {{app?.appDeploymentSpec.defaultStorageSpace}}"
+										   formControlName="storageSpace" id="storageSpace">
+								</div>
+							</form>
 						</div>
 						<p *ngIf="requiredFields"><strong class="text-danger">*</strong> = required fields</p>
-						<button type="button" class="btn btn-success" [disabled]="!isValid()" (click)="applyConfiguration()">Apply configuration</button>
+						<button type="button" class="btn btn-success" [disabled]="!isValid() || !configAdvancedTab.valid" (click)="applyConfiguration()">Apply configuration</button>
 					</div>
 				</div>
 			</div>

@@ -66,14 +66,19 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private List<String> managedDevicesIpAddresses;
 
+    /** Required storage space to be allocated for this particular instance in GB */
+    @Column(nullable = false)
+    private Integer storageSpace;
+
     /** GitLab project information created to store configuration files for this service (deployment) */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private GitLabProject gitLabProject;
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
         this.domain = domain;
+        this.storageSpace = storageSpace;
     }
 }

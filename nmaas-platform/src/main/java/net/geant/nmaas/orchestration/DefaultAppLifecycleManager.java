@@ -2,6 +2,8 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -37,10 +39,14 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private ApplicationEventPublisher eventPublisher;
 
+    private NmServiceInfoRepository nmServiceInfoRepository;
+
     @Autowired
-    public DefaultAppLifecycleManager(AppDeploymentRepositoryManager repositoryManager, ApplicationEventPublisher eventPublisher) {
+    public DefaultAppLifecycleManager(AppDeploymentRepositoryManager repositoryManager,
+                                      ApplicationEventPublisher eventPublisher, NmServiceInfoRepository nmServiceInfoRepository) {
         this.repositoryManager = repositoryManager;
         this.eventPublisher = eventPublisher;
+        this.nmServiceInfoRepository = nmServiceInfoRepository;
     }
 
     @Override
@@ -80,15 +86,16 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws InvalidDeploymentIdException {
+    public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
         appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
             appDeployment.setStorageSpace(configuration.getStorageSpace());
-        } else{
-            appDeployment.setStorageSpace(appDeployment.getStorageSpace());
+            serviceInfo.setStorageSpace(configuration.getStorageSpace());
         }
         repositoryManager.update(appDeployment);
+        nmServiceInfoRepository.save(serviceInfo);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }

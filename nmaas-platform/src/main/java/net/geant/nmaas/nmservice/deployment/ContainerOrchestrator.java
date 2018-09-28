@@ -8,6 +8,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -29,12 +30,11 @@ public interface ContainerOrchestrator {
      * for NM service being requested and if so creates proper NM service info object.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param deploymentName name of application instance provided by the user
-     * @param domain name of the client domain for this deployment
+     * @param appDeployment deployment details provided by user
      * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if current deployment environment is not supported by the application
      */
-    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
+    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException;
 
     /**

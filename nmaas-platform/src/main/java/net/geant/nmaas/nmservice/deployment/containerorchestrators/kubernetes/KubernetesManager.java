@@ -21,6 +21,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmen
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
@@ -72,7 +73,7 @@ public class KubernetesManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
             throw new NmServiceRequestVerificationException(
@@ -80,10 +81,14 @@ public class KubernetesManager implements ContainerOrchestrator {
         if(appDeploymentSpec.getKubernetesTemplate() == null){
             throw new NmServiceRequestVerificationException("Kubernetes template cannot be null");
         }
+        if(appDeployment == null){
+            throw new NmServiceRequestVerificationException("App deployment cannot be null");
+        }
         repositoryManager.storeService(new KubernetesNmServiceInfo(
                 deploymentId,
-                deploymentName,
-                domain,
+                appDeployment.getDeploymentName(),
+                appDeployment.getDomain(),
+                appDeployment.getStorageSpace(),
                 KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
         );
     }

@@ -56,6 +56,7 @@ public abstract class BasePrepareDeploymentEnvTest {
                 deploymentId,
                 DEPLOYMENT_NAME,
                 DOMAIN,
+                20,
                 prepareTestComposeFileTemplate(composeFileTemplatePath));
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());
