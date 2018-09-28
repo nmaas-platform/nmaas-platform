@@ -5932,7 +5932,7 @@ button.close {
   opacity: .5;
 }
 .modal-header {
-  padding: 15px;
+  padding: 5px;
   border-bottom: 1px solid #e5e5e5;
 }
 .modal-header .close {
@@ -5947,7 +5947,7 @@ button.close {
   padding: 15px;
 }
 .modal-footer {
-  padding: 15px;
+  padding: 5px;
   text-align: right;
   border-top: 1px solid #e5e5e5;
 }

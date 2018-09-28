@@ -9,6 +9,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +19,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
+public class UserServiceImpl implements UserService {
 	
 	UserRepository userRepo;
 	
@@ -167,4 +169,16 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 			throw new IllegalArgumentException("user is null");
 	}
 
+	@Override
+	public String findAllUsersEmailWithAdminRole(){
+        String emails = "";
+        for(User user: findAll()){
+            for(UserRole userRole: user.getRoles()){
+                if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SUPERADMIN.name())){
+                    emails = emails + userRole.getUser().getEmail() + ",";
+                }
+            }
+        }
+        return emails;
+	}
 }

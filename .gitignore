@@ -19,3 +19,5 @@ nmaas-platform/src/main/resources/git.properties
 *.iml
 *.ipr
 
+nmaas-platform/target/
+target/scala-2.12/

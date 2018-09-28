@@ -29,7 +29,7 @@
     display: inline-block;
     height: auto;
     width: auto;
-    max-width: 45px;
-    max-height: 45px;
-    padding-bottom: 10px;
+    max-width: 18px;
+    max-height: 18px;
+    vertical-align: text-bottom;
 }

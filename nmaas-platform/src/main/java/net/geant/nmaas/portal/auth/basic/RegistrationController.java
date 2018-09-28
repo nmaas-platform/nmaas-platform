@@ -5,16 +5,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.model.EmailConfirmation;
+import net.geant.nmaas.portal.service.NotificationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Domain;
@@ -32,32 +31,44 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/auth/basic/registration")
 @Log4j2
 public class RegistrationController {
+	private UserService usersService;
 
-	UserService users;
-	
-	DomainService domains;
-	
-	PasswordEncoder passwordEncoder;
-	
-	ModelMapper modelMapper;
+	private DomainService domains;
+
+	private PasswordEncoder passwordEncoder;
+
+	private ModelMapper modelMapper;
+
+	private NotificationService notificationService;
+
+	private TokenAuthenticationService tokenAuthenticationService;
 
 	@Autowired
-	public RegistrationController(UserService users, DomainService domains, PasswordEncoder passwordEncoder, ModelMapper modelMapper){
-		this.users = users;
+	public RegistrationController(UserService usersService,
+								  DomainService domains,
+								  PasswordEncoder passwordEncoder,
+								  ModelMapper modelMapper,
+								  NotificationService notificationService,
+								  TokenAuthenticationService tokenAuthenticationService){
+		this.usersService = usersService;
 		this.domains = domains;
 		this.passwordEncoder = passwordEncoder;
 		this.modelMapper = modelMapper;
+		this.notificationService = notificationService;
+		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 	
 	@PostMapping
 	@Transactional
+
+    @ResponseStatus(HttpStatus.CREATED)
 	public void signup(@RequestBody final Registration registration) throws SignupException {
 		if(registration == null || StringUtils.isEmpty(registration.getUsername()) || StringUtils.isEmpty(registration.getPassword()) )
 			throw new SignupException("Invalid credentials.");
 							
 		User newUser = null;
 		try {
-			newUser = users.register(registration.getUsername(), domains.getGlobalDomain().orElseThrow(MissingElementException::new));
+			newUser = usersService.register(registration.getUsername(), domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 			if(newUser == null)
 				throw new SignupException("Unable to register new user.");
 			if(!registration.getTermsOfUseAccepted()){
@@ -80,16 +91,26 @@ public class RegistrationController {
 		newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
 		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
 
-
-
 		try {
-			users.update(newUser);
+			usersService.update(newUser);
             log.info(String.format("The user with user name - %s, first name - %s, last name - %s, email - %s have signed up with domain id - %s.",
                     registration.getUsername(),
                     registration.getFirstname(),
                     registration.getLastname(),
                     registration.getEmail(),
                     registration.getDomainId()));
+
+            EmailConfirmation emailConfirmation = EmailConfirmation
+                    .builder()
+                    .firstName(newUser.getFirstname())
+                    .lastName(newUser.getLastname())
+                    .toEmail(usersService.findAllUsersEmailWithAdminRole())
+                    .userName(newUser.getUsername())
+                    .subject("NMaaS: New account registration request")
+                    .templateName("admin-notification")
+                    .build();
+			notificationService.sendEmail(emailConfirmation, tokenAuthenticationService.getAnonymousAccessToken());
+
 			if(registration.getDomainId() != null)
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 		} catch (ObjectNotFoundException e) {
@@ -116,5 +137,4 @@ public class RegistrationController {
 						.collect(Collectors.toList());
 		
 	}
-	
 }

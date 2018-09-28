@@ -30,6 +30,7 @@ import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.comp
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
 import { ShibbolethDetailsComponent } from './admin/shibboleth/details/shibboleth-details.component';
+import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
 
 @NgModule({
   imports: [
@@ -66,6 +67,7 @@ import { ShibbolethDetailsComponent } from './admin/shibboleth/details/shibbolet
       GitlabDetailsComponent,
       ModalInfoTermsComponent,
       ModalInfoPolicyComponent,
+      ModalChangelogComponent,
   ],
   providers: [
     PasswordValidator,

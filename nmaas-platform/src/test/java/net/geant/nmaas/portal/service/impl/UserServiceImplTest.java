@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -287,6 +288,22 @@ public class UserServiceImplTest {
     public void setPrivacyPolicyAcceptedFlagShouldChangeFlagToFalse(){
         userService.setPrivacyPolicyAcceptedFlag((long) 0, false);
         verify(userRepository).setPrivacyPolicyAcceptedFlag((long) 0, false);
+    }
+
+    @Test
+    public void findAllUsersEmailWithAdminRole(){
+        List<User> users = new ArrayList<>();
+        List<UserRole> userRoles = new ArrayList<>();
+
+        Domain domain = new Domain((long) 1, "test", "test");
+        User user = User.builder().firstname("test").lastname("test").email("test1@email.com").build();
+        UserRole userRole = new UserRole(user, domain, Role.ROLE_SUPERADMIN);
+        userRoles.add(userRole);
+
+        user.setRoles(userRoles);
+        users.add(user);
+        when(userRepository.findAll()).thenReturn(users);
+        assertEquals("test1@email.com,", userService.findAllUsersEmailWithAdminRole());
     }
 
 }
