@@ -30,7 +30,7 @@ task testCoverage(type: Exec) {
 	println 'Testing with code coverage analysis'
 
 	if ( OperatingSystem.current().isWindows() ) {
-		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '/',
+		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '/'
 	} else {
 		commandLine 'ng', 'test', '--watch=false', '--browser', 'ChromeHeadless', '/'
 	}
