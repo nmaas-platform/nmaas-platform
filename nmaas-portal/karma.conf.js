@@ -6,7 +6,6 @@ module.exports = function (config) {
             require('karma-jasmine'),
             require('karma-babel-preprocessor'),
             require('karma-chrome-launcher'),
-            require('karma-phantomjs-launcher'),
             require('karma-webpack'),
             require('karma-jasmine-html-reporter'),
             require('karma-coverage-istanbul-reporter'),
@@ -30,8 +29,8 @@ module.exports = function (config) {
             { pattern: './src/test.ts', watched: false }
         ],
         preprocessors: {
-            '**/*.spec.ts': ['webpack'],
-            './src/test.ts': ['webpack']
+            '**/*.spec.ts': ['@angular/cli'],
+            './src/test.ts': ['@angular/cli']
         },
         mime: {
             'text/x-typescript': ['ts','tsx']
