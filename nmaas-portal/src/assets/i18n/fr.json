@@ -1,10 +1,14 @@
 {
   "NAVBAR": {
-    "MARKET": "Hello Angular with ngx-translate!",
-    "SUBSCRIPTIONS": "Change languagessss",
-    "INSTANCES": "Hello Angular with ngx-translate!",
-    "DOMAINS": "Change languagessss",
-    "USERS": "Hello Angular with ngx-translate!",
-    "INVENTORY": "Change languagessss"
+    "MARKET": "Marché",
+    "SUBSCRIPTIONS": "Abonnement",
+    "INSTANCES": "Instances",
+    "DOMAINS": "Domaines",
+    "USERS": "Utilisateurs",
+    "INVENTORY": "Inventaire",
+    "MONITOR": "Moniteur",
+    "CONFIGURATION": "Configuration",
+    "PROFILE": "Profil",
+    "LOGOUT": "Connectez - Out"
   }
 }

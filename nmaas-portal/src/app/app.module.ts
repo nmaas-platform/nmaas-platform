@@ -17,9 +17,7 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import { HttpClientModule } from '@angular/common/http';
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -27,9 +25,7 @@ export function appConfigFactory( config: AppConfigService) {
   }
 }
 
-export function HttpLoaderFactory(httpClient: HttpClient) {
-    return new TranslateHttpLoader(httpClient);
-}
+
 
 export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     tokenGetter: () => {

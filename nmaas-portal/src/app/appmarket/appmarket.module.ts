@@ -35,7 +35,6 @@ import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpLoaderFactory} from '../app.module';
 
 @NgModule({
   declarations: [
@@ -86,3 +85,7 @@ import {HttpLoaderFactory} from '../app.module';
 
 })
 export class AppMarketModule {}
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+    return new TranslateHttpLoader(httpClient);
+}
