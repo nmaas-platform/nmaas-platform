@@ -61,7 +61,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain) {
-        return externalUrl(deploymentName.toLowerCase(), domain, externalServiceDomain.toLowerCase());
+        return externalUrl(deploymentName.toLowerCase(), domain.toLowerCase(), externalServiceDomain.toLowerCase());
     }
 
     /**
@@ -103,7 +103,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                         servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
-                IngressRule rule = prepareNewRule(serviceExternalUrl, serviceName, servicePort);
+                IngressRule rule = prepareNewRule(serviceExternalUrl.toLowerCase(), serviceName.toLowerCase(), servicePort);
                 ingress.getSpec().getRules().add(rule);
                 deleteIngressResource(client, ingress);
             }
