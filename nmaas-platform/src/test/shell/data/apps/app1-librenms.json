@@ -41,7 +41,7 @@
 									"type": "string"
 								}
 							},
-							"required": ["ipAddress", "snmpCommunity", "snmpVersion"]
+							"required": ["items"]
 						}
 					}
 				}

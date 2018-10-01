@@ -61,7 +61,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain) {
-        return externalUrl(deploymentName, domain, externalServiceDomain);
+        return externalUrl(deploymentName.toLowerCase(), domain, externalServiceDomain.toLowerCase());
     }
 
     /**
@@ -118,7 +118,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     private String externalUrl(String deploymentName, String domain, String externalServiceDomain) {
-        return deploymentName + "." + domain.toLowerCase() + "." + externalServiceDomain;
+        return deploymentName.toLowerCase() + "." + domain.toLowerCase() + "." + externalServiceDomain.toLowerCase();
     }
 
     private String ingressClassName(String domain) {
