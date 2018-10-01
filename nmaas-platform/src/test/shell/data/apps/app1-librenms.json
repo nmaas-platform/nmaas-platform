@@ -10,8 +10,15 @@
 	"issuesUrl": "https://github.com/librenms/librenms/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE"
+			"DOCKER_COMPOSE",
+			"KUBERNETES"
 		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-librenms",
+				"version": "1.0.0-alfa"
+			}
+		},
 		"dockerComposeFileTemplate": {
 			"dcnAttachedContainers": [
 				{"name": "librenms", "description": "librenms"}
@@ -51,10 +58,19 @@
 							"required": ["ipAddress", "snmpCommunity", "snmpVersion"]
 						}
 					}
-				}
+				},
+				"required": ["targets"]
 			},
 			"form": [
-				"*"
+				{
+					"key": "targets",
+					"items":[
+						"targets[]",
+						"targets[].ipAddress",
+						"targets[].snmpCommunity",
+						"targets[].snmpVersion"
+					]
+				}
 			]
 		}
 	}

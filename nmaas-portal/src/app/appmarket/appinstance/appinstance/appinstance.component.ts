@@ -166,11 +166,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
     for(let value of this.requiredFields){
       if(!this.appConfiguration.jsonInput.hasOwnProperty(value)){
-          return false;
-      } else if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items) && this.configurationTemplate.schema.properties[value].items.properties.hasOwnProperty("ipAddress")){
-        for(let val of this.appConfiguration.jsonInput[value]){
-            if(!val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])){
+        return false;
+      }
+      if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items)){
+        for(let val of this.appConfiguration.jsonInput[value]) {
+            if (!isNullOrUndefined(val.ipAddress) && !val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])) {
                 return false;
+            }
+        }
+        if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items.required)){
+            for(let valReq of this.configurationTemplate.schema.properties[value].items.required){
+                for(let val of this.appConfiguration.jsonInput[value]){
+                    if(!val.hasOwnProperty(valReq)){
+                        return false;
+                    }
+                }
             }
         }
       }
