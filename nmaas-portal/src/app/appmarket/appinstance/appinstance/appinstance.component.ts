@@ -12,7 +12,7 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
-import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
+import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
@@ -67,7 +67,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject(SESSION_STORAGE) private storage: StorageService,
+    @Inject(LOCAL_STORAGE) private storage: StorageService,
               private fb: FormBuilder) {
       this.configAdvancedTab = fb.group({
       storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]

@@ -104,7 +104,7 @@
 				</table>
 			</div>
 
-			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || appInstanceStatus.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus.state === AppInstanceState[AppInstanceState.UNKNOWN]}" >
+            <div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || appInstanceStatus?.state > AppInstanceState.CONFIGURATION_AWAITING}" >
 				<div class="col-xs-12">
 					<h3>Configuration</h3>
 					<hr>
