@@ -27,7 +27,7 @@ public class ShibbolethManagerTest {
 
     private ShibbolethManager shibbolethManager;
 
-    @Value("{sso.key}")
+    @Value("${sso.key}")
     private String path;
 
     @Before
