@@ -27,9 +27,6 @@ public class ShibbolethManagerTest {
 
     private ShibbolethManager shibbolethManager;
 
-    @Value("${sso.key}")
-    private String path;
-
     @Before
     public void setup(){
         shibbolethManager = new ShibbolethManager(repo, modelMapper);
