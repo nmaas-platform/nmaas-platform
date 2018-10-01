@@ -29,5 +29,22 @@
 				}
 			]
 		}
+	},
+	"additionalParametersTemplate": {
+		"template": {
+			"schema": {
+				"type": "object",
+				"properties":{
+					"adminMail": {
+						"type": "string",
+						"format": "email",
+						"title": "Admin email"
+					}
+				}
+			},
+			"form":[
+				"adminMail"
+			]
+		}
 	}
 }

@@ -1,6 +1,11 @@
 package net.geant.nmaas.orchestration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Map;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
@@ -94,10 +99,21 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             appDeployment.setStorageSpace(configuration.getStorageSpace());
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
         }
+        if(configuration.getAdditionalParameters() != null && !configuration.getAdditionalParameters().isEmpty()){
+            serviceInfo.setAdditionalParameters(this.getMapFromJson(configuration.getAdditionalParameters()));
+        }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
+        }
+    }
+
+    private Map<String, String> getMapFromJson(String inputJson){
+        try {
+            return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
+        } catch (IOException e) {
+            throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
     }
 

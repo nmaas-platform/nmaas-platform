@@ -84,6 +84,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                     ingressManager.getTlsSupported())
             );
         }
+        if(serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()){
+            serviceInfo.getAdditionalParameters().forEach(arguments::put);
+        }
         helmCommandExecutor.executeHelmInstallCommand(
                 namespaceService.namespace(domain),
                 deploymentId,

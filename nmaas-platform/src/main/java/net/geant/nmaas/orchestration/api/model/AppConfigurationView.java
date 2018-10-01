@@ -14,6 +14,13 @@ public class AppConfigurationView {
     @JsonProperty("jsonInput")
     private String jsonInput;
     private Integer storageSpace;
+    @JsonProperty("additionalParameters")
+    private String additionalParameters;
+
+    @JsonSetter("additionalParameters")
+    public void setAdditionalParameters(JsonNode data){
+        this.additionalParameters = data.toString();
+    }
 
     public void setStorageSpace(Integer storageSpace){
         this.storageSpace = storageSpace;
