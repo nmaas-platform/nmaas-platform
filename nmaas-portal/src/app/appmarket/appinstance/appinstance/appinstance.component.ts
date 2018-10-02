@@ -12,7 +12,7 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
-import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
+import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ModalComponent} from "../../../shared/modal";
 
@@ -46,6 +46,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
+  public additionalParametersTemplate: any;
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
 
@@ -70,7 +71,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject(SESSION_STORAGE) private storage: StorageService,
+    @Inject(LOCAL_STORAGE) private storage: StorageService,
               private fb: FormBuilder) {
       this.configAdvancedTab = fb.group({
       storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
@@ -89,6 +90,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
+          this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
           this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
@@ -137,11 +139,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     this.appConfiguration.jsonInput = configuration;
   }
 
+  public changeAdditionalParameters(additionalParameters: string): void{
+    this.appConfiguration.additionalParameters = additionalParameters;
+  }
+
   public applyConfiguration(): void {
     if(this.isValid()){
       this.appConfiguration.storageSpace = this.configAdvancedTab.controls['storageSpace'].value;
         this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
-          console.log(this.appConfiguration.storageSpace)
           console.log('Configuration applied');
           this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
         });

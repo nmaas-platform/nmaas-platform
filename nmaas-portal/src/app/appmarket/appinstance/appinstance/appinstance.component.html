@@ -86,7 +86,7 @@
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 				</div>
-				<p>State: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus.userFriendlyState : 'Something went wrong'}}</p>
+				<p>State: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus?.userFriendlyState : 'Something went wrong'}}</p>
 				<p>Details: {{appInstanceStatus?.userFriendlyDetails}}</p>
 			</div>
 			
@@ -119,13 +119,14 @@
 				</table>
 			</div>
 
-			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || appInstanceStatus.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus.state === AppInstanceState[AppInstanceState.UNKNOWN]}" >
+            <div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || appInstanceStatus?.state > AppInstanceState.CONFIGURATION_AWAITING}" >
 				<div class="col-xs-12">
 					<h3>Configuration</h3>
 					<hr>
 					<ul class="nav nav-tabs">
 						<li class="active"><a data-toggle="tab" href="#configForm">Configuration</a> </li>
 						<li> <a data-toggle="tab" href="#advanced">Advanced</a> </li>
+						<li> <a data-toggle="tab" href="#additionalParameters">Additional parameters</a> </li>
 					</ul>
 					<div class="tab-content" style="padding-top: 10px">
 						<div id="configForm" class="tab-pane fade in active">
@@ -146,6 +147,16 @@
 										   formControlName="storageSpace" id="storageSpace">
 								</div>
 							</form>
+						</div>
+						<div id="additionalParameters" class="tab-pane fade" style="padding-bottom: 10px">
+							<json-schema-form *ngIf="additionalParametersTemplate"
+											   [form]="additionalParametersTemplate"
+												[options]="jsonFormOptions"
+												[framework]="bootstrap-3"
+												[language]="en"
+												(onChanges)="changeAdditionalParameters($event)">
+
+							</json-schema-form>
 						</div>
 						<p *ngIf="requiredFields"><strong class="text-danger">*</strong> = required fields</p>
 						<button type="button" class="btn btn-success" [disabled]="!isValid() || !configAdvancedTab.valid" (click)="applyConfiguration()">Apply configuration</button>
