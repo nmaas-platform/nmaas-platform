@@ -1,3 +1,6 @@
+const puppeteer = require('puppeteer');
+process.env.CHROME_BIN = puppeteer.executablePath();
+
 module.exports = function (config) {
     config.set({
         basePath: '',
@@ -49,7 +52,7 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_WARN,
         autoWatch: false,
-        browsers: ['Chrome', 'PhantomJS', 'ChromeHeadless'],
+        browsers: ['ChromeHeadless'],
         singleRun: false,
     });
 };
