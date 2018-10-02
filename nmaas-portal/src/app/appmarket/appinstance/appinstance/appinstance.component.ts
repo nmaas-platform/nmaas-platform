@@ -14,6 +14,7 @@ import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
 import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ModalComponent} from "../../../shared/modal";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -30,6 +31,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
+
+  @ViewChild(ModalComponent)
+  public undeployModal: ModalComponent;
 
   @ViewChild(RateComponent)
   public readonly appRate: RateComponent;
@@ -74,6 +78,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.undeployModal.setModalType("warning");
+    this.undeployModal.setStatusOfIcons(true);
     this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
@@ -144,7 +150,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public undeploy(): void {
     if (this.appInstanceId) {
-      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
+      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/instances']));
     }
   }
 

@@ -52,7 +52,7 @@
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE]">
 								<a *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">Go to app</a>
-								<button class = "btn btn-danger" (click)="undeploy()">Undeploy</button>
+								<button *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]" class = "btn btn-danger" (click)="this.undeployModal.show()">Undeploy</button>
 							</div>
 							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<button class="btn btn-primary" (click)="this.modal.show()">Restart</button>
@@ -63,7 +63,22 @@
 						</div>
 					</div>
 				</div>
-			</div>	
+			</div>
+
+			<nmaas-modal>
+				<div class="nmaas-modal-header">
+					<h4 style="text-align: center">Undeploy confirmation</h4>
+				</div>
+				<div class="nmaas-modal-body">
+					<div class="form-group">
+						<p>Do you want to undeploy this application instance?</p>
+					</div>
+				</div>
+				<div class="nmaas-modal-footer">
+					<button type="button" class="btn btn-danger" (click)="this.undeploy()">Yes</button>
+					<button type="button" class="btn btn-primary" (click)="this.undeployModal.hide()">Cancel</button>
+				</div>
+			</nmaas-modal>
 		
 			<div class='row'>
 				<h3>Installation progress</h3>
@@ -140,6 +155,4 @@
 			<hr>
 			<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
 		</div>
-
-
 	
