@@ -47,15 +47,20 @@
 			"schema": {
 				"type": "object",
 				"properties":{
-					"adminMail": {
+					"nav.config.ADMIN_MAIL": {
 						"type": "string",
 						"format": "email",
 						"title": "Admin email"
+					},
+					"nav.config.DEFAULT_FROM_EMAIL": {
+						"type": "string",
+						"format": "email",
+						"title": "Default sender email"
 					}
 				}
 			},
 			"form":[
-				"adminMail"
+				"*"
 			]
 		}
 	}
