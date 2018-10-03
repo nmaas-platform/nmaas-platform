@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -73,6 +74,11 @@ public abstract class NmServiceInfo {
     /** GitLab project information created to store configuration files for this service (deployment) */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private GitLabProject gitLabProject;
+
+    /** Map of additional parameters provided by user during wizard completion */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
+    private Map<String, String> additionalParameters;
 
     public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace) {
         this.name = deploymentId.value();

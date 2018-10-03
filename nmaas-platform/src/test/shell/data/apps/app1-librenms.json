@@ -10,8 +10,22 @@
 	"issuesUrl": "https://github.com/librenms/librenms/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE"
+			"DOCKER_COMPOSE",
+			"KUBERNETES"
 		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-librenms",
+				"version": "1.0.0-alfa"
+			}
+		},
+		"dockerComposeFileTemplate": {
+			"dcnAttachedContainers": [
+				{"name": "librenms", "description": "librenms"}
+			],
+			"composeFileTemplateContent":"version: '2'\n\nservices:\n  mysql:\n    image: k0st/alpine-mariadb\n    volumes:\n      - ${volume}/mysql:/var/lib/mysql\n    environment:\n      MYSQL_DATABASE: librenms_nmaas\n      MYSQL_USER: librenms_nmaas\n      MYSQL_PASSWORD: pwd4librenms_nmaas\n    networks:\n      nmaas-inter-container:\n  ${librenms.container_name}:\n    depends_on:\n      - mysql\n    image: docker-hub.man.poznan.pl:5000/aweinert/librenms:1.2\n    ports:\n      - ${port}:80\n    volumes:\n      - ${volume}:/data\n    environment:\n      DB_TYPE: mysql\n      DB_HOST: mysql\n      DB_NAME: librenms_nmaas\n      DB_USER: librenms_nmaas\n      DB_PASS: pwd4librenms_nmaas\n      POLLER: 16\n    networks:\n      nmaas-ext-access:\n      nmaas-dcn:\n        ipv4_address: ${librenms.container_ip_address}\n      nmaas-inter-container:\n    privileged: true\n\nnetworks:\n  nmaas-ext-access:\n    external:\n      name: ${nmaas_ext_access_network}\n  nmaas-dcn:\n    external:\n      name: ${nmaas_dcn_network}\n  nmaas-inter-container:"
+
+		},
 		"defaultStorageSpace":20,
 		"configFileRepositoryRequired":true
 	},
@@ -44,10 +58,19 @@
 							"required": ["ipAddress", "snmpCommunity", "snmpVersion"]
 						}
 					}
-				}
+				},
+				"required": ["targets"]
 			},
 			"form": [
-				"*"
+				{
+					"key": "targets",
+					"items":[
+						"targets[]",
+						"targets[].ipAddress",
+						"targets[].snmpCommunity",
+						"targets[].snmpVersion"
+					]
+				}
 			]
 		}
 	}
