@@ -16,8 +16,11 @@ import {AppMarketModule} from "../appmarket";
 import {UserService} from "../service";
 import {CompleteComponent} from "./complete/complete.component";
 import {ContentDisplayService} from "../service/content-display.service";
-import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
-import  {ReCaptchaModule} from "angular5-recaptcha";
+import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
+import {ReCaptchaModule} from "angular5-recaptcha";
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -37,8 +40,15 @@ import  {ReCaptchaModule} from "angular5-recaptcha";
     RouterModule,
     SharedModule,
     PipesModule,
-      AppMarketModule,
-      ReCaptchaModule
+    AppMarketModule,
+    ReCaptchaModule,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    })
   ],
   exports: [
     WelcomeComponent
@@ -51,3 +61,6 @@ import  {ReCaptchaModule} from "angular5-recaptcha";
   ]
 })
 export class WelcomeModule {}
+export function HttpLoaderFactory(httpClient: HttpClient) {
+    return new TranslateHttpLoader(httpClient);
+}

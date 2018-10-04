@@ -10,5 +10,13 @@
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profil",
     "LOGOUT": "Connectez - Out"
+  },
+  
+  
+  "WELCOME":{
+  	"TITLE": "Gestion de réseau en tant que service",
+  	"P1": "fournit un portefeuille d'applications de gestion de réseau exécutées sur une infrastructure de surveillance réseau sécurisée par utilisateur.",
+  	"P2": "Le service NMaaS de GÉANT est composé de trois aspects: fourniture, gestion et maintenance de l'infrastructure du portail de service NMaaS, de la plate-forme et des outils sélectionnés, prise en charge de l'utilisation du système par les utilisateurs, et des outils sélectionnés pour la surveillance de leurs réseaux via NMaaS, ainsi que les utilisateurs qui apportent leur logiciel au système NMaaS. ",
+  	"P3": "Les utilisateurs de NMaaS sont des organisations qui ne souhaitent pas posséder l'infrastructure NMS et / ou souhaitent externaliser la gestion de réseau, ainsi que des organisations et / ou des particuliers qui recherchent un logiciel de gestion de réseau de qualité ou qui souhaitent partager leur logiciel. au sein de la communauté "
   }
 }

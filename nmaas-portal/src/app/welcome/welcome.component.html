@@ -4,15 +4,23 @@
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 vertical-offset" id="welcome-container">
 			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12" >
 				<div style="display: block;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel-body">
+					<div>
+						<button (click)="useLanguage('en')">en</button>
+						<button (click)="useLanguage('de')">de</button>
+					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px;">
-						<h3><b>Network Management as a Service</b> (<a href="https://www.geant.org/Services/Connectivity_and_network/NMaaS/Pages/Home.aspx" rel="nofollow" target="_blank">NMaaS</a>) provides a portfolio of network management
-							applications run on a per-user, secured network monitoring infrastructure. </h3>
+						<h3>
+						<b>
+							{{ 'WELCOME.TITLE1' | translate }}
+						</b> 
+							(<a href="https://www.geant.org/Services/Connectivity_and_network/NMaaS/Pages/Home.aspx" rel="nofollow" target="_blank">NMaaS</a>)
+					  		{{ 'WELCOME.TITLE2' | translate }}
+						</h3>
 					</div>
 					<div style="padding-left: 10px;" class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-						<p>GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the
-						infrastructure of the NMaaS service portal, platform and selected tools, supporting users in
-						using the system, and the selected tools for monitoring their networks via NMaaS, as well as
-						supporting users that contribute their software to NMaaS system. </p>
+						<p>
+							{{ 'WELCOME.P1' | translate }}
+						</p>
 					</div>
 					<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 ">
                         <img src="../../assets/images/landing/pic_first.png" class="center-block glyphicon-align-center landing-img-lg"
@@ -26,10 +34,9 @@
 					</div>
 					<div style="padding-left: 10px;" class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
 						<h3>Users</h3>
-						<p>NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or
-							want to outsource network management, as well as organisations and/or individuals that are
-							searching for quality network management software or who want to share their software
-							within the community.</p>
+						<p>
+							{{ 'WELCOME.P2' | translate }}
+						</p>
 					</div>
 				</div>
 				<br>

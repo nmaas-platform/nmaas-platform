@@ -3,25 +3,22 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../auth/auth.service';
 import {DomainService} from "../../service";
+
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
-  providers: [ AuthService ]
+  providers: [ AuthService, TranslateService]
 })
 export class NavbarComponent implements OnInit {
 
   constructor(public authService: AuthService, public domainService: DomainService, public translate: TranslateService) {
-    translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('en');
-
-
-    const browserLang = translate.getBrowserLang();
-    const lang = browserLang.match(/en|fr/) ? browserLang : 'en';
-    console.log(lang);
-    translate.use(lang);
+  }
+  useLanguage(language: string) {
+    this.translate.use(language);
   }
 
   ngOnInit() {

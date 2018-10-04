@@ -10,5 +10,12 @@
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profile",
     "LOGOUT": "Logout"
+  },
+  
+  "WELCOME":{
+  	"TITLE1": "Network Management as a Service",
+  	"TITLE2": "provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure.",
+  	"P1": "GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the infrastructure of the NMaaS service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via NMaaS, as well as supporting users that contribute their software to NMaaS system.",
+  	"P2": "NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community."
   }
 }
