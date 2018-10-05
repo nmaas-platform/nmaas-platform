@@ -167,7 +167,7 @@ public class KubernetesClusterManagerTest {
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultStorageClass("storageClass");
         deployment.setUseInClusterGitLabInstance(false);
-        deployment.setSmtpServerAddress("test-postfix");
+        deployment.setSmtpServerHostname("test-postfix");
         deployment.setSmtpServerPort(543);
         cluster.setDeployment(deployment);
         KClusterAttachPoint attachPoint = new KClusterAttachPoint();

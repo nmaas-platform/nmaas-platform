@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
@@ -33,6 +34,11 @@ public class KubernetesNmServiceInfo extends NmServiceInfo {
 
     public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, KubernetesTemplate kubernetesTemplate) {
         super(deploymentId, deploymentName, domain, storageSpace);
+        this.kubernetesTemplate = kubernetesTemplate;
+    }
+
+    public KubernetesNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Map<String, String> additionalParameters, KubernetesTemplate kubernetesTemplate) {
+        super(deploymentId, deploymentName, domain, storageSpace, additionalParameters);
         this.kubernetesTemplate = kubernetesTemplate;
     }
 }

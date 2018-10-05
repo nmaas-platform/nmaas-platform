@@ -1,9 +1,12 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
@@ -48,6 +51,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
     private KClusterApiManager clusterApiManager;
+    private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
 
     @Autowired
@@ -59,6 +63,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                              IngressControllerManager ingressControllerManager,
                              IngressResourceManager ingressResourceManager,
                              KClusterApiManager clusterApiManager,
+                             KClusterDeploymentManager deploymentManager,
                              GitLabManager gitLabManager) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
@@ -68,6 +73,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         this.ingressControllerManager = ingressControllerManager;
         this.ingressResourceManager = ingressResourceManager;
         this.clusterApiManager = clusterApiManager;
+        this.deploymentManager = deploymentManager;
         this.gitLabManager = gitLabManager;
     }
 
@@ -84,13 +90,40 @@ public class KubernetesManager implements ContainerOrchestrator {
         if(appDeployment == null){
             throw new NmServiceRequestVerificationException("App deployment cannot be null");
         }
-        repositoryManager.storeService(new KubernetesNmServiceInfo(
-                deploymentId,
-                appDeployment.getDeploymentName(),
-                appDeployment.getDomain(),
-                appDeployment.getStorageSpace(),
-                KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
-        );
+        if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()){
+            repositoryManager.storeService(new KubernetesNmServiceInfo(
+                    deploymentId,
+                    appDeployment.getDeploymentName(),
+                    appDeployment.getDomain(),
+                    appDeployment.getStorageSpace(),
+                    createAdditionalParametersMap(appDeploymentSpec.getDeployParameters()),
+                    KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
+            );
+        } else{
+            repositoryManager.storeService(new KubernetesNmServiceInfo(
+                    deploymentId,
+                    appDeployment.getDeploymentName(),
+                    appDeployment.getDomain(),
+                    appDeployment.getStorageSpace(),
+                    KubernetesTemplate.copy(appDeploymentSpec.getKubernetesTemplate()))
+            );
+        }
+    }
+
+    private Map<String, String> createAdditionalParametersMap(Map<ParameterType, String> deployParameters){
+        Map<String, String> additionalParameters = new HashMap<>();
+        deployParameters.forEach((k,v) ->{
+            switch (k){
+                case SMTP_HOSTNAME: {
+                    additionalParameters.put(v, deploymentManager.getSTMPServerHostname());
+                    break;
+                } case SMTP_PORT: {
+                    additionalParameters.put(v, deploymentManager.getSTMPServerPort().toString());
+                    break;
+                }
+            }
+        });
+        return additionalParameters;
     }
 
     @Override

@@ -176,6 +176,16 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
     }
 
+    @Override
+    public String getSTMPServerHostname(){
+        return loadSingleCluster().getDeployment().getSmtpServerHostname();
+    }
+
+    @Override
+    public Integer getSTMPServerPort(){
+        return loadSingleCluster().getDeployment().getSmtpServerPort();
+    }
+
     private KCluster loadSingleCluster() {
         long noOfClusters = repository.count();
         if (noOfClusters != 1) {

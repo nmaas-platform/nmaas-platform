@@ -39,7 +39,7 @@ public class KClusterDeployment {
 
     /** The IP address / hostname of the SMTP server */
     @Column(nullable = false)
-    private String smtpServerAddress;
+    private String smtpServerHostname;
 
     /** Port on which SMTP server is exposed */
     @Column(nullable = false)

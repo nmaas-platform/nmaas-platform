@@ -25,7 +25,7 @@
     "defaultNamespace":"default",
     "defaultStorageClass":"nmaas-nfs-storage",
     "useInClusterGitLabInstance":false,
-    "smtpServerAddress": "nmaas-postfix",
+    "smtpServerHostname": "nmaas-postfix",
     "smtpServerPort": "587"
   },
   "attachPoint": {
