@@ -24,7 +24,9 @@
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
     "defaultNamespace":"default",
     "defaultStorageClass":"nmaas-nfs-storage",
-    "useInClusterGitLabInstance":false
+    "useInClusterGitLabInstance":false,
+    "smtpServerAddress": "nmaas-postfix",
+    "smtpServerPort": "587"
   },
   "attachPoint": {
     "routerName":"R3",

@@ -36,4 +36,12 @@ public class KClusterDeployment {
     /** Flag indicating if a GitLab instance deployed within the cluster should be used for configuration storage */
     @Column(nullable = false)
     private Boolean useInClusterGitLabInstance;
+
+    /** The IP address / hostname of the SMTP server */
+    @Column(nullable = false)
+    private String smtpServerAddress;
+
+    /** Port on which SMTP server is exposed */
+    @Column(nullable = false)
+    private Integer smtpServerPort;
 }

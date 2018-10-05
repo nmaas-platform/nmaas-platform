@@ -52,6 +52,8 @@ public class KCluster {
             checkArgument(api.getRestApiPort() != null, "When using KCluster Api the rest api port can't be empty");
             checkArgument(api.getRestApiHostAddress() != null, "When using KCluster Api the rest api host address can't be empty");
         }
+        checkArgument(deployment.getSmtpServerAddress() != null && !deployment.getSmtpServerAddress().isEmpty(), "SMTP server hostname can't be empty");
+        checkArgument(deployment.getSmtpServerPort() != null && deployment.getSmtpServerPort() > 0, "SMTP server hostname must be greater than 0");
     }
 
 }

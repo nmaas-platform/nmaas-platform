@@ -176,6 +176,26 @@
                             [(ngModel)]="cluster.deployment.useInClusterGitLabInstance" [checked]="cluster.deployment.useInClusterGitLabInstance == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="smtpServerAddress" class="col-sm-2 control-label">SMTP server hostname: </label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="smtpServerAddress" name="smtpServerAddress"
+                               [(ngModel)]="cluster.deployment.smtpServerAddress" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerAddress="ngModel">
+                        <div class="alert alert-danger" *ngIf="smtpServerAddress.invalid && (smtpServerAddress.dirty || smtpServerAddress.touched)">
+                            <div *ngIf="smtpServerAddress.errors.required">SMTP server hostname is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="smtpServerPort" class="col-sm-2 control-label">SMTP server port: </label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control no-spin" id="smtpServerPort" name="smtpServerPort"
+                               [(ngModel)]="cluster.deployment.smtpServerPort" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerPort="ngModel">
+                        <div class="alert alert-danger" *ngIf="smtpServerPort.invalid && (smtpServerPort.dirty || smtpServerPort.touched)">
+                            <div *ngIf="smtpServerPort.errors.required">SMTP server port is required</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="panel-default panel-heading">Attach point:</div>
