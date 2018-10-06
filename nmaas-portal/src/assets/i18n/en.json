@@ -16,6 +16,27 @@
   	"TITLE1": "Network Management as a Service",
   	"TITLE2": "provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure.",
   	"P1": "GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the infrastructure of the NMaaS service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via NMaaS, as well as supporting users that contribute their software to NMaaS system.",
-  	"P2": "NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community."
+  	"P2": "Users",
+  	"P3": "NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community.",
+	"P4": "System, marketplace and service",
+	"P5": "NMaaS provides multiple benefits, as a system, an application marketplace, and as a service. NMaaS simplifies domain network management by providing the infrastructure and tools via a cloud-based, multi-tenant and secure network management system. It enables the deployment of network management tools, as well as management and monitoring of client networks, although NMaaS does not monitor and manage the network by itself. The selection of tools that is and/or can be made available to users is not limited to network management tools and can be easily extended.",
+	"P6": "Cost reduction",
+	"P7": "With NMaaS, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
+	"P8": "Smart scaling",
+	"P9": "If there is a need to extend Your services - you can do it within few minutes in any place, any time, by just deploying new instances",
+	"P10": "NMaaS Features",
+	"P11": "Application Market",
+	"P12": "At store you can find not only official applications, selected by the administrator, but also there is a place for applications created by community - and to share them with other people.",
+	"P13": "Rating system",
+	"P14": "You want to share your opinion about application? Give some hints to author? There is solution - you can rate and comment every application at store.",
+	"P15": "SSO Support",
+	"P16": "If you want to login using same account for few services, not only NMaasS, You can login using SSO, where you can choose your identity provider and login using existing account.",
+	"P17": "Fast & easy deployment",
+	"P18": "You can deploy your first application in few minutes - just add your configuration, get application from Market and deploy it - our services will do rest. In few minutes you will get address for your instance of application.",
+	"P19": "Easy scaling",
+	"P20": "More networks, more domains? That's simple - you can easily scale horizontal applications by adding more instances of application.",
+	"P21": "Domains management",
+	"P22": "You have more then one domain to manage, but you don't have own infrastructure? There is simple solution - NMaaS support multiple domains and configurations to manage.",
+	"P23": "Technologies used"
   }
 }

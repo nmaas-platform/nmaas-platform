@@ -1,6 +1,6 @@
 {
   "NAVBAR": {
-    "MARKET": "Marché",
+    "MARKET": "MarchÃ©",
     "SUBSCRIPTIONS": "Abonnement",
     "INSTANCES": "Instances",
     "DOMAINS": "Domaines",
@@ -11,12 +11,31 @@
     "PROFILE": "Profil",
     "LOGOUT": "Connectez - Out"
   },
-  
-  
-  "WELCOME":{
-  	"TITLE": "Gestion de r�seau en tant que service",
-  	"P1": "fournit un portefeuille d'applications de gestion de r�seau ex�cut�es sur une infrastructure de surveillance r�seau s�curis�e par utilisateur.",
-  	"P2": "Le service NMaaS de G�ANT est compos� de trois aspects: fourniture, gestion et maintenance de l'infrastructure du portail de service NMaaS, de la plate-forme et des outils s�lectionn�s, prise en charge de l'utilisation du syst�me par les utilisateurs, et des outils s�lectionn�s pour la surveillance de leurs r�seaux via NMaaS, ainsi que les utilisateurs qui apportent leur logiciel au syst�me NMaaS. ",
-  	"P3": "Les utilisateurs de NMaaS sont des organisations qui ne souhaitent pas poss�der l'infrastructure NMS et / ou souhaitent externaliser la gestion de r�seau, ainsi que des organisations et / ou des particuliers qui recherchent un logiciel de gestion de r�seau de qualit� ou qui souhaitent partager leur logiciel. au sein de la communaut� "
+  "WELCOME": {
+    "TITLE1": "gestion de réseau en tant que service",
+    "TITLE2": "fournit un portefeuille d'applications de gestion de réseau exécutées sur une infrastructure de surveillance réseau sécurisée par utilisateur.",
+    "P1": "GÉANT’s NMaaS service comprend trois aspects: la fourniture, la gestion et la maintenance de l'infrastructure du portail de service NMaaS, la plate-forme et les outils sélectionnés, le soutien des utilisateurs dans l'utilisation du système, et les outils sélectionnés pour la surveillance de leurs réseaux Via NMaaS, ainsi que de soutenir les utilisateurs qui apportent leur logiciel à NMaaS système. ",
+    "P2": "Utilisateurs",
+    "P3": "les utilisateurs de NMaaS sont des organisations qui ne veulent pas posséder les infrastructures des NEM elles-mêmes et/ou qui veulent externaliser la gestion de réseau, ainsi que des organisations et/ou des individus qui recherchent un logiciel de gestion de réseau de qualité ou qui veulent partager leur logiciel au sein de la communauté. ",
+    "P4": "système, marché et service",
+    "P5": "NMaaS fournit de multiples avantages, en tant que système, un marché d'applications, et en tant que service. NMaaS simplifie la gestion de réseau de domaine en fournissant l'infrastructure et les outils par l'intermédiaire d'un nuage-basé, multi-locataire et système sécurisé de gestion de réseau. Il permet le déploiement d'outils de gestion de réseau, ainsi que la gestion et la surveillance des réseaux clients, bien que NMaaS ne surveille pas et ne gère pas le réseau par lui-même. La sélection des outils qui sont et/ou peuvent être mis à la disposition des utilisateurs ne se limite pas aux outils de gestion de réseau et peut être facilement étendue. ",
+    "P6": "réduction des coûts",
+    "P7": "avec NMaaS, les utilisateurs n'ont pas à supporter les coûts de propriété et les risques liés à la maintenance et au contrôle de l'infrastructure de gestion de réseau.",
+    "P8": "mise à l'échelle intelligente",
+    "P9": "S'il est nécessaire d'étendre vos services-vous pouvez le faire en quelques minutes dans n'importe quel endroit, n'importe quand, en déployant simplement de nouvelles instances",
+    "P10": "NMaaS features",
+    "P11": "marché de l'Application",
+    "P12": "en magasin vous pouvez trouver non seulement les applications officielles, sélectionnées par l'administrateur, mais aussi il ya une place pour les applications créées par la communauté-et de les partager avec d'autres personnes.",
+    "P13": "système de cotation",
+    "P14": "vous voulez partager votre opinion sur l'application? Donner quelques conseils à L'auteur? Il y a une solution-vous pouvez noter et commenter chaque application en magasin. ",
+    "P15": "support SSO",
+    "P16": "si vous voulez vous connecter en utilisant le même compte pour peu de services, non seulement NMaasS, vous pouvez vous connecter en utilisant SSO, où vous pouvez choisir votre fournisseur d'identité et de connexion en utilisant le compte existant.",
+    "P17": "déploiement rapide et facile",
+    "P18": "vous pouvez déployer votre première application en quelques minutes-il suffit d'ajouter votre configuration, obtenir l'application du marché et de le déployer-nos services se reposer. En quelques minutes, vous obtiendrez l'adresse de votre instance d'application. ",
+    "P19": "mise à l'échelle aisée",
+    "P20": "plus de réseaux, plus de domaines? C'est simple: vous pouvez facilement mettre à l'échelle des applications horizontales en ajoutant d'autres instances d'application. ",
+    "P21": "gestion de domaines",
+    "P22": "vous avez plus d'un domaine à gérer, mais vous n'avez pas d'infrastructure propre? Il existe une solution simple-NMaaS prendre en charge plusieurs domaines et configurations à gérer. ",
+    "P23": "technologies utilisées"
   }
 }

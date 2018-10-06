@@ -6,7 +6,8 @@
 				<div style="display: block;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel-body">
 					<div>
 						<button (click)="useLanguage('en')">en</button>
-						<button (click)="useLanguage('de')">de</button>
+						<button (click)="useLanguage('fr')">fr</button>
+						<button (click)="useLanguage('pl')">pl</button>
 					</div>
 					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px;">
 						<h3>
@@ -33,23 +34,17 @@
 						<img src="../../assets/images/landing/people.png" alt="Users" class="center-block landing-img-sm landing-img-left">
 					</div>
 					<div style="padding-left: 10px;" class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
-						<h3>Users</h3>
+						<h3>{{ 'WELCOME.P2' | translate }}</h3>
 						<p>
-							{{ 'WELCOME.P2' | translate }}
+							{{ 'WELCOME.P3' | translate }}
 						</p>
 					</div>
 				</div>
 				<br>
 				<div style="display: block;" class="col-lg-12 panel-body landing-block-padding">
 					<div style="padding-left: 10px;" class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
-						<h3>System, marketplace and service</h3>
-						<p>NMaaS provides multiple benefits, as a system, an application marketplace, and as a service.
-							NMaaS simplifies domain network management by providing the infrastructure and tools via a
-							cloud-based, multi-tenant and secure network management system. It enables the deployment
-							of network management tools, as well as management and monitoring of client networks,
-							although NMaaS does not monitor and manage the network by itself. The selection of tools
-							that is and/or can be made available to users is not limited to network management tools
-							and can be easily extended.</p>
+						<h3>{{ 'WELCOME.P4' | translate }}</h3>
+						<p>{{ 'WELCOME.P5' | translate }}</p>
 					</div>
 					<div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
 						<img src="../../assets/images/landing/shop&cloud.png" alt="Clients" class="glyphicon-align-center center-block landing-img-lg landing-img-right">
@@ -61,17 +56,15 @@
 						<img src="../../assets/images/landing/costs.png" alt="Clients" class="center-block landing-img-sm landing-img-left">
 					</div>
 					<div style="padding-left: 10px;" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-						<h3>Cost reduction</h3>
-						<p>With NMaaS, users do not have to bear the ownership costs and
-							risks related to maintenance and control of the network management infrastructure.</p>
+						<h3>{{ 'WELCOME.P6' | translate }}</h3>
+						<p>{{ 'WELCOME.P7' | translate }}</p>
 					</div>
 				</div>
 				<br>
 				<div style="display: block;" class="col-lg-12 panel-body landing-block-padding">
 					<div style="padding-left: 10px;" class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-						<h3>Smart scaling</h3>
-						<p>If there is a need to extend Your services - you can do it within few minutes in any place,
-						any time, by just deploying new instances</p>
+						<h3>{{ 'WELCOME.P8' | translate }}</h3>
+						<p>{{ 'WELCOME.P9' | translate }}</p>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<img src="../../assets/images/landing/scaling.png" alt="Clients" class="center-block landing-img-lg landing-img-right">
@@ -81,50 +74,42 @@
 			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12"
                  style="border-top: solid 1px #6c757d; margin-top: 20px;">
 				<div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8 col-sm-offset-1 col-sm-10 text-center" style="padding-top: 15px;
-				padding-bottom: 10px;"><h2>NMaaS Features</h2></div><br>
+				padding-bottom: 10px;"><h2>{{ 'WELCOME.P10' | translate }}</h2></div><br>
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="col-lg-offset-1 col-md-offset-1 col-lg-5 col-md-5 col-sm-6 col-xs-12">
-						<h3>Application Market</h3>
-						<p>At store you can find not only official applications, selected by the administrator, but
-                        also there is a place for applications created by community - and to share them with other
-                        people.</p><br>
+						<h3>{{ 'WELCOME.P11' | translate }}</h3>
+						<p>{{ 'WELCOME.P12' | translate }}</p><br>
 					</div>
 					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
-						<h3>Rating system</h3>
-						<p>You want to share your opinion about application? Give some hints to author? There is
-                        solution - you can rate and comment every application at store.</p><br>
+						<h3>{{ 'WELCOME.P13' | translate }}</h3>
+						<p>{{ 'WELCOME.P14' | translate }}</p><br>
 					</div>
 				</div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="col-lg-offset-1 col-md-offset-1 col-lg-5 col-md-5 col-sm-6 col-xs-12">
-						<h3>SSO Support</h3>
-						<p>If you want to login using same account for few services, not only NMaasS, You can login
-                        using SSO, where you can choose your identity provider and login using existing account.<p>
+						<h3>{{ 'WELCOME.P15' | translate }}</h3>
+						<p>{{ 'WELCOME.P16' | translate }}<p>
 					</div>
 					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
-						<h3>Fast & easy deployment</h3>
-						<p>You can deploy your first application in few minutes - just add your configuration, get
-                        application from Market and deploy it - our services will do rest. In few minutes you will get
-                        address for your instance of application.</p>
+						<h3>{{ 'WELCOME.P17' | translate }}</h3>
+						<p>{{ 'WELCOME.P18' | translate }}</p>
 					</div>
 				</div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 					<div class="col-lg-offset-1 col-md-offset-1 col-lg-5 col-md-5 col-sm-6 col-xs-12">
-						<h3>Easy scaling</h3>
-						<p>More networks, more domains? That's simple - you can easily scale horizontal applications by
-                        adding more instances of application.</p>
+						<h3>{{ 'WELCOME.P19' | translate }}</h3>
+						<p>{{ 'WELCOME.P20' | translate }}</p>
 					</div>
 					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
-						<h3>Domains management</h3>
-						<p>You have more then one domain to manage, but you don't have own infrastructure? There is
-                            simple solution - NMaaS support multiple domains and configurations to manage.</p>
+						<h3>{{ 'WELCOME.P21' | translate }}</h3>
+						<p>{{ 'WELCOME.P22' | translate }}</p>
 					</div>
 				</div>
 			</div>
 			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12"
                  style="border-top: solid 1px #6c757d; margin-top: 20px;">
                 <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-2 col-sm-8 col-xs-12 text-center" style="padding-top: 15px;
-                    padding-bottom: 10px;"><h2>Technologies used</h2></div>
+                    padding-bottom: 10px;"><h2>{{ 'WELCOME.P23' | translate }}</h2></div>
                 <div class="center-block col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
                         <a href="https://angular.io/" target="_blank" rel="nofollow">

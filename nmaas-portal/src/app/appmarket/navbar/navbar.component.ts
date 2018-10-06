@@ -15,6 +15,7 @@ import {TranslateService} from '@ngx-translate/core';
 export class NavbarComponent implements OnInit {
 
   constructor(public authService: AuthService, public domainService: DomainService, public translate: TranslateService) {
+    translate.addLangs(['en', 'fr', 'pl']);
     translate.setDefaultLang('en');
   }
   useLanguage(language: string) {
