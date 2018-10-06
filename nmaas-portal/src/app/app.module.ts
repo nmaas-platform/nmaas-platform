@@ -25,8 +25,6 @@ export function appConfigFactory( config: AppConfigService) {
   }
 }
 
-
-
 export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     tokenGetter: () => {
         return localStorage.getItem('token'); //TODO: change this to be able to replace 'token' with definied name
