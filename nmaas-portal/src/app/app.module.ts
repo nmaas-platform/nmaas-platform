@@ -17,7 +17,9 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
-import { HttpClientModule } from '@angular/common/http';
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -51,6 +53,13 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     SharedModule,
     WelcomeModule,
     routing,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     AuthGuard,
@@ -66,3 +75,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+    return new TranslateHttpLoader(httpClient);
+}

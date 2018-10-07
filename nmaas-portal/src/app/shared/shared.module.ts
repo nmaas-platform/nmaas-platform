@@ -31,6 +31,9 @@ import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-ter
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
 import { ShibbolethDetailsComponent } from './admin/shibboleth/details/shibboleth-details.component';
 import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -39,7 +42,14 @@ import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelo
     FormsModule,
     ServicesModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    })
   ],
   declarations: [
     RateComponent,
@@ -98,3 +108,6 @@ import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelo
   ]
 })
 export class SharedModule {}
+export function HttpLoaderFactory(httpClient: HttpClient) {
+    return new TranslateHttpLoader(httpClient);
+}

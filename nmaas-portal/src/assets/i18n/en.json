@@ -9,10 +9,13 @@
     "MONITOR": "Monitor",
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profile",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "LOGIN_REGISTER": "Login/Register"
   },
   
   "WELCOME":{
+  	"LOGIN": "Login",
+  	"REGISTER": "Register",
   	"TITLE1": "Network Management as a Service",
   	"TITLE2": "provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure.",
   	"P1": "GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the infrastructure of the NMaaS service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via NMaaS, as well as supporting users that contribute their software to NMaaS system.",
@@ -38,5 +41,32 @@
 	"P21": "Domains management",
 	"P22": "You have more then one domain to manage, but you don't have own infrastructure? There is simple solution - NMaaS support multiple domains and configurations to manage.",
 	"P23": "Technologies used"
+  },
+  
+  "REGISTRATION":{
+  	"USERNAME": "Username",
+  	"PASSWORD": "Password",
+  	"CONFIRM_PASSWORD": "Confirm password",
+  	"EMAIL": "Email",
+  	"FIRST_NAME": "First name",
+  	"LAST_NAME": "Last name",
+  	"DOMAIN": "Domain",
+  	"NOT_SELECTED": "Not selected",
+  	"TERMS": "Terms of Use",
+  	"AGREEMENT_MESSAGE": "I agree to the",
+  	"PRIVACY_POLICY": "Privacy Policy",
+  	"SUBMIT": "Submit",
+  	"FORM_SUBMISSION": "Registration form submission",
+  	"THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
+  	"DONE_MESASAGE": "Done"  	
+  },
+  
+  "LOGIN":{
+  	"USERNAME": "Username",
+  	"USERNAME_REQUIRED_MESSAGE": "Username is required",
+  	"PASSWORD": "Password",
+  	"PASSWORD_REQUIRED_MESSAGE": "Password is required",
+  	"LOGIN": "Login",
+  	"LOGIN_WITH": "Login with"
   }
 }

@@ -152,8 +152,8 @@
 					</div>
 					<div class="panel-body" id="login-out" style="overflow-y: auto;">
 						<ul class="nav nav-tabs nav-justified">
-							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['login']">Login</a></li>
-							<li role="registration" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['registration']">Register</a></li>
+							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['login']">{{ 'WELCOME.LOGIN' | translate }}</a></li>
+							<li role="registration" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['registration']">{{ 'WELCOME.REGISTER' | translate }}</a></li>
 						</ul>
 						<router-outlet></router-outlet>
 					</div>

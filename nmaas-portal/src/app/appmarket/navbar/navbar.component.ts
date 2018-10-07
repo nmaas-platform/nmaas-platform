@@ -14,9 +14,10 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(public authService: AuthService, public domainService: DomainService, public translate: TranslateService) {
+  constructor(public authService: AuthService, public domainService: DomainService, private translate: TranslateService) {
     translate.addLangs(['en', 'fr', 'pl']);
-    translate.setDefaultLang('en');
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
   useLanguage(language: string) {
     this.translate.use(language);
