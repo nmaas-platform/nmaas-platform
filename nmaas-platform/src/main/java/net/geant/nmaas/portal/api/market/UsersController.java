@@ -354,7 +354,7 @@ public class UsersController {
                     userService.findByUsername(principal.getName()).get();
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
-            log.info(String.format("Admin user name - %s with role - %s, has added a role - %s to user name - %s. The domain id is - %d.",
+            log.info(String.format("User [%s] with role [%s] added role [%s] to user [%s] in domain [%d].",
                     principal.getName(),
                     adminRoles,
                     userRole.getRole().authority(),
@@ -402,6 +402,7 @@ public class UsersController {
     @PutMapping("/users/status/{userId}")
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
+	@Transactional
     public void setEnabledFlag(@PathVariable Long userId,
                                                  @RequestParam("enabled") final boolean isEnabledFlag,
                                                  @RequestHeader("Authorization") final String token,

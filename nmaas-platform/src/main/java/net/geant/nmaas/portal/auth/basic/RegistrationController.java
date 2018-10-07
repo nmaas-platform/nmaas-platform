@@ -65,14 +65,16 @@ public class RegistrationController {
 	public void signup(@RequestBody final Registration registration) {
 		if(registration == null
 				|| StringUtils.isEmpty(registration.getUsername())
-				|| StringUtils.isEmpty(registration.getPassword()) )
+				|| StringUtils.isEmpty(registration.getPassword())) {
 			throw new SignupException("Invalid credentials.");
-							
+		}
+
 		User newUser = null;
 		try {
 			newUser = usersService.register(registration.getUsername(), domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-			if(newUser == null)
+			if(newUser == null) {
 				throw new SignupException("Unable to register new user.");
+			}
 			if(!registration.getTermsOfUseAccepted()){
 				throw new SignupException("Terms of Use were not accepted.");
 			}
