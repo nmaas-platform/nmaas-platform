@@ -13,9 +13,16 @@ import lombok.NoArgsConstructor;
 public class AppConfigurationView {
     @JsonProperty("jsonInput")
     private String jsonInput;
-    private Double storageSpace;
+    private Integer storageSpace;
+    @JsonProperty("additionalParameters")
+    private String additionalParameters;
 
-    public void setStorageSpace(Double storageSpace){
+    @JsonSetter("additionalParameters")
+    public void setAdditionalParameters(JsonNode data){
+        this.additionalParameters = data.toString();
+    }
+
+    public void setStorageSpace(Integer storageSpace){
         this.storageSpace = storageSpace;
     }
 

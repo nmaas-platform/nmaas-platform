@@ -43,7 +43,7 @@ public class AppDeploymentSpec implements Serializable {
     private KubernetesTemplate kubernetesTemplate;
 
     @Column(nullable = false)
-    private Double defaultStorageSpace;
+    private Integer defaultStorageSpace;
 
     private boolean configFileRepositoryRequired;
 }

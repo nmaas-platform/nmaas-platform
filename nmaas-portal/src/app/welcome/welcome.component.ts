@@ -37,13 +37,14 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
       this.height = document.getElementById("global-footer").offsetHeight;
       //console.log(`Footer h: ${this.height}`);
       let navHeight = document.getElementById("navbar-welcome").offsetHeight;
-      document.getElementById("welcome-container").style.marginBottom = `${this.height + 15}px`;
-      document.getElementById("welcome-container").style.marginTop = `${navHeight + 10}px`;
-      document.getElementById("login-out").style.maxHeight = `calc(95vh - ${this.height + navHeight + (navHeight-50)}px)`;
-      document.getElementById("login-out").style.paddingTop = `${this.height - 50}`;
+      document.getElementById("welcome-container").style.marginBottom = `${this.height + 5}px`;
+      document.getElementById("welcome-container").style.marginTop = `${navHeight + 2}px`;
+      document.getElementById("login-out").style.maxHeight = `calc(95vh - ${this.height +  navHeight + 10}px)`;
+      document.getElementById("login-out").style.paddingTop = `${navHeight}`;
       if(this.height > 90){
         document.getElementById("global-footer").style.textAlign = "center";
         document.getElementById("global-footer-version").style.lineHeight = `inherit`;
+        document.getElementById("login-out").style.maxHeight = `calc(94vh - ${this.height +  navHeight + 10}px)`;
       }else{
         document.getElementById("global-footer").style.textAlign = "right";
         document.getElementById("global-footer-version").style.lineHeight = `${this.height-4}px`;

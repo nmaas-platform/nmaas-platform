@@ -12,7 +12,9 @@ import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
-import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
+import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ModalComponent} from "../../../shared/modal";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -30,6 +32,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
 
+  @ViewChild(ModalComponent)
+  public undeployModal: ModalComponent;
+
   @ViewChild(RateComponent)
   public readonly appRate: RateComponent;
 
@@ -41,10 +46,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
+  public additionalParametersTemplate: any;
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
 
   public intervalCheckerSubscribtion;
+
+  public configAdvancedTab: FormGroup;
 
   jsonFormOptions: any = {
     addSubmit: false, // Add a submit button if layout does not have one
@@ -63,9 +71,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject(SESSION_STORAGE) private storage: StorageService) {}
+    @Inject(LOCAL_STORAGE) private storage: StorageService,
+              private fb: FormBuilder) {
+      this.configAdvancedTab = fb.group({
+      storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
+    });
+  }
 
   ngOnInit() {
+    this.undeployModal.setModalType("warning");
+    this.undeployModal.setStatusOfIcons(true);
     this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
@@ -75,6 +90,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
+          this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
           this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
@@ -123,8 +139,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     this.appConfiguration.jsonInput = configuration;
   }
 
+  public changeAdditionalParameters(additionalParameters: string): void{
+    this.appConfiguration.additionalParameters = additionalParameters;
+  }
+
   public applyConfiguration(): void {
     if(this.isValid()){
+      this.appConfiguration.storageSpace = this.configAdvancedTab.controls['storageSpace'].value;
         this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
           console.log('Configuration applied');
           this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
@@ -134,7 +155,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public undeploy(): void {
     if (this.appInstanceId) {
-      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
+      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/instances']));
     }
   }
 
@@ -156,11 +177,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
     for(let value of this.requiredFields){
       if(!this.appConfiguration.jsonInput.hasOwnProperty(value)){
-          return false;
-      } else if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items) && this.configurationTemplate.schema.properties[value].items.properties.hasOwnProperty("ipAddress")){
-        for(let val of this.appConfiguration.jsonInput[value]){
-            if(!val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])){
+        return false;
+      }
+      if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items)){
+        for(let val of this.appConfiguration.jsonInput[value]) {
+            if (!isNullOrUndefined(val.ipAddress) && !val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])) {
                 return false;
+            }
+        }
+        if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items.required)){
+            for(let valReq of this.configurationTemplate.schema.properties[value].items.required){
+                for(let val of this.appConfiguration.jsonInput[value]){
+                    if(!val.hasOwnProperty(valReq)){
+                        return false;
+                    }
+                }
             }
         }
       }

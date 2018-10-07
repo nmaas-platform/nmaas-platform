@@ -14,7 +14,6 @@ public class ShibbolethView {
     private Long id;
     private String loginUrl;
     private String logoutUrl;
-    private String keyFilePath;
     private int timeout;
 
 }

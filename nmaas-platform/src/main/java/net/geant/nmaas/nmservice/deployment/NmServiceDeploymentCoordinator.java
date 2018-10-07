@@ -12,6 +12,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmService
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -50,10 +51,10 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec deploymentSpec)
+    public void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec deploymentSpec)
             throws NmServiceRequestVerificationException {
         try {
-            orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, deploymentName, domain, deploymentSpec);
+            orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
             notifyStateChangeListeners(deploymentId, REQUEST_VERIFIED);
         } catch (Exception e) {

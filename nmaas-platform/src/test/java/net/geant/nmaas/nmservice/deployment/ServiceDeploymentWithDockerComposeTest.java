@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -41,16 +42,18 @@ public class ServiceDeploymentWithDockerComposeTest {
 	@Test
 	public void shouldConfirmSupportForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		AppDeployment appDeployment = new AppDeployment(Identifier.newInstance(1L), "domain", Identifier.newInstance("app"), "deploy", false, 20);
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setDockerComposeFileTemplate(new DockerComposeFileTemplate());
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("did"), null, null, appDeploymentSpec);
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("did"), appDeployment, appDeploymentSpec);
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		AppDeployment appDeployment = new AppDeployment(Identifier.newInstance(1L), "domain", Identifier.newInstance("app"), "deploy", false, 20);
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES));
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, appDeployment, appDeploymentSpec);
 	}
 
 }

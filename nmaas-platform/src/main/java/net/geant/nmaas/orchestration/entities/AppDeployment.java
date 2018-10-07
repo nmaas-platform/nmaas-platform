@@ -69,9 +69,9 @@ public class AppDeployment {
     private String errorMessage;
 
     /** Required storage space to be allocated for this particular instance in GB */
-    private Double storageSpace;
+    private Integer storageSpace;
 
-    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Double storageSpace) {
+    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Integer storageSpace) {
         this.deploymentId = deploymentId;
         this.domain = domain;
         this.applicationId = applicationId;

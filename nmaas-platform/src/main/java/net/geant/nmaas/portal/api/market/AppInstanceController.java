@@ -190,15 +190,18 @@ public class AppInstanceController extends AppBaseController {
         if (!valid)
             throw new ProcessingException("Configuration is not in valid JSON format");
 
-        appInstance.setConfiguration(configuration.getJsonInput());
-        instances.update(appInstance);
+		if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0)
+			throw new ProcessingException("Storage space cannot be less or equal 0");
 
-        try {
-            appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
-        } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
-        }
-    }
+		appInstance.setConfiguration(configuration.getJsonInput());
+		instances.update(appInstance);
+
+		try {
+			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
+		} catch (Throwable e) {
+			throw new ProcessingException("Missing app instance");
+		}
+	}
 
     @GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
@@ -337,17 +340,14 @@ public class AppInstanceController extends AppBaseController {
             throws MissingElementException {
         if (appInstanceId == null)
             throw new MissingElementException("Missing app instance id.");
-
-        net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
-
-        return appInstance;
+        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
     }
 
     private AppInstance mapAppInstance(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) {
         if (appInstance == null)
             return null;
-
         AppInstance ai = modelMapper.map(appInstance, AppInstance.class);
+
         try {
             ai.setState(mapAppInstanceState(this.appDeploymentMonitor.state(appInstance.getInternalId())));
             ai.setUserFriendlyState(ai.getState().getUserFriendlyState());
@@ -359,17 +359,12 @@ public class AppInstanceController extends AppBaseController {
 
         try {
             ai.setUrl(this.appDeploymentMonitor.userAccessDetails(appInstance.getInternalId()).getUrl());
-        } catch (InvalidAppStateException e) {
-            ai.setUrl(null);
-        } catch (InvalidDeploymentIdException e) {
+        } catch (InvalidAppStateException
+                | InvalidDeploymentIdException e) {
             ai.setUrl(null);
         }
 
         return ai;
     }
 
-    protected void checkParam(Long id) throws MissingElementException {
-        if (id == null)
-            throw new MissingElementException("Missing id.");
-    }
 }
