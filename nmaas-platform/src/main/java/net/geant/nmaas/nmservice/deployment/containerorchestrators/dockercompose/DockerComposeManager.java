@@ -26,6 +26,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
@@ -89,7 +90,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.DOCKER_COMPOSE))
             throw new NmServiceRequestVerificationException(
@@ -97,10 +98,14 @@ public class DockerComposeManager implements ContainerOrchestrator {
         if(appDeploymentSpec.getDockerComposeFileTemplate() == null){
             throw new NmServiceRequestVerificationException("File template cannot be null");
         }
+        if(appDeployment == null){
+            throw new NmServiceRequestVerificationException("App deployment cannot be null");
+        }
         DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(
                 deploymentId,
-                deploymentName,
-                domain,
+                appDeployment.getDeploymentName(),
+                appDeployment.getDomain(),
+                appDeployment.getStorageSpace(),
                 DockerComposeFileTemplate.copy(appDeploymentSpec.getDockerComposeFileTemplate())
         );
         repositoryManager.storeService(serviceInfo);

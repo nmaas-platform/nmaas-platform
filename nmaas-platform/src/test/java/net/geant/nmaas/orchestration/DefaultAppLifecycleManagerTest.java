@@ -45,11 +45,11 @@ public class DefaultAppLifecycleManagerTest {
     public void shouldFailToDeployApplicationInstance() throws InterruptedException {
         when(appRepository.findById(1L)).thenReturn(Optional.of(new Application("appName")));
         when(appDepRepository.findByDeploymentId(Matchers.any())).thenReturn(Optional.of(
-                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true, 20.0)));
+                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true, 20)));
         when(appDepRepositoryManager.load(Matchers.any())).thenReturn(Optional.empty());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setConfigFileRepositoryRequired(true);
-        appDeploymentSpec.setDefaultStorageSpace(20.0);
+        appDeploymentSpec.setDefaultStorageSpace(20);
         appLifecycleManager.deployApplication("domain1", Identifier.newInstance(1L), "deploymentName", appDeploymentSpec);
         Thread.sleep(200);
     }

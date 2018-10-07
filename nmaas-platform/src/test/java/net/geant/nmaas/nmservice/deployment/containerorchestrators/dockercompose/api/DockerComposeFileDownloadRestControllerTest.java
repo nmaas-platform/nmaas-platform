@@ -46,7 +46,7 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .webAppContextSetup(context)
                 .addFilters(springSecurityFilterChain)
                 .build();
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         nmServiceInfo.setDockerComposeFile(new DockerComposeFile(COMPOSE_FILE_CONTENT));
         repositoryManager.storeService(nmServiceInfo);
     }
@@ -79,7 +79,7 @@ public class DockerComposeFileDownloadRestControllerTest {
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))
                 .andExpect(status().isNotFound());
         Identifier deploymentId = Identifier.newInstance("newDeploymentId");
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         repositoryManager.storeService(nmServiceInfo);
         mvc.perform(get("/api/dockercompose/files/{deploymentId}", deploymentId.value())
                 .with(httpBasic(context.getEnvironment().getProperty("app.compose.download.client.username"), context.getEnvironment().getProperty("app.compose.download.client.password"))))

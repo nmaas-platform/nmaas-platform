@@ -200,12 +200,15 @@ public class AppInstanceController extends AppBaseController {
 		if (!valid)
 			throw new ProcessingException("Configuration is not in valid JSON format");
 
+		if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0)
+			throw new ProcessingException("Storage space cannot be less or equal 0");
+
 		appInstance.setConfiguration(configuration.getJsonInput());
 		instances.update(appInstance);
 
 		try {
 			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
-		} catch (InvalidDeploymentIdException e) {
+		} catch (Throwable e) {
 			throw new ProcessingException("Missing app instance");
 		}
 	}

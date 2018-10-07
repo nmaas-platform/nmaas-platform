@@ -28,7 +28,7 @@ public class DockerComposeServiceRepositoryManagerTest {
 
     @Test
     public void shouldAddUpdateAndRemoveNmServiceInfo() throws InvalidDeploymentIdException {
-        DockerComposeNmServiceInfo info = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        DockerComposeNmServiceInfo info = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         manager.storeService(info);
         DockerComposeNmServiceInfo storedInfo = manager.loadService(deploymentId);
         assertThat(storedInfo, is(notNullValue()));

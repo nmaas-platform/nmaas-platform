@@ -67,6 +67,7 @@ public class ConfigDownloadCommandExecutionTest {
                 deploymentId,
                 "deploymentName",
                 "domain",
+                20,
                 new DockerComposeFileTemplate("testContent"));
         nmServiceInfo.setHost(dockerHostRepositoryManager.loadPreferredDockerHost());
         DockerComposeService dockerComposeService = new DockerComposeService();

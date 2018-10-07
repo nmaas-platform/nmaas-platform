@@ -66,7 +66,7 @@ public class OrchestratorManagerRestControllerTest {
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, modelMapper)).build();
         Application application = new Application("testapp");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
-        application.getAppDeploymentSpec().setDefaultStorageSpace(20.0);
+        application.getAppDeploymentSpec().setDefaultStorageSpace(20);
         application.getAppDeploymentSpec().setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }
@@ -87,7 +87,7 @@ public class OrchestratorManagerRestControllerTest {
     }
 
     @Test
-    public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Exception {
+    public void shouldApplyConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CONFIGURATION_JSON)
@@ -103,7 +103,7 @@ public class OrchestratorManagerRestControllerTest {
     }
 
     @Test
-    public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Exception {
+    public void shouldReturnNotFoundOnMissingDeploymentWithGivenDeploymentId() throws Throwable {
         doThrow(InvalidDeploymentIdException.class).when(lifecycleManager).applyConfiguration(any(),any());
         mvc.perform(post("/api/orchestration/deployments/{deploymentId}", "anydeploymentid")
                 .contentType(MediaType.APPLICATION_JSON)

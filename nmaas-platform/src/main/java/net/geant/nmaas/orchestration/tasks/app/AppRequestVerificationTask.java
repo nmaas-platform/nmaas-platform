@@ -50,8 +50,7 @@ public class AppRequestVerificationTask {
                     new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
             serviceDeployment.verifyRequest(
                     deploymentId,
-                    appDeployment.getDeploymentName(),
-                    appDeployment.getDomain(),
+                    appDeployment,
                     application.getAppDeploymentSpec());
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();

@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.api.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import java.util.List;
@@ -14,7 +16,11 @@ public class AppDeploymentSpec {
 
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
-    private Double defaultStorageSpace;
+    private KubernetesTemplate kubernetesTemplate;
+
+    private DockerComposeFileTemplate dockerComposeFileTemplate;
+
+    private Integer defaultStorageSpace;
 
     private boolean configFileRepositoryRequired;
 
