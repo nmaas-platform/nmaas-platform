@@ -11,15 +11,9 @@ import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isA;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -28,8 +22,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -167,10 +171,11 @@ public class ApplicationInstanceServiceTest {
         applicationInstanceService.delete(null);
     }
 
-    @Test(expected = ObjectNotFoundException.class)
-    public void deleteMethodShouldNotFindAnyObjectByFind(){
-        when(appInstanceRepo.findById(anyLong())).thenReturn(Optional.empty());
-        applicationInstanceService.delete((long) 0);
+    @Test
+    public void deleteMethodShouldNotTriggerDeleteIfInstanceNotFound(){
+        when(appInstanceRepo.findById(1L)).thenReturn(Optional.empty());
+        applicationInstanceService.delete(1L);
+        verify(appInstanceRepo, times(0)).delete(any());
     }
 
     @Test
@@ -212,10 +217,10 @@ public class ApplicationInstanceServiceTest {
         applicationInstanceService.find(null);
     }
 
-    @Test(expected = ObjectNotFoundException.class)
-    public void findMethodShouldThrowObjectNotFoundExceptionDueToObjectWasNotFound(){
+    @Test
+    public void findReturnEmptyOptionalIfInstanceNotFound(){
         when(appInstanceRepo.findById(anyLong())).thenReturn(Optional.empty());
-        applicationInstanceService.find((long) 0);
+        assertFalse(applicationInstanceService.find(1L).isPresent());
     }
 
     @Test
