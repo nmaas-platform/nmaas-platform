@@ -31,6 +31,7 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/auth/basic/registration")
 @Log4j2
 public class RegistrationController {
+
 	private UserService usersService;
 
 	private DomainService domains;
@@ -60,10 +61,11 @@ public class RegistrationController {
 	
 	@PostMapping
 	@Transactional
-
     @ResponseStatus(HttpStatus.CREATED)
-	public void signup(@RequestBody final Registration registration) throws SignupException {
-		if(registration == null || StringUtils.isEmpty(registration.getUsername()) || StringUtils.isEmpty(registration.getPassword()) )
+	public void signup(@RequestBody final Registration registration) {
+		if(registration == null
+				|| StringUtils.isEmpty(registration.getUsername())
+				|| StringUtils.isEmpty(registration.getPassword()) )
 			throw new SignupException("Invalid credentials.");
 							
 		User newUser = null;
