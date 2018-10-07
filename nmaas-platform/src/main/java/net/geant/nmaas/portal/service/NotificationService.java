@@ -4,6 +4,6 @@ import net.geant.nmaas.portal.api.model.EmailConfirmation;
 
 public interface NotificationService {
 
-    void sendEmail(EmailConfirmation emailConfirmation, String token);
+    void sendEmail(EmailConfirmation emailConfirmation);
 
 }
