@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,4 +45,10 @@ public class KClusterDeployment {
     /** Port on which SMTP server is exposed */
     @Column(nullable = false)
     private Integer smtpServerPort;
+
+    /** SMTP server username */
+    private String smtpServerUsername;
+
+    /** SMTP server user password */
+    private String smtpServerPassword;
 }

@@ -19,6 +19,8 @@ class ClusterAttachPoint {
 class ClusterDeployment {
     public smtpServerHostname: string="";
     public smtpServerPort: string="";
+    public smtpServerUsername: string="";
+    public smtpServerPassword: string="";
     public defaultNamespace: string="";
     public defaultStorageClass: string="";
     public id: number;

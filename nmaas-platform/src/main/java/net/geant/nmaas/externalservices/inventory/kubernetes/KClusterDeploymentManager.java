@@ -8,7 +8,11 @@ public interface KClusterDeploymentManager {
 
     Boolean getUseInClusterGitLabInstance();
 
-    String getSTMPServerHostname();
+    String getSMTPServerHostname();
 
-    Integer getSTMPServerPort();
+    Integer getSMTPServerPort();
+
+    Optional<String> getSMTPServerUsername();
+
+    Optional<String> getSMTPServerPassword();
 }

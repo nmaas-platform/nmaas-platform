@@ -28,7 +28,9 @@
 		"defaultStorageSpace":20,
 		"deployParameters": {
 			"SMTP_HOSTNAME":"nav.config.EMAIL_HOST",
-			"SMTP_PORT":"nav.config.EMAIL_PORT"
+			"SMTP_PORT":"nav.config.EMAIL_PORT",
+			"SMTP_USERNAME":"nav.config.EMAIL_HOST_USER",
+			"SMTP_PASSWORD":"nav.config.EMAIL_HOST_PASSWORD"
 		},
 		"configFileRepositoryRequired":false
 	},

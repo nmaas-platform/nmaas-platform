@@ -177,13 +177,23 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public String getSTMPServerHostname(){
+    public String getSMTPServerHostname(){
         return loadSingleCluster().getDeployment().getSmtpServerHostname();
     }
 
     @Override
-    public Integer getSTMPServerPort(){
+    public Integer getSMTPServerPort(){
         return loadSingleCluster().getDeployment().getSmtpServerPort();
+    }
+
+    @Override
+    public Optional<String> getSMTPServerUsername(){
+        return Optional.of(loadSingleCluster().getDeployment().getSmtpServerUsername());
+    }
+
+    @Override
+    public Optional<String> getSMTPServerPassword(){
+        return Optional.of(loadSingleCluster().getDeployment().getSmtpServerPassword());
     }
 
     private KCluster loadSingleCluster() {

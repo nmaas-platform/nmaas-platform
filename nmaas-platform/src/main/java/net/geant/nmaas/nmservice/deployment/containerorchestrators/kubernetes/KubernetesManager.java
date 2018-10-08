@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
@@ -34,6 +35,7 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Profile("env_kubernetes")
+@Log4j2
 public class KubernetesManager implements ContainerOrchestrator {
 
     private KubernetesRepositoryManager repositoryManager;
@@ -115,10 +118,23 @@ public class KubernetesManager implements ContainerOrchestrator {
         deployParameters.forEach((k,v) ->{
             switch (k){
                 case SMTP_HOSTNAME: {
-                    additionalParameters.put(v, deploymentManager.getSTMPServerHostname());
+                    additionalParameters.put(v, deploymentManager.getSMTPServerHostname());
                     break;
                 } case SMTP_PORT: {
-                    additionalParameters.put(v, deploymentManager.getSTMPServerPort().toString());
+                    additionalParameters.put(v, deploymentManager.getSMTPServerPort().toString());
+                    break;
+                } case SMTP_USERNAME: {
+                    deploymentManager.getSMTPServerUsername().ifPresent(username->{
+                        if(!username.isEmpty())
+                            additionalParameters.put(v, username);
+                    });
+                    break;
+
+                } case SMTP_PASSWORD: {
+                    deploymentManager.getSMTPServerPassword().ifPresent(value->{
+                        if(!value.isEmpty())
+                            additionalParameters.put(v, value);
+                    });
                     break;
                 }
             }
