@@ -10,18 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @NoArgsConstructor
 public class AppBaseController {
 
+	@Autowired
 	protected ModelMapper modelMapper;
-	
-	protected ApplicationService applications;
-
-	protected UserService users;
 
 	@Autowired
-    public AppBaseController(ModelMapper modelMapper, ApplicationService applications, UserService users) {
-        this.modelMapper = modelMapper;
-        this.applications = applications;
-        this.users = users;
-    }
+	protected ApplicationService applications;
+
+	@Autowired
+	protected UserService users;
 
     protected net.geant.nmaas.portal.persistent.entity.Application getApp(Long appId) throws MissingElementException {
 		if(appId == null)
