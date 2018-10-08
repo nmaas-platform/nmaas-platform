@@ -29,7 +29,6 @@ import {ClusterService} from "../service/cluster.service";
 import {GitlabModule} from "./admin/gitlab/gitlab.module";
 import {ConfigurationModule} from "./admin/configuration/configuration.module";
 import {MonitorModule} from "./admin/monitor/monitor.module";
-import {ShibbolethModule} from "./admin/shibboleth/shibboleth.module";
 import {StorageServiceModule} from "ngx-webstorage-service";
 
 @NgModule({
@@ -53,7 +52,6 @@ import {StorageServiceModule} from "ngx-webstorage-service";
     PipesModule,
     ClustersModule,
       GitlabModule,
-      ShibbolethModule,
       MonitorModule,
       ConfigurationModule
   ],

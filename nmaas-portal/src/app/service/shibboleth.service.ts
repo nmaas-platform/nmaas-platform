@@ -15,28 +15,8 @@ export class ShibbolethService extends GenericDataService{
     this.url = this.appConfig.getApiUrl() + '/management/shibboleth/';
   }
 
-  public getAll():Observable<ShibbolethConfig[]>{
-    return this.get<ShibbolethConfig[]>(this.url+'list');
-  }
-
   public getOne():Observable<ShibbolethConfig>{
     return this.get<ShibbolethConfig>(this.url);
-  }
-
-  public getOneById(config_id:number):Observable<ShibbolethConfig>{
-    return this.get<ShibbolethConfig>(this.url + config_id);
-  }
-
-  public add(shibbolethConfig:ShibbolethConfig):Observable<any>{
-    return this.post(this.url, shibbolethConfig);
-  }
-
-  public update(shibbolethConfig:ShibbolethConfig):Observable<any>{
-    return this.put(this.url + shibbolethConfig.id, shibbolethConfig);
-  }
-
-  public remove(config_id:number):Observable<any>{
-    return this.delete(this.url + config_id);
   }
 
 }
