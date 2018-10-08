@@ -1,26 +1,29 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.NoArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @NoArgsConstructor
 public class AppBaseController {
 
-	@Autowired
 	protected ModelMapper modelMapper;
 	
-	@Autowired
 	protected ApplicationService applications;
 
-	@Autowired
 	protected UserService users;
 
-	protected net.geant.nmaas.portal.persistent.entity.Application getApp(Long appId) throws MissingElementException {
+	@Autowired
+    public AppBaseController(ModelMapper modelMapper, ApplicationService applications, UserService users) {
+        this.modelMapper = modelMapper;
+        this.applications = applications;
+        this.users = users;
+    }
+
+    protected net.geant.nmaas.portal.persistent.entity.Application getApp(Long appId) throws MissingElementException {
 		if(appId == null)
 			throw new MissingElementException("Missing application id.");
 		
@@ -39,8 +42,6 @@ public class AppBaseController {
 			throw new MissingElementException("Missing username.");
 		
 		return users.findById(userId).orElseThrow(() -> new MissingElementException("Missing user id=" + userId));
-
 	}
 
-	
 }
