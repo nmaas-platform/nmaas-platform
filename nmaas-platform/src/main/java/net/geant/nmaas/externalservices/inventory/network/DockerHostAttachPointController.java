@@ -6,7 +6,16 @@ import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHos
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -22,41 +31,34 @@ public class DockerHostAttachPointController {
         this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
     }
 
-    @RequestMapping(
-            value = "/dockerhosts",
-            method = RequestMethod.GET)
+    @GetMapping("/dockerhosts")
     public List<DockerHostAttachPoint> listAllDockerHostAttachPoints() {
         return dockerHostAttachPointRepository.findAll();
     }
 
-    @RequestMapping(
-            value = "/dockerhosts/{name}",
-            method = RequestMethod.GET)
+    @GetMapping("/dockerhosts/{name}")
     public DockerHostAttachPoint getDockerHostAttachPoint(
-            @PathVariable("name") String name) throws AttachPointNotFoundException {
+            @PathVariable("name") String name) {
         return dockerHostAttachPointRepository
                 .findByDockerHostName(name)
                 .orElseThrow(() -> new AttachPointNotFoundException(name));
     }
 
-    @RequestMapping(
+    @PostMapping(
             value = "/dockerhosts",
-            method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addDockerHostAttachPoint(
-            @RequestBody DockerHostAttachPoint dockerHostAttachPoint) throws DataAccessException {
+    public void addDockerHostAttachPoint(@RequestBody DockerHostAttachPoint dockerHostAttachPoint) {
         dockerHostAttachPointRepository.save(dockerHostAttachPoint);
     }
 
-    @RequestMapping(
+    @PutMapping(
             value = "/dockerhosts/{name}",
-            method = RequestMethod.PUT,
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateDockerHostAttachPoint(
             @PathVariable("name") String name,
-            @RequestBody DockerHostAttachPoint modifiedDockerHostAttachPoint) throws AttachPointNotFoundException, DataAccessException {
+            @RequestBody DockerHostAttachPoint modifiedDockerHostAttachPoint) {
         DockerHostAttachPoint currentDockerHostAttachPoint = dockerHostAttachPointRepository
                 .findByDockerHostName(name)
                 .orElseThrow(() -> new AttachPointNotFoundException(name));
@@ -66,12 +68,9 @@ public class DockerHostAttachPointController {
         dockerHostAttachPointRepository.save(currentDockerHostAttachPoint);
     }
 
-    @RequestMapping(
-            value = "/dockerhosts/{name}",
-            method = RequestMethod.DELETE)
+    @DeleteMapping("/dockerhosts/{name}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeDockerHostAttachPoint(
-            @PathVariable("name") String name) throws DataAccessException, AttachPointNotFoundException {
+    public void removeDockerHostAttachPoint(@PathVariable("name") String name) {
         DockerHostAttachPoint dhap = dockerHostAttachPointRepository
                 .findByDockerHostName(name)
                 .orElseThrow(() -> new AttachPointNotFoundException(name));
@@ -80,7 +79,7 @@ public class DockerHostAttachPointController {
 
     @ExceptionHandler(AttachPointNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleAttachPointNotFoundException (AttachPointNotFoundException ex) {
+    public String handleAttachPointNotFoundException(AttachPointNotFoundException ex) {
         return "Did not find attach point with provided identifier -> " + ex.getMessage();
     }
 

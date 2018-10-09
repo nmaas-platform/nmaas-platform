@@ -40,19 +40,19 @@ public class GitLabManager {
                 .collect(Collectors.toList());
     }
 
-    public GitLab getGitlabConfigById(Long id) throws GitLabNotFoundException {
+    public GitLab getGitlabConfigById(Long id) {
         return this.repository.findById(id)
                 .orElseThrow(()->new GitLabNotFoundException("GitLab configuration with id " + id + " not found in repository"));
     }
 
-    public void addGitlabConfig(GitLab gitLabConfig) throws OnlyOneGitLabSupportedException {
+    public void addGitlabConfig(GitLab gitLabConfig) {
         if(repository.count() > 0){
             throw new OnlyOneGitLabSupportedException("GitLab config already exists. It can be either removed or updated.");
         }
         this.repository.save(gitLabConfig);
     }
 
-    public void updateGitlabConfig(Long id, GitLab updatedGitLabConfig) throws GitLabNotFoundException {
+    public void updateGitlabConfig(Long id, GitLab updatedGitLabConfig) {
         Optional<GitLab> gitLabConfig = repository.findById(id);
         if(!gitLabConfig.isPresent()){
             throw new GitLabNotFoundException("GitLab config with id "+id+" not found in repository.");
@@ -60,7 +60,7 @@ public class GitLabManager {
         repository.save(updatedGitLabConfig);
     }
 
-    public void removeGitlabConfig(Long id) throws GitLabNotFoundException {
+    public void removeGitlabConfig(Long id) {
         GitLab gitLabConfig = repository.findById(id)
                 .orElseThrow(() -> new GitLabNotFoundException("GitLab config with id "+id+" not found in repository."));
         repository.delete(gitLabConfig);
@@ -86,7 +86,7 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getPort();
     }
 
-    public void validateGitLabInstance() throws GitLabInvalidConfigurationException {
+    public void validateGitLabInstance() {
         GitLab gitLabInstance = this.loadSingleGitlabConfig();
         checkArgument(gitLabInstance.getToken()!= null && !gitLabInstance.getRepositoryAccessUsername().isEmpty(), "Repository access username is null or empty");
         checkArgument(gitLabInstance.getPort() != null, "GitLab port is null");

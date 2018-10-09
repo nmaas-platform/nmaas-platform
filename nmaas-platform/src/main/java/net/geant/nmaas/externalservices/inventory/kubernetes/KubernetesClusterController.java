@@ -54,8 +54,8 @@ public class KubernetesClusterController {
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
-    @GetMapping(value = "/{id}")
-    public KCluster getKubernetesCluster(@PathVariable("id") Long id) throws KubernetesClusterNotFoundException {
+    @GetMapping("/{id}")
+    public KCluster getKubernetesCluster(@PathVariable("id") Long id) {
         return clusterManager.getClusterById(id);
     }
 
@@ -69,7 +69,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addKubernetesCluster(@RequestBody KCluster cluster) throws OnlyOneKubernetesClusterSupportedException {
+    public Long addKubernetesCluster(@RequestBody KCluster cluster) {
         cluster.validate();
         clusterManager.addNewCluster(cluster);
         return cluster.getId();
@@ -85,8 +85,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KCluster cluster)
-            throws KubernetesClusterNotFoundException {
+    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KCluster cluster) {
         cluster.validate();
         clusterManager.updateCluster(id, cluster);
     }
@@ -99,7 +98,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeKubernetesCluster(@PathVariable("id") Long id) throws KubernetesClusterNotFoundException {
+    public void removeKubernetesCluster(@PathVariable("id") Long id) {
         clusterManager.removeCluster(id);
     }
 
