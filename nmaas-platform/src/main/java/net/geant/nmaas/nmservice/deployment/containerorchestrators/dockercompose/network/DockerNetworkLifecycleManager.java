@@ -82,6 +82,7 @@ public class DockerNetworkLifecycleManager {
             throw new CouldNotCreateContainerNetworkException(
                     "Could not create container network -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
         } catch (InvalidDomainException ide) {
@@ -114,6 +115,7 @@ public class DockerNetworkLifecycleManager {
             throw new ContainerOrchestratorInternalErrorException(
                     "Could not execute requested action on Docker Engine -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
         } catch (InvalidDomainException ide) {
@@ -142,6 +144,7 @@ public class DockerNetworkLifecycleManager {
             throw new CouldNotRemoveContainerNetworkException(
                     "Could not removeIfNoContainersAttached container network " + network.getDeploymentId() + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
             throw new ContainerOrchestratorInternalErrorException(
                     "Internal error -> " + interruptedException.getMessage(), interruptedException);
         } catch (InvalidDomainException ide) {

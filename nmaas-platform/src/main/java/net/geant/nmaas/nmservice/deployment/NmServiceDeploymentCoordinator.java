@@ -102,7 +102,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                     orchestrator.checkService(deploymentId);
                     notifyStateChangeListeners(deploymentId, VERIFIED, "");
                     return;
-                } catch(ContainerCheckFailedException e) {
+                }catch(ContainerCheckFailedException e) {
                     Thread.sleep(serviceDeploymentCheckInternal * 1000L);
                     currentWaitTime += serviceDeploymentCheckInternal;
                 }
@@ -112,6 +112,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
                 | DockerNetworkCheckFailedException
                 | ContainerOrchestratorInternalErrorException
                 | InterruptedException e) {
+            Thread.currentThread().interrupt();
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
         }

@@ -69,6 +69,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
             }
         } catch (InvalidDomainException
                 | InterruptedException e){
+            Thread.currentThread().interrupt();
             throw new CouldNotDeployDcnException("Exception during DCN deploy " + e.getMessage());
         }
     }

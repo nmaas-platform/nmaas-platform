@@ -146,6 +146,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
         } catch ( InvalidDomainException
                 | InterruptedException
                 | DockerException anyException) {
+            Thread.currentThread().interrupt();
             notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYMENT_FAILED);
             throw new CouldNotDeployDcnException("Exception during DCN deployment -> " + anyException.getMessage());
         }
@@ -160,6 +161,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
             }
         } catch (DockerException
                 | InterruptedException e) {
+            Thread.currentThread().interrupt();
             log.warn("Failed to remove old Ansible containers", e);
         }
     }
@@ -173,6 +175,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
             Thread.sleep(1000);
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFIED);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFICATION_FAILED);
         }
     }
@@ -189,6 +192,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
         } catch ( InvalidDomainException
                 | InterruptedException
                 | DockerException e) {
+            Thread.currentThread().interrupt();
             notifyStateChangeListeners(domain, DcnDeploymentState.REMOVAL_FAILED);
             throw new CouldNotRemoveDcnException("Exception during DCN removal -> " + e.getMessage());
         }
