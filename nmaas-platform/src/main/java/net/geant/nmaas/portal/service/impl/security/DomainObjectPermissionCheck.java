@@ -20,15 +20,15 @@ import net.geant.nmaas.portal.service.DomainService;
 @Component
 public class DomainObjectPermissionCheck extends BasePermissionCheck {
 
-	@Autowired
-	private DomainService domains;
-	
 	final static String DOMAIN = "domain";
 
-	final protected Map<Role, Permissions[]> globalPermMatrix = new HashMap<Role, Permissions[]>();
-	final protected Map<Role, Permissions[]> permMatrix = new HashMap<Role, Permissions[]>(); 
-	
-	
+	@Autowired
+	private DomainService domains;
+
+	private final Map<Role, Permissions[]> globalPermMatrix = new HashMap<Role, Permissions[]>();
+	private final Map<Role, Permissions[]> permMatrix = new HashMap<Role, Permissions[]>();
+
+
 	public DomainObjectPermissionCheck() {
 		globalPermMatrix.put(Role.ROLE_SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
 		globalPermMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ, Permissions.WRITE});
@@ -65,10 +65,11 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
 											: domains.getGlobalDomain().orElseThrow(() -> new IllegalStateException("Global domain not found.")));
 		
 		for(UserRole role : user.getRoles()) {
-			if(domains.getGlobalDomain().get().equals(role.getDomain()))
+			if(domains.getGlobalDomain().orElseThrow(()-> new IllegalArgumentException("Global domain not found")).equals(role.getDomain())) {
 				resultPerms.addAll(Arrays.asList(globalPermMatrix.get(role.getRole())));
-			else if(role.getDomain().equals(domain))
+			}else if(role.getDomain().equals(domain)) {
 				resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));
+			}
 		}
 		
 		return resultPerms;
