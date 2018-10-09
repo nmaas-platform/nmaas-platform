@@ -37,7 +37,7 @@ public class DomainServiceImpl implements DomainService {
 	CodenameValidator validator;
 	
 	@Value("${domain.global:GLOBAL}")
-	String GLOBAL_DOMAIN;
+	String globalDomain;
 
 	DomainRepository domainRepo;
 
@@ -69,16 +69,13 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Domain createGlobalDomain() throws ProcessingException {
-		Optional<Domain> globalDomain = getGlobalDomain();
-		if(globalDomain.isPresent())
-			return globalDomain.get();
-		else
-			return createDomain(GLOBAL_DOMAIN, GLOBAL_DOMAIN);
+		Optional<Domain> globalDomainOptional = getGlobalDomain();
+		return globalDomainOptional.orElseGet(() -> createDomain(this.globalDomain, this.globalDomain));
 	}
 	
 	@Override
 	public Optional<Domain> getGlobalDomain() {		
-		return domainRepo.findByName(GLOBAL_DOMAIN);
+		return domainRepo.findByName(globalDomain);
 	}
 	
 	
@@ -109,11 +106,9 @@ public class DomainServiceImpl implements DomainService {
 		checkParam(name);
 		checkParam(codename);
 
-		Optional.ofNullable(validator)
-				.map(v -> v.valid(codename))
-				.filter(result -> result)
-				.orElseThrow(() -> new ProcessingException("Domain codename is not valid")); 
-		
+		if(!Optional.ofNullable(validator).map(v -> v.valid(codename)).filter(result -> result).isPresent()){
+			throw new ProcessingException("Domain codename is not valid");
+		}
 		try {
 			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass));
 		} catch(Exception ex) {
@@ -224,7 +219,7 @@ public class DomainServiceImpl implements DomainService {
 		
 		Domain domain = getDomain(domainId);
 		
-		User user = getUser(userId);;
+		User user = getUser(userId);
 		
 		return userRoleRepo.findRolesByDomainAndUser(domain, user);
 	}
@@ -235,7 +230,7 @@ public class DomainServiceImpl implements DomainService {
 		
 		Domain domain = getDomain(domainId);
 		
-		User user = getUser(userId);;
+		User user = getUser(userId);
 				
 		User userMember = userRoleRepo.findDomainMember(domain, user);
 		if(userMember == null)
@@ -250,7 +245,7 @@ public class DomainServiceImpl implements DomainService {
 
 		User user = getUser(userId);
 				
-		return user.getRoles().stream().map(ur -> ur.getDomain()).collect(Collectors.toSet());
+		return user.getRoles().stream().map(UserRole::getDomain).collect(Collectors.toSet());
 	}
 
 	protected void checkParam(String name) {
@@ -281,7 +276,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	protected void checkGlobal(Domain domain){
-		if(domain.getCodename().equals(GLOBAL_DOMAIN))
+		if(domain.getCodename().equals(globalDomain))
 			throw new IllegalArgumentException("Global domain can't be updated or removed");
 	}
 	
