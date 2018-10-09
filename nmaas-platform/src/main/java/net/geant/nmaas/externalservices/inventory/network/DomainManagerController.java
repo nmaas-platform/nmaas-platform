@@ -12,12 +12,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/management/domains")
-public class DomainManagerRestController {
+public class DomainManagerController {
 
     private DomainNetworkAttachPointRepository attachPointRepository;
 
     @Autowired
-    public DomainManagerRestController(DomainNetworkAttachPointRepository attachPointRepository) {
+    public DomainManagerController(DomainNetworkAttachPointRepository attachPointRepository) {
         this.attachPointRepository = attachPointRepository;
     }
 

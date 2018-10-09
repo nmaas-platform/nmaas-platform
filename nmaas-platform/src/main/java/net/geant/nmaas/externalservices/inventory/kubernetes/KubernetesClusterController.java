@@ -27,12 +27,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/api/management/kubernetes")
-public class KubernetesClusterManagerRestController {
+public class KubernetesClusterController {
 
     private KubernetesClusterManager clusterManager;
 
     @Autowired
-    public KubernetesClusterManagerRestController(KubernetesClusterManager clusterManager) {
+    public KubernetesClusterController(KubernetesClusterManager clusterManager) {
         this.clusterManager = clusterManager;
     }
 

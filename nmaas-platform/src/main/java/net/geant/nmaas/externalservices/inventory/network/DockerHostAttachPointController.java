@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/management/network")
-public class DockerHostAttachPointManagerRestController {
+public class DockerHostAttachPointController {
 
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
 
     @Autowired
-    public DockerHostAttachPointManagerRestController(
+    public DockerHostAttachPointController(
             DockerHostAttachPointRepository dockerHostAttachPointRepository) {
         this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
     }

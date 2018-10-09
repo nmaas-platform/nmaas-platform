@@ -17,15 +17,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class KubernetesClusterManagerApiSecurityTest extends BaseControllerTest {
-
-    @Before
-    public void setup() {
-        mvc = createMVC();
-    }
+public class KubernetesClusterControllerSecTest extends BaseControllerTest {
 
     @MockBean
     private KubernetesClusterRepository repository;
+
+    @Before
+    public void setup() {
+        createMVC();
+    }
 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
