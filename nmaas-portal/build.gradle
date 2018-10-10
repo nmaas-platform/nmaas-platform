@@ -40,8 +40,13 @@ task testCoverage(type: Exec) {
 testCoverage.dependsOn(npm_install)
 
 sonarqube {
-	properties
-		{ property "sonar.sources", "src" }
+    properties
+		{
+			property "sonar.sources", "src"
+			property "sonar.exclusions", "**/node_modules/**,**/*.spec.ts,**/bootstrap.js"
+			property "sonar.tests", "src"
+			property "sonar.test.inclusions", "**/*.spec.ts"
+		}
 }
 
 build.dependsOn(buildGUI)
