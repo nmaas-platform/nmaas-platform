@@ -3,6 +3,7 @@ import org.gradle.internal.os.OperatingSystem;
 plugins {
 	id "com.moowork.node" version "1.0.1"
 	id 'java'
+	id "org.sonarqube" version "2.6.2"
 }
 
 apply from: '../reactor/build.gradle'
@@ -37,6 +38,11 @@ task testCoverage(type: Exec) {
 
 }
 testCoverage.dependsOn(npm_install)
+
+sonarqube {
+	properties
+		{ property "sonar.sources", "src" }
+}
 
 build.dependsOn(buildGUI)
 build.dependsOn(testCoverage)
