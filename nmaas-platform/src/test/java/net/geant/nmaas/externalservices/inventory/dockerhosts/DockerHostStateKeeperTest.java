@@ -46,9 +46,9 @@ public class DockerHostStateKeeperTest {
 
     @After
     public void clean() throws DockerHostStateNotFoundException {
-        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
         dockerHostStateKeeper.removeAllAssignments(DOCKER_HOST_NAME_1);
         dockerHostStateKeeper.removeAllAssignments(DOCKER_HOST_NAME_2);
+        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
     }
 
     @Test

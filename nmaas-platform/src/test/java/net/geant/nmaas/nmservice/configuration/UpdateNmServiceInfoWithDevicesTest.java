@@ -5,6 +5,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.hamcrest.Matchers;
@@ -39,9 +40,9 @@ public class UpdateNmServiceInfoWithDevicesTest {
 
     @Before
     public void setup() {
-        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId1, DEPLOYMENT_NAME_1, DOMAIN, null);
+        DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(deploymentId1, DEPLOYMENT_NAME_1, DOMAIN, 20, null);
         nmServiceRepositoryManager.storeService(serviceInfo);
-        serviceInfo = new DockerComposeNmServiceInfo(deploymentId2, DEPLOYMENT_NAME_2, DOMAIN, new DockerComposeFileTemplate("testContent"));
+        serviceInfo = new DockerComposeNmServiceInfo(deploymentId2, DEPLOYMENT_NAME_2, DOMAIN, 20, new DockerComposeFileTemplate("testContent"));
         nmServiceRepositoryManager.storeService(serviceInfo);
     }
 

@@ -19,7 +19,7 @@ public class KubernetesRepositoryManager extends NmServiceRepositoryManager<Kube
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateKServiceExternalUrl(Identifier deploymentId, String serviceExternalUrl) throws InvalidDeploymentIdException {
         KubernetesNmServiceInfo serviceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        serviceInfo.setServiceExternalUrl(serviceExternalUrl);
+        serviceInfo.setServiceExternalUrl(serviceExternalUrl.toLowerCase());
         repository.save(serviceInfo);
     }
 

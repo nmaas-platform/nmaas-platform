@@ -18,6 +18,7 @@ import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,9 @@ public class SSOAuthController {
 
 	private ConfigurationManager configurationManager;
 
+	@Value("${sso.key}")
+	private String ssoKey;
+
 	@Autowired
 	public SSOAuthController(UserService users, DomainService domains, ShibbolethManager shibbolethManager, JWTTokenService jwtTokenService, ConfigurationManager configurationManager){
 		this.users = users;
@@ -65,7 +69,7 @@ public class SSOAuthController {
 			throw new AuthenticationException("Missing username");
 
 		ShibbolethView shibboleth = shibbolethManager.getOneShibbolethConfig();
-		userSSOLoginData.validate(shibbolethManager.getKey(shibboleth.getKeyFilePath()), shibboleth.getTimeout());
+		userSSOLoginData.validate(ssoKey, shibboleth.getTimeout());
 
 		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
 		User user = maybeUser.orElse(null);

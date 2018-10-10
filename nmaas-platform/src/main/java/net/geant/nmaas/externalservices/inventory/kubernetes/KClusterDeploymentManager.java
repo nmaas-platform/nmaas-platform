@@ -7,5 +7,4 @@ public interface KClusterDeploymentManager {
     Optional<String> getStorageClass(String domain);
 
     Boolean getUseInClusterGitLabInstance();
-
 }

@@ -2,29 +2,34 @@ package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.portal.BaseControllerTest;
-import net.geant.nmaas.portal.persistent.entity.*;
-import net.geant.nmaas.portal.service.ApplicationInstanceService;
+import net.geant.nmaas.portal.persistent.entity.AppInstance;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class AppInstanceControllerTest extends BaseControllerTest {
+public class AppInstanceControllerIntTest extends BaseControllerTest {
 
     @MockBean
-    private ApplicationInstanceService instances;
+    private AppInstanceRepository appInstanceRepository;
 
     @MockBean
     private AppLifecycleManager appLifecycleManager;
@@ -39,7 +44,7 @@ public class AppInstanceControllerTest extends BaseControllerTest {
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
         AppInstance appInstance = new AppInstance(new Application("test"),"test",domain,user);
-        when(instances.find(1L)).thenReturn(Optional.of(appInstance));
+        when(appInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
@@ -52,7 +57,7 @@ public class AppInstanceControllerTest extends BaseControllerTest {
 
     @Test
     public void shouldThrowAnExceptionWhenInputIsIncorrect() throws Exception{
-        when(instances.find(0L)).thenReturn(Optional.empty());
+        when(appInstanceRepository.findById(0L)).thenReturn(Optional.empty());
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart",0L)
                 .header("Authorization","Bearer " + getValidUserTokenFor(Role.ROLE_SUPERADMIN)))
                 .andExpect(status().is(404));

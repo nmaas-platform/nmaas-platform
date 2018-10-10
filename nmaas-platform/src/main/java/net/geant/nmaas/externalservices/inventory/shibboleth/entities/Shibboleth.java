@@ -28,9 +28,6 @@ public class Shibboleth {
     private String logoutUrl;
 
     @Column(nullable = false)
-    private String keyFilePath;
-
-    @Column(nullable = false)
     private int timeout = 10;
 
 }
