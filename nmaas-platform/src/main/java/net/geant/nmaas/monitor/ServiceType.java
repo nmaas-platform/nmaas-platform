@@ -6,6 +6,10 @@ public enum ServiceType {
         public String getName(){
             return "GITLAB";
         }
+    },
+    HELM{
+        @Override
+        public String getName(){return "HELM";}
     };
 
     public abstract String getName();
