@@ -2,7 +2,6 @@ import org.gradle.internal.os.OperatingSystem;
 
 plugins {
 	id "com.moowork.node" version "1.0.1"
-	id 'java'
 	id "org.sonarqube" version "2.6.2"
 }
 
@@ -31,9 +30,9 @@ task testCoverage(type: Exec) {
 	println 'Testing with code coverage analysis'
 
 	if ( OperatingSystem.current().isWindows() ) {
-		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '/'
+		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', '/'
 	} else {
-		commandLine 'ng', 'test', '--watch=false', '--browser', 'ChromeHeadless', '/'
+		commandLine 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', '/'
 	}
 
 }
