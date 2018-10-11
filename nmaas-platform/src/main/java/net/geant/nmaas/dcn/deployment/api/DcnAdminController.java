@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/management/dcns")
-public class DcnAdminRestController {
+public class DcnAdminController {
 
     private DcnRepositoryManager dcnRepositoryManager;
 
     @Autowired
-    public DcnAdminRestController(DcnRepositoryManager dcnRepositoryManager){
+    public DcnAdminController(DcnRepositoryManager dcnRepositoryManager){
         this.dcnRepositoryManager = dcnRepositoryManager;
     }
 
@@ -30,7 +30,7 @@ public class DcnAdminRestController {
     @GetMapping
     public List<DcnView> listAllDcns() {
         return dcnRepositoryManager.loadAllNetworks().stream()
-                .map(dcn -> new DcnView(dcn))
+                .map(DcnView::new)
                 .collect(Collectors.toList());
     }
 

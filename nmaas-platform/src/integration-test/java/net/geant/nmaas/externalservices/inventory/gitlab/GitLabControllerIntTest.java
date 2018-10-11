@@ -2,8 +2,8 @@ package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
+import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -24,13 +24,17 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class GitLabConfigControllerTest {
+public class GitLabControllerIntTest {
+
     @Autowired
     private GitLabManager manager;
 
@@ -46,7 +50,7 @@ public class GitLabConfigControllerTest {
 
     @Before
     public void init(){
-        mvc = MockMvcBuilders.standaloneSetup(new GitLabConfigController(manager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new GitLabController(manager)).build();
     }
 
     @After

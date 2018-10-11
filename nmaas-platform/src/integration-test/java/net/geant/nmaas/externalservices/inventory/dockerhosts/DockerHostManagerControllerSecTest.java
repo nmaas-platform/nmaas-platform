@@ -1,6 +1,5 @@
-package net.geant.nmaas.externalservices.inventory.gitlab;
+package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import net.geant.nmaas.portal.BaseControllerTest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
@@ -16,29 +15,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-k8s.properties")
-public class GitLabConfigApiSecurityTest extends BaseControllerTest {
+@TestPropertySource("classpath:application-test-compose.properties")
+public class DockerHostManagerControllerSecTest extends BaseControllerTest {
 
     @MockBean
-    private GitLabRepository repository;
+    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     @Before
-    public void setup(){
-        mvc = createMVC();
+    public void setup() {
+        createMVC();
     }
 
     @Test
-    public void shouldAuthorizeAdminProperUser() throws Exception{
+    public void shouldAuthorizeAdminProperUser() throws Exception {
         String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
-        mvc.perform(get("/api/management/gitlab")
+        mvc.perform(get("/api/management/dockerhosts")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void shouldRejectNonAdminProperUser() throws Exception{
-        String token = getValidUserTokenFor(Role.ROLE_DOMAIN_ADMIN);
-        mvc.perform(get("/api/management/gitlab")
+    public void shouldRejectNonAdminProperUser() throws Exception {
+        String token = getValidUserTokenFor(Role.ROLE_USER);
+        mvc.perform(get("/api/management/dockerhosts")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isUnauthorized());
     }

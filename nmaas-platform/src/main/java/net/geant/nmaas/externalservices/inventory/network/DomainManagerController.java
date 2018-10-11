@@ -6,24 +6,31 @@ import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNet
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/management/domains")
-public class DomainManagerRestController {
+public class DomainManagerController {
 
     private DomainNetworkAttachPointRepository attachPointRepository;
 
     @Autowired
-    public DomainManagerRestController(DomainNetworkAttachPointRepository attachPointRepository) {
+    public DomainManagerController(DomainNetworkAttachPointRepository attachPointRepository) {
         this.attachPointRepository = attachPointRepository;
     }
 
     @GetMapping(value = "/{domainName}/network")
-    public DomainNetworkAttachPoint getDomainNetworkAttachPoint(
-            @PathVariable("domainName") String domainName) throws AttachPointNotFoundException {
+    public DomainNetworkAttachPoint getDomainNetworkAttachPoint(@PathVariable("domainName") String domainName) {
         return attachPointRepository
                 .findByDomain(domainName)
                 .orElseThrow(() -> new AttachPointNotFoundException(String.valueOf(domainName)));
@@ -31,8 +38,7 @@ public class DomainManagerRestController {
 
     @PostMapping(value = "/{domainName}/network", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void setOrUpdateDomainNetworkAttachPoint(
-            @RequestBody DomainNetworkAttachPoint domainNetworkAttachPoint) throws DataAccessException {
+    public void setOrUpdateDomainNetworkAttachPoint(@RequestBody DomainNetworkAttachPoint domainNetworkAttachPoint) {
         Optional<DomainNetworkAttachPoint> queryResult = attachPointRepository.findByDomain(domainNetworkAttachPoint.getDomain());
         DomainNetworkAttachPoint attachPoint;
         if (queryResult.isPresent()) {
@@ -46,7 +52,7 @@ public class DomainManagerRestController {
     @DeleteMapping(value = "/{domainName}/network")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeDomainNetworkAttachPoint(
-            @PathVariable("domainName") String domainName) throws AttachPointNotFoundException, DataAccessException {
+            @PathVariable("domainName") String domainName) {
         DomainNetworkAttachPoint dnap = attachPointRepository
                 .findByDomain(domainName)
                 .orElseThrow(() -> new AttachPointNotFoundException(String.valueOf(domainName)));

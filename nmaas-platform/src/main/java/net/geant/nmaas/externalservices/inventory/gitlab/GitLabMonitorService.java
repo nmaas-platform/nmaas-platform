@@ -1,6 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
-import java.util.Date;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
@@ -13,10 +12,12 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @Log4j2
 @NoArgsConstructor
-public class GitLabMonitorServiceImpl implements MonitorService {
+public class GitLabMonitorService implements MonitorService {
 
     private GitLabManager gitLabManager;
 

@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class KubernetesClusterManagerRestControllerTest {
+public class KubernetesClusterControllerIntTest {
 
     private final static String URL_PREFIX = "/api/management/kubernetes";
 
@@ -107,7 +107,7 @@ public class KubernetesClusterManagerRestControllerTest {
 
     @Before
     public void init() {
-        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterManagerRestController(clusterManager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterController(clusterManager)).build();
     }
 
     @After

@@ -21,7 +21,10 @@ import javax.ws.rs.core.MediaType;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -50,7 +53,7 @@ public class DockerHostAttachPointManagerRestControllerTest {
     @Before
     public void init() {
         mvc = MockMvcBuilders
-                .standaloneSetup(new DockerHostAttachPointManagerRestController(dockerHostAttachPointRepository))
+                .standaloneSetup(new DockerHostAttachPointController(dockerHostAttachPointRepository))
                 .build();
     }
 
