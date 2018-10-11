@@ -155,7 +155,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 if(foundDomain.isPresent()){
                     return foundDomain.get().getKubernetesNamespace();
                 }
-            default: return NMAAS_NAMESPACE_PREFIX + domain;
+                return NMAAS_NAMESPACE_PREFIX + domain;
+            default:
+                return NMAAS_NAMESPACE_PREFIX + domain;
         }
     }
 

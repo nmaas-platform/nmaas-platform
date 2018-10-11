@@ -199,40 +199,39 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public boolean unsubscribe(ApplicationSubscription appSub) {
+	public void unsubscribe(ApplicationSubscription appSub) {
 		checkParam(appSub);
 
-		if(appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication()))
-			return true;
-		else if(!appSubRepo.existsById(appSub.getId()))
-			throw new ObjectNotFoundException("Application subscription not found.");
-		
-		appSub.setActive(false);
-		appSub.setDeleted(true);
+		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
+			if(!appSubRepo.existsById(appSub.getId()))
+				throw new ObjectNotFoundException("Application subscription not found.");
 
-		try {
-			appSubRepo.save(appSub);
-			return true;
-		}catch(Exception ex) {
-			throw new ProcessingException("Unable to unsubscribe application", ex);
+			appSub.setActive(false);
+			appSub.setDeleted(true);
+
+			try {
+				appSubRepo.save(appSub);
+			} catch(Exception ex) {
+				throw new ProcessingException("Unable to unsubscribe application", ex);
+			}
 		}
 	}
 
 	@Override
-	public boolean unsubscribe(Long applicationId, Long domainId) {
+	public void unsubscribe(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
 
 		ApplicationSubscription appSub = findApplicationSubscription(applicationId, domainId);
 
-		return unsubscribe(appSub);
+		unsubscribe(appSub);
 	}
 
 	@Override
-	public boolean unsubscribe(Application application, Domain domain) {
+	public void unsubscribe(Application application, Domain domain) {
 		checkParam(application, domain);
 		
 		ApplicationSubscription appSub = findApplicationSubscription(application, domain);		
-		return unsubscribe(appSub);
+		unsubscribe(appSub);
 	}
 
 
