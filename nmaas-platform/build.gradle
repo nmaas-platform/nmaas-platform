@@ -79,6 +79,14 @@ dependencies {
 	testCompile('org.springframework.security:spring-security-test')
 }
 
+test {
+	systemProperties 'property': 'value'
+	afterTest { desc, result ->
+		println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+	}
+	ignoreFailures = true
+}
+
 task integrationTest(type: Test) {
 	testClassesDirs = sourceSets.integrationTest.output.classesDirs
 	classpath = sourceSets.integrationTest.runtimeClasspath

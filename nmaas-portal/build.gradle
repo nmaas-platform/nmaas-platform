@@ -2,7 +2,7 @@ import org.gradle.internal.os.OperatingSystem;
 
 plugins {
 	id "com.moowork.node" version "1.0.1"
-	id 'java'
+	id "org.sonarqube" version "2.6.2"
 }
 
 apply from: '../reactor/build.gradle'
@@ -26,6 +26,28 @@ task dist(type: Zip) {
 }
 buildGUI.doLast { tasks.dist.execute() }
 
-build.dependsOn(buildGUI)
-build.dependsOn(npm_install)
+task testCoverage(type: Exec) {
+	println 'Testing with code coverage analysis'
 
+	if ( OperatingSystem.current().isWindows() ) {
+		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', '/'
+	} else {
+		commandLine 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', '/'
+	}
+
+}
+testCoverage.dependsOn(npm_install)
+
+sonarqube {
+    properties
+		{
+			property "sonar.sources", "src"
+			property "sonar.exclusions", "**/node_modules/**,**/*.spec.ts,**/bootstrap.js"
+			property "sonar.tests", "src"
+			property "sonar.test.inclusions", "**/*.spec.ts"
+		}
+}
+
+build.dependsOn(buildGUI)
+build.dependsOn(testCoverage)
+build.dependsOn(npm_install)

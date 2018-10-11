@@ -27,7 +27,11 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UsersControllerTest {
 
@@ -39,11 +43,11 @@ public class UsersControllerTest {
 
 	private DomainService domainService = mock(DomainService.class);
 
+	private NotificationService notificationService = mock(NotificationService.class);
+
 	private ModelMapper modelMapper = new ModelMapper();
 
 	private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-
-	private NotificationService notificationService = mock(NotificationService.class);
 
 	private UsersController usersController;
 
@@ -63,7 +67,7 @@ public class UsersControllerTest {
 		when(principal.getName()).thenReturn(admin.getUsername());
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
 		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
-        doNothing().when(notificationService).sendEmail(any(EmailConfirmation.class), any(String.class));
+        doNothing().when(notificationService).sendEmail(any(EmailConfirmation.class));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 	}
@@ -318,7 +322,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldSetEnabledFlag(){
-		usersController.setEnabledFlag(userList.get(0).getId(), true, null, principal);
+		usersController.setEnabledFlag(userList.get(0).getId(), true, principal);
 		verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), true);
 	}
 

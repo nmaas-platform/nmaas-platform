@@ -134,6 +134,14 @@ public class HelmCommandExecutor {
         }
     }
 
+    void executeVersionCommand() throws CommandExecutionException{
+        try{
+            singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command());
+        } catch(SshConnectionException e) {
+            throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());
+        }
+    }
+
     private SingleCommandExecutor singleCommandExecutor() {
         return SingleCommandExecutor.getExecutor(clusterHelmManager.getHelmHostAddress(), clusterHelmManager.getHelmHostSshUsername());
     }
