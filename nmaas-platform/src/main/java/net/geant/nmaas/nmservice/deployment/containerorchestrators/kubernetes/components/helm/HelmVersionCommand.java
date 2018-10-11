@@ -6,9 +6,12 @@ public class HelmVersionCommand extends HelmCommand {
 
     private static final String VERSION = "version";
 
-    static HelmVersionCommand command(){
+    static HelmVersionCommand command(boolean enableTls){
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(VERSION);
+        if(enableTls){
+            sb.append(SPACE).append(TLS);
+        }
         return new HelmVersionCommand(sb.toString());
     }
 
