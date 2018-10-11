@@ -26,13 +26,16 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
-public class DockerHostManagerRestControllerTest {
+public class DockerHostManagerControllerIntTest {
 
     private final static String THIRD_HOST_NAME = "GN4-DOCKER-3";
     private final static String FOURTH_HOST_NAME = "GN4-DOCKER-1";
@@ -51,7 +54,7 @@ public class DockerHostManagerRestControllerTest {
     @Before
     public void init() {
         DockerHostRepositoryInit.addDefaultDockerHost(dockerHostRepositoryManager);
-        mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerRestController(dockerHostRepositoryManager, modelMapper)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new DockerHostManagerController(dockerHostRepositoryManager, modelMapper)).build();
     }
 
     @After

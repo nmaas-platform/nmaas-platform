@@ -1,16 +1,25 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostDetails;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostView;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostDetails;
+import net.geant.nmaas.externalservices.inventory.dockerhosts.model.DockerHostView;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,14 +29,14 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api/management/dockerhosts")
-public class DockerHostManagerRestController {
+public class DockerHostManagerController {
 
     private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private ModelMapper modelMapper;
 
     @Autowired
-    public DockerHostManagerRestController(DockerHostRepositoryManager dockerHostRepositoryManager, ModelMapper modelMapper) {
+    public DockerHostManagerController(DockerHostRepositoryManager dockerHostRepositoryManager, ModelMapper modelMapper) {
         this.dockerHostRepositoryManager = dockerHostRepositoryManager;
         this.modelMapper = modelMapper;
     }
@@ -37,9 +46,7 @@ public class DockerHostManagerRestController {
      * @return list of {@link DockerHostView} objects
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "",
-            method = RequestMethod.GET)
+    @GetMapping
     public List<DockerHostView> listAllDockerHosts() {
         return dockerHostRepositoryManager.loadAll().stream()
                 .map(dockerHost -> modelMapper.map(dockerHost, DockerHostView.class))
@@ -53,9 +60,7 @@ public class DockerHostManagerRestController {
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "/{name}",
-            method = RequestMethod.GET)
+    @GetMapping("/{name}")
     public DockerHostDetails getDockerHost(
             @PathVariable("name") String name)
             throws DockerHostNotFoundException {
@@ -68,11 +73,8 @@ public class DockerHostManagerRestController {
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "/firstpreferred",
-            method = RequestMethod.GET)
-    public DockerHostDetails getPreferredDockerHost()
-            throws DockerHostNotFoundException {
+    @GetMapping("/firstpreferred")
+    public DockerHostDetails getPreferredDockerHost() {
         return modelMapper.map(dockerHostRepositoryManager.loadPreferredDockerHost(), DockerHostDetails.class);
     }
 
@@ -83,13 +85,9 @@ public class DockerHostManagerRestController {
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "",
-            method = RequestMethod.POST,
-            consumes = "application/json")
+    @PostMapping(value = "", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addDockerHost(
-            @RequestBody DockerHostDetails newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException {
+    public void addDockerHost(@RequestBody DockerHostDetails newDockerHost) {
         dockerHostRepositoryManager.addDockerHost(modelMapper.map(newDockerHost, DockerHost.class));
     }
 
@@ -101,15 +99,11 @@ public class DockerHostManagerRestController {
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "/{name}",
-            method = RequestMethod.PUT,
-            consumes = "application/json")
+    @PutMapping(value = "/{name}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateDockerHost(
             @PathVariable("name") String name,
-            @RequestBody DockerHostDetails dockerHost)
-            throws DockerHostNotFoundException, DockerHostInvalidException {
+            @RequestBody DockerHostDetails dockerHost) {
         dockerHostRepositoryManager.updateDockerHost(name, modelMapper.map(dockerHost, DockerHost.class));
     }
 
@@ -120,13 +114,9 @@ public class DockerHostManagerRestController {
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-    @RequestMapping(
-            value = "/{name}",
-            method = RequestMethod.DELETE)
+    @DeleteMapping("/{name}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void removeDockerHost(
-            @PathVariable("name") String name)
-            throws DockerHostNotFoundException, DockerHostInvalidException {
+    public void removeDockerHost(@PathVariable("name") String name) {
         dockerHostRepositoryManager.removeDockerHost(name);
     }
 

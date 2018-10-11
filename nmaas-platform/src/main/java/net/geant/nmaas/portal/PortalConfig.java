@@ -50,6 +50,9 @@ public class PortalConfig {
 			@Value("${admin.password}")
 			String adminPassword;
 
+			@Value("${admin.email}")
+			String adminEmail;
+
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws ProcessingException {
@@ -57,7 +60,7 @@ public class PortalConfig {
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
-					addUser("admin", adminPassword, "geant.notification@gmail.com", Role.ROLE_SUPERADMIN);
+					addUser("admin", adminPassword, adminEmail, Role.ROLE_SUPERADMIN);
 				}
 			}
 

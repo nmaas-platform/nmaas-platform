@@ -70,7 +70,7 @@ public class DockerHostStateKeeper {
             count++;
             portNumber++;
         }
-        newAssignedPorts.forEach((port) -> state.getPortAssignments().add(new NumberAssignment(port, deploymentId)));
+        newAssignedPorts.forEach(port -> state.getPortAssignments().add(new NumberAssignment(port, deploymentId)));
         stateRepository.save(state);
         return newAssignedPorts;
     }
@@ -109,7 +109,7 @@ public class DockerHostStateKeeper {
      */
     @Transactional
     public Integer getAssignedPort(String dockerHostName, Identifier deploymentId) {
-        if (getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).size() > 0)
+        if (!getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).isEmpty())
             return getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).get(0);
         else
             return null;
@@ -132,7 +132,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public int assignVlanForNetwork(String dockerHostName, String domain) throws DockerHostNotFoundException {
+    public int assignVlanForNetwork(String dockerHostName, String domain) {
         addStateForDockerHostIfAbsent(dockerHostName);
         return assignVlan(stateForDockerHost(dockerHostName), domain);
     }
@@ -204,7 +204,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, String domain) throws DockerHostNotFoundException {
+    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, String domain) {
         addStateForDockerHostIfAbsent(dockerHostName);
         return assignAddresses(stateForDockerHost(dockerHostName), domain);
     }
@@ -291,14 +291,11 @@ public class DockerHostStateKeeper {
     }
 
     void removeAllAssignments(String dockerHostName) {
-        try {
-            DockerHostState state = stateForDockerHost(dockerHostName);
-            state.setPortAssignments(new ArrayList<>());
-            state.setVlanAssignments(new ArrayList<>());
-            state.setAddressAssignments(new ArrayList<>());
-            stateRepository.save(state);
-        } catch (DockerHostStateNotFoundException ignored) {
-        }
+        DockerHostState state = stateForDockerHost(dockerHostName);
+        state.setPortAssignments(new ArrayList<>());
+        state.setVlanAssignments(new ArrayList<>());
+        state.setAddressAssignments(new ArrayList<>());
+        stateRepository.save(state);
     }
 
 }

@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
-public class AnsiblePlaybookStatusNotificationTest {
+public class AnsibleNotificationControllerIntTest {
 
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
@@ -70,7 +70,7 @@ public class AnsiblePlaybookStatusNotificationTest {
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
         AnsiblePlaybookExecutionStateListener coordinator = new AnsibleDcnDeploymentExecutor(dcnRepositoryManager, null, null, applicationEventPublisher, dockerHostNetworkRepository, null);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
-        mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationRestController(coordinator)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationController(coordinator)).build();
     }
 
     @After

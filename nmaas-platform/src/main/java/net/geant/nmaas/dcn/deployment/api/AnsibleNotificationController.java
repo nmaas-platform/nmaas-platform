@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Profile("dcn_ansible")
 @RequestMapping(value = "/api/dcns/notifications")
-public class AnsibleNotificationRestController {
+public class AnsibleNotificationController {
 
     private AnsiblePlaybookExecutionStateListener stateListener;
 
     @Autowired
-    public AnsibleNotificationRestController(AnsiblePlaybookExecutionStateListener stateListener) {
+    public AnsibleNotificationController(AnsiblePlaybookExecutionStateListener stateListener) {
         this.stateListener = stateListener;
     }
 
