@@ -1,6 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
