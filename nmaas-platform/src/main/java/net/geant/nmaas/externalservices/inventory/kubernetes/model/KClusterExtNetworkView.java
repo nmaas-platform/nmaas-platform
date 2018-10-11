@@ -1,9 +1,16 @@
-package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
+package net.geant.nmaas.externalservices.inventory.kubernetes.model;
 
 import java.net.InetAddress;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 public class KClusterExtNetworkView {
 
     /**

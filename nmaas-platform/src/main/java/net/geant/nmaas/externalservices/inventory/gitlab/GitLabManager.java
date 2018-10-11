@@ -45,19 +45,21 @@ public class GitLabManager {
                 .orElseThrow(()->new GitLabNotFoundException("GitLab configuration with id " + id + " not found in repository"));
     }
 
-    public void addGitlabConfig(GitLab gitLabConfig) {
+    public Long addGitlabConfig(GitLabView gitLabConfig) {
         if(repository.count() > 0){
             throw new OnlyOneGitLabSupportedException("GitLab config already exists. It can be either removed or updated.");
         }
-        this.repository.save(gitLabConfig);
+        GitLab gitLab = modelMapper.map(gitLabConfig, GitLab.class);
+        this.repository.save(gitLab);
+        return gitLab.getId();
     }
 
-    public void updateGitlabConfig(Long id, GitLab updatedGitLabConfig) {
+    public void updateGitlabConfig(Long id, GitLabView updatedGitLabConfig) {
         Optional<GitLab> gitLabConfig = repository.findById(id);
         if(!gitLabConfig.isPresent()){
             throw new GitLabNotFoundException("GitLab config with id "+id+" not found in repository.");
         }
-        repository.save(updatedGitLabConfig);
+        repository.save(modelMapper.map(updatedGitLabConfig, GitLab.class));
     }
 
     public void removeGitlabConfig(Long id) {
