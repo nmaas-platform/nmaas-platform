@@ -81,10 +81,14 @@ dependencies {
 
 test {
 	systemProperties 'property': 'value'
+	ignoreFailures = true
 	afterTest { desc, result ->
 		println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
 	}
-	ignoreFailures = true
+	jacoco {
+		append = true
+		destinationFile = file("$buildDir/jacoco/test.exec")
+	}
 }
 
 task integrationTest(type: Test) {
@@ -94,17 +98,29 @@ task integrationTest(type: Test) {
 	afterTest { desc, result ->
 		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
 	}
+//	jacoco {
+//		append = true
+//		destinationFile = file("$buildDir/jacoco/test.exec")
+//	}
+}
+integrationTest.dependsOn(test)
+
+jacoco {
+	toolVersion = "0.8.1"
+	reportsDir = file("$buildDir/jacoco")
 }
 
 jacocoTestReport {
 	reports {
 		xml.enabled false
 		csv.enabled false
-		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
+		html.destination file("${buildDir}/jacocoHtml")
 	}
 	executionData(test, integrationTest)
 }
 
-// removed integrationTest task from build
-// check.dependsOn integrationTest
-integrationTest.mustRunAfter test
+sonarqube {
+	properties {
+		property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
+	}
+}
