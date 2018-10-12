@@ -2,7 +2,9 @@ package net.geant.nmaas.externalservices.inventory.network;
 
 import net.geant.nmaas.externalservices.inventory.network.entities.DockerHostAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
+import net.geant.nmaas.externalservices.inventory.network.model.DockerHostAttachPointView;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -25,10 +27,13 @@ public class DockerHostAttachPointController {
 
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
 
+    private ModelMapper modelMapper;
+
     @Autowired
     public DockerHostAttachPointController(
-            DockerHostAttachPointRepository dockerHostAttachPointRepository) {
+            DockerHostAttachPointRepository dockerHostAttachPointRepository, ModelMapper modelMapper) {
         this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/dockerhosts")
@@ -48,8 +53,8 @@ public class DockerHostAttachPointController {
             value = "/dockerhosts",
             consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addDockerHostAttachPoint(@RequestBody DockerHostAttachPoint dockerHostAttachPoint) {
-        dockerHostAttachPointRepository.save(dockerHostAttachPoint);
+    public void addDockerHostAttachPoint(@RequestBody DockerHostAttachPointView dockerHostAttachPoint) {
+        dockerHostAttachPointRepository.save(modelMapper.map(dockerHostAttachPoint, DockerHostAttachPoint.class));
     }
 
     @PutMapping(
@@ -58,7 +63,7 @@ public class DockerHostAttachPointController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateDockerHostAttachPoint(
             @PathVariable("name") String name,
-            @RequestBody DockerHostAttachPoint modifiedDockerHostAttachPoint) {
+            @RequestBody DockerHostAttachPointView modifiedDockerHostAttachPoint) {
         DockerHostAttachPoint currentDockerHostAttachPoint = dockerHostAttachPointRepository
                 .findByDockerHostName(name)
                 .orElseThrow(() -> new AttachPointNotFoundException(name));

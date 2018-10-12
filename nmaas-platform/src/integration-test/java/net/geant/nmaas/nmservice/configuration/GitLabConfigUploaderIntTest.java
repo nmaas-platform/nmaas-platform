@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabSupportedException;
+import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
@@ -69,7 +70,7 @@ public class GitLabConfigUploaderIntTest {
     @Test
     @Ignore
     public void shouldTransferConfigFiles() throws OnlyOneGitLabSupportedException, FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException, GitLabApiException {
-        GitLab gitLab = simpleGitLabInstance();
+        GitLabView gitLab = simpleGitLabInstance();
         gitLabManager.addGitlabConfig(gitLab);
         assertThat("Gitlab URL is wrong",gitLabManager.getGitLabApiUrl().equals("http://"+gitLabApiUrl+":80"));
         Identifier deploymentId = Identifier.newInstance(UUID.randomUUID().toString());
@@ -81,8 +82,8 @@ public class GitLabConfigUploaderIntTest {
         gitLabConfigUploader.transferConfigFiles(deploymentId, Arrays.asList(testConfig1.getConfigId(), testConfig2.getConfigId()), true);
     }
 
-    private GitLab simpleGitLabInstance(){
-        GitLab gitLab = new GitLab();
+    private GitLabView simpleGitLabInstance(){
+        GitLabView gitLab = new GitLabView();
         gitLab.setToken(gitLabApiToken);
         gitLab.setServer(gitLabApiUrl);
         gitLab.setPort(80);

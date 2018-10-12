@@ -107,7 +107,7 @@ public class KubernetesClusterControllerIntTest {
 
     @Before
     public void init() {
-        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterController(clusterManager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterController(clusterManager, modelMapper)).build();
     }
 
     @After

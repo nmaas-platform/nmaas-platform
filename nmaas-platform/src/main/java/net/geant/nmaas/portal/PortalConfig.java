@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal;
 
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -125,15 +126,16 @@ public class PortalConfig {
 			@Transactional
 			public void afterPropertiesSet() throws Exception {
 				try {
-					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
+					ConfigurationView configuration = configurationManager.getConfiguration();
 					if(configuration.isMaintenance())
 						configuration.setMaintenance(false);
 					if(configuration.isSsoLoginAllowed())
 						configuration.setSsoLoginAllowed(true);
+					configurationManager.updateConfiguration(configuration.getId(), configuration);
 
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false, false));
+					configurationManager.addConfiguration(new ConfigurationView(false, false));
 				}
 			}
 		};
