@@ -91,7 +91,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KCluster clusterView) {
+    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KClusterView clusterView) {
         KCluster cluster = modelMapper.map(clusterView, KCluster.class);
         cluster.validate();
         clusterManager.updateCluster(id, cluster);
