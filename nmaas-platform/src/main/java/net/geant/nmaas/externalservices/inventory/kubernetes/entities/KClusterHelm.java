@@ -41,4 +41,7 @@ public class KClusterHelm {
 
     /** Directory on the helm host in which all charts are stored */
     private String helmHostChartsDirectory;
+
+    /** Flag indicating if tls is enabled */
+    private Boolean enableTls;
 }

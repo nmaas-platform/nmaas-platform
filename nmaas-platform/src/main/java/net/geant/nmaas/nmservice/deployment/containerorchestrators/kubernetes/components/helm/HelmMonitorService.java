@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 @NoArgsConstructor
 @Log4j2
-public class HelmMonitorServiceImpl implements MonitorService {
+public class HelmMonitorService implements MonitorService {
 
     private MonitorManager monitorManager;
 
