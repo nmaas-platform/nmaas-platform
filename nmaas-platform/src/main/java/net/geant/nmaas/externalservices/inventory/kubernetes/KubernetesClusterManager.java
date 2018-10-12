@@ -9,7 +9,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
@@ -80,6 +80,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public String getHelmHostChartsDirectory() {
         return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
+    }
+
+    @Override
+    public boolean getEnableTls(){
+        return this.loadSingleCluster().getHelm().getEnableTls();
     }
 
     @Override
@@ -155,7 +160,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 if(foundDomain.isPresent()){
                     return foundDomain.get().getKubernetesNamespace();
                 }
-            default: return NMAAS_NAMESPACE_PREFIX + domain;
+                return NMAAS_NAMESPACE_PREFIX + domain;
+            default:
+                return NMAAS_NAMESPACE_PREFIX + domain;
         }
     }
 

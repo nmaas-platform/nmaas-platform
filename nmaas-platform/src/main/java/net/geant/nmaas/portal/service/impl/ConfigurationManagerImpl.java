@@ -1,10 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -17,31 +20,47 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private ConfigurationRepository repository;
 
+    private ShibbolethManager shibbolethManager;
+
+    private ModelMapper modelMapper;
+
     @Autowired
+    public ConfigurationManagerImpl(ConfigurationRepository repository, ShibbolethManager shibbolethManager, ModelMapper modelMapper){
     public ConfigurationManagerImpl(ConfigurationRepository repository){
         this.repository = repository;
+        this.shibbolethManager = shibbolethManager;
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public Configuration getConfiguration(){
-        return this.loadSingleConfiguration();
+    public ConfigurationView getConfiguration(){
+        return modelMapper.map(this.loadSingleConfiguration(), ConfigurationView.class);
     }
 
     @Override
-    public void addConfiguration(Configuration configuration) throws OnlyOneConfigurationSupportedException{
+    public Long addConfiguration(ConfigurationView configurationView) throws OnlyOneConfigurationSupportedException{
         if(repository.count() > 0){
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
+        if(configurationView.isSsoLoginAllowed() && !this.shibbolethManager.shibbolethConfigExist()){
+            throw new IllegalStateException("Shibboleth configuration is not set up");
+        }
+        Configuration configuration = modelMapper.map(configurationView, Configuration.class);
         this.repository.save(configuration);
+        return configuration.getId();
     }
 
     @Override
-    public void updateConfiguration(Long id, Configuration updatedConfiguration) throws ConfigurationNotFoundException{
+    public void updateConfiguration(Long id, ConfigurationView updatedConfiguration) throws ConfigurationNotFoundException{
         Optional<Configuration> configuration = repository.findById(id);
         if(!configuration.isPresent()){
             throw new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository");
         }
         repository.save(updatedConfiguration);
+        if(updatedConfiguration.isSsoLoginAllowed() && !this.shibbolethManager.shibbolethConfigExist()){
+            throw new IllegalStateException("Shibboleth configuration is not set up");
+        }
+        repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }
 
     private Configuration loadSingleConfiguration(){

@@ -2,7 +2,9 @@ package net.geant.nmaas.externalservices.inventory.network;
 
 import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
+import net.geant.nmaas.externalservices.inventory.network.model.DomainNetworkAttachPointView;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -24,9 +26,12 @@ public class DomainManagerController {
 
     private DomainNetworkAttachPointRepository attachPointRepository;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public DomainManagerController(DomainNetworkAttachPointRepository attachPointRepository) {
+    public DomainManagerController(DomainNetworkAttachPointRepository attachPointRepository, ModelMapper modelMapper) {
         this.attachPointRepository = attachPointRepository;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping(value = "/{domainName}/network")
@@ -38,13 +43,13 @@ public class DomainManagerController {
 
     @PostMapping(value = "/{domainName}/network", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void setOrUpdateDomainNetworkAttachPoint(@RequestBody DomainNetworkAttachPoint domainNetworkAttachPoint) {
+    public void setOrUpdateDomainNetworkAttachPoint(@RequestBody DomainNetworkAttachPointView domainNetworkAttachPoint) {
         Optional<DomainNetworkAttachPoint> queryResult = attachPointRepository.findByDomain(domainNetworkAttachPoint.getDomain());
         DomainNetworkAttachPoint attachPoint;
         if (queryResult.isPresent()) {
-            attachPoint = queryResult.get().update(domainNetworkAttachPoint);
+            attachPoint = queryResult.get().update(modelMapper.map(domainNetworkAttachPoint, DomainNetworkAttachPoint.class));
         } else {
-            attachPoint = domainNetworkAttachPoint;
+            attachPoint = modelMapper.map(domainNetworkAttachPoint, DomainNetworkAttachPoint.class);
         }
         attachPointRepository.save(attachPoint);
     }

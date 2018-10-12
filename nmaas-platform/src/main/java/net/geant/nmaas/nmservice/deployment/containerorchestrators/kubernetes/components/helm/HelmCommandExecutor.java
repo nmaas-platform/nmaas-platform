@@ -40,7 +40,8 @@ public class HelmCommandExecutor {
                         namespace,
                         releaseName,
                         arguments,
-                        constructChartArchivePath(template.getArchive())
+                        constructChartArchivePath(template.getArchive()),
+                        clusterHelmManager.getEnableTls()
                 );
             } else {
                 command = HelmInstallCommand.commandWithRepo(
@@ -48,7 +49,8 @@ public class HelmCommandExecutor {
                         releaseName,
                         arguments,
                         constructChartNameWithRepo(template.getChart().getName()),
-                        template.getChart().getVersion()
+                        template.getChart().getVersion(),
+                        clusterHelmManager.getEnableTls()
                 );
             }
             singleCommandExecutor().executeSingleCommand(command);
@@ -75,7 +77,7 @@ public class HelmCommandExecutor {
 
     void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
         try {
-            HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value());
+            HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value(), clusterHelmManager.getEnableTls());
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
@@ -89,7 +91,7 @@ public class HelmCommandExecutor {
 
     private HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
         try {
-            HelmStatusCommand command = HelmStatusCommand.command(releaseName);
+            HelmStatusCommand command = HelmStatusCommand.command(releaseName, clusterHelmManager.getEnableTls());
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
         } catch (SshConnectionException
@@ -107,7 +109,7 @@ public class HelmCommandExecutor {
 
     public List<String> executeHelmListCommand() throws CommandExecutionException {
         try {
-            HelmListCommand command = HelmListCommand.command();
+            HelmListCommand command = HelmListCommand.command(clusterHelmManager.getEnableTls());
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return Arrays.asList(output.split("\n"));
         } catch (SshConnectionException
@@ -123,7 +125,8 @@ public class HelmCommandExecutor {
             if (clusterHelmManager.getUseLocalChartArchives()) {
                 command = HelmUpgradeCommand.commandWithArchive(
                         deploymentId.value(),
-                        constructChartArchivePath(chartArchiveName)
+                        constructChartArchivePath(chartArchiveName),
+                        clusterHelmManager.getEnableTls()
                 );
             } else {
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
@@ -136,7 +139,7 @@ public class HelmCommandExecutor {
 
     void executeVersionCommand() throws CommandExecutionException{
         try{
-            singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command());
+            singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command(clusterHelmManager.getEnableTls()));
         } catch(SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());
         }

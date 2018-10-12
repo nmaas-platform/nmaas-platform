@@ -50,7 +50,7 @@ public class GitLabControllerIntTest {
 
     @Before
     public void init(){
-        mvc = MockMvcBuilders.standaloneSetup(new GitLabController(manager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new GitLabController(manager, modelMapper)).build();
     }
 
     @After
@@ -67,7 +67,6 @@ public class GitLabControllerIntTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         assertEquals(1, manager.getAllGitlabConfig().size());
-        System.out.println(Long.parseLong(result.getResponse().getContentAsString()));
         mvc.perform(delete(URL_PREFIX+"/{id}", Long.parseLong(result.getResponse().getContentAsString())))
                 .andExpect(status().isNoContent());
         assertEquals(0, manager.getAllGitlabConfig().size());
@@ -87,7 +86,7 @@ public class GitLabControllerIntTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
-        GitLab updated = simpleGitlabConfig();
+        GitLabView updated = simpleGitlabConfig();
         updated.setId(Long.parseLong(result.getResponse().getContentAsString()));
         updated.setToken("newtesttoken");
         mvc.perform(put(URL_PREFIX+"/{id}", updated.getId())
@@ -135,7 +134,7 @@ public class GitLabControllerIntTest {
         MvcResult result = mvc.perform(get(URL_PREFIX+"/{id}", Long.parseLong(mvcResult.getResponse().getContentAsString())))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertEquals(Long.parseLong(mvcResult.getResponse().getContentAsString()), ((GitLab) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<GitLab>(){})).getId().longValue());
+        assertEquals(Long.parseLong(mvcResult.getResponse().getContentAsString()), ((GitLabView) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<GitLabView>(){})).getId().longValue());
     }
 
     @Test
@@ -154,8 +153,8 @@ public class GitLabControllerIntTest {
     }
 
 
-    private GitLab simpleGitlabConfig(){
-        GitLab config = new GitLab();
+    private GitLabView simpleGitlabConfig(){
+        GitLabView config = new GitLabView();
         config.setPort(80);
         config.setServer("11.10.1.1");
         config.setSshServer("10.10.10.1");
