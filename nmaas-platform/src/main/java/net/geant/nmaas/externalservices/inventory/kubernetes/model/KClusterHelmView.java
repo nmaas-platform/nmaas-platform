@@ -1,10 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.model;
 
-import java.net.InetAddress;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.net.InetAddress;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,4 +24,6 @@ class KClusterHelmView {
     private String helmChartRepositoryName;
 
     private String helmHostChartsDirectory;
+
+    private Boolean enableTls;
 }
