@@ -83,6 +83,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public boolean getEnableTls(){
+        return this.loadSingleCluster().getHelm().getEnableTls();
+    }
+
+    @Override
     public IngressControllerConfigOption getControllerConfigOption() {
         return loadSingleCluster().getIngress().getControllerConfigOption();
     }

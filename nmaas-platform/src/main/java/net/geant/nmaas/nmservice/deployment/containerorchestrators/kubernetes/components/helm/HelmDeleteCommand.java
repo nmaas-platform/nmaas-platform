@@ -13,7 +13,7 @@ public class HelmDeleteCommand extends HelmCommand {
      * @param releaseName release name
      * @return complete command object
      */
-    public static HelmDeleteCommand command(String releaseName) {
+    public static HelmDeleteCommand command(String releaseName, boolean enableTls) {
         if (releaseName == null || releaseName.isEmpty())
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         StringBuilder sb = new StringBuilder();
@@ -21,6 +21,9 @@ public class HelmDeleteCommand extends HelmCommand {
                 .append(SPACE).append(DELETE)
                 .append(SPACE).append(OPTION_PURGE)
                 .append(SPACE).append(releaseName);
+        if(enableTls){
+            sb.append(SPACE).append(TLS);
+        }
         return new HelmDeleteCommand(sb.toString());
     }
 
