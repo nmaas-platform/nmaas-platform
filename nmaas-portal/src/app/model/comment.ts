@@ -1,8 +1,8 @@
 import { User } from './user';
 
 export class Comment {
-    public id: Number;
-    public parentId: Number;
+    public id: number;
+    public parentId: number;
     public owner: User;
     public createdAt: Date;
     public deleted: boolean;
