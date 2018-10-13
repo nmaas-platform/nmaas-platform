@@ -1,8 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ShibbolethConfig} from "../../../../model/shibboleth";
-import {Router} from "@angular/router";
-import {BaseComponent} from "../../../common/basecomponent/base.component";
-import {ComponentMode} from "../../../common/componentmode";
+import {ShibbolethConfig} from '../../../../model/shibboleth';
+import {Router} from '@angular/router';
+import {BaseComponent} from '../../../common/basecomponent/base.component';
+import {ComponentMode} from '../../../common/componentmode';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-shibbolethdetails',
@@ -12,23 +13,27 @@ import {ComponentMode} from "../../../common/componentmode";
 export class ShibbolethDetailsComponent extends BaseComponent implements OnInit {
 
   @Input()
-  shibbolethConfig:ShibbolethConfig = new ShibbolethConfig();
+  shibbolethConfig: ShibbolethConfig = new ShibbolethConfig();
 
   @Output()
-  onSave:EventEmitter<ShibbolethConfig> = new EventEmitter<ShibbolethConfig>();
+  onSave: EventEmitter<ShibbolethConfig> = new EventEmitter<ShibbolethConfig>();
 
   @Output()
-  onDelete:EventEmitter<number> = new EventEmitter<number>();
+  onDelete: EventEmitter<number> = new EventEmitter<number>();
 
   @Input()
   private errMsg: string;
 
-  constructor(private router:Router) { super(); }
+  constructor(private router: Router, private translate: TranslateService ) {
+    super();
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
   }
 
-  public onModeChange():void{
+  public onModeChange(): void{
       const newMode: ComponentMode = (this.mode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
       if (this.isModeAllowed(newMode)) {
           this.mode = newMode;
