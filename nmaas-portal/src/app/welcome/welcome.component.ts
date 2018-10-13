@@ -20,15 +20,13 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService, private translate: TranslateService) { 
+  constructor(private appConfig: AppConfigService, private translate: TranslateService){
     const browserLang = translate.getBrowserLang();
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
-  
   useLanguage(language: string) {
       this.translate.use(language);
   }
-
   ngOnInit() {
     this.onResize();
   }

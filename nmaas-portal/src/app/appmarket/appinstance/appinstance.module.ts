@@ -20,6 +20,9 @@ import {
     Bootstrap3Framework,
     Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
 } from "angular2-json-schema-form";
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
+import {HttpLoaderFactory} from '../../app.module';
 
 @NgModule({
   declarations: [
@@ -45,7 +48,14 @@ import {
         WidgetLibraryService,
         {provide: Framework, useClass: Bootstrap3Framework, multi: true}
       ]
-    }
+    },
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   exports: [
     AppInstanceComponent,

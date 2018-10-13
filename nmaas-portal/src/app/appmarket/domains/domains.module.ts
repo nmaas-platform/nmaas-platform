@@ -12,6 +12,10 @@ import {DomainsListComponent} from './list/domainslist.component';
 import {DomainComponent} from './domain/domain.component';
 
 import {DomainService} from '../../service/domain.service';
+import {routing} from '../../app.routes';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
+import {HttpLoaderFactory} from '../../app.module';
 
 
 
@@ -27,6 +31,13 @@ import {DomainService} from '../../service/domain.service';
     SharedModule,
     AuthModule,
     PipesModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   exports: [
     DomainsListComponent,
