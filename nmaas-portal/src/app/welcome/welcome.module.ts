@@ -12,15 +12,15 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ProfileComponent} from './profile/profile.component';
-import {AppMarketModule} from "../appmarket";
-import {UserService} from "../service";
-import {CompleteComponent} from "./complete/complete.component";
-import {ContentDisplayService} from "../service/content-display.service";
+import {AppMarketModule} from '../appmarket';
+import {UserService} from '../service';
+import {CompleteComponent} from './complete/complete.component';
+import {ContentDisplayService} from '../service/content-display.service';
 import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
-import {ReCaptchaModule} from "angular5-recaptcha";
+import {ReCaptchaModule} from 'angular5-recaptcha';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
+import {HttpLoaderFactory} from '../app.module';
 
 @NgModule({
   declarations: [
@@ -61,6 +61,3 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
   ]
 })
 export class WelcomeModule {}
-export function HttpLoaderFactory(httpClient: HttpClient) {
-    return new TranslateHttpLoader(httpClient);
-}

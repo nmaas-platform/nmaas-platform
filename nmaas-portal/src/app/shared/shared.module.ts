@@ -34,6 +34,7 @@ import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelo
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HttpLoaderFactory} from '../app.module';
 
 @NgModule({
   imports: [
@@ -108,6 +109,6 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
   ]
 })
 export class SharedModule {}
-export function HttpLoaderFactory(httpClient: HttpClient) {
-    return new TranslateHttpLoader(httpClient);
-}
+// export function HttpLoaderFactory(httpClient: HttpClient) {
+//     return new TranslateHttpLoader(httpClient);
+// }

@@ -24,17 +24,17 @@ import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.comp
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
-import {ClustersModule} from "./admin/clusters/clusters.module";
-import {ClusterService} from "../service/cluster.service";
-import {GitlabModule} from "./admin/gitlab/gitlab.module";
-import {ConfigurationModule} from "./admin/configuration/configuration.module";
-import {MonitorModule} from "./admin/monitor/monitor.module";
-import {ShibbolethModule} from "./admin/shibboleth/shibboleth.module";
-import {StorageServiceModule} from "ngx-webstorage-service";
+import {ClustersModule} from './admin/clusters/clusters.module';
+import {ClusterService} from '../service/cluster.service';
+import {GitlabModule} from './admin/gitlab/gitlab.module';
+import {ConfigurationModule} from './admin/configuration/configuration.module';
+import {MonitorModule} from './admin/monitor/monitor.module';
+import {ShibbolethModule} from './admin/shibboleth/shibboleth.module';
+import {StorageServiceModule} from 'ngx-webstorage-service';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
+import {HttpLoaderFactory} from '../app.module';
 
 @NgModule({
   declarations: [
@@ -85,7 +85,3 @@ import {BrowserModule} from '@angular/platform-browser';
 
 })
 export class AppMarketModule {}
-
-export function HttpLoaderFactory(httpClient: HttpClient) {
-    return new TranslateHttpLoader(httpClient);
-}
