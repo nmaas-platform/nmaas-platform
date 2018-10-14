@@ -1,5 +1,12 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,16 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import lombok.*;
-
 @Entity
-@Table(name="users")
+@Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
-
 public class User {
 
 	@Id
@@ -55,7 +59,6 @@ public class User {
 	public User(String username, boolean enabled) {
 		this(username);
 		this.enabled = enabled;
-
 	}
 	
 	public User(String username, boolean enabled, String password, Domain domain, Role role) {
@@ -72,12 +75,12 @@ public class User {
 		}	
 	}
 
-  public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted) {
-    this(username, enabled);
-    this.password = password;
-    this.termsOfUseAccepted = termsOfUseAccepted;
-    this.roles.add(new UserRole(this, domain, role));
-  }
+	public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted) {
+		this(username, enabled);
+		this.password = password;
+		this.termsOfUseAccepted = termsOfUseAccepted;
+		this.roles.add(new UserRole(this, domain, role));
+	}
 
     public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted, boolean privacyPolicyAccepted) {
         this(username, enabled);
@@ -135,6 +138,5 @@ public class User {
         }
 		return true;
 	}	
-	
-	
+
 }

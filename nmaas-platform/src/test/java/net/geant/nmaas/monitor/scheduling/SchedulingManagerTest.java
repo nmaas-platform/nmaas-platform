@@ -3,7 +3,7 @@ package net.geant.nmaas.monitor.scheduling;
 import java.util.Arrays;
 import java.util.List;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorServiceImpl;
+import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorService;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.ServiceType;
@@ -40,7 +40,7 @@ public class SchedulingManagerTest {
     @Before
     public void setup() throws Exception{
         jobDescriptor = new JobDescriptor(ServiceType.GITLAB, 3L, TimeFormat.MIN);
-        GitLabMonitorServiceImpl gitLabMonitorService = new GitLabMonitorServiceImpl();
+        GitLabMonitorService gitLabMonitorService = new GitLabMonitorService();
         gitLabMonitorService.setGitLabManager(gitLabManager);
         gitLabMonitorService.setMonitorManager(monitorManager);
         monitorServices = Arrays.asList(gitLabMonitorService);

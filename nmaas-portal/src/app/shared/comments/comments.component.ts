@@ -72,7 +72,7 @@ export class CommentsComponent implements OnInit {
         }
     }
 
-    public deleteComment(id: Number): void {
+    public deleteComment(id: number): void {
         this.appsService.deleteAppCommentByUrl(this.pathUrl, new Id(id)).subscribe(
                 () => { this.refresh() }
             );

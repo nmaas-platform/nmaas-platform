@@ -33,7 +33,7 @@ public class DockerHostRepositoryManager {
      * @throws DockerHostInvalidException when invalid input
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addDockerHost(DockerHost newDockerHost) throws DockerHostAlreadyExistsException, DockerHostInvalidException {
+    public void addDockerHost(DockerHost newDockerHost) {
         validateDockerHost(newDockerHost);
         try {
             loadByName(newDockerHost.getName());
@@ -51,7 +51,7 @@ public class DockerHostRepositoryManager {
      * @throws DockerHostInvalidException when invalid input
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeDockerHost(String name) throws DockerHostNotFoundException, DockerHostInvalidException {
+    public void removeDockerHost(String name) {
         DockerHost dockerHost = loadByName(name);
         repository.delete(dockerHost);
     }
@@ -65,7 +65,7 @@ public class DockerHostRepositoryManager {
      * @throws DockerHostInvalidException when invalid input
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateDockerHost(String name, DockerHost dockerHost) throws DockerHostNotFoundException, DockerHostInvalidException {
+    public void updateDockerHost(String name, DockerHost dockerHost) {
         validateDockerHostAndName(name, dockerHost);
         DockerHost currentDockerHost = loadByName(name);
         dockerHost.setId(currentDockerHost.getId());
@@ -88,7 +88,7 @@ public class DockerHostRepositoryManager {
      * @return {@link DockerHost} instance loaded form the repository
      * @throws DockerHostNotFoundException when Docker host does not exists in the repository
      */
-    public DockerHost loadByName(String hostName) throws DockerHostNotFoundException {
+    public DockerHost loadByName(String hostName) {
         return repository.findByName(hostName)
                 .orElseThrow(() -> new DockerHostNotFoundException("Did not find Docker Host with " + hostName + " name in the repository"));
     }
@@ -100,7 +100,7 @@ public class DockerHostRepositoryManager {
      * @return {@link DockerHost} instance loaded form the repository
      * @throws DockerHostNotFoundException when preferred Docker host does not exists in the repository
      */
-    public DockerHost loadPreferredDockerHost() throws DockerHostNotFoundException {
+    public DockerHost loadPreferredDockerHost() {
         Iterable<DockerHost> preferredHosts = repository.findByPreferredTrue();
         if (preferredHosts.iterator().hasNext())
             return preferredHosts.iterator().next();
@@ -108,20 +108,20 @@ public class DockerHostRepositoryManager {
             throw new DockerHostNotFoundException("Did not find preferred Docker host in the repository.");
     }
 
-    private void validateDockerHostName(String name) throws DockerHostInvalidException {
+    private void validateDockerHostName(String name) {
         if(name == null) {
             throw new DockerHostInvalidException("Docker host name cannot be null");
         }
     }
 
-    private void validateDockerHost(DockerHost dockerHost) throws DockerHostInvalidException {
+    private void validateDockerHost(DockerHost dockerHost) {
         if(dockerHost == null) {
             throw new DockerHostInvalidException("Docker host cannot be null");
         }
         validateDockerHostName(dockerHost.getName());
     }
 
-    private void validateDockerHostAndName(String name, DockerHost dockerHost) throws DockerHostInvalidException {
+    private void validateDockerHostAndName(String name, DockerHost dockerHost) {
         validateDockerHostName(name);
         validateDockerHost(dockerHost);
         if(!name.equals(dockerHost.getName())) {

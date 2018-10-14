@@ -76,6 +76,7 @@
     "HEML_CHART_REPO_NAME": "Nazwa repozytorium wykresu hełmu",
     "HEML_CHARTS_DIRECTORY": "Katalog map hełmu",
     "REST_API": "REST API",
+    "ENABLE_TLS": "Enable TLS",
     "HOST_PORT": "Host port",
     "USER_REST_API": "Użyj interfejsu API REST",
     "INGRESS": "Ingress",

@@ -40,6 +40,7 @@ class ClusterHelm {
     public helmHostSshUsername: string;
     public helmChartRepositoryName: string;
     public id: number;
+    public enableTls: boolean = true;
     public useLocalChartArchives: boolean = false;
 }
 

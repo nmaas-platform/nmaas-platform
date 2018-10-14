@@ -21,7 +21,6 @@ export class LogoutComponent implements OnInit {
           if(config.ssoLoginAllowed && this.auth.loginUsingSsoService){
               let url = window.location.origin;
               this.shibbolethService.getOne().subscribe(shibboleth =>{
-                  window.location.href.replace(/ssoUserId=.+/, '');
                   // Shibboleth SP uses parameter 'target' instead of 'return'
                   window.location.href = shibboleth.logoutUrl + '?return=' + url;
               });

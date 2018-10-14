@@ -7,7 +7,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAp
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;

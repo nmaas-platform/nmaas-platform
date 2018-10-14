@@ -1,5 +1,6 @@
 export enum ServiceType{
-    GITLAB = "GitLab"
+    GITLAB = "GitLab",
+    HELM = "Helm"
 }
 
 export enum MonitorStatus{

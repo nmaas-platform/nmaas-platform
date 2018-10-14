@@ -9,7 +9,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class DockerHostStateKeeper {
             count++;
             portNumber++;
         }
-        newAssignedPorts.forEach((port) -> state.getPortAssignments().add(new NumberAssignment(port, deploymentId)));
+        newAssignedPorts.forEach(port -> state.getPortAssignments().add(new NumberAssignment(port, deploymentId)));
         stateRepository.save(state);
         return newAssignedPorts;
     }
@@ -88,9 +87,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public void removePortAssignment(String dockerHostName, Identifier deploymentId) throws DockerHostStateNotFoundException {
-        if (stateForDockerHostNotExists(dockerHostName))
-            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+    public void removePortAssignment(String dockerHostName, Identifier deploymentId) {
         removePortAssignment(stateForDockerHost(dockerHostName), deploymentId);
     }
 
@@ -111,10 +108,8 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public Integer getAssignedPort(String dockerHostName, Identifier deploymentId) throws DockerHostStateNotFoundException {
-        if (stateForDockerHostNotExists(dockerHostName))
-            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
-        if (getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).size() > 0)
+    public Integer getAssignedPort(String dockerHostName, Identifier deploymentId) {
+        if (!getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).isEmpty())
             return getAssignedPorts(stateForDockerHost(dockerHostName), deploymentId).get(0);
         else
             return null;
@@ -137,7 +132,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public int assignVlanForNetwork(String dockerHostName, String domain) throws DockerHostNotFoundException {
+    public int assignVlanForNetwork(String dockerHostName, String domain) {
         addStateForDockerHostIfAbsent(dockerHostName);
         return assignVlan(stateForDockerHost(dockerHostName), domain);
     }
@@ -163,9 +158,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public void removeVlanAssignment(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
-        if (stateForDockerHostNotExists(dockerHostName))
-            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+    public void removeVlanAssignment(String dockerHostName, String domain) {
         removeVlanAssignment(stateForDockerHost(dockerHostName), domain);
     }
 
@@ -188,7 +181,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public Integer getAssignedVlan(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
+    public Integer getAssignedVlan(String dockerHostName, String domain) {
         if (stateForDockerHostNotExists(dockerHostName))
             throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
         return getAssignedVlan(stateForDockerHost(dockerHostName), domain);
@@ -211,7 +204,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, String domain) throws DockerHostNotFoundException {
+    public DockerNetworkIpam assignAddressPoolForNetwork(String dockerHostName, String domain) {
         addStateForDockerHostIfAbsent(dockerHostName);
         return assignAddresses(stateForDockerHost(dockerHostName), domain);
     }
@@ -241,9 +234,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public void removeAddressPoolAssignment(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
-        if (stateForDockerHostNotExists(dockerHostName))
-            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+    public void removeAddressPoolAssignment(String dockerHostName, String domain) {
         removeAddressPoolAssignment(stateForDockerHost(dockerHostName), domain);
     }
 
@@ -266,9 +257,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostStateNotFoundException if state for provided Docker Host doesn't exist in repository
      */
     @Transactional
-    public DockerNetworkIpam getAssignedAddressPool(String dockerHostName, String domain) throws DockerHostStateNotFoundException {
-        if (stateForDockerHostNotExists(dockerHostName))
-            throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
+    public DockerNetworkIpam getAssignedAddressPool(String dockerHostName, String domain) {
         return getAssignedAddressPool(stateForDockerHost(dockerHostName), domain);
     }
 
@@ -297,20 +286,16 @@ public class DockerHostStateKeeper {
     }
 
     private DockerHostState stateForDockerHost(String dockerHostName) {
-        return stateRepository.findByDockerHostName(dockerHostName).orElse(null);
+        return stateRepository.findByDockerHostName(dockerHostName)
+                .orElseThrow(() -> new DockerHostStateNotFoundException(String.format("State for Docker Host %s was not stored before.", dockerHostName)));
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeAllAssignments(String dockerHostName) {
-        try {
-            if (stateForDockerHostNotExists(dockerHostName))
-                throw new DockerHostStateNotFoundException("State for given Docker Host was not stored before.");
-            DockerHostState state = stateForDockerHost(dockerHostName);
-            state.setPortAssignments(new ArrayList<>());
-            state.setVlanAssignments(new ArrayList<>());
-            state.setAddressAssignments(new ArrayList<>());
-            stateRepository.save(state);
-        } catch (DockerHostStateNotFoundException ignored) {
-        }
+    void removeAllAssignments(String dockerHostName) {
+        DockerHostState state = stateForDockerHost(dockerHostName);
+        state.setPortAssignments(new ArrayList<>());
+        state.setVlanAssignments(new ArrayList<>());
+        state.setAddressAssignments(new ArrayList<>());
+        stateRepository.save(state);
     }
+
 }

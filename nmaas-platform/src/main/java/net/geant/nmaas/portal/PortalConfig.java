@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal;
 
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -50,6 +51,9 @@ public class PortalConfig {
 			@Value("${admin.password}")
 			String adminPassword;
 
+			@Value("${admin.email}")
+			String adminEmail;
+
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws ProcessingException {
@@ -57,7 +61,7 @@ public class PortalConfig {
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
-					addUser("admin", adminPassword, "geant.notification@gmail.com", Role.ROLE_SUPERADMIN);
+					addUser("admin", adminPassword, adminEmail, Role.ROLE_SUPERADMIN);
 				}
 			}
 
@@ -122,15 +126,16 @@ public class PortalConfig {
 			@Transactional
 			public void afterPropertiesSet() throws Exception {
 				try {
-					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
+					ConfigurationView configuration = configurationManager.getConfiguration();
 					if(configuration.isMaintenance())
 						configuration.setMaintenance(false);
 					if(configuration.isSsoLoginAllowed())
 						configuration.setSsoLoginAllowed(true);
+					configurationManager.updateConfiguration(configuration.getId(), configuration);
 
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false, false));
+					configurationManager.addConfiguration(new ConfigurationView(false, false));
 				}
 			}
 		};

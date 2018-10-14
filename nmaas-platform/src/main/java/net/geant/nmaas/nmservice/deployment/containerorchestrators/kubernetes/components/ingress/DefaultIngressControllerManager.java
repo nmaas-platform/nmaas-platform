@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;

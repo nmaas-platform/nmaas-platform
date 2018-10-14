@@ -75,6 +75,7 @@
     "HEML_CHART_REPO_NAME": "Helm chart repository name",
     "HEML_CHARTS_DIRECTORY": "Helm charts directory",
     "REST_API": "REST API",
+    "ENABLE_TLS": "Enable TLS",
     "USER_REST_API": "Use REST API",
     "HOST_PORT": "Host port",
     "INGRESS": "Ingress",

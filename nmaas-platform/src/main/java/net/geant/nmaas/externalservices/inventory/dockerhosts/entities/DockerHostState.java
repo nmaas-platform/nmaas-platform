@@ -1,7 +1,9 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -22,8 +23,8 @@ import lombok.Setter;
 public class DockerHostState {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -32,13 +33,13 @@ public class DockerHostState {
     @Column(nullable = false)
     private String dockerHostAddressPoolBase;
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<NumberAssignment> portAssignments = new ArrayList<>();
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<NumberAssignment> vlanAssignments = new ArrayList<>();
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<NumberAssignment> addressAssignments = new ArrayList<>();
 
     public DockerHostState(String dockerHostName, String dockerHostAddressPoolBase) {
