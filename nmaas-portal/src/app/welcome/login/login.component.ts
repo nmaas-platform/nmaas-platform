@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     ssoError:string = '';
 
     constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService, private translate: TranslateService) { 
-      const browserLang = translate.getBrowserLang();
+      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
       translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
     }
 

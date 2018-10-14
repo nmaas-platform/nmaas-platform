@@ -43,7 +43,7 @@ export class RegistrationComponent implements OnInit {
   public domains: Observable<Domain[]>;
 
   constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService, private translate: TranslateService) {
-    const browserLang = translate.getBrowserLang();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
     
     this.registrationForm = fb.group(

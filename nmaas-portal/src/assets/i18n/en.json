@@ -138,18 +138,18 @@
     "EDIT_BUTTON": "Edit"
   },
   "SAML_PROXY": {
-    "TITLE": "Configuration du proxy SAML",
-    "LOGIN_URL": "URL de connexion",
+    "TITLE": "SAML Proxy configuration",
+    "LOGIN_URL": "Login url",
     "LOGOUT_URL": "Logout url",
-    "SSO_KEY_FILE_PATH": "chemin du fichier de clé SSO",
+    "SSO_KEY_FILE_PATH": "SSO key file path",
     "TIMEOUT": "Timeout [minutes]",
     "VIEW_BUTTON": "View",
-    "SUBMIT_BUTTON": "Soumettre",
-    "EDIT_BUTTON": "Modifier",
-    "LOGIN_URL_REQUIRED_MESSAGE": "L'URL de connexion est obligatoire",
-    "LOGOUT_URL_REQUIRED_MESSAGE": "L'URL de déconnexion est requise",
-    "SSO_KEY_REQUIRED_MESSAGE": "La clé SSO est requise",
-    "TIMEOUT_REQUIRED_MESSAGE": "Le délai d'attente est requis"
+    "SUBMIT_BUTTON": "Submit",
+    "EDIT_BUTTON": "Edit",
+    "LOGIN_URL_REQUIRED_MESSAGE": "Login url is required",
+    "LOGOUT_URL_REQUIRED_MESSAGE": "Logout url is required",
+    "SSO_KEY_REQUIRED_MESSAGE": "SSO key is required",
+    "TIMEOUT_REQUIRED_MESSAGE": "Timeout is required"
   },
   "USERS": {
     "TITLE": "Users",

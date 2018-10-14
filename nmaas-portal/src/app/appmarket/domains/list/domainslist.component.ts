@@ -14,7 +14,7 @@ export class DomainsListComponent implements OnInit {
   public domains: Observable<Domain[]>;
 
   constructor(protected domainService: DomainService, protected authService: AuthService, private translate: TranslateService) {
-    const browserLang = translate.getBrowserLang();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 

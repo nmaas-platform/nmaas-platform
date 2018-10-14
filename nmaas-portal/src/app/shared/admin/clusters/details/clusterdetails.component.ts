@@ -39,7 +39,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
   constructor(private router: Router, private translate: TranslateService) {
     super();
     this.initializeMaps();
-    const browserLang = translate.getBrowserLang();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 

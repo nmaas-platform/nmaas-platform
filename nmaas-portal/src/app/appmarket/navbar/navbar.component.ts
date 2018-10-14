@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit {
 
   constructor(public authService: AuthService, public domainService: DomainService, private translate: TranslateService) {
     translate.addLangs(['en', 'fr', 'pl']);
-    const browserLang = translate.getBrowserLang();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
   useLanguage(language: string) {
@@ -26,8 +26,8 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
   }
 
-  protected checkUserRole():boolean{
-    return this.authService.getDomains().filter(value => value != this.domainService.getGlobalDomainId()).length > 0
-        || this.authService.getRoles().filter(value => value != 'ROLE_GUEST').length > 0;
+  protected checkUserRole(): boolean {
+    return this.authService.getDomains().filter(value => value ! = this.domainService.getGlobalDomainId()).length > 0
+        || this.authService.getRoles().filter(value => value ! = 'ROLE_GUEST').length > 0;
   }
 }

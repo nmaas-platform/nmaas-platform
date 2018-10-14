@@ -39,7 +39,7 @@ export class AppInstanceListComponent implements OnInit {
               private authService: AuthService,
               private appConfig: AppConfigService,
               private translate: TranslateService) {
-    const browserLang = translate.getBrowserLang();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
