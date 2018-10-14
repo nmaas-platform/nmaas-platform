@@ -21,4 +21,12 @@ class KClusterDeploymentView {
     private String defaultStorageClass;
 
     private Boolean useInClusterGitLabInstance;
+
+    private String smtpServerHostname;
+
+    private Integer smtpServerPort;
+
+    private String smtpServerUsername;
+
+    private String smtpServerPassword;
 }
