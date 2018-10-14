@@ -27,7 +27,7 @@ bootJar {
 }
 
 sourceSets {
-	integrationTest {
+	'integration-test' {
 		java {
 			compileClasspath += main.output + test.output
 			runtimeClasspath += main.output + test.output
@@ -92,8 +92,8 @@ test {
 }
 
 task integrationTest(type: Test) {
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
+	testClassesDirs = sourceSets.'integration-test'.output.classesDirs
+	classpath = sourceSets.'integration-test'.runtimeClasspath
 	outputs.upToDateWhen { false }
 	afterTest { desc, result ->
 		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
