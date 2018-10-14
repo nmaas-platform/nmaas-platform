@@ -77,5 +77,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
 export class AppModule { }
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
-    return new TranslateHttpLoader(httpClient);
+    // return new TranslateHttpLoader(httpClient);// Use this if you want to get the language json from local asset folder
+  return new TranslateHttpLoader(httpClient, 'http://localhost:9000/api/content/language/', '.json');
 }
+
