@@ -27,7 +27,7 @@ bootJar {
 }
 
 sourceSets {
-	'integration-test' {
+	integrationTest {
 		java {
 			compileClasspath += main.output + test.output
 			runtimeClasspath += main.output + test.output
@@ -92,8 +92,8 @@ test {
 }
 
 task integrationTest(type: Test) {
-	testClassesDirs = sourceSets.'integration-test'.output.classesDirs
-	classpath = sourceSets.'integration-test'.runtimeClasspath
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
 	afterTest { desc, result ->
 		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
@@ -122,6 +122,5 @@ jacocoTestReport {
 sonarqube {
 	properties {
 		property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
-		properties["sonar.tests"] += sourceSets.'integration-test'.allSource.srcDirs
 	}
 }
