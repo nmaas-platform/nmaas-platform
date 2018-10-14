@@ -122,5 +122,6 @@ jacocoTestReport {
 sonarqube {
 	properties {
 		property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
+		properties["sonar.tests"] += sourceSets.integrationTest.allSource.srcDirs
 	}
 }
