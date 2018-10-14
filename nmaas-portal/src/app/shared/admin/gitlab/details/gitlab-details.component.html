@@ -64,8 +64,6 @@
                     class="btn btn-primary" [disabled]="!gitLabForm.form.valid">{{ 'GIT_LAB.SUBMIT_BUTTON' | translate }}</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">{{ 'GIT_LAB.EDIT_BUTTON' | translate }}</button>
-            <!--<button *ngIf="isInMode(ComponentMode.VIEW)" type="button"
-                    class="btn btn-danger" (click)="remove()">Remove</button>-->
         </form>
     </div>
 </div>

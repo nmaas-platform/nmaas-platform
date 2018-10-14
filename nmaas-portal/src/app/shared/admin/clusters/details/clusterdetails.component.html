@@ -293,9 +293,6 @@
                     class="btn btn-danger">{{ 'CLUSTERS.SUBMIT_BUTTON' | translate }}</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">{{ 'CLUSTERS.EDIT_BUTTON' | translate }}</button>
-            <!--<button *ngIf="isInMode(ComponentMode.VIEW)" type="button"
-                    class="btn btn-danger" (click)="remove(cluster.name)">Remove</button>-->
-                    type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
         </form>
     </div>
 </div>
