@@ -3,6 +3,7 @@ package net.geant.nmaas.portal;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
@@ -66,9 +67,12 @@ public class PortalConfig {
 			}
 
 			private void addUser(String username, String password, String email, Role role) {
-				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true, true);
-				user.setEmail(email);
-				userRepository.save(user);
+				Optional<Domain> globalDomain = domains.getGlobalDomain();
+				if(globalDomain.isPresent()) {
+					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
+					user.setEmail(email);
+					userRepository.save(user);
+				}
 			}
 						
 		};

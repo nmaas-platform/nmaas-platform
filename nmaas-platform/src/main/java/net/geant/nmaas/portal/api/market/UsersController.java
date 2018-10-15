@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 @Log4j2
 public class UsersController {
+
+	private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
+	private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
+
 
 	private UserService userService;
 
@@ -93,58 +98,53 @@ public class UsersController {
 	public void updateUser(@PathVariable("userId") final Long userId,
 						   @RequestBody final UserRequest userRequest,
 						   final Principal principal) {
-		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
+		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 
 		if(userRequest == null)
 			throw new MissingElementException("User request is null");
-
+		try {
         String message = getMessageWhenUserUpdated(userDetails, userRequest);
-        final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                userService.findByUsername(principal.getName()).get();
-        final String adminRoles = getRoleAsString(adminUser.getRoles());
-        final String userRoles = getRoleAsString(userDetails.getRoles());
+			final net.geant.nmaas.portal.persistent.entity.User adminUser = userService.findByUsername(principal.getName()).orElseThrow(ProcessingException::new);
+			final String adminRoles = getRoleAsString(adminUser.getRoles());
+			final String userRoles = getRoleAsString(userDetails.getRoles());
 
-		if(userRequest.getPassword() != null)
-			userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+			if (userRequest.getPassword() != null)
+				userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
-		if(userRequest.getFirstname() != null)
-			userDetails.setFirstname(userRequest.getFirstname());
-		if(userRequest.getLastname() != null)
-			userDetails.setLastname(userRequest.getLastname());
-		if(userRequest.getEmail() != null)
-			userDetails.setEmail(userRequest.getEmail());
-		userDetails.setEnabled(userRequest.isEnabled());
-		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
-			userDetails.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
-		try {
-            userService.update(userDetails);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to modify user");
-		}
+			if (userRequest.getFirstname() != null)
+				userDetails.setFirstname(userRequest.getFirstname());
+			if (userRequest.getLastname() != null)
+				userDetails.setLastname(userRequest.getLastname());
+			if (userRequest.getEmail() != null)
+				userDetails.setEmail(userRequest.getEmail());
+			userDetails.setEnabled(userRequest.isEnabled());
+			if (userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
+				userDetails.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
 
-		if(userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
-			Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
-					.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
-							userDetails,
-							domainService.findDomain(ur.getDomainId()).get(),
-							ur.getRole()))
-					.collect(Collectors.toSet());
+				userService.update(userDetails);
 
-			userDetails.setNewRoles(roles);
-		}
-		try {
-            userService.update(userDetails);
-            if(!StringUtils.isEmpty(message)) {
-	            log.info(String.format("Admin user name - %s with role - %s, has updated the user - %s with role - %s. The following changes are - ",
-	                    principal.getName(),
-	                    adminRoles,
-	                    userDetails.getUsername(),
-	                    userRoles));
-	            log.info(message);
-            }
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to modify roles");
-		}
+			if (userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
+				Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
+						.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
+								userDetails,
+								domainService.findDomain(ur.getDomainId()).orElseThrow(() -> new ProcessingException(DOMAIN_NOT_FOUND_ERROR_MESSAGE)),
+								ur.getRole()))
+						.collect(Collectors.toSet());
+
+				userDetails.setNewRoles(roles);
+			}
+				userService.update(userDetails);
+				if (!StringUtils.isEmpty(message)) {
+					log.info(String.format("Admin user name - %s with role - %s, has updated the user - %s with role - %s. The following changes are - ",
+							principal.getName(),
+							adminRoles,
+							userDetails.getUsername(),
+							userRoles));
+					log.info(message);
+				}
+			} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+				throw new ProcessingException("Unable to modify roles");
+			}
 	}
 	
 	@DeleteMapping(value="/users/{userId}")
@@ -178,7 +178,7 @@ public class UsersController {
 		if (userRole.getDomainId() == null) 
 			domain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		else
-			domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException("Domain not found"));
+			domain = domainService.findDomain(userRole.getDomainId()).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 
@@ -186,7 +186,7 @@ public class UsersController {
 			domainService.removeMemberRole(domain.getId(), user.getId(), userRole.getRole());
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                    userService.findByUsername(principal.getName()).get();
+                    userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
 
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
@@ -358,13 +358,13 @@ public class UsersController {
 				throw new ProcessingException("Role cannot be assigned.");
 		}
 			
-		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);;
+		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 
 		try {
 			domainService.addMemberRole(domain.getId(), user.getId(), role);
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                    userService.findByUsername(principal.getName()).get();
+                    userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
             log.info(String.format("User [%s] with role [%s] added role [%s] to user [%s] in domain [%d].",
@@ -396,7 +396,7 @@ public class UsersController {
 			domainService.removeMemberRole(domain.getId(), user.getId(), role);
 
             final net.geant.nmaas.portal.persistent.entity.User adminUser =
-                    userService.findByUsername(principal.getName()).get();
+                    userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
 
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
@@ -420,35 +420,39 @@ public class UsersController {
     public void setEnabledFlag(@PathVariable Long userId,
 							   @RequestParam("enabled") final boolean isEnabledFlag,
 							   final Principal principal) {
-        userService.setEnabledFlag(userId, isEnabledFlag);
-        net.geant.nmaas.portal.persistent.entity.User user = userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found."));
-        net.geant.nmaas.portal.persistent.entity.User adminUser =
-                userService.findByUsername(principal.getName()).get();
-        List<Role> rolesList = adminUser.getRoles().stream().map(x-> x.getRole()).collect(Collectors.toList());
-        List<String> rolesAsStringList = rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
-        String roleAsString = rolesAsStringList.stream().collect(Collectors.joining(","));
-        String message = String.format("User [%s] with role [%s] [%s] account of user [%s].",
-				principal.getName(),
-				roleAsString,
-				isEnabledFlag ? "activated" : "deactivated",
-				getUser(userId).getUsername());
-        EmailConfirmation emailConfirmation = EmailConfirmation
-                .builder()
-                .firstName(user.getFirstname())
-                .lastName(user.getLastname())
-                .toEmail(user.getEmail())
-                .userName(user.getUsername())
-                .build();
-        if(isEnabledFlag) {
-            emailConfirmation.setSubject("NMaaS: Account created");
-            emailConfirmation.setTemplateName("user-activate-notification");
-        } else{
-            emailConfirmation.setSubject("NMaaS: Account blocked");
-            emailConfirmation.setTemplateName("user-deactivate-notification");
-        }
+		try {
+			userService.setEnabledFlag(userId, isEnabledFlag);
+			net.geant.nmaas.portal.persistent.entity.User user = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
+			net.geant.nmaas.portal.persistent.entity.User adminUser =
+					userService.findByUsername(principal.getName()).orElseThrow(() -> new ObjectNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE));
+			List<Role> rolesList = adminUser.getRoles().stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
+			List<String> rolesAsStringList = rolesList.stream().map(Role::authority).collect(Collectors.toList());
+			String roleAsString = String.join(",", rolesAsStringList);
+			String message = String.format("User [%s] with role [%s] [%s] account of user [%s].",
+					principal.getName(),
+					roleAsString,
+					isEnabledFlag ? "activated" : "deactivated",
+					getUser(userId).getUsername());
+			EmailConfirmation emailConfirmation = EmailConfirmation
+					.builder()
+					.firstName(user.getFirstname())
+					.lastName(user.getLastname())
+					.toEmail(user.getEmail())
+					.userName(user.getUsername())
+					.build();
+			if (isEnabledFlag) {
+				emailConfirmation.setSubject("NMaaS: Account created");
+				emailConfirmation.setTemplateName("user-activate-notification");
+			} else {
+				emailConfirmation.setSubject("NMaaS: Account blocked");
+				emailConfirmation.setTemplateName("user-deactivate-notification");
+			}
 
-        notificationService.sendEmail(emailConfirmation);
-        log.info(message);
+			notificationService.sendEmail(emailConfirmation);
+			log.info(message);
+		}catch(ObjectNotFoundException err){
+			throw new MissingElementException(err.getMessage());
+		}
     }
 
     @GetMapping("/users/isAdmin")
@@ -459,8 +463,9 @@ public class UsersController {
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) {
-		if(domainService.getGlobalDomain().isPresent()){
-			Long globalId = domainService.getGlobalDomain().get().getId();
+		Optional<Domain> globalDomainOptional = domainService.getGlobalDomain();
+		if(globalDomainOptional.isPresent()){
+			Long globalId = globalDomainOptional.get().getId();
 			try{
 				if(domainService.getMemberRoles(globalId, userId).isEmpty()){
 					domainService.addMemberRole(globalId, userId, Role.ROLE_GUEST);
@@ -482,42 +487,41 @@ public class UsersController {
 	}
 	
 	protected Domain getDomain(Long domainId) {
-		return domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		return domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 	}
 	
 	protected net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) {
-		return userService.findById(userId).orElseThrow(() -> new MissingElementException("User not found"));
+		return userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 	}
 
 	protected String getRoleAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
-        return getRoleAsList(userRoles).stream().collect(Collectors.joining(", "));
+        return String.join(", ", getRoleAsList(userRoles));
     }
 	
 	protected List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
-        final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
-        return rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+        final List<Role> rolesList = userRoles.stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
+        return rolesList.stream().map(Role::authority).collect(Collectors.toList());
     }
 
     protected String getRequestedRoleAsString(Set<UserRole> userRoles){
-        return getRequestedRoleAsList(userRoles).stream().collect(Collectors.joining(","));
+        return String.join(",", getRequestedRoleAsList(userRoles));
     }
     
     protected List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
-        final List<Role> rolesList = userRoles.stream().map(x-> x.getRole()).collect(Collectors.toList());
-        return rolesList.stream().map(x-> x.authority()).collect(Collectors.toList());
+        final List<Role> rolesList = userRoles.stream().map(UserRole::getRole).collect(Collectors.toList());
+        return rolesList.stream().map(Role::authority).collect(Collectors.toList());
     }
 
     protected String getRoleWithDomainIdAsString(Set<UserRole> userRoles){
-        return userRoles.stream().map(x-> x.getRole().authority() + "@domain" + x.getDomainId())
-                .collect(Collectors.toList())
-                .stream().collect(Collectors.joining(", "));
+        return String.join(", ", userRoles.stream().map(x -> x.getRole().authority() + "@domain" + x.getDomainId())
+				.collect(Collectors.toList()));
     }
 
     private boolean isSame(String newDetail, String oldDetail){
         newDetail  = StringUtils.isEmpty(newDetail) ? "" : newDetail;
         oldDetail  =  StringUtils.isEmpty(oldDetail) ? "" : oldDetail;
 
-        return newDetail.equalsIgnoreCase(oldDetail) ? true : false;
+        return newDetail.equalsIgnoreCase(oldDetail);
     }
 
 	private boolean isSame(List<String> requestRoleList, List<String> userRoleList) {
@@ -526,23 +530,24 @@ public class UsersController {
 
     protected String getMessageWhenUserUpdated(final net.geant.nmaas.portal.persistent.entity.User user, final UserRequest userRequest){
         String message = "";
+        String constMessageElement = " to - ";
         if(!isSame(userRequest.getUsername(), user.getUsername())){
-            message = message + System.lineSeparator() + "||| Username changed from - " + user.getUsername() + " to - " + userRequest.getUsername() + "|||" ;
+            message = message + System.lineSeparator() + "||| Username changed from - " + user.getUsername() + constMessageElement + userRequest.getUsername() + "|||" ;
         }
         if(!isSame(userRequest.getEmail(), user.getEmail())){
-            message =  message + System.lineSeparator() + "||| Email changed from - " + user.getEmail() + " to - " + userRequest.getEmail() + "|||";
+            message =  message + System.lineSeparator() + "||| Email changed from - " + user.getEmail() + constMessageElement + userRequest.getEmail() + "|||";
         }
         if(!isSame(userRequest.getFirstname(), user.getFirstname())){
-            message =  message + System.lineSeparator() + "||| First name changed from - " + user.getFirstname() + " to - " + userRequest.getFirstname() + "|||";
+            message =  message + System.lineSeparator() + "||| First name changed from - " + user.getFirstname() + constMessageElement + userRequest.getFirstname() + "|||";
         }
         if(!isSame(userRequest.getLastname(), user.getLastname())){
-            message =  message + System.lineSeparator() + "||| Last name changed from - " + user.getLastname() + " to - " + userRequest.getLastname() + "|||";
+            message =  message + System.lineSeparator() + "||| Last name changed from - " + user.getLastname() + constMessageElement + userRequest.getLastname() + "|||";
         }
         if(!userRequest.isEnabled() == user.isEnabled()){
-            message =  message + System.lineSeparator() + "||| Enabled flag changed from - " + user.isEnabled() + " to - " + userRequest.isEnabled() + "|||";
+            message =  message + System.lineSeparator() + "||| Enabled flag changed from - " + user.isEnabled() + constMessageElement + userRequest.isEnabled() + "|||";
         }
         if(!isSame(getRequestedRoleAsList(userRequest.getRoles()), getRoleAsList(user.getRoles()))){
-            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + " to - " + getRoleWithDomainIdAsString(userRequest.getRoles()) + "|||";
+            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + constMessageElement + getRoleWithDomainIdAsString(userRequest.getRoles()) + "|||";
         }
         return message;
     }
