@@ -42,13 +42,7 @@ import {HttpLoaderFactory} from '../app.module';
     PipesModule,
     AppMarketModule,
     ReCaptchaModule,
-    TranslateModule.forRoot({
-      loader: {
-          provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
-          deps: [HttpClient]
-      }
-    })
+      TranslateModule.forChild()
   ],
   exports: [
     WelcomeComponent

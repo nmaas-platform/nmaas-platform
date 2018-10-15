@@ -20,6 +20,7 @@ import { AuthService } from './auth/auth.service';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {TranslateService} from "@ngx-translate/core";
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -71,7 +72,11 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
         deps: [ AppConfigService ],
         multi: true,
     },
+      TranslateService
   ],
+    exports:[
+      TranslateModule
+    ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

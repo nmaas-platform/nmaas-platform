@@ -5,6 +5,8 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule} from "@angular/router/testing";
 import {AppConfigService, ConfigurationService} from "./service";
 import {HttpClient, HttpHandler} from "@angular/common/http";
+import {TranslateService, TranslateModule, TranslateLoader} from "@ngx-translate/core";
+import {TranslateFakeLoader} from "@ngx-translate/core";
 
 describe('App: NmaasPortal', () => {
   beforeEach(() => {
@@ -13,13 +15,20 @@ describe('App: NmaasPortal', () => {
         AppComponent
       ],
         imports: [
-            RouterTestingModule
+            RouterTestingModule,
+            TranslateModule.forRoot({
+                loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                }
+            })
         ],
         providers: [
             AppConfigService,
             HttpClient,
             HttpHandler,
-            ConfigurationService
+            ConfigurationService,
+            TranslateService
         ]
     });
   });

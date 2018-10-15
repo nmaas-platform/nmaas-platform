@@ -31,10 +31,7 @@ import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-ter
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
 import { ShibbolethDetailsComponent } from './admin/shibboleth/details/shibboleth-details.component';
 import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {HttpLoaderFactory} from '../app.module';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -44,13 +41,7 @@ import {HttpLoaderFactory} from '../app.module';
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
-    TranslateModule.forRoot({
-      loader: {
-          provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
-          deps: [HttpClient]
-      }
-    })
+      TranslateModule.forChild()
   ],
   declarations: [
     RateComponent,
@@ -78,7 +69,7 @@ import {HttpLoaderFactory} from '../app.module';
       GitlabDetailsComponent,
       ModalInfoTermsComponent,
       ModalInfoPolicyComponent,
-      ModalChangelogComponent,
+      ModalChangelogComponent
   ],
   providers: [
     PasswordValidator,
