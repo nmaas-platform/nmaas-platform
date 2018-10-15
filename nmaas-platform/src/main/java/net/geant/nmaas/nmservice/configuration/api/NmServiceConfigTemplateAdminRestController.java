@@ -1,7 +1,9 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
+import net.geant.nmaas.nmservice.configuration.model.NmServiceConfigurationTemplateView;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +22,12 @@ public class NmServiceConfigTemplateAdminRestController {
 
     private NmServiceConfigFileTemplatesRepository templates;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public NmServiceConfigTemplateAdminRestController(NmServiceConfigFileTemplatesRepository templates){
+    public NmServiceConfigTemplateAdminRestController(NmServiceConfigFileTemplatesRepository templates, ModelMapper modelMapper){
         this.templates = templates;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -43,8 +48,8 @@ public class NmServiceConfigTemplateAdminRestController {
     @PostMapping(value = "", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addConfigurationTemplate(
-            @RequestBody NmServiceConfigurationTemplate configurationTemplate) {
-        templates.save(configurationTemplate);
+            @RequestBody NmServiceConfigurationTemplateView configurationTemplate) {
+        templates.save(modelMapper.map(configurationTemplate, NmServiceConfigurationTemplate.class));
     }
 
 }

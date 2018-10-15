@@ -12,9 +12,12 @@ public class HelmListCommand extends HelmCommand {
      *
      * @return complete command object
      */
-    public static HelmListCommand command() {
+    public static HelmListCommand command(boolean enableTls) {
         StringBuilder sb = new StringBuilder();
         sb.append(HELM).append(SPACE).append(LIST).append(SPACE).append(LIST_OPTION);
+        if(enableTls){
+            sb.append(SPACE).append(TLS);
+        }
         return new HelmListCommand(sb.toString());
     }
 

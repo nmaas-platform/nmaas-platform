@@ -54,7 +54,14 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label for="helmenabletls" class="col-sm-2 control-label">Enable TLS:</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="helmenabletls" name="helmenabletls"
+                               [(ngModel)]="cluster.helm.enableTls" [checked]="cluster.helm.enableTls == true" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                    </div>
+                </div>
             <div class="panel-default panel-heading">REST API:</div>
             <div class="panel-body">
                 <div class="form-group">
@@ -176,6 +183,40 @@
                             [(ngModel)]="cluster.deployment.useInClusterGitLabInstance" [checked]="cluster.deployment.useInClusterGitLabInstance == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="smtpServerHostname" class="col-sm-2 control-label">SMTP server hostname: </label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="smtpServerHostname" name="smtpServerHostname"
+                               [(ngModel)]="cluster.deployment.smtpServerHostname" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerHostname="ngModel">
+                        <div class="alert alert-danger" *ngIf="smtpServerHostname.invalid && (smtpServerHostname.dirty || smtpServerHostname.touched)">
+                            <div *ngIf="smtpServerHostname.errors.required">SMTP server hostname is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="smtpServerPort" class="col-sm-2 control-label">SMTP server port: </label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control no-spin" id="smtpServerPort" name="smtpServerPort"
+                               [(ngModel)]="cluster.deployment.smtpServerPort" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerPort="ngModel">
+                        <div class="alert alert-danger" *ngIf="smtpServerPort.invalid && (smtpServerPort.dirty || smtpServerPort.touched)">
+                            <div *ngIf="smtpServerPort.errors.required">SMTP server port is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="smtpServerUsername" class="col-sm-2 control-label">SMTP server username: </label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="smtpServerUsername" name="smtpServerUsername"
+                               [(ngModel)]="cluster.deployment.smtpServerUsername" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="smtpServerPass" class="col-sm-2 control-label">SMTP server password: </label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="smtpServerPass" name="smtpServerPass"
+                               [(ngModel)]="cluster.deployment.smtpServerPassword" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
             </div>
 
             <div class="panel-default panel-heading">Attach point:</div>
@@ -286,8 +327,6 @@
                     class="btn btn-danger">Submit</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
-            <!--<button *ngIf="isInMode(ComponentMode.VIEW)" type="button"
-                    class="btn btn-danger" (click)="remove(cluster.name)">Remove</button>-->
         </form>
     </div>
 </div>

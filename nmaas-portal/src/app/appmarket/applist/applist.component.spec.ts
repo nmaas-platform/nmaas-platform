@@ -4,6 +4,12 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { AppListComponent } from './applist.component';
+import {RouterTestingModule} from "@angular/router/testing";
+import {AppSubscriptionsService} from "../../service/appsubscriptions.service";
+import {UserDataService} from "../../service/userdata.service";
+import {ApplicationsViewComponent} from "../../shared/applications/applications.component";
+import {AppConfigService, AppsService} from "../../service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('ApplistComponent', () => {
   let component: AppListComponent;
@@ -11,7 +17,20 @@ describe('ApplistComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppListComponent ]
+      declarations: [ AppListComponent ],
+        imports:[
+            RouterTestingModule,
+            HttpClientTestingModule,
+
+        ],
+        providers: [
+            AppConfigService,
+            ApplicationsViewComponent,
+            AppSubscriptionsService,
+            UserDataService,
+            AppsService,
+
+        ]
     })
     .compileComponents();
   }));
@@ -22,7 +41,4 @@ describe('ApplistComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
 });

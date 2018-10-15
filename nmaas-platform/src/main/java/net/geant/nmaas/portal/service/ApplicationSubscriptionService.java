@@ -37,8 +37,8 @@ public interface ApplicationSubscriptionService {
 	ApplicationSubscription subscribe(Application application, Domain domain, boolean active);
 	
 	void unsubscribe(ApplicationSubscription appSub);
-	boolean unsubscribe(Long applicationId, Long domainId);
-	boolean unsubscribe(Application application, Domain domain);
+	void unsubscribe(Long applicationId, Long domainId);
+	void unsubscribe(Application application, Domain domain);
 		
 	List<Application> getSubscribedApplications();
 	List<Application> getSubscribedApplications(Long domainId);

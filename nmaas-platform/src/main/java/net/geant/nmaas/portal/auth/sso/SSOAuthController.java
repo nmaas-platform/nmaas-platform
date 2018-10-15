@@ -5,12 +5,12 @@ import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethVie
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.auth.UserToken;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -58,7 +58,7 @@ public class SSOAuthController {
 
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException, IOException {
-		Configuration configuration = this.configurationManager.getConfiguration();
+		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
 			throw new AuthenticationException("SSO login method is not enabled");
 

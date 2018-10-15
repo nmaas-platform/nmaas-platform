@@ -4,16 +4,16 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
@@ -83,6 +83,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public boolean getEnableTls(){
+        return this.loadSingleCluster().getHelm().getEnableTls();
+    }
+
+    @Override
     public IngressControllerConfigOption getControllerConfigOption() {
         return loadSingleCluster().getIngress().getControllerConfigOption();
     }
@@ -118,7 +123,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public synchronized KClusterExtNetworkView reserveExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
+    public synchronized KClusterExtNetworkView reserveExternalNetwork(String domain) {
         KCluster cluster = loadSingleCluster();
         KClusterExtNetwork network = cluster.getExternalNetworks().stream()
                 .filter(n -> !n.isAssigned())
@@ -132,7 +137,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
-    public KClusterExtNetworkView getReservedExternalNetwork(String domain) throws ExternalNetworkNotFoundException {
+    public KClusterExtNetworkView getReservedExternalNetwork(String domain) {
         KCluster cluster = loadSingleCluster();
         KClusterExtNetwork network = cluster.getExternalNetworks().stream()
                 .filter(n -> domain.equals(n.getAssignedTo()))
@@ -155,7 +160,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 if(foundDomain.isPresent()){
                     return foundDomain.get().getKubernetesNamespace();
                 }
-            default: return NMAAS_NAMESPACE_PREFIX + domain;
+                return NMAAS_NAMESPACE_PREFIX + domain;
+            default:
+                return NMAAS_NAMESPACE_PREFIX + domain;
         }
     }
 
@@ -176,6 +183,26 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
     }
 
+    @Override
+    public String getSMTPServerHostname(){
+        return loadSingleCluster().getDeployment().getSmtpServerHostname();
+    }
+
+    @Override
+    public Integer getSMTPServerPort(){
+        return loadSingleCluster().getDeployment().getSmtpServerPort();
+    }
+
+    @Override
+    public Optional<String> getSMTPServerUsername(){
+        return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerUsername());
+    }
+
+    @Override
+    public Optional<String> getSMTPServerPassword(){
+        return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerPassword());
+    }
+
     private KCluster loadSingleCluster() {
         long noOfClusters = repository.count();
         if (noOfClusters != 1) {
@@ -190,14 +217,14 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 .collect(Collectors.toList());
     }
 
-    public KCluster getClusterById(Long id) throws KubernetesClusterNotFoundException {
+    public KCluster getClusterById(Long id) {
         return modelMapper.map(
                 repository.findById(id).orElseThrow(() ->
                         new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."))
                 , KCluster.class);
     }
 
-    public void addNewCluster(KCluster newKubernetesCluster) throws OnlyOneKubernetesClusterSupportedException {
+    public void addNewCluster(KCluster newKubernetesCluster) {
         if(repository.count() > 0)
             throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
         repository.save(newKubernetesCluster);
@@ -228,7 +255,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         return "http://" + cluster.getApi().getRestApiHostAddress().getHostAddress() + ":" + cluster.getApi().getRestApiPort();
     }
 
-    public void updateCluster(Long id, KCluster updatedKubernetesCluster) throws KubernetesClusterNotFoundException {
+    public void updateCluster(Long id, KCluster updatedKubernetesCluster) {
         Optional<KCluster> existingKubernetesCluster = repository.findById(id);
         if (!existingKubernetesCluster.isPresent())
             throw new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository.");
@@ -240,7 +267,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
         }
     }
 
-    public void removeCluster(Long id) throws KubernetesClusterNotFoundException {
+    public void removeCluster(Long id) {
         KCluster cluster = repository.findById(id).
                 orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."));
         repository.delete(cluster);

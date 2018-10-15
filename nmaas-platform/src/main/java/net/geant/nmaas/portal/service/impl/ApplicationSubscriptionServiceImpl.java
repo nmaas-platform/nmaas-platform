@@ -203,45 +203,40 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		return subscribe(appSub);
 	}
 
-		@Override
-		public void unsubscribe(ApplicationSubscription appSub) {
+	@Override
+	public void unsubscribe(ApplicationSubscription appSub) {
 		checkParam(appSub);
 
 		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
-				appSub.setActive(false);
-				appSub.setDeleted(true);
+			if(!appSubRepo.existsById(appSub.getId()))
+				throw new ObjectNotFoundException("Application subscription not found.");
 
-				try {
-					appSubRepo.save(appSub);
-				} catch (Exception ex) {
-					throw new ProcessingException("Unable to unsubscribe application", ex);
-				}
-		}else if(!appSubRepo.existsById(appSub.getId())) {
-			throw new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE);
+			appSub.setActive(false);
+			appSub.setDeleted(true);
+
+			try {
+				appSubRepo.save(appSub);
+			} catch(Exception ex) {
+				throw new ProcessingException("Unable to unsubscribe application", ex);
+			}
 		}
 	}
 
 	@Override
-	public boolean unsubscribe(Long applicationId, Long domainId) {
+	public void unsubscribe(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
-		try{
+
 		ApplicationSubscription appSub = findApplicationSubscription(applicationId, domainId);
+
 		unsubscribe(appSub);
-		return true;
-		}catch(ProcessingException err){
-			return false;
-		}
 	}
 
 	@Override
-	public boolean unsubscribe(Application application, Domain domain) {
+	public void unsubscribe(Application application, Domain domain) {
 		checkParam(application, domain);
-		try {
-			unsubscribe(application.getId(), domain.getId());
-			return true;
-		}catch(ProcessingException err){
-			return false;
-		}
+		
+		ApplicationSubscription appSub = findApplicationSubscription(application, domain);		
+		unsubscribe(appSub);
 	}
 
 
@@ -284,6 +279,8 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
                 new ObjectNotFoundException("Application " + applicationId + " not found."));
 	}
 
+	
+	
 	protected void checkParam(ApplicationSubscription appSub) {
 		if(appSub == null)
 			throw new IllegalArgumentException("appSub is null");
