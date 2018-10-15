@@ -144,11 +144,11 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
                             encodeForCloudSideRouter(domain)));
             notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYMENT_INITIATED);
         } catch ( InvalidDomainException
-                | InterruptedException
                 | DockerException anyException) {
-            Thread.currentThread().interrupt();
             notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYMENT_FAILED);
             throw new CouldNotDeployDcnException("Exception during DCN deployment -> " + anyException.getMessage());
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -159,10 +159,10 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
                 log.debug("Removing old container " + container.id());
                 dockerApiClient.removeContainer(ansibleDockerApiUrl, container.id());
             }
-        } catch (DockerException
-                | InterruptedException e) {
-            Thread.currentThread().interrupt();
+        } catch (DockerException e) {
             log.warn("Failed to remove old Ansible containers", e);
+        } catch(InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -175,8 +175,8 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
             Thread.sleep(1000);
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFIED);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFICATION_FAILED);
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -190,11 +190,11 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
                     buildContainerForCloudSideRouterConfigRemoval(dcnInfo.getPlaybookForCloudSideRouter(), encodeForCloudSideRouter(domain)));
             notifyStateChangeListeners(domain, DcnDeploymentState.REMOVAL_INITIATED);
         } catch ( InvalidDomainException
-                | InterruptedException
                 | DockerException e) {
-            Thread.currentThread().interrupt();
             notifyStateChangeListeners(domain, DcnDeploymentState.REMOVAL_FAILED);
             throw new CouldNotRemoveDcnException("Exception during DCN removal -> " + e.getMessage());
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 

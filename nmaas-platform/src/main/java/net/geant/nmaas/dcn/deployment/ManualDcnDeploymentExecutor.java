@@ -60,17 +60,15 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
         try {
             // needs to wait for DCN state change in database
             Thread.sleep(200);
-            switch(dcnRepositoryManager.loadCurrentState(domain)){
-                case REQUEST_VERIFIED:
-                    notifyStateChangeListeners(domain, DcnDeploymentState.WAITING_FOR_OPERATOR_CONFIRMATION);
-                    break;
-                default:
-                    throw new CouldNotDeployDcnException("Exception during DCN deploy. Trying to deploy DCN with state: " + dcnRepositoryManager.loadCurrentState(domain).toString());
+            if(dcnRepositoryManager.loadCurrentState(domain) == DcnDeploymentState.REQUEST_VERIFIED){
+                notifyStateChangeListeners(domain, DcnDeploymentState.WAITING_FOR_OPERATOR_CONFIRMATION);
+            }else{
+                throw new CouldNotDeployDcnException("Exception during DCN deploy. Trying to deploy DCN with state: " + dcnRepositoryManager.loadCurrentState(domain).toString());
             }
-        } catch (InvalidDomainException
-                | InterruptedException e){
-            Thread.currentThread().interrupt();
+        } catch (InvalidDomainException e){
             throw new CouldNotDeployDcnException("Exception during DCN deploy " + e.getMessage());
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 

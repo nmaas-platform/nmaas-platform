@@ -51,7 +51,7 @@ public class AppInstance extends DomainAware implements Serializable {
 	
 	@CreatedBy
 	@ManyToOne(fetch=FetchType.LAZY)
-	User owner;
+	private User owner;
 	
 	@Basic
 	Identifier internalId;

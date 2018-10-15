@@ -110,11 +110,11 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             throw new ContainerCheckFailedException("Maximum wait time for container deployment exceeded");
         } catch (ContainerCheckFailedException
                 | DockerNetworkCheckFailedException
-                | ContainerOrchestratorInternalErrorException
-                | InterruptedException e) {
-            Thread.currentThread().interrupt();
+                | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());
+        } catch(InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 
