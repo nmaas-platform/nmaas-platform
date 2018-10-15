@@ -1,8 +1,7 @@
 package net.geant.nmaas.portal.auth.sso;
 
 import java.io.IOException;
-import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
-import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
+import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
@@ -38,22 +37,19 @@ public class SSOAuthController {
 
 	private DomainService domains;
 
-	private ShibbolethManager shibbolethManager;
-
 	private JWTTokenService jwtTokenService;
 
 	private ConfigurationManager configurationManager;
 
-	@Value("${sso.key}")
-	private String ssoKey;
+	private ShibbolethConfigManager shibbolethConfigManager;
 
 	@Autowired
-	public SSOAuthController(UserService users, DomainService domains, ShibbolethManager shibbolethManager, JWTTokenService jwtTokenService, ConfigurationManager configurationManager){
+	public SSOAuthController(UserService users, DomainService domains, JWTTokenService jwtTokenService, ConfigurationManager configurationManager, ShibbolethConfigManager shibbolethConfigManager){
 		this.users = users;
 		this.domains = domains;
-		this.shibbolethManager = shibbolethManager;
 		this.jwtTokenService = jwtTokenService;
 		this.configurationManager = configurationManager;
+		this.shibbolethConfigManager = shibbolethConfigManager;
 	}
 
 	@RequestMapping(value="/login", method=RequestMethod.POST)
@@ -68,8 +64,8 @@ public class SSOAuthController {
 		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
 			throw new AuthenticationException("Missing username");
 
-		ShibbolethView shibboleth = shibbolethManager.getOneShibbolethConfig();
-		userSSOLoginData.validate(ssoKey, shibboleth.getTimeout());
+		shibbolethConfigManager.checkParam();
+		userSSOLoginData.validate(shibbolethConfigManager.getKey(), shibbolethConfigManager.getTimeout());
 
 		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
 		User user = maybeUser.orElse(null);
