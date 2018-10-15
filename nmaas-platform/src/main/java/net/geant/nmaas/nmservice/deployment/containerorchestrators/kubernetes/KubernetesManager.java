@@ -1,8 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
@@ -35,8 +33,10 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements service deployment mechanism on Kubernetes cluster.
@@ -84,14 +84,16 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec)
             throws NmServiceRequestVerificationException {
-        if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
-            throw new NmServiceRequestVerificationException(
-                    "Service deployment not possible with currently used container orchestrator");
-        if(appDeploymentSpec.getKubernetesTemplate() == null){
-            throw new NmServiceRequestVerificationException("Kubernetes template cannot be null");
-        }
         if(appDeployment == null){
             throw new NmServiceRequestVerificationException("App deployment cannot be null");
+        }
+        if(appDeploymentSpec == null){
+            throw new NmServiceRequestVerificationException("App deployment spec cannot be null");
+        }
+        if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.KUBERNETES))
+            throw new NmServiceRequestVerificationException("Service deployment not possible with currently used container orchestrator");
+        if(appDeploymentSpec.getKubernetesTemplate() == null){
+            throw new NmServiceRequestVerificationException("Kubernetes template cannot be null");
         }
         if(appDeploymentSpec.getDeployParameters() != null && !appDeploymentSpec.getDeployParameters().isEmpty()){
             repositoryManager.storeService(new KubernetesNmServiceInfo(
@@ -129,7 +131,6 @@ public class KubernetesManager implements ContainerOrchestrator {
                             additionalParameters.put(v, username);
                     });
                     break;
-
                 } case SMTP_PASSWORD: {
                     deploymentManager.getSMTPServerPassword().ifPresent(value->{
                         if(!value.isEmpty())
