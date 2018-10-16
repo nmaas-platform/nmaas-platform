@@ -29,17 +29,10 @@ import {ClusterService} from '../service/cluster.service';
 import {GitlabModule} from './admin/gitlab/gitlab.module';
 import {ConfigurationModule} from './admin/configuration/configuration.module';
 import {MonitorModule} from './admin/monitor/monitor.module';
-import {ShibbolethModule} from './admin/shibboleth/shibboleth.module';
 import {StorageServiceModule} from 'ngx-webstorage-service';
 import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
-import {ClustersModule} from "./admin/clusters/clusters.module";
-import {ClusterService} from "../service/cluster.service";
-import {GitlabModule} from "./admin/gitlab/gitlab.module";
-import {ConfigurationModule} from "./admin/configuration/configuration.module";
-import {MonitorModule} from "./admin/monitor/monitor.module";
-import {StorageServiceModule} from "ngx-webstorage-service";
 
 @NgModule({
   declarations: [
