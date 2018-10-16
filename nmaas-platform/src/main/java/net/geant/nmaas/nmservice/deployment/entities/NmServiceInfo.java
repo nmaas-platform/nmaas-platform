@@ -87,4 +87,13 @@ public abstract class NmServiceInfo {
         this.domain = domain;
         this.storageSpace = storageSpace;
     }
+
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Map <String, String> additionalParameters) {
+        this.name = deploymentId.value();
+        this.deploymentId = deploymentId;
+        this.deploymentName = deploymentName;
+        this.domain = domain;
+        this.storageSpace = storageSpace;
+        this.additionalParameters = additionalParameters;
+    }
 }

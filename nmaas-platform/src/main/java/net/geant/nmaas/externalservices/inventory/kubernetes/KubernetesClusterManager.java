@@ -9,10 +9,10 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -82,6 +82,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public String getHelmHostChartsDirectory() {
         return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
+    }
+
+    @Override
+    public boolean getEnableTls(){
+        return this.loadSingleCluster().getHelm().getEnableTls();
     }
 
     @Override
@@ -157,7 +162,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
                 if(foundDomain.isPresent()){
                     return foundDomain.get().getKubernetesNamespace();
                 }
-            default: return NMAAS_NAMESPACE_PREFIX + domain;
+                return NMAAS_NAMESPACE_PREFIX + domain;
+            default:
+                return NMAAS_NAMESPACE_PREFIX + domain;
         }
     }
 
@@ -176,6 +183,26 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public Boolean getUseInClusterGitLabInstance() {
         return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
+    }
+
+    @Override
+    public String getSMTPServerHostname(){
+        return loadSingleCluster().getDeployment().getSmtpServerHostname();
+    }
+
+    @Override
+    public Integer getSMTPServerPort(){
+        return loadSingleCluster().getDeployment().getSmtpServerPort();
+    }
+
+    @Override
+    public Optional<String> getSMTPServerUsername(){
+        return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerUsername());
+    }
+
+    @Override
+    public Optional<String> getSMTPServerPassword(){
+        return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerPassword());
     }
 
     private KCluster loadSingleCluster() {

@@ -67,7 +67,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) throws ProcessingException {
 		try {
-			boolean result = appSubscriptions.unsubscribe(appId, domainId);
+			appSubscriptions.unsubscribe(appId, domainId);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to unsubscribe. " + e.getMessage());
 		}

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Profile("env_kubernetes")
@@ -32,6 +33,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
     static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
+    static final private String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
@@ -58,7 +60,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         try {
             installHelmChart(deploymentId, repositoryManager.loadService(deploymentId));
         } catch (CommandExecutionException cee) {
-            throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
+            throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
@@ -68,9 +70,8 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         String serviceExternalURL = serviceInfo.getServiceExternalUrl();
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
-        if (deploymentManager.getStorageClass(domain).isPresent()) {
-            arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, deploymentManager.getStorageClass(domain).get());
-        }
+        Optional<String> storageClass = deploymentManager.getStorageClass(domain);
+        storageClass.ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         if(serviceInfo.getGitLabProject() != null)
@@ -106,7 +107,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
             return status.equals(HelmPackageStatus.DEPLOYED);
         } catch (CommandExecutionException cee) {
-            throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
+            throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
@@ -116,7 +117,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
         } catch (CommandExecutionException cee) {
-            throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
+            throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 
@@ -131,7 +132,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                     template.getArchive()
             );
         } catch (CommandExecutionException cee) {
-            throw new KServiceManipulationException("Helm command execution failed -> " + cee.getMessage());
+            throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
     }
 

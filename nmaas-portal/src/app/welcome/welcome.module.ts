@@ -18,6 +18,7 @@ import {CompleteComponent} from "./complete/complete.component";
 import {ContentDisplayService} from "../service/content-display.service";
 import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
 import  {ReCaptchaModule} from "angular5-recaptcha";
+import {ShibbolethService} from "../service/shibboleth.service";
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import  {ReCaptchaModule} from "angular5-recaptcha";
     RegistrationService,
     UserService,
     ChangelogService,
+      ShibbolethService,
       ContentDisplayService
   ]
 })

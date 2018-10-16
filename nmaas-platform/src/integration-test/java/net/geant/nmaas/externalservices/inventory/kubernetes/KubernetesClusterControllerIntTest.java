@@ -73,7 +73,9 @@ public class KubernetesClusterControllerIntTest {
                         "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
                         "\"defaultNamespace\":\"testNamespace\"," +
                         "\"defaultStorageClass\":\"storageClass\"," +
-                        "\"useInClusterGitLabInstance\":\"false\"" +
+                        "\"useInClusterGitLabInstance\":\"false\"," +
+                        "\"smtpServerHostname\": \"nmaas-postfix\"," +
+                        "\"smtpServerPort\": 587" +
                     "}," +
                     "\"attachPoint\":{" +
                         "\"routerName\":\"R1\"," +
@@ -107,7 +109,7 @@ public class KubernetesClusterControllerIntTest {
 
     @Before
     public void init() {
-        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterController(clusterManager)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterController(clusterManager, modelMapper)).build();
     }
 
     @After
@@ -264,6 +266,8 @@ public class KubernetesClusterControllerIntTest {
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultStorageClass("storageClass");
         deployment.setUseInClusterGitLabInstance(false);
+        deployment.setSmtpServerHostname("test-postfix");
+        deployment.setSmtpServerPort(543);
         cluster.setDeployment(deployment);
         KClusterAttachPoint attachPoint = new KClusterAttachPoint();
         attachPoint.setRouterId("172.0.0.1");

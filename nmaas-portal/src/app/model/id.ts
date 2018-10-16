@@ -1,7 +1,7 @@
 export class Id {
-  public id: Number = undefined;
+  public id: number = undefined;
   
-  constructor(id?: Number) {
+  constructor(id?: number) {
     this.id = id;
   }
 

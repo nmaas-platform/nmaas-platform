@@ -1,16 +1,15 @@
 package net.geant.nmaas.portal.auth.sso;
 
 import java.io.IOException;
-import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
-import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethManager;
+import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.auth.UserToken;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -38,27 +37,24 @@ public class SSOAuthController {
 
 	private DomainService domains;
 
-	private ShibbolethManager shibbolethManager;
-
 	private JWTTokenService jwtTokenService;
 
 	private ConfigurationManager configurationManager;
 
-	@Value("${sso.key}")
-	private String ssoKey;
+	private ShibbolethConfigManager shibbolethConfigManager;
 
 	@Autowired
-	public SSOAuthController(UserService users, DomainService domains, ShibbolethManager shibbolethManager, JWTTokenService jwtTokenService, ConfigurationManager configurationManager){
+	public SSOAuthController(UserService users, DomainService domains, JWTTokenService jwtTokenService, ConfigurationManager configurationManager, ShibbolethConfigManager shibbolethConfigManager){
 		this.users = users;
 		this.domains = domains;
-		this.shibbolethManager = shibbolethManager;
 		this.jwtTokenService = jwtTokenService;
 		this.configurationManager = configurationManager;
+		this.shibbolethConfigManager = shibbolethConfigManager;
 	}
 
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws AuthenticationException,SignupException, IOException {
-		Configuration configuration = this.configurationManager.getConfiguration();
+		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
 			throw new AuthenticationException("SSO login method is not enabled");
 
@@ -68,8 +64,8 @@ public class SSOAuthController {
 		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
 			throw new AuthenticationException("Missing username");
 
-		ShibbolethView shibboleth = shibbolethManager.getOneShibbolethConfig();
-		userSSOLoginData.validate(ssoKey, shibboleth.getTimeout());
+		shibbolethConfigManager.checkParam();
+		userSSOLoginData.validate(shibbolethConfigManager.getKey(), shibbolethConfigManager.getTimeout());
 
 		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
 		User user = maybeUser.orElse(null);

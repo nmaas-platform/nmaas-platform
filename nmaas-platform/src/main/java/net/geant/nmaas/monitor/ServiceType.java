@@ -10,6 +10,10 @@ public enum ServiceType {
     HELM{
         @Override
         public String getName(){return "HELM";}
+    },
+    SHIBBOLETH{
+        @Override
+        public String getName(){return "SHIBBOLETH";}
     };
 
     public abstract String getName();

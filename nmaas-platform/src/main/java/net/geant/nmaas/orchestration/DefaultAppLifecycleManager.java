@@ -100,7 +100,11 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
         }
         if(configuration.getAdditionalParameters() != null && !configuration.getAdditionalParameters().isEmpty()){
-            serviceInfo.setAdditionalParameters(this.getMapFromJson(configuration.getAdditionalParameters()));
+            if(serviceInfo.getAdditionalParameters() == null){
+                serviceInfo.setAdditionalParameters(this.getMapFromJson(configuration.getAdditionalParameters()));
+            } else {
+                serviceInfo.getAdditionalParameters().putAll(this.getMapFromJson(configuration.getAdditionalParameters()));
+            }
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);

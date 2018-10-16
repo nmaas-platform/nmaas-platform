@@ -1,9 +1,11 @@
 package net.geant.nmaas.orchestration.entities;
 
+import java.util.Map;
 import javax.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 
 import javax.persistence.CascadeType;
@@ -17,6 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
@@ -44,6 +48,10 @@ public class AppDeploymentSpec implements Serializable {
 
     @Column(nullable = false)
     private Integer defaultStorageSpace;
+
+    @ElementCollection
+    @Fetch(FetchMode.SELECT)
+    private Map<ParameterType, String> deployParameters;
 
     private boolean configFileRepositoryRequired;
 }

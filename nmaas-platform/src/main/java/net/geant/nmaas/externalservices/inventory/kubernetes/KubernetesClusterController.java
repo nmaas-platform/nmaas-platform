@@ -1,9 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,9 +33,12 @@ public class KubernetesClusterController {
 
     private KubernetesClusterManager clusterManager;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public KubernetesClusterController(KubernetesClusterManager clusterManager) {
+    public KubernetesClusterController(KubernetesClusterManager clusterManager, ModelMapper modelMapper) {
         this.clusterManager = clusterManager;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -55,21 +60,22 @@ public class KubernetesClusterController {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/{id}")
-    public KCluster getKubernetesCluster(@PathVariable("id") Long id) {
-        return clusterManager.getClusterById(id);
+    public KClusterView getKubernetesCluster(@PathVariable("id") Long id) {
+        return modelMapper.map(clusterManager.getClusterById(id), KClusterView.class);
     }
 
     /**
      * Store new {@link KCluster} instance. In current implementation only a single Kubernetes cluster in
      * the system is supported.
-     * @param cluster new {@link KCluster} data
+     * @param clusterView new {@link KCluster} data
      * @throws OnlyOneKubernetesClusterSupportedException when trying to add new cluster while one already exists (HttpStatus.NOT_ACCEPTABLE)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addKubernetesCluster(@RequestBody KCluster cluster) {
+    public Long addKubernetesCluster(@RequestBody KClusterView clusterView) {
+        KCluster cluster = modelMapper.map(clusterView, KCluster.class);
         cluster.validate();
         clusterManager.addNewCluster(cluster);
         return cluster.getId();
@@ -78,14 +84,15 @@ public class KubernetesClusterController {
     /**
      * Update {@link KCluster} instance
      * @param id Unique {@link KCluster} id
-     * @param cluster {@link KCluster} instance pass to update
+     * @param clusterView {@link KCluster} instance pass to update
      * @throws KubernetesClusterNotFoundException when cluster with given id does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KCluster cluster) {
+    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KClusterView clusterView) {
+        KCluster cluster = modelMapper.map(clusterView, KCluster.class);
         cluster.validate();
         clusterManager.updateCluster(id, cluster);
     }

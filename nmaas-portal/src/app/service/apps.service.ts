@@ -32,9 +32,7 @@ export class AppsService extends GenericDataService {
     }
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
-        return this.http.get(this.appConfig.getApiUrl() + urlPath)
-            .timeout(10000)
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.getByUrl(urlPath);
     }
 
     public setMyAppRateByUrl(urlPath: string): Observable<any> {
@@ -44,9 +42,7 @@ export class AppsService extends GenericDataService {
     }
 
     public getAppCommentsByUrl(urlPath: string): Observable<Comment[]> {
-        return this.http.get(this.appConfig.getApiUrl() + urlPath)
-            .timeout(10000)
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.getByUrl(urlPath);
     }
 
     public addAppCommentByUrl(urlPath: string, comment: Comment): Observable<Id> {
@@ -62,12 +58,16 @@ export class AppsService extends GenericDataService {
     }
     
     public getAppScreenshotsByUrl(urlPath: string): Observable<FileInfo[]> {
-        return this.http.get(this.appConfig.getApiUrl() + urlPath)
-            .timeout(10000)
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.getByUrl(urlPath);
     }
 
     public getAppScreenshotUrl(urlPath: string): string {
         return this.appConfig.getApiUrl() + urlPath;
+    }
+
+    private getByUrl(urlPath: string): Observable<any>{
+        return this.http.get(this.appConfig.getApiUrl() + urlPath)
+            .timeout(10000)
+            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
     }
 }

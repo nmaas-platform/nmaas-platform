@@ -4,6 +4,7 @@ import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabSupportedException;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,9 +29,12 @@ public class GitLabController {
 
     private GitLabManager gitLabManager;
 
+    private ModelMapper modelMapper;
+
     @Autowired
-    public GitLabController(GitLabManager gitLabManager){
+    public GitLabController(GitLabManager gitLabManager, ModelMapper modelMapper){
         this.gitLabManager = gitLabManager;
+        this.modelMapper = modelMapper;
     }
 
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
@@ -42,17 +46,16 @@ public class GitLabController {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping(value = "/{id}")
-    public GitLab getGitlabConfigById(@PathVariable("id") Long id) {
-        return gitLabManager.getGitlabConfigById(id);
+    public GitLabView getGitlabConfigById(@PathVariable("id") Long id) {
+        return modelMapper.map(gitLabManager.getGitlabConfigById(id), GitLabView.class);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addGitlabConfig (@RequestBody GitLab newGitLabConfig) {
-        gitLabManager.addGitlabConfig(newGitLabConfig);
-        return newGitLabConfig.getId();
+    public Long addGitlabConfig (@RequestBody GitLabView newGitLabConfig) {
+        return gitLabManager.addGitlabConfig(newGitLabConfig);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -60,7 +63,7 @@ public class GitLabController {
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateGitlabConfig(@PathVariable("id") Long id,
-                                   @RequestBody GitLab updatedGitLabConfig) {
+                                   @RequestBody GitLabView updatedGitLabConfig) {
         gitLabManager.updateGitlabConfig(id, updatedGitLabConfig);
     }
 

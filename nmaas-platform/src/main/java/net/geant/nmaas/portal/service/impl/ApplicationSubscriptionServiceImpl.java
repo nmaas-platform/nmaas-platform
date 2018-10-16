@@ -24,11 +24,13 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 @Service
 public class ApplicationSubscriptionServiceImpl implements ApplicationSubscriptionService {
 
-    ApplicationSubscriptionRepository appSubRepo;
+	private static final String APP_NOT_FOUND_ERR_MESSAGE = "Application subscription not found.";
+
+    private ApplicationSubscriptionRepository appSubRepo;
 	
-	DomainService domains;
+	private DomainService domains;
 	
-	ApplicationService applications;
+	private ApplicationService applications;
 
 	@Autowired
 	public ApplicationSubscriptionServiceImpl(ApplicationSubscriptionRepository appSubRepo,
@@ -163,10 +165,13 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	@Override
 	public ApplicationSubscription subscribe(ApplicationSubscription appSub) {
 		checkParam(appSub);
-		
-		if(appSubRepo.existsById(appSub.getId()))
-			appSub = appSubRepo.findById(appSub.getId()).get();
-		
+
+		if(appSubRepo.existsById(appSub.getId())) {
+			Optional<ApplicationSubscription> appSubOptional = appSubRepo.findById(appSub.getId());
+			if(appSubOptional.isPresent()) {
+				appSub = appSubOptional.get();
+			}
+		}
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);
 			
@@ -199,40 +204,39 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public boolean unsubscribe(ApplicationSubscription appSub) {
+	public void unsubscribe(ApplicationSubscription appSub) {
 		checkParam(appSub);
 
-		if(appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication()))
-			return true;
-		else if(!appSubRepo.existsById(appSub.getId()))
-			throw new ObjectNotFoundException("Application subscription not found.");
-		
-		appSub.setActive(false);
-		appSub.setDeleted(true);
+		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
+			if(!appSubRepo.existsById(appSub.getId()))
+				throw new ObjectNotFoundException("Application subscription not found.");
 
-		try {
-			appSubRepo.save(appSub);
-			return true;
-		}catch(Exception ex) {
-			throw new ProcessingException("Unable to unsubscribe application", ex);
+			appSub.setActive(false);
+			appSub.setDeleted(true);
+
+			try {
+				appSubRepo.save(appSub);
+			} catch(Exception ex) {
+				throw new ProcessingException("Unable to unsubscribe application", ex);
+			}
 		}
 	}
 
 	@Override
-	public boolean unsubscribe(Long applicationId, Long domainId) {
+	public void unsubscribe(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
 
 		ApplicationSubscription appSub = findApplicationSubscription(applicationId, domainId);
 
-		return unsubscribe(appSub);
+		unsubscribe(appSub);
 	}
 
 	@Override
-	public boolean unsubscribe(Application application, Domain domain) {
+	public void unsubscribe(Application application, Domain domain) {
 		checkParam(application, domain);
 		
 		ApplicationSubscription appSub = findApplicationSubscription(application, domain);		
-		return unsubscribe(appSub);
+		unsubscribe(appSub);
 	}
 
 
@@ -248,17 +252,19 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 	protected ApplicationSubscription findApplicationSubscription(Id id) {
 		return appSubRepo.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException("Application subscription not found."));
+                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
 	
 	private ApplicationSubscription findApplicationSubscription(Long applicationId, Long domainId) {
 		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElseThrow(() ->
-                new ObjectNotFoundException("Application subscription not found."));
+                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
-	
+
+
+	@SuppressWarnings("unused")
 	private ApplicationSubscription findApplicationSubscription(Application application, Domain domain) {
 		return appSubRepo.findByDomainAndApplication(domain, application).orElseThrow(() ->
-                new ObjectNotFoundException("Application subscription not found."));
+                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
 	
 	protected Domain getDomain(Long domainId) {
