@@ -7,7 +7,6 @@ import {AppConfigService, ConfigurationService} from "./service";
 import {HttpClient, HttpHandler} from "@angular/common/http";
 import {TranslateService, TranslateModule, TranslateLoader} from "@ngx-translate/core";
 import {TranslateFakeLoader} from "@ngx-translate/core";
-import {TranslateLoaderImpl} from "./service/translate-loader-impl.service";
 
 describe('App: NmaasPortal', () => {
   beforeEach(() => {
@@ -20,8 +19,7 @@ describe('App: NmaasPortal', () => {
             TranslateModule.forRoot({
                 loader: {
                     provide: TranslateLoader,
-                    useClass: TranslateLoaderImpl,
-                    deps: [HttpClient ,AppConfigService]
+                    useClass: TranslateFakeLoader
                 }
             })
         ],
