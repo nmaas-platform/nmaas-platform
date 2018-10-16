@@ -36,8 +36,8 @@
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']"><a [routerLink]="['/admin/configuration']">{{ 'NAVBAR.CONFIGURATION' | translate }}</a></li>
 				
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']">					
-					<select #langSelect (change)="translate.use(langSelect.value)">
+				<li class="navbar-form form-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']">
+					<select #langSelect class="form-control" (change)="translate.use(langSelect.value)">
 						<option *ngFor="let lang of translate.getLangs()" [value]="lang" 
 							[selected]="lang === translate.currentLang">{{ lang }}</option>
 					</select>					
