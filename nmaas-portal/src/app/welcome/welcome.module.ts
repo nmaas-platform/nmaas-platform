@@ -52,7 +52,8 @@ import {ShibbolethService} from "../service/shibboleth.service";
     RegistrationService,
     UserService,
     ChangelogService,
-      ContentDisplayService
+      ContentDisplayService,
+      ShibbolethService
   ]
 })
 export class WelcomeModule {}
