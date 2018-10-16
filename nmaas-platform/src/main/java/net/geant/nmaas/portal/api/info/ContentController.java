@@ -16,11 +16,15 @@ import javax.transaction.Transactional;
 @RequestMapping("/api/content")
 public class ContentController {
 
-    @Autowired
     private ContentRepository contentRepo;
 
-    @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    public ContentController(ContentRepository contentRepo, ModelMapper modelMapper){
+        this.contentRepo = contentRepo;
+        this.modelMapper = modelMapper;
+    }
 
     @Transactional
     @GetMapping("/{name}")

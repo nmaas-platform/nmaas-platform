@@ -11,23 +11,29 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @Profile("env_docker-compose")
 @RequestMapping(value = "/api/dockercompose/files")
 @Log4j2
 public class DockerComposeFileDownloadRestController {
 
-    @Autowired
     private DockerComposeServiceRepositoryManager repositoryManager;
+
+    @Autowired
+    public DockerComposeFileDownloadRestController(DockerComposeServiceRepositoryManager repositoryManager){
+        this.repositoryManager = repositoryManager;
+    }
 
     @GetMapping(value = "/{deploymentId}")
     public void downloadComposeFile(@PathVariable(value = "deploymentId") String deploymentId, HttpServletResponse response)

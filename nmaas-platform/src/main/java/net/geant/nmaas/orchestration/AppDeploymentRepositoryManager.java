@@ -16,9 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Service
 public class AppDeploymentRepositoryManager {
 
@@ -57,6 +54,12 @@ public class AppDeploymentRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public String loadStateErrorMessage(Identifier deploymentId) throws InvalidDeploymentIdException {
+        return repository.getErrorMessageByDeploymentId(deploymentId)
+                .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         appDeployment.setConfiguration(configuration);
@@ -91,5 +94,11 @@ public class AppDeploymentRepositoryManager {
 
     private void addChangeOfStateToHistory(AppDeployment appDeployment, AppDeploymentState previousState, AppDeploymentState currentState){
         appDeployment.getHistory().add(new AppDeploymentHistory(appDeployment, new Date(), previousState, currentState));
+    }
+
+    public void reportErrorStatusAndSaveInEntity(Identifier deploymentId , String error) throws InvalidDeploymentIdException {
+        AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
+        appDeployment.setErrorMessage(error);
+        repository.save(appDeployment);
     }
 }

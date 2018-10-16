@@ -8,6 +8,7 @@ import lombok.Setter;
 public class AppInstanceStatus {
 	Long appInstanceId;
 	AppInstanceState state;
+	AppInstanceState previousState;
 	String details;
 	String userFriendlyDetails;
 	String userFriendlyState;

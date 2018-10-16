@@ -1,23 +1,34 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
+import net.geant.nmaas.nmservice.configuration.model.NmServiceConfigurationTemplateView;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @RequestMapping(value = "/api/management/configurations/templates")
 public class NmServiceConfigTemplateAdminRestController {
 
-    @Autowired
     private NmServiceConfigFileTemplatesRepository templates;
+
+    private ModelMapper modelMapper;
+
+    @Autowired
+    public NmServiceConfigTemplateAdminRestController(NmServiceConfigFileTemplatesRepository templates, ModelMapper modelMapper){
+        this.templates = templates;
+        this.modelMapper = modelMapper;
+    }
 
     /**
      * Lists all {@link NmServiceConfigurationTemplate} stored in repository.
@@ -37,8 +48,8 @@ public class NmServiceConfigTemplateAdminRestController {
     @PostMapping(value = "", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addConfigurationTemplate(
-            @RequestBody NmServiceConfigurationTemplate configurationTemplate) {
-        templates.save(configurationTemplate);
+            @RequestBody NmServiceConfigurationTemplateView configurationTemplate) {
+        templates.save(modelMapper.map(configurationTemplate, NmServiceConfigurationTemplate.class));
     }
 
 }

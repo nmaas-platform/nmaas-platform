@@ -37,9 +37,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
@@ -61,7 +58,7 @@ public class ConfigDownloadCommandExecutionTest {
 
     // for password: testpass
     private static final String CORRECT_CONFIG_DOWNLOAD_COMMAND =
-            "mkdir -p /home/mgmt/volumes/testVolumeName/ && wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic Y29uZmlnVGVzdDp0ZXN0cGFzcw==\" http://portal.nmaas.gn4.net:-1/api/configs/id1 -O /home/mgmt/volumes/testVolumeName/fileName1";
+            "mkdir -p /home/mgmt/volumes/testVolumeName/ && wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic Y29uZmlnVGVzdDp0ZXN0cGFzcw==\" http://localhost:9000/api/configs/id1 -O /home/mgmt/volumes/testVolumeName/fileName1";
 
     @Before
     public void setup() throws UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {
@@ -70,6 +67,7 @@ public class ConfigDownloadCommandExecutionTest {
                 deploymentId,
                 "deploymentName",
                 "domain",
+                20,
                 new DockerComposeFileTemplate("testContent"));
         nmServiceInfo.setHost(dockerHostRepositoryManager.loadPreferredDockerHost());
         DockerComposeService dockerComposeService = new DockerComposeService();
@@ -92,7 +90,7 @@ public class ConfigDownloadCommandExecutionTest {
 
     @Test
     public void shouldPrepareConfigDownloadCommandString() throws FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException, SshConnectionException, CommandExecutionException {
-        configDownloadCommandExecutor.transferConfigFiles(deploymentId, Arrays.asList(configId1));
+        configDownloadCommandExecutor.transferConfigFiles(deploymentId, Arrays.asList(configId1),true);
         ArgumentCaptor<Command> commandArgumentCaptor = ArgumentCaptor.forClass(Command.class);
         verify(executor, times(1)).executeSingleCommand(commandArgumentCaptor.capture());
         assertThat(commandArgumentCaptor.getValue().asString(), equalTo(CORRECT_CONFIG_DOWNLOAD_COMMAND));

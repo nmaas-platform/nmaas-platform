@@ -7,7 +7,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAp
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
@@ -30,9 +30,6 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class KubernetesClusterManagerTest {
 
     private static final String REST_API_HOST_ADDRESS = "10.10.1.1";
@@ -170,6 +167,8 @@ public class KubernetesClusterManagerTest {
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultStorageClass("storageClass");
         deployment.setUseInClusterGitLabInstance(false);
+        deployment.setSmtpServerHostname("test-postfix");
+        deployment.setSmtpServerPort(543);
         cluster.setDeployment(deployment);
         KClusterAttachPoint attachPoint = new KClusterAttachPoint();
         attachPoint.setRouterName("R1");

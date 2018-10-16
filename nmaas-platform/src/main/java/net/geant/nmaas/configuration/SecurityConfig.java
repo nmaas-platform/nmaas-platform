@@ -52,11 +52,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME = "ansible.notification.client.password";
+    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
 	private static final String APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.config.download.client.username";
-	private static final String APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.config.download.client.password";
+	private static final String APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME = "app.config.download.client.password";
 	private static final String APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.compose.download.client.username";
-	private static final String APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.compose.download.client.password";
+	private static final String APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME = "app.compose.download.client.password";
 
 	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
 	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
@@ -74,19 +74,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
+					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME))
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 			auth.inMemoryAuthentication()
 					.passwordEncoder(NoOpPasswordEncoder.getInstance())
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME))
 					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
 		}
 	}
@@ -134,6 +134,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -146,6 +148,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+										new AntPathRequestMatcher("/api/configuration/**", "GET"),
+										new AntPathRequestMatcher("/api/management/shibboleth/", "GET"),
 										new AntPathRequestMatcher("/v2/api-docs"),
 										new AntPathRequestMatcher("/swagger-resources"),
 										new AntPathRequestMatcher("/swagger-resources/**"),

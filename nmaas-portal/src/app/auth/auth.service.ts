@@ -211,27 +211,6 @@ export class AuthService {
       });
   }
 
-  public allowsSSO(): boolean {
-    return 'sso' in this.appConfig.config;
-  }
-
-  public allowsBasic(): boolean {
-    return !this.allowsSSO() || ('allowsBasic' in this.appConfig.config.sso);
-  }
-
-  public getSSOName(): string {
-    if(!this.allowsSSO()) return '';
-    return ('name' in this.appConfig.config.sso) ? this.appConfig.config.sso.name : 'SSO service';
-  }
-
-  public getSSOLoginUrl(): string {
-    return this.allowsSSO() ? this.appConfig.config.sso.loginUrl : null;
-  }
-
-  public getSSOLogoutUrl(): string {
-    return this.allowsSSO() ? this.appConfig.config.sso.logoutUrl : null;
-  }
-
   public propagateSSOLogin(userid: string): Observable<boolean> {
     console.log('propagateSSOLogin');
     console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl);

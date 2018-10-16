@@ -12,4 +12,6 @@ public interface KClusterHelmManager {
 
     String getHelmHostChartsDirectory();
 
+    boolean getEnableTls();
+
 }

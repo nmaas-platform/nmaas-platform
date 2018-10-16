@@ -19,9 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Log4j2
 public class AppRequestVerificationTask {
@@ -53,8 +50,7 @@ public class AppRequestVerificationTask {
                     new InvalidApplicationIdException("Application for deployment " + deploymentId + " does not exist in repository"));
             serviceDeployment.verifyRequest(
                     deploymentId,
-                    appDeployment.getDeploymentName(),
-                    appDeployment.getDomain(),
+                    appDeployment,
                     application.getAppDeploymentSpec());
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();

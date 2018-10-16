@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+  import {Component, OnInit, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Domain} from '../../../model/domain';
@@ -36,6 +36,8 @@ export class DomainComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit() {
+      this.modal.setModalType("warning");
+      this.modal.setStatusOfIcons(true);
     this.mode = this.getMode(this.route);
     this.route.params.subscribe(params => {
       if (!isUndefined(params['id'])) {

@@ -6,12 +6,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Set of properties describing details of service deployment in Kubernetes cluster
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 @Table(name="k_cluster_deployment")
 public class KClusterDeployment {
@@ -35,43 +37,17 @@ public class KClusterDeployment {
     @Column(nullable = false)
     private Boolean useInClusterGitLabInstance;
 
-    public Long getId() {
-        return id;
-    }
+    /** The IP address / hostname of the SMTP server */
+    @Column(nullable = false)
+    private String smtpServerHostname;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /** Port on which SMTP server is exposed */
+    @Column(nullable = false)
+    private Integer smtpServerPort;
 
-    public NamespaceConfigOption getNamespaceConfigOption() {
-        return namespaceConfigOption;
-    }
+    /** SMTP server username */
+    private String smtpServerUsername;
 
-    public void setNamespaceConfigOption(NamespaceConfigOption namespaceConfigOption) {
-        this.namespaceConfigOption = namespaceConfigOption;
-    }
-
-    public String getDefaultNamespace() {
-        return defaultNamespace;
-    }
-
-    public void setDefaultNamespace(String defaultNamespace) {
-        this.defaultNamespace = defaultNamespace;
-    }
-
-    public String getDefaultStorageClass() {
-        return defaultStorageClass;
-    }
-
-    public void setDefaultStorageClass(String defaultStorageClass) {
-        this.defaultStorageClass = defaultStorageClass;
-    }
-
-    public Boolean getUseInClusterGitLabInstance() {
-        return useInClusterGitLabInstance;
-    }
-
-    public void setUseInClusterGitLabInstance(Boolean useInClusterGitLabInstance) {
-        this.useInClusterGitLabInstance = useInClusterGitLabInstance;
-    }
+    /** SMTP server user password */
+    private String smtpServerPassword;
 }

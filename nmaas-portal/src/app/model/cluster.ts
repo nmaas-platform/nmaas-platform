@@ -17,6 +17,10 @@ class ClusterAttachPoint {
 }
 
 class ClusterDeployment {
+    public smtpServerHostname: string="";
+    public smtpServerPort: string="";
+    public smtpServerUsername: string="";
+    public smtpServerPassword: string="";
     public defaultNamespace: string="";
     public defaultStorageClass: string="";
     public id: number;
@@ -40,6 +44,7 @@ class ClusterHelm {
     public helmHostSshUsername: string;
     public helmChartRepositoryName: string;
     public id: number;
+    public enableTls: boolean = true;
     public useLocalChartArchives: boolean = false;
 }
 

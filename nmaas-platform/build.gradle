@@ -51,6 +51,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-devtools')
+	compile('org.springframework.boot:spring-boot-starter-quartz')
 
 	compile('org.modelmapper:modelmapper:2.2.0')
 	compile('org.modelmapper.extensions:modelmapper-spring:2.2.0')
@@ -61,7 +62,7 @@ dependencies {
 
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 	compile('com.spotify:docker-client:8.8.0')
-	compile('org.freemarker:freemarker:2.3.20')
+	compile('org.freemarker:freemarker:2.3.28')
 	compile('com.hierynomus:sshj:0.21.1')
 	compile('org.gitlab4j:gitlab4j-api:4.8.30')
 	compile('io.fabric8:kubernetes-client:3.1.8')
@@ -74,10 +75,20 @@ dependencies {
 	compile ('org.apache.logging.log4j:log4j-jul:2.11.1')
 	compile ('org.projectlombok:lombok:1.18.2')
 
-	compile ('org.projectlombok:lombok:1.18.2')
-
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
+}
+
+test {
+	systemProperties 'property': 'value'
+	ignoreFailures = true
+	afterTest { desc, result ->
+		println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+	}
+	jacoco {
+		append = true
+		destinationFile = file("$buildDir/jacoco/test.exec")
+	}
 }
 
 task integrationTest(type: Test) {
@@ -87,17 +98,29 @@ task integrationTest(type: Test) {
 	afterTest { desc, result ->
 		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
 	}
+//	jacoco {
+//		append = true
+//		destinationFile = file("$buildDir/jacoco/test.exec")
+//	}
+}
+integrationTest.dependsOn(test)
+
+jacoco {
+	toolVersion = "0.8.1"
+	reportsDir = file("$buildDir/jacoco")
 }
 
 jacocoTestReport {
 	reports {
 		xml.enabled false
 		csv.enabled false
-		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
+		html.destination file("${buildDir}/jacocoHtml")
 	}
 	executionData(test, integrationTest)
 }
 
-// removed integrationTest task from build
-// check.dependsOn integrationTest
-integrationTest.mustRunAfter test
+sonarqube {
+	properties {
+		property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
+	}
+}

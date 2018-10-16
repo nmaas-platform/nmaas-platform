@@ -32,7 +32,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -60,6 +59,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
+        appDeploymentSpec.setDefaultStorageSpace(20);
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);
         application = applications.save(application);

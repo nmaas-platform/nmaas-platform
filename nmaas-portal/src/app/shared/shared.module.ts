@@ -29,6 +29,7 @@ import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails
 import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
+import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
 
 @NgModule({
   imports: [
@@ -60,10 +61,11 @@ import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-p
     AppElementComponent,
     AppListComponent,
     ApplicationsViewComponent,
-    ClusterDetailsComponent,
+      ClusterDetailsComponent,
       GitlabDetailsComponent,
       ModalInfoTermsComponent,
-      ModalInfoPolicyComponent
+      ModalInfoPolicyComponent,
+      ModalChangelogComponent,
   ],
   providers: [
     PasswordValidator,

@@ -1,16 +1,30 @@
 package net.geant.nmaas.orchestration.entities;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Details of single application deployment in the system.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
 @Table(name="app_deployment")
+@Getter
+@Setter
+@NoArgsConstructor
 public class AppDeployment {
 
     @Id
@@ -36,6 +50,7 @@ public class AppDeployment {
 
     /** Current deployment state. */
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AppDeploymentState state = AppDeploymentState.REQUESTED;
 
     /** Initial application configuration provided by the user. */
@@ -46,76 +61,22 @@ public class AppDeployment {
     @OneToMany(mappedBy = "app", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<AppDeploymentHistory> history = new ArrayList<>();
 
-    public AppDeployment() { }
+    /** Indicates if GitLab instance is required during deployment */
+    @Column(nullable = false)
+    private boolean configFileRepositoryRequired;
 
-    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName) {
+    /** Contains information about deployment fails */
+    private String errorMessage;
+
+    /** Required storage space to be allocated for this particular instance in GB */
+    private Integer storageSpace;
+
+    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Integer storageSpace) {
         this.deploymentId = deploymentId;
         this.domain = domain;
         this.applicationId = applicationId;
         this.deploymentName = deploymentName;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Identifier getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(Identifier deploymentId) {
-        this.deploymentId = deploymentId;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    public Identifier getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(Identifier applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public String getDeploymentName() {
-        return deploymentName;
-    }
-
-    public void setDeploymentName(String deploymentName) {
-        this.deploymentName = deploymentName;
-    }
-
-    public AppDeploymentState getState() {
-        return state;
-    }
-
-    public void setState(AppDeploymentState state) {
-        this.state = state;
-    }
-
-    public AppConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(AppConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    public List<AppDeploymentHistory> getHistory() {
-        return history;
-    }
-
-    public void setHistory(List<AppDeploymentHistory> history) {
-        this.history = history;
+        this.configFileRepositoryRequired = configFileRepositoryRequired;
+        this.storageSpace = storageSpace;
     }
 }

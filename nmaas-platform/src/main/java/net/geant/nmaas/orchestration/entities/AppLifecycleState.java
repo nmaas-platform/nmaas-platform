@@ -4,8 +4,6 @@ import net.geant.nmaas.orchestration.AppLifecycleManager;
 
 /**
  * Application lifecycle states as presented to the {@link AppLifecycleManager} client.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public enum AppLifecycleState {
 

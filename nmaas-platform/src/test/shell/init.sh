@@ -145,7 +145,7 @@ curl -X POST $API_URL/apps/1/comments --header "Authorization: Bearer $TOKEN" --
 echo 
 echo ---------------------
 echo Get second app
-curl -X GET $API_URL/apps/2/complete --header "Authorization: Bearer $TOKEN"
+curl -X GET $API_URL/apps/2/ --header "Authorization: Bearer $TOKEN"
 
 
 echo 

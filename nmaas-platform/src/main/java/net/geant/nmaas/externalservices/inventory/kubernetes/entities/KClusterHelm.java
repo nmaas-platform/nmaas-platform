@@ -7,12 +7,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.net.InetAddress;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Set of properties describing a Kubernetes cluster Helm client details
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 @Table(name="k_cluster_helm")
 public class KClusterHelm {
@@ -40,51 +42,6 @@ public class KClusterHelm {
     /** Directory on the helm host in which all charts are stored */
     private String helmHostChartsDirectory;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public InetAddress getHelmHostAddress() {
-        return helmHostAddress;
-    }
-
-    public void setHelmHostAddress(InetAddress helmHostAddress) {
-        this.helmHostAddress = helmHostAddress;
-    }
-
-    public String getHelmHostSshUsername() {
-        return helmHostSshUsername;
-    }
-
-    public void setHelmHostSshUsername(String helmHostSshUsername) {
-        this.helmHostSshUsername = helmHostSshUsername;
-    }
-
-    public Boolean getUseLocalChartArchives() {
-        return useLocalChartArchives;
-    }
-
-    public void setUseLocalChartArchives(Boolean useLocalChartArchives) {
-        this.useLocalChartArchives = useLocalChartArchives;
-    }
-
-    public String getHelmChartRepositoryName() {
-        return helmChartRepositoryName;
-    }
-
-    public void setHelmChartRepositoryName(String helmChartRepositoryName) {
-        this.helmChartRepositoryName = helmChartRepositoryName;
-    }
-
-    public String getHelmHostChartsDirectory() {
-        return helmHostChartsDirectory;
-    }
-
-    public void setHelmHostChartsDirectory(String helmHostChartsDirectory) {
-        this.helmHostChartsDirectory = helmHostChartsDirectory;
-    }
+    /** Flag indicating if tls is enabled */
+    private Boolean enableTls;
 }

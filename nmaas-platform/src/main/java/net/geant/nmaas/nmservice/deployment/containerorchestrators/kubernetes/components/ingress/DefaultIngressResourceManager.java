@@ -4,7 +4,12 @@ import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
-import io.fabric8.kubernetes.api.model.extensions.*;
+import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPath;
+import io.fabric8.kubernetes.api.model.extensions.HTTPIngressRuleValue;
+import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.extensions.IngressBackend;
+import io.fabric8.kubernetes.api.model.extensions.IngressRule;
+import io.fabric8.kubernetes.api.model.extensions.IngressSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
@@ -24,8 +29,6 @@ import java.util.stream.Collectors;
 
 /**
  * Uses the Kubernetes REST API to create, update and delete ingress resource.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DefaultIngressResourceManager implements IngressResourceManager {
@@ -58,7 +61,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain) {
-        return externalUrl(deploymentName, domain, externalServiceDomain);
+        return externalUrl(deploymentName.toLowerCase(), domain.toLowerCase(), externalServiceDomain.toLowerCase());
     }
 
     /**
@@ -100,7 +103,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                         servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
-                IngressRule rule = prepareNewRule(serviceExternalUrl, serviceName, servicePort);
+                IngressRule rule = prepareNewRule(serviceExternalUrl.toLowerCase(), serviceName.toLowerCase(), servicePort);
                 ingress.getSpec().getRules().add(rule);
                 deleteIngressResource(client, ingress);
             }
@@ -115,7 +118,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
     }
 
     private String externalUrl(String deploymentName, String domain, String externalServiceDomain) {
-        return deploymentName + "." + domain.toLowerCase() + "." + externalServiceDomain;
+        return deploymentName.toLowerCase() + "." + domain.toLowerCase() + "." + externalServiceDomain.toLowerCase();
     }
 
     private String ingressClassName(String domain) {

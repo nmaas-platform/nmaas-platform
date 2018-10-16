@@ -39,7 +39,7 @@ export class RateComponent implements OnInit, OnChanges {
   	this.appsService.getAppRateByUrl(this.pathUrl).subscribe(rate => this.rate = rate);
   }
   
-  public update(rate: Number) {
+  public update(rate: number) {
   	if(this.editable) {
   		this.appsService.setMyAppRateByUrl(this.pathUrl + '/' + rate).subscribe( apiResponse => { 
   						this.refresh();

@@ -12,7 +12,27 @@
 		"supportedDeploymentEnvironments": [
 			"DOCKER_COMPOSE",
 			"KUBERNETES"
-		]
+		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nav",
+				"version": "0.1.1"
+			}
+		},
+		"dockerComposeFileTemplate": {
+			"dcnAttachedContainers": [
+				{"name": "nav", "description": "nav"}
+			],
+			"composeFileTemplateContent":"version: '2'\nservices:\n  ${nav.container_name}:\n    image: mbrekkevold/nav:latest\n    ports:\n      - ${port}:80\n    volumes:\n      - ${volume}/log:/usr/local/nav/var/log\n      - ${volume}/roomimages:/usr/local/nav/var/uploads/images/rooms\n    depends_on:\n      - postgres\n      - carbon-cache\n      - graphite-web\n    environment:\n      - PGHOST=postgres\n      - PGDATABASE=nav\n      - PGUSER=nav\n      - PGPORT=5432\n      - CARBONHOST=carbon-cache\n      - CARBONPORT=2003\n      - GRAPHITEWEB=http://graphite-web/\n      - NOINITDB=0\n    networks:\n      nmaas-ext-access:\n      nmaas-dcn:\n        ipv4_address: ${nav.container_ip_address}\n      nmaas-inter-container:\n    privileged: true\n\n  postgres:\n    image: postgres:9.4\n    volumes:\n      - ${volume}/postgres:/var/lib/postgresql/data\n    networks:\n      nmaas-inter-container:\n\n  carbon-cache:\n    image: mbrekkevold/nav-carbon-cache:latest\n    volumes_from:\n      - whisper\n    networks:\n      nmaas-inter-container:\n\n  graphite-web:\n    image: mbrekkevold/graphite-web\n    environment:\n      - TIME_ZONE=Europe/Oslo\n      - CARBONLINK_HOSTS=carbon-cache:7002\n    volumes_from:\n      - whisper\n    networks:\n      nmaas-inter-container:\n\n  whisper:\n    image: busybox\n    volumes:\n      - ${volume}/whisper:/var/lib/graphite/storage/whisper\n    networks:\n      nmaas-inter-container:\n\nnetworks:\n  nmaas-ext-access:\n    external:\n      name: ${nmaas_ext_access_network}\n  nmaas-dcn:\n    external:\n      name: ${nmaas_dcn_network}\n  nmaas-inter-container:"
+		},
+		"defaultStorageSpace":20,
+		"deployParameters": {
+			"SMTP_HOSTNAME":"nav.config.EMAIL_HOST",
+			"SMTP_PORT":"nav.config.EMAIL_PORT",
+			"SMTP_USERNAME":"nav.config.EMAIL_HOST_USER",
+			"SMTP_PASSWORD":"nav.config.EMAIL_HOST_PASSWORD"
+		},
+		"configFileRepositoryRequired":false
 	},
 	"configTemplate": {
 		"template": {
@@ -24,11 +44,29 @@
 				{
 					"type":"help",
 					"helpvalue":"All required configuration should be applied using NAV graphical interface"
-				},
-				{
-					"type": "submit",
-					"title": "Proceed"
 				}
+			]
+		}
+	},
+	"additionalParametersTemplate": {
+		"template": {
+			"schema": {
+				"type": "object",
+				"properties":{
+					"nav.config.ADMIN_MAIL": {
+						"type": "string",
+						"format": "email",
+						"title": "Admin email"
+					},
+					"nav.config.DEFAULT_FROM_EMAIL": {
+						"type": "string",
+						"format": "email",
+						"title": "Default sender email"
+					}
+				}
+			},
+			"form":[
+				"*"
 			]
 		}
 	}

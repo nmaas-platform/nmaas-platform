@@ -5,8 +5,12 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.extern.log4j.Log4j2;
 import io.jsonwebtoken.ExpiredJwtException;
+import net.geant.nmaas.portal.api.exception.SignupException;
+import net.geant.nmaas.portal.persistent.entity.Role;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +36,26 @@ import net.geant.nmaas.portal.service.UserService;
 @Log4j2
 public class BasicAuthController {
 
-	@Autowired
 	private UserService users;
 	
-	@Autowired
     private DomainService domains;
 	
-	@Autowired
     private PasswordEncoder passwordEncoder;
 	
-	@Autowired
     private JWTTokenService jwtTokenService;
 
-    @Autowired
     private ConfigurationManager configurationManager;
+
+    @Autowired
+    public BasicAuthController(UserService users, DomainService domains,
+                               PasswordEncoder passwordEncoder, JWTTokenService jwtTokenService,
+                               ConfigurationManager configurationManager){
+        this.users = users;
+        this.domains = domains;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenService = jwtTokenService;
+        this.configurationManager = configurationManager;
+    }
 	
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {
@@ -84,7 +94,7 @@ public class BasicAuthController {
 	}
 
     protected void validate(final Optional<String> userName, final Optional<String> password,
-                            String actualPassword, boolean isEnabled, boolean istermsOfUseAccepteded, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
+                            String actualPassword, boolean isEnabled, boolean isTermsOfUseAccepted, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
         boolean isValid = true;
         if(!userName.isPresent() || !password.isPresent()){
             isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
@@ -93,11 +103,10 @@ public class BasicAuthController {
             if (!isEnabled) {
                 isValid = validateAndLogMessage("User is not active", userName.get());
             }
-            if (!istermsOfUseAccepteded){
-              isValid = validateAndLogMessage("Terms of Use were not accepted", userName.get());
-            }
-            if(!isPrivacyPolicyAccepted){
-                isValid = validateAndLogMessage("Privacy Policy were not accepted", userName.get());
+            if (!isTermsOfUseAccepted || !isPrivacyPolicyAccepted){
+              User user = users.findByUsername(userName.get()).orElseThrow(SignupException::new);
+              log.error("Terms of Use or Privacy Policy were not accepted by %s", userName.get());
+              user.setNewRoles(ImmutableSet.of(new UserRole(user, domains.getGlobalDomain().orElseThrow(SignupException::new), Role.ROLE_NOT_ACCEPTED)));
             }
             if (!passwordEncoder.matches(password.get(), actualPassword)) {
                 isValid = validateAndLogMessage("Invalid password", userName.get());

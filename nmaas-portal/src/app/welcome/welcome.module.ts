@@ -16,7 +16,9 @@ import {AppMarketModule} from "../appmarket";
 import {UserService} from "../service";
 import {CompleteComponent} from "./complete/complete.component";
 import {ContentDisplayService} from "../service/content-display.service";
+import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
 import  {ReCaptchaModule} from "angular5-recaptcha";
+import {ShibbolethService} from "../service/shibboleth.service";
 
 @NgModule({
   declarations: [
@@ -27,6 +29,7 @@ import  {ReCaptchaModule} from "angular5-recaptcha";
     RegistrationComponent,
     ProfileComponent,
     CompleteComponent,
+    TermsAcceptanceComponent,
   ],
   imports: [
     FormsModule,
@@ -45,6 +48,7 @@ import  {ReCaptchaModule} from "angular5-recaptcha";
     RegistrationService,
     UserService,
     ChangelogService,
+      ShibbolethService,
       ContentDisplayService
   ]
 })

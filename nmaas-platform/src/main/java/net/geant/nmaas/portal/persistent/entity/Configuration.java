@@ -1,8 +1,18 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Configuration {
 
     @Id
@@ -10,27 +20,14 @@ public class Configuration {
     private Long id;
 
     @Column(name = "maintenance", nullable = false)
-    private Boolean maintenance = false;
+    private boolean maintenance = false;
 
-    public Configuration(){}
+    @Column(nullable = false)
+    private boolean ssoLoginAllowed = false;
 
-    public Configuration(boolean maintenance){
+    public Configuration(boolean maintenance, boolean ssoLoginAllowed){
         this.maintenance = maintenance;
+        this.ssoLoginAllowed = ssoLoginAllowed;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public boolean isMaintenance() {
-        return maintenance;
-    }
-
-    public void setMaintenance(boolean maintenance) {
-        this.maintenance = maintenance;
-    }
 }

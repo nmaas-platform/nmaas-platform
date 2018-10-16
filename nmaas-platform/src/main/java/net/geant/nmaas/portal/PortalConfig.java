@@ -1,7 +1,9 @@
 package net.geant.nmaas.portal;
 
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
@@ -13,10 +15,10 @@ import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +32,12 @@ import java.util.Optional;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
 public class PortalConfig {
 
-	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public PortalConfig(PasswordEncoder passwordEncoder){
+		this.passwordEncoder = passwordEncoder;
+	}
 	
 	@Bean
 	public InitializingBean insertDefaultUsers() {
@@ -43,6 +49,12 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
+			@Value("${admin.password}")
+			String adminPassword;
+
+			@Value("${admin.email}")
+			String adminEmail;
+
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws ProcessingException {
@@ -50,13 +62,17 @@ public class PortalConfig {
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
-					addUser("admin", "admin", Role.ROLE_SUPERADMIN);
+					addUser("admin", adminPassword, adminEmail, Role.ROLE_SUPERADMIN);
 				}
 			}
 
-			private void addUser(String username, String password, Role role) {								
-				User user = new User(username, true, passwordEncoder.encode(password), domains.getGlobalDomain().get(), role, true, true);
-				userRepository.save(user);
+			private void addUser(String username, String password, String email, Role role) {
+				Optional<Domain> globalDomain = domains.getGlobalDomain();
+				if(globalDomain.isPresent()) {
+					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
+					user.setEmail(email);
+					userRepository.save(user);
+				}
 			}
 						
 		};
@@ -75,29 +91,26 @@ public class PortalConfig {
 			@Override
 			@Transactional
 			public void afterPropertiesSet() {
-
 				Optional<Content> defaultTermsOfUse = contentRepository.findByName("tos");
 				if(!defaultTermsOfUse.isPresent()){
 					try {
 						addContentToDatabase("tos", "Terms of use", readContent("classpath:tos.txt"));
-					}catch (IOException e){
-						throw new ProcessingException("Init error: Terms of use file does not exists.");
+					}catch (IOException err){
+						throw new ProcessingException(err.getMessage());
 					}
 				}
-
 				Optional<Content> defaultPrivacyPolicy = contentRepository.findByName("pp");
 				if(!defaultPrivacyPolicy.isPresent()){
 					try {
 						addContentToDatabase("pp", "Privacy Policy", readContent("classpath:pp.txt"));
-					}catch (IOException e){
-						throw new ProcessingException("Init error: Privacy Policy file does not exists.");
+					}catch (IOException err){
+						throw new ProcessingException(err.getMessage());
 					}
 				}
 			}
 
 			private String readContent(String file) throws IOException {
-				Resource resource = resourceLoader.getResource(file);
-				return new String(IOUtils.toString(resource.getInputStream(), "utf-8"));
+				return IOUtils.toString(resourceLoader.getResource(file).getInputStream(), "utf-8");
 			}
 
 			private void addContentToDatabase(String name, String title, String content){
@@ -117,13 +130,16 @@ public class PortalConfig {
 			@Transactional
 			public void afterPropertiesSet() throws Exception {
 				try {
-					net.geant.nmaas.portal.persistent.entity.Configuration configuration = configurationManager.getConfiguration();
-					if(configuration.isMaintenance()){
+					ConfigurationView configuration = configurationManager.getConfiguration();
+					if(configuration.isMaintenance())
 						configuration.setMaintenance(false);
-					}
+					if(configuration.isSsoLoginAllowed())
+						configuration.setSsoLoginAllowed(true);
+					configurationManager.updateConfiguration(configuration.getId(), configuration);
+
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new net.geant.nmaas.portal.persistent.entity.Configuration(false));
+					configurationManager.addConfiguration(new ConfigurationView(false, false));
 				}
 			}
 		};

@@ -1,6 +1,10 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.dcn.deployment.entities.*;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -18,9 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
@@ -39,7 +40,7 @@ public class DcnRepositoryManagerTest {
 
     @Before
     public void populateRepositories() {
-        appDeploymentRepository.save(new AppDeployment(DEPLOYMENT_ID, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME));
+        appDeploymentRepository.save(new AppDeployment(DEPLOYMENT_ID, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME, true, 20));
     }
 
     @After

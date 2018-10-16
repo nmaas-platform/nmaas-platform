@@ -21,9 +21,6 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public abstract class BasePrepareDeploymentEnvTest {
 
     @Autowired
@@ -59,6 +56,7 @@ public abstract class BasePrepareDeploymentEnvTest {
                 deploymentId,
                 DEPLOYMENT_NAME,
                 DOMAIN,
+                20,
                 prepareTestComposeFileTemplate(composeFileTemplatePath));
         serviceInfo.setHost(dockerHost);
         serviceInfo.setDockerComposeService(dockerComposeService());

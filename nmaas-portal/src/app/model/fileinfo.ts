@@ -1,6 +1,6 @@
 export class FileInfo {
    constructor(
-        public id: Number, 
+        public id: number,
         public filename: string,
         public contentType: string) {
    }    

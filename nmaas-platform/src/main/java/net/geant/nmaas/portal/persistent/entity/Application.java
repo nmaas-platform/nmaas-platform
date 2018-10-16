@@ -35,7 +35,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-public class Application implements Serializable {
+public class  Application implements Serializable {
 
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
@@ -61,9 +61,12 @@ public class Application implements Serializable {
 	@Basic(fetch=FetchType.LAZY)
 	@Lob
 	private String fullDescription;
-	
+
 	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
 	private ConfigTemplate configTemplate;
+
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.LAZY)
+	private ConfigTemplate additionalParametersTemplate;
 	
 	@ManyToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "application_id"), inverseJoinColumns=@JoinColumn(name="tag_id"))
@@ -82,7 +85,7 @@ public class Application implements Serializable {
 		this.name = name;
 	}
 
-	protected Application(Long id, String name) {
+	public Application(Long id, String name) {
 		this(name);
 		this.id = id;
 	}

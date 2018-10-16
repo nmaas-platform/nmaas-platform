@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.security;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import lombok.NoArgsConstructor;
@@ -19,11 +20,15 @@ import net.geant.nmaas.portal.service.UserService;
 @NoArgsConstructor
 public class ApiPermissionEvaluator implements PermissionEvaluator {
 	
-	@Autowired
 	private UserService users;
 	
+	private AclService aclService;
+
 	@Autowired
-	AclService aclService;
+	public ApiPermissionEvaluator(UserService userService, AclService aclService){
+		this.users = userService;
+		this.aclService = aclService;
+	}
 
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -34,25 +39,17 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 	public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType,
 			Object permission) {
 				
-		if(authentication == null || authentication.getName() == null || targetType == null || permission == null || !(permission instanceof String))
+		if(authentication == null || authentication.getName() == null || targetType == null || !(permission instanceof String))
 			return false;
 						
-		String targetName;
 		String permissionStr = (String)permission;
-		
-		if(targetType instanceof String)
-			targetName = targetType;
-		else
-			targetName = targetType.getClass().getSimpleName();
-		targetName = targetName.toLowerCase();
-								
-		User user = users.findByUsername(authentication.getName()).get();
-		if(user == null)
+		Optional<User> user = users.findByUsername(authentication.getName());
+		if(!user.isPresent())
 			return false;
 		
 		Permissions[] perms = convertToPermissions(permissionStr);
 		
-		return aclService.isAuthorized(user.getId(), targetId, targetType, perms);		
+		return aclService.isAuthorized(user.get().getId(), targetId, targetType, perms);
 	}
 
 	private Permissions[] convertToPermissions(String permissionStr) {
@@ -62,7 +59,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 		String[] permArray = (permissionStr != null ? permissionStr.trim().split(",") : null); 
 		if(permArray != null) {
 			for(String perm : permArray)
-				if(perm != null || perm.trim().length() > 0)
+				if(perm != null && perm.trim().length() > 0)
 					perms.add(Permissions.valueOf(perm));
 		}
 		

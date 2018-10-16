@@ -7,7 +7,6 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +47,7 @@ public class ConfigurationControllerTest extends BaseControllerTest {
 
     @Test
     public void shouldAddNewConfiguration() throws Exception {
-        Configuration configuration = new Configuration(true);
+        ConfigurationView configuration = new ConfigurationView(true, false);
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
@@ -66,12 +65,12 @@ public class ConfigurationControllerTest extends BaseControllerTest {
         MvcResult mvcPostResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
-                .content(new ObjectMapper().writeValueAsString(new Configuration(false)))
+                .content(new ObjectMapper().writeValueAsString(new ConfigurationView(false, false)))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
         Long id = Long.parseLong(mvcPostResult.getResponse().getContentAsString());
-        Configuration configuration = new Configuration(true);
+        ConfigurationView configuration = new ConfigurationView(true, false);
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX+"/{id}",id)
                 .contentType(MediaType.APPLICATION_JSON)

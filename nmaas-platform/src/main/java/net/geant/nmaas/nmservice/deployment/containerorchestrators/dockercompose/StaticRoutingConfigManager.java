@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.inventory.network.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
@@ -16,15 +16,11 @@ import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Profile("env_docker-compose")
 @Log4j2
@@ -36,7 +32,7 @@ class StaticRoutingConfigManager {
     private DockerComposeCommandExecutor composeCommandExecutor;
 
     @Autowired
-    public StaticRoutingConfigManager(DomainNetworkAttachPointRepository customerNetworks, DockerNetworkResourceManager dockerNetworkResourceManager, DockerComposeServiceRepositoryManager nmServiceRepositoryManager, DockerComposeCommandExecutor composeCommandExecutor) {
+    StaticRoutingConfigManager(DomainNetworkAttachPointRepository customerNetworks, DockerNetworkResourceManager dockerNetworkResourceManager, DockerComposeServiceRepositoryManager nmServiceRepositoryManager, DockerComposeCommandExecutor composeCommandExecutor) {
         this.customerNetworks = customerNetworks;
         this.dockerNetworkResourceManager = dockerNetworkResourceManager;
         this.nmServiceRepositoryManager = nmServiceRepositoryManager;
@@ -44,7 +40,6 @@ class StaticRoutingConfigManager {
     }
 
     @Loggable(LogLevel.INFO)
-    @Transactional
     void configure(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
         DockerComposeNmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         DomainNetworkAttachPoint customerNetwork = customerNetworks.findByDomain(service.getDomain())

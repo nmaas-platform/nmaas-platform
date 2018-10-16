@@ -1,7 +1,16 @@
-		<footer class="footer">
-			<a style="float:left;padding-left:15px;cursor:pointer" (click)="modal.show()" class="text-left">Version {{gitInfo?.buildVersion}}</a>
-			<a style="float:right;padding-right:15px;cursor:pointer" (click)="router.navigate(['/changelog'])" *ngIf="!checkURL()">Changelog</a>
-			<p style="text-align:center">GEANT NMaaS AppMarket (c) 2017-2018 <a href="http://geant.net">GEANT</a></p>
+		<footer class="footer col-lg-12" id="global-footer">
+			<div class="container-fluid">
+				<div class="col-lg-4 col-md-4"></div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-center" >
+                    <p style="text-align:center; vertical-align: text-bottom;"><a href="http://geant.org" target="_blank" rel="nofollow"><img class="img-footer" src="assets/images/geant-logo-small.png" alt="GEANT"></a></p>
+					<p>NMaaS @Geant 2017-2018</p>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="global-footer-version">
+					<a (click)="modal.show()" class="text-right">Version {{gitInfo?.buildVersion}}</a>
+					<br *ngIf="!checkURL()">
+                    <a (click)="changeLog.show()" *ngIf="!checkURL()">Changelog</a>
+                </div>
+			</div>
 		</footer>
 
 		<nmaas-modal>
@@ -17,6 +26,7 @@
 				</div>
 			</div>
 			<div class="nmaas-modal-footer">
-				<button class="btn btn-danger center-block" (click)="this.modal.hide()">Go back</button>
+				<button class="btn btn-primary text-center center-block" (click)="this.modal.hide()">Close</button>
 			</div>
 		</nmaas-modal>
+<app-modal-changelog></app-modal-changelog>

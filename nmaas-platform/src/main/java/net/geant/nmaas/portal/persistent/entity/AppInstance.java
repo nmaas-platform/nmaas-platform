@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -41,6 +42,7 @@ public class AppInstance extends DomainAware implements Serializable {
 	
 	@Basic(fetch=FetchType.LAZY)
 	@Lob
+	@Type(type = "text")
 	String configuration;
 
 	@CreatedDate
@@ -49,7 +51,7 @@ public class AppInstance extends DomainAware implements Serializable {
 	
 	@CreatedBy
 	@ManyToOne(fetch=FetchType.LAZY)
-	User owner;
+	private User owner;
 	
 	@Basic
 	Identifier internalId;

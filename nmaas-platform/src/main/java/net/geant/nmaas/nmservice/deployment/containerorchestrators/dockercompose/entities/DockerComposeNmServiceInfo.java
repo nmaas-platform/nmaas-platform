@@ -1,5 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -12,9 +14,9 @@ import javax.persistence.OneToOne;
 
 /**
  * Network Management Service deployment information for application deployed with Docker Compose.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 public class DockerComposeNmServiceInfo extends NmServiceInfo {
 
@@ -24,13 +26,6 @@ public class DockerComposeNmServiceInfo extends NmServiceInfo {
     @ManyToOne(fetch = FetchType.EAGER)
     private DockerHost host;
 
-    public DockerHost getHost() {
-        return host;
-    }
-
-    public void setHost(DockerHost host) {
-        this.host = host;
-    }
     /**
      * Docker compose file template for this service.
      */
@@ -53,32 +48,8 @@ public class DockerComposeNmServiceInfo extends NmServiceInfo {
         super();
     }
 
-    public DockerComposeNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, DockerComposeFileTemplate dockerComposeFileTemplate) {
-        super(deploymentId, deploymentName, domain);
+    public DockerComposeNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, DockerComposeFileTemplate dockerComposeFileTemplate) {
+        super(deploymentId, deploymentName, domain, storageSpace);
         this.dockerComposeFileTemplate = dockerComposeFileTemplate;
-    }
-
-    public DockerComposeFileTemplate getDockerComposeFileTemplate() {
-        return dockerComposeFileTemplate;
-    }
-
-    public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
-        this.dockerComposeFileTemplate = dockerComposeFileTemplate;
-    }
-
-    public DockerComposeFile getDockerComposeFile() {
-        return dockerComposeFile;
-    }
-
-    public void setDockerComposeFile(DockerComposeFile dockerComposeFile) {
-        this.dockerComposeFile = dockerComposeFile;
-    }
-
-    public DockerComposeService getDockerComposeService() {
-        return dockerComposeService;
-    }
-
-    public void setDockerComposeService(DockerComposeService dockerComposeService) {
-        this.dockerComposeService = dockerComposeService;
     }
 }

@@ -1,0 +1,24 @@
+<nmaas-modal>
+  <div class="nmaas-modal-header">Changelog</div>
+  <div class="nmaas-modal-body" style="height: 30%; max-height: 45vh;overflow-y: auto;">
+    <div *ngFor="let version of changelog?.versions; let i = index">
+      <div class="card panel panel-default">
+        <h3 class="panel-title text-center">
+          <button class="btn btn-link" data-toggle="collapse" [attr.data-target]="'#collapse'+i.toString()">
+            {{version?.verNo}} {{version?.date}}
+          </button>
+        </h3>
+      </div>
+      <div [attr.id]="'collapse'+i.toString()" class="collapse" data-parent="#accordion">
+        <div class="card-body" *ngFor="let t of version?.topic">
+          <span>{{t?.title}}</span><br>
+          {{t?.tags}}<br>
+          {{t?.description}} <br>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nmaas-modal-footer">
+    <a class="btn btn-primary text-center center-block" (click)="modal.hide()">Close</a>
+  </div>
+  <nmaas-modal>

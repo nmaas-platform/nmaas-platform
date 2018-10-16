@@ -1,4 +1,5 @@
 import {ConfigTemplate} from './configtemplate';
+import {AppDeploymentSpec} from "./appdeploymentspec";
 
 export class Application {
   public id: number = undefined;
@@ -12,4 +13,6 @@ export class Application {
   public fullDescription: string = undefined;
   public tags: string[] = [];
   public configTemplate: ConfigTemplate = undefined;
+  public additionalParametersTemplate: ConfigTemplate = undefined;
+  public appDeploymentSpec: AppDeploymentSpec = undefined;
 }

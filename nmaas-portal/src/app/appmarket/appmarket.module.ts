@@ -28,6 +28,8 @@ import {ClustersModule} from "./admin/clusters/clusters.module";
 import {ClusterService} from "../service/cluster.service";
 import {GitlabModule} from "./admin/gitlab/gitlab.module";
 import {ConfigurationModule} from "./admin/configuration/configuration.module";
+import {MonitorModule} from "./admin/monitor/monitor.module";
+import {StorageServiceModule} from "ngx-webstorage-service";
 
 @NgModule({
   declarations: [
@@ -38,6 +40,7 @@ import {ConfigurationModule} from "./admin/configuration/configuration.module";
   ],
   imports: [
     FormsModule,
+    StorageServiceModule,
     CommonModule,
     RouterModule,
     SharedModule,
@@ -49,6 +52,7 @@ import {ConfigurationModule} from "./admin/configuration/configuration.module";
     PipesModule,
     ClustersModule,
       GitlabModule,
+      MonitorModule,
       ConfigurationModule
   ],
   exports: [

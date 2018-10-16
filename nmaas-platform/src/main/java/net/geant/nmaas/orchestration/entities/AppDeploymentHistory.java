@@ -10,7 +10,13 @@ import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name="app_deployment_history")
 public class AppDeploymentHistory {
@@ -33,37 +39,11 @@ public class AppDeploymentHistory {
     @Column(nullable = false)
     private AppDeploymentState currentState;
 
-    public AppDeploymentHistory(){}
-
     public AppDeploymentHistory(AppDeployment app, Date timestamp, AppDeploymentState previousState, AppDeploymentState currentState) {
         this.app = app;
         this.timestamp = timestamp;
         this.previousState = previousState;
         this.currentState = currentState;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public AppDeployment getApp() {
-        return app;
-    }
-
-    public void setApp(AppDeployment app) {
-        this.app = app;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
     }
 
     public String getPreviousStateString() {
@@ -73,23 +53,7 @@ public class AppDeploymentHistory {
         return this.previousState.lifecycleState().getUserFriendlyState();
     }
 
-    public AppDeploymentState getPreviousState(){
-        return this.previousState;
-    }
-
-    public void setPreviousState(AppDeploymentState previousState) {
-        this.previousState = previousState;
-    }
-
     public String getCurrentStateString() {
         return currentState.lifecycleState().getUserFriendlyState();
-    }
-
-    public AppDeploymentState getCurrentState(){
-        return this.currentState;
-    }
-
-    public void setCurrentState(AppDeploymentState currentState) {
-        this.currentState = currentState;
     }
 }

@@ -2,9 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import java.util.function.Predicate;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class HelmUpgradeCommand extends HelmCommand {
 
     private static final String UPGRADE = "upgrade";
@@ -16,7 +13,7 @@ public class HelmUpgradeCommand extends HelmCommand {
      * @param chartArchive complete path to the release chart archive
      * @return complete command object
      */
-    static HelmUpgradeCommand commandWithArchive(String releaseName, String chartArchive) {
+    static HelmUpgradeCommand commandWithArchive(String releaseName, String chartArchive, boolean enableTls) {
         if (releaseName == null || releaseName.isEmpty())
             throw new IllegalArgumentException("Name of the release can't be null or empty");
         if (chartArchive == null || chartArchive.isEmpty())
@@ -26,6 +23,9 @@ public class HelmUpgradeCommand extends HelmCommand {
                 .append(SPACE).append(UPGRADE)
                 .append(SPACE).append(releaseName)
                 .append(SPACE).append(chartArchive);
+        if(enableTls){
+            sb.append(SPACE).append(TLS);
+        }
         return new HelmUpgradeCommand(sb.toString());
     }
 

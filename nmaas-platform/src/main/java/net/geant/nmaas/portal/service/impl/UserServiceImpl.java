@@ -9,17 +9,20 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
+public class UserServiceImpl implements UserService {
 	
 	UserRepository userRepo;
 	
@@ -129,25 +132,53 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 
 	@Override
 	@Transactional
-	public void setTermsOfUseAcceptedFlag(Long userId, boolean touAccept){ userRepo.setTermsOfUseAcceptedFlag(userId, touAccept);}
+	public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag){ userRepo.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);}
+
+	@Override
+	@Transactional
+	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) throws MissingElementException{
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
+	}
 
 	@Override
 	@Transactional
 	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepo.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
 
-	protected void checkParam(Long id) {
+	@Override
+	@Transactional
+	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws MissingElementException{
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
+	}
+
+	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
 	
-	protected void checkParam(String username) {
+	private void checkParam(String username) {
 		if(username == null)
 			throw new IllegalArgumentException("username is null");
 	}
 	
-	protected void checkParam(User user) {
+	private void checkParam(User user) {
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
 	}
 
+	@Override
+	public String findAllUsersEmailWithAdminRole(){
+        String emails = "";
+        for(User user: findAll()){
+            for(UserRole userRole: user.getRoles()){
+                if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SUPERADMIN.name())){
+                    emails = emails + userRole.getUser().getEmail() + ",";
+                }
+            }
+        }
+        return emails;
+	}
 }

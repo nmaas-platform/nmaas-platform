@@ -11,6 +11,7 @@ public abstract class HelmCommand implements Command {
     protected static final String OPTION_NAMESPACE = "--namespace";
     protected static final String OPTION_NAME = "--name";
     protected static final String OPTION_VERSION = "--version";
+    protected static final String TLS = "--tls";
 
     protected String command;
 

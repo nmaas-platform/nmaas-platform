@@ -15,9 +15,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Log4j2
 public class AppConfigurationTask {
@@ -44,7 +41,8 @@ public class AppConfigurationTask {
             serviceConfiguration.configureNmService(
                     deploymentId,
                     appDeployment.getApplicationId(),
-                    appDeployment.getConfiguration());
+                    appDeployment.getConfiguration(),
+                    appDeployment.isConfigFileRepositoryRequired());
         } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

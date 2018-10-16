@@ -8,11 +8,11 @@ import static org.mockito.Matchers.any;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasicAuthControllerTest {
@@ -50,15 +50,5 @@ public class BasicAuthControllerTest {
     @Test(expected = AuthenticationException.class)
     public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
         basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false, true, true);
-    }
-
-    @Test(expected = AuthenticationException.class)
-    public void testValidateWithValidUserNameAndValidPasswordAndEnabledUserAndTouNotAccepted() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, false, true);
-    }
-
-    @Test(expected = AuthenticationException.class)
-    public void testValidateWithValidUserNameAndValidPasswordAndEnabledUserAndTouAcceptedAndPrivacyPolicyNotAccepted() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, true, false);
     }
 }
