@@ -6,10 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import net.geant.nmaas.portal.api.domain.ApplicationBrief;
 import net.geant.nmaas.portal.persistent.entity.Tag;
@@ -28,13 +25,13 @@ public class TagController {
 		this.tagRepo = tagRepo;
 		this.modelMapper = modelMapper;
 	}
-	
-	@RequestMapping(method=RequestMethod.GET)
+
+	@GetMapping
 	public Set<String> getAll() {
 		return tagRepo.findAll().stream().map(tag -> modelMapper.map(tag, String.class)).collect(Collectors.toSet());
 	}
-	
-	@RequestMapping(value="/{tagName}", method=RequestMethod.GET)
+
+	@GetMapping(value="/{tagName}")
 	public Set<ApplicationBrief> getByTag(@PathVariable("tagName") String tagName) {
 		Tag tag = tagRepo.findByName(tagName);
 		if(tag != null)

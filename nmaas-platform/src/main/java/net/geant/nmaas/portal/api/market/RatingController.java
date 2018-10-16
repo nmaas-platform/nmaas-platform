@@ -8,10 +8,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import net.geant.nmaas.portal.api.domain.ApiResponse;
 import net.geant.nmaas.portal.api.domain.AppRate;
@@ -34,22 +31,22 @@ public class RatingController extends AppBaseController {
 		this.ratingRepo = ratingRepo;
 		this.userRepo = userRepo;
 	}
-	
-	@RequestMapping(method=RequestMethod.GET)
+
+	@GetMapping
 	public AppRate getAppRating(@PathVariable("appId") Long appId) throws MissingElementException {
 		Application app = getApp(appId);
 		Double rate = ratingRepo.getApplicationRating(app.getId());
 		return (rate != null ? new AppRate(rate) : new AppRate());
 	}
-	
-	@RequestMapping(value="/my", method=RequestMethod.GET)
+
+	@GetMapping(value="/my")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRate getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) throws MissingElementException {
 		User user = getUser(principal.getName());
 		return getUserAppRating(appId, user.getId());
 	}
 
-	@RequestMapping(value="/user/{userId}", method=RequestMethod.GET)
+	@GetMapping(value="/user/{userId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	public AppRate getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) throws MissingElementException {
 		Application app = getApp(appId);
@@ -60,8 +57,8 @@ public class RatingController extends AppBaseController {
 		return appRate.isPresent() ? new AppRate(appRate.get().getRate()) : new AppRate();
 	}
 
-	
-	@RequestMapping(value="/my/{rate}", method=RequestMethod.POST)
+
+	@PostMapping(value="/my/{rate}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'WRITE')")
 	@Transactional
 	public ApiResponse setUserAppRating(@PathVariable("appId") Long appId, @PathVariable("rate") Integer rate, @NotNull Principal principal) throws MissingElementException {

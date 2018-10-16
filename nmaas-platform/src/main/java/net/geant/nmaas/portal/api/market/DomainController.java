@@ -39,6 +39,9 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
+	private static final String UNABLE_CHANGE_DOMAIN_ID_ERR_MSG = "Unable to change domain id";
+	private static final String DOMAIN_NOT_FOUND_ERR_MSG = "Domain not found.";
+
 	UserService userService;
 	
 	DomainService domainService;
@@ -92,9 +95,9 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
 		if(!domainId.equals(domainUpdate.getId()))
-			throw new ProcessingException("Unable to change domain id");
+			throw new ProcessingException(UNABLE_CHANGE_DOMAIN_ID_ERR_MSG);
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERR_MSG));
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
@@ -114,9 +117,9 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_OPERATOR')")
 	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
 		if(!domainId.equals(domainUpdate.getId())){
-			throw new ProcessingException("Unable to change domain id");
+			throw new ProcessingException(UNABLE_CHANGE_DOMAIN_ID_ERR_MSG);
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERR_MSG));
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
 		try {
@@ -133,9 +136,9 @@ public class DomainController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SUPERADMIN')")
 	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
 		if(!domainId.equals(domainUpdate.getId())){
-			throw new ProcessingException("Unable to change domain id");
+			throw new ProcessingException(UNABLE_CHANGE_DOMAIN_ID_ERR_MSG);
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERR_MSG));
 		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		try{
 			domainService.updateDomain(domain);
@@ -164,7 +167,7 @@ public class DomainController extends AppBaseController {
 	@Transactional(readOnly = true)	
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	public Domain getDomain(@PathVariable Long domainId) throws MissingElementException {	
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERR_MSG));
 		return modelMapper.map(domain, Domain.class);
 	}
 	

@@ -2,9 +2,7 @@ package net.geant.nmaas.portal.api.configuration;
 
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
-import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.service.ConfigurationManager;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

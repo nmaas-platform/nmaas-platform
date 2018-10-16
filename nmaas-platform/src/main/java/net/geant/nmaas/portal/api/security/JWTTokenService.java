@@ -7,8 +7,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.jsonwebtoken.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

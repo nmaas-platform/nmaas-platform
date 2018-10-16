@@ -34,8 +34,8 @@ public class AppCommentsController extends AppBaseController {
 		this.commentRepo = commentRepo;
 		this.userRepo = userRepo;
 	}
-			
-	@RequestMapping(method=RequestMethod.GET)
+
+	@GetMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
 	public List<Comment> getComments(@PathVariable(value="appId", required=true) Long appId, Pageable pageable) throws MissingElementException {
 		Application app = getApp(appId);
@@ -54,9 +54,8 @@ public class AppCommentsController extends AppBaseController {
 												return c;}
 											).collect(Collectors.toList());
 	}
-	
-	
-	@RequestMapping(method=RequestMethod.POST)
+
+	@PostMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
 	@Transactional
 	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) throws MissingElementException, ProcessingException {

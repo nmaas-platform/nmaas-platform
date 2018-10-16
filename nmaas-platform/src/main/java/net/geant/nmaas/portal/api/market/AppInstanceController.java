@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -45,6 +44,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class AppInstanceController extends AppBaseController {
 
+    private static final String MISSING_APP_INSTANCE_ERROR_MESSAGE = "Missing app instance";
+
     private AppLifecycleManager appLifecycleManager;
 
     private AppDeploymentMonitor appDeploymentMonitor;
@@ -66,7 +67,7 @@ public class AppInstanceController extends AppBaseController {
     @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
     @Transactional
     public List<AppInstance> getAllInstances(Pageable pageable) throws MissingElementException {
-        return instances.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAll(pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping("/apps/instances/my")
@@ -74,7 +75,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstance> getMyAllInstances(@NotNull Principal principal, Pageable pageable) throws MissingElementException {
         User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("User not found"));
 
-        return instances.findAllByOwner(user, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAllByOwner(user, pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping("/domains/{domainId}/apps/instances")
@@ -83,7 +84,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstance> getAllInstances(@PathVariable Long domainId, Pageable pageable) throws MissingElementException {
         net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
 
-        return instances.findAllByDomain(domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAllByDomain(domain, pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping(value = "/domains/{domainId}/apps/instances/my")
@@ -110,7 +111,7 @@ public class AppInstanceController extends AppBaseController {
         User user = users.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException("User not found"));
 
-        return instances.findAllByOwner(user, domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAllByOwner(user, domain, pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
@@ -129,7 +130,6 @@ public class AppInstanceController extends AppBaseController {
     public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
                                 @NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException, ProcessingException {
         Application app = getApp(appInstanceSubscription.getApplicationId());
-        User user = getUser(principal.getName());
 
         net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 
@@ -160,7 +160,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSING_APP_INSTANCE_ERROR_MESSAGE);
         }
     }
 
@@ -174,7 +174,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             appLifecycleManager.removeApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSING_APP_INSTANCE_ERROR_MESSAGE);
         }
     }
 
@@ -199,7 +199,7 @@ public class AppInstanceController extends AppBaseController {
 		try {
 			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
 		} catch (Throwable e) {
-			throw new ProcessingException("Missing app instance");
+			throw new ProcessingException(MISSING_APP_INSTANCE_ERROR_MESSAGE);
 		}
 	}
 
@@ -234,7 +234,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             this.appLifecycleManager.restartApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSING_APP_INSTANCE_ERROR_MESSAGE);
         }
     }
 
@@ -248,7 +248,7 @@ public class AppInstanceController extends AppBaseController {
             state = appDeploymentMonitor.state(appInstance.getInternalId());
             previousState = appDeploymentMonitor.previousState(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSING_APP_INSTANCE_ERROR_MESSAGE);
         }
 
         return prepareAppInstanceStatus(appInstance.getId(), state, previousState);
@@ -259,8 +259,6 @@ public class AppInstanceController extends AppBaseController {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.readTree(json);
             return true;
-        } catch (JsonProcessingException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }

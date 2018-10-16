@@ -9,23 +9,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/apps")
 public class ApplicationController extends AppBaseController {
-	
-	@RequestMapping(method= RequestMethod.GET)
+
+	@GetMapping
 	@Transactional
 	public List<ApplicationBrief> getApplications() {
 		return applications.findAll().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
 	}
-	
-	@RequestMapping(method=RequestMethod.POST)
+
+	@PostMapping
 	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) Application appRequest) {
@@ -34,8 +31,8 @@ public class ApplicationController extends AppBaseController {
 		applications.update(app);
 		return new Id(app.getId());
 	}
-	
-	@RequestMapping(value="/{appId}", method=RequestMethod.GET)
+
+	@GetMapping(value="/{appId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
 	public Application getApplication(@PathVariable(value = "appId", required=true) Long id) throws MissingElementException {
