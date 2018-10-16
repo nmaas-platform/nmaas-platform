@@ -21,6 +21,8 @@ import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateService} from "@ngx-translate/core";
+import {TranslateLoaderImpl} from "./service/translate-loader-impl.service";
+
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -58,7 +60,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
       loader: {
           provide: TranslateLoader,
           useFactory: HttpLoaderFactory,
-          deps: [HttpClient]
+          deps: [HttpClient, AppConfigService]
       }
     })
   ],
@@ -81,8 +83,8 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
 })
 export class AppModule { }
 
-export function HttpLoaderFactory(httpClient: HttpClient) {
+export function HttpLoaderFactory(httpClient: HttpClient, appConfig: AppConfigService) {
     // return new TranslateHttpLoader(httpClient);// Use this if you want to get the language json from local asset folder
-  return new TranslateHttpLoader(httpClient, 'http://localhost:9000/api/content/language/', '.json');
+  return new TranslateLoaderImpl(httpClient, appConfig);
 }
 
