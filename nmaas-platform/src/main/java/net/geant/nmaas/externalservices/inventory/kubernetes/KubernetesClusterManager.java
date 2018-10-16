@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 public class KubernetesClusterManager implements KClusterApiManager, KClusterHelmManager, KClusterIngressManager,
         KClusterDeploymentManager, KNamespaceService {
 
+    private static final String NMAAS_NAMESPACE_PREFIX = "nmaas-ns-";
+
     private KubernetesClusterRepository repository;
     private DomainService domainService;
     private ModelMapper modelMapper;
@@ -191,9 +193,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     public KCluster getClusterById(Long id) {
-        return modelMapper.map(
-                repository.findById(id).orElseThrow(() ->
-                        new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."))
+        return modelMapper.map(repository.findById(id).orElseThrow(() -> new KubernetesClusterNotFoundException(clusterNotFoundMessage(id)))
                 , KCluster.class);
     }
 
@@ -231,7 +231,7 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     public void updateCluster(Long id, KCluster updatedKubernetesCluster) {
         Optional<KCluster> existingKubernetesCluster = repository.findById(id);
         if (!existingKubernetesCluster.isPresent())
-            throw new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository.");
+            throw new KubernetesClusterNotFoundException(clusterNotFoundMessage(id));
         else {
             updatedKubernetesCluster.setId(id);
             updatedKubernetesCluster.validate();
@@ -241,9 +241,12 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     public void removeCluster(Long id) {
-        KCluster cluster = repository.findById(id).
-                orElseThrow(() -> new KubernetesClusterNotFoundException("Kubernetes cluster with id " + id + " not found in repository."));
+        KCluster cluster = repository.findById(id).orElseThrow(() -> new KubernetesClusterNotFoundException(clusterNotFoundMessage(id)));
         repository.delete(cluster);
+    }
+
+    private String clusterNotFoundMessage(Long id) {
+        return String.format("Kubernetes cluster with id %s not found in repository.", id);
     }
 
 }

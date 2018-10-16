@@ -2,8 +2,6 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.Map;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -31,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -119,7 +119,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeApplication(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public void removeApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
     }
 
@@ -137,7 +137,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void restartApplication(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public void restartApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRestartActionEvent(this, deploymentId));
     }
 }
