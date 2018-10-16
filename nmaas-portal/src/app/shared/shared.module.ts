@@ -29,7 +29,6 @@ import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails
 import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
-import { ShibbolethDetailsComponent } from './admin/shibboleth/details/shibboleth-details.component';
 import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
 import {TranslateModule} from '@ngx-translate/core';
 
@@ -64,7 +63,6 @@ import {TranslateModule} from '@ngx-translate/core';
     AppElementComponent,
     AppListComponent,
     ApplicationsViewComponent,
-      ShibbolethDetailsComponent,
       ClusterDetailsComponent,
       GitlabDetailsComponent,
       ModalInfoTermsComponent,
@@ -94,12 +92,8 @@ import {TranslateModule} from '@ngx-translate/core';
     ApplicationsViewComponent,
     ClusterDetailsComponent,
       GitlabDetailsComponent,
-      ShibbolethDetailsComponent,
       ModalInfoTermsComponent,
       ModalInfoPolicyComponent
   ]
 })
 export class SharedModule {}
-// export function HttpLoaderFactory(httpClient: HttpClient) {
-//     return new TranslateHttpLoader(httpClient);
-// }

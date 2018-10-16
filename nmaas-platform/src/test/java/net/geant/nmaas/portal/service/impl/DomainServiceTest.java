@@ -44,7 +44,7 @@ public class DomainServiceTest {
     public void setup(){
         validator = new DefaultCodenameValidator("[\\p{Alnum}_]{2,8}");
         domainService = new DomainServiceImpl(validator, domainRepository, userService, userRoleRepo, dcnRepositoryManager);
-        ((DomainServiceImpl) domainService).GLOBAL_DOMAIN = "GLOBAL";
+        ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
     @Test

@@ -9,10 +9,10 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -181,6 +181,26 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public Boolean getUseInClusterGitLabInstance() {
         return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
+    }
+
+    @Override
+    public String getSMTPServerHostname(){
+        return loadSingleCluster().getDeployment().getSmtpServerHostname();
+    }
+
+    @Override
+    public Integer getSMTPServerPort(){
+        return loadSingleCluster().getDeployment().getSmtpServerPort();
+    }
+
+    @Override
+    public Optional<String> getSMTPServerUsername(){
+        return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerUsername());
+    }
+
+    @Override
+    public Optional<String> getSMTPServerPassword(){
+        return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerPassword());
     }
 
     private KCluster loadSingleCluster() {

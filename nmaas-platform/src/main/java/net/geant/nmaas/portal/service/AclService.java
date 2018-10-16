@@ -11,7 +11,7 @@ public interface AclService {
 		WRITE,
 		DELETE,
 		OWNER		
-	};
+	}
 	
 	
 	boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions perm);

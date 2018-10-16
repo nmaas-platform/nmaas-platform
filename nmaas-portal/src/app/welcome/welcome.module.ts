@@ -21,6 +21,7 @@ import {ReCaptchaModule} from 'angular5-recaptcha';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {HttpClient} from '@angular/common/http';
 import {HttpLoaderFactory} from '../app.module';
+import {ShibbolethService} from "../service/shibboleth.service";
 
 @NgModule({
   declarations: [
