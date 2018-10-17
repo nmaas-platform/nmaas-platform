@@ -184,5 +184,23 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application"
+  },
+  "MONITOR": {
+    "TITLE": "Monitor service",
+    "SERVICE_NAME": "Nom du service",
+    "LAST_CHECK": "Dernier contrôle",
+    "LAST_SUCCESS": "Dernier succès",
+    "CHECK_INTERVAL": "Intervalle de vérification",
+    "ADD_JOB_BUTTON": "Ajouter un travail",
+    "VIEW_SETTINGS_BUTTON": "Afficher les paramètres",
+    "CHECK_NOW_BUTTON": "Vérifier maintenant",
+    "EDIT_SETTINGS_BUTTON": "Modifier les paramètres",
+    "REMOVE_BUTTON": "Supprimer"
+  },
+  "PORTAL_CONFIGURATION": {
+    "TITLE": "Configuration du portail",
+    "MAINTENANCE": "Maintenance",
+    "ALLOW_SSO_LOGIN": "Autoriser la connexion SSO",
+    "SUBMIT_BUTTON": "Soumettre"
   }
 }

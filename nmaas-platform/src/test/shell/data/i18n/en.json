@@ -184,5 +184,23 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Go to app"
+  },
+  "MONITOR": {
+    "TITLE": "Monitor service",
+    "SERVICE_NAME": "Service name",
+    "LAST_CHECK": "Last check",
+    "LAST_SUCCESS": "Last success",
+    "CHECK_INTERVAL": "Check interval",
+    "ADD_JOB_BUTTON": "Add job",
+    "VIEW_SETTINGS_BUTTON": "View settings",
+    "CHECK_NOW_BUTTON": "Check now",
+    "EDIT_SETTINGS_BUTTON": "Edit settings",
+    "REMOVE_BUTTON": "Remove"
+  },
+  "PORTAL_CONFIGURATION": {
+    "TITLE": "Portal configuration",
+    "MAINTENANCE": "Maintenance",
+    "ALLOW_SSO_LOGIN": "Allow SSO login",
+    "SUBMIT_BUTTON": "Submit"
   }
 }

@@ -8,15 +8,17 @@ import {AuthModule} from "../../../auth/auth.module";
 import {PipesModule} from "../../../pipe/pipes.module";
 import {FormsModule} from "@angular/forms";
 import {SharedModule} from "../../../shared";
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
     imports: [
-        CommonModule,
-        RouterModule,
-        AuthModule,
-        PipesModule,
-        FormsModule,
-        SharedModule
+    CommonModule,
+    RouterModule,
+    AuthModule,
+    PipesModule,
+    FormsModule,
+    SharedModule,
+    TranslateModule.forChild()
     ],
     providers: [
         MonitorService
