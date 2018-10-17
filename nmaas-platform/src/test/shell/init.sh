@@ -205,3 +205,15 @@ curl -X POST $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --he
 echo
 echo Get all subscriptions
 curl -X GET $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --header "Accept: application/json" | python -m json.tool
+
+
+echo
+echo ---------------------
+echo Create english language content
+curl -X POST $API_URL/i18n/en.json --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/en.json
+echo
+echo Create french language content
+curl -X POST $API_URL/i18n/fr.json --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/fr.json
+echo
+echo Create polish language content
+curl -X POST $API_URL/i18n/pl.json --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json

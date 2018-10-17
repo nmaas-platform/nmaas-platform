@@ -1,8 +1,11 @@
 package net.geant.nmaas.portal.api.info;
 
+import net.geant.nmaas.portal.api.domain.Domain;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,20 +23,14 @@ public class ContentController {
 
     private ContentRepository contentRepo;
 
+    private InternationalizationRepository internationalizationRepository;
+
     private ModelMapper modelMapper;
 
-    @Value("classpath:i18n/en.json")
-    private Resource englishContent;
-
-    @Value("classpath:i18n/fr.json")
-    private Resource frenchContent;
-
-    @Value("classpath:i18n/pl.json")
-    private Resource polishContent;
-
     @Autowired
-    public ContentController(ContentRepository contentRepo, ModelMapper modelMapper){
+    public ContentController(ContentRepository contentRepo, InternationalizationRepository internationalizationRepository, ModelMapper modelMapper){
         this.contentRepo = contentRepo;
+        this.internationalizationRepository = internationalizationRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -46,18 +43,11 @@ public class ContentController {
 
     @GetMapping("/language/{language}")
     @ResponseStatus(HttpStatus.OK)
-    public String getContents(@PathVariable("language") String language) throws IOException {
-        String content = "";
-        if (language.equalsIgnoreCase("en.json")) {
-            content = readAsString(englishContent);
-        }
-        if (language.equalsIgnoreCase("fr.json")) {
-            content = readAsString(frenchContent);
-        }
-        if (language.equalsIgnoreCase("pl.json")) {
-            content = readAsString(polishContent);
-        }
-        return content;
+    public String getLanguage(@PathVariable("language") String language) {
+        return internationalizationRepository
+                .findByLanguageOrderByIdDesc(language)
+                .map(content -> content.getContent())
+                .orElseThrow(() -> new RuntimeException("language content not available"));
     }
 
     private String readAsString(Resource resource) throws IOException {
