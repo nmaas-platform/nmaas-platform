@@ -40,7 +40,7 @@ public class AppDeploymentRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateState(Identifier deploymentId, AppDeploymentState currentState) throws InvalidDeploymentIdException {
+    public void updateState(Identifier deploymentId, AppDeploymentState currentState) {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         addChangeOfStateToHistory(appDeployment, appDeployment.getState(), currentState);
         appDeployment.setState(currentState);
@@ -48,19 +48,19 @@ public class AppDeploymentRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public AppDeploymentState loadState(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public AppDeploymentState loadState(Identifier deploymentId) {
         return repository.getStateByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String loadStateErrorMessage(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public String loadStateErrorMessage(Identifier deploymentId) {
         return repository.getErrorMessageByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) throws InvalidDeploymentIdException {
+    public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         appDeployment.setConfiguration(configuration);
         repository.save(appDeployment);
@@ -78,7 +78,7 @@ public class AppDeploymentRepositoryManager {
         return repository.findByDomainAndState(domain, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
     }
 
-    public String loadDomainByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public String loadDomainByDeploymentId(Identifier deploymentId) {
         return repository.getDomainByDeploymentId(deploymentId)
                 .orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
     }
@@ -87,7 +87,7 @@ public class AppDeploymentRepositoryManager {
         repository.deleteAll();
     }
 
-    public List<AppDeploymentHistory> getAppStateHistoryByDeploymentId(Identifier deploymentId) throws InvalidDeploymentIdException{
+    public List<AppDeploymentHistory> getAppStateHistoryByDeploymentId(Identifier deploymentId){
         AppDeployment app = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
         return app.getHistory();
     }
@@ -96,7 +96,7 @@ public class AppDeploymentRepositoryManager {
         appDeployment.getHistory().add(new AppDeploymentHistory(appDeployment, new Date(), previousState, currentState));
     }
 
-    public void reportErrorStatusAndSaveInEntity(Identifier deploymentId , String error) throws InvalidDeploymentIdException {
+    public void reportErrorStatusAndSaveInEntity(Identifier deploymentId , String error) {
         AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("Deployment with id " + deploymentId + " not found in the repository. "));
         appDeployment.setErrorMessage(error);
         repository.save(appDeployment);

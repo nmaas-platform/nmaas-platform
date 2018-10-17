@@ -13,7 +13,7 @@ public interface IngressControllerManager {
      * @param domain name of the client domain for this deployment
      * @throws IngressControllerManipulationException if any exception is thrown during ingress processing
      */
-    void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException;
+    void deployIngressControllerIfMissing(String domain);
 
     /**
      * Deletes an ingress controller for given domain.
@@ -21,6 +21,6 @@ public interface IngressControllerManager {
      * @param domain name of the client domain for this deployment
      * @throws IngressControllerManipulationException if any exception is thrown during ingress processing
      */
-    void deleteIngressController(String domain) throws IngressControllerManipulationException;
+    void deleteIngressController(String domain);
 
 }
