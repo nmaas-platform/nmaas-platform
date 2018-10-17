@@ -27,19 +27,20 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name="docker_host")
+@Table(name = "docker_host")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DockerHost {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     /**
      * Unique name identifying this Docker host.
      */
     @EqualsAndHashCode.Include
+    @Column(unique = true, nullable = false)
     private String name;
 
     /**
