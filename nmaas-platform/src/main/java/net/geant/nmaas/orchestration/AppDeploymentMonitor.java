@@ -7,6 +7,7 @@ import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public interface AppDeploymentMonitor {
      * @return current state of the application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException;
+    AppLifecycleState state(Identifier deploymentId);
 
     /**
      * Retrieves the previous state of deployed application.
@@ -31,7 +32,7 @@ public interface AppDeploymentMonitor {
      * @return previous state of the application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    AppLifecycleState previousState(Identifier deploymentId) throws InvalidDeploymentIdException;
+    AppLifecycleState previousState(Identifier deploymentId);
 
     /**
      * Retrieves information on all deployments in the system.
@@ -49,7 +50,7 @@ public interface AppDeploymentMonitor {
      * @throws InvalidAppStateException if application deployment state {@link AppLifecycleState} is not the expected one
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    AppUiAccessDetails userAccessDetails(Identifier deploymentId) throws InvalidAppStateException, InvalidDeploymentIdException;
+    AppUiAccessDetails userAccessDetails(Identifier deploymentId);
 
     /**
      * Retrieves information about application deployment state transitions.
@@ -58,6 +59,6 @@ public interface AppDeploymentMonitor {
      * @return all of state changes of the application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any processed application
      */
-    List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) throws InvalidDeploymentIdException;
+    List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId);
 
 }

@@ -46,7 +46,7 @@ public interface AppLifecycleManager {
      *
      * @param deploymentId unique identifier of the deployed user application
      */
-    void removeApplication(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void removeApplication(Identifier deploymentId);
 
     /**
      * Updates already deployed user application to the latest or provided by user version available in the NMaaS Portal.
@@ -72,6 +72,6 @@ public interface AppLifecycleManager {
      * @param deploymentId unique identifier of the deployed user application
      * @throws InvalidDeploymentIdException if provided deploymentId does not match any deployed application
      */
-    void restartApplication(Identifier deploymentId) throws InvalidDeploymentIdException;
+    void restartApplication(Identifier deploymentId);
 
 }

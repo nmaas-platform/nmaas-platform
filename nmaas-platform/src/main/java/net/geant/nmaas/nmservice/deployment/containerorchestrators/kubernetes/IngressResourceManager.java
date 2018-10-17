@@ -26,7 +26,7 @@ public interface IngressResourceManager {
      * @param serviceExternalUrl service external URL
      * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
-    void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl) throws IngressResourceManipulationException;
+    void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl);
 
     /**
      * Deletes a rule from existing ingress resource.
@@ -35,7 +35,7 @@ public interface IngressResourceManager {
      * @param domain name of the client domain for this deployment
      * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
-    void deleteIngressRule(String serviceExternalUrl, String domain) throws IngressResourceManipulationException;
+    void deleteIngressRule(String serviceExternalUrl, String domain);
 
     /**
      * Deletes the entire ingress resource for given domain.
@@ -43,6 +43,6 @@ public interface IngressResourceManager {
      * @param domain name of the client domain for this deployment
      * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
-    void deleteIngressResource(String domain) throws IngressResourceManipulationException;
+    void deleteIngressResource(String domain);
 
 }

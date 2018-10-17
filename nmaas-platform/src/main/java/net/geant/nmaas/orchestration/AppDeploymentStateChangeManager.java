@@ -3,9 +3,7 @@ package net.geant.nmaas.orchestration;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppDeploymentErrorEvent;
@@ -16,7 +14,6 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +40,7 @@ public class AppDeploymentStateChangeManager {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
+    public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
@@ -90,7 +87,7 @@ public class AppDeploymentStateChangeManager {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public synchronized void notifyGenericError(AppDeploymentErrorEvent event) throws InvalidDeploymentIdException {
+    public synchronized void notifyGenericError(AppDeploymentErrorEvent event) {
         try{
             deploymentRepositoryManager.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
         }catch(Exception ex){
