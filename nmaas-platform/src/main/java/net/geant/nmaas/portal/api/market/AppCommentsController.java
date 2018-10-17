@@ -35,9 +35,9 @@ public class AppCommentsController extends AppBaseController {
 		this.userRepo = userRepo;
 	}
 			
-	@RequestMapping(method=RequestMethod.GET)
+	@GetMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
-	public List<Comment> getComments(@PathVariable(value="appId", required=true) Long appId, Pageable pageable) throws MissingElementException {
+	public List<Comment> getComments(@PathVariable(value="appId", required=true) Long appId, Pageable pageable) {
 		Application app = getApp(appId);
 		Page<net.geant.nmaas.portal.persistent.entity.Comment> page = commentRepo.findByApplication(app, pageable);
 		return page.getContent().stream().map(comment -> { 
@@ -56,10 +56,10 @@ public class AppCommentsController extends AppBaseController {
 	}
 	
 	
-	@RequestMapping(method=RequestMethod.POST)
+	@PostMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
 	@Transactional
-	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) throws MissingElementException, ProcessingException {
+	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) {
 		Application app = getApp(appId);
 
 		if(comment.getComment() == null || comment.getComment().isEmpty())
@@ -101,20 +101,20 @@ public class AppCommentsController extends AppBaseController {
 	@PostMapping(value="/{commentId}")
 	@PreAuthorize("hasPermission(null, 'comment', 'WRITE')")
 	@Transactional
-	public void editComment(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="commentId", required=true) Long commentId, @RequestBody(required=true) CommentRequest comment, Principal principal) throws MissingElementException, ProcessingException {
+	public void editComment(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="commentId", required=true) Long commentId, @RequestBody(required=true) CommentRequest comment, Principal principal) {
 		throw new ProcessingException("Comment editing not supported.");
 	}
 
 	@DeleteMapping(value="/{commentId}")
 	@PreAuthorize("hasPermission(#commentId, 'comment', 'DELETE')")
 	@Transactional
-	public void deleteComment(@PathVariable(value="appId") Long appId, @PathVariable(value="commentId") Long commentId) throws MissingElementException {
+	public void deleteComment(@PathVariable(value="appId") Long appId, @PathVariable(value="commentId") Long commentId) {
 		net.geant.nmaas.portal.persistent.entity.Comment comment = getComment(commentId);
 		comment.setDeleted(true);
 		commentRepo.save(comment);
 	}
 	
-	private net.geant.nmaas.portal.persistent.entity.Comment getComment(Long commentId) throws MissingElementException {
+	private net.geant.nmaas.portal.persistent.entity.Comment getComment(Long commentId) {
 		if (commentId == null)
 			throw new MissingElementException("Missing comment id." );
 		return commentRepo.findById(commentId).orElseThrow(() ->
