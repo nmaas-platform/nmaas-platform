@@ -99,12 +99,8 @@ task integrationTest(type: Test) {
 	afterTest { desc, result ->
 		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
 	}
-//	jacoco {
-//		append = true
-//		destinationFile = file("$buildDir/jacoco/test.exec")
-//	}
+	dependsOn(test)
 }
-integrationTest.dependsOn(test)
 
 jacoco {
 	toolVersion = "0.8.1"

@@ -15,16 +15,15 @@ task buildGUI(type: Exec) {
 	} else {
 		commandLine 'ng', 'build', '--base-href', '/', '--deploy-url', '/'
 	}	
-	
+	dependsOn(npm_install)
 }
-buildGUI.dependsOn(npm_install)
 
 task dist(type: Zip) {
-	from 'build/app' 
+	from 'build/app'
 	baseName project.name
 	version project.version
+	dependsOn(buildGUI)
 }
-buildGUI.doLast { tasks.dist.execute() }
 
 task testCoverage(type: Exec) {
 	println 'Testing with code coverage analysis'
@@ -35,8 +34,8 @@ task testCoverage(type: Exec) {
 		commandLine 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', '/'
 	}
 
+	dependsOn(npm_install)
 }
-testCoverage.dependsOn(npm_install)
 
 sonarqube {
     properties
@@ -49,6 +48,5 @@ sonarqube {
 		}
 }
 
-build.dependsOn(buildGUI)
+build.dependsOn(dist)
 build.dependsOn(testCoverage)
-build.dependsOn(npm_install)
