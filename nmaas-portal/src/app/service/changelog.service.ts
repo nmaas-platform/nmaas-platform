@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { HttpClient } from '@angular/common/http';
 import {GenericDataService} from "./genericdata.service";
 import {AppConfigService} from "./appconfig.service";
+import {GitInfo} from "../model/gitinfo";
 
 @Injectable()
 export class ChangelogService extends GenericDataService{
@@ -19,6 +19,6 @@ export class ChangelogService extends GenericDataService{
 	}
 
 	getGitInfo(){
-		return this.get<string[]>(this.url+'/git');
+		return this.get<GitInfo>(this.url+'/git');
 	}
 }
