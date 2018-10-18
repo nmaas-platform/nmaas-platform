@@ -46,7 +46,7 @@ public class AppDeploymentMonitorRestController {
      * @return list of deployments
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     public List<AppDeploymentView> listAllDeployments() {
         return deploymentMonitor.allDeployments().stream()
                 .map(d -> modelMapper.map(d, AppDeploymentView.class))
@@ -60,7 +60,7 @@ public class AppDeploymentMonitorRestController {
      * @return current deployment state
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @RequestMapping(value = "{deploymentId}/state", method = RequestMethod.GET)
     public AppLifecycleState loadDeploymentState(
             @PathVariable String deploymentId) throws InvalidDeploymentIdException {
@@ -75,7 +75,7 @@ public class AppDeploymentMonitorRestController {
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      * @throws InvalidAppStateException if deployment didn't complete yet
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @RequestMapping(value = "{deploymentId}/access", method = RequestMethod.GET)
     public AppUiAccessDetails loadDeploymentUserAccessInfo(
             @PathVariable String deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException {

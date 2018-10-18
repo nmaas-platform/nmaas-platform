@@ -63,7 +63,7 @@ public class AppInstanceController extends AppBaseController {
     }
 
     @GetMapping("/apps/instances")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public List<AppInstance> getAllInstances(Pageable pageable) throws MissingElementException {
         return instances.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());

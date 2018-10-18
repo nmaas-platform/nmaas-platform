@@ -59,7 +59,7 @@ public class AppTemplatePermissionCheckTest {
 
 	
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = atpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);
 		assertEquals(5, perms.size());

@@ -60,7 +60,7 @@ public class CommentPermissionCheckTest {
 	}
 
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = cpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
 		assertEquals(5, perms.size());

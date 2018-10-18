@@ -26,7 +26,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   constructor(protected authService: AuthService, protected domainService: DomainService, protected userData: UserDataService, protected appConfig: AppConfigService) {}
 
   ngOnInit() {
-      if(this.authService.hasRole('ROLE_SUPERADMIN')){
+      if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
         this.refresh = Observable.interval(10000).subscribe(next => {
             if(this.domainService.shouldUpdate()) {
                 this.updateDomains();
@@ -40,7 +40,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   }
 
   public updateDomains(): void {
-    if (this.authService.hasRole('ROLE_SUPERADMIN')) {
+    if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
       this.domains = this.domainService.getAll();
     } else {
       this.domains = this.domainService.getMyDomains();

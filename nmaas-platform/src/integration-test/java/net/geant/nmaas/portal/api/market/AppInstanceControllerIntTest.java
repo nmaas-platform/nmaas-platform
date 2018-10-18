@@ -59,7 +59,7 @@ public class AppInstanceControllerIntTest extends BaseControllerTest {
     public void shouldThrowAnExceptionWhenInputIsIncorrect() throws Exception{
         when(appInstanceRepository.findById(0L)).thenReturn(Optional.empty());
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart",0L)
-                .header("Authorization","Bearer " + getValidUserTokenFor(Role.ROLE_SUPERADMIN)))
+                .header("Authorization","Bearer " + getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN)))
                 .andExpect(status().is(404));
     }
 }

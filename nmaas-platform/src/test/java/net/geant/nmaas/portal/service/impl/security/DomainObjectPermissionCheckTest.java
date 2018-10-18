@@ -70,7 +70,7 @@ public class DomainObjectPermissionCheckTest {
 	}
 
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = dopch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(5, perms.size());

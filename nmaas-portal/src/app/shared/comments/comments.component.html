@@ -30,7 +30,7 @@
 						<div class="media-body">
 						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}}
                               <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(comment.id, false)">Reply</button>
-                              <span *ngIf="authService.hasRole('ROLE_SUPERADMIN') || authService.getUsername() === comment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span>
+                              <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === comment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span>
                           </h6>
 						  <p>{{comment.comment}}</p>
 							<div *ngIf="this.commentId === comment.id && !this.subComment && this.active">
@@ -59,7 +59,7 @@
 									<div class="media-body">
                                      <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}}
                                           <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">Reply</button>
-                                          <span *ngIf="authService.hasRole('ROLE_SUPERADMIN') || authService.getUsername() === subcomment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span>
+                                          <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === subcomment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span>
                                      </h6>
 									  <p>{{subcomment.comment}}</p>
 										<div *ngIf="this.commentId === subcomment.id && this.subComment && this.active">

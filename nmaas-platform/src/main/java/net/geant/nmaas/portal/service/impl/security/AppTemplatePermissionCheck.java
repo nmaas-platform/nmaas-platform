@@ -27,7 +27,7 @@ public class AppTemplatePermissionCheck extends BasePermissionCheck {
 	final protected Map<Role, Permissions[]> permMatrix = new HashMap<Role, Permissions[]>(); 
 	
 	public AppTemplatePermissionCheck() {
-		permMatrix.put(Role.ROLE_SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
+		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ});
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.READ});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] { Permissions.READ});

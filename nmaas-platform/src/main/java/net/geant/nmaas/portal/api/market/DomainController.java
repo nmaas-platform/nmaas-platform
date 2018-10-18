@@ -72,7 +72,7 @@ public class DomainController extends AppBaseController {
 	
 	@PostMapping
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) throws ProcessingException {
 		if(domainService.existsDomain(domainRequest.getName())) 
 			throw new ProcessingException("Domain already exists.");
@@ -89,7 +89,7 @@ public class DomainController extends AppBaseController {
 	
 	@PutMapping("/{domainId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
 		if(!domainId.equals(domainUpdate.getId()))
 			throw new ProcessingException("Unable to change domain id");
@@ -130,7 +130,7 @@ public class DomainController extends AppBaseController {
 
 	@PatchMapping("/{domainId}/dcn")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
 		if(!domainId.equals(domainUpdate.getId())){
 			throw new ProcessingException("Unable to change domain id");
@@ -154,7 +154,7 @@ public class DomainController extends AppBaseController {
 	
 	@DeleteMapping("/{domainId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	public void deleteDomain(@PathVariable Long domainId) throws MissingElementException {		
 		if(!domainService.removeDomain(domainId))
 			throw new MissingElementException("Unable to delete domain");

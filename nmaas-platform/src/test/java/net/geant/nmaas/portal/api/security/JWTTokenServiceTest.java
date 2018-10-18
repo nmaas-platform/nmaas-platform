@@ -56,7 +56,7 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_SYSTEM_ADMIN);
 		roles.add(Role.ROLE_USER);
 		User tester = new User("tester", true, "test123", new Domain(DOMAIN, DOMAIN), roles);
 		
@@ -76,7 +76,7 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testInvalidToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_SYSTEM_ADMIN);
 		roles.add(Role.ROLE_USER);
 		User tester = new User("tester", true, "test123", new Domain(DOMAIN, DOMAIN), roles);
 		
@@ -94,7 +94,7 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testValidateRefreshToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_SYSTEM_ADMIN);
 		roles.add(Role.ROLE_USER);
 		User tester = new User("tester", true, "test123", new Domain(DOMAIN, DOMAIN), roles);
 
