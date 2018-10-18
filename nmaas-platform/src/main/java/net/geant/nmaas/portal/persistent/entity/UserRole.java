@@ -53,6 +53,8 @@ public class UserRole {
 			throw new IllegalStateException("Domain is null");
 		if(role == null)
 			throw new IllegalStateException("Role is null");
+		if(role == Role.ROLE_SYSTEM_COMPONENT)
+			throw new IllegalStateException("Role cannot be assigned.");
 		id = new Id(user, domain, role);
 	}
 

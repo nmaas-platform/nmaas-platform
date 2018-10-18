@@ -343,6 +343,9 @@ public class UsersController {
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
 		Role role = userRole.getRole();
+
+		if(role == Role.ROLE_SYSTEM_COMPONENT)
+			throw new ProcessingException("Role cannot be assigned.");
 		
 		if(!domainId.equals(userRole.getDomainId()))
 			throw new ProcessingException("Invalid request domain");
@@ -455,10 +458,10 @@ public class UsersController {
 		}
     }
 
-    @GetMapping("/users/isAdmin")
+    @GetMapping("/users/isSystemComponent")
     @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void isAdmin(final Principal principal){
+    public void isSystemComponent(final Principal principal){
         log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
     }
 
