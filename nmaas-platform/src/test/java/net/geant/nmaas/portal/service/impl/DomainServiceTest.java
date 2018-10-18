@@ -189,6 +189,11 @@ public class DomainServiceTest {
         this.domainService.addMemberRole(1L, 1L, null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAddMemberSystemComponentRole() throws ObjectNotFoundException{
+        this.domainService.addMemberRole(1L, 1L, Role.ROLE_SYSTEM_COMPONENT);
+    }
+
     @Test
     public void shouldRemoveMemberRole() throws ObjectNotFoundException {
         Long domainId = 1L;

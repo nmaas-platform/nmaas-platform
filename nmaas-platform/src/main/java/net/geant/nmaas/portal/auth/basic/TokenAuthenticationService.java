@@ -58,7 +58,7 @@ public class TokenAuthenticationService {
         User user = User.builder().firstname("anonymous")
                 .lastname("anonymous")
                 .username("anonymous")
-                .roles(Arrays.asList(new UserRole(new User("anonymous"), new Domain("anonymous", "anonymous"), Role.ROLE_SYSTEM_ADMIN)))
+                .roles(Collections.singletonList(new UserRole(new User("anonymous"), new Domain("anonymous", "anonymous"), Role.ROLE_SYSTEM_COMPONENT)))
                 .build();
         return jwtTokenService.getToken(user);
     }
