@@ -10,12 +10,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 /**
  * Details of single application deployment in the system.
@@ -66,6 +68,8 @@ public class AppDeployment {
     private boolean configFileRepositoryRequired;
 
     /** Contains information about deployment fails */
+    @Lob
+    @Type(type = "text")
     private String errorMessage;
 
     /** Required storage space to be allocated for this particular instance in GB */

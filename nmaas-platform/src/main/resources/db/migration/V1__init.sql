@@ -28,7 +28,7 @@ create table app_deployment (
   deployment_id bytea(255) not null,
   deployment_name varchar(255) not null,
   domain varchar(255) not null,
-  error_message varchar(255),
+  error_message clob,
   state varchar(255) not null,
   storage_space integer,
   configuration_id bigint,
