@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 public enum Role {
-	ROLE_SUPERADMIN,
+	ROLE_SYSTEM_ADMIN,
 	ROLE_DOMAIN_ADMIN,
 	ROLE_OPERATOR,
 	ROLE_TOOL_MANAGER,

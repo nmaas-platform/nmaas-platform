@@ -37,21 +37,21 @@ public class GitLabController {
         this.modelMapper = modelMapper;
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping
     public List<GitLabView> listAllGitlabConfig(){
         return gitLabManager.getAllGitlabConfig();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping(value = "/{id}")
     public GitLabView getGitlabConfigById(@PathVariable("id") Long id) {
         return modelMapper.map(gitLabManager.getGitlabConfigById(id), GitLabView.class);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public Long addGitlabConfig (@RequestBody GitLabView newGitLabConfig) {
@@ -59,7 +59,7 @@ public class GitLabController {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateGitlabConfig(@PathVariable("id") Long id,
@@ -67,7 +67,7 @@ public class GitLabController {
         gitLabManager.updateGitlabConfig(id, updatedGitLabConfig);
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeGitlabConfig(@PathVariable("id") Long id) {

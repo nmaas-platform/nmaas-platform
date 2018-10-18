@@ -62,7 +62,7 @@ public class PortalConfig {
 				
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
-					addUser("admin", adminPassword, adminEmail, Role.ROLE_SUPERADMIN);
+					addUser("admin", adminPassword, adminEmail, Role.ROLE_SYSTEM_ADMIN);
 				}
 			}
 

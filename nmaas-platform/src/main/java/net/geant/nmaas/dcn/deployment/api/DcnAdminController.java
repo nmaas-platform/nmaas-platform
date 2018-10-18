@@ -26,7 +26,7 @@ public class DcnAdminController {
      * Lists all DCN instances represented by {@link DcnView} objects.
      * @return list of {@link DcnView} objects
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping
     public List<DcnView> listAllDcns() {
         return dcnRepositoryManager.loadAllNetworks().stream()

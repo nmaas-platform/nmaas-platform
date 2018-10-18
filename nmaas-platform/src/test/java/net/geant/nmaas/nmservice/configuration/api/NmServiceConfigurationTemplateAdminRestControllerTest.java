@@ -57,7 +57,7 @@ public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseC
 
     @Test
     public void shouldStoreAndLoadTemplate() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(post("/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)

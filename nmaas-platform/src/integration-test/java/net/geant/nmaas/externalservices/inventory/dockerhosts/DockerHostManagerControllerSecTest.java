@@ -28,7 +28,7 @@ public class DockerHostManagerControllerSecTest extends BaseControllerTest {
 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(get("/api/management/dockerhosts")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());

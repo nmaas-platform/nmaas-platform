@@ -45,7 +45,7 @@ public class DockerHostManagerController {
      * Lists all {@link DockerHost} instances represented by {@link DockerHostView} objects.
      * @return list of {@link DockerHostView} objects
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping
     public List<DockerHostView> listAllDockerHosts() {
         return dockerHostRepositoryManager.loadAll().stream()
@@ -59,7 +59,7 @@ public class DockerHostManagerController {
      * @return {@link DockerHostDetails} instance
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/{name}")
     public DockerHostDetails getDockerHost(
             @PathVariable("name") String name)
@@ -72,7 +72,7 @@ public class DockerHostManagerController {
      * @return {@link DockerHostDetails} instance
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/firstpreferred")
     public DockerHostDetails getPreferredDockerHost() {
         return modelMapper.map(dockerHostRepositoryManager.loadPreferredDockerHost(), DockerHostDetails.class);
@@ -84,7 +84,7 @@ public class DockerHostManagerController {
      * @throws DockerHostAlreadyExistsException when Docker host exists (HttpStatus.CONFLICT)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PostMapping(value = "", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addDockerHost(@RequestBody DockerHostDetails newDockerHost) {
@@ -98,7 +98,7 @@ public class DockerHostManagerController {
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PutMapping(value = "/{name}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateDockerHost(
@@ -113,7 +113,7 @@ public class DockerHostManagerController {
      * @throws DockerHostNotFoundException when Docker host does not exists (HttpStatus.NOT_FOUND)
      * @throws DockerHostInvalidException when invalid input (HttpStatus.NOT_ACCEPTABLE)
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @DeleteMapping("/{name}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeDockerHost(@PathVariable("name") String name) {

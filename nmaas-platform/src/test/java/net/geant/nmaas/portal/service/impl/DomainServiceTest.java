@@ -227,9 +227,9 @@ public class DomainServiceTest {
         User user = new User("user");
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findRolesByDomainAndUser(domain, user)).thenReturn(ImmutableSet.of(Role.ROLE_SUPERADMIN));
+        when(userRoleRepo.findRolesByDomainAndUser(domain, user)).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
         Set<Role> roleSet = this.domainService.getMemberRoles(domainId, userId);
-        assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SUPERADMIN)));
+        assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN)));
     }
 
     @Test
@@ -279,7 +279,7 @@ public class DomainServiceTest {
         Long userId = 1L;
         User user = new User("user");
         Domain domain = new Domain(1L, "testdom", "testdom");
-        user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, Role.ROLE_SUPERADMIN)));
+        user.setNewRoles(ImmutableSet.of(new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN)));
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Set<Domain> result = this.domainService.getUserDomains(userId);
         assertThat("Result mismatch", result.contains(domain));

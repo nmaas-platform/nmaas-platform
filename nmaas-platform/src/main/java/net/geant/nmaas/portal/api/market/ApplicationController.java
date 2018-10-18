@@ -26,7 +26,7 @@ public class ApplicationController extends AppBaseController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) Application appRequest) {
 		net.geant.nmaas.portal.persistent.entity.Application app = applications.create(appRequest.getName());

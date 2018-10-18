@@ -297,7 +297,7 @@ public class UserServiceImplTest {
 
         Domain domain = new Domain((long) 1, "test", "test");
         User user = User.builder().firstname("test").lastname("test").email("test1@email.com").build();
-        UserRole userRole = new UserRole(user, domain, Role.ROLE_SUPERADMIN);
+        UserRole userRole = new UserRole(user, domain, Role.ROLE_SYSTEM_ADMIN);
         userRoles.add(userRole);
 
         user.setRoles(userRoles);

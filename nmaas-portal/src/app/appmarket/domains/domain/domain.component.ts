@@ -58,7 +58,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
   protected submit(): void {
     if (!isUndefined(this.domainId)) {
-      this.authService.hasRole('ROLE_SUPERADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.authService.hasRole('ROLE_SYSTEM_ADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
       this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
     }

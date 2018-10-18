@@ -68,7 +68,7 @@ public class AppInstancePermissionCheckTest {
 	}
 
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = aipch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1_APP1.getId(), AppInstancePermissionCheck.APPINSTANCE);
 		assertEquals(5, perms.size());
