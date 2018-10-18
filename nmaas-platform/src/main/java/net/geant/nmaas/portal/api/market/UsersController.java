@@ -74,7 +74,7 @@ public class UsersController {
 	}
 
 	@GetMapping("/users")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<User> getUsers(Pageable pageable) {
 		return userService.findAll(pageable).getContent().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList());
 	}
@@ -85,7 +85,7 @@ public class UsersController {
 	}
 		
 	@GetMapping(value="/users/{userId}")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public User retrieveUser(@PathVariable("userId") Long userId) {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
 		return modelMapper.map(user, User.class);
@@ -93,7 +93,7 @@ public class UsersController {
 
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
 	public void updateUser(@PathVariable("userId") final Long userId,
 						   @RequestBody final UserRequest userRequest,
@@ -148,14 +148,14 @@ public class UsersController {
 	}
 	
 	@DeleteMapping(value="/users/{userId}")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void deleteUser(@PathVariable("userId") Long userId) {
 		throw new ProcessingException("User removing not supported.");
 	}
 	
 	@GetMapping("/users/{userId}/roles")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public Set<UserRole> getUserRoles(@PathVariable Long userId) {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 		return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRole.class)).collect(Collectors.toSet());
@@ -163,7 +163,7 @@ public class UsersController {
 
 	@DeleteMapping("/users/{userId}/roles")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
 	public void removeUserRole(@PathVariable final Long userId,
                                @RequestBody final UserRole userRole,
@@ -351,7 +351,7 @@ public class UsersController {
 		final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
 		if(domain.equals(globalDomain)) {
-			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
+			if(!(role == Role.ROLE_SYSTEM_ADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
 				throw new ProcessingException("Role cannot be assigned.");			
 		} else {
 			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
@@ -414,7 +414,7 @@ public class UsersController {
 	}
 
     @PutMapping("/users/status/{userId}")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
     public void setEnabledFlag(@PathVariable Long userId,
@@ -456,7 +456,7 @@ public class UsersController {
     }
 
     @GetMapping("/users/isAdmin")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void isAdmin(final Principal principal){
         log.info("User with name " + principal.getName() + " is an admin user, has validated the token");

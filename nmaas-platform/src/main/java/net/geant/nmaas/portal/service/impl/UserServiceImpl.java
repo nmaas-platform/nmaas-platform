@@ -174,7 +174,7 @@ public class UserServiceImpl implements UserService {
         String emails = "";
         for(User user: findAll()){
             for(UserRole userRole: user.getRoles()){
-                if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SUPERADMIN.name())){
+                if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())){
                     emails = emails + userRole.getUser().getEmail() + ",";
                 }
             }

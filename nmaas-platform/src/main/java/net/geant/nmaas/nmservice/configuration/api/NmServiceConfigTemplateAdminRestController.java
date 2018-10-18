@@ -34,7 +34,7 @@ public class NmServiceConfigTemplateAdminRestController {
      * Lists all {@link NmServiceConfigurationTemplate} stored in repository.
      * @return list of {@link NmServiceConfigurationTemplate} objects
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @GetMapping(value = "")
     public List<NmServiceConfigurationTemplate> listAllConfigurationTemplates() {
         return templates.findAll();
@@ -44,7 +44,7 @@ public class NmServiceConfigTemplateAdminRestController {
      * Stores new {@link NmServiceConfigurationTemplate} in repository.
      * @param configurationTemplate configuration template to be stored
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @PostMapping(value = "", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addConfigurationTemplate(

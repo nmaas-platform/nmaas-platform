@@ -6,7 +6,7 @@ import { ComponentMode } from '../../../shared';
 
 export const GitlabRoutes: Route[] = [
     { path: 'admin/gitlab', component: GitlabDetailsComponent, canActivate: [AuthGuard, RoleGuard],
-        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN', 'ROLE_OPERATOR']}},
+        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']}},
     { path: 'admin/gitlab/:id', component: GitlabDetailsComponent, canActivate: [AuthGuard, RoleGuard],
-        data: {mode: ComponentMode.EDIT, roles: ['ROLE_SUPERADMIN', 'ROLE_OPERATOR']}}
+        data: {mode: ComponentMode.EDIT, roles: ['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']}}
 ];

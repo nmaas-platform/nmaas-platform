@@ -64,9 +64,9 @@ public class UserRepositoryTest {
 	}
 
 	@Test
-	public void shouldCreateTwoUsersOneWithRoleUserAndSecondWithRoleSuperAdminAndAddSecondUserRoleUser() {
+	public void shouldCreateTwoUsersOneWithRoleUserAndSecondWithRoleSystemAdminAndAddSecondUserRoleUser() {
 		User tester = new User("tester", true, "test123", domains.findDomain(DOMAIN).get(), Role.ROLE_USER);
-		User admin = new User("testadmin", true, "testadmin123", domains.getGlobalDomain().get(), Role.ROLE_SUPERADMIN);
+		User admin = new User("testadmin", true, "testadmin123", domains.getGlobalDomain().get(), Role.ROLE_SYSTEM_ADMIN);
 		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);

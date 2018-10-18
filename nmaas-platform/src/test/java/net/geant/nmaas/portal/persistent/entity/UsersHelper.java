@@ -10,7 +10,7 @@ public class UsersHelper {
 	public final static Domain DOMAIN2 = new Domain(3l, "domain2", "D2");
 
 	
-	public final static User ADMIN = new User(1l, "admin", true, GLOBAL, Role.ROLE_SUPERADMIN);
+	public final static User ADMIN = new User(1l, "admin", true, GLOBAL, Role.ROLE_SYSTEM_ADMIN);
 	public final static User TOOL_MANAGER = new User(2l , "toolman", true, GLOBAL, Role.ROLE_TOOL_MANAGER);
 	
 	public final static User DOMAIN1_ADMIN = new User(3l, "domain1_admin", true, DOMAIN1, Role.ROLE_DOMAIN_ADMIN);

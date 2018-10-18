@@ -82,7 +82,7 @@ public class UsersControllerIntTest extends BaseControllerTest {
         domains.createDomain(DOMAIN, DOMAIN);
 
         //Add extra users, default admin is already there
-        User admin = userRepo.save(new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_SUPERADMIN)));
+        User admin = userRepo.save(new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_SYSTEM_ADMIN)));
 
         User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
         userStub.setFirstname("Test");
@@ -178,7 +178,7 @@ public class UsersControllerIntTest extends BaseControllerTest {
     @Test
     public void testGetRolesAsString(){
         Role role1 = Role.ROLE_USER;
-        Role role2 = Role.ROLE_SUPERADMIN;
+        Role role2 = Role.ROLE_SYSTEM_ADMIN;
         Role role3 = Role.ROLE_DOMAIN_ADMIN;
         UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), role1);
         UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), role2);
@@ -189,7 +189,7 @@ public class UsersControllerIntTest extends BaseControllerTest {
         userRoles.add(userRole2);
         userRoles.add(userRole3);
 
-        assertEquals("ROLE_USER, ROLE_SUPERADMIN, ROLE_DOMAIN_ADMIN", userController.getRoleAsString(userRoles));
+        assertEquals("ROLE_USER, ROLE_SYSTEM_ADMIN, ROLE_DOMAIN_ADMIN", userController.getRoleAsString(userRoles));
     }
 
     @Test

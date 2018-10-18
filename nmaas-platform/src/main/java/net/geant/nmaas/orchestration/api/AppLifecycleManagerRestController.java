@@ -50,7 +50,7 @@ public class AppLifecycleManagerRestController {
      * @param applicationId identifier of the application
      * @return unique identifier of the application deployment
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PostMapping(params = {"domain", "applicationid"})
     @ResponseStatus(code = HttpStatus.CREATED)
     public Identifier deployApplication(
@@ -68,7 +68,7 @@ public class AppLifecycleManagerRestController {
      * @param configuration initial application configuration provided by the user
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @PostMapping(value = "/{deploymentId}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.OK)
     public void applyConfiguration(
@@ -83,7 +83,7 @@ public class AppLifecycleManagerRestController {
      * @param deploymentId unique identifier of the application deployment
      * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @DeleteMapping(value = "/{deploymentId}")
     @ResponseStatus(code = HttpStatus.OK)
     public void removeApplication(

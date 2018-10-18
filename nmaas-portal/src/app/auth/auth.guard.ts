@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.auth.isLogged()) {
       this.maintenanceService.getConfiguration().subscribe(value => {
-         if (!this.auth.hasRole('ROLE_SUPERADMIN') && value.maintenance) {
+         if (!this.auth.hasRole('ROLE_SYSTEM_ADMIN') && value.maintenance) {
              this.auth.logout();
              this.router.navigate(['/welcome/login']);
              return false;

@@ -60,7 +60,7 @@ public class UsersControllerTest {
 		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
-		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SUPERADMIN);
+		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
 		admin.setId(2L);
 		userList = Arrays.asList(tester, admin);
 
@@ -303,15 +303,15 @@ public class UsersControllerTest {
 	public void shouldNotAddGlobalRoleToCustomDomain(){
 		UserRole userRole = new UserRole();
 		userRole.setDomainId(DOMAIN.getId());
-		userRole.setRole(Role.ROLE_SUPERADMIN);
+		userRole.setRole(Role.ROLE_SYSTEM_ADMIN);
 		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 	}
 
 	@Test
 	public void shouldRemoveUserRole(){
-		String userRole = "ROLE_SUPERADMIN";
+		String userRole = "ROLE_SYSTEM_ADMIN";
 		usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
-		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SUPERADMIN);
+		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SYSTEM_ADMIN);
 	}
 
 	@Test(expected = MissingElementException.class)

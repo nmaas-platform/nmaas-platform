@@ -47,7 +47,7 @@ export class UsersListComponent implements OnInit {
 
     let users: Observable<User[]> = null;
 
-    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {      
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])) {      
       users = this.userService.getAll(this.domainId);
     } else if (!isNullOrUndefined(this.domainId) && this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
       users = this.userService.getAll(this.domainId);
