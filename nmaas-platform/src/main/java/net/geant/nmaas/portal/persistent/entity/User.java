@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.persistent.entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,12 +28,14 @@ import java.util.Set;
 @Setter
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
+	@EqualsAndHashCode.Include
 	@Column(unique = true, nullable = false)
 	private String username;
 	
@@ -112,31 +115,5 @@ public class User {
 	public void setNewRoles(Set<UserRole> roles) {
 		this.roles.addAll(roles);
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username)) {
-            return false;
-        }
-		return true;
-	}	
 
 }

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class KubernetesRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateKServiceExternalUrl(Identifier deploymentId, String serviceExternalUrl) throws InvalidDeploymentIdException {
+    public void updateKServiceExternalUrl(Identifier deploymentId, String serviceExternalUrl) {
         KubernetesNmServiceInfo serviceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         serviceInfo.setServiceExternalUrl(serviceExternalUrl.toLowerCase());
         repository.save(serviceInfo);

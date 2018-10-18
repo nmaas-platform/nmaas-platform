@@ -1,17 +1,18 @@
 package net.geant.nmaas.monitor;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.monitor.repositories.MonitorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class MonitorManager {
@@ -33,7 +34,7 @@ public class MonitorManager {
 
     public void updateMonitorEntry(MonitorEntryView monitorEntryView){
         MonitorEntry monitorEntry = this.repository.findByServiceName(monitorEntryView.getServiceName())
-                .orElseThrow(() -> new MonitorEntryNotFound(String.format("Monitor entry for %s cannot be found", monitorEntryView.getServiceName().getName())));
+                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(monitorEntryView.getServiceName().getName())));
         validateMonitorEntryUpdate(monitorEntryView);
         monitorEntryView.setId(monitorEntry.getId());
         this.repository.save(modelMapper.map(monitorEntryView, MonitorEntry.class));
@@ -41,7 +42,7 @@ public class MonitorManager {
 
     public void updateMonitorEntry(Date lastCheck, ServiceType serviceType, MonitorStatus status){
         MonitorEntry monitorEntry = this.repository.findByServiceName(serviceType)
-                .orElseThrow(() -> new MonitorEntryNotFound(String.format("Monitor entry for %s cannot be found", serviceType.getName())));
+                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceType.getName())));
         validateMonitorEntryUpdate(lastCheck, status);
         monitorEntry.setStatus(status);
         monitorEntry.setLastCheck(lastCheck);
@@ -65,7 +66,7 @@ public class MonitorManager {
     public MonitorEntryView getMonitorEntries(String serviceName){
         return this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
                 .map(entity -> this.modelMapper.map(entity, MonitorEntryView.class))
-                .orElseThrow(() -> new MonitorEntryNotFound(String.format("Monitor entry for %s cannot be found", serviceName)));
+                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName)));
     }
 
     private void validateMonitorEntryUpdate(Date lastCheck, MonitorStatus status){
@@ -91,5 +92,9 @@ public class MonitorManager {
             throw new IllegalStateException("Time format cannot be null");
         if(monitorEntryView.getServiceName() == null || repository.existsByServiceName(monitorEntryView.getServiceName()))
             throw new IllegalStateException("Service name is null or already created");
+    }
+
+    private String monitorEntryNotFoundMessage(String service) {
+        return String.format("Monitor entry for %s cannot be found", service);
     }
 }
