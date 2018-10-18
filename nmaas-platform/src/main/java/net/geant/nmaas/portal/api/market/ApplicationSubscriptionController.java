@@ -42,7 +42,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
 		try {
-			net.geant.nmaas.portal.persistent.entity.ApplicationSubscription appSub = appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
+			net.geant.nmaas.portal.persistent.entity.ApplicationSubscription appSub;
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
 		}
@@ -54,7 +54,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@Transactional
 	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
 		try {
-			net.geant.nmaas.portal.persistent.entity.ApplicationSubscription appSub = appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
+			net.geant.nmaas.portal.persistent.entity.ApplicationSubscription appSub;
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
 		}		

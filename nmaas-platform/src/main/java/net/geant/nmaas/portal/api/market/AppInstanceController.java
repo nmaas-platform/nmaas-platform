@@ -53,6 +53,8 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
+    private static final String MISSINGAPPINSTANCE = "Missing app instance;"
+
     @Autowired
     public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
                                  ApplicationInstanceService applicationInstanceService, DomainService domains) {
@@ -129,7 +131,6 @@ public class AppInstanceController extends AppBaseController {
     public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
                                 @NotNull Principal principal, @PathVariable Long domainId) throws MissingElementException, ProcessingException {
         Application app = getApp(appInstanceSubscription.getApplicationId());
-        User user = getUser(principal.getName());
 
         net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
 
@@ -160,7 +161,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSINGAPPINSTANCE);
         }
     }
 
@@ -174,7 +175,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             appLifecycleManager.removeApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSINGAPPINSTANCE);
         }
     }
 
@@ -199,7 +200,7 @@ public class AppInstanceController extends AppBaseController {
 		try {
 			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
 		} catch (Throwable e) {
-			throw new ProcessingException("Missing app instance");
+			throw new ProcessingException(MISSINGAPPINSTANCE);
 		}
 	}
 
@@ -234,7 +235,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             this.appLifecycleManager.restartApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSINGAPPINSTANCE);
         }
     }
 
@@ -248,7 +249,7 @@ public class AppInstanceController extends AppBaseController {
             state = appDeploymentMonitor.state(appInstance.getInternalId());
             previousState = appDeploymentMonitor.previousState(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException("Missing app instance");
+            throw new ProcessingException(MISSINGAPPINSTANCE);
         }
 
         return prepareAppInstanceStatus(appInstance.getId(), state, previousState);
