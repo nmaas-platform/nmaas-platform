@@ -456,7 +456,7 @@ public class UsersController {
     }
 
     @GetMapping("/users/isAdmin")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void isAdmin(final Principal principal){
         log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
