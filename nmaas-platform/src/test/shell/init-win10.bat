@@ -120,6 +120,14 @@ rem echo.
 rem curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\pmacct\pmacct3.jpg;type=image/png"  %API_URL%/apps/3/screenshots
 
 echo.
+echo App6
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app6-prometheus.json
+echo.
+echo App6 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\prometheus.svg;type=image/svg+xml" %API_URL%/apps/4/logo
+echo.
+
+echo.
 echo ---------------------
 echo Get all apps
 curl -X GET %API_URL%/apps --header "Authorization: Bearer %token%"

@@ -1,0 +1,64 @@
+{
+	"name":"Prometheus",
+	"version":"2.4.0",
+	"license":"Apache 2 License",
+	"briefDescription":"Power your metrics and alerting with a leading open-source monitoring solution.",
+	"tags": [ "monitoring", "alerting"],
+	"fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.\nPrometheus's main features are:\n->a multi-dimensional data model with time series data identified by metric name and key/value pairs\n->a flexible query language to leverage this dimensionality\n->no reliance on distributed storage; single server nodes are autonomous\n->time series collection happens via a pull model over HTTP\n->pushing time series is supported via an intermediary gateway\n->targets are discovered via service discovery or static configuration\n->multiple modes of graphing and dashboarding support",
+	"wwwUrl": "https://prometheus.io/",
+	"sourceUrl": "https://github.com/prometheus/prometheus",
+	"issuesUrl": "https://github.com/prometheus/prometheus/issues",
+	"appDeploymentSpec": {
+		"supportedDeploymentEnvironments": [
+			"DOCKER_COMPOSE",
+			"KUBERNETES"
+		],
+		"defaultStorageSpace":20,
+		"configFileRepositoryRequired":true
+	},
+	"configTemplate": {
+		"template": {
+			"schema": {
+				"type": "object",
+				"properties": {
+					"targets": {
+						"title": "Targets",
+						"type": "array",
+						"minItems": 1,
+						"items": {
+							"type": "object",
+							"properties": {
+								"jobName": {
+									"title": "Job name",
+									"type": "string",
+								},
+								"ipAddress": {
+									"title": "IP address",
+									"type": "string",
+									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+								},
+								"label": {
+									"title": "Label",
+									"type": "string",
+								}
+							}
+						}
+					}
+				},
+				"required": [
+					"targets"
+				]
+			},
+			"form": [
+				{
+					"key":"targets",
+					"items":[
+						"targets[]",
+						"targets[].ipAddress",
+						"targets[].label"
+					]
+				}
+			]
+		}
+	}
+}
