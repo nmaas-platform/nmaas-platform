@@ -12,7 +12,7 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.4.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.6.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
 	}
@@ -74,6 +74,7 @@ dependencies {
     compile ('org.apache.logging.log4j:log4j-core:2.11.1')
 	compile ('org.apache.logging.log4j:log4j-jul:2.11.1')
 	compile ('org.projectlombok:lombok:1.18.2')
+	compile ("org.flywaydb:flyway-core:5.2.0")
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
