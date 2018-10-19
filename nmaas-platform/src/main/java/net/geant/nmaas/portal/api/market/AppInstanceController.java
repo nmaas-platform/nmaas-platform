@@ -53,7 +53,7 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
-    private static final String MISSINGAPPINSTANCE = "Missing app instance";
+    private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
     @Autowired
     public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
@@ -161,7 +161,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             this.appLifecycleManager.redeployApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException(MISSINGAPPINSTANCE);
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
 
@@ -175,7 +175,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             appLifecycleManager.removeApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException(MISSINGAPPINSTANCE);
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
 
@@ -200,7 +200,7 @@ public class AppInstanceController extends AppBaseController {
 		try {
 			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
 		} catch (Throwable e) {
-			throw new ProcessingException(MISSINGAPPINSTANCE);
+			throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
 		}
 	}
 
@@ -235,7 +235,7 @@ public class AppInstanceController extends AppBaseController {
         try {
             this.appLifecycleManager.restartApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException(MISSINGAPPINSTANCE);
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }
 
@@ -249,7 +249,7 @@ public class AppInstanceController extends AppBaseController {
             state = appDeploymentMonitor.state(appInstance.getInternalId());
             previousState = appDeploymentMonitor.previousState(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
-            throw new ProcessingException(MISSINGAPPINSTANCE);
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
 
         return prepareAppInstanceStatus(appInstance.getId(), state, previousState);
