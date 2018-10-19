@@ -75,14 +75,6 @@ public class JWTTokenServiceTest {
 	}
 
 	@Test
-	public void shouldGetValidTokenForSystemComponent(){
-		String token = tokenService.getSystemComponentToken();
-		Claims claims = tokenService.getClaims(token);
-		Object scopes = claims.get("scopes");
-		assertThat("Wrong role assigned", scopes.toString().equals(Role.ROLE_SYSTEM_COMPONENT.toString()));
-	}
-
-	@Test
 	public void testInvalidToken() {
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(Role.ROLE_SYSTEM_ADMIN);

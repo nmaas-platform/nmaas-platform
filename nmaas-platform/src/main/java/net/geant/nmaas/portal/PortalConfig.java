@@ -52,6 +52,12 @@ public class PortalConfig {
 			@Value("${admin.password}")
 			String adminPassword;
 
+			@Value("${system_component.password}")
+			String systemComponentPassword;
+
+			@Value("${system_component.email}")
+			String systemComponentMail;
+
 			@Value("${admin.email}")
 			String adminEmail;
 
@@ -63,6 +69,11 @@ public class PortalConfig {
 				Optional<User> admin = userRepository.findByUsername("admin");
 				if(!admin.isPresent()) {
 					addUser("admin", adminPassword, adminEmail, Role.ROLE_SYSTEM_ADMIN);
+				}
+
+				Optional<User> systemComponent = userRepository.findByUsername("system_component");
+				if(!systemComponent.isPresent()){
+					addUser("system_component", systemComponentPassword, systemComponentMail, Role.ROLE_SYSTEM_COMPONENT);
 				}
 			}
 

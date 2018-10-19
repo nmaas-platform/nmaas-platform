@@ -76,12 +76,17 @@ public class UsersController {
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<User> getUsers(Pageable pageable) {
-		return userService.findAll(pageable).getContent().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList());
+		return userService.findAll(pageable).getContent().stream()
+				.filter(user->user.getRoles().stream().noneMatch(role -> role.getRole() == Role.ROLE_SYSTEM_COMPONENT))
+				.map(user -> modelMapper.map(user, User.class))
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping(value="/users/roles")	
 	public List<Role> getRoles() {
-		return Arrays.asList(Role.values());
+		return Arrays.stream(Role.values())
+				.filter(role -> !role.equals(Role.ROLE_SYSTEM_COMPONENT))
+				.collect(Collectors.toList());
 	}
 		
 	@GetMapping(value="/users/{userId}")
@@ -173,6 +178,9 @@ public class UsersController {
 
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
+
+		if(userRole.getRole() == Role.ROLE_SYSTEM_COMPONENT)
+			throw new ProcessingException("Role cannot be assigned.");
 
 		Domain domain = null;
 		if (userRole.getDomainId() == null) 
@@ -394,6 +402,9 @@ public class UsersController {
 
 		final Domain domain = getDomain(domainId);
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+
+		if(role == Role.ROLE_SYSTEM_COMPONENT)
+			throw new ProcessingException("Role cannot be removed.");
 				
 		try {
 			domainService.removeMemberRole(domain.getId(), user.getId(), role);

@@ -1,7 +1,10 @@
 package net.geant.nmaas.portal.auth.basic;
 
+import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +21,14 @@ public class TokenAuthenticationService {
 	private final static String AUTH_HEADER="Authorization";
 	private final static String AUTH_METHOD="Bearer";
 	
-	@Autowired
 	private JWTTokenService jwtTokenService;
-	
-	public TokenAuthenticationService(JWTTokenService jwtTokenService) {
+
+	private UserRepository userRepository;
+
+	@Autowired
+	public TokenAuthenticationService(JWTTokenService jwtTokenService, UserRepository userRepository) {
 		this.jwtTokenService = jwtTokenService;
+		this.userRepository = userRepository;
 	}
 
 	public Authentication getAuthentication(HttpServletRequest httpRequest) {
@@ -50,7 +56,8 @@ public class TokenAuthenticationService {
 	}
 
 	public String getAnonymousAccessToken(){
-        return jwtTokenService.getSystemComponentToken();
+		User systemComponent = userRepository.findByUsername("system_component").orElseThrow(() -> new AuthenticationException("User cannot be found"));
+        return jwtTokenService.getToken(systemComponent);
     }
 
 }

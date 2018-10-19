@@ -40,17 +40,6 @@ public class JWTTokenService {
 		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 		.compact();
 	}
-
-	public String getSystemComponentToken(){
-		return Jwts.builder()
-				.setSubject("system_component")
-				.setIssuer(jwtSettings.getIssuer())
-				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
-				.claim("scopes", Role.ROLE_SYSTEM_COMPONENT)
-				.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
-				.compact();
-	}
 	
 	public String getRefreshToken(User user) {
 		if(user == null || StringUtils.isEmpty(user.getUsername())) 

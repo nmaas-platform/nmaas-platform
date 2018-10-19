@@ -76,7 +76,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldReturnRoles(){
 		List<Role> roles = usersController.getRoles();
-		assertThat("Number of roles mismatch", roles.size() == 9);
+		assertThat("Number of roles mismatch", roles.size() == 8);
 	}
 
 	@Test
