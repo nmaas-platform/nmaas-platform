@@ -15,11 +15,11 @@ import {AuthService} from "../../../auth/auth.service";
 export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   private userId: number;
-  private user: User;
+  public user: User;
 
   constructor(private userService: UserService, private router: Router,
     private route: ActivatedRoute,
-    private location: Location, private authService:AuthService) {
+    private location: Location, public authService:AuthService) {
     super();
   }
 

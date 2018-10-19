@@ -19,7 +19,7 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
 
   private formats: typeof TimeFormat = TimeFormat;
 
-  private monitorEntry: MonitorEntry;
+  public monitorEntry: MonitorEntry;
 
   private errMsg: string;
 
