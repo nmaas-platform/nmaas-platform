@@ -53,7 +53,7 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
-    private static final String MISSINGAPPINSTANCE = "Missing app instance;"
+    private static final String MISSINGAPPINSTANCE = "Missing app instance";
 
     @Autowired
     public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
