@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.security;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -71,6 +72,14 @@ public class JWTTokenServiceTest {
 		List<Map<String,String>> list = (List<Map<String,String>>)scopes;
 		assertEquals(2, list.size());
 		
+	}
+
+	@Test
+	public void shouldGetValidTokenForSystemComponent(){
+		String token = tokenService.getSystemComponentToken();
+		Claims claims = tokenService.getClaims(token);
+		Object scopes = claims.get("scopes");
+		assertThat("Wrong role assigned", scopes.toString().equals(Role.ROLE_SYSTEM_COMPONENT.toString()));
 	}
 
 	@Test

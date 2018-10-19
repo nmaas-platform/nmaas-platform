@@ -1,12 +1,7 @@
 package net.geant.nmaas.portal.auth.basic;
 
-import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.Role;
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +38,7 @@ public class TokenAuthenticationService {
 		Set<SimpleGrantedAuthority> authorities = null;
 
 		if (scopes != null && scopes instanceof List<?>) {
-			authorities = new HashSet<SimpleGrantedAuthority>();
+			authorities = new HashSet<>();
 			for (Map<String, String> authority : (List<Map<String, String>>) scopes)
 				for (String role : authority.values())
 					authorities.add(new SimpleGrantedAuthority(role.substring(role.indexOf(":") + 1)));
@@ -55,12 +50,7 @@ public class TokenAuthenticationService {
 	}
 
 	public String getAnonymousAccessToken(){
-        User user = User.builder().firstname("anonymous")
-                .lastname("anonymous")
-                .username("anonymous")
-                .roles(Collections.singletonList(new UserRole(new User("anonymous"), new Domain("anonymous", "anonymous"), Role.ROLE_SYSTEM_COMPONENT)))
-                .build();
-        return jwtTokenService.getToken(user);
+        return jwtTokenService.getSystemComponentToken();
     }
 
 }

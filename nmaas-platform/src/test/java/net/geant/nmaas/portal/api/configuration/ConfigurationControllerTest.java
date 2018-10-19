@@ -1,8 +1,7 @@
 package net.geant.nmaas.portal.api.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.portal.BaseControllerTest;
-import net.geant.nmaas.portal.persistent.entity.Configuration;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class ConfigurationControllerTest extends BaseControllerTest {
+public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Autowired
     private ConfigurationManager configurationManager;

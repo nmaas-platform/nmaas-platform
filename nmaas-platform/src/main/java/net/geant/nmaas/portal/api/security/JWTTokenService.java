@@ -7,9 +7,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.jsonwebtoken.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,6 +39,17 @@ public class JWTTokenService {
 		.claim("scopes", user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
 		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 		.compact();
+	}
+
+	public String getSystemComponentToken(){
+		return Jwts.builder()
+				.setSubject("system_component")
+				.setIssuer(jwtSettings.getIssuer())
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
+				.claim("scopes", Role.ROLE_SYSTEM_COMPONENT)
+				.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
+				.compact();
 	}
 	
 	public String getRefreshToken(User user) {

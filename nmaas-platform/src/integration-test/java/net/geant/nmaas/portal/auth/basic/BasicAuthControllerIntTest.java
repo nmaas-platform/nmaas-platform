@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.auth.basic;
 
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class BasicAuthControllerIntTest extends BaseControllerTest {
+public class BasicAuthControllerIntTest extends BaseControllerTestSetup {
 
     @Before
     public void setup() {

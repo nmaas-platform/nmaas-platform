@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableAutoConfiguration
 @Transactional(value=TxType.REQUIRES_NEW)
 @Rollback
-public class UsersControllerIntTest extends BaseControllerTest {
+public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     final static String DOMAIN = "DOMAIN";
 
