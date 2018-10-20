@@ -39,7 +39,9 @@
     "P20": "Plus de rÃ©seaux, plus de domaines? C'est simple: vous pouvez facilement mettre Ã  l'Ã©chelle des applications horizontales en ajoutant d'autres instances d'application.",
     "P21": "Gestion de domaines",
     "P22": "Vous avez plus d'un domaine Ã  gÃ©rer, mais vous n'avez pas d'infrastructure propre? Il existe une solution simple-NMaaS prendre en charge plusieurs domaines et configurations Ã  gÃ©rer.",
-    "P23": "Technologies utilisÃ©es"
+    "P23": "Technologies utilisÃ©es",
+    "P24": "Sécurité",
+    "P25": "Avec NMaaS, vous n'avez pas à vous soucier de la sécurité. Nous fournissons une connexion sécurisée à des instances séparées par VPN sur votre réseau - afin de permettre aux institutions et aux projets de gérer le réseau en toute sécurité."
   },
   "REGISTRATION": {
     "USERNAME": "Nom d'utilisateur",

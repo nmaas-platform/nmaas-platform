@@ -39,7 +39,9 @@
     "P20": "More networks, more domains? That's simple - you can easily scale horizontal applications by adding more instances of application.",
     "P21": "Domains management",
     "P22": "You have more then one domain to manage, but you don't have own infrastructure? There is simple solution - NMaaS support multiple domains and configurations to manage.",
-    "P23": "Technologies used"
+    "P23": "Technologies used",
+    "P24": "Security",
+    "P25": "With NMaaS, you don't have to worry about security. We provide safe connection to separeted instances by VPN to your network - to allow institutions and projects to safe management of network."
   },
   "REGISTRATION": {
     "USERNAME": "Username",

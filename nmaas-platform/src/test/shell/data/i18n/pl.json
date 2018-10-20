@@ -39,7 +39,9 @@
     "P20": "Większa ilość (bardziej; więcej) sieci, większa ilość (bardziej; więcej) dziedziny? Który jest prosty - wy łatwo możecie ważyć (obliczać) poziome użytki (podanie) przez dodawanie większa ilość (bardziej; więcej) wypadki użytku (podanie).",
     "P21": "Kierownictwo Dziedzin",
     "P22": "Wy ma bardziej (więcej) potem jedzicie dziedzina kierować (dawać sobie radę), ale wy nie macie własne system urządzeństanowiący osnowę? Tu jest prostym rozwiązaniem - *NMaaS* popierają wielokrotne dziedziny i konfiguracje kierować (dawać sobie radę).",
-    "P23": "Technologie używał"
+    "P23": "Technologie używał",
+    "P24": "Bezpieczeństwo",
+    "P25": "Dzięki NMaaS nie musisz martwić się o bezpieczeństwo. Zapewniamy bezpieczne połączenie z oddzielonymi instancjami przez VPN do twojej sieci - aby umożliwić instytucjom i projektom bezpieczne zarządzanie siecią."
   },
   "REGISTRATION": {
     "USERNAME": "Nazwa Użytkownika",
