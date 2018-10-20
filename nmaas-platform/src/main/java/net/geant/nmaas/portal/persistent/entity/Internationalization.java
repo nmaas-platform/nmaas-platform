@@ -12,24 +12,17 @@ import java.util.Date;
 @Setter
 @Entity
 @Builder
-@Table(name="internationalization")
 public class Internationalization {
 
     @Setter(AccessLevel.NONE)
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name="language", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String language;
-
     @Lob
     @Type(type= "text")
-    @Column(name = "content")
+    @Column
     private String content;
-
-    @Column(name = "create_date")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
 }
