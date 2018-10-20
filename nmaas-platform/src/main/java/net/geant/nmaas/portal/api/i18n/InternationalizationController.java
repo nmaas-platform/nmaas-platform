@@ -4,6 +4,7 @@ import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +18,7 @@ public class InternationalizationController {
     }
 
     @PostMapping("/{language}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void saveLanguageContent(@PathVariable String language, @RequestBody String content) {
         Internationalization internationalization = Internationalization.builder().language(language).content(content).build();
