@@ -92,7 +92,7 @@ public class SSOAuthController {
 		if(!user.isEnabled())
 			throw new AuthenticationException("User is not active.");
 
-		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configuration.isMaintenance())
+		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN")) && configuration.isMaintenance())
 			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));

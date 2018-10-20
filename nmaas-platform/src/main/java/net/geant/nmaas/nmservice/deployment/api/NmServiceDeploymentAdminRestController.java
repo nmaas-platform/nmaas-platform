@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/api/management/services")
 public class NmServiceDeploymentAdminRestController {
 
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @RequestMapping(value = "", method = RequestMethod.GET)
     public String basicInfo() {
         return "This is NMaaS Platform REST API for NM Services configuration";

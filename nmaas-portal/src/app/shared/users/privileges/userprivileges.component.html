@@ -38,7 +38,7 @@
 					</tr>
 				</thead>
 
-				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SUPERADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
+				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SYSTEM_ADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
 						<td>{{getDomainName(userrole.domainId)|async}}</td>
@@ -50,7 +50,7 @@
 					</ng-template>
 				</tbody>
 
-				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SUPERADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
+				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SYSTEM_ADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 						<tr *ngIf="domainId == userrole.domainId">
 							<td>{{getDomainName(userrole.domainId)|async}}</td>

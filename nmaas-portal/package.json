@@ -37,11 +37,13 @@
     "jasmine": "^2.99.0",
     "lodash": "4.x",
     "ngx-webstorage-service": "^3.1.1",
-    "npm": "^6.4.1",
     "rxjs": "^5.5.6",
-    "ts-helpers": "^1.1.2"
+    "ts-helpers": "^1.1.2",
+    "bootstrap": "^3.3.7",
+    "jquery": "^1.11.3"
   },
   "devDependencies": {
+    "npm": "^6.4.1",
     "@angular/cli": "^1.7.3",
     "@angular/compiler-cli": "^5.2.0",
     "@babel/core": "^7.1.0",

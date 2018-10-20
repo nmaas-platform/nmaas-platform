@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
@@ -60,7 +61,7 @@ public class UsersControllerTest {
 		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
-		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SUPERADMIN);
+		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
 		admin.setId(2L);
 		userList = Arrays.asList(tester, admin);
 
@@ -75,7 +76,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldReturnRoles(){
 		List<Role> roles = usersController.getRoles();
-		assertThat("Number of roles mismatch", roles.size() == 8);
+		assertThat("Number of roles mismatch", roles.size() == 9);
 	}
 
 	@Test
@@ -123,6 +124,17 @@ public class UsersControllerTest {
 	public void shouldNotUpdateWithNullUserRequest(){
 		Long userId = 1L;
 		usersController.updateUser(userId, null, principal);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void shouldNotUpdateWithSystemComponentRole(){
+		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(GLOBAL_DOMAIN.getId());
+		userRole.setRole(Role.ROLE_SYSTEM_COMPONENT);;
+		userRequest.setRoles(ImmutableSet.of(userRole));
+		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
 	}
 
 	@Test
@@ -303,15 +315,23 @@ public class UsersControllerTest {
 	public void shouldNotAddGlobalRoleToCustomDomain(){
 		UserRole userRole = new UserRole();
 		userRole.setDomainId(DOMAIN.getId());
-		userRole.setRole(Role.ROLE_SUPERADMIN);
+		userRole.setRole(Role.ROLE_SYSTEM_ADMIN);
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+	}
+
+	@Test(expected = ProcessingException.class)
+	public void shouldNotAddSystemComponentRoleToUser(){
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(GLOBAL_DOMAIN.getId());
+		userRole.setRole(Role.ROLE_SYSTEM_COMPONENT);
 		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 	}
 
 	@Test
 	public void shouldRemoveUserRole(){
-		String userRole = "ROLE_SUPERADMIN";
+		String userRole = "ROLE_SYSTEM_ADMIN";
 		usersController.removeUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
-		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SUPERADMIN);
+		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_SYSTEM_ADMIN);
 	}
 
 	@Test(expected = MissingElementException.class)

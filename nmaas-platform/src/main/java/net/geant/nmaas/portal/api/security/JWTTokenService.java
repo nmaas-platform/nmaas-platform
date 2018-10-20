@@ -23,6 +23,8 @@ public class JWTTokenService {
 
 	private JWTSettings jwtSettings;
 
+	private static final String SCOPES = "scopes";
+
 	@Autowired
 	public JWTTokenService(JWTSettings jwtSettings){
 		this.jwtSettings = jwtSettings;
@@ -37,7 +39,7 @@ public class JWTTokenService {
 		.setIssuer(jwtSettings.getIssuer())
 		.setIssuedAt(new Date())
 		.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
-		.claim("scopes", user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
+		.claim(SCOPES, user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
 		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 		.compact();
 	}
@@ -52,7 +54,7 @@ public class JWTTokenService {
 					.setId(UUID.randomUUID().toString())
 					.setIssuedAt(new Date())
 					.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRefreshTokenExpTime()))
-					.claim("scopes", Arrays.asList(JWTSettings.Scopes.REFRESH_TOKEN))
+					.claim(SCOPES, Arrays.asList(JWTSettings.Scopes.REFRESH_TOKEN))
 					.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 					.compact();
 	}
@@ -60,9 +62,8 @@ public class JWTTokenService {
 	public boolean validateRefreshToken(String token) {
 		try {
 			Claims claims = getClaims(token);
-			Object scope = claims.get("scopes");
-			if(scope instanceof List<?>) {
-				if(((List<String>)scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name()))
+			Object scope = claims.get(SCOPES);
+			if(scope instanceof List<?> && ((List<String>)scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name())) {
 					return true;
 			} 
 			return false;

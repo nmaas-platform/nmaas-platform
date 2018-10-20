@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.network;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.network.entities.DockerHostAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
 import net.geant.nmaas.externalservices.inventory.network.model.DockerHostAttachPointView;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/management/network")
+@Log4j2
 public class DockerHostAttachPointController {
 
     private DockerHostAttachPointRepository dockerHostAttachPointRepository;
@@ -55,6 +57,7 @@ public class DockerHostAttachPointController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addDockerHostAttachPoint(@RequestBody DockerHostAttachPointView dockerHostAttachPoint) {
         dockerHostAttachPointRepository.save(modelMapper.map(dockerHostAttachPoint, DockerHostAttachPoint.class));
+        log.info(dockerHostAttachPointRepository.count());
     }
 
     @PutMapping(

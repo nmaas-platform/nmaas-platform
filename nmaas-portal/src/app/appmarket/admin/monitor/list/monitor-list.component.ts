@@ -12,7 +12,7 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class MonitorListComponent implements OnInit {
 
-  private monitorEntries: MonitorEntry[] = [];
+  public monitorEntries: MonitorEntry[] = [];
 
   private services: typeof ServiceType = ServiceType;
 

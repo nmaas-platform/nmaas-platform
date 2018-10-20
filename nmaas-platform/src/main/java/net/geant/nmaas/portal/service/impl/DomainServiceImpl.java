@@ -266,6 +266,8 @@ public class DomainServiceImpl implements DomainService {
 	protected void checkParams(Role role) {
 		if(role == null)
 			throw new IllegalArgumentException("role is null");
+		if(role == Role.ROLE_SYSTEM_COMPONENT)
+			throw new IllegalArgumentException("Role cannot be assigned.");
 	}
 	
 	protected void checkParams(Long domainId, Long userId) {

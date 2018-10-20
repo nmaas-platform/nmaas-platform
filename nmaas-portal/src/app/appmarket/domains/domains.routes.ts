@@ -6,12 +6,12 @@ import { ComponentMode } from '../../shared/common/componentmode';
 
 export const DomainsRoutes: Route[] = [
   {path: 'domains', component: DomainsListComponent, canActivate: [AuthGuard, RoleGuard],
-                        data: {roles: ['ROLE_SUPERADMIN', 'ROLE_DOMAIN_ADMIN', 'ROLE_OPERATOR']}},
+                        data: {roles: ['ROLE_SYSTEM_ADMIN', 'ROLE_DOMAIN_ADMIN', 'ROLE_OPERATOR']}},
   {path: 'domains/add', component: DomainComponent, canActivate: [AuthGuard, RoleGuard],
-                        data: {mode: ComponentMode.CREATE, roles: ['ROLE_SUPERADMIN']}},
+                        data: {mode: ComponentMode.CREATE, roles: ['ROLE_SYSTEM_ADMIN']}},
   {path: 'domains/view/:id', component: DomainComponent, canActivate: [AuthGuard, RoleGuard],
-                        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SUPERADMIN', 'ROLE_DOMAIN_ADMIN', 'ROLE_OPERATOR']}},
+                        data: {mode: ComponentMode.VIEW, roles: ['ROLE_SYSTEM_ADMIN', 'ROLE_DOMAIN_ADMIN', 'ROLE_OPERATOR']}},
   {path: 'domains/edit/:id', component: DomainComponent, canActivate: [AuthGuard, RoleGuard],
-                        data: {mode: ComponentMode.EDIT, roles: ['ROLE_SUPERADMIN', 'ROLE_OPERATOR']}}
+                        data: {mode: ComponentMode.EDIT, roles: ['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']}}
   
 ];

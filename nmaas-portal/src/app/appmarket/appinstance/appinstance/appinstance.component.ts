@@ -71,7 +71,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject(LOCAL_STORAGE) private storage: StorageService,
+    @Inject(LOCAL_STORAGE) public storage: StorageService,
               private fb: FormBuilder) {
       this.configAdvancedTab = fb.group({
       storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
@@ -171,7 +171,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appRate.refresh();
   }
 
-  private isValid(): boolean {
+  public isValid(): boolean {
     if(isNullOrUndefined(this.requiredFields)){
       return true;
     }

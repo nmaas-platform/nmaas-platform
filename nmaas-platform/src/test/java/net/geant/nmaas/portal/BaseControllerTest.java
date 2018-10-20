@@ -52,7 +52,7 @@ public class BaseControllerTest {
 	
 	protected void prepareSecurity() {
 		SecurityContext context = SecurityContextHolder.createEmptyContext();		
-		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, Arrays.asList(new SimpleGrantedAuthority(Role.ROLE_SUPERADMIN.authority()))));
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(ADMIN_USERNAME, null, Arrays.asList(new SimpleGrantedAuthority(Role.ROLE_SYSTEM_ADMIN.authority()))));
 		SecurityContextHolder.setContext(context);
 	}
 	

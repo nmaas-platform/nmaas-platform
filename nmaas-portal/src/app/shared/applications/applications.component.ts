@@ -30,11 +30,11 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public domainId: number;
 
-  protected applications: Observable<Application[]>;
+  public applications: Observable<Application[]>;
   protected copy_applications: Observable<Application[]>;
-  protected selected: Observable<Set<number>>;
+  public selected: Observable<Set<number>>;
 
-  protected searchedAppName: string = "";
+  public searchedAppName: string = "";
   protected searchedTag: string = "all";
 
   constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
@@ -118,13 +118,13 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  protected filterAppsByName(typed: string): void {
+  public filterAppsByName(typed: string): void {
 
     this.searchedAppName = typed;
     this.doSearch();
   }
 
-  protected filterAppsByTag(tag: string): void {
+  public filterAppsByTag(tag: string): void {
 
     this.searchedAppName = "";
     this.searchedTag = tag;

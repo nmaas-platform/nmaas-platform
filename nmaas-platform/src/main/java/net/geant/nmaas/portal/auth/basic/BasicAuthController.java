@@ -62,7 +62,7 @@ public class BasicAuthController {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
         validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled(), user.isTermsOfUseAccepted(), user.isPrivacyPolicyAccepted());
 
-        if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SUPERADMIN")) && configurationManager.getConfiguration().isMaintenance())
+        if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN")) && configurationManager.getConfiguration().isMaintenance())
             throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
 
         log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
