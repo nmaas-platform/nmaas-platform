@@ -14,15 +14,15 @@
 			<ul class="nav navbar-nav">
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/']">{{ 'NAVBAR.MARKET' | translate }}</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *ngIf="checkUserRole()"><a [routerLink]="['/subscriptions']">{{ 'NAVBAR.SUBSCRIPTIONS' | translate }}</a></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_USER']"><a
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_USER']"><a
 					[routerLink]="['/instances']">{{ 'NAVBAR.INSTANCES' | translate }}</a></li>
 				<li class="divider-vertical"></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN', 'ROLE_OPERATOR']"><a
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a
 					[routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SUPERADMIN']">
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']">
 					<a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
 				</li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']" class="dropdown">
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" class="dropdown">
 					<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ 'NAVBAR.INVENTORY' | translate }}<strong class="caret"></strong></a>
 					<ul class="dropdown-menu">
 						<li><a [routerLink]="['/admin/clusters']">Kubernetes</a>
@@ -33,10 +33,10 @@
 
 			<ul class="nav navbar-nav navbar-right">
 				<li class="divider-vertical"></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a></li>
-				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']"><a [routerLink]="['/admin/configuration']">{{ 'NAVBAR.CONFIGURATION' | translate }}</a></li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a></li>
+				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">{{ 'NAVBAR.CONFIGURATION' | translate }}</a></li>
 				
-				<li class="navbar-form form-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SUPERADMIN']">
+				<li class="navbar-form form-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN']">
 					<select #langSelect class="form-control" (change)="translate.use(langSelect.value)">
 						<option *ngFor="let lang of translate.getLangs()" [value]="lang" 
 							[selected]="lang === translate.currentLang">{{ lang }}</option>
