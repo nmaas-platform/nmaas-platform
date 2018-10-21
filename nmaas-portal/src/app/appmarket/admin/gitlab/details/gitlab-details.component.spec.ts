@@ -69,10 +69,7 @@ describe('GitlabDetailsComponent', () => {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                 }
-            }),
-            CommonModule,
-            AuthModule,
-            PipesModule
+            })
         ],
         providers: [
             {provide: GitlabService, useClass: MockGitlabService},
