@@ -12,13 +12,13 @@ import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
     imports: [
-    CommonModule,
-    RouterModule,
-    AuthModule,
-    PipesModule,
-    FormsModule,
-    SharedModule,
-    TranslateModule.forChild()
+        CommonModule,
+        RouterModule,
+        AuthModule,
+        PipesModule,
+        FormsModule,
+        SharedModule,
+        TranslateModule.forChild()
     ],
     providers: [
         MonitorService

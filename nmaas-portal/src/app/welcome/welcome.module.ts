@@ -21,7 +21,7 @@ import {ReCaptchaModule} from 'angular5-recaptcha';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {HttpClient} from '@angular/common/http';
 import {HttpLoaderFactory} from '../app.module';
-import {ShibbolethService} from "../service/shibboleth.service";
+import {ShibbolethService} from '../service/shibboleth.service';
 
 @NgModule({
   declarations: [
@@ -43,7 +43,7 @@ import {ShibbolethService} from "../service/shibboleth.service";
     PipesModule,
     AppMarketModule,
     ReCaptchaModule,
-      TranslateModule.forChild()
+    TranslateModule.forChild()
   ],
   exports: [
     WelcomeComponent
@@ -52,8 +52,8 @@ import {ShibbolethService} from "../service/shibboleth.service";
     RegistrationService,
     UserService,
     ChangelogService,
-      ContentDisplayService,
-      ShibbolethService
+    ContentDisplayService,
+    ShibbolethService
   ]
 })
 export class WelcomeModule {}

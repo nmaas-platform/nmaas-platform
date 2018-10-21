@@ -38,7 +38,7 @@ import {TranslateModule} from '@ngx-translate/core';
     AppInstanceProgressModule,
     PipesModule,
     Bootstrap3FrameworkModule,
-      TranslateModule.forChild(),
+    TranslateModule.forChild(),
     {
       ngModule: JsonSchemaFormModule,
       providers: [

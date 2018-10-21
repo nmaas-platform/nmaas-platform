@@ -60,7 +60,7 @@ import {BrowserModule} from '@angular/platform-browser';
     ConfigurationModule,
     BrowserModule,
     HttpClientModule,
-      TranslateModule.forChild()
+    TranslateModule.forChild()
   ],
   exports: [
     AppMarketComponent,

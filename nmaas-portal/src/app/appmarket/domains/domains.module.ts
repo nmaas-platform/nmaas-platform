@@ -28,7 +28,7 @@ import {TranslateModule} from '@ngx-translate/core';
     SharedModule,
     AuthModule,
     PipesModule,
-      TranslateModule.forChild()
+    TranslateModule.forChild()
   ],
   exports: [
     DomainsListComponent
