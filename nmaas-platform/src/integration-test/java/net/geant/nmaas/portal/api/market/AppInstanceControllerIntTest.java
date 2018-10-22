@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class AppInstanceControllerIntTest extends BaseControllerTest {
+public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
     @MockBean
     private AppInstanceRepository appInstanceRepository;

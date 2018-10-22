@@ -1,6 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
-public class DockerHostManagerControllerSecTest extends BaseControllerTest {
+public class DockerHostManagerControllerSecTest extends BaseControllerTestSetup {
 
     @MockBean
     private DockerHostRepositoryManager dockerHostRepositoryManager;

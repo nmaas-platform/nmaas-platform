@@ -7,9 +7,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.jsonwebtoken.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

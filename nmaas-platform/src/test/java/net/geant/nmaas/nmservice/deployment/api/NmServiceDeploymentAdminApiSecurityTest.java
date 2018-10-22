@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.api;
 
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class NmServiceDeploymentAdminApiSecurityTest extends BaseControllerTest {
+public class NmServiceDeploymentAdminApiSecurityTest extends BaseControllerTestSetup {
 
     @Autowired
     private WebApplicationContext context;

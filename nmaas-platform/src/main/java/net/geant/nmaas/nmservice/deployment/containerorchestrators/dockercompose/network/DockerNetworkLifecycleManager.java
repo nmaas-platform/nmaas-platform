@@ -4,6 +4,7 @@ import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
 import com.spotify.docker.client.exceptions.NetworkNotFoundException;
 import com.spotify.docker.client.messages.NetworkConfig;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
@@ -19,6 +20,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class DockerNetworkLifecycleManager {
 
@@ -82,12 +84,13 @@ public class DockerNetworkLifecycleManager {
             throw new CouldNotCreateContainerNetworkException(
                     "Could not create container network -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Internal error -> " + interruptedException.getMessage(), interruptedException);
+            log.error("Internal error -> " + interruptedException.getMessage());
+            Thread.currentThread().interrupt();
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(
                     "No network found in repository for domain " + domain, ide);
         }
+        throw new ContainerOrchestratorInternalErrorException("Internal error");
     }
 
     private boolean networkAlreadyDeployed(DockerHostNetwork network) {
@@ -114,8 +117,8 @@ public class DockerNetworkLifecycleManager {
             throw new ContainerOrchestratorInternalErrorException(
                     "Could not execute requested action on Docker Engine -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Internal error -> " + interruptedException.getMessage(), interruptedException);
+            log.error("Internal error -> " + interruptedException.getMessage());
+            Thread.currentThread().interrupt();
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
@@ -142,8 +145,8 @@ public class DockerNetworkLifecycleManager {
             throw new CouldNotRemoveContainerNetworkException(
                     "Could not removeIfNoContainersAttached container network " + network.getDeploymentId() + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
-            throw new ContainerOrchestratorInternalErrorException(
-                    "Internal error -> " + interruptedException.getMessage(), interruptedException);
+            log.error("Internal error -> " + interruptedException.getMessage());
+            Thread.currentThread().interrupt();
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }

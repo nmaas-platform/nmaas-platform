@@ -6,7 +6,7 @@ import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.api.model.DcnView;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DcnAdminControllerSecTest extends BaseControllerTest {
+public class DcnAdminControllerSecTest extends BaseControllerTestSetup {
 
     @MockBean
     private DcnRepositoryManager dcnRepositoryManager;
