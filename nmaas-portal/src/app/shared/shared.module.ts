@@ -30,6 +30,7 @@ import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.comp
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
 import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -38,7 +39,8 @@ import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelo
     FormsModule,
     ServicesModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+      TranslateModule.forChild()
   ],
   declarations: [
     RateComponent,
@@ -65,7 +67,7 @@ import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelo
       GitlabDetailsComponent,
       ModalInfoTermsComponent,
       ModalInfoPolicyComponent,
-      ModalChangelogComponent,
+      ModalChangelogComponent
   ],
   providers: [
     PasswordValidator,

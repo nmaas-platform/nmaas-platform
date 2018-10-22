@@ -3,6 +3,7 @@ import {MonitorService} from "../../../../service/monitor.service";
 import {Router} from "@angular/router";
 import {MonitorEntry, ServiceType, TimeFormat} from "../../../../model/monitorentry";
 import {Time} from "@angular/common";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-montiorlist',
@@ -15,7 +16,10 @@ export class MonitorListComponent implements OnInit {
 
   private services: typeof ServiceType = ServiceType;
 
-  constructor(private monitorService: MonitorService, private router: Router) {}
+  constructor(private monitorService: MonitorService, private router: Router, private translate: TranslateService) {
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
     this.update();

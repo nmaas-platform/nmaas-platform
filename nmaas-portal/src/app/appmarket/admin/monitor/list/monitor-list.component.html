@@ -1,14 +1,14 @@
 <div class="col-sm-12 col-sm-12 col-md-12">
-    <h3>Monitor service</h3>
-    <a [routerLink]="['add']" class="btn btn-primary" role="button">Add job</a>
+    <h3>{{ 'MONITOR.TITLE' | translate }}</h3>
+    <a [routerLink]="['add']" class="btn btn-primary" role="button">{{ 'MONITOR.ADD_JOB_BUTTON' | translate }}</a>
     <br>
     <table class="table table-hover table-condensed">
         <thead>
             <tr>
-                <th>Service name</th>
-                <th>Last check</th>
-                <th>Last success</th>
-                <th>Check interval</th>
+                <th>{{ 'MONITOR.SERVICE_NAME' | translate }}</th>
+                <th>{{ 'MONITOR.LAST_CHECK' | translate }}</th>
+                <th>{{ 'MONITOR.LAST_SUCCESS' | translate }}</th>
+                <th>{{ 'MONITOR.CHECK_INTERVAL' | translate }}</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
@@ -27,10 +27,10 @@
                     </td>
                     <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td class="text-right">
-                        <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">View settings</a>
-                        <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">Check now</a>
-                        <a [routerLink]="['edit/', entry.serviceName.toString()]" class="btn btn-success" role="button">Edit settings</a>
-                        <a (click)="removeJob(entry.serviceName.toString())" class="btn btn-danger" role="button">Remove</a>
+                        <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">{{ 'MONITOR.VIEW_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">{{ 'MONITOR.CHECK_NOW_BUTTON' | translate }}</a>
+                        <a [routerLink]="['edit/', entry.serviceName.toString()]" class="btn btn-success" role="button">{{ 'MONITOR.EDIT_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="removeJob(entry.serviceName.toString())" class="btn btn-danger" role="button">{{ 'MONITOR.REMOVE_BUTTON' | translate }}</a>
                     </td>
                 </tr>
                 <tr *ngIf="entry.status !== null && entry.status !== undefined" [style.background-color]="entry.status.toString() === 'SUCCESS'?'#99ff99':'#FF6651'">
@@ -45,10 +45,10 @@
                     </td>
                     <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
                     <td class="text-right">
-                        <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">View settings</a>
-                        <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">Check now</a>
-                        <a [routerLink]="['edit/', entry.serviceName.toString()]" class="btn btn-success" role="button">Edit settings</a>
-                        <a (click)="removeJob(entry.serviceName.toString())" class="btn btn-danger" role="button">Remove</a>
+                        <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">{{ 'MONITOR.VIEW_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">{{ 'MONITOR.CHECK_NOW_BUTTON' | translate }}</a>
+                        <a [routerLink]="['edit/', entry.serviceName.toString()]" class="btn btn-success" role="button">{{ 'MONITOR.EDIT_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="removeJob(entry.serviceName.toString())" class="btn btn-danger" role="button">{{ 'MONITOR.REMOVE_BUTTON' | translate }}</a>
                     </td>
                 </tr>
             </ng-template>

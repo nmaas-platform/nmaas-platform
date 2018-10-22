@@ -13,6 +13,7 @@ import { isUndefined } from 'util';
 import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
+import {TranslateService} from '@ngx-translate/core';
 
 
 
@@ -40,9 +41,15 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, public domainService: DomainService, private userDataService:UserDataService, private authService:AuthService) {
+  constructor(private userService: UserService,
+              private domainService: DomainService,
+              private userDataService: UserDataService,
+              private authService: AuthService,
+              private translate: TranslateService) {
     super();
     userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {
@@ -52,7 +59,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     console.log('UsersList:onChanges ' + changes.toString());
     this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
-  
   public getDomainName(domainId: number): Observable<string> {
     //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
@@ -65,17 +71,17 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public filterDomainNames(user:User):UserRole[]{
+  public filterDomainNames(user: User): UserRole[]{
     return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId());
   }
 
-  public getOnlyDomainRoles(user:User):UserRole[]{
-    return user.roles.filter(role=>role.domainId===this.domainId);
+  public getOnlyDomainRoles(user: User): UserRole[]{
+    return user.roles.filter(role => role.domainId===this.domainId);
   }
 
-  public getGlobalRole(user:User):string{
-    let userRole:UserRole[] = user.roles.filter(role=>role.domainId===this.domainService.getGlobalDomainId());
-    return userRole[0].role.toString() === Role[Role.ROLE_GUEST]?'-':userRole[0].role.toString().slice(5);
+  public getGlobalRole(user: User): String{
+    let userRole: UserRole[] = user.roles.filter(role => role.domainId === this.domainService.getGlobalDomainId());
+    return userRole[0].role.toString() === Role[Role.ROLE_GUEST] ?'-' : userRole[0].role.toString().slice(5);
   }
 
   public getUserDomainIds(user: User): number[] {

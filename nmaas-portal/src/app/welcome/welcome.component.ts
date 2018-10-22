@@ -1,4 +1,5 @@
 import { AppConfigService } from '../service/appconfig.service';
+import {TranslateService} from '@ngx-translate/core';
 import {
     AfterContentChecked,
     AfterViewChecked,
@@ -19,7 +20,10 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService) { }
+  constructor(private appConfig: AppConfigService, private translate: TranslateService){
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
     this.onResize();

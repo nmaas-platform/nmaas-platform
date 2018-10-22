@@ -1,6 +1,6 @@
 import { Routes, RouterModule } from '@angular/router';
 
-import { AppMarketRoutes } from './appmarket/index';
+import { AppMarketRoutes } from './appmarket';
 
 import { AuthGuard } from './auth/auth.guard';
 import { WelcomeRoutes } from './welcome/welcome.routes';

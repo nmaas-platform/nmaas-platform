@@ -4,8 +4,12 @@
 					<a href="/" data-toggle="tooltip" data-placement="right" title="Network Management as a Service homepage"><img src="assets/images/logo-small.png" style="margin: 5px"
 									 alt="Network Management as a Service"></a>
 				</div>
+
 				<div style="display: inline-block" class="pull-right">
-					<button class="btn navbar-btn" data-toggle="collapse" data-target="#login-register-panel">Login/Register</button>
+					<button (click)="useLanguage('en')" ><img src="assets/images/country/gb_1.png" style="width: 60px; height: 30px;"></button>
+					<button (click)="useLanguage('fr')"><img src="assets/images/country/fr_1.png" style="width: 60px; height: 30px;"></button>
+					<button (click)="useLanguage('pl')"><img src="assets/images/country/pl_1.png" style="width: 60px; height: 30px;"></button>
+					<button class="btn navbar-btn" data-toggle="collapse" data-target="#login-register-panel">{{ 'NAVBAR.LOGIN_REGISTER' | translate }}</button>
 				</div>
 			</div>
 		</nav>

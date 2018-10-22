@@ -9,11 +9,11 @@ import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable} from 'rxjs/Observable';
+import {TranslateService} from '@ngx-translate/core';
 
 export enum AppInstanceListSelection {
-  ALL,
-  MY,
-}
+  ALL, MY,
+};
 
 @Component({
   selector: 'nmaas-appinstancelist',
@@ -33,7 +33,15 @@ export class AppInstanceListComponent implements OnInit {
   public selectedUsername: string;
   public domainId: number = 0;
 
-  constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private authService: AuthService, private appConfig: AppConfigService) {}
+  constructor(private appInstanceService: AppInstanceService,
+              private domainService: DomainService,
+              private userDataService: UserDataService,
+              private authService: AuthService,
+              private appConfig: AppConfigService,
+              private translate: TranslateService) {
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
@@ -61,8 +69,8 @@ export class AppInstanceListComponent implements OnInit {
 
   }
 
-  public checkPrivileges(app){
-    return app.owner.username === this.authService.getUsername() || this.authService.hasRole("ROLE_SYSTEM_ADMIN") || this.authService.hasDomainRole(app.domainId, "ROLE_DOMAIN_ADMIN");
+  public checkPrivileges(app) {
+    return app.owner.username === this.authService.getUsername() || this.authService.hasRole('ROLE_SYSTEM_ADMIN') || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN');
   }
 
   public onSelectionChange(event) {
