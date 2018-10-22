@@ -24,14 +24,14 @@ import {ModalComponent} from '../../../shared/modal';
 export class DomainComponent extends BaseComponent implements OnInit {
 
   private domainId: number;
-  private domain: Domain;
+  public domain: Domain;
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
   @ViewChild(ModalComponent)
-  private modal:ModalComponent;
+  public modal:ModalComponent;
 
-    constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService:AuthService) {
+    constructor(public domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService:AuthService) {
     super();
   }
 
@@ -65,7 +65,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     this.domainService.setUpdateRequiredFlag(true);
   }
 
-  protected updateDcnConfigured(): void {
+  public updateDcnConfigured(): void {
       this.domain.dcnConfigured = !this.domain.dcnConfigured;
       this.domainService.updateDcnConfigured(this.domain).subscribe((value) => {
         this.modal.hide();

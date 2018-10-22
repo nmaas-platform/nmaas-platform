@@ -42,7 +42,6 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
-		//super.successfulAuthentication(request, response, chain, authResult);
 		log.debug("Authentication: " + authResult);
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
 		context.setAuthentication(authResult);
@@ -54,7 +53,6 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException failed) throws IOException, ServletException {
-		//super.unsuccessfulAuthentication(request, response, failed);
 		log.debug("Authentication unsuccessful");
 		SecurityContextHolder.clearContext();
 		getFailureHandler().onAuthenticationFailure(request, response, failed);

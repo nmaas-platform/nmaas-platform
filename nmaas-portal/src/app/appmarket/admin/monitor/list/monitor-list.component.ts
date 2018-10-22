@@ -11,7 +11,7 @@ import {Time} from "@angular/common";
 })
 export class MonitorListComponent implements OnInit {
 
-  private monitorEntries: MonitorEntry[] = [];
+  public monitorEntries: MonitorEntry[] = [];
 
   private services: typeof ServiceType = ServiceType;
 
