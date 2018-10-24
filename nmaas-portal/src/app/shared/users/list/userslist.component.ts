@@ -42,7 +42,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
   constructor(private userService: UserService,
-              private domainService: DomainService,
+              public domainService: DomainService,
               private userDataService: UserDataService,
               private authService: AuthService,
               private translate: TranslateService) {
