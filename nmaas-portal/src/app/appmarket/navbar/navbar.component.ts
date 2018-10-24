@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
   }
 
-  protected checkUserRole(): boolean {
+  public checkUserRole(): boolean {
     return this.authService.getDomains().filter(value => value ! = this.domainService.getGlobalDomainId()).length > 0
         || this.authService.getRoles().filter(value => value ! = 'ROLE_GUEST').length > 0;
   }
