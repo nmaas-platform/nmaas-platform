@@ -10,7 +10,7 @@
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profil",
     "LOGOUT": "Connectez - Out",
-    "LOGIN_REGISTER": "Connexion / S'inscrire"
+    "LOGIN_REGISTER": "Connexion | S'inscrire"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -74,7 +74,7 @@
     "HOST_ADDRESS": "Adresse de l'hôte REST",
     "HOST_SSH_USERNAME": "Nom d'utilisateur de l'hôte SSH",
     "HOST_SSH_USERNAME_VALIDATION_MESSAGE": "adresse hôte de barre ne doit contenir que des chiffres et des points",
-    "USER_LOCAL_CHART_ARCHIEVES": "Utiliser les archives de graphique locales",
+    "USER_LOCAL_CHART_ARCHIVES": "Utiliser les archives de graphique locales",
     "HEML_CHART_REPO_NAME": "Nom du référentiel du diagramme de pilotage",
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
@@ -85,7 +85,7 @@
     "CONTROLLER_CONFIG_OPTION": "Option de configuration du contrôleur",
     "SUPPORTED_INGRESS_CLASS": "Classe d'entrée prise en charge",
     "CONTROLLER_CHART_NAME": "Nom du graphique du contrôleur",
-    "CONTROLLER_CHART_ARCHIEVE": "Archive du graphique du contrôleur",
+    "CONTROLLER_CHART_ARCHIVE": "Archive du graphique du contrôleur",
     "RESOURCE_CONFIG_OPTION": "Option de configuration de ressource",
     "EXTERNAL_SERVICE_DOMAIN": "Domaine de service externe",
     "TLS_SUPPORTED": "TLS supporté",
@@ -124,7 +124,7 @@
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "L'adresse réseau doit contenir uniquement des chiffres et des points",
     "MASK_VALIDATION_MESSAGE": "Le masque doit être compris entre 0 et 32"
   },
-  "GIT_LAB": {
+  "GITLAB": {
     "TITLE": "Configuration de GitLab",
     "SERVER_ADDRESS": "Adresse du serveur",
     "SERVER_ADDRESS_REQUIRED_MESSAGE": "L'adresse du serveur est requise",

@@ -1,16 +1,16 @@
 {
   "NAVBAR": {
-    "MARKET": "Market",
-    "SUBSCRIPTIONS": "Subscription",
+    "MARKET": "Applications",
+    "SUBSCRIPTIONS": "Subscriptions",
     "INSTANCES": "Instances",
     "DOMAINS": "Domains",
     "USERS": "Users",
-    "INVENTORY": "Inventory",
-    "MONITOR": "Monitor",
+    "INVENTORY": "External components",
+    "MONITOR": "Monitoring",
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
-    "LOGIN_REGISTER": "Login/Register"
+    "LOGIN_REGISTER": "Login | Register"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -73,7 +73,7 @@
     "HELM": "Helm",
     "HOST_ADDRESS": "REST Host address",
     "HOST_SSH_USERNAME": "Host SSH username",
-    "USER_LOCAL_CHART_ARCHIEVES": "Use local chart archives",
+    "USER_LOCAL_CHART_ARCHIVES": "Use local chart archives",
     "HEML_CHART_REPO_NAME": "Helm chart repository name",
     "HEML_CHARTS_DIRECTORY": "Helm charts directory",
     "REST_API": "REST API",
@@ -84,7 +84,7 @@
     "CONTROLLER_CONFIG_OPTION": "Controller config option",
     "SUPPORTED_INGRESS_CLASS": "Supported Ingress class",
     "CONTROLLER_CHART_NAME": "Controller chart name",
-    "CONTROLLER_CHART_ARCHIEVE": "Controller chart archive",
+    "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource config option",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
     "TLS_SUPPORTED": "TLS supported",
@@ -124,7 +124,7 @@
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Network address must contain only digits and dots",
     "MASK_VALIDATION_MESSAGE": "Mask must be between 0 and 32"
   },
-  "GIT_LAB": {
+  "GITLAB": {
     "TITLE": "GitLab configuration",
     "SERVER_ADDRESS": "Server address",
     "SERVER_ADDRESS_REQUIRED_MESSAGE": "Server address is required",
@@ -241,7 +241,7 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long."
   },
   "GIT_INFO": {
-    "HEADER": "NMaaS version",
+    "HEADER": "NMaaS version information",
     "VERSION": "Version",
     "BUILD_TIME": "Build time",
     "LAST_COMMIT": "Last commit",

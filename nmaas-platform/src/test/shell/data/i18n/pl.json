@@ -1,16 +1,16 @@
 {
   "NAVBAR": {
-    "MARKET": "Market",
-    "SUBSCRIPTIONS": "Subskrypowane",
+    "MARKET": "Aplikacje",
+    "SUBSCRIPTIONS": "Subskrypcje",
     "INSTANCES": "Instancje",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
-    "INVENTORY": "Zewnętrzne serwisy",
-    "MONITOR": "Monitor",
+    "INVENTORY": "Zewnętrzne komponenty",
+    "MONITOR": "Monitoring",
     "CONFIGURATION": "Konfiguracja",
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
-    "LOGIN_REGISTER": "Logowanie / Rejestracja"
+    "LOGIN_REGISTER": "Logowanie | Rejestracja"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -20,7 +20,7 @@
     "P1": "Treść zostanie dodana wkrótce.",
     "P2": "Użytkownicy",
     "P3": "Treść zostanie dodana wkrótce.",
-    "P4": "Sklep NmmaS",
+    "P4": "Sklep NMaaS",
     "P5": "Treść zostanie dodana wkrótce.",
     "P6": "Redukcja kosztów",
     "P7": "Treść zostanie dodana wkrótce.",
@@ -69,22 +69,22 @@
     "LOGIN_WITH": "Zaloguj się przez"
   },
   "CLUSTERS": {
-    "TITLE": "Konfiugracja klastra",
+    "TITLE": "Informacje o klastrze",
     "HELM": "Helm",
-    "HOST_ADDRESS": "REST Host address",
-    "HOST_SSH_USERNAME": "Host SSH username",
-    "USER_LOCAL_CHART_ARCHIEVES": "Use local chart archives",
-    "HEML_CHART_REPO_NAME": "Helm chart repository name",
-    "HEML_CHARTS_DIRECTORY": "Helm charts directory",
-    "REST_API": "REST API",
-    "ENABLE_TLS": "Enable TLS",
-    "USER_REST_API": "Use REST API",
+    "HOST_ADDRESS": "Adres hosta",
+    "HOST_SSH_USERNAME": "Nazwa użytkownika SSH",
+    "USER_LOCAL_CHART_ARCHIVES": "Korzystaj z lokalnych definicji chartów",
+    "HEML_CHART_REPO_NAME": "Nazwa repozytorium chartów",
+    "HEML_CHARTS_DIRECTORY": "Localna lokalizacja chartów",
+    "REST_API": "Kubernetes API",
+    "ENABLE_TLS": "Włącz TLS",
+    "USER_REST_API": "Korzystaj z Kubernetes API",
     "HOST_PORT": "Host port",
     "INGRESS": "Ingress",
     "CONTROLLER_CONFIG_OPTION": "Controller config option",
     "SUPPORTED_INGRESS_CLASS": "Supported Ingress class",
     "CONTROLLER_CHART_NAME": "Controller chart name",
-    "CONTROLLER_CHART_ARCHIEVE": "Controller chart archive",
+    "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource config option",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
     "TLS_SUPPORTED": "TLS supported",
@@ -124,7 +124,7 @@
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Network address może zawierać tylko cyfry i kropki",
     "MASK_VALIDATION_MESSAGE": "Mask musi zawierać się w przedziale od 0 do 32"
   },
-  "GIT_LAB": {
+  "GITLAB": {
     "TITLE": "Konfiguracja GitLab",
     "SERVER_ADDRESS": "Adres serwera",
     "SERVER_ADDRESS_REQUIRED_MESSAGE": "Adres serwera jest wymagany",
@@ -227,16 +227,16 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków."
   },
   "GIT_INFO": {
-    "HEADER": "Wersja NMmaS",
+    "HEADER": "Informacje o wersji NMaaS",
     "VERSION": "Wersja",
     "BUILD_TIME": "Ostatnie budowanie",
     "LAST_COMMIT": "Ostatni commit",
-    "BRANCH_NAME": "Branch",
+    "BRANCH_NAME": "Gałąź",
     "CLOSE_BUTTON": "Zamknij"
   },
   "USER_DETAILS": {
     "USER": "Użytkownik",
-    "HEADER": "Ogólne informacje",
+    "HEADER": "Informacje ogólne",
     "USERNAME": "Nazwa użytkownika",
     "FIRST_NAME": "Imię",
     "LAST_NAME": "Nazwisko",
