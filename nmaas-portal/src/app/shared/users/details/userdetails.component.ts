@@ -4,6 +4,7 @@ import {ComponentMode} from '../../common/componentmode';
 import {Component, Input, Output, EventEmitter, OnInit, ViewChild} from '@angular/core';
 import {AuthService} from "../../../auth/auth.service";
 import {PasswordComponent} from "../../common/password/password.component";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-userdetails',
@@ -21,8 +22,10 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   @Output()
   public onSave: EventEmitter<User> = new EventEmitter<User>();
 
-  constructor(private authService:AuthService) {
+  constructor(private authService:AuthService, private translate:TranslateService) {
     super();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {

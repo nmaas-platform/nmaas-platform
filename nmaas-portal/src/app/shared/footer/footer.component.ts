@@ -4,6 +4,7 @@ import {ChangelogService} from "../../service";
 import {ModalComponent} from "../modal";
 import {ModalChangelogComponent} from "./modal-changelog/modal-changelog.component";
 import {GitInfo} from "../../model/gitinfo";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-footer',
@@ -21,7 +22,10 @@ export class FooterComponent implements OnInit {
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
 
-  constructor(private changelogService:ChangelogService, private router:Router) { }
+  constructor(private changelogService:ChangelogService, private router:Router, private translate:TranslateService) {
+      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
     this.modal.setModalType("info");

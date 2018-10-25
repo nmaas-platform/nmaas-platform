@@ -1,11 +1,11 @@
 {
   "NAVBAR": {
     "MARKET": "Market",
-    "SUBSCRIPTIONS": "Subskrypcja",
+    "SUBSCRIPTIONS": "Subskrypowane",
     "INSTANCES": "Instancje",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
-    "INVENTORY": "Inwentarz",
+    "INVENTORY": "Zewnętrzne serwisy",
     "MONITOR": "Monitor",
     "CONFIGURATION": "Konfiguracja",
     "PROFILE": "Profil",
@@ -203,13 +203,15 @@
     "DCN_STATUS": "Status DCN",
     "DCN_CONFIGURED": "DCN skonfigurowany",
     "DOMAIN_USERS": "Użytkownicy w domenie",
-    "ID": "Id",
+    "ID": "Id w bazie danych",
     "USER_NAME": "Nazwa użytkownika",
     "FIRST_NAME": "Imię",
     "LAST_NAME": "Nazwisko",
     "ROLES": "Role",
     "CONFIGURED": "Status DCN - Skonfigurowany",
     "NOT_CONFIGURED": "Status DCN - Nie skonfigurowany",
+    "CONFIGURED_VIEW": "Skonfigurowany",
+    "NOT_CONFIGURED_VIEW": "Nie skonfigurowany",
     "NOT_FOUND": "Nie znaleziono",
     "DCN_STATUS_CHANGE": "Zmiana statusu DCN",
     "QUESTION_1": "Właśnie zmieniasz status DCN dla wybranej domeny",
@@ -223,5 +225,141 @@
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Skrót dla domeny jest wymagany.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z, A-Z, 0_9, _.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków."
+  },
+  "GIT_INFO": {
+    "HEADER": "Wersja NMmaS",
+    "VERSION": "Wersja",
+    "BUILD_TIME": "Ostatnie budowanie",
+    "LAST_COMMIT": "Ostatni commit",
+    "BRANCH_NAME": "Branch",
+    "CLOSE_BUTTON": "Zamknij"
+  },
+  "USER_DETAILS": {
+    "USER": "Użytkownik",
+    "HEADER": "Ogólne informacje",
+    "USERNAME": "Nazwa użytkownika",
+    "FIRST_NAME": "Imię",
+    "LAST_NAME": "Nazwisko",
+    "EMAIL": "Email",
+    "CHANGE_PASSWORD_BUTTON": "Zmień hasło",
+    "ID": "Id w bazie danych",
+    "VIEW_BUTTON": "Pokaż",
+    "SUBMIT_BUTTON": "Prześlij",
+    "EDIT_BUTTON": "Edytuj",
+    "REMOVE_BUTTON": "Usuń"
+  },
+  "USER_PRIVILEGES": {
+    "HEADER": "Uprawnienia użytkownika",
+    "DOMAIN": "Domena",
+    "ROLE": "Rola",
+    "ADD_BUTTON": "Dodaj",
+    "REMOVE_BUTTON": "Usuń"
+  },
+  "SCREENSHOTS": {
+    "HEADER": "Zrzuty ekranu",
+    "CLOSE_BUTTON": "Zamknij"
+  },
+  "PASSWORD": {
+    "HEADER": "Zmiana hasła",
+    "PASSWORD": "Hasło",
+    "NEW_PASSWORD": "Nowe hasło",
+    "NEW_PASSWORD_CONFIRMATION": "Potwierdź nowe hasło",
+    "PASSWORD_NOT_MATCH": "Hasło nie pasuje",
+    "SUBMIT_BUTTON": "Prześlij"
+  },
+  "COMMENTS": {
+    "ADD_COMMENT": "Dodaj komentarz",
+    "ADD_BUTTON": "Dodaj",
+    "NO_COMMENTS_MESSAGE": "Jeszcze nie ma żadnych komentarzy",
+    "COMMENTS_LIST": "Komentarze",
+    "REPLY_BUTTON": "Odpowiedz",
+    "COMMENTS.PLACEHOLDER": "Wpisz tutaj komentarz..."
+  },
+  "APPLICATIONS": {
+    "DETAILS_BUTTON": "Szczegóły",
+    "SUBSCRIBE_BUTTON": "Subskrybuj",
+    "SUBSCRIBED_BUTTON": "Subskrybowane",
+    "UNSUBSCRIBE_BUTTON": "Zrezygnuj z subskrypcji",
+    "DEPLOY_BUTTON": "Uruchom",
+    "LIST_BUTTON": "Lista",
+    "TILES_BUTTON": "Kafelki",
+    "APPLICATION": "Aplikacja",
+    "DESCRIPTION": "Opis",
+    "CATEGORY": "Kategoria",
+    "RATING": "Oceny"
+  },
+  "RESTART_MODAL": {
+    "HEADER": "Potwierdzenie restartu instancji",
+    "BODY": "Czy chcesz zrestartować tą instancje?",
+    "YES_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
+  "INSTALL_MODAL": {
+    "HEADER": "Uruchom nową instancje ",
+    "INSTANCE_NAME": "Nazwa instancji",
+    "INSTANCE_NAME_PATTERN_ERROR": "Nazwa instancji może zawierać tylko znaki a-z, A-Z, 0_9, _ and -.",
+    "INSTANCE_NAME_LENGTH_ERROR": "Nazwa instancji może mieć długość od 3 do 10 znaków.",
+    "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana.",
+    "DOMAIN": "Domena",
+    "CLOSE_BUTTON": "Zamknij",
+    "DEPLOY_BUTTON": "Uruchom"
+  },
+  "APP_INSTANCE": {
+    "SOURCE": "Źródło",
+    "ISSUES": "Problemy",
+    "VERSION": "Wersja",
+    "LICENSE": "Licencja",
+    "TAGS": "Tagi",
+    "RATING": "Oceny",
+    "MY_RATING": "Moja ocena",
+    "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
+    "UNDEPLOY_BUTTON": "Zatrzymaj",
+    "RESTART_BUTTON": "Restart",
+    "REDEPLOY_BUTTON": "Uruchom ponownie",
+    "INSTALLATION_PROGRESS": {
+      "HEADER": "Postęp instalacji",
+      "STATE": "Stan",
+      "DEFAULT_ERROR_STATE": "Coś poszło nie tak",
+      "DETAILS": "Szczegóły",
+      "DEFAULT_ERROR_MESSAGE": "Skontaktuj się z supportem"
+    },
+    "DEPLOYMENT_HISTORY": {
+      "HEADER": "Historia uruchomień",
+      "TIMESTAMP": "Timestamp",
+      "STATE_TRANSITIONS": "Przejścia stanu"
+    },
+    "CONFIGURATION": {
+      "HEADER": "Konfiguracja",
+      "CONFIGURATION_TAB": "Podstawowa konfiguracja",
+      "ADVANCED_TAB": "Zaawansowana konfiguracja",
+      "ADDITIONAL_TAB": "Parametry dodatkowe",
+      "STORAGE_SPACE": "Storage space"
+    },
+    "REQUIRED_FIELDS": "pola wymagane",
+    "APPLY_CONFIG_BUTTON": "Prześlij konfiguracje",
+    "DEFAULT_VALUE": "Wartość domyślna"
+  },
+  "UNDEPLOY_MODAL": {
+    "HEADER": "Potwierdzenie zatrzymania",
+    "BODY": "Czy chcesz zatrzymać tą instancje?",
+    "YES_BUTTON": "Tak",
+    "CANCEL_BUTTON": "Anuluj"
+  },
+  "SEARCH": "Szukaj",
+  "COMPLETE_REGISTRATION": {
+    "HEADER": "Wprowadź następujące informacje aby dokończyć proces rejestracji",
+    "MODAL": {
+      "HEADER": "Rejestracja zakończona",
+      "BODY": "Twoje konto zostało założone w systemie. Proszę zaloguj się ponownie.",
+      "RETURN_BUTTON": "Powrót do strony logowania"
+    }
+  },
+  "TERMS_ACCEPTANCE": {
+    "HEADER": "Przeczytaj i zaakceptuj poniższe dokumenty przed przejściem do systemu",
+    "MODAL": {
+      "HEADER": "Dodano brakujące zatwierdzenia",
+      "BODY": "Polityka prywatności i warunki korzystania zostały zaakceptowane. Proszę zaloguj się ponownie do systemu.",
+      "CLOSE_BUTTON": "Zamknij"
+    }
   }
 }

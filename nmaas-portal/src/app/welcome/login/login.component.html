@@ -2,12 +2,12 @@
 							<fieldset>
 							<div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !username.valid }">
 								<label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
-								<input type="text" name="username" class="form-control" placeholder="Username" [(ngModel)]="model.username" #username="ngModel" required >
+								<input type="text" name="username" class="form-control" placeholder="{{ 'LOGIN.USERNAME' | translate }}" [(ngModel)]="model.username" #username="ngModel" required >
 								<div *ngIf="loginForm.submitted && !username.valid">{{ 'LOGIN.USERNAME_REQUIRED_MESSAGE' | translate }}</div>
 							</div>
 							<div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !password.valid }">	
 								<label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
-								<input type="password" name="password" class="form-control" placeholder="Password" [(ngModel)]="model.password" #password="ngModel" required >			
+								<input type="password" name="password" class="form-control" placeholder="{{ 'LOGIN.PASSWORD' | translate }}" [(ngModel)]="model.password" #password="ngModel" required >
 								<div *ngIf="loginForm.submitted && !password.valid">{{ 'LOGIN.PASSWORD_REQUIRED_MESSAGE' | translate }}</div>
 							</div>
 							<div class="form-group form-group-sm">

@@ -17,8 +17,8 @@
 		<div>
 			<p>
 				<a [routerLink]="['/apps', app.id]" class="btn btn-primary"
-				   role="button">Details</a>
-				<a href="#" class="btn btn-success disabled pull-right" *ngIf="selected">Subscribed</a>
+				   role="button">{{'APPLICATIONS.DETAILS_BUTTON' | translate}}</a>
+				<a href="#" class="btn btn-success disabled pull-right" *ngIf="selected">{{'APPLICATIONS.SUBSCRIBED_BUTTON' | translate}}</a>
 			</p>
 		</div>
 	</div>

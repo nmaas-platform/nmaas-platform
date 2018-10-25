@@ -12,9 +12,9 @@
 		<div class="btn-toolbar" role="toolbar">
 			<div class="btn-group pull-right">
 				<a href="#tab-grid" class="btn btn-default" data-toggle="tab" [class.active]="selectedListType === ListType.GRID" (click)="selectedListType = ListType.GRID">
-					<span class="glyphicon glyphicon-th"></span> Tiles</a>
+					<span class="glyphicon glyphicon-th"></span> {{'APPLICATIONS.TILES_BUTTON' | translate}}</a>
 				<a href="#tab-list" class="btn btn-default" data-toggle="tab" [class.active]="selectedListType === ListType.TABLE" (click)="selectedListType = ListType.TABLE">
-				<span class="glyphicon glyphicon-th-list"></span> List</a>
+				<span class="glyphicon glyphicon-th-list"></span> {{'APPLICATIONS.LIST_BUTTON' | translate}}</a>
 			</div>
 		</div>
 	</div>

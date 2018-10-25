@@ -20,11 +20,11 @@
 	</div>
 </div>
 <nmaas-modal (click)="modal.hide()">
-<div class="nmaas-modal-header">Screenshot</div>
+<div class="nmaas-modal-header">{{'SCREENSHOT.HEADER' | translate}}</div>
 <div class="nmaas-modal-body">
 	<img alt="Screenshot" [src]="selectedImg | secure">
 </div>
 <div class="nmaas-modal-footer">
-	<button type="button" class="btn btn-default" (click)="modal.hide()">Close</button>
+	<button type="button" class="btn btn-default" (click)="modal.hide()">{{'SCREENSHOT.CLOSE_BUTTON' | translate}}</button>
 </div>
 <nmaas-modal>
