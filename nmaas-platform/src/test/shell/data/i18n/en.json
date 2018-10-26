@@ -200,6 +200,16 @@
     "EDIT_SETTINGS_BUTTON": "Edit settings",
     "REMOVE_BUTTON": "Remove"
   },
+  "MONITOR_DETAILS": {
+    "HEADER": "Monitor service details",
+    "SERVICE_NAME": "Service name",
+    "INTERVAL": "Interval",
+    "INTERVAL_REQUIRED_ERROR": "Interval is required",
+    "TIME_FORMAT_REQUIRED_ERROR": "Time format is required",
+    "SUBMIT_BUTTON": "Submit",
+    "GO_BACK_BUTTON": "Go back",
+    "NOT_FOUND_ERROR": "Not found"
+  },
   "PORTAL_CONFIGURATION": {
     "TITLE": "Portal configuration",
     "MAINTENANCE": "Maintenance",

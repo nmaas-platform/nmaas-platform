@@ -186,6 +186,16 @@
     "EDIT_SETTINGS_BUTTON": "Edytuj ustawienia",
     "REMOVE_BUTTON": "Usuń"
   },
+  "MONITOR_DETAILS": {
+    "HEADER": "Szczegóły monitorowania",
+    "SERVICE_NAME": "Nazwa usługi",
+    "INTERVAL": "Interwał",
+    "INTERVAL_REQUIRED_ERROR": "Interwał jest wymagany",
+    "TIME_FORMAT_REQUIRED_ERROR": "Jednostka czasu jest wymagana",
+    "SUBMIT_BUTTON": "Prześlij",
+    "GO_BACK_BUTTON": "Powrót",
+    "NOT_FOUND_ERROR": "Nie znaleziono"
+  },
   "PORTAL_CONFIGURATION": {
     "TITLE": "Konfiguracja portalu",
     "MAINTENANCE": "Przerwa techniczna",
