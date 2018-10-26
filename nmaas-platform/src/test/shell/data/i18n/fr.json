@@ -203,7 +203,9 @@
     "TITLE": "Configuration du portail",
     "MAINTENANCE": "Maintenance",
     "ALLOW_SSO_LOGIN": "Autoriser la connexion SSO",
-    "SUBMIT_BUTTON": "Soumettre"
+    "SUBMIT_BUTTON": "Soumettre",
+    "LANGUAGE_ERROR": "Cannot disable active or default language",
+    "DEFAULT_LANGUAGE": "Default language"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails du domaine",

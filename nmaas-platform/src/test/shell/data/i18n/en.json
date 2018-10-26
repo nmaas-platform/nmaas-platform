@@ -203,7 +203,9 @@
     "TITLE": "Portal configuration",
     "MAINTENANCE": "Maintenance",
     "ALLOW_SSO_LOGIN": "Allow SSO login",
-    "SUBMIT_BUTTON": "Submit"
+    "SUBMIT_BUTTON": "Submit",
+    "LANGUAGE_ERROR": "Cannot disable active or default language",
+    "DEFAULT_LANGUAGE": "Default language"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",

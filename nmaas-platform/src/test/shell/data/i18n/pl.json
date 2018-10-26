@@ -203,7 +203,9 @@
     "TITLE": "Konfiguracja portalu",
     "MAINTENANCE": "Konserwacja",
     "ALLOW_SSO_LOGIN": "Zezwalaj na logowanie jednokrotne",
-    "SUBMIT_BUTTON": "Wyślij"
+    "SUBMIT_BUTTON": "Wyślij",
+    "LANGUAGE_ERROR": "Nie można zdeaktywować domyślnego, lub aktywnego języka",
+    "DEFAULT_LANGUAGE": "Domyślny język"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",

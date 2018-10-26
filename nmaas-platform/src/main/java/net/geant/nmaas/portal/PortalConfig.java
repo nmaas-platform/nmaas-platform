@@ -150,7 +150,7 @@ public class PortalConfig {
 
 				} catch(IllegalStateException e){
 					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new ConfigurationView(false, false));
+					configurationManager.addConfiguration(new ConfigurationView(false, false, "en"));
 				}
 			}
 		};
