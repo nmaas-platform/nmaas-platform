@@ -26,4 +26,7 @@ public class EmailConfirmation {
     private String firstName;
     private String lastName;
     private String userName;
+    private String appName;
+    private String appInstanceName;
+    private String domainName;
 }

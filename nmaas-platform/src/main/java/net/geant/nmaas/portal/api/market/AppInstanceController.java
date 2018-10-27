@@ -18,11 +18,17 @@ import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.model.EmailConfirmation;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.NotificationService;
+import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,9 +42,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -55,13 +64,21 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
+    private NotificationService notificationService;
+
+    private UserService userService;
+
     @Autowired
     public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
-                                 ApplicationInstanceService applicationInstanceService, DomainService domains) {
+                                 ApplicationInstanceService applicationInstanceService, DomainService domains,
+                                 NotificationService notificationService,
+                                 UserService userService) {
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instances = applicationInstanceService;
         this.domains = domains;
+        this.notificationService = notificationService;
+        this.userService = userService;
     }
 
     @GetMapping("/apps/instances")
@@ -147,9 +164,14 @@ public class AppInstanceController extends AppBaseController {
                 appInstance.getName(),
                 modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
         appInstance.setInternalId(internalId);
+        final User user = userService.findByUsername(principal.getName()).orElseThrow(ProcessingException::new);
+        final List<User> domainUsers = findUsersWithDomainAdminRole(domainId);
+
+        notificationService.sendEmail(getAppInstanceReadyEmailConfirmation(user, appInstance.getName(), app.getName(), domain.getCodename()));
+        domainUsers.forEach(domainUser ->
+                notificationService.sendEmail(getDomainAdminNotificationEmailConfirmation(domainUser, appInstance.getName(), app.getName(), domain.getCodename())));
 
         instances.update(appInstance);
-
         return new Id(appInstance.getId());
     }
 
@@ -368,4 +390,41 @@ public class AppInstanceController extends AppBaseController {
         return ai;
     }
 
+    private EmailConfirmation getAppInstanceReadyEmailConfirmation(User user, String appInstanceName, String appName, String domainName){
+        return EmailConfirmation.builder()
+                .toEmail(user.getEmail())
+                .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
+                .lastName(user.getLastname())
+                .appInstanceName(appInstanceName)
+                .appName(appName)
+                .domainName(domainName)
+                .subject("Your app instance is ready")
+                .templateName("app-instance-ready-notification")
+                .build();
+    }
+
+    private EmailConfirmation getDomainAdminNotificationEmailConfirmation(User user, String appInstanceName, String appName, String domainName){
+        return EmailConfirmation.builder()
+                .toEmail(user.getEmail())
+                .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
+                .lastName(user.getLastname())
+                .appInstanceName(appInstanceName)
+                .appName(appName)
+                .domainName(domainName)
+                .subject("New app instance is ready")
+                .templateName("domain-admin-notification")
+                .build();
+    }
+
+    protected List<User> findUsersWithDomainAdminRole(Long domainId){
+        List<User> users = new ArrayList<>();
+        for(User user : domains.getMembers(domainId)) {
+            for (UserRole userRole : user.getRoles()) {
+                if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name())) {
+                    users.add(user);
+                }
+            }
+        }
+        return users;
+    }
 }
