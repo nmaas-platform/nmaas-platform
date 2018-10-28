@@ -1,32 +1,28 @@
 package net.geant.nmaas.portal.api.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class EmailConfirmation {
+public class EmailConfirmation extends Email{
 
-    @NotNull
-    private String toEmail;
-
-    @NotNull
-    private String subject;
-
-    @NotNull
-    private String templateName;
-
-    @NotNull
-    private String firstName;
     private String lastName;
     private String userName;
     private String appName;
     private String appInstanceName;
     private String domainName;
+
+    @Builder
+    public EmailConfirmation(@NotNull String toEmail, @NotNull String subject, @NotNull String templateName, @NotNull String firstName, String lastName, String userName, String appName, String appInstanceName, String domainName) {
+        super(toEmail, subject, templateName, firstName);
+        this.lastName = lastName;
+        this.userName = userName;
+        this.appName = appName;
+        this.appInstanceName = appInstanceName;
+        this.domainName = domainName;
+    }
 }
