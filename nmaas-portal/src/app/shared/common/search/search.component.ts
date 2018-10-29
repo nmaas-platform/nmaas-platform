@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-inline-search',
@@ -16,7 +17,10 @@ export class SearchComponent implements OnInit {
   @Output()
   public changed: EventEmitter<string> = new EventEmitter<string>();
   
-  constructor() { }
+  constructor(private translate:TranslateService) {
+      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
   }

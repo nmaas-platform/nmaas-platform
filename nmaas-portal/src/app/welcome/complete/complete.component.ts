@@ -13,6 +13,7 @@ import {ModalComponent} from "../../shared/modal";
 import {isNullOrUndefined} from "util";
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     selector: 'app-complete',
@@ -45,8 +46,12 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 protected profileService: ProfileService,
                 private userService: UserService,
                 private authService: AuthService,
-                private router: Router) {
+                private router: Router,
+                private translate: TranslateService) {
         super();
+        translate.addLangs(['en', 'fr', 'pl']);
+        const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+        translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
         this.registrationForm = fb.group(
             {
                 username: ['', [Validators.required, Validators.minLength(3)]],
@@ -104,6 +109,11 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
             }
         }
+    }
+
+    public useLanguage(language: string) {
+        this.translate.use(language);
+        this.translate.setDefaultLang(language);
     }
 
     public hide(): void{

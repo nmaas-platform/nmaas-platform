@@ -10,6 +10,7 @@ import {DomainService} from '../../../service/domain.service';
 import { UserDataService } from '../../../service/userdata.service';
 import { isUndefined } from 'util';
 import {Observable} from "rxjs/Observable";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-modal-app-install',
@@ -32,7 +33,9 @@ export class AppInstallModalComponent implements OnInit {
 
   userDomains: Domain[];
 
-  constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private router: Router) {
+  constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private router: Router, private translate:TranslateService) {
+      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {

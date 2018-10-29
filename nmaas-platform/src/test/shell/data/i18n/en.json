@@ -1,47 +1,47 @@
 {
   "NAVBAR": {
-    "MARKET": "Market",
-    "SUBSCRIPTIONS": "Subscription",
+    "MARKET": "Applications",
+    "SUBSCRIPTIONS": "Subscriptions",
     "INSTANCES": "Instances",
     "DOMAINS": "Domains",
     "USERS": "Users",
-    "INVENTORY": "Inventory",
-    "MONITOR": "Monitor",
+    "INVENTORY": "External components",
+    "MONITOR": "Monitoring",
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
-    "LOGIN_REGISTER": "Login/Register"
+    "LOGIN_REGISTER": "Login | Register"
   },
   "WELCOME": {
     "LOGIN": "Login",
     "REGISTER": "Register",
     "TITLE1": "Network Management as a Service",
-    "TITLE2": "provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure.",
+    "TITLE2": "provides a portfolio of network management applications run as dedicated per-user instances in the cloud.",
     "P1": "GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the infrastructure of the NMaaS service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via NMaaS, as well as supporting users that contribute their software to NMaaS system.",
-    "P2": "Users",
+    "P2": "Target users",
     "P3": "NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community.",
-    "P4": "System, marketplace and service",
-    "P5": "NMaaS provides multiple benefits, as a system, an application marketplace, and as a service. NMaaS simplifies domain network management by providing the infrastructure and tools via a cloud-based, multi-tenant and secure network management system. It enables the deployment of network management tools, as well as management and monitoring of client networks, although NMaaS does not monitor and manage the network by itself. The selection of tools that is and/or can be made available to users is not limited to network management tools and can be easily extended.",
+    "P4": "NMaaS Marketplace",
+    "P5": "NMaaS Marketplace is a catalogue of available open source tools, supported by community, distributed free, chosen by administration. There is also place for your application choice - you can propose new applications. ",
     "P6": "Cost reduction",
     "P7": "With NMaaS, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
-    "P8": "Smart scaling",
-    "P9": "If there is a need to extend Your services - you can do it within few minutes in any place, any time, by just deploying new instances",
+    "P8": "Flexible scaling",
+    "P9": "If You need some horizontal scaling - there is no problem with that on NMaaS. You can very easily scale Your instances in few minutes.",
     "P10": "NMaaS Features",
     "P11": "Application Market",
-    "P12": "At store you can find not only official applications, selected by the administrator, but also there is a place for applications created by community - and to share them with other people.",
-    "P13": "Rating system",
-    "P14": "You want to share your opinion about application? Give some hints to author? There is solution - you can rate and comment every application at store.",
+    "P12": "At store You can find top picked applications to manage and maintain Your network infrastructure, chosen by administrators and community.",
+    "P13": "Own applications",
+    "P14": "You want to share your application among the community? You can request adding your application to NMaaS Application Market.",
     "P15": "SSO Support",
     "P16": "If you want to login using same account for few services, not only NMaasS, You can login using SSO, where you can choose your identity provider and login using existing account.",
     "P17": "Fast & easy deployment",
     "P18": "You can deploy your first application in few minutes - just add your configuration, get application from Market and deploy it - our services will do rest. In few minutes you will get address for your instance of application.",
-    "P19": "Easy scaling",
-    "P20": "More networks, more domains? That's simple - you can easily scale horizontal applications by adding more instances of application.",
+    "P19": "Monitoring",
+    "P20": "NMaaS gives You solution for service monitoring - with our service tool, You can check and collect information about your services availability.",
     "P21": "Domains management",
     "P22": "You have more then one domain to manage, but you don't have own infrastructure? There is simple solution - NMaaS support multiple domains and configurations to manage.",
     "P23": "Technologies used",
     "P24": "Security",
-    "P25": "With NMaaS, you don't have to worry about security. We provide safe connection to separeted instances by VPN to your network - to allow institutions and projects to safe management of network."
+    "P25": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network."
   },
   "REGISTRATION": {
     "USERNAME": "Username",
@@ -73,7 +73,7 @@
     "HELM": "Helm",
     "HOST_ADDRESS": "REST Host address",
     "HOST_SSH_USERNAME": "Host SSH username",
-    "USER_LOCAL_CHART_ARCHIEVES": "Use local chart archives",
+    "USER_LOCAL_CHART_ARCHIVES": "Use local chart archives",
     "HEML_CHART_REPO_NAME": "Helm chart repository name",
     "HEML_CHARTS_DIRECTORY": "Helm charts directory",
     "REST_API": "REST API",
@@ -84,7 +84,7 @@
     "CONTROLLER_CONFIG_OPTION": "Controller config option",
     "SUPPORTED_INGRESS_CLASS": "Supported Ingress class",
     "CONTROLLER_CHART_NAME": "Controller chart name",
-    "CONTROLLER_CHART_ARCHIEVE": "Controller chart archive",
+    "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource config option",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
     "TLS_SUPPORTED": "TLS supported",
@@ -124,7 +124,7 @@
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Network address must contain only digits and dots",
     "MASK_VALIDATION_MESSAGE": "Mask must be between 0 and 32"
   },
-  "GIT_LAB": {
+  "GITLAB": {
     "TITLE": "GitLab configuration",
     "SERVER_ADDRESS": "Server address",
     "SERVER_ADDRESS_REQUIRED_MESSAGE": "Server address is required",
@@ -173,7 +173,8 @@
     "ACTIVATE": "Active",
     "DETAILS_BUTTON": "Details",
     "EDIT_BUTTON": "Edit",
-    "REMOVE_BUTTON": "Remove"
+    "REMOVE_BUTTON": "Remove",
+    "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
     "TITLE": "Application instances",
@@ -199,6 +200,16 @@
     "EDIT_SETTINGS_BUTTON": "Edit settings",
     "REMOVE_BUTTON": "Remove"
   },
+  "MONITOR_DETAILS": {
+    "HEADER": "Monitor service details",
+    "SERVICE_NAME": "Service name",
+    "INTERVAL": "Interval",
+    "INTERVAL_REQUIRED_ERROR": "Interval is required",
+    "TIME_FORMAT_REQUIRED_ERROR": "Time format is required",
+    "SUBMIT_BUTTON": "Submit",
+    "GO_BACK_BUTTON": "Go back",
+    "NOT_FOUND_ERROR": "Not found"
+  },
   "PORTAL_CONFIGURATION": {
     "TITLE": "Portal configuration",
     "MAINTENANCE": "Maintenance",
@@ -223,6 +234,8 @@
     "ROLES": "Roles",
     "CONFIGURED": "DCN status - Configured",
     "NOT_CONFIGURED": "DCN status - Not configured",
+    "CONFIGURED_VIEW": "Configured",
+    "NOT_CONFIGURED_VIEW": "Not configured",
     "NOT_FOUND": "Not found",
     "DCN_STATUS_CHANGE": "DCN status change",
     "QUESTION_1": "You are about to update the DCN configuration status for domain",
@@ -236,5 +249,139 @@
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename is required.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contains a-z, A-Z, 0_9, _ characters.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long."
+  },
+  "GIT_INFO": {
+    "HEADER": "NMaaS version information",
+    "VERSION": "Version",
+    "BUILD_TIME": "Build time",
+    "LAST_COMMIT": "Last commit",
+    "BRANCH_NAME": "Branch",
+    "CLOSE_BUTTON": "Close"
+  },
+  "USER_DETAILS": {
+    "USER": "User",
+    "HEADER": "General information",
+    "USERNAME": "Username",
+    "FIRST_NAME": "First name",
+    "LAST_NAME": "Last name",
+    "EMAIL": "Email",
+    "CHANGE_PASSWORD_BUTTON": "Change password",
+    "ID": "Id in db",
+    "VIEW_BUTTON": "View",
+    "SUBMIT_BUTTON": "Submit",
+    "EDIT_BUTTON": "Edit",
+    "REMOVE_BUTTON": "Remove"
+  },
+  "USER_PRIVILEGES": {
+    "HEADER": "Privileges",
+    "DOMAIN": "Domain",
+    "ROLE": "Role",
+    "ADD_BUTTON": "Add",
+    "REMOVE_BUTTON": "Remove"
+  },
+  "SCREENSHOTS": {
+    "HEADER": "Screenshots",
+    "CLOSE_BUTTON": "Close"
+  },
+  "PASSWORD": {
+    "HEADER": "Change password",
+    "PASSWORD": "Password",
+    "NEW_PASSWORD": "New password",
+    "NEW_PASSWORD_CONFIRMATION": "Confirm new password",
+    "PASSWORD_NOT_MATCH": "Password not match",
+    "SUBMIT_BUTTON": "Submit"
+  },
+  "COMMENTS": {
+    "ADD_COMMENT": "Add comment",
+    "ADD_BUTTON": "Add",
+    "NO_COMMENTS_MESSAGE": "No comment added yet",
+    "COMMENTS_LIST": "Comments",
+    "REPLY_BUTTON": "Reply",
+    "COMMENTS.PLACEHOLDER": "Add some comment here..."
+  },
+  "APPLICATIONS": {
+    "DETAILS_BUTTON": "Details",
+    "SUBSCRIBE_BUTTON": "Subscribe",
+    "SUBSCRIBED_BUTTON": "Subscribed",
+    "UNSUBSCRIBE_BUTTON": "Unsubscribe",
+    "DEPLOY_BUTTON": "Deploy",
+    "APPLICATION": "Application",
+    "DESCRIPTION": "Description",
+    "CATEGORY": "Category",
+    "RATING": "Rating"
+  },
+  "RESTART_MODAL": {
+    "HEADER": "Restart confirmation",
+    "BODY": "Do you want to restart this application instance?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "INSTALL_MODAL": {
+    "HEADER": "Deploy new instance of ",
+    "INSTANCE_NAME": "Instance name",
+    "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0_9, _ and - characters.",
+    "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long.",
+    "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required.",
+    "DOMAIN": "Domain",
+    "CLOSE_BUTTON": "Close",
+    "DEPLOY_BUTTON": "Deploy"
+  },
+  "APP_INSTANCE": {
+    "SOURCE": "Source",
+    "ISSUES": "Issues",
+    "VERSION": "Version",
+    "LICENSE": "License",
+    "TAGS": "Tags",
+    "RATING": "Rating",
+    "MY_RATING": "My rating",
+    "GO_TO_APP_BUTTON": "Go to app",
+    "UNDEPLOY_BUTTON": "Undeploy",
+    "RESTART_BUTTON": "Restart",
+    "REDEPLOY_BUTTON": "Redeploy",
+    "INSTALLATION_PROGRESS": {
+      "HEADER": "Installation progress",
+      "STATE": "State",
+      "DEFAULT_ERROR_STATE": "Something went wrong",
+      "DETAILS": "Details",
+      "DEFAULT_ERROR_MESSAGE": "Please contact support"
+    },
+    "DEPLOYMENT_HISTORY": {
+      "HEADER": "Deployment history",
+      "TIMESTAMP": "Timestamp",
+      "STATE_TRANSITIONS": "State transitions"
+    },
+    "CONFIGURATION": {
+      "HEADER": "Configuration",
+      "CONFIGURATION_TAB": "Configuration",
+      "ADVANCED_TAB": "Advanced",
+      "ADDITIONAL_TAB": "Additional parameters",
+      "STORAGE_SPACE": "Storage space"
+    },
+    "REQUIRED_FIELDS": "required fields",
+    "APPLY_CONFIG_BUTTON": "Apply configuration",
+    "DEFAULT_VALUE": "Default value"
+  },
+  "UNDEPLOY_MODAL": {
+    "HEADER": "Undeploy confirmation",
+    "BODY": "Do you want to undeploy this application instance?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "SEARCH": "Search",
+  "COMPLETE_REGISTRATION": {
+    "HEADER": "Please provide the following information to finalize your registration",
+    "MODAL": {
+      "HEADER": "Registration completed",
+      "BODY": "Your data has been registered in the system. Please login again.",
+      "RETURN_BUTTON": "Return to login page"
+    }
+  },
+  "TERMS_ACCEPTANCE": {
+    "HEADER": "Please read and accept the following documents before accessing the system",
+    "MODAL": {
+      "HEADER": "Missing approvals provided",
+      "BODY": "Your acceptance of Terms of Use and Privacy Policy has been registered in the system. Please login again.",
+      "CLOSE_BUTTON": "Close"
+    }
   }
 }

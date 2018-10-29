@@ -67,8 +67,8 @@
 		<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.VIEW)">
 			<label class="col-sm-2 control-label text-right" for="configured-status">{{ 'DOMAIN_DETAILS.DCN_STATUS' | translate }}</label>
 			<div class="col-sm-10" id="configured-status" style="padding-top: 6px;">
-				<p *ngIf="domain?.dcnConfigured">Configured</p>
-				<p *ngIf="!domain?.dcnConfigured">Not configured</p>
+				<p *ngIf="domain?.dcnConfigured">{{ 'DOMAIN_DETAILS.CONFIGURED_VIEW' | translate }}</p>
+				<p *ngIf="!domain?.dcnConfigured">{{ 'DOMAIN_DETAILS.NOT_CONFIGURED_VIEW' | translate }}</p>
 			</div>
 		</div>
 
