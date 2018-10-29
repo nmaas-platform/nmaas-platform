@@ -30,16 +30,16 @@
 							"properties": {
 								"jobName": {
 									"title": "Job name",
-									"type": "string",
+									"type": "string"
 								},
 								"ipAddress": {
-									"title": "IP address",
+									"title": "IP address with port",
 									"type": "string",
-									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\:[0-9]{6}$"
 								},
 								"label": {
 									"title": "Label",
-									"type": "string",
+									"type": "string"
 								}
 							}
 						}
