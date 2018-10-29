@@ -47,4 +47,5 @@ public interface DomainService {
 	Set<Role> getMemberRoles(Long domainId, Long userId) throws ObjectNotFoundException;
 	
 	Set<Domain> getUserDomains(Long userId) throws ObjectNotFoundException;
+	List<User> findUsersWithDomainAdminRole(Long domainId);
 }
