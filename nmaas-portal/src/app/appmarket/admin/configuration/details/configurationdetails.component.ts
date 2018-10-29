@@ -22,8 +22,6 @@ export class ConfigurationDetailsComponent extends BaseComponent implements OnIn
 
   constructor(private router: Router, private configurationService: ConfigurationService, private languageService:InternationalizationService, private contentService:ContentDisplayService, private translate: TranslateService) {
     super();
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {
@@ -36,7 +34,7 @@ export class ConfigurationDetailsComponent extends BaseComponent implements OnIn
   }
 
   public save(): void{
-      this.configurationService.updateConfiguration(this.configuration).subscribe(() => {this.update(); this.translate.setDefaultLang(this.configuration.defaultLanguage)}, err => this.errorMsg = err.message);
+      this.configurationService.updateConfiguration(this.configuration).subscribe(() => this.update(), err => this.errorMsg = err.message);
   }
 
   public changeLanguageState(language:Language, state: boolean): void{

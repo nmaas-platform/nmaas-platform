@@ -4,7 +4,6 @@ import {AppsService} from '../../service/index';
 import {Comment, Id} from '../../model/index';
 import {AuthService} from '../../auth/auth.service';
 import {isNullOrUndefined} from "util";
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     selector: 'comments',
@@ -34,9 +33,7 @@ export class CommentsComponent implements OnInit {
 
     commentErrorMsg: string;
 
-    constructor(private appsService: AppsService, private authService:AuthService, private translate:TranslateService) {
-        const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-        translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+    constructor(private appsService: AppsService, private authService:AuthService) {
     }
 
     ngOnInit() {

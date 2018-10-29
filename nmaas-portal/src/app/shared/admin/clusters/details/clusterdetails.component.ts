@@ -9,7 +9,6 @@ import {BaseComponent} from '../../../common/basecomponent/base.component';
 import {ComponentMode} from '../../../common/componentmode';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Router} from '@angular/router';
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'nmaas-clusterdetails',
@@ -36,11 +35,9 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     @Output()
     public onDelete: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private router: Router, private translate: TranslateService) {
+  constructor(private router: Router) {
     super();
     this.initializeMaps();
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
     ngOnInit() {

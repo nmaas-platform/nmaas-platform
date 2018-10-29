@@ -10,10 +10,10 @@ import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {Router} from "@angular/router";
 import {AuthService} from "../../auth/auth.service";
 import {ModalComponent} from "../../shared/modal";
-import {isNullOrUndefined} from "util";
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {TranslateService} from "@ngx-translate/core";
+import {ContentDisplayService} from "../../service/content-display.service";
 
 @Component({
     selector: 'app-complete',
@@ -32,6 +32,8 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     public submitted: boolean = false;
     public success: boolean = false;
 
+    public languages: string[];
+
     @ViewChild(ModalComponent)
     public readonly modal: ModalComponent;
 
@@ -47,11 +49,9 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 private userService: UserService,
                 private authService: AuthService,
                 private router: Router,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private contentService: ContentDisplayService) {
         super();
-        translate.addLangs(['en', 'fr', 'pl']);
-        const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-        translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
         this.registrationForm = fb.group(
             {
                 username: ['', [Validators.required, Validators.minLength(3)]],
@@ -64,7 +64,8 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.profileService.getOne().subscribe((user) => this.user = user)
+        this.contentService.getLanguages().subscribe(langs => this.languages = langs);
+        this.profileService.getOne().subscribe((user) => this.user = user);
         this.modal.setStatusOfIcons(false);
         this.modal.setModalType("success");
     }
@@ -113,7 +114,6 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
     public useLanguage(language: string) {
         this.translate.use(language);
-        this.translate.setDefaultLang(language);
     }
 
     public hide(): void{

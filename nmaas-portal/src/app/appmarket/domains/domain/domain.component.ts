@@ -13,7 +13,6 @@ import {Role, UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
 import {AuthService} from "../../../auth/auth.service";
 import {ModalComponent} from '../../../shared/modal';
-  import {TranslateService} from '@ngx-translate/core';
 
 
 @Component({
@@ -32,10 +31,8 @@ export class DomainComponent extends BaseComponent implements OnInit {
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
 
-    constructor(public domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService: AuthService, private translate: TranslateService) {
+    constructor(public domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService: AuthService) {
       super();
-      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
     }
 
   ngOnInit() {

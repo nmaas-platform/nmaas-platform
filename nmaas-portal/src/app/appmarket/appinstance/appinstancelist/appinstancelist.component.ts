@@ -9,7 +9,6 @@ import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable} from 'rxjs/Observable';
-import {TranslateService} from '@ngx-translate/core';
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -37,10 +36,7 @@ export class AppInstanceListComponent implements OnInit {
               private domainService: DomainService,
               private userDataService: UserDataService,
               private authService: AuthService,
-              private appConfig: AppConfigService,
-              private translate: TranslateService) {
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+              private appConfig: AppConfigService) {
   }
 
   ngOnInit() {

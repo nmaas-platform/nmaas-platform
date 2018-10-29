@@ -7,8 +7,8 @@
                         <img alt="Geant logo" src="assets/images/geant-logo-small.png">
                     </div>
                     <div style="display: inline-block" class="pull-right">
-                        <select #langSelect class="form-control" (change)="translate.use(langSelect.value)">
-                            <option *ngFor="let lang of translate.getLangs()" [value]="lang"
+                        <select #langSelect class="form-control" (change)="useLanguage(langSelect.value)">
+                            <option *ngFor="let lang of languages" [value]="lang"
                                     [selected]="lang === translate.currentLang">{{ lang }}</option>
                         </select>
                     </div>

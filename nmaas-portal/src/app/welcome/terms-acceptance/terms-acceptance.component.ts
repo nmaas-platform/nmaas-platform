@@ -10,7 +10,6 @@ import {UserService} from "../../service";
 import {AuthService} from "../../auth/auth.service";
 import {Router} from "@angular/router";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-terms-acceptance',
@@ -37,10 +36,8 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
     @ViewChild(ModalInfoPolicyComponent)
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
-    constructor(private fb: FormBuilder, private userService: UserService,  private auth: AuthService, private router: Router, private translate: TranslateService) {
+    constructor(private fb: FormBuilder, private userService: UserService,  private auth: AuthService, private router: Router) {
         super();
-        const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-        translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
         this.registrationForm = fb.group(
             {
                 termsOfUseAccepted: [false],

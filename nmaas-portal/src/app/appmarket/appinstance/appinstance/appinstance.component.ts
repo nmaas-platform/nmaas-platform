@@ -15,7 +15,6 @@ import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ModalComponent} from "../../../shared/modal";
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -73,9 +72,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private location: Location,
     @Inject(LOCAL_STORAGE) public storage: StorageService,
-              private fb: FormBuilder, private translate: TranslateService) {
-      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+              private fb: FormBuilder) {
       this.configAdvancedTab = fb.group({
       storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
     });

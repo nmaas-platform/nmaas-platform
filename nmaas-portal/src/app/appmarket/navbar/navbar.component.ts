@@ -29,7 +29,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
       if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
-          this.refresh = Observable.interval(10000).subscribe(next => {
+          this.refresh = Observable.interval(5000).subscribe(next => {
               if(this.contentService.shouldUpdate()) {
                   this.getSupportedLanguages();
                   this.contentService.setUpdateRequiredFlag(false);

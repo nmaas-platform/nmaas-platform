@@ -6,7 +6,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {isUndefined} from 'util';
 import {AuthService} from "../../../auth/auth.service";
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-userdetails',
@@ -19,11 +18,8 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   public user: User;
 
   constructor(private userService: UserService, private router: Router,
-    private route: ActivatedRoute,
-    private location: Location, public authService:AuthService, private translate:TranslateService) {
+    private route: ActivatedRoute, private location: Location, public authService:AuthService) {
     super();
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {
