@@ -46,7 +46,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldAddNewConfiguration() throws Exception {
-        ConfigurationView configuration = new ConfigurationView(true, false);
+        ConfigurationView configuration = new ConfigurationView(true, false, "en");
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
@@ -61,15 +61,19 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldUpdateConfiguration() throws Exception {
+        mvc.perform(post("/api/i18n/en")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + getValidTokenForUser(user))
+                .content("[]"));
         MvcResult mvcPostResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
-                .content(new ObjectMapper().writeValueAsString(new ConfigurationView(false, false)))
+                .content(new ObjectMapper().writeValueAsString(new ConfigurationView(false, false, "en")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
         Long id = Long.parseLong(mvcPostResult.getResponse().getContentAsString());
-        ConfigurationView configuration = new ConfigurationView(true, false);
+        ConfigurationView configuration = new ConfigurationView(true, false, "en");
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX+"/{id}",id)
                 .contentType(MediaType.APPLICATION_JSON)

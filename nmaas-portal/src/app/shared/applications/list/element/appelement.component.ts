@@ -6,7 +6,6 @@ import {DefaultLogo} from '../../../../directive/defaultlogo.directive';
 
 import {isUndefined} from 'util';
 import {SecurePipe} from '../../../../pipe/index';
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-applist-element',
@@ -23,9 +22,7 @@ export class AppElementComponent implements OnInit {
   @Input()
   public selected: boolean;
 
-  constructor(public appImagesService: AppImagesService, private translate:TranslateService) {
-      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  constructor(public appImagesService: AppImagesService) {
   }
 
   ngOnInit() {

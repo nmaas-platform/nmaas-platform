@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +20,9 @@ public class Internationalization {
 
     @Column(unique = true, nullable = false)
     private String language;
+
+    private boolean enabled;
+
     @Lob
     @Type(type= "text")
     @Column

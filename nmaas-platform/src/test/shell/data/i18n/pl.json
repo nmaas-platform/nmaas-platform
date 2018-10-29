@@ -200,7 +200,9 @@
     "TITLE": "Konfiguracja portalu",
     "MAINTENANCE": "Przerwa techniczna",
     "ALLOW_SSO_LOGIN": "Zezwól na logowanie przez SSO",
-    "SUBMIT_BUTTON": "Prześlij"
+    "SUBMIT_BUTTON": "Prześlij",
+    "LANGUAGE_ERROR": "Nie można zdeaktywować domyślnego, lub aktywnego języka",
+    "DEFAULT_LANGUAGE": "Domyślny język"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
@@ -283,7 +285,7 @@
     "NO_COMMENTS_MESSAGE": "Jeszcze nie ma żadnych komentarzy",
     "COMMENTS_LIST": "Komentarze",
     "REPLY_BUTTON": "Odpowiedz",
-    "COMMENTS.PLACEHOLDER": "Wpisz tutaj komentarz..."
+    "PLACEHOLDER": "Wpisz tutaj komentarz..."
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Szczegóły",

@@ -9,7 +9,6 @@ import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {ModalComponent} from "../../shared/modal";
-import {TranslateService} from '@ngx-translate/core';
 
 import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
 
@@ -42,9 +41,7 @@ export class RegistrationComponent implements OnInit {
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
 
-  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService, private translate: TranslateService) {
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService) {
     
     this.registrationForm = fb.group(
       {

@@ -4,7 +4,6 @@ import {Role} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-domains-list', templateUrl: './domainslist.component.html', styleUrls: ['./domainslist.component.css']
@@ -13,9 +12,7 @@ export class DomainsListComponent implements OnInit {
 
   public domains: Observable<Domain[]>;
 
-  constructor(protected domainService: DomainService, protected authService: AuthService, private translate: TranslateService) {
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  constructor(protected domainService: DomainService, protected authService: AuthService) {
   }
 
   ngOnInit() {

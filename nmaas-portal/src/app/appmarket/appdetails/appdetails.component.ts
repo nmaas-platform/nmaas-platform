@@ -20,7 +20,6 @@ import 'rxjs/add/operator/isEmpty';
 import {empty} from 'rxjs/observable/empty';
 import {isUndefined} from 'util';
 import {AppSubscription} from "../../model";
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -52,10 +51,7 @@ export class AppDetailsComponent implements OnInit {
     private appInstanceService: AppInstanceService,
     private userDataService: UserDataService,
     private authService: AuthService,
-    private router: Router, private route: ActivatedRoute, private location: Location,
-    private translate:TranslateService) {
-      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+    private router: Router, private route: ActivatedRoute, private location: Location) {
   }
 
   ngOnInit() {

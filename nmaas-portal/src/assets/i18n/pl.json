@@ -283,7 +283,7 @@
     "NO_COMMENTS_MESSAGE": "Jeszcze nie ma żadnych komentarzy",
     "COMMENTS_LIST": "Komentarze",
     "REPLY_BUTTON": "Odpowiedz",
-    "COMMENTS.PLACEHOLDER": "Wpisz tutaj komentarz..."
+    "PLACEHOLDER": "Wpisz tutaj komentarz..."
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Szczegóły",

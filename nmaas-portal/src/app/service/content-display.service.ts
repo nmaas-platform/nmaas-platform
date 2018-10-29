@@ -8,6 +8,8 @@ import {Content} from "../model/content";
 @Injectable()
 export class ContentDisplayService extends GenericDataService {
 
+    private updateRequiredFlag: boolean = false;
+
     constructor(http: HttpClient, appConfig: AppConfigService) {
         super(http, appConfig);
     }
@@ -16,7 +18,19 @@ export class ContentDisplayService extends GenericDataService {
         return this.http.get<Content>(this.getContentUrl()+name);
     }
 
+    public getLanguages(): Observable<string[]>{
+        return this.get(this.getContentUrl() + 'languages');
+    }
+
     protected getContentUrl(): string{
         return this.appConfig.getApiUrl()+'/content/'
+    }
+
+    public setUpdateRequiredFlag(flag:boolean){
+        this.updateRequiredFlag = flag;
+    }
+
+    public shouldUpdate(): boolean{
+        return this.updateRequiredFlag;
     }
 }

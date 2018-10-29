@@ -9,7 +9,6 @@ import {AppViewType} from '../common/viewtype';
 import {Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {isUndefined} from 'util';
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-applications-view',
@@ -38,9 +37,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   public searchedAppName: string = "";
   protected searchedTag: string = "all";
 
-  constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService, private translate:TranslateService) {
-      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {
   }
 
   ngOnInit() {

@@ -213,7 +213,9 @@
     "TITLE": "Configuration du portail",
     "MAINTENANCE": "Maintenance",
     "ALLOW_SSO_LOGIN": "Autoriser la connexion SSO",
-    "SUBMIT_BUTTON": "Soumettre"
+    "SUBMIT_BUTTON": "Soumettre",
+    "LANGUAGE_ERROR": "Cannot disable active or default language",
+    "DEFAULT_LANGUAGE": "Default language"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails du domaine",
@@ -296,7 +298,7 @@
     "NO_COMMENTS_MESSAGE": "No comment added yet",
     "COMMENTS_LIST": "Comments",
     "REPLY_BUTTON": "Reply",
-    "COMMENTS.PLACEHOLDER": "Add some comment here..."
+    "PLACEHOLDER": "Add some comment here..."
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",

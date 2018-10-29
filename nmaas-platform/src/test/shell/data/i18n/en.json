@@ -214,7 +214,9 @@
     "TITLE": "Portal configuration",
     "MAINTENANCE": "Maintenance",
     "ALLOW_SSO_LOGIN": "Allow SSO login",
-    "SUBMIT_BUTTON": "Submit"
+    "SUBMIT_BUTTON": "Submit",
+    "LANGUAGE_ERROR": "Cannot disable active or default language",
+    "DEFAULT_LANGUAGE": "Default language"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",
@@ -297,7 +299,7 @@
     "NO_COMMENTS_MESSAGE": "No comment added yet",
     "COMMENTS_LIST": "Comments",
     "REPLY_BUTTON": "Reply",
-    "COMMENTS.PLACEHOLDER": "Add some comment here..."
+    "PLACEHOLDER": "Add some comment here..."
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",

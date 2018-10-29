@@ -8,7 +8,6 @@ import {AppViewType} from '../../common/viewtype';
 import {Component, OnInit, Input, ViewEncapsulation, OnDestroy} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {isUndefined} from 'util';
-import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-applist',
@@ -36,9 +35,7 @@ export class AppListComponent implements OnInit, OnDestroy {
   @Input()
   public selected: Observable<Set<number>>;
 
-  constructor(private appSubscriptionService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService, private translate:TranslateService) {
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+  constructor(private appSubscriptionService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {
     if (isUndefined(this.listType)) {
       this.listType = ListType.GRID;
     }
