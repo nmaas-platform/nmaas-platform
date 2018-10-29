@@ -5,6 +5,7 @@ import { ModalComponent } from '../modal/index';
 import { AppsService, AppImagesService } from '../../service/index';
 import { FileInfo } from '../../model/fileinfo';
 import { GroupPipe, SecurePipe } from '../../pipe/index';
+import {TranslateService} from "@ngx-translate/core";
 
 
 @Component({
@@ -26,7 +27,10 @@ export class ScreenshotsComponent implements OnInit {
 
     public selectedImg: string;
 
-    constructor(private appsService: AppsService) { }
+    constructor(private appsService: AppsService, private translate:TranslateService) {
+        const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+        translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+    }
 
     ngOnInit() {
         this.appsService.getAppScreenshotsByUrl(this.pathUrl).subscribe(fileInfos => this.imagesFileInfo = fileInfos);

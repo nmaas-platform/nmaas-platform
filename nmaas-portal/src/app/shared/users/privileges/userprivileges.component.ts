@@ -11,6 +11,7 @@ import {Observable} from "rxjs/Observable";
 import {CacheService} from "../../../service/cache.service";
 import {UserDataService} from "../../../service/userdata.service";
 import {isNullOrUndefined} from "util";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-userprivileges',
@@ -33,8 +34,10 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   public newPrivilegeForm: FormGroup;
 
   constructor(protected fb: FormBuilder, protected domainService: DomainService,
-    protected userService: UserService, protected authService: AuthService, protected userData:UserDataService) {
+    protected userService: UserService, protected authService: AuthService, protected userData:UserDataService, private translate:TranslateService) {
     super();
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
     this.newPrivilegeForm = fb.group(
       {
         userId: [null, Validators.required],

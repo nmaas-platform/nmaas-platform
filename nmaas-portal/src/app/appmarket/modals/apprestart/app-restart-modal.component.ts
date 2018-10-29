@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ModalComponent} from "../../../shared/modal";
 import {AppInstanceService} from "../../../service";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-modal-app-restart',
@@ -19,7 +20,10 @@ export class AppRestartModalComponent implements OnInit {
     @Input()
     private domainId: number;
 
-    constructor(private appInstanceService:AppInstanceService) { }
+    constructor(private appInstanceService:AppInstanceService, private translate:TranslateService) {
+        const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+        translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+    }
 
     ngOnInit() {
 

@@ -6,21 +6,21 @@
       </div>
     </div>
     <div class="panel-body">
-      <h5 class="text-center">Please read and accept the following documents before accessing the system:</h5>
+      <h5 class="text-center">{{'TERMS_ACCEPTANCE.HEADER' | translate}}:</h5>
       <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
 
         <div class="form-group form-group-sm">
           <input id="termsOfUseAccepted" type="checkbox" class="checkbox-inline" formControlName="termsOfUseAccepted">
-          <label class="control-label">I agree to the <a (click)="modalInfoTerms.show()">Terms of Use</a>*</label>
+          <label class="control-label">{{'REGISTRATION.AGREEMENT_MESSAGE' | translate}} <a (click)="modalInfoTerms.show()">{{'REGISTRATION.TERMS' | translate}}</a>*</label>
         </div>
         <div class="form-group form-group-sm">
           <input id="privacyPolicyAccepted" type="checkbox" class="checkbox-inline" formControlName="privacyPolicyAccepted">
-          <label class="control-label">I agree to the <a (click)="modalInfoPolicy.show()">Privacy Policy</a>*</label>
+          <label class="control-label">{{'REGISTRATION.AGREEMENT_MESSAGE' | translate}} <a (click)="modalInfoPolicy.show()">{{'REGISTRATION.PRIVACY_POLICY' | translate}}</a>*</label>
         </div>
 
         <div class="form-group form-group-sm">
           <button class="btn btn-primary btn-block" type="submit">
-            Submit
+            {{'REGISTRATION.SUBMIT' | translate}}
             <img alt="submit" *ngIf="sending" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
           </button>
 
@@ -36,15 +36,15 @@
 
 <nmaas-modal>
   <div class="nmaas-modal-header">
-    <h4 style="text-align: center">Missing approvals provided</h4>
+    <h4 style="text-align: center">{{'TERMS_ACCEPTANCE.MODAL.HEADER' | translate}}</h4>
   </div>
   <div class="nmaas-modal-body">
     <div class="form-group text-left">
-      <p class="text-center">Your acceptance of Terms of Use and Privacy Policy has been registered in the system. Please login again.</p>
+      <p class="text-center">{{'TERMS_ACCEPTANCE.MODAL.BODY' | translate}}</p>
     </div>
   </div>
   <div class="nmaas-modal-footer">
-    <button class="btn btn-danger center-block" (click)="hide()">Close</button>
+    <button class="btn btn-danger center-block" (click)="hide()">{{'TERMS_ACCEPTANCE.MODAL.CLOSE_BUTTON' | translate}}</button>
   </div>
 </nmaas-modal>
 <modal-info-terms></modal-info-terms>

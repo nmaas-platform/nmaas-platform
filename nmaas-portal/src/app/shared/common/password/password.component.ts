@@ -3,6 +3,7 @@ import {AbstractControl, Validator, Validators, FormBuilder, FormGroup} from '@a
 import {UserService} from "../../../service";
 import {Password} from "../../../model";
 import {ModalComponent} from "../../modal";
+import {TranslateService} from "@ngx-translate/core";
 
 export class PasswordValidator implements Validator {
 
@@ -37,7 +38,9 @@ export class PasswordComponent implements OnInit {
 
   public errormsg:string;
 
-  constructor(private fb: FormBuilder, private userService:UserService) {
+  constructor(private fb: FormBuilder, private userService:UserService, private translate:TranslateService) {
+    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
+    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
     this.passwordForm = fb.group(
       {
         password: ['', Validators.required],
