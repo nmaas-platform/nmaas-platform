@@ -84,6 +84,7 @@ public class GitLabMonitorService implements MonitorService {
                 .toEmail(user.getEmail())
                 .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
                 .subject("GitLab health check fails")
+                .errorMessage("This is to notify you that the GitLab health check fails.")
                 .templateName("monitoring-failure-notification")
                 .build();
     }

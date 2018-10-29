@@ -23,10 +23,10 @@ public class NotificationServiceImpl implements NotificationService {
     private String port;
 
     @Value("${notification.path}")
-    private String emailConfirmationToken;
+    private String emailConfirmationPath;
 
     @Value("${notification.error.path}")
-    private String failureEmailConfirmationToken;
+    private String failureEmailPath;
 
     private TokenAuthenticationService tokenAuthenticationService;
 
@@ -37,7 +37,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendEmail(EmailConfirmation emailConfirmation) {
-        final String uri = String.format("%s:%s%s", url, port, emailConfirmationToken);
+        final String uri = String.format("%s:%s%s", url, port, emailConfirmationPath);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -50,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendFailureEmail(FailureEmail emailConfirmation) {
-        final String uri = String.format("%s:%s%s", url, port, emailConfirmationToken);
+        final String uri = String.format("%s:%s%s", url, port, failureEmailPath);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
