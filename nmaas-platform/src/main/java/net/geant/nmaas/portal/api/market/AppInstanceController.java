@@ -165,7 +165,7 @@ public class AppInstanceController extends AppBaseController {
                 modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
         appInstance.setInternalId(internalId);
         final User user = userService.findByUsername(principal.getName()).orElseThrow(ProcessingException::new);
-        final List<User> domainUsers = findUsersWithDomainAdminRole(domainId);
+        final List<User> domainUsers = domains.findUsersWithDomainAdminRole(domainId);
 
         notificationService.sendEmail(getAppInstanceReadyEmailConfirmation(user, appInstance.getName(), app.getName(), domain.getCodename()));
         domainUsers.forEach(domainUser ->
@@ -414,17 +414,5 @@ public class AppInstanceController extends AppBaseController {
                 .subject("New app instance is ready")
                 .templateName("domain-admin-notification")
                 .build();
-    }
-
-    protected List<User> findUsersWithDomainAdminRole(Long domainId){
-        List<User> users = new ArrayList<>();
-        for(User user : domains.getMembers(domainId)) {
-            for (UserRole userRole : user.getRoles()) {
-                if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name())) {
-                    users.add(user);
-                }
-            }
-        }
-        return users;
     }
 }

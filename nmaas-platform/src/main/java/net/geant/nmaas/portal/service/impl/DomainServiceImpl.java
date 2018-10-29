@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -246,6 +247,19 @@ public class DomainServiceImpl implements DomainService {
 		User user = getUser(userId);
 				
 		return user.getRoles().stream().map(UserRole::getDomain).collect(Collectors.toSet());
+	}
+
+	@Override
+	public List<User> findUsersWithDomainAdminRole(Long domainId){
+		List<User> users = new ArrayList<>();
+		for(User user : getMembers(domainId)) {
+			for (UserRole userRole : user.getRoles()) {
+				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name())) {
+					users.add(user);
+				}
+			}
+		}
+		return users;
 	}
 
 	protected void checkParam(String name) {
