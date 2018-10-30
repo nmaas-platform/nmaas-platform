@@ -19,7 +19,8 @@ export class AppRestartModalComponent implements OnInit {
     @Input()
     private domainId: number;
 
-    constructor(private appInstanceService:AppInstanceService) { }
+    constructor(private appInstanceService:AppInstanceService) {
+    }
 
     ngOnInit() {
 

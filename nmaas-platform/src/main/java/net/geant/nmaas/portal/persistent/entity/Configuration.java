@@ -25,9 +25,13 @@ public class Configuration {
     @Column(nullable = false)
     private boolean ssoLoginAllowed = false;
 
-    public Configuration(boolean maintenance, boolean ssoLoginAllowed){
+    @Column(nullable = false)
+    private String defaultLanguage;
+
+    public Configuration(boolean maintenance, boolean ssoLoginAllowed, String defaultLanguage){
         this.maintenance = maintenance;
         this.ssoLoginAllowed = ssoLoginAllowed;
+        this.defaultLanguage = defaultLanguage;
     }
 
 }

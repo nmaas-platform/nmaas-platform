@@ -35,6 +35,13 @@
 				<li class="divider-vertical"></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">{{ 'NAVBAR.CONFIGURATION' | translate }}</a></li>
+				
+				<li class="navbar-form form-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN']">
+					<select #langSelect class="form-control" (change)="useLanguage(langSelect.value)">
+						<option *ngFor="let lang of languages" [value]="lang"
+								[selected]="lang === translate.currentLang">{{ lang }}</option>
+					</select>					
+				</li>
 
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"

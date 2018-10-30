@@ -10,6 +10,8 @@ import {Observable} from 'rxjs';
 import {Configuration} from '../../../../model/configuration';
 import {BaseComponent} from '../../../../shared/common/basecomponent/base.component';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from '@ngx-translate/core';
+import {InternationalizationService} from "../../../../service/internationalization.service";
+import {ContentDisplayService} from "../../../../service/content-display.service";
 
 class MockConfigurationService {
     protected uri: string;
@@ -51,7 +53,9 @@ describe('ConfigurationDetailsComponent', () => {
             AppConfigService,
             AppComponent,
             BaseComponent,
-            TranslateService
+            TranslateService,
+            InternationalizationService,
+            ContentDisplayService
         ],
     })
     .compileComponents();
@@ -61,10 +65,5 @@ describe('ConfigurationDetailsComponent', () => {
     fixture = TestBed.createComponent(ConfigurationDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create the app', () => {
-      const app = fixture.debugElement.componentInstance;
-      expect(app).toBeTruthy();
   });
 });

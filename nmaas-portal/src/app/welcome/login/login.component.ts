@@ -9,7 +9,6 @@ import {Configuration} from "../../model/configuration";
 import {isNullOrUndefined} from "util";
 import {ShibbolethService} from "../../service/shibboleth.service";
 import {ShibbolethConfig} from "../../model/shibboleth";
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-login',
@@ -28,9 +27,7 @@ export class LoginComponent implements OnInit {
     ssoLoading: boolean = false;
     ssoError:string = '';
 
-    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService, private translate: TranslateService) { 
-      const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-      translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
+    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService) {
     }
 
     ngOnInit() {

@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.info;
 
-import net.geant.nmaas.portal.api.domain.Domain;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
@@ -8,7 +9,6 @@ import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +46,17 @@ public class ContentController {
     public String getLanguage(@PathVariable("language") String language) {
         return internationalizationRepository
                 .findByLanguageOrderByIdDesc(language)
-                .map(content -> content.getContent())
+                .map(Internationalization::getContent)
                 .orElseThrow(() -> new RuntimeException("language content not available"));
+    }
+
+    @GetMapping("/languages")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> getEnabledLanguages(){
+        return internationalizationRepository.findAll().stream()
+                .filter(Internationalization::isEnabled)
+                .map(Internationalization::getLanguage)
+                .collect(Collectors.toList());
     }
 
     private String readAsString(Resource resource) throws IOException {

@@ -1,12 +1,12 @@
 	<div class="row">
-		<h4>Add comment:</h4>
+		<h4>{{'COMMENTS.ADD_COMMENT' | translate}}:</h4>
 		<div>
 			<form role="form" (ngSubmit)="this.addComment()">
 				<div class="form-group">
-					<label class="sr-only" for="comment">Add comment:</label>
-					<textarea name="comment" id="comment" placeholder="Add some comment here..."
+					<label class="sr-only" for="comment">{{'COMMENTS.ADD_COMMENT' | translate}}:</label>
+					<textarea name="comment" id="comment" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
 						class="form-control" rows="2" required [(ngModel)]="newComment.comment"></textarea>
-					<button type="submit" class="btn btn-default">Add</button>
+					<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
 					<div class="alert alert-danger" *ngIf="commentErrorMsg">
 						{{commentErrorMsg}}
 					</div>
@@ -15,10 +15,10 @@
 		</div>
 	</div>
 	<div class="row" *ngIf="comments.length === 0 || comments === null || comments === undefined">
-		<h3>No comment added yet</h3>
+		<h3>{{'COMMENTS.NO_COMMENTS_MESSAGE' | translate}}</h3>
 	</div>
 	<div class="row" *ngIf="comments.length > 0">
-				<h3>Comments:</h3>
+				<h3>{{'COMMENTS.COMMENTS_LIST' | translate}}:</h3>
 				<ul class="media-list">
 					<ng-template ngFor let-comment [ngForOf]="comments">
 					<li *ngIf="!comment.parentId" class="media">
@@ -29,16 +29,16 @@
 						</div>
 						<div class="media-body">
 						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}}
-                              <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(comment.id, false)">Reply</button>
+                              <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(comment.id, false)">{{'COMMENTS.REPLY_BUTTON' | translate}}</button>
                               <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === comment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span>
                           </h6>
 						  <p>{{comment.comment}}</p>
 							<div *ngIf="this.commentId === comment.id && !this.subComment && this.active">
 								<form role="form" (ngSubmit)="this.addReply(comment.id)">
 									<div class="form-group">
-										<textarea name="comment" id="comment2" placeholder="Add some comment here..."
+										<textarea name="comment" id="comment2" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
 												  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
-										<button type="submit" class="btn btn-default">Add</button>
+										<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
 										<div class="alert alert-danger" *ngIf="replyErrorMsg">
 											{{replyErrorMsg}}
 										</div>
@@ -58,16 +58,16 @@
 									</div>
 									<div class="media-body">
                                      <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}}
-                                          <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">Reply</button>
+                                          <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">{{'COMMENTS.REPLY_BUTTON' | translate}}</button>
                                           <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === subcomment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span>
                                      </h6>
 									  <p>{{subcomment.comment}}</p>
 										<div *ngIf="this.commentId === subcomment.id && this.subComment && this.active">
 											<form role="form" (ngSubmit)="this.addReply(comment.id)">
 												<div class="form-group">
-													<textarea name="comment3" id="comment3" placeholder="Add some comment here..."
+													<textarea name="comment3" id="comment3" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
 															  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
-													<button type="submit" class="btn btn-default">Add</button>
+													<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
 													<div class="alert alert-danger" *ngIf="replyErrorMsg">
 														{{replyErrorMsg}}
 													</div>

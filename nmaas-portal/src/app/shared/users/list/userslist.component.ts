@@ -13,10 +13,6 @@ import { isUndefined } from 'util';
 import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
-import {TranslateService} from '@ngx-translate/core';
-
-
-
 
 @Component({
   selector: 'nmaas-userslist',
@@ -44,12 +40,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   constructor(private userService: UserService,
               public domainService: DomainService,
               private userDataService: UserDataService,
-              private authService: AuthService,
-              private translate: TranslateService) {
+              private authService: AuthService) {
     super();
     userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {

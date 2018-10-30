@@ -14,43 +14,43 @@
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<div class="btn-group pull-right">
 						<a role="button" href="{{app?.wwwUrl}}" class="btn btn-default">WWW</a>
-						<a role="button" href="{{app?.sourceUrl}}" class="btn btn-default">Source</a>
-						<a role="button" href="{{app?.issuesUrl}}" class="btn btn-default">Issues</a>
+						<a role="button" href="{{app?.sourceUrl}}" class="btn btn-default">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+						<a role="button" href="{{app?.issuesUrl}}" class="btn btn-default">{{'APP_INSTANCE.ISSUES' | translate}}</a>
 					</div>
 				</div>
 			</div>
 
 			<hr>
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">Version: {{app?.version}}</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">License: {{app?.license}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{'APP_INSTANCE.VERSION' | translate}}: {{app?.version}}</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">{{'APP_INSTANCE.LICENSE' | translate}}: {{app?.license}}</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-					Tags: {{app?.tags.join(", ")}}
+					{{'APP_INSTANCE.TAGS' | translate}}: {{app?.tags.join(", ")}}
 				</div>
 			</div>
 			<hr>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<p>
-						<span>Rating:</span>
+						<span>{{'APP_INSTANCE.RATING' | translate}}:</span>
 						<rate name="appRate" [pathUrl]="'/apps/' + appId + '/rate'"></rate>
 					</p>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<p>
-						<span>My rating:</span>
+						<span>{{'APP_INSTANCE.MY_RATING' | translate}}:</span>
 						<rate name="myAppRate" [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + appId + '/rate/my'"></rate>
 					</p>
 				</div>
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 					<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
-						<button class="btn btn-primary" (click)="subscribe()">Subscribe</button>
+						<button class="btn btn-primary" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 					</div>
 					<div *ngIf="subscribed" class="btn-group pull-right">
-						<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">Deploy</button>
-						<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">Unsubscribe</button>
+						<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
+						<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">{{'APPLICATIONS.UNSUBSCRIBE_BUTTON' | translate}}</button>
 					</div>
 					
 				</div>
@@ -60,13 +60,13 @@
 
 
 	<div class='row'>
-		<h3>Screenshots</h3>
+		<h3>{{'SCREENSHOTS.HEADER' | translate}}</h3>
 		<hr>
 		<screenshots [pathUrl]="'/apps/' + appId + '/screenshots'"></screenshots>
 	</div>
 
 	<div class="row">
-		<h3>Description</h3>
+		<h3>{{'APPLICATIONS.DESCRIPTION' | translate}}</h3>
 		<hr>
 		{{app?.fullDescription}}
 	</div>

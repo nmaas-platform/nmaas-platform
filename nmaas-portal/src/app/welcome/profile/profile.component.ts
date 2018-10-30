@@ -11,7 +11,9 @@ import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 })
 export class ProfileComponent extends BaseComponent implements OnInit {
 
-  constructor(protected profileService:ProfileService) {super()}
+  constructor(protected profileService:ProfileService) {
+      super();
+  }
 
   public user:User;
 

@@ -16,10 +16,39 @@
                        [(ngModel)]="this.configuration.ssoLoginAllowed" [checked]="this.configuration.ssoLoginAllowed === true">
             </div>
         </div>
+        <div class="form-group">
+            <label for="defaultLang" class="col-sm-2 control-label">{{'PORTAL_CONFIGURATION.DEFAULT_LANGUAGE' | translate}}</label>
+            <div class="col-sm-10">
+                <select id="defaultLang" #langSelect class="form-control" (change)="this.configuration.defaultLanguage = langSelect.value">
+                    <option *ngFor="let lang of languages" [value]="lang.language"
+                            [selected]="lang.language === configuration.defaultLanguage">{{ lang.language }}</option>
+                </select>
+            </div>
+        </div>
       <button class="btn btn-primary" type="submit">{{ 'PORTAL_CONFIGURATION.SUBMIT_BUTTON' | translate }}</button>
         <div class="alert alert-danger" style="margin-top: 5px" *ngIf="errorMsg">
             {{errorMsg}}
         </div>
     </form>
+    <hr>
+    <h4>Language support:</h4>
+    <div class="form-group">
+        <ng-template ngFor let-lang [ngForOf]="languages" let-i="index">
+            <div class="checkbox-inline">
+                <label for="lang {{i}}" class="control-label">{{lang.language}}</label>
+                <div class="btn-group btn-toggle" *ngIf="lang.enabled" id="lang {{i}}">
+                    <button class="btn btn-sm btn-primary active" (click)="changeLanguageState(lang, true)">Enabled</button>
+                    <button class="btn btn-sm btn-default" (click)="changeLanguageState(lang, false)">Disabled</button>
+                </div>
+                <div class="btn-group btn-toggle" *ngIf="!lang.enabled">
+                    <button class="btn btn-sm btn-default" (click)="changeLanguageState(lang, true)">Enabled</button>
+                    <button class="btn btn-sm btn-primary active" (click)="changeLanguageState(lang, false)">Disabled</button>
+                </div>
+            </div>
+        </ng-template>
+        <div class="alert alert-danger" style="margin-top: 5px" *ngIf="langErrorMsg">
+            {{'PORTAL_CONFIGURATION.LANGUAGE_ERROR' | translate}}
+        </div>
+    </div>
   </div>
 </div>

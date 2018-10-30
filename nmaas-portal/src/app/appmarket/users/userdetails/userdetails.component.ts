@@ -18,8 +18,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   public user: User;
 
   constructor(private userService: UserService, private router: Router,
-    private route: ActivatedRoute,
-    private location: Location, public authService:AuthService) {
+    private route: ActivatedRoute, private location: Location, public authService:AuthService) {
     super();
   }
 

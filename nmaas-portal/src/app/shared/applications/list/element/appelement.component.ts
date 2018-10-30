@@ -22,7 +22,8 @@ export class AppElementComponent implements OnInit {
   @Input()
   public selected: boolean;
 
-  constructor(public appImagesService: AppImagesService) {}
+  constructor(public appImagesService: AppImagesService) {
+  }
 
   ngOnInit() {
     if (isUndefined(this.selected)) {

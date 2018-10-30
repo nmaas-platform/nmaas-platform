@@ -5,6 +5,8 @@ import { AuthService } from '../../auth/auth.service';
 import {DomainService} from "../../service";
 
 import {TranslateService} from '@ngx-translate/core';
+import {ContentDisplayService} from "../../service/content-display.service";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'nmaas-navbar',
@@ -23,24 +25,42 @@ export class NavbarComponent implements OnInit {
     translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
     this.languageActual = this.getCurrent();
     this.pathToIcon = 'assets/images/country/' + this.getCurrent() + '_circle.png';
+  public languages: string[];
+
+  public refresh: Subscription;
+
+  constructor(public authService: AuthService, public domainService: DomainService, private translate: TranslateService, private contentService:ContentDisplayService) {
   }
 
-  ngOnInit() {
+  useLanguage(language: string) {
+    this.translate.use(language);
   }
-
-    useLanguage(language: string) {
-        this.translate.use(language);
-        this.translate.setDefaultLang(language);
-        this.languageActual = this.getCurrent();
-        this.pathToIcon = 'assets/images/country/' + language + '_circle.png';
-    }
 
     getCurrent(){
         return this.translate.currentLang;
     }
 
+  ngOnInit() {
+      if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
+          this.refresh = Observable.interval(5000).subscribe(next => {
+              if(this.contentService.shouldUpdate()) {
+                  this.getSupportedLanguages();
+                  this.contentService.setUpdateRequiredFlag(false);
+              }
+          });
+      }
+      this.getSupportedLanguages()
+  }
+
   public checkUserRole(): boolean {
     return this.authService.getDomains().filter(value => value ! = this.domainService.getGlobalDomainId()).length > 0
         || this.authService.getRoles().filter(value => value ! = 'ROLE_GUEST').length > 0;
+  }
+
+  public getSupportedLanguages(){
+    this.contentService.getLanguages().subscribe(langs =>{
+        this.translate.addLangs(langs);
+        this.languages = langs;
+    });
   }
 }

@@ -37,7 +37,8 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   public searchedAppName: string = "";
   protected searchedTag: string = "all";
 
-  constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
+  constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {
+  }
 
   ngOnInit() {
     // this.updateDomain();
