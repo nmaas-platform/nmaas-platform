@@ -365,6 +365,7 @@ create table k_cluster_deployment (
   smtp_server_port integer not null,
   smtp_server_username varchar(255),
   use_in_cluster_git_lab_instance boolean not null,
+  force_dedicated_workers boolean not null,
   primary key (id));
 
 create table k_cluster_ext_network (

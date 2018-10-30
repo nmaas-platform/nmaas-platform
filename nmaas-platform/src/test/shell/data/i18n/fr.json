@@ -94,6 +94,7 @@
     "DEFAULT_NAMESPACE": "Espace de nom par défaut",
     "DEFAULT_STORAGE_CLASS": "Classe de stockage par défaut",
     "USER_LOCAL_GITLAB_INSTANCE": "Utiliser l'instance GitLab locale",
+    "FORCE_DEDICATED_WORKERS": "Force service deployment on dedicated workers",
     "ATTACH_POINT": "Attach point",
     "ROUTER_NAME": "Nom du routeur",
     "ROUTER_ID": "ID de routeur",

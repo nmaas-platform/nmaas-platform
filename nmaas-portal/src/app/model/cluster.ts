@@ -26,6 +26,7 @@ class ClusterDeployment {
     public id: number;
     public namespaceConfigOption: string;
     public useInClusterGitLabInstance: boolean = false;
+    public forceDedicatedWorkers: boolean = false;
 }
 
 export class ClusterExtNetwork {

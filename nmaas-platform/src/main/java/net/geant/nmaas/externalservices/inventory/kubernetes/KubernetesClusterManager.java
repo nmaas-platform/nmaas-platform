@@ -181,6 +181,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     }
 
     @Override
+    public boolean getForceDedicatedWorkers(){
+        return loadSingleCluster().getDeployment().getForceDedicatedWorkers();
+    }
+
+    @Override
     public Boolean getUseInClusterGitLabInstance() {
         return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
     }
