@@ -114,19 +114,13 @@ curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/
 echo
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/opennti/opennti3.png;type=image/png" $API_URL/apps/4/screenshots
 
-# echo
-# echo App5
-# curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app5-pmacct.json
-# echo
-# echo App5 logo
-# curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/pmacct.svg;type=image/svg+xml" $API_URL/apps/5/logo
-# echo
-# echo App5 screenshots
-# curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/pmacct/pmacct1.jpg;type=image/jpg" $API_URL/apps/5/screenshots
-# echo
-# curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/pmacct/pmacct2.png;type=image/png" $API_URL/apps/5/screenshots
-# echo
-# curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/pmacct/pmacct3.jpg;type=image/jpg" $API_URL/apps/5/screenshots
+echo
+echo App5
+curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app5-prometheus.json
+echo
+echo App5 logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/prometheus_logo.svg;type=image/svg+xml" $API_URL/apps/5/logo
+echo
 
 echo 
 echo ---------------------
