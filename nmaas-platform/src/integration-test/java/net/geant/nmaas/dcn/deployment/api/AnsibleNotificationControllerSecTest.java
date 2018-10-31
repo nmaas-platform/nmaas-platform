@@ -3,7 +3,7 @@ package net.geant.nmaas.dcn.deployment.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
-public class AnsibleNotificationControllerSecTest extends BaseControllerTest {
+public class AnsibleNotificationControllerSecTest extends BaseControllerTestSetup {
 
     @Before
     public void setup() {

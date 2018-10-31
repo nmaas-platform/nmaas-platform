@@ -12,13 +12,16 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ProfileComponent} from './profile/profile.component';
-import {AppMarketModule} from "../appmarket";
-import {UserService} from "../service";
-import {CompleteComponent} from "./complete/complete.component";
-import {ContentDisplayService} from "../service/content-display.service";
-import { TermsAcceptanceComponent } from './terms-acceptance/terms-acceptance.component';
-import  {ReCaptchaModule} from "angular5-recaptcha";
-import {ShibbolethService} from "../service/shibboleth.service";
+import {AppMarketModule} from '../appmarket';
+import {UserService} from '../service';
+import {CompleteComponent} from './complete/complete.component';
+import {ContentDisplayService} from '../service/content-display.service';
+import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
+import {ReCaptchaModule} from 'angular5-recaptcha';
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {HttpClient} from '@angular/common/http';
+import {HttpLoaderFactory} from '../app.module';
+import {ShibbolethService} from '../service/shibboleth.service';
 
 @NgModule({
   declarations: [
@@ -38,8 +41,9 @@ import {ShibbolethService} from "../service/shibboleth.service";
     RouterModule,
     SharedModule,
     PipesModule,
-      AppMarketModule,
-      ReCaptchaModule
+    AppMarketModule,
+    ReCaptchaModule,
+    TranslateModule.forChild()
   ],
   exports: [
     WelcomeComponent
@@ -48,8 +52,8 @@ import {ShibbolethService} from "../service/shibboleth.service";
     RegistrationService,
     UserService,
     ChangelogService,
-      ShibbolethService,
-      ContentDisplayService
+    ContentDisplayService,
+    ShibbolethService
   ]
 })
 export class WelcomeModule {}

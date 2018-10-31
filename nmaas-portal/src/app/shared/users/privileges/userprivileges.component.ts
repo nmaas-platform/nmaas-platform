@@ -48,8 +48,8 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
 
   public getAllowedRoles(): Role[] {
     let roles: Role[];
-    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN]) && this.newPrivilegeForm.get('domainId').value==this.domainService.getGlobalDomainId()) {
-      roles = [Role.ROLE_SUPERADMIN, Role.ROLE_TOOL_MANAGER, Role.ROLE_OPERATOR];
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) && this.newPrivilegeForm.get('domainId').value==this.domainService.getGlobalDomainId()) {
+      roles = [Role.ROLE_SYSTEM_ADMIN, Role.ROLE_TOOL_MANAGER, Role.ROLE_OPERATOR];
       roles = this.filterRoles(roles, this.newPrivilegeForm.get('domainId').value);
     } else if (this.newPrivilegeForm.get('domainId').value!=null) {
       roles = [Role.ROLE_DOMAIN_ADMIN, Role.ROLE_USER, Role.ROLE_GUEST];
@@ -69,7 +69,7 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit() {
-      if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {
+      if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])) {
         this.domainService.getAll().subscribe((domains) => this.domains = domains);
       } else if (this.authService.hasRole(Role[Role.ROLE_DOMAIN_ADMIN])) {
         const domainIds: number[] = this.authService.getDomainsWithRole(Role[Role.ROLE_DOMAIN_ADMIN]);

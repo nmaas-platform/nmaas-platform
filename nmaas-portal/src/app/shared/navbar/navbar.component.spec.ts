@@ -1,14 +1,38 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavbarComponent } from './navbar.component';
+import {TranslateModule} from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
+import {TranslateFakeLoader} from "@ngx-translate/core";
+import {TranslateLoader} from "@ngx-translate/core";
+import {ContentDisplayService} from "../../service/content-display.service";
+import {Observable} from "rxjs";
 
-describe('NavbarComponent', () => {
+class MockContentDisplayService{
+
+    public getLanguages(): Observable<string[]>{
+        return Observable.of([]);
+    }
+}
+
+describe('NavbarComponent_Shared', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NavbarComponent ]
+      declarations: [ NavbarComponent ],
+        imports: [
+            TranslateModule.forRoot({
+                loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                }
+            })
+        ],
+        providers: [
+            {provide: ContentDisplayService, useClass: MockContentDisplayService}
+        ]
     })
     .compileComponents();
   }));

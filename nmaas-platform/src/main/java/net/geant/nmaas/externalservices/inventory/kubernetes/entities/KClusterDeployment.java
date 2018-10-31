@@ -50,4 +50,8 @@ public class KClusterDeployment {
 
     /** SMTP server user password */
     private String smtpServerPassword;
+
+    /** Flag indicating if service should deploy on dedicated workers */
+    @Column(nullable = false)
+    private Boolean forceDedicatedWorkers;
 }

@@ -74,6 +74,7 @@ public class KubernetesClusterControllerIntTest {
                         "\"defaultNamespace\":\"testNamespace\"," +
                         "\"defaultStorageClass\":\"storageClass\"," +
                         "\"useInClusterGitLabInstance\":\"false\"," +
+                        "\"forceDedicatedWorkers\":\"false\"," +
                         "\"smtpServerHostname\": \"nmaas-postfix\"," +
                         "\"smtpServerPort\": 587" +
                     "}," +
@@ -266,6 +267,7 @@ public class KubernetesClusterControllerIntTest {
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultStorageClass("storageClass");
         deployment.setUseInClusterGitLabInstance(false);
+        deployment.setForceDedicatedWorkers(false);
         deployment.setSmtpServerHostname("test-postfix");
         deployment.setSmtpServerPort(543);
         cluster.setDeployment(deployment);

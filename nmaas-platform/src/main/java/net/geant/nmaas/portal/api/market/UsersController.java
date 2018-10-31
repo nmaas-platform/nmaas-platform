@@ -74,18 +74,23 @@ public class UsersController {
 	}
 
 	@GetMapping("/users")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<User> getUsers(Pageable pageable) {
-		return userService.findAll(pageable).getContent().stream().map(user -> modelMapper.map(user, User.class)).collect(Collectors.toList());
+		return userService.findAll(pageable).getContent().stream()
+				.filter(user->user.getRoles().stream().noneMatch(role -> role.getRole() == Role.ROLE_SYSTEM_COMPONENT))
+				.map(user -> modelMapper.map(user, User.class))
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping(value="/users/roles")	
 	public List<Role> getRoles() {
-		return Arrays.asList(Role.values());
+		return Arrays.stream(Role.values())
+				.filter(role -> !role.equals(Role.ROLE_SYSTEM_COMPONENT))
+				.collect(Collectors.toList());
 	}
 		
 	@GetMapping(value="/users/{userId}")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public User retrieveUser(@PathVariable("userId") Long userId) {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);		
 		return modelMapper.map(user, User.class);
@@ -93,7 +98,7 @@ public class UsersController {
 
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
 	public void updateUser(@PathVariable("userId") final Long userId,
 						   @RequestBody final UserRequest userRequest,
@@ -148,14 +153,14 @@ public class UsersController {
 	}
 	
 	@DeleteMapping(value="/users/{userId}")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void deleteUser(@PathVariable("userId") Long userId) {
 		throw new ProcessingException("User removing not supported.");
 	}
 	
 	@GetMapping("/users/{userId}/roles")
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public Set<UserRole> getUserRoles(@PathVariable Long userId) {
 		net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 		return user.getRoles().stream().map(ur -> modelMapper.map(ur, UserRole.class)).collect(Collectors.toSet());
@@ -163,7 +168,7 @@ public class UsersController {
 
 	@DeleteMapping("/users/{userId}/roles")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
 	public void removeUserRole(@PathVariable final Long userId,
                                @RequestBody final UserRole userRole,
@@ -173,6 +178,9 @@ public class UsersController {
 
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
+
+		if(userRole.getRole() == Role.ROLE_SYSTEM_COMPONENT)
+			throw new ProcessingException("Role cannot be assigned.");
 
 		Domain domain = null;
 		if (userRole.getDomainId() == null) 
@@ -343,7 +351,10 @@ public class UsersController {
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
 		Role role = userRole.getRole();
-		
+
+		if(role == Role.ROLE_SYSTEM_COMPONENT)
+			throw new ProcessingException("Role cannot be assigned.");
+
 		if(!domainId.equals(userRole.getDomainId()))
 			throw new ProcessingException("Invalid request domain");
 								
@@ -351,7 +362,7 @@ public class UsersController {
 		final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
 		if(domain.equals(globalDomain)) {
-			if(!(role == Role.ROLE_SUPERADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
+			if(!(role == Role.ROLE_SYSTEM_ADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
 				throw new ProcessingException("Role cannot be assigned.");			
 		} else {
 			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
@@ -391,6 +402,9 @@ public class UsersController {
 
 		final Domain domain = getDomain(domainId);
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
+
+		if(role == Role.ROLE_SYSTEM_COMPONENT)
+			throw new ProcessingException("Role cannot be removed.");
 				
 		try {
 			domainService.removeMemberRole(domain.getId(), user.getId(), role);
@@ -414,7 +428,7 @@ public class UsersController {
 	}
 
     @PutMapping("/users/status/{userId}")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
     public void setEnabledFlag(@PathVariable Long userId,
@@ -455,10 +469,10 @@ public class UsersController {
 		}
     }
 
-    @GetMapping("/users/isAdmin")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @GetMapping("/users/isSystemComponent")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void isAdmin(final Principal principal){
+    public void isSystemComponent(final Principal principal){
         log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
     }
 

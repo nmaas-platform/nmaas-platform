@@ -2,54 +2,54 @@
 	<div class="form-group form-group-sm" 
 			[ngClass]="{'has-error':  registrationForm.controls.username.invalid && registrationForm.controls.username.dirty, 
  					 	'has-success': registrationForm.controls.username.valid && registrationForm.controls.username.dirty}">
-		<label for="username" class="control-label">Username *</label>
-		<input id="username" class="form-control" placeholder="Username" formControlName="username">
+		<label for="username" class="control-label">{{ 'REGISTRATION.USERNAME' | translate }} *</label>
+		<input id="username" class="form-control" placeholder="{{ 'REGISTRATION.USERNAME' | translate }}" formControlName="username">
 	</div>
 	<div class="form-group form-group-sm"
 			[ngClass]="{'has-error':  registrationForm.controls.newPassword.invalid && registrationForm.controls.newPassword.dirty,
  					 	'has-success': registrationForm.controls.newPassword.valid && registrationForm.controls.newPassword.dirty}">
-		<label for="newPassword" class="control-label">Password *</label>
-		<input id="newPassword" type="password" class="form-control" placeholder="Password" formControlName="newPassword">
+		<label for="newPassword" class="control-label">{{ 'REGISTRATION.PASSWORD' | translate }} *</label>
+		<input id="newPassword" type="password" class="form-control" placeholder="{{ 'REGISTRATION.PASSWORD' | translate }}" formControlName="newPassword">
 	</div>
 	<div class="form-group form-group-sm"
 			[ngClass]="{'has-error':  registrationForm.controls.confirmPassword.invalid && (registrationForm.controls.confirmPassword.dirty || registrationForm.controls.newPassword.dirty) ,
  					 	'has-success': registrationForm.controls.confirmPassword.valid && registrationForm.controls.confirmPassword.dirty}">
-		<label for="confirmPassword" class="control-label">Confirm password *</label>
-		<input id="confirmPassword" type="password" class="form-control" placeholder="Confirm password" formControlName="confirmPassword">
+		<label for="confirmPassword" class="control-label">{{ 'REGISTRATION.CONFIRM_PASSWORD' | translate }} *</label>
+		<input id="confirmPassword" type="password" class="form-control" placeholder="{{ 'REGISTRATION.CONFIRM_PASSWORD' | translate }}" formControlName="confirmPassword">
 	</div>
 	<div class="form-group form-group-sm"
 			[ngClass]="{'has-error':  registrationForm.controls.email.invalid && registrationForm.controls.email.dirty, 
  					 	'has-success': registrationForm.controls.email.valid && registrationForm.controls.email.dirty}">
-		<label for="email" class="control-label">Email *</label>
-		<input id="email" class="form-control" placeholder="E-mail" formControlName="email">
+		<label for="email" class="control-label">{{ 'REGISTRATION.EMAIL' | translate }} *</label>
+		<input id="email" class="form-control" placeholder="{{ 'REGISTRATION.EMAIL' | translate }}" formControlName="email">
 	</div>
 	
 	<div class="form-group form-group-sm">
-		<label for="firstname" class="control-label">First name</label>
-		<input id="firstname" class="form-control" placeholder="First name" formControlName="firstname">
+		<label for="firstname" class="control-label">{{ 'REGISTRATION.FIRST_NAME' | translate }}</label>
+		<input id="firstname" class="form-control" placeholder="{{ 'REGISTRATION.FIRST_NAME' | translate }}" formControlName="firstname">
 	</div>
 	
 	<div class="form-group form-group-sm">
-		<label for="lastname" class="control-label">Last name</label>
-		<input id="lastname" class="form-control" placeholder="Last name" formControlName="lastname">
+		<label for="lastname" class="control-label">{{ 'REGISTRATION.LAST_NAME' | translate }}</label>
+		<input id="lastname" class="form-control" placeholder="{{ 'REGISTRATION.LAST_NAME' | translate }}" formControlName="lastname">
 	</div>
 	
 	<div class="form-group form-group-sm">
-		<label for="domainId" class="control-label">Domain</label>
+		<label for="domainId" class="control-label">{{ 'REGISTRATION.DOMAIN' | translate }}</label>
 		<select id="domainId" class="form-control" formControlName="domainId">
-			<option [value]="null" [selected]="true">Not selected</option>
+			<option [value]="null" [selected]="true">{{ 'REGISTRATION.NOT_SELECTED' | translate }}</option>
 			<option *ngFor="let domain of domains | async" [value]="domain?.id">{{domain?.codename}} - {{domain?.name}}</option>
 		</select>
 	</div>
 
 	<div class="form-group form-group-sm">
 		<input id="termsOfUseAccepted" type="checkbox" class="checkbox-inline" formControlName="termsOfUseAccepted">
-		<label class="control-label">I agree to the <a (click)="modalInfoTerms.show()">Terms of Use</a>*</label>
+		<label class="control-label">{{ 'REGISTRATION.AGREEMENT_MESSAGE' | translate }} <a (click)="modalInfoTerms.show()">{{ 'REGISTRATION.TERMS' | translate }}</a>*</label>
 	</div>
 
 	<div class="form-group form-group-sm">
 		<input id="privacyPolicyAccepted" type="checkbox" class="checkbox-inline" formControlName="privacyPolicyAccepted">
-		<label class="control-label">I agree to the <a (click)="modalInfoPolicy.show()">Privacy Policy</a>*</label>
+		<label class="control-label">{{ 'REGISTRATION.AGREEMENT_MESSAGE' | translate }} <a (click)="modalInfoPolicy.show()">{{ 'REGISTRATION.PRIVACY_POLICY' | translate }}</a>*</label>
 	</div>
 
 	<div class="form-group-sm form-group">
@@ -58,7 +58,7 @@
 
 	<div class="form-group form-group-sm">
 		<button class="btn btn-primary btn-block" [disabled]="!registrationForm.valid" type="submit" validate>
-			Submit
+			{{ 'REGISTRATION.SUBMIT' | translate }}
 			<img alt="submit" *ngIf="sending" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
 		</button>
 	</div>
@@ -69,15 +69,15 @@
 </form>
 <nmaas-modal>
 	<div class="nmaas-modal-header">
-		<h4 style="text-align: center">Registration form submission</h4>
+		<h4 style="text-align: center">{{ 'REGISTRATION.FORM_SUBMISSION' | translate }}</h4>
 	</div>
 	<div class="nmaas-modal-body">
 		<div class="form-group text-left">
-			<p class="text-center">Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.</p>
+			<p class="text-center">{{ 'REGISTRATION.THANK_YOU_MESSAGE' | translate }}</p>
 		</div>
 	</div>
 	<div class="nmaas-modal-footer">
-		<button class="btn btn-danger center-block" [routerLink]="['/welcome/login']">Done</button>
+		<button class="btn btn-danger center-block" [routerLink]="['/welcome/login']">{{ 'REGISTRATION.DONE_MESSAGE' | translate }}</button>
 	</div>
 </nmaas-modal>
 <modal-info-terms></modal-info-terms>

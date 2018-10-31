@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -203,8 +204,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	@Autowired
-	public TokenAuthenticationService tokenAuthenticationService(JWTTokenService jwtTokenService) {
-		return new TokenAuthenticationService(jwtTokenService);
+	public TokenAuthenticationService tokenAuthenticationService(JWTTokenService jwtTokenService, UserRepository userRepository) {
+		return new TokenAuthenticationService(jwtTokenService, userRepository);
 	}
 	
 }

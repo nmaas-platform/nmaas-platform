@@ -113,6 +113,8 @@ public class User {
 	}
 
 	public void setNewRoles(Set<UserRole> roles) {
+		if(roles.stream().anyMatch(role-> role.getRole() == Role.ROLE_SYSTEM_COMPONENT))
+			throw new IllegalStateException("This role cannot be assigned");
 		this.roles.addAll(roles);
 	}
 

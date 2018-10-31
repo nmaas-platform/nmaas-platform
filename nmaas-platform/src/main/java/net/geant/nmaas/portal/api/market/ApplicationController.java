@@ -9,21 +9,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/apps")
 public class ApplicationController extends AppBaseController {
-
-	@GetMapping
+	
+	@RequestMapping(method= RequestMethod.GET)
 	@Transactional
 	public List<ApplicationBrief> getApplications() {
 		return applications.findAll().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
 	}
-
-	@PostMapping
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	
+	@RequestMapping(method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) Application appRequest) {
 		net.geant.nmaas.portal.persistent.entity.Application app = applications.create(appRequest.getName());
@@ -31,8 +34,8 @@ public class ApplicationController extends AppBaseController {
 		applications.update(app);
 		return new Id(app.getId());
 	}
-
-	@GetMapping(value="/{appId}")
+	
+	@RequestMapping(value="/{appId}", method=RequestMethod.GET)
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
 	public Application getApplication(@PathVariable(value = "appId", required=true) Long id) throws MissingElementException {

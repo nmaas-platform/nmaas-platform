@@ -11,11 +11,12 @@ import {Time} from "@angular/common";
 })
 export class MonitorListComponent implements OnInit {
 
-  private monitorEntries: MonitorEntry[] = [];
+  public monitorEntries: MonitorEntry[] = [];
 
   private services: typeof ServiceType = ServiceType;
 
-  constructor(private monitorService: MonitorService, private router: Router) {}
+  constructor(private monitorService: MonitorService, private router: Router) {
+  }
 
   ngOnInit() {
     this.update();

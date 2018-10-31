@@ -29,4 +29,6 @@ class KClusterDeploymentView {
     private String smtpServerUsername;
 
     private String smtpServerPassword;
+
+    private Boolean forceDedicatedWorkers;
 }

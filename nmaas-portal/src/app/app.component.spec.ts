@@ -5,6 +5,31 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule} from "@angular/router/testing";
 import {AppConfigService, ConfigurationService} from "./service";
 import {HttpClient, HttpHandler} from "@angular/common/http";
+import {TranslateService, TranslateModule, TranslateLoader} from "@ngx-translate/core";
+import {TranslateFakeLoader} from "@ngx-translate/core";
+import {Observable} from "rxjs";
+import {Configuration} from "./model/configuration";
+
+class MockConfigurationService{
+    protected uri:string;
+
+    constructor() {
+        this.uri = 'http://localhost/api';
+    }
+
+    public getApiUrl(): string {
+        return 'http://localhost/api';
+    }
+
+    public getConfiguration():Observable<Configuration>{
+        return Observable.of<Configuration>();
+    }
+
+    public updateConfiguration(configuration:Configuration):Observable<any>{
+        return Observable.of<Configuration>();
+    }
+}
+
 
 describe('App: NmaasPortal', () => {
   beforeEach(() => {
@@ -13,13 +38,20 @@ describe('App: NmaasPortal', () => {
         AppComponent
       ],
         imports: [
-            RouterTestingModule
+            RouterTestingModule,
+            TranslateModule.forRoot({
+                loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                }
+            })
         ],
         providers: [
-            AppConfigService,
+            {provide: AppConfigService, useClass: MockConfigurationService},
             HttpClient,
             HttpHandler,
-            ConfigurationService
+            ConfigurationService,
+            TranslateService
         ]
     });
   });

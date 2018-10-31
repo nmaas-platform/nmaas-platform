@@ -38,14 +38,14 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 	private DomainService domainService;
 
 	public AppInstancePermissionCheck() {
-		globalPermMatrix.put(Role.ROLE_SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
+		globalPermMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.OWNER, Permissions.READ, Permissions.WRITE});
 		globalPermMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ});
 		globalPermMatrix.put(Role.ROLE_TOOL_MANAGER, new Permissions[] {Permissions.READ});
 		globalPermMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {});
 		globalPermMatrix.put(Role.ROLE_USER, new Permissions[] {});
 		globalPermMatrix.put(Role.ROLE_GUEST, new Permissions[] {});	
 		
-		permMatrix.put(Role.ROLE_SUPERADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
+		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_OPERATOR, new Permissions[]{Permissions.READ});
 		permMatrix.put(Role.ROLE_DOMAIN_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
 		permMatrix.put(Role.ROLE_USER, new Permissions[] {Permissions.CREATE, Permissions.READ});

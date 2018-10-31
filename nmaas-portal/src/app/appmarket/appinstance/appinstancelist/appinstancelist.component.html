@@ -1,9 +1,9 @@
 					<div class="col-sm-12 col-sm-12 col-md-12">
-						<h3>Application instances</h3> 
+						<h3>{{ 'APP_INSTANCES.TITLE' | translate }}</h3>
 					
 						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
 							<form class = "form-inline" role = "form">
-								<label for="selectionType">Show: </label>
+								<label for="selectionType">{{ 'APP_INSTANCES.SHOW' | translate }}: </label>
 								<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">				
 									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value.charAt(0) + sl.value.toLowerCase().substring(1,sl.value.length)}}</option>
 								</select>	
@@ -15,12 +15,12 @@
 						   
 						   <thead>
 							  <tr>
-								 <th>Name</th>
-								 <th *ngIf="domainId === undefined">Domain</th>
-								 <th>Owner</th>
-								 <th>Deployed at</th>
-								 <th>Application</th>
-								 <th>State</th>
+								 <th>{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								 <th *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								 <th>{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								 <th>{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								 <th>{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								 <th>{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								 <th>&nbsp;</th>
 							  </tr>
 						   </thead>
@@ -36,9 +36,9 @@
 								 <td>{{appInstance?.userFriendlyState}}</td>
 								<td>
 									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
-										Details
+										{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
 									</a>
-									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">Go to app</a>							
+									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">{{ 'APP_INSTANCES.GO_TO_APP_BUTTON' | translate }}</a>
 								</td>
 							  </tr>
 							  </ng-template>

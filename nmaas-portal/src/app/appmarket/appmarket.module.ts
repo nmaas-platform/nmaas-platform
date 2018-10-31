@@ -24,12 +24,15 @@ import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.comp
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
-import {ClustersModule} from "./admin/clusters/clusters.module";
-import {ClusterService} from "../service/cluster.service";
-import {GitlabModule} from "./admin/gitlab/gitlab.module";
-import {ConfigurationModule} from "./admin/configuration/configuration.module";
-import {MonitorModule} from "./admin/monitor/monitor.module";
-import {StorageServiceModule} from "ngx-webstorage-service";
+import {ClustersModule} from './admin/clusters/clusters.module';
+import {ClusterService} from '../service/cluster.service';
+import {GitlabModule} from './admin/gitlab/gitlab.module';
+import {ConfigurationModule} from './admin/configuration/configuration.module';
+import {MonitorModule} from './admin/monitor/monitor.module';
+import {StorageServiceModule} from 'ngx-webstorage-service';
+import {TranslateModule} from '@ngx-translate/core';
+import {HttpClientModule} from '@angular/common/http';
+import {BrowserModule} from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -51,9 +54,13 @@ import {StorageServiceModule} from "ngx-webstorage-service";
     AuthModule,
     PipesModule,
     ClustersModule,
-      GitlabModule,
-      MonitorModule,
-      ConfigurationModule
+    GitlabModule,
+
+    MonitorModule,
+    ConfigurationModule,
+    BrowserModule,
+    HttpClientModule,
+    TranslateModule.forChild()
   ],
   exports: [
     AppMarketComponent,

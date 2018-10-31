@@ -42,6 +42,7 @@ export class RegistrationComponent implements OnInit {
   public domains: Observable<Domain[]>;
 
   constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService) {
+    
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],

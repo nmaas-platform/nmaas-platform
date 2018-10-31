@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseControllerTest {
+public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseControllerTestSetup {
 
     @Autowired
     private WebApplicationContext context;
@@ -57,7 +57,7 @@ public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseC
 
     @Test
     public void shouldStoreAndLoadTemplate() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(post("/api/management/configurations/templates")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)

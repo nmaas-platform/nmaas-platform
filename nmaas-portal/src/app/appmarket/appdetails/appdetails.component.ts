@@ -51,7 +51,8 @@ export class AppDetailsComponent implements OnInit {
     private appInstanceService: AppInstanceService,
     private userDataService: UserDataService,
     private authService: AuthService,
-    private router: Router, private route: ActivatedRoute, private location: Location) {}
+    private router: Router, private route: ActivatedRoute, private location: Location) {
+  }
 
   ngOnInit() {
        
@@ -103,7 +104,7 @@ export class AppDetailsComponent implements OnInit {
       return false;
     }
 
-    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN]) 
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) 
         || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
       return true;
     }
@@ -116,7 +117,7 @@ export class AppDetailsComponent implements OnInit {
       return false;
     }
 
-    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN]) 
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) 
         || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])
         || this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_USER])) {
       return true;

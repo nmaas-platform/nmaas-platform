@@ -4,7 +4,9 @@ import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
+import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private ModelMapper modelMapper;
 
+    private InternationalizationRepository internationalizationRepository;
+
     @Autowired
-    public ConfigurationManagerImpl(ConfigurationRepository repository, ModelMapper modelMapper){
+    public ConfigurationManagerImpl(ConfigurationRepository repository, InternationalizationRepository internationalizationRepository, ModelMapper modelMapper){
         this.repository = repository;
+        this.internationalizationRepository = internationalizationRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -47,6 +52,11 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         Optional<Configuration> configuration = repository.findById(id);
         if(!configuration.isPresent()){
             throw new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository");
+        }
+        Internationalization internationalization = internationalizationRepository.findByLanguageOrderByIdDesc(updatedConfiguration.getDefaultLanguage())
+                .orElseThrow(()->new IllegalArgumentException("Language not found"));
+        if(!internationalization.isEnabled()){
+            throw new IllegalStateException("Default language must be active");
         }
         repository.save(modelMapper.map(updatedConfiguration, Configuration.class));
     }

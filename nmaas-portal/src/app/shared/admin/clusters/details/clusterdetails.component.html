@@ -1,103 +1,103 @@
 <div class="panel panel-default">
-    <div class="panel-heading">Kubernetes cluster configuration</div>
+    <div class="panel-heading">{{ 'CLUSTERS.TITLE' | translate }}</div>
     <div class="panel-body">
         <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #clusterForm="ngForm">
-            <div class="panel-default panel-heading">Helm:</div>
+            <div class="panel-default panel-heading">{{ 'CLUSTERS.HELM' | translate }}</div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="helmhostaddress" class="col-sm-2 control-label">Host address:</label>
+                    <label for="helmhostaddress" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_ADDRESS' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmhostaddress" name="helmhostaddress"
                                [(ngModel)]="cluster.helm.helmHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #hostaddress="ngModel">
                         <div class="alert alert-danger" *ngIf="hostaddress.invalid && (hostaddress.dirty || hostaddress.touched)">
-                            <div *ngIf="hostaddress.errors.required">Helm host address is required</div>
-                            <div *ngIf="hostaddress.errors.pattern">Helm host address must contain only digits and dots</div>
+                            <div *ngIf="hostaddress.errors.required">{{ 'CLUSTERS.HOST_ADDRESS_REQUIRED_MESSAGE' | translate }}</div>
+                            <div *ngIf="hostaddress.errors.pattern">{{ 'CLUSTERS.HOST_ADDRESS_VALIDATION_MESSAGE' | translate }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="helmhostsshusername" class="col-sm-2 control-label">Host SSH username:</label>
+                    <label for="helmhostsshusername" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_SSH_USERNAME' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmhostsshusername" name="helmhostsshusername"
                                [(ngModel)]="cluster.helm.helmHostSshUsername" [disabled]="isInMode(ComponentMode.VIEW)" required #sshUsername="ngModel">
                         <div class="alert alert-danger" *ngIf="sshUsername.invalid && (sshUsername.dirty || sshUsername.touched)">
-                            <div *ngIf="sshUsername.errors.required">Host SSH username is required</div>
+                            <div *ngIf="sshUsername.errors.required">{{ 'CLUSTERS.HOST_SSH_USERNAME_REQUIRED_MESSAGE' | translate }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="helmuselocalchartarchives" class="col-sm-2 control-label">Use local chart archives:</label>
+                    <label for="helmuselocalchartarchives" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_LOCAL_CHART_ARCHIVES' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="helmuselocalchartarchives" name="helmuselocalchartarchives"
                                [(ngModel)]="cluster.helm.useLocalChartArchives" [checked]="cluster.helm.useLocalChartArchives == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="helmrepositoryname" class="col-sm-2 control-label">Helm chart repository name:</label>
+                    <label for="helmrepositoryname" class="col-sm-2 control-label">{{ 'CLUSTERS.HEML_CHART_REPO_NAME' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmrepositoryname" name="helmrepositoryname"
                                [(ngModel)]="cluster.helm.helmChartRepositoryName" [disabled]="isInMode(ComponentMode.VIEW) || cluster.helm.useLocalChartArchives"
-                                required #helmRepositoryName="ngModel">
+                               required #helmRepositoryName="ngModel">
                         <div class="alert alert-danger" *ngIf="helmRepositoryName.invalid && (helmRepositoryName.dirty || helmRepositoryName.touched)">
-                            <div *ngIf="helmRepositoryName.errors.required">Helm chart repository name is required</div>
+                            <div *ngIf="helmRepositoryName.errors.required">{{ 'CLUSTERS.HELM_CHART_REPO_NAME_REQUIRED_MESSAGE' | translate }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="helmhostchartsdirectory" class="col-sm-2 control-label">Helm charts directory:</label>
+                    <label for="helmhostchartsdirectory" class="col-sm-2 control-label">{{ 'CLUSTERS.HEML_CHARTS_DIRECTORY' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="helmhostchartsdirectory" name="helmhostchartsdirectory"
                                [(ngModel)]="cluster.helm.helmHostChartsDirectory"
                                [disabled]="isInMode(ComponentMode.VIEW) || !cluster.helm.useLocalChartArchives" required #chartsDirectory="ngModel">
                         <div class="alert alert-danger" *ngIf="chartsDirectory.invalid && (chartsDirectory.dirty || chartsDirectory.touched)">
-                            <div *ngIf="chartsDirectory.errors.required">Helm charts directory is required</div>
+                            <div *ngIf="chartsDirectory.errors.required">{{ 'CLUSTERS.HELM_CHART_DIRECTORY_REQUIRED_MESSAGE' | translate }}</div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="panel-default panel-heading">{{ 'CLUSTERS.REST_API' | translate }}</div>
                 <div class="form-group">
-                    <label for="helmenabletls" class="col-sm-2 control-label">Enable TLS:</label>
+                    <label for="helmenabletls" class="col-sm-2 control-label">{{ 'CLUSTERS.ENABLE_TLS' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="helmenabletls" name="helmenabletls"
                                [(ngModel)]="cluster.helm.enableTls" [checked]="cluster.helm.enableTls == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
-                    </div>
                 </div>
-            <div class="panel-default panel-heading">REST API:</div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="useKClusterApi" class="col-sm-2 control-label">Use REST API:</label>
+                    <label for="useKClusterApi" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_REST_API' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="useKClusterApi" name="useKClusterApi"
                                [(ngModel)]="cluster.api.useKClusterApi" [checked]="cluster.api.useKClusterApi == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group" *ngIf="cluster.api.useKClusterApi">
-                    <label for="apihostaddress" class="col-sm-2 control-label">Host address:</label>
+                    <label for="apihostaddress" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_ADDRESS' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="apihostaddress" name="apihostaddress"
                                [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #restaddress="ngModel">
                         <div class="alert alert-danger" *ngIf="restaddress.invalid && (restaddress.dirty || restaddress.touched)">
-                            <div *ngIf="restaddress.errors.required">REST API host address is required</div>
-                            <div *ngIf="restaddress.errors.pattern">REST API host address must contain only numbers and dots</div>
+                            <div *ngIf="restaddress.errors.required">{{ 'CLUSTERS.REST_API_HOST_ADDRESS_REQUIRED_MESSAGE' | translate }}</div>
+                            <div *ngIf="restaddress.errors.pattern">{{ 'CLUSTERS.REST_API_HOST_ADDRESS_VALIDATION_MESSAGE' | translate }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="form-group" *ngIf="cluster.api.useKClusterApi">
-                    <label for="apihostport" class="col-sm-2 control-label">Host port:</label>
+                    <label for="apihostport" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_PORT' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="number" class="form-control no-spin" id="apihostport" name="apihostport"
                                [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)" required #apiport="ngModel">
                         <div class="alert alert-danger" *ngIf="apiport.invalid && (apiport.dirty || apiport.touched)">
-                            <div *ngIf="apiport.errors.required">REST API host port is required</div>
+                            <div *ngIf="apiport.errors.required">{{ 'CLUSTERS.REST_API_PORT_REQUIRED_MESSAGE' | translate }}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="panel-default panel-heading">Ingress:</div>
+            <div class="panel-default panel-heading">{{ 'CLUSTERS.INGRESS' | translate }}</div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="ingresscontrollerconfigoption" class="col-sm-2 control-label">Controller config option:</label>
+                    <label for="ingresscontrollerconfigoption" class="col-sm-2 control-label">{{ 'CLUSTERS.CONTROLLER_CONFIG_OPTION' | translate }}</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="ingresscontrollerconfigoption" name="ingresscontrollerconfigoption"
                                 [(ngModel)]="cluster.ingress.controllerConfigOption" [disabled]="isInMode(ComponentMode.VIEW)" required>
@@ -106,28 +106,28 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="suportedingressclass" class="col-sm-2 control-label">Supported Ingress class:</label>
+                    <label for="suportedingressclass" class="col-sm-2 control-label">{{ 'CLUSTERS.SUPPORTED_INGRESS_CLASS' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="suportedingressclass" name="suportedingressclass"
                                [(ngModel)]="cluster.ingress.supportedIngressClass" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingresscontrollerchartname" class="col-sm-2 control-label">Controller chart name:</label>
+                    <label for="ingresscontrollerchartname" class="col-sm-2 control-label">{{ 'CLUSTERS.CONTROLLER_CHART_NAME' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ingresscontrollerchartname" name="ingresscontrollerchartname"
                                [(ngModel)]="cluster.ingress.controllerChartName" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingresscontrollerchartarchive" class="col-sm-2 control-label">Controller chart archive:</label>
+                    <label for="ingresscontrollerchartarchive" class="col-sm-2 control-label">{{ 'CLUSTERS.CONTROLLER_CHART_ARCHIVE' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ingresscontrollerchartarchive" name="ingresscontrollerchartarchive"
                                [(ngModel)]="cluster.ingress.controllerChartArchive" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingressresourceconfigoption" class="col-sm-2 control-label">Resource config option:</label>
+                    <label for="ingressresourceconfigoption" class="col-sm-2 control-label">{{ 'CLUSTERS.RESOURCE_CONFIG_OPTION' | translate }}</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="ingressresourceconfigoption" name="ingressresourceconfigoption"
                                 [(ngModel)]="cluster.ingress.resourceConfigOption" [disabled]="isInMode(ComponentMode.VIEW)" required>
@@ -136,14 +136,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingressexternalservicedomain" class="col-sm-2 control-label">External service domain:</label>
+                    <label for="ingressexternalservicedomain" class="col-sm-2 control-label">{{ 'CLUSTERS.EXTERNAL_SERVICE_DOMAIN' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ingressexternalservicedomain" name="ingressexternalservicedomain"
                                [(ngModel)]="cluster.ingress.externalServiceDomain" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingresstlssupported" class="col-sm-2 control-label">TLS supported:</label>
+                    <label for="ingresstlssupported" class="col-sm-2 control-label">{{ 'CLUSTERS.TLS_SUPPORTED' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="ingresstlssupported" name="ingresstlssupported"
                                [(ngModel)]="cluster.ingress.tlsSupported" [checked]="cluster.ingress.tlsSupported == true" [disabled]="isInMode(ComponentMode.VIEW)">
@@ -151,10 +151,10 @@
                 </div>
             </div>
 
-            <div class="panel-default panel-heading">Deployment:</div>
+            <div class="panel-default panel-heading">{{ 'CLUSTERS.DEPLOYMENT' | translate }}</div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="deploymentnamespaceconfigoption" class="col-sm-2 control-label">Namespace config option:</label>
+                    <label for="deploymentnamespaceconfigoption" class="col-sm-2 control-label">{{ 'CLUSTERS.NAMESPACE_CONFIG_OPTION' | translate }}</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="deploymentnamespaceconfigoption" name="deploymentnamespaceconfigoption"
                                 [(ngModel)]="cluster.deployment.namespaceConfigOption" [disabled]="isInMode(ComponentMode.VIEW)" required>
@@ -163,24 +163,31 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="deploymentdefaultnamespace" class="col-sm-2 control-label">Default namespace:</label>
+                    <label for="deploymentdefaultnamespace" class="col-sm-2 control-label">{{ 'CLUSTERS.DEFAULT_NAMESPACE' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="deploymentdefaultnamespace" name="deploymentdefaultnamespace"
                                [(ngModel)]="cluster.deployment.defaultNamespace" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="deploymentdefaultstorageclass" class="col-sm-2 control-label">Default storage class:</label>
+                    <label for="deploymentdefaultstorageclass" class="col-sm-2 control-label">{{ 'CLUSTERS.DEFAULT_STORAGE_CLASS' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="deploymentdefaultstorageclass" name="deploymentdefaultstorageclass"
                                [(ngModel)]="cluster.deployment.defaultStorageClass" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="useinclustergitlabinstance" class="col-sm-2 control-label">Use local GitLab instance: </label>
+                    <label for="useinclustergitlabinstance" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_LOCAL_GITLAB_INSTANCE' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="useinclustergitlabinstance" name="useinclustergitlabinstance"
-                            [(ngModel)]="cluster.deployment.useInClusterGitLabInstance" [checked]="cluster.deployment.useInClusterGitLabInstance == true" [disabled]="isInMode(ComponentMode.VIEW)">
+                               [(ngModel)]="cluster.deployment.useInClusterGitLabInstance" [checked]="cluster.deployment.useInClusterGitLabInstance == true" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="forceDedicatedWorkers" class="col-sm-2 control-label">{{ 'CLUSTERS.FORCE_DEDICATED_WORKERS' | translate }}</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="forceDedicatedWorkers" name="forceDedicatedWorkers"
+                               [(ngModel)]="cluster.deployment.forceDedicatedWorkers" [checked]="cluster.deployment.forceDedicatedWorkers == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -219,10 +226,10 @@
                 </div>
             </div>
 
-            <div class="panel-default panel-heading">Attach point:</div>
+            <div class="panel-default panel-heading">{{ 'CLUSTERS.ATTACH_POINT' | translate }}</div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="routername" class="col-sm-2 control-label">Router name:</label>
+                    <label for="routername" class="col-sm-2 control-label">{{ 'CLUSTERS.ROUTER_NAME' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="routername" name="routername"
                                [(ngModel)]="cluster.attachPoint.routerName" [disabled]="isInMode(ComponentMode.VIEW)">
@@ -230,7 +237,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="routerid" class="col-sm-2 control-label">Router ID:</label>
+                    <label for="routerid" class="col-sm-2 control-label">{{ 'CLUSTERS.ROUTER_ID' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="routerid" name="routerid"
                                [(ngModel)]="cluster.attachPoint.routerId" [disabled]="isInMode(ComponentMode.VIEW)">
@@ -238,7 +245,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="routerintname" class="col-sm-2 control-label">Router interface name:</label>
+                    <label for="routerintname" class="col-sm-2 control-label">{{ 'CLUSTERS.ROUTER_INTERFACE_NAME' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="routerintname" name="routerintname"
                                [(ngModel)]="cluster.attachPoint.routerInterfaceName" [disabled]="isInMode(ComponentMode.VIEW)">
@@ -246,17 +253,17 @@
                 </div>
             </div>
 
-            <div class="panel-default panel-heading">External networks:</div>
+            <div class="panel-default panel-heading">{{ 'CLUSTERS.EXTERNAL_NETWORKS' | translate }}</div>
             <div class="panel-body">
                 <table class="table table-hover table-condensed">
                     <thead>
                     <tr>
-                        <th>Address</th>
-                        <th>Network</th>
-                        <th>Netmask length</th>
-                        <th>Assigned</th>
-                        <th>Assigned since:</th>
-                        <th>Assigned to:</th>
+                        <th>{{ 'CLUSTERS.ADDRESS' | translate }}</th>
+                        <th>{{ 'CLUSTERS.NETWORK' | translate }}</th>
+                        <th>{{ 'CLUSTERS.NETMASK_LENGTH' | translate }}</th>
+                        <th>{{ 'CLUSTERS.ASSIGNED' | translate }}</th>
+                        <th>{{ 'CLUSTERS.ASSIGNED_SINCE' | translate }}</th>
+                        <th>{{ 'CLUSTERS.ASSIGNED_TO' | translate }}</th>
                         <th>&nbsp;</th>
                     </tr>
                     </thead>
@@ -267,23 +274,23 @@
                                 <input type="text" class="form-control" [name]="'extnetextip'+i"
                                        [(ngModel)]="extnetwork.externalIp" [disabled]="isInMode(ComponentMode.VIEW)" required pattern="[0-9.]*" #ip="ngModel">
                                 <div class="alert alert-danger" *ngIf="ip.invalid && (ip.dirty || ip.touched)">
-                                    <div *ngIf="ip.errors.required">IP is required</div>
-                                    <div *ngIf="ip.errors.pattern">IP must contain only digits and dots</div>
+                                    <div *ngIf="ip.errors.required">{{ 'CLUSTERS.IP_REQUIRED_MESSAGE' | translate }}</div>
+                                    <div *ngIf="ip.errors.pattern">{{ 'CLUSTERS.IP_VALIDATION_MESSAGE' | translate }}</div>
                                 </div>
                             </td>
                             <td>
                                 <input type="text" class="form-control" [name]="'extnetextnet'+i"
                                        [(ngModel)]="extnetwork.externalNetwork" [disabled]="isInMode(ComponentMode.VIEW)" required pattern="[0-9.]*" #network="ngModel">
                                 <div class="alert alert-danger" *ngIf="network.invalid && (network.dirty || network.touched)">
-                                    <div *ngIf="network.errors.required">Network is required</div>
-                                    <div *ngIf="network.errors.pattern">Network address must contain only digits and dots</div>
+                                    <div *ngIf="network.errors.required">{{ 'CLUSTERS.NETWORK_REQUIRED_MESSAGE' | translate }}</div>
+                                    <div *ngIf="network.errors.pattern">{{ 'CLUSTERS.NETWORK_ADDRESS_VALIDATION_MESSAGE' | translate }}</div>
                                 </div>
                             </td>
                             <td>
                                 <input type="text" class="form-control" [name]="'extnetmask'+i"
                                        [(ngModel)]="extnetwork.externalNetworkMaskLength" [disabled]="isInMode(ComponentMode.VIEW)" min="0" max="32" #mask="ngModel">
                                 <div class="alert alert-danger" *ngIf="mask.invalid && (mask.dirty || mask.touched)">
-                                    <div *ngIf="mask.errors.min || mask.errors.max">Mask must be between 0 and 32</div>
+                                    <div *ngIf="mask.errors.min || mask.errors.max">{{ 'CLUSTERS.MASK_VALIDATION_MESSAGE' | translate }}</div>
                                 </div>
                             </td>
                             <td>
@@ -300,7 +307,7 @@
                             </td>
                             <td class="text-right">
                                 <button *ngIf="!isInMode(ComponentMode.VIEW)" type="button" class="btn btn-sm btn-danger"
-                                        (click)="removeNetwork(extnetwork.id)">Remove
+                                        (click)="removeNetwork(extnetwork.id)">{{ 'CLUSTERS.REMOVE_BUTTON' | translate }}
                                 </button>
                             </td>
                         </tr>
@@ -309,7 +316,7 @@
                         <td></td><td></td><td></td><td></td><td></td><td></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-success"
-                                    (click)="addNetwork()">Add
+                                    (click)="addNetwork()">{{ 'CLUSTERS.ADD_BUTTON' | translate }}
                             </button>
                         </td>
                     </tr>
@@ -322,11 +329,11 @@
             </div>
 
             <button *ngIf="isInMode(ComponentMode.EDIT)" type="button"
-                    class="btn btn-default" (click)="onModeChange()">View</button>
+                    class="btn btn-default" (click)="onModeChange()">{{ 'CLUSTERS.VIEW_BUTTON' | translate }}</button>
             <button *ngIf="!isInMode(ComponentMode.VIEW)" [disabled]="!clusterForm.form.valid" type="submit"
-                    class="btn btn-danger">Submit</button>
+                    class="btn btn-primary">{{ 'CLUSTERS.SUBMIT_BUTTON' | translate }}</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
-                    type="button" class="btn btn-default" (click)="onModeChange()">Edit</button>
+                    type="button" class="btn btn-default" (click)="onModeChange()">{{ 'CLUSTERS.EDIT_BUTTON' | translate }}</button>
         </form>
     </div>
 </div>

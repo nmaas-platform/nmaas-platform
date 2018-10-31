@@ -45,7 +45,7 @@ public class KubernetesClusterController {
      * List all {@link KCluster} stored in repository
      * @return list of {@link KubernetesClusterView} objects
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping
     public List<KubernetesClusterView> listAllKubernetesClusters() {
         return clusterManager.getAllClusters();
@@ -58,7 +58,7 @@ public class KubernetesClusterController {
      * @throws KubernetesClusterNotFoundException when cluster with given id does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/{id}")
     public KClusterView getKubernetesCluster(@PathVariable("id") Long id) {
         return modelMapper.map(clusterManager.getClusterById(id), KClusterView.class);
@@ -71,7 +71,7 @@ public class KubernetesClusterController {
      * @throws OnlyOneKubernetesClusterSupportedException when trying to add new cluster while one already exists (HttpStatus.NOT_ACCEPTABLE)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
     public Long addKubernetesCluster(@RequestBody KClusterView clusterView) {
@@ -88,7 +88,7 @@ public class KubernetesClusterController {
      * @throws KubernetesClusterNotFoundException when cluster with given id does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KClusterView clusterView) {
@@ -102,7 +102,7 @@ public class KubernetesClusterController {
      * @param id Unique {@link KCluster} id
      * @throws KubernetesClusterNotFoundException when Kubernetes cluster does not exists (HttpStatus.NOT_FOUND)
      */
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeKubernetesCluster(@PathVariable("id") Long id) {

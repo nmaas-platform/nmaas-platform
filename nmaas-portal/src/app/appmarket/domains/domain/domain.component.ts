@@ -7,7 +7,7 @@ import { BaseComponent } from '../../../shared/common/basecomponent/base.compone
 import {isUndefined} from 'util';
 import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
 import {User} from "../../../model";
-import {UserService} from "../../../service";
+import {AppConfigService, UserService} from '../../../service';
 import {Observable} from "rxjs/Observable";
 import {Role, UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
@@ -24,16 +24,16 @@ import {ModalComponent} from '../../../shared/modal';
 export class DomainComponent extends BaseComponent implements OnInit {
 
   private domainId: number;
-  private domain: Domain;
+  public domain: Domain;
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
   @ViewChild(ModalComponent)
-  private modal:ModalComponent;
+  public modal:ModalComponent;
 
-    constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService:AuthService) {
-    super();
-  }
+    constructor(public domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService: AuthService) {
+      super();
+    }
 
   ngOnInit() {
       this.modal.setModalType("warning");
@@ -58,14 +58,14 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
   protected submit(): void {
     if (!isUndefined(this.domainId)) {
-      this.authService.hasRole('ROLE_SUPERADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.authService.hasRole('ROLE_SYSTEM_ADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
       this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
     }
     this.domainService.setUpdateRequiredFlag(true);
   }
 
-  protected updateDcnConfigured(): void {
+  public updateDcnConfigured(): void {
       this.domain.dcnConfigured = !this.domain.dcnConfigured;
       this.domainService.updateDcnConfigured(this.domain).subscribe((value) => {
         this.modal.hide();

@@ -20,11 +20,15 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${notification.port}")
     private String port;
 
-    @Value("${notification.path.withToken}")
+    @Value("${notification.path}")
     private String pathWithToken;
 
-    @Autowired
     private TokenAuthenticationService tokenAuthenticationService;
+
+    @Autowired
+    public NotificationServiceImpl(TokenAuthenticationService tokenAuthenticationService){
+        this.tokenAuthenticationService = tokenAuthenticationService;
+    }
 
     @Override
     public void sendEmail(EmailConfirmation emailConfirmation) {

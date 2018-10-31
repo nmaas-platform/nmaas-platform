@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-k8s.properties")
-public class KubernetesClusterControllerSecTest extends BaseControllerTest {
+public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup {
 
     @MockBean
     private KubernetesClusterRepository repository;
@@ -29,7 +29,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTest {
 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(get("/api/management/kubernetes")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());

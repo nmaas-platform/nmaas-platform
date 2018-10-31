@@ -9,13 +9,13 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 @Rollback
-public class ApplicationControllerTest extends BaseControllerTest {
+public class ApplicationControllerTest extends BaseControllerTestSetup {
 	
 	@Before
 	public void setUp() throws Exception {

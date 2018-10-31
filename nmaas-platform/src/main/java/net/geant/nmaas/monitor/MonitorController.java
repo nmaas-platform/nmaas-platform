@@ -35,7 +35,7 @@ public class MonitorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         this.scheduleManager.createJob(jobDescriptor);
@@ -44,14 +44,14 @@ public class MonitorController {
 
     @PostMapping("/{serviceName}/execute")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void executeJobNow(@PathVariable String serviceName){
         scheduleManager.executeJob(serviceName);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
         JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         this.scheduleManager.updateJob(jobDescriptor);
@@ -60,7 +60,7 @@ public class MonitorController {
 
     @DeleteMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void deleteMonitorEntryAndJob(@PathVariable String serviceName){
         this.scheduleManager.deleteJob(serviceName);
         this.monitorManager.deleteMonitorEntry(serviceName);
@@ -68,28 +68,28 @@ public class MonitorController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public List<MonitorEntryView> getAllMonitorEntries(){
         return this.monitorManager.getAllMonitorEntries();
     }
 
     @GetMapping("/{serviceName}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public MonitorEntryView getMonitorEntry(@PathVariable String serviceName){
         return this.monitorManager.getMonitorEntries(serviceName);
     }
 
     @PatchMapping("/{serviceName}/resume")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void resumeJob(@PathVariable String serviceName){
         scheduleManager.resumeJob(serviceName);
     }
 
     @PatchMapping("/{serviceName}/pause")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN') || hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void pauseJob(@PathVariable String serviceName){
         scheduleManager.pauseJob(serviceName);
     }

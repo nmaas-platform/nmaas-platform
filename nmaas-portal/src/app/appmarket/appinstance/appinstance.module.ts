@@ -20,6 +20,7 @@ import {
     Bootstrap3Framework,
     Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
 } from "angular2-json-schema-form";
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import {
     AppInstanceProgressModule,
     PipesModule,
     Bootstrap3FrameworkModule,
+    TranslateModule.forChild(),
     {
       ngModule: JsonSchemaFormModule,
       providers: [

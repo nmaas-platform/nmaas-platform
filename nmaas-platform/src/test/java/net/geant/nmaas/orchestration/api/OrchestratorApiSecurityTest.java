@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.api;
 
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.BaseControllerTest;
+import net.geant.nmaas.portal.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class OrchestratorApiSecurityTest extends BaseControllerTest {
+public class OrchestratorApiSecurityTest extends BaseControllerTestSetup {
 
     @Before
     public void setup() {
@@ -30,7 +30,7 @@ public class OrchestratorApiSecurityTest extends BaseControllerTest {
 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
-        String token = getValidUserTokenFor(Role.ROLE_SUPERADMIN);
+        String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(get("/api/orchestration/deployments")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());

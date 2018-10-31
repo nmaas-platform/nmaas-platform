@@ -62,11 +62,11 @@ public class ApplicationRepositoryTest {
 	@BeforeTransaction
 	public void setUp() throws Exception {
 //		domains.createGlobalDomain();
-//		userRepo.save(new User("admin", "admin", domains.getGlobalDomain().get(), Role.ROLE_SUPERADMIN));
+//		userRepo.save(new User("admin", "admin", domains.getGlobalDomain().get(), Role.ROLE_SYSTEM_ADMIN));
 	}
 
 	@Test
-	@WithMockUser(username="admin", roles={"SUPERADMIN"})
+	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})
 	public void testAddApplication() {
 		Application app1 = new Application("zabbix");
 		app1.setTags(new HashSet<Tag>());

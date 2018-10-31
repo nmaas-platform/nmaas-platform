@@ -8,6 +8,7 @@ import {AuthModule} from "../../../auth/auth.module";
 import {PipesModule} from "../../../pipe/pipes.module";
 import {FormsModule} from "@angular/forms";
 import {SharedModule} from "../../../shared";
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
     imports: [
@@ -16,7 +17,8 @@ import {SharedModule} from "../../../shared";
         AuthModule,
         PipesModule,
         FormsModule,
-        SharedModule
+        SharedModule,
+        TranslateModule.forChild()
     ],
     providers: [
         MonitorService

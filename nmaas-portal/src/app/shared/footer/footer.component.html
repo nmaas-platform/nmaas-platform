@@ -6,7 +6,7 @@
 					<p>NMaaS @Geant 2017-2018</p>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="global-footer-version">
-					<a (click)="modal.show()" class="text-right">Version {{gitInfo?.buildVersion}}</a>
+					<a (click)="modal.show()" class="text-right">{{'GIT_INFO.VERSION' | translate}} {{gitInfo?.buildVersion}}</a>
 					<br *ngIf="!checkURL()">
                     <a (click)="changeLog.show()" *ngIf="!checkURL()">Changelog</a>
                 </div>
@@ -15,18 +15,18 @@
 
 		<nmaas-modal>
 			<div class="nmaas-modal-header">
-				<h4 style="text-align: center">NMaaS version</h4>
+				<h4 style="text-align: center">{{'GIT_INFO.HEADER' | translate}}</h4>
 			</div>
 			<div class="nmaas-modal-body">
 				<div class="form-group text-left">
-					<p>Version: {{gitInfo?.buildVersion}}</p>
-					<p>Build time: {{gitInfo?.buildTime}}</p>
-					<p>Last commit: {{gitInfo?.commitName}}</p>
-					<p>Branch: {{gitInfo?.branchName}}</p>
+					<p>{{'GIT_INFO.VERSION' | translate}}: {{gitInfo?.buildVersion}}</p>
+					<p>{{'GIT_INFO.BUILD_TIME' | translate}}: {{gitInfo?.buildTime}}</p>
+					<p>{{'GIT_INFO.LAST_COMMIT' | translate}}: {{gitInfo?.commitName}}</p>
+					<p>{{'GIT_INFO.BRANCH_NAME' | translate}}: {{gitInfo?.branchName}}</p>
 				</div>
 			</div>
 			<div class="nmaas-modal-footer">
-				<button class="btn btn-primary text-center center-block" (click)="this.modal.hide()">Close</button>
+				<button class="btn btn-primary text-center center-block" (click)="this.modal.hide()">{{'GIT_INFO.CLOSE_BUTTON' | translate}}</button>
 			</div>
 		</nmaas-modal>
 <app-modal-changelog></app-modal-changelog>

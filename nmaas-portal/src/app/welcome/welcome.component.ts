@@ -19,7 +19,8 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService) { }
+  constructor(private appConfig: AppConfigService){
+  }
 
   ngOnInit() {
     this.onResize();

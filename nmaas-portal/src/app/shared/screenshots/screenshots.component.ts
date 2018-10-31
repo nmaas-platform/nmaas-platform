@@ -26,7 +26,8 @@ export class ScreenshotsComponent implements OnInit {
 
     public selectedImg: string;
 
-    constructor(private appsService: AppsService) { }
+    constructor(private appsService: AppsService) {
+    }
 
     ngOnInit() {
         this.appsService.getAppScreenshotsByUrl(this.pathUrl).subscribe(fileInfos => this.imagesFileInfo = fileInfos);

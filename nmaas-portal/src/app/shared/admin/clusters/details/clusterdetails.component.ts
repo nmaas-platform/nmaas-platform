@@ -8,7 +8,7 @@ import {
 import {BaseComponent} from '../../../common/basecomponent/base.component';
 import {ComponentMode} from '../../../common/componentmode';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'nmaas-clusterdetails',
@@ -35,10 +35,10 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     @Output()
     public onDelete: EventEmitter<string> = new EventEmitter<string>();
 
-    constructor(private router:Router) {
-        super();
-        this.initializeMaps();
-    }
+  constructor(private router: Router) {
+    super();
+    this.initializeMaps();
+  }
 
     ngOnInit() {
 

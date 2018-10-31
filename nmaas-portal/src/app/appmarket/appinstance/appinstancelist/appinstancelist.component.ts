@@ -11,9 +11,8 @@ import {UserDataService} from '../../../service/userdata.service';
 import {Observable} from 'rxjs/Observable';
 
 export enum AppInstanceListSelection {
-  ALL,
-  MY,
-}
+  ALL, MY,
+};
 
 @Component({
   selector: 'nmaas-appinstancelist',
@@ -33,7 +32,12 @@ export class AppInstanceListComponent implements OnInit {
   public selectedUsername: string;
   public domainId: number = 0;
 
-  constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private authService: AuthService, private appConfig: AppConfigService) {}
+  constructor(private appInstanceService: AppInstanceService,
+              private domainService: DomainService,
+              private userDataService: UserDataService,
+              private authService: AuthService,
+              private appConfig: AppConfigService) {
+  }
 
   ngOnInit() {
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
@@ -61,8 +65,8 @@ export class AppInstanceListComponent implements OnInit {
 
   }
 
-  public checkPrivileges(app){
-    return app.owner.username === this.authService.getUsername() || this.authService.hasRole("ROLE_SUPERADMIN") || this.authService.hasDomainRole(app.domainId, "ROLE_DOMAIN_ADMIN");
+  public checkPrivileges(app) {
+    return app.owner.username === this.authService.getUsername() || this.authService.hasRole('ROLE_SYSTEM_ADMIN') || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN');
   }
 
   public onSelectionChange(event) {

@@ -27,7 +27,8 @@ export class LoginComponent implements OnInit {
     ssoLoading: boolean = false;
     ssoError:string = '';
 
-    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService) { }
+    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService) {
+    }
 
     ngOnInit() {
         this.configService.getConfiguration().subscribe(config=>{

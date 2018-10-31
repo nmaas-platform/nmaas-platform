@@ -4,6 +4,7 @@ import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.DockerTimeoutException;
 import com.spotify.docker.client.exceptions.NetworkNotFoundException;
 import com.spotify.docker.client.messages.NetworkConfig;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
@@ -19,11 +20,9 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class DockerNetworkLifecycleManager {
-
-    private static final String INTERNAL_ERROR_MSG = "Internal error -> ";
-    private static final String DOCKER_ENGINE_ERROR_MSG = "Could not connect to Docker Engine -> ";
 
     private DockerHostNetworkRepositoryManager repositoryManager;
     private DockerHostStateKeeper dockerHostStateKeeper;
@@ -48,7 +47,7 @@ public class DockerNetworkLifecycleManager {
             dockerHostNetwork.setGateway(assignedAddresses.getGateway());
             repositoryManager.updateNetwork(dockerHostNetwork);
         } catch (DockerHostNotFoundException dhnfe) {
-            throw new ContainerOrchestratorInternalErrorException(INTERNAL_ERROR_MSG + dhnfe.getMessage());
+            throw new ContainerOrchestratorInternalErrorException("Internal error -> " + dhnfe.getMessage());
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
@@ -80,18 +79,18 @@ public class DockerNetworkLifecycleManager {
                     "Network specification verification failed -> " + verificationException.getMessage(), verificationException);
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    DOCKER_ENGINE_ERROR_MSG + dockerTimeoutException.getMessage(), dockerTimeoutException);
+                    "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new CouldNotCreateContainerNetworkException(
                     "Could not create container network -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
+            log.error("Internal error -> " + interruptedException.getMessage());
             Thread.currentThread().interrupt();
-            throw new ContainerOrchestratorInternalErrorException(
-                    INTERNAL_ERROR_MSG + interruptedException.getMessage(), interruptedException);
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(
                     "No network found in repository for domain " + domain, ide);
         }
+        throw new ContainerOrchestratorInternalErrorException("Internal error");
     }
 
     private boolean networkAlreadyDeployed(DockerHostNetwork network) {
@@ -113,14 +112,13 @@ public class DockerNetworkLifecycleManager {
                     "Docker network with id " + network.getDeploymentId() + " not found on the Docker Host -> " + networkNotFoundException.getMessage());
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    DOCKER_ENGINE_ERROR_MSG + dockerTimeoutException.getMessage(), dockerTimeoutException);
+                    "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new ContainerOrchestratorInternalErrorException(
                     "Could not execute requested action on Docker Engine -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
+            log.error("Internal error -> " + interruptedException.getMessage());
             Thread.currentThread().interrupt();
-            throw new ContainerOrchestratorInternalErrorException(
-                    INTERNAL_ERROR_MSG + interruptedException.getMessage(), interruptedException);
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
@@ -142,14 +140,13 @@ public class DockerNetworkLifecycleManager {
                 executeRemove(network.getDeploymentId(), network.getHost().apiUrl());
         } catch (DockerTimeoutException dockerTimeoutException) {
             throw new ContainerOrchestratorInternalErrorException(
-                    DOCKER_ENGINE_ERROR_MSG + dockerTimeoutException.getMessage(), dockerTimeoutException);
+                    "Could not connect to Docker Engine -> " + dockerTimeoutException.getMessage(), dockerTimeoutException);
         } catch (DockerException dockerException) {
             throw new CouldNotRemoveContainerNetworkException(
                     "Could not removeIfNoContainersAttached container network " + network.getDeploymentId() + " -> " + dockerException.getMessage(), dockerException);
         } catch (InterruptedException interruptedException) {
+            log.error("Internal error -> " + interruptedException.getMessage());
             Thread.currentThread().interrupt();
-            throw new ContainerOrchestratorInternalErrorException(
-                    INTERNAL_ERROR_MSG + interruptedException.getMessage(), interruptedException);
         } catch (InvalidDomainException ide) {
             throw new ContainerOrchestratorInternalErrorException(ide.getMessage());
         }
