@@ -33,6 +33,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
     static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
+    static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "spec.nodeSelector.domain";
     static final private String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
 
     private KubernetesRepositoryManager repositoryManager;
@@ -72,6 +73,9 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
         Optional<String> storageClass = deploymentManager.getStorageClass(domain);
         storageClass.ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
+        if(deploymentManager.getForceDedicatedWorkers()){
+            arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, domain);
+        }
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
         arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
         if(serviceInfo.getGitLabProject() != null)

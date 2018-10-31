@@ -15,4 +15,6 @@ public interface KClusterDeploymentManager {
     Optional<String> getSMTPServerUsername();
 
     Optional<String> getSMTPServerPassword();
+
+    boolean getForceDedicatedWorkers();
 }

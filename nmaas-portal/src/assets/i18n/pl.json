@@ -93,6 +93,7 @@
     "DEFAULT_NAMESPACE": "Default namespace",
     "DEFAULT_STORAGE_CLASS": "Default storage class",
     "USER_LOCAL_GITLAB_INSTANCE": "Use local GitLab instance",
+    "FORCE_DEDICATED_WORKERS": "Force service deployment on dedicated workers",
     "ATTACH_POINT": "Attach point",
     "ROUTER_NAME": "Router name",
     "ROUTER_ID": "Router ID",
