@@ -15,8 +15,6 @@ public class KClusterView {
 
     private Long id;
 
-    private KClusterHelmView helm;
-
     private KClusterApiView api;
 
     private KClusterIngressView ingress;

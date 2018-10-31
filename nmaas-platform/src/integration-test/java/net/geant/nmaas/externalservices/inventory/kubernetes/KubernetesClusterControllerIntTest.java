@@ -10,7 +10,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAp
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
@@ -237,19 +236,12 @@ public class KubernetesClusterControllerIntTest {
     public void shouldMapKubernetesClusterToKubernetesClusterView() throws UnknownHostException {
         KCluster source = initNewKubernetesCluster();
         KubernetesClusterView output = modelMapper.map(source, KubernetesClusterView.class);
-        assertThat(output.getHelmHostAddress().getHostAddress(), equalTo(source.getHelm().getHelmHostAddress().getHostAddress()));
         assertThat(output.getRestApiHostAddress().getHostAddress(), equalTo(source.getApi().getRestApiHostAddress().getHostAddress()));
         assertThat(output.getRestApiPort(), equalTo(source.getApi().getRestApiPort()));
     }
 
     private KCluster initNewKubernetesCluster() throws UnknownHostException {
         KCluster cluster = new KCluster();
-        KClusterHelm helm = new KClusterHelm();
-        helm.setHelmHostAddress(InetAddress.getByName("192.168.0.1"));
-        helm.setHelmHostSshUsername("testuser");
-        helm.setUseLocalChartArchives(true);
-        helm.setHelmHostChartsDirectory("/home/testuser/charts");
-        cluster.setHelm(helm);
         KClusterApi api = new KClusterApi();
         api.setRestApiHostAddress(InetAddress.getByName("192.168.0.8"));
         api.setRestApiPort(9999);
