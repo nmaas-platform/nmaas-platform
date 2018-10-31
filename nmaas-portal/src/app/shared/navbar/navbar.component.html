@@ -1,15 +1,28 @@
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="navbar-welcome">
 			<div class="container-fluid">
-				<div class="navbar-header">
+				<div class="navbar-header" style="display: inline-block">
 					<a href="/" data-toggle="tooltip" data-placement="right" title="Network Management as a Service homepage"><img src="assets/images/logo-small.png" style="margin: 5px"
 									 alt="Network Management as a Service"></a>
 				</div>
-
 				<div style="display: inline-block" class="pull-right">
-					<button (click)="useLanguage('en')" ><img src="assets/images/country/gb_1.png" style="width: 60px; height: 30px;"></button>
-					<button (click)="useLanguage('fr')"><img src="assets/images/country/fr_1.png" style="width: 60px; height: 30px;"></button>
-					<button (click)="useLanguage('pl')"><img src="assets/images/country/pl_1.png" style="width: 60px; height: 30px;"></button>
 					<button class="btn navbar-btn" data-toggle="collapse" data-target="#login-register-panel">{{ 'NAVBAR.LOGIN_REGISTER' | translate }}</button>
 				</div>
+				<div class="pull-right navbar-btn" style="display: inline-block">
+					<li class="dropdown language-selector pull-right" style="list-style-type: none; margin: 5px; vertical-align: middle;">
+						<span>Language:</span>
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+							<img src="{{[getPathToCurrent()]}}" class="lang-circle-icon" />
+						</a>
+						<ul class="dropdown-menu pull-right">
+							<li *ngFor="let lang of languages" [ngClass]="{'active': getCurrent() == lang}">
+								<a (click)="useLanguage(lang)">
+									<img class="lang-circle-icon" src="assets/images/country/{{lang}}_circle.png" />
+									<span>{{lang.toUpperCase()}}</span>
+								</a>
+							</li>
+						</ul>
+					</li>
+				</div>
+
 			</div>
 		</nav>

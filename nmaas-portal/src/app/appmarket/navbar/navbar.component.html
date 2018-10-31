@@ -35,13 +35,6 @@
 				<li class="divider-vertical"></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a></li>
 				<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">{{ 'NAVBAR.CONFIGURATION' | translate }}</a></li>
-				
-				<li class="navbar-form form-group" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN']">
-					<select #langSelect class="form-control" (change)="useLanguage(langSelect.value)">
-						<option *ngFor="let lang of languages" [value]="lang"
-								[selected]="lang === translate.currentLang">{{ lang }}</option>
-					</select>					
-				</li>
 
 				<li [routerLinkActive]="['active']" class="dropdown"><a href="#" class="dropdown-toggle"
 					data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -52,6 +45,22 @@
 						<li class="divider"></li>
 						<li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['/logout']">{{ 'NAVBAR.LOGOUT' | translate }}</a></li>
 					</ul></li>
+
+				<li class="divider-vertical"></li>
+				<li class="dropdown language-selector pull-right" style="vertical-align: middle; display: inline-block;">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+						<img src="{{[getPathToCurrent()]}}" class="lang-circle-icon" />
+					</a>
+					<ul class="dropdown-menu pull-right">
+						<li *ngFor="let lang of languages" [ngClass]="{'active': getCurrent() == lang}">
+							<a (click)="useLanguage(lang)">
+								<img class="lang-circle-icon" src="assets/images/country/{{lang}}_circle.png" />
+								<span>{{lang.toUpperCase()}}</span>
+							</a>
+						</li>
+					</ul>
+				</li>
+
 			</ul>
 
 			<ul class="nav navbar-form navbar-right" *ngIf="checkUserRole()">
