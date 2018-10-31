@@ -80,7 +80,7 @@ class MockAuthService{
     }
 }
 
-describe('NavbarComponent', () => {
+describe('NavbarComponent_AppMarket', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
 

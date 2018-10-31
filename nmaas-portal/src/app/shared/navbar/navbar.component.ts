@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
+import {Observable, Subscription} from "rxjs";
+import {ContentDisplayService} from "../../service/content-display.service";
 
 @Component({
   selector: 'app-navbar',
@@ -9,27 +11,32 @@ import {TranslateService} from '@ngx-translate/core';
 })
 export class NavbarComponent implements OnInit {
 
-  public languageActual = '';
-  public pathToIcon = '';
+    public languages: string[];
+    public refresh: Subscription;
 
-  constructor(private translate: TranslateService) {
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
-    this.languageActual = this.getCurrent();
-    this.pathToIcon = 'assets/images/country/' + this.getCurrent() + '_circle.png';
-  }
+    constructor(private translate: TranslateService, private contentService:ContentDisplayService) {
+    }
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-    this.translate.setDefaultLang(language);
-    this.languageActual = this.getCurrent();
-    this.pathToIcon = 'assets/images/country/' + language + '_circle.png';
-  }
+    useLanguage(language: string) {
+        this.translate.use(language);
+    }
 
-  getCurrent(){
-    return this.translate.currentLang;
-  }
+    getCurrent(){
+        return this.translate.currentLang;
+    }
 
-  ngOnInit() {
-  }
+    getPathToCurrent(){
+        return "assets/images/country/" + this.getCurrent() + "_circle.png";
+    }
+
+    ngOnInit() {
+        this.getSupportedLanguages()
+    }
+
+    public getSupportedLanguages(){
+        this.contentService.getLanguages().subscribe(langs =>{
+            this.translate.addLangs(langs);
+            this.languages = langs;
+        });
+    }
 }
