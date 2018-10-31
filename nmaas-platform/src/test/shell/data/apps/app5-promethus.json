@@ -10,9 +10,15 @@
 	"issuesUrl": "https://github.com/prometheus/prometheus/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE",
 			"KUBERNETES"
 		],
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-prometheus",
+				"version": "1.0.0-alfa"
+			},
+			"archive": "nmaas-prometheus-1.0.0-alfa.tgz"
+		},
 		"defaultStorageSpace":20,
 		"configFileRepositoryRequired":true
 	},
