@@ -60,6 +60,7 @@
 					"key":"targets",
 					"items":[
 						"targets[]",
+                        "targets[].jobName",
 						"targets[].ipAddress",
 						"targets[].label"
 					]
