@@ -7,7 +7,7 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -447,7 +447,7 @@ public class UsersController {
 					roleAsString,
 					isEnabledFlag ? "activated" : "deactivated",
 					getUser(userId).getUsername());
-			EmailConfirmation emailConfirmation = EmailConfirmation
+			ConfirmationEmail confirmationEmail = ConfirmationEmail
 					.builder()
 					.firstName(user.getFirstname())
 					.lastName(user.getLastname())
@@ -455,14 +455,14 @@ public class UsersController {
 					.userName(user.getUsername())
 					.build();
 			if (isEnabledFlag) {
-				emailConfirmation.setSubject("NMaaS: Account created");
-				emailConfirmation.setTemplateName("user-activate-notification");
+				confirmationEmail.setSubject("NMaaS: Account created");
+				confirmationEmail.setTemplateName("user-activate-notification");
 			} else {
-				emailConfirmation.setSubject("NMaaS: Account blocked");
-				emailConfirmation.setTemplateName("user-deactivate-notification");
+				confirmationEmail.setSubject("NMaaS: Account blocked");
+				confirmationEmail.setTemplateName("user-deactivate-notification");
 			}
 
-			notificationService.sendEmail(emailConfirmation);
+			notificationService.sendEmail(confirmationEmail);
 			log.info(message);
 		}catch(ObjectNotFoundException err){
 			throw new MissingElementException(err.getMessage());

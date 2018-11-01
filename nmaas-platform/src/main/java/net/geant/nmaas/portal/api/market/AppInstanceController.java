@@ -18,17 +18,14 @@ import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.NotificationService;
 import net.geant.nmaas.portal.service.UserService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,10 +39,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.NotFoundException;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -390,8 +385,8 @@ public class AppInstanceController extends AppBaseController {
         return ai;
     }
 
-    private EmailConfirmation getAppInstanceReadyEmailConfirmation(User user, String appInstanceName, String appName, String domainName){
-        return EmailConfirmation.builder()
+    private ConfirmationEmail getAppInstanceReadyEmailConfirmation(User user, String appInstanceName, String appName, String domainName){
+        return ConfirmationEmail.builder()
                 .toEmail(user.getEmail())
                 .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
                 .lastName(user.getLastname())
@@ -403,8 +398,8 @@ public class AppInstanceController extends AppBaseController {
                 .build();
     }
 
-    private EmailConfirmation getDomainAdminNotificationEmailConfirmation(User user, String appInstanceName, String appName, String domainName){
-        return EmailConfirmation.builder()
+    private ConfirmationEmail getDomainAdminNotificationEmailConfirmation(User user, String appInstanceName, String appName, String domainName){
+        return ConfirmationEmail.builder()
                 .toEmail(user.getEmail())
                 .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
                 .lastName(user.getLastname())

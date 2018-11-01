@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailConfirmation extends Email{
+public class ConfirmationEmail extends Email{
 
     private String lastName;
     private String userName;
@@ -17,7 +17,7 @@ public class EmailConfirmation extends Email{
     private String domainName;
 
     @Builder
-    public EmailConfirmation(@NotNull String toEmail, @NotNull String subject, @NotNull String templateName, @NotNull String firstName, String lastName, String userName, String appName, String appInstanceName, String domainName) {
+    public ConfirmationEmail(@NotNull String toEmail, @NotNull String subject, @NotNull String templateName, @NotNull String firstName, String lastName, String userName, String appName, String appInstanceName, String domainName) {
         super(toEmail, subject, templateName, firstName);
         this.lastName = lastName;
         this.userName = userName;
