@@ -7,7 +7,6 @@ import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
 import net.geant.nmaas.portal.api.model.FailureEmail;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -64,7 +63,7 @@ public class GitLabMonitorService implements MonitorService {
             this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);
         } catch(GitLabInvalidConfigurationException | IllegalStateException e){
             findUsersToSendEmail().forEach(user ->
-                    notificationService.sendFailureEmail(getDomainAdminNotificationEmailConfirmation(user)));
+                    notificationService.sendFailureEmail(buildFailureEmail(user)));
             this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.FAILURE);
         }
     }
@@ -79,7 +78,7 @@ public class GitLabMonitorService implements MonitorService {
         this.checkStatus();
     }
 
-    private FailureEmail getDomainAdminNotificationEmailConfirmation(User user){
+    private FailureEmail buildFailureEmail(User user){
         return FailureEmail.builder()
                 .toEmail(user.getEmail())
                 .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
