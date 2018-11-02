@@ -1,15 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.security.Principal;
-import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
 import net.geant.nmaas.portal.api.domain.ApiResponse;
 import net.geant.nmaas.portal.api.domain.AppRate;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -17,6 +7,18 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/apps/{appId}/rate")
