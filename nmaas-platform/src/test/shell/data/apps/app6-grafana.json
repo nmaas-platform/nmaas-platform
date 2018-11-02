@@ -1,0 +1,38 @@
+{
+  "name":"Grafana",
+  "version":"0.24.0",
+  "license":"Apache 2 License",
+  "briefDescription":"The tool for beautiful monitoring and metric analytics.",
+  "tags": [ "monitoring", "visualization"],
+  "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
+  "wwwUrl": "https://grafana.com/",
+  "sourceUrl": "https://github.com/grafana/grafana",
+  "issuesUrl": "https://github.com/grafana/grafana/issues",
+  "appDeploymentSpec": {
+    "supportedDeploymentEnvironments": [
+      "KUBERNETES"
+    ],
+    "kubernetesTemplate": {
+      "chart": {
+        "name": "nmaas-grafana"
+      },
+      "archive": "nmaas-grafana-alfa.tgz"
+    },
+    "defaultStorageSpace":20,
+    "configFileRepositoryRequired":true
+  },
+  "configTemplate": {
+    "template": {
+      "schema": {
+        "type": "object",
+        "properties": {	}
+      },
+      "form": [
+        {
+          "type":"help",
+          "helpvalue":"All required configuration should be applied using Grafana graphical interface"
+        }
+      ]
+    }
+  }
+}
