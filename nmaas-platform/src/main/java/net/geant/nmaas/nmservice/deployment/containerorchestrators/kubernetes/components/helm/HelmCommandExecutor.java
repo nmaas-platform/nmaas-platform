@@ -30,8 +30,8 @@ public class HelmCommandExecutor {
     @Value("${helm.chartsDirectory}")
     String helmChartsDirectory;
 
-    //It should be enabled by default
-    Boolean enableTls = true;
+    @Value("${helm.enableTls}")
+    Boolean enableTls;
 
 
     public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
