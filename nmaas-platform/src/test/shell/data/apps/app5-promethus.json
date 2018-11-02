@@ -14,9 +14,9 @@
 		],
 		"kubernetesTemplate": {
 			"chart": {
-				"name": "nmaas-prometheus"
-			},
-			"archive": "nmaas-prometheus-alfa.tgz"
+				"name": "nmaas-prometheus",
+				"version": "1.0.0-alfa"
+			}
 		},
 		"defaultStorageSpace":20,
 		"configFileRepositoryRequired":true

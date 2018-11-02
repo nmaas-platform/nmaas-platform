@@ -14,9 +14,9 @@
     ],
     "kubernetesTemplate": {
       "chart": {
-        "name": "nmaas-grafana"
-      },
-      "archive": "nmaas-grafana-alfa.tgz"
+        "name": "nmaas-grafana",
+        "version": "1.0.0-alfa"
+      }
     },
     "defaultStorageSpace":20,
     "configFileRepositoryRequired":true
