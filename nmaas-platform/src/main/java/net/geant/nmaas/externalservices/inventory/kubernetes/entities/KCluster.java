@@ -31,9 +31,6 @@ public class KCluster {
     private Long id;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
-    private KClusterHelm helm;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
     private KClusterApi api;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)

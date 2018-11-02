@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * At this point it is assumed that exactly one cluster should exist.
  */
 @Component
-public class KubernetesClusterManager implements KClusterApiManager, KClusterHelmManager, KClusterIngressManager,
+public class KubernetesClusterManager implements KClusterApiManager, KClusterIngressManager,
         KClusterDeploymentManager, KNamespaceService {
 
     private static final String NMAAS_NAMESPACE_PREFIX = "nmaas-ns-";
@@ -57,36 +57,6 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterHel
     @Override
     public boolean getUseClusterApi(){
         return this.loadSingleCluster().getApi().isUseKClusterApi();
-    }
-
-    @Override
-    public String getHelmHostAddress() {
-        return loadSingleCluster().getHelm().getHelmHostAddress().getHostAddress();
-    }
-
-    @Override
-    public String getHelmHostSshUsername() {
-        return loadSingleCluster().getHelm().getHelmHostSshUsername();
-    }
-
-    @Override
-    public Boolean getUseLocalChartArchives() {
-        return loadSingleCluster().getHelm().getUseLocalChartArchives();
-    }
-
-    @Override
-    public String getHelmChartRepositoryName() {
-        return loadSingleCluster().getHelm().getHelmChartRepositoryName();
-    }
-
-    @Override
-    public String getHelmHostChartsDirectory() {
-        return loadSingleCluster().getHelm().getHelmHostChartsDirectory();
-    }
-
-    @Override
-    public boolean getEnableTls(){
-        return this.loadSingleCluster().getHelm().getEnableTls();
     }
 
     @Override
