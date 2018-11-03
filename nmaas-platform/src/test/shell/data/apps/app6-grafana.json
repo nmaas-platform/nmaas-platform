@@ -1,6 +1,6 @@
 {
   "name":"Grafana",
-  "version":"0.24.0",
+  "version":"5.3.1",
   "license":"Apache 2 License",
   "briefDescription":"The tool for beautiful monitoring and metric analytics.",
   "tags": [ "monitoring", "visualization"],
@@ -18,7 +18,7 @@
         "version": "1.0.0-alfa"
       }
     },
-    "defaultStorageSpace":20,
+    "defaultStorageSpace":5,
     "configFileRepositoryRequired":true
   },
   "configTemplate": {
