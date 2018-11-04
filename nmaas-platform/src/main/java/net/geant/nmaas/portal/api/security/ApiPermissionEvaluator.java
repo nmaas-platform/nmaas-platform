@@ -54,7 +54,7 @@ public class ApiPermissionEvaluator implements PermissionEvaluator {
 
 	private Permissions[] convertToPermissions(String permissionStr) {
 		
-		Set<Permissions> perms = new HashSet<Permissions>();
+		Set<Permissions> perms = new HashSet<>();
 		
 		String[] permArray = (permissionStr != null ? permissionStr.trim().split(",") : null); 
 		if(permArray != null) {
