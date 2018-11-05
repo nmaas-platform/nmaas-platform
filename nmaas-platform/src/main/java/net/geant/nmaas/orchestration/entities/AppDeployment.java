@@ -14,9 +14,8 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 /**
@@ -26,6 +25,8 @@ import org.hibernate.annotations.Type;
 @Table(name="app_deployment")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class AppDeployment {
 
@@ -53,6 +54,7 @@ public class AppDeployment {
     /** Current deployment state. */
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private AppDeploymentState state = AppDeploymentState.REQUESTED;
 
     /** Initial application configuration provided by the user. */
@@ -61,6 +63,7 @@ public class AppDeployment {
 
     /** Store all of deployment state changes */
     @OneToMany(mappedBy = "app", orphanRemoval = true, cascade = CascadeType.ALL)
+    @Builder.Default
     private List<AppDeploymentHistory> history = new ArrayList<>();
 
     /** Indicates if GitLab instance is required during deployment */
@@ -83,4 +86,15 @@ public class AppDeployment {
         this.configFileRepositoryRequired = configFileRepositoryRequired;
         this.storageSpace = storageSpace;
     }
+    private String loggedInUsersName;
+
+    private Long domainId;
+
+    private String appName;
+
+    private Long appInstanceId;
+
+    private String appInstanceName;
+
+    private String domainCodeName;
 }

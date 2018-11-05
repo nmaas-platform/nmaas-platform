@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
@@ -14,6 +15,12 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.NotificationService;
+import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,10 +40,23 @@ public class AppDeploymentStateChangeManager {
 
     private ApplicationEventPublisher eventPublisher;
 
+    private NotificationService notificationService;
+
+    private UserService userService;
+
+    private DomainService domains;
+
     @Autowired
-    public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager, ApplicationEventPublisher eventPublisher){
+    public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager,
+                                           ApplicationEventPublisher eventPublisher,
+                                           NotificationService notificationService,
+                                           UserService userService,
+                                           DomainService domains){
         this.deploymentRepositoryManager = deploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
+        this.notificationService = notificationService;
+        this.userService = userService;
+        this.domains = domains;
     }
 
     @EventListener
@@ -57,6 +78,16 @@ public class AppDeploymentStateChangeManager {
                         event.getErrorMessage());
                 deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(), event.getErrorMessage());
             }
+            Optional<AppDeployment> optionalAppDeployment = deploymentRepositoryManager.load(event.getDeploymentId());
+            if(optionalAppDeployment.isPresent()){
+                AppDeployment appDeployment = optionalAppDeployment.get();
+                final User user = userService.findByUsername(appDeployment.getLoggedInUsersName()).orElseThrow(ProcessingException::new);
+                final List<User> domainUsers = domains.findUsersWithDomainAdminRole(appDeployment.getDomainId());
+
+                notificationService.sendEmail(getAppInstanceReadyEmailConfirmation(user, appDeployment.getAppInstanceName(), appDeployment.getAppName(), appDeployment.getAppInstanceId(), appDeployment.getDomainCodeName()));
+                domainUsers.forEach(domainUser ->
+                        notificationService.sendEmail(getDomainAdminNotificationEmailConfirmation(domainUser, appDeployment.getAppInstanceName(), appDeployment.getAppName(), appDeployment.getAppInstanceId(), appDeployment.getDomainCodeName())));
+            };
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
@@ -107,6 +138,34 @@ public class AppDeploymentStateChangeManager {
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }
+    }
+
+    private ConfirmationEmail getAppInstanceReadyEmailConfirmation(User user, String appInstanceName, String appName, Long appId, String domainName){
+        return ConfirmationEmail.builder()
+                .toEmail(user.getEmail())
+                .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
+                .lastName(user.getLastname())
+                .appInstanceName(appInstanceName)
+                .appName(appName)
+                .domainName(domainName)
+                .accessURL(String.format("https://portal.nmaas.qalab.geant.net/instances/%s", appId))
+                .subject("Your app instance is ready")
+                .templateName("app-instance-ready-notification")
+                .build();
+    }
+
+    private ConfirmationEmail getDomainAdminNotificationEmailConfirmation(User user, String appInstanceName, String appName, Long appId, String domainName){
+        return ConfirmationEmail.builder()
+                .toEmail(user.getEmail())
+                .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
+                .lastName(user.getLastname())
+                .appInstanceName(appInstanceName)
+                .appName(appName)
+                .domainName(domainName)
+                .accessURL(String.format("https://portal.nmaas.qalab.geant.net/instances/%s", appId))
+                .subject("New app instance is ready")
+                .templateName("domain-admin-notification")
+                .build();
     }
 
 }

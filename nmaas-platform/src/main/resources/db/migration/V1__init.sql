@@ -561,3 +561,4 @@ alter table nm_service_info_additional_parameters add constraint FKt80oxva42ec2f
 alter table nm_service_info_managed_devices_ip_addresses add constraint FKhfwvis7mkxbwnabi9oya4bvcw foreign key (nm_service_info_id) references nm_service_info;
 alter table user_role add constraint FKj345gk1bovqvfame88rcx7yyx foreign key (user_id) references users;
 alter table user_role add constraint FK6skmr1hqmklgohtssd74qkrau foreign key (domain_id) references domain;
+alter table app_deployment add (logged_in_users_name varchar(255), domain_id  bigint, app_name  varchar(255), app_instance_id bigint, app_instance_name varchar(255), domain_code_name varchar(255));

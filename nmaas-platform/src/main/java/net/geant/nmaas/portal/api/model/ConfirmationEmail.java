@@ -15,14 +15,16 @@ public class ConfirmationEmail extends Email{
     private String appName;
     private String appInstanceName;
     private String domainName;
+    private String accessURL;
 
     @Builder
-    public ConfirmationEmail(@NotNull String toEmail, @NotNull String subject, @NotNull String templateName, @NotNull String firstName, String lastName, String userName, String appName, String appInstanceName, String domainName) {
+    public ConfirmationEmail(@NotNull String toEmail, @NotNull String subject, @NotNull String templateName, @NotNull String firstName, String lastName, String userName, String appName, String appInstanceName, String domainName, String accessURL) {
         super(toEmail, subject, templateName, firstName);
         this.lastName = lastName;
         this.userName = userName;
         this.appName = appName;
         this.appInstanceName = appInstanceName;
         this.domainName = domainName;
+        this.accessURL = accessURL;
     }
 }
