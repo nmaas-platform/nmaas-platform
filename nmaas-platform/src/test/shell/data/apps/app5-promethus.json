@@ -65,13 +65,13 @@
 								"title": "IP address and port",
 								"type": "string",
                                 "minLength": 3,
-								"pattern": "\\:[0-9]{1,6}$"
+								"pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
 							}
 						}
 					}
 				},
               "required": [
-                "targets"
+                "targets", "targets.jobName", "targets.Addresses"
               ]
 			},
 			"form": [
