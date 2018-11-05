@@ -52,7 +52,7 @@
 			<button
 				*ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
 				type="button" class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.EDIT_BUTTON' | translate}}</button>
-			<button (click)="passwordModal.show()" class="btn btn-success" *ngIf="isInMode(ComponentMode.PROFILVIEW)">{{'USER_DETAILS.CHANGE_PASSWORD_BUTTON' | translate}}</button>
+			<button (click)="passwordModal.show()" class="btn btn-success" *ngIf="isInMode(ComponentMode.PROFILVIEW) && !user.ssoUser">{{'USER_DETAILS.CHANGE_PASSWORD_BUTTON' | translate}}</button>
 		</form>
 
 	</div>

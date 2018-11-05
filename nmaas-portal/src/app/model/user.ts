@@ -10,6 +10,7 @@ export class User {
   public roles: UserRole[] = [];
   public termsOfUseAccepted: boolean = undefined;
   public privacyPolicyAccepted: boolean = undefined;
+  public ssoUser: boolean = undefined;
   
   public getDomainIds(): number[] {
     return Array.from(new Set(this.roles.map(ur => ur.domainId)));
