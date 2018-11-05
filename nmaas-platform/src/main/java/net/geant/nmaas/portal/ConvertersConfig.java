@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.api.domain.converters.InetAddressInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.RoleInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.TagConverter;
 import net.geant.nmaas.portal.api.domain.converters.TagInverseConverter;
+import net.geant.nmaas.portal.api.domain.converters.UserConverter;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 
 import org.modelmapper.Conditions;
@@ -34,6 +35,7 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressConverter());
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
+	    modelMapper.addConverter(new UserConverter());
 	    return modelMapper;
 	}
 	
