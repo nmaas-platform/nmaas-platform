@@ -19,8 +19,8 @@ import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationExcepti
 
 public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-	private final static String AUTH_HEADER="Authorization";
-	private final static String AUTH_METHOD="Basic";
+	private static final  String AUTH_HEADER="Authorization";
+	private static final String AUTH_METHOD="Basic";
 	
 	UserDetailsService userDetailsService;
 	
@@ -33,9 +33,9 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException, IOException, ServletException {
+			throws IOException, ServletException {
 		
-		HttpServletRequest httpRequest = (HttpServletRequest)request;
+		HttpServletRequest httpRequest = request;
 		
 		String authHeader = httpRequest.getHeader(AUTH_HEADER);
 		if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " "))
@@ -62,9 +62,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 		if(password != user.getPassword())
 			throw new BasicAuthenticationException("Invalid credentials.");	
 						
-		UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
-				
-		return userToken;
+		return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
 	}
 
 	

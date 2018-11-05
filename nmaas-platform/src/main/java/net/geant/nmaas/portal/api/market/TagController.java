@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,12 +30,12 @@ public class TagController {
 		this.modelMapper = modelMapper;
 	}
 	
-	@RequestMapping(method=RequestMethod.GET)
+	@GetMapping
 	public Set<String> getAll() {
 		return tagRepo.findAll().stream().map(tag -> modelMapper.map(tag, String.class)).collect(Collectors.toSet());
 	}
 	
-	@RequestMapping(value="/{tagName}", method=RequestMethod.GET)
+	@GetMapping(value="/{tagName}")
 	public Set<ApplicationBrief> getByTag(@PathVariable("tagName") String tagName) {
 		Tag tag = tagRepo.findByName(tagName);
 		if(tag != null)

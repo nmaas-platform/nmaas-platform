@@ -13,7 +13,7 @@ public class User extends UserBase {
 	protected String lastname;
 	protected String email;
 	
-	protected Set<UserRole> roles = new HashSet<UserRole>();
+	protected Set<UserRole> roles = new HashSet<>();
 	
 	protected User() {
 		super();

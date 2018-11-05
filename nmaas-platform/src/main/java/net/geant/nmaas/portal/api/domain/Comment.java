@@ -19,5 +19,5 @@ public class Comment {
 	private String comment;
 	private boolean deleted;
 	
-	List<Comment> subComments = new ArrayList<Comment>();
+	List<Comment> subComments = new ArrayList<>();
 }
