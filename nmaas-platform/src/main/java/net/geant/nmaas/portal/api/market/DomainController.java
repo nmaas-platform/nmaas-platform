@@ -6,25 +6,25 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
-import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
+import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.Domain;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.Id;
@@ -63,7 +63,7 @@ public class DomainController extends AppBaseController {
 	
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
-	public List<Domain> getMyDomains(@NotNull Principal principal) throws ProcessingException, MissingElementException {
+	public List<Domain> getMyDomains(@NotNull Principal principal) {
 		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 					
 		try {
@@ -76,7 +76,7 @@ public class DomainController extends AppBaseController {
 	@PostMapping
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) throws ProcessingException {
+	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) {
 		if(domainService.existsDomain(domainRequest.getName())) 
 			throw new ProcessingException("Domain already exists.");
 		
@@ -93,7 +93,7 @@ public class DomainController extends AppBaseController {
 	@PutMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
+	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId()))
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		
@@ -115,7 +115,7 @@ public class DomainController extends AppBaseController {
 	@PatchMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR')")
-	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
+	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId())){
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
@@ -134,7 +134,7 @@ public class DomainController extends AppBaseController {
 	@PatchMapping("/{domainId}/dcn")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
+	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId())){
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
@@ -158,7 +158,7 @@ public class DomainController extends AppBaseController {
 	@DeleteMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public void deleteDomain(@PathVariable Long domainId) throws MissingElementException {		
+	public void deleteDomain(@PathVariable Long domainId) {		
 		if(!domainService.removeDomain(domainId))
 			throw new MissingElementException("Unable to delete domain");
 	}
@@ -166,7 +166,7 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)	
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public Domain getDomain(@PathVariable Long domainId) throws MissingElementException {	
+	public Domain getDomain(@PathVariable Long domainId) {	
 		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		return modelMapper.map(domain, Domain.class);
 	}

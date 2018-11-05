@@ -12,8 +12,9 @@ public class User extends UserBase {
 	protected String firstname;
 	protected String lastname;
 	protected String email;
+	protected boolean ssoUser;
 	
-	protected Set<UserRole> roles = new HashSet<UserRole>();
+	protected Set<UserRole> roles = new HashSet<>();
 	
 	protected User() {
 		super();
@@ -23,9 +24,10 @@ public class User extends UserBase {
 		super(id, username);
 	}
 	
-	public User(Long id, String username, Set<UserRole> roles) {
+	public User(Long id, String username, Set<UserRole> roles, boolean ssoUser) {
 		this(id, username);
 		this.roles = roles;
+		this.ssoUser = ssoUser;
 	}
 	
 }
