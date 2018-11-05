@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -17,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -179,5 +179,19 @@ public class UserServiceImpl implements UserService {
             }
         }
         return emails;
+	}
+
+	@Override
+	public List<User> findUsersWithRoleSystemAdminAndOperator(){
+		List<User> users = new ArrayList<>();
+		for(User user : findAll()) {
+			for (UserRole userRole : user.getRoles()) {
+				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) ||
+						userRole.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())) {
+					users.add(user);
+				}
+			}
+		}
+		return users;
 	}
 }

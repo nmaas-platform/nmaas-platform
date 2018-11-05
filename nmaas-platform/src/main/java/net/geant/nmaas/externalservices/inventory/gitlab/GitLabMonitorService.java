@@ -62,7 +62,7 @@ public class GitLabMonitorService implements MonitorService {
             this.gitLabManager.validateGitLabInstance();
             this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);
         } catch(GitLabInvalidConfigurationException | IllegalStateException e){
-            findUsersToSendEmail().forEach(user ->
+            userService.findUsersWithRoleSystemAdminAndOperator().forEach(user ->
                     notificationService.sendFailureEmail(buildFailureEmail(user)));
             this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.FAILURE);
         }
@@ -86,18 +86,5 @@ public class GitLabMonitorService implements MonitorService {
                 .errorMessage("This is to notify you that the GitLab health check fails.")
                 .templateName("monitoring-failure-notification")
                 .build();
-    }
-
-    protected List<User> findUsersToSendEmail(){
-        List<User> users = new ArrayList<>();
-        for(User user : userService.findAll()) {
-            for (UserRole userRole : user.getRoles()) {
-                if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) ||
-                        userRole.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())) {
-                    users.add(user);
-                }
-            }
-        }
-        return users;
     }
 }
