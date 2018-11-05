@@ -18,14 +18,14 @@ import java.io.Serializable;
 
 @Component
 public class CommentPermissionCheck extends BasePermissionCheck {
-	public final static String COMMENT = "comment";
+	public static final String COMMENT = "comment";
 			
 	@Autowired
 	CommentRepository comments;
 	
-	final protected Map<Role, Permissions[]> permMatrix = new HashMap<Role, Permissions[]>();
+	protected final Map<Role, Permissions[]> permMatrix = new HashMap<>();
 	
-	final protected static Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
+	protected final static Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
 	
 	public CommentPermissionCheck() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
@@ -51,7 +51,7 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 		if(user == null)
 			throw new IllegalArgumentException("user is missing");
 		
-		Set<Permissions> resultPerms = new HashSet<Permissions>();
+		Set<Permissions> resultPerms = new HashSet<>();
 
 		Comment comment = null;
 		if(targetId != null)

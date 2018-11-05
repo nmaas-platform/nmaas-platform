@@ -20,13 +20,13 @@ import net.geant.nmaas.portal.service.DomainService;
 @Component
 public class DomainObjectPermissionCheck extends BasePermissionCheck {
 
-	final static String DOMAIN = "domain";
+	static final String DOMAIN = "domain";
 
 	@Autowired
 	private DomainService domains;
 
-	private final Map<Role, Permissions[]> globalPermMatrix = new HashMap<Role, Permissions[]>();
-	private final Map<Role, Permissions[]> permMatrix = new HashMap<Role, Permissions[]>();
+	private final Map<Role, Permissions[]> globalPermMatrix = new HashMap<>();
+	private final Map<Role, Permissions[]> permMatrix = new HashMap<>();
 
 
 	public DomainObjectPermissionCheck() {
@@ -59,7 +59,7 @@ public class DomainObjectPermissionCheck extends BasePermissionCheck {
 		if(user == null)
 			throw new IllegalArgumentException("user is missing");
 		
-		Set<Permissions> resultPerms = new HashSet<Permissions>();
+		Set<Permissions> resultPerms = new HashSet<>();
 		
 		Domain domain = (targetId != null ? domains.findDomain((Long)targetId).orElseThrow(() -> new IllegalStateException("Domain not found."))
 											: domains.getGlobalDomain().orElseThrow(() -> new IllegalStateException("Global domain not found.")));

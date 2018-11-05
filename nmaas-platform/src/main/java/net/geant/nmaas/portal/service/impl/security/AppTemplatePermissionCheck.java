@@ -19,12 +19,12 @@ import net.geant.nmaas.portal.service.AclService.Permissions;
 @Component
 public class AppTemplatePermissionCheck extends BasePermissionCheck {
 
-	public final static String APPTEMPLATE = "appTemplate";
+	public static final String APPTEMPLATE = "appTemplate";
 	
 	@Autowired
 	ApplicationRepository applications;
 	
-	final protected Map<Role, Permissions[]> permMatrix = new HashMap<Role, Permissions[]>(); 
+	protected final Map<Role, Permissions[]> permMatrix = new HashMap<>(); 
 	
 	public AppTemplatePermissionCheck() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});
@@ -50,7 +50,7 @@ public class AppTemplatePermissionCheck extends BasePermissionCheck {
 			throw new IllegalArgumentException("user is missing");
 
 		
-		Set<Permissions> resultPerms = new HashSet<Permissions>();
+		Set<Permissions> resultPerms = new HashSet<>();
 		
 		for(UserRole role : user.getRoles())
 			resultPerms.addAll(Arrays.asList(permMatrix.get(role.getRole())));

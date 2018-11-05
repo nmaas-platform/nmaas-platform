@@ -68,7 +68,7 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public Domain createGlobalDomain() throws ProcessingException {
+	public Domain createGlobalDomain() {
 		Optional<Domain> globalDomainOptional = getGlobalDomain();
 		return globalDomainOptional.orElseGet(() -> createDomain(this.globalDomain, this.globalDomain));
 	}
@@ -92,17 +92,17 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public Domain createDomain(String name, String codename) throws ProcessingException {
+	public Domain createDomain(String name, String codename) {
 		return createDomain(name, codename, true);
 	}
 
 	@Override
-	public Domain createDomain(String name, String codename, boolean active) throws ProcessingException{
+	public Domain createDomain(String name, String codename, boolean active) {
 		return createDomain(name, codename, active, false, null, null);
 	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) throws ProcessingException {
+	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
 		checkParam(name);
 		checkParam(codename);
 
@@ -117,7 +117,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public void storeDcnInfo(String domain) throws InvalidDomainException {
+	public void storeDcnInfo(String domain) {
 		this.dcnRepositoryManager.storeDcnInfo(new DcnInfo(constructDcnSpec(domain)));
 	}
 
@@ -145,7 +145,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public void updateDomain(Domain domain) throws ProcessingException {		
+	public void updateDomain(Domain domain) {		
 		checkParam(domain);
 		checkGlobal(domain);
 		if(domain.getId() == null)
@@ -163,7 +163,7 @@ public class DomainServiceImpl implements DomainService {
 		return userRoleRepo.findDomainMembers(id);		
 	}
 
-	public void addMemberRole(Long domainId, Long userId, Role role) throws ObjectNotFoundException {
+	public void addMemberRole(Long domainId, Long userId, Role role) {
 		checkParams(domainId, userId);
 		checkParams(role);
 			
@@ -182,16 +182,16 @@ public class DomainServiceImpl implements DomainService {
 		previousRole.ifPresent(value -> userRoleRepo.deleteBy(user, domain, value.getRole()));
 	}
 
-	private User getUser(Long userId) throws ObjectNotFoundException {
+	private User getUser(Long userId) {
 		return users.findById(userId).orElseThrow(() -> new ObjectNotFoundException("User not found"));
 	}
 
-	private Domain getDomain(Long domainId) throws ObjectNotFoundException {
+	private Domain getDomain(Long domainId) {
 		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
 	}
 
 	@Override
-	public void removeMemberRole(Long domainId, Long userId, Role role) throws ObjectNotFoundException {
+	public void removeMemberRole(Long domainId, Long userId, Role role) {
 		checkParams(domainId, userId);
 		checkParams(role);
 			
@@ -203,7 +203,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public void removeMember(Long domainId, Long userId) throws ObjectNotFoundException {
+	public void removeMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
 		 
 		Domain domain = getDomain(domainId);
@@ -214,7 +214,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public Set<Role> getMemberRoles(Long domainId, Long userId) throws ObjectNotFoundException {
+	public Set<Role> getMemberRoles(Long domainId, Long userId) {
 		checkParams(domainId, userId);
 		
 		Domain domain = getDomain(domainId);
@@ -225,7 +225,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public User getMember(Long domainId, Long userId) throws ProcessingException {
+	public User getMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
 		
 		Domain domain = getDomain(domainId);
@@ -240,7 +240,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public Set<Domain> getUserDomains(Long userId) throws ObjectNotFoundException {
+	public Set<Domain> getUserDomains(Long userId) {
 		checkParams(userId);
 
 		User user = getUser(userId);
