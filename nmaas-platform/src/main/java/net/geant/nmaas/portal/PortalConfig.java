@@ -140,18 +140,8 @@ public class PortalConfig {
 			@Override
 			@Transactional
 			public void afterPropertiesSet() throws Exception {
-				try {
-					ConfigurationView configuration = configurationManager.getConfiguration();
-					if(configuration.isMaintenance())
-						configuration.setMaintenance(false);
-					if(configuration.isSsoLoginAllowed())
-						configuration.setSsoLoginAllowed(true);
-					configurationManager.updateConfiguration(configuration.getId(), configuration);
-
-				} catch(IllegalStateException e){
-					configurationManager.deleteAllConfigurations();
-					configurationManager.addConfiguration(new ConfigurationView(false, false));
-				}
+                configurationManager.deleteAllConfigurations();
+                configurationManager.addConfiguration(new ConfigurationView(false, false, "en"));
 			}
 		};
 	}

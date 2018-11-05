@@ -51,7 +51,8 @@ export class AppDetailsComponent implements OnInit {
     private appInstanceService: AppInstanceService,
     private userDataService: UserDataService,
     private authService: AuthService,
-    private router: Router, private route: ActivatedRoute, private location: Location) {}
+    private router: Router, private route: ActivatedRoute, private location: Location) {
+  }
 
   ngOnInit() {
        

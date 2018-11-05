@@ -2,67 +2,7 @@
     <div class="panel-heading">{{ 'CLUSTERS.TITLE' | translate }}</div>
     <div class="panel-body">
         <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #clusterForm="ngForm">
-            <div class="panel-default panel-heading">{{ 'CLUSTERS.HELM' | translate }}</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="helmhostaddress" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_ADDRESS' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="helmhostaddress" name="helmhostaddress"
-                               [(ngModel)]="cluster.helm.helmHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #hostaddress="ngModel">
-                        <div class="alert alert-danger" *ngIf="hostaddress.invalid && (hostaddress.dirty || hostaddress.touched)">
-                            <div *ngIf="hostaddress.errors.required">{{ 'CLUSTERS.HOST_ADDRESS_REQUIRED_MESSAGE' | translate }}</div>
-                            <div *ngIf="hostaddress.errors.pattern">{{ 'CLUSTERS.HOST_ADDRESS_VALIDATION_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="helmhostsshusername" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_SSH_USERNAME' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="helmhostsshusername" name="helmhostsshusername"
-                               [(ngModel)]="cluster.helm.helmHostSshUsername" [disabled]="isInMode(ComponentMode.VIEW)" required #sshUsername="ngModel">
-                        <div class="alert alert-danger" *ngIf="sshUsername.invalid && (sshUsername.dirty || sshUsername.touched)">
-                            <div *ngIf="sshUsername.errors.required">{{ 'CLUSTERS.HOST_SSH_USERNAME_REQUIRED_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="helmuselocalchartarchives" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_LOCAL_CHART_ARCHIEVES' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="checkbox" id="helmuselocalchartarchives" name="helmuselocalchartarchives"
-                               [(ngModel)]="cluster.helm.useLocalChartArchives" [checked]="cluster.helm.useLocalChartArchives == true" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="helmrepositoryname" class="col-sm-2 control-label">{{ 'CLUSTERS.HEML_CHART_REPO_NAME' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="helmrepositoryname" name="helmrepositoryname"
-                               [(ngModel)]="cluster.helm.helmChartRepositoryName" [disabled]="isInMode(ComponentMode.VIEW) || cluster.helm.useLocalChartArchives"
-                               required #helmRepositoryName="ngModel">
-                        <div class="alert alert-danger" *ngIf="helmRepositoryName.invalid && (helmRepositoryName.dirty || helmRepositoryName.touched)">
-                            <div *ngIf="helmRepositoryName.errors.required">{{ 'CLUSTERS.HELM_CHART_REPO_NAME_REQUIRED_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="helmhostchartsdirectory" class="col-sm-2 control-label">{{ 'CLUSTERS.HEML_CHARTS_DIRECTORY' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="helmhostchartsdirectory" name="helmhostchartsdirectory"
-                               [(ngModel)]="cluster.helm.helmHostChartsDirectory"
-                               [disabled]="isInMode(ComponentMode.VIEW) || !cluster.helm.useLocalChartArchives" required #chartsDirectory="ngModel">
-                        <div class="alert alert-danger" *ngIf="chartsDirectory.invalid && (chartsDirectory.dirty || chartsDirectory.touched)">
-                            <div *ngIf="chartsDirectory.errors.required">{{ 'CLUSTERS.HELM_CHART_DIRECTORY_REQUIRED_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="panel-default panel-heading">{{ 'CLUSTERS.REST_API' | translate }}</div>
-                <div class="form-group">
-                    <label for="helmenabletls" class="col-sm-2 control-label">{{ 'CLUSTERS.ENABLE_TLS' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="checkbox" id="helmenabletls" name="helmenabletls"
-                               [(ngModel)]="cluster.helm.enableTls" [checked]="cluster.helm.enableTls == true" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
             <div class="panel-body">
                 <div class="form-group">
                     <label for="useKClusterApi" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_REST_API' | translate }}</label>
@@ -120,7 +60,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="ingresscontrollerchartarchive" class="col-sm-2 control-label">{{ 'CLUSTERS.CONTROLLER_CHART_ARCHIEVE' | translate }}</label>
+                    <label for="ingresscontrollerchartarchive" class="col-sm-2 control-label">{{ 'CLUSTERS.CONTROLLER_CHART_ARCHIVE' | translate }}</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="ingresscontrollerchartarchive" name="ingresscontrollerchartarchive"
                                [(ngModel)]="cluster.ingress.controllerChartArchive" [disabled]="isInMode(ComponentMode.VIEW)">
@@ -181,6 +121,13 @@
                     <div class="col-sm-10">
                         <input type="checkbox" id="useinclustergitlabinstance" name="useinclustergitlabinstance"
                                [(ngModel)]="cluster.deployment.useInClusterGitLabInstance" [checked]="cluster.deployment.useInClusterGitLabInstance == true" [disabled]="isInMode(ComponentMode.VIEW)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="forceDedicatedWorkers" class="col-sm-2 control-label">{{ 'CLUSTERS.FORCE_DEDICATED_WORKERS' | translate }}</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" id="forceDedicatedWorkers" name="forceDedicatedWorkers"
+                               [(ngModel)]="cluster.deployment.forceDedicatedWorkers" [checked]="cluster.deployment.forceDedicatedWorkers == true" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
@@ -322,9 +269,9 @@
             </div>
 
             <button *ngIf="isInMode(ComponentMode.EDIT)" type="button"
-                    class="btn btn-default" (click)="onModeChange()">{{ 'CLUSTERS.ASSIGNED_TO' | translate }}</button>
+                    class="btn btn-default" (click)="onModeChange()">{{ 'CLUSTERS.VIEW_BUTTON' | translate }}</button>
             <button *ngIf="!isInMode(ComponentMode.VIEW)" [disabled]="!clusterForm.form.valid" type="submit"
-                    class="btn btn-danger">{{ 'CLUSTERS.SUBMIT_BUTTON' | translate }}</button>
+                    class="btn btn-primary">{{ 'CLUSTERS.SUBMIT_BUTTON' | translate }}</button>
             <button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
                     type="button" class="btn btn-default" (click)="onModeChange()">{{ 'CLUSTERS.EDIT_BUTTON' | translate }}</button>
         </form>

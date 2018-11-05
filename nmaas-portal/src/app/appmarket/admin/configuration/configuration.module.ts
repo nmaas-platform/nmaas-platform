@@ -8,6 +8,7 @@ import {AuthModule} from '../../../auth/auth.module';
 import {PipesModule} from '../../../pipe/pipes.module';
 import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
+import {InternationalizationService} from "../../../service/internationalization.service";
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import {TranslateModule} from '@ngx-translate/core';
   ],
   providers: [
       ConfigurationService,
+      InternationalizationService
   ]
 })
 export class ConfigurationModule { }

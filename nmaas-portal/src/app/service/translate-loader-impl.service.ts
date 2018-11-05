@@ -9,7 +9,7 @@ export class TranslateLoaderImpl implements TranslateLoader{
     constructor(public http: HttpClient, public appConfig:AppConfigService){};
 
     getTranslation(lang: string): Observable<any>{
-        return this.http.get<string>(this.appConfig.getApiUrl() + '/content/language/' + lang + ".json")
+        return this.http.get<string>(this.appConfig.getApiUrl() + '/content/language/' + lang)
             .catch(error=> this.http.get<string>('./assets/i18n/' + lang + '.json'));
     }
 }

@@ -47,3 +47,11 @@ html, body {
 .landing-block-padding{
 	padding-top: 4vh;
 }
+
+.features-bottom-padding{
+	padding-bottom: 1px;
+}
+
+.features-top-padding{
+	padding-top: 15px;
+}

@@ -21,6 +21,6 @@ public class ApplicationBrief {
 	
 	String briefDescription;
 	
-	Set<String> tags = new HashSet<String>();
+	Set<String> tags = new HashSet<>();
 
 }

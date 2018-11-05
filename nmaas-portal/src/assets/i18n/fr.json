@@ -10,7 +10,7 @@
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profil",
     "LOGOUT": "Connectez - Out",
-    "LOGIN_REGISTER": "Connexion / S'inscrire"
+    "LOGIN_REGISTER": "Connexion | S'inscrire"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -39,7 +39,9 @@
     "P20": "Plus de rÃ©seaux, plus de domaines? C'est simple: vous pouvez facilement mettre Ã  l'Ã©chelle des applications horizontales en ajoutant d'autres instances d'application.",
     "P21": "Gestion de domaines",
     "P22": "Vous avez plus d'un domaine Ã  gÃ©rer, mais vous n'avez pas d'infrastructure propre? Il existe une solution simple-NMaaS prendre en charge plusieurs domaines et configurations Ã  gÃ©rer.",
-    "P23": "Technologies utilisÃ©es"
+    "P23": "Technologies utilisÃ©es",
+    "P24": "Sécurité",
+    "P25": "Avec NMaaS, vous n'avez pas à vous soucier de la sécurité. Nous fournissons une connexion sécurisée à des instances séparées par VPN sur votre réseau - afin de permettre aux institutions et aux projets de gérer le réseau en toute sécurité."
   },
   "REGISTRATION": {
     "USERNAME": "Nom d'utilisateur",
@@ -72,7 +74,7 @@
     "HOST_ADDRESS": "Adresse de l'hôte REST",
     "HOST_SSH_USERNAME": "Nom d'utilisateur de l'hôte SSH",
     "HOST_SSH_USERNAME_VALIDATION_MESSAGE": "adresse hôte de barre ne doit contenir que des chiffres et des points",
-    "USER_LOCAL_CHART_ARCHIEVES": "Utiliser les archives de graphique locales",
+    "USER_LOCAL_CHART_ARCHIVES": "Utiliser les archives de graphique locales",
     "HEML_CHART_REPO_NAME": "Nom du référentiel du diagramme de pilotage",
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
@@ -83,7 +85,7 @@
     "CONTROLLER_CONFIG_OPTION": "Option de configuration du contrôleur",
     "SUPPORTED_INGRESS_CLASS": "Classe d'entrée prise en charge",
     "CONTROLLER_CHART_NAME": "Nom du graphique du contrôleur",
-    "CONTROLLER_CHART_ARCHIEVE": "Archive du graphique du contrôleur",
+    "CONTROLLER_CHART_ARCHIVE": "Archive du graphique du contrôleur",
     "RESOURCE_CONFIG_OPTION": "Option de configuration de ressource",
     "EXTERNAL_SERVICE_DOMAIN": "Domaine de service externe",
     "TLS_SUPPORTED": "TLS supporté",
@@ -92,6 +94,7 @@
     "DEFAULT_NAMESPACE": "Espace de nom par défaut",
     "DEFAULT_STORAGE_CLASS": "Classe de stockage par défaut",
     "USER_LOCAL_GITLAB_INSTANCE": "Utiliser l'instance GitLab locale",
+    "FORCE_DEDICATED_WORKERS": "Force service deployment on dedicated workers",
     "ATTACH_POINT": "Attach point",
     "ROUTER_NAME": "Nom du routeur",
     "ROUTER_ID": "ID de routeur",
@@ -122,7 +125,7 @@
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "L'adresse réseau doit contenir uniquement des chiffres et des points",
     "MASK_VALIDATION_MESSAGE": "Le masque doit être compris entre 0 et 32"
   },
-  "GIT_LAB": {
+  "GITLAB": {
     "TITLE": "Configuration de GitLab",
     "SERVER_ADDRESS": "Adresse du serveur",
     "SERVER_ADDRESS_REQUIRED_MESSAGE": "L'adresse du serveur est requise",
@@ -184,5 +187,201 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application"
+  },
+  "MONITOR": {
+    "TITLE": "Monitor service",
+    "SERVICE_NAME": "Nom du service",
+    "LAST_CHECK": "Dernier contrôle",
+    "LAST_SUCCESS": "Dernier succès",
+    "CHECK_INTERVAL": "Intervalle de vérification",
+    "ADD_JOB_BUTTON": "Ajouter un travail",
+    "VIEW_SETTINGS_BUTTON": "Afficher les paramètres",
+    "CHECK_NOW_BUTTON": "Vérifier maintenant",
+    "EDIT_SETTINGS_BUTTON": "Modifier les paramètres",
+    "REMOVE_BUTTON": "Supprimer"
+  },
+  "MONITOR_DETAILS": {
+    "HEADER": "Monitor service details",
+    "SERVICE_NAME": "Service name",
+    "INTERVAL": "Interval",
+    "INTERVAL_REQUIRED_ERROR": "Interval is required",
+    "TIME_FORMAT_REQUIRED_ERROR": "Time format is required",
+    "SUBMIT_BUTTON": "Submit",
+    "GO_BACK_BUTTON": "Go back",
+    "NOT_FOUND_ERROR": "Not found"
+  },
+  "PORTAL_CONFIGURATION": {
+    "TITLE": "Configuration du portail",
+    "MAINTENANCE": "Maintenance",
+    "ALLOW_SSO_LOGIN": "Autoriser la connexion SSO",
+    "SUBMIT_BUTTON": "Soumettre"
+  },
+  "DOMAIN_DETAILS": {
+    "TITLE": "Détails du domaine",
+    "NAME": "nom",
+    "CODE_NAME": "Nom de code",
+    "ACTIVE": "Actif",
+    "ID_IN_DB": "ID dans la base de données",
+    "KUBERNETES_NAMESPACE": "Espace de noms Kubernetes",
+    "KUBERNETES_STORAGE_CLASS": "Classe de stockage Kubernetes",
+    "DCN_STATUS": "Statut DCN",
+    "DCN_CONFIGURED": "DCN configuré",
+    "DOMAIN_USERS": "Utilisateurs du domaine",
+    "ID": "J'ai",
+    "USER_NAME": "Nom d'utilisateur",
+    "FIRST_NAME": "Prénom",
+    "LAST_NAME": "Nom de famille",
+    "ROLES": "Roles",
+    "CONFIGURED": "Statut DCN - Configuré",
+    "NOT_CONFIGURED": "Statut DCN - Non configuré",
+    "CONFIGURED_VIEW": "Configured",
+    "NOT_CONFIGURED_VIEW": "Not configured",
+    "NOT_FOUND": "Introuvable",
+    "DCN_STATUS_CHANGE": "Changement d'état DCN",
+    "QUESTION_1": "Vous êtes sur le point de mettre à jour l'état de la configuration DCN du domaine",
+    "QUESTION_2": ". Voulez-vous continuer?",
+    "CHANGE_TO_NOT_CONFIGURE": "Changer en Non configuré",
+    "CHANGE_TO_CONFIGURE": "Changer en configuré",
+    "YES_BUTTON": "Oui",
+    "CANCEL_BUTTON": "Annuler",
+    "SUBMIT_BUTTON": "Soumettre",
+    "NAME_IS_REQUIRED_MESSAGE": "Le nom est requis.",
+    "CODE_NAME_IS_REQUIRED_MESSAGE": "Le nom de code est requis.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Le nom de code doit contenir les caractères a-z, A-Z, 0_9, _.",
+    "CODE_NAME_PATTERN_MESSAGE_2": "Le nom de code doit comporter entre 2 et 8 caractères."
+  },
+  "GIT_INFO": {
+    "HEADER": "NMaaS version",
+    "VERSION": "Version",
+    "BUILD_TIME": "Build time",
+    "LAST_COMMIT": "Last commit",
+    "BRANCH_NAME": "Branch",
+    "CLOSE_BUTTON": "Close"
+  },
+  "USER_DETAILS": {
+    "USER": "User",
+    "HEADER": "General information",
+    "USERNAME": "Username",
+    "FIRST_NAME": "First name",
+    "LAST_NAME": "Last name",
+    "EMAIL": "Email",
+    "CHANGE_PASSWORD_BUTTON": "Change password",
+    "ID": "Id in db",
+    "VIEW_BUTTON": "View",
+    "SUBMIT_BUTTON": "Submit",
+    "EDIT_BUTTON": "Edit",
+    "REMOVE_BUTTON": "Remove"
+  },
+  "USER_PRIVILEGES": {
+    "HEADER": "Privileges",
+    "DOMAIN": "Domain",
+    "ROLE": "Role",
+    "ADD_BUTTON": "Add",
+    "REMOVE_BUTTON": "Remove"
+  },
+  "SCREENSHOTS": {
+    "HEADER": "Screenshots",
+    "CLOSE_BUTTON": "Close"
+  },
+  "PASSWORD": {
+    "HEADER": "Change password",
+    "PASSWORD": "Password",
+    "NEW_PASSWORD": "New password",
+    "NEW_PASSWORD_CONFIRMATION": "Confirm new password",
+    "PASSWORD_NOT_MATCH": "Password not match",
+    "SUBMIT_BUTTON": "Submit"
+  },
+  "COMMENTS": {
+    "ADD_COMMENT": "Add comment",
+    "ADD_BUTTON": "Add",
+    "NO_COMMENTS_MESSAGE": "No comment added yet",
+    "COMMENTS_LIST": "Comments",
+    "REPLY_BUTTON": "Reply",
+    "PLACEHOLDER": "Add some comment here..."
+  },
+  "APPLICATIONS": {
+    "DETAILS_BUTTON": "Details",
+    "SUBSCRIBE_BUTTON": "Subscribe",
+    "SUBSCRIBED_BUTTON": "Subscribed",
+    "UNSUBSCRIBE_BUTTON": "Unsubscribe",
+    "DEPLOY_BUTTON": "Deploy",
+    "APPLICATION": "Application",
+    "DESCRIPTION": "Description",
+    "CATEGORY": "Category",
+    "RATING": "Rating"
+  },
+  "RESTART_MODAL": {
+    "HEADER": "Restart confirmation",
+    "BODY": "Do you want to restart this application instance?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "INSTALL_MODAL": {
+    "HEADER": "Deploy new instance of ",
+    "INSTANCE_NAME": "Instance name",
+    "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0_9, _ and - characters.",
+    "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long.",
+    "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required.",
+    "DOMAIN": "Domain",
+    "CLOSE_BUTTON": "Close",
+    "DEPLOY_BUTTON": "Deploy"
+  },
+  "APP_INSTANCE": {
+    "SOURCE": "Source",
+    "ISSUES": "Issues",
+    "VERSION": "Version",
+    "LICENSE": "License",
+    "TAGS": "Tags",
+    "RATING": "Rating",
+    "MY_RATING": "My rating",
+    "GO_TO_APP_BUTTON": "Go to app",
+    "UNDEPLOY_BUTTON": "Undeploy",
+    "RESTART_BUTTON": "Restart",
+    "REDEPLOY_BUTTON": "Redeploy",
+    "INSTALLATION_PROGRESS": {
+      "HEADER": "Installation progress",
+      "STATE": "State",
+      "DEFAULT_ERROR_STATE": "Something went wrong",
+      "DETAILS": "Details",
+      "DEFAULT_ERROR_MESSAGE": "Please contact support"
+    },
+    "DEPLOYMENT_HISTORY": {
+      "HEADER": "Deployment history",
+      "TIMESTAMP": "Timestamp",
+      "STATE_TRANSITIONS": "State transitions"
+    },
+    "CONFIGURATION": {
+      "HEADER": "Configuration",
+      "CONFIGURATION_TAB": "Configuration",
+      "ADVANCED_TAB": "Advanced",
+      "ADDITIONAL_TAB": "Additional parameters",
+      "STORAGE_SPACE": "Storage space"
+    },
+    "REQUIRED_FIELDS": "required fields",
+    "APPLY_CONFIG_BUTTON": "Apply configuration",
+    "DEFAULT_VALUE": "Default value"
+  },
+  "UNDEPLOY_MODAL": {
+    "HEADER": "Undeploy confirmation",
+    "BODY": "Do you want to undeploy this application instance?",
+    "YES_BUTTON": "Yes",
+    "CANCEL_BUTTON": "Cancel"
+  },
+  "SEARCH": "Search",
+  "COMPLETE_REGISTRATION": {
+    "HEADER": "Please provide the following information to finalize your registration",
+    "MODAL": {
+      "HEADER": "Registration completed",
+      "BODY": "Your data has been registered in the system. Please login again.",
+      "RETURN_BUTTON": "Return to login page"
+    }
+  },
+  "TERMS_ACCEPTANCE": {
+    "HEADER": "Please read and accept the following documents before accessing the system",
+    "MODAL": {
+      "HEADER": "Missing approvals provided",
+      "BODY": "Your acceptance of Terms of Use and Privacy Policy has been registered in the system. Please login again.",
+      "CLOSE_BUTTON": "Close"
+    }
   }
 }

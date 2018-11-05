@@ -12,6 +12,7 @@ import {UsersListComponent} from './list/userslist.component';
 import {UserDetailsComponent} from './userdetails/userdetails.component';
 
 import {UserService} from '../../service/user.service';
+import {TranslateModule} from "@ngx-translate/core";
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {UserService} from '../../service/user.service';
     SharedModule,
     AuthModule,
     PipesModule,
+    TranslateModule.forChild()
   ],
   exports: [
     UsersListComponent,

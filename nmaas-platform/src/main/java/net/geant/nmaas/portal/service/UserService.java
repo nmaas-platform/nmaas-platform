@@ -22,14 +22,14 @@ public interface UserService {
 	boolean existsByUsername(String username);
 	boolean existsById(Long id);
 	
-	User register(String username, Domain domain) throws ObjectAlreadyExistsException, MissingElementException;
-	User register(String username, boolean enabled, String password, Domain domain) throws ObjectAlreadyExistsException, MissingElementException;
+	User register(String username, Domain domain);
+	User register(String username, boolean enabled, String password, Domain domain);
 	
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);
 
-	void delete(User user) throws MissingElementException, ProcessingException;	
-	void update(User user) throws ProcessingException;
+	void delete(User user);	
+	void update(User user);
     void setEnabledFlag(Long userId, boolean isEnabled);
     void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag);
     void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag);

@@ -33,7 +33,8 @@ export class CommentsComponent implements OnInit {
 
     commentErrorMsg: string;
 
-    constructor(private appsService: AppsService, private authService:AuthService) { }
+    constructor(private appsService: AppsService, private authService:AuthService) {
+    }
 
     ngOnInit() {
         this.refresh();

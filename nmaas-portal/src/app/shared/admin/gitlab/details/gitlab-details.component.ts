@@ -3,7 +3,6 @@ import {BaseComponent} from "../../../common/basecomponent/base.component";
 import {GitLabConfig} from "../../../../model/gitlab";
 import {ComponentMode} from "../../../common/componentmode";
 import {Router} from "@angular/router";
-import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-gitlabdetails',
@@ -21,10 +20,8 @@ export class GitlabDetailsComponent extends BaseComponent implements OnInit {
   @Output()
   onDelete: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor(private router: Router, private translate: TranslateService) {
+  constructor(private router: Router) {
     super();
-    const browserLang = translate.currentLang == null ? 'en' : translate.currentLang;
-    translate.use(browserLang.match(/en|fr|pl/) ? browserLang : 'en');
   }
 
   ngOnInit() {

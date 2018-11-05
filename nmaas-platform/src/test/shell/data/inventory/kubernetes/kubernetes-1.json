@@ -1,12 +1,4 @@
 {
-  "helm": {
-    "helmHostAddress":"10.134.241.6",
-    "helmHostSshUsername":"nmaas",
-    "useLocalChartArchives":true,
-    "helmChartRepositoryName":"nmaas-test",
-    "helmHostChartsDirectory":"/home/nmaas/charts",
-    "enableTls":true
-  },
   "api": {
     "restApiHostAddress":"10.134.241.6",
     "restApiPort":8080,
@@ -26,6 +18,7 @@
     "defaultNamespace":"default",
     "defaultStorageClass":"nmaas-nfs-storage",
     "useInClusterGitLabInstance":false,
+    "forceDedicatedWorkers":false,
     "smtpServerHostname": "nmaas-postfix",
     "smtpServerPort": "587"
   },

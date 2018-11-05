@@ -5,8 +5,17 @@ import {TranslateModule} from "@ngx-translate/core";
 import {TranslateService} from "@ngx-translate/core";
 import {TranslateFakeLoader} from "@ngx-translate/core";
 import {TranslateLoader} from "@ngx-translate/core";
+import {ContentDisplayService} from "../../service/content-display.service";
+import {Observable} from "rxjs";
 
-describe('NavbarComponent', () => {
+class MockContentDisplayService{
+
+    public getLanguages(): Observable<string[]>{
+        return Observable.of([]);
+    }
+}
+
+describe('NavbarComponent_Shared', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
 
@@ -21,7 +30,9 @@ describe('NavbarComponent', () => {
                 }
             })
         ],
-        providers: [TranslateService]
+        providers: [
+            {provide: ContentDisplayService, useClass: MockContentDisplayService}
+        ]
     })
     .compileComponents();
   }));

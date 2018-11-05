@@ -26,6 +26,7 @@ class ClusterDeployment {
     public id: number;
     public namespaceConfigOption: string;
     public useInClusterGitLabInstance: boolean = false;
+    public forceDedicatedWorkers: boolean = false;
 }
 
 export class ClusterExtNetwork {
@@ -36,16 +37,6 @@ export class ClusterExtNetwork {
     public externalNetwork: string;
     public externalNetworkMaskLength: number;
     public id: number;
-}
-
-class ClusterHelm {
-    public helmHostAddress: string;
-    public helmHostChartsDirectory: string;
-    public helmHostSshUsername: string;
-    public helmChartRepositoryName: string;
-    public id: number;
-    public enableTls: boolean = true;
-    public useLocalChartArchives: boolean = false;
 }
 
 class ClusterIngress {
@@ -64,7 +55,6 @@ export class Cluster {
     public attachPoint: ClusterAttachPoint;
     public deployment: ClusterDeployment;
     public externalNetworks: ClusterExtNetwork[];
-    public helm: ClusterHelm;
     public id: number;
     public ingress: ClusterIngress;
     constructor(){
@@ -72,7 +62,6 @@ export class Cluster {
         this.attachPoint = new ClusterAttachPoint();
         this.deployment = new ClusterDeployment();
         this.externalNetworks = [];
-        this.helm = new ClusterHelm();
         this.ingress = new ClusterIngress();
     }
 }

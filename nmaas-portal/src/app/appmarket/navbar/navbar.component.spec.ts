@@ -5,7 +5,7 @@ import { DebugElement } from '@angular/core';
 
 import { NavbarComponent } from './navbar.component';
 import {AuthService, DomainRoles} from "../../auth/auth.service";
-import {AppConfigService, DomainService} from "../../service";
+import {AppConfigService, ConfigurationService, DomainService} from "../../service";
 import {RouterTestingModule} from "@angular/router/testing";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {JwtHelperService} from "@auth0/angular-jwt";
@@ -80,7 +80,7 @@ class MockAuthService{
     }
 }
 
-describe('NavbarComponent', () => {
+describe('NavbarComponent_AppMarket', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
 
@@ -93,7 +93,7 @@ describe('NavbarComponent', () => {
         ],
         providers:[
             {provide: AuthService, useClass: MockAuthService},
-            DomainService,
+            DomainService, ConfigurationService
         ]
     })
     .compileComponents();

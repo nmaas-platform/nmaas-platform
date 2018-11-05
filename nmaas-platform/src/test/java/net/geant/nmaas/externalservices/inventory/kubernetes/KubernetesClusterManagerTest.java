@@ -8,7 +8,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAt
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterHelm;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
@@ -47,28 +46,6 @@ public class KubernetesClusterManagerTest {
     @Before
     public void setup() {
         manager = new KubernetesClusterManager(repository, null, domainService);
-    }
-
-    @Test
-    public void shouldRetrieveClusterDetails() throws UnknownHostException {
-        when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
-        assertThat(manager.getHelmHostChartsDirectory(), equalTo(HELM_HOST_CHARTS_DIRECTORY));
-        assertThat(manager.getHelmHostAddress(), equalTo(HELM_HOST_ADDRESS));
-        assertThat(manager.getHelmHostSshUsername(), equalTo(HELM_HOST_SSH_USERNAME));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionOnMissingCluster() {
-        when(repository.count()).thenReturn(0L);
-        manager.getHelmHostAddress();
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionOnTooManyClusters() throws UnknownHostException {
-        when(repository.count()).thenReturn(2L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster(), simpleKubernetesCluster()));
-        manager.getHelmHostAddress();
     }
 
     @Test
@@ -145,12 +122,6 @@ public class KubernetesClusterManagerTest {
 
     private KCluster simpleKubernetesCluster() throws UnknownHostException {
         KCluster cluster = new KCluster();
-        KClusterHelm helm = new KClusterHelm();
-        helm.setHelmHostAddress(InetAddress.getByName(HELM_HOST_ADDRESS));
-        helm.setHelmHostSshUsername(HELM_HOST_SSH_USERNAME);
-        helm.setUseLocalChartArchives(true);
-        helm.setHelmHostChartsDirectory(HELM_HOST_CHARTS_DIRECTORY);
-        cluster.setHelm(helm);
         KClusterApi api = new KClusterApi();
         api.setRestApiHostAddress(InetAddress.getByName(REST_API_HOST_ADDRESS));
         api.setRestApiPort(REST_API_PORT);
