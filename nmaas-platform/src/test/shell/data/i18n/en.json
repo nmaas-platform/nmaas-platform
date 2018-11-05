@@ -58,7 +58,7 @@
     "SUBMIT": "Submit",
     "FORM_SUBMISSION": "Registration form submission",
     "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
-    "DONE_MESASAGE": "Done"
+    "DONE_MESSAGE": "Done"
   },
   "LOGIN": {
     "USERNAME": "Username",
@@ -141,20 +141,6 @@
     "SUBMIT_BUTTON": "Submit",
     "EDIT_BUTTON": "Edit"
   },
-  "SAML_PROXY": {
-    "TITLE": "SAML Proxy configuration",
-    "LOGIN_URL": "Login url",
-    "LOGOUT_URL": "Logout url",
-    "SSO_KEY_FILE_PATH": "SSO key file path",
-    "TIMEOUT": "Timeout [minutes]",
-    "VIEW_BUTTON": "View",
-    "SUBMIT_BUTTON": "Submit",
-    "EDIT_BUTTON": "Edit",
-    "LOGIN_URL_REQUIRED_MESSAGE": "Login url is required",
-    "LOGOUT_URL_REQUIRED_MESSAGE": "Logout url is required",
-    "SSO_KEY_REQUIRED_MESSAGE": "SSO key is required",
-    "TIMEOUT_REQUIRED_MESSAGE": "Timeout is required"
-  },
   "USERS": {
     "TITLE": "Users",
     "USER_NAME": "Username",
@@ -162,7 +148,7 @@
     "GLOBAL_ROLE": "Global role",
     "ROLES": "Roles",
     "ENABLED": "Enabled",
-    "ENABLED_BUTTON": "Enabled",
+    "ENABLE_BUTTON": "Enable",
     "DETAILS_BUTTON": "Details",
     "DISABLE_BUTTON": "Disable",
     "REMOVE_FROM_DOMAIN_BUTTON": "Remove from domain"
@@ -250,7 +236,7 @@
     "SUBMIT_BUTTON": "Submit",
     "NAME_IS_REQUIRED_MESSAGE": "Name is required.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename is required.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contains a-z, A-Z, 0_9, _ characters.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only a-z, A-Z, 0_9 and _ characters.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long."
   },
   "GIT_INFO": {
@@ -291,7 +277,7 @@
     "PASSWORD": "Password",
     "NEW_PASSWORD": "New password",
     "NEW_PASSWORD_CONFIRMATION": "Confirm new password",
-    "PASSWORD_NOT_MATCH": "Password not match",
+    "PASSWORD_NOT_MATCH": "Entered passwords don't match",
     "SUBMIT_BUTTON": "Submit"
   },
   "COMMENTS": {

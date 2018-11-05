@@ -22,9 +22,9 @@
 				<td *ngIf="domainId !== domainService.getGlobalDomainId()"><span *ngFor="let role of getOnlyDomainRoles(user)">{{role.role | slice:5}}</span></td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="user?.enabled"></span><span class="glyphicon glyphicon-remove" *ngIf="!(user?.enabled)"></span></td>
 				<td class="text-right">
-					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">{{ 'USERS.TITLE' | translate }}</a>
+					<a (click)="view(user.id)" class="btn btn-sm btn-primary" role="button">{{ 'USERS.DETAILS_BUTTON' | translate }}</a>
 					<a (click)="changeUserStatus(user, false)" *ngIf="user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="btn btn-sm btn-warning" role="button">{{ 'USERS.DISABLE_BUTTON' | translate }}</a>
-					<a (click)="changeUserStatus(user, true)" *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="btn btn-sm btn-warning" role="button">{{ 'USERS.ENABLED_BUTTON' | translate }}</a>
+					<a (click)="changeUserStatus(user, true)" *ngIf="!user.enabled && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="btn btn-sm btn-warning" role="button">{{ 'USERS.ENABLE_BUTTON' | translate }}</a>
 					<a *ngIf="isModeAllowed(ComponentMode.DELETE) && domainId != domainService.getGlobalDomainId()" (click)="remove(user)" class="btn btn-sm btn-danger" role="button">{{ 'USERS.REMOVE_FROM_DOMAIN_BUTTON' | translate }}</a>
 				</td>
 			</tr>

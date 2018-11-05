@@ -44,7 +44,7 @@
     "TECHNOLOGIES_USED_HEADER": "Użyte technologie"
   },
   "REGISTRATION": {
-    "USERNAME": "Nazwa Użytkownika",
+    "USERNAME": "Nazwa użytkownika",
     "PASSWORD": "Hasło",
     "CONFIRM_PASSWORD": "Potwierdź hasło",
     "EMAIL": "E-mail",
@@ -52,13 +52,13 @@
     "LAST_NAME": "Nazwisko",
     "DOMAIN": "Domena",
     "NOT_SELECTED": "Nie wybrano",
-    "TERMS": "warunkami korzystania",
+    "TERMS": "Warunkami Korzystania",
     "AGREEMENT_MESSAGE": "Zgadzam się z",
-    "PRIVACY_POLICY": "polityką prywatności",
+    "PRIVACY_POLICY": "Polityką Prywatności",
     "SUBMIT": "Zatwierdź",
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
-    "DONE_MESASAGE": "Gotowe"
+    "DONE_MESSAGE": "Gotowe"
   },
   "LOGIN": {
     "USERNAME": "Nazwa użytkownika",
@@ -148,7 +148,7 @@
     "GLOBAL_ROLE": "Globalna rola",
     "ROLES": "Role",
     "ENABLED": "Aktywna",
-    "ENABLED_BUTTON": "Aktywuj",
+    "ENABLE_BUTTON": "Aktywuj",
     "DETAILS_BUTTON": "Szczegóły",
     "DISABLE_BUTTON": "Dezaktywuj",
     "REMOVE_FROM_DOMAIN_BUTTON": "Usuń z domeny"

@@ -58,7 +58,7 @@
     "SUBMIT": "Soumettre",
     "FORM_SUBMISSION": "Formulaire d'inscription",
     "THANK_YOU_MESSAGE": "Merci d'avoir envoyé le formulaire d'inscription. Votre compte doit être activé par l'administrateur système. Cela prend du temps.",
-    "DONE_MESASAGE": "Terminé"
+    "DONE_MESSAGE": "Terminé"
   },
   "LOGIN": {
     "USERNAME": "Nom d'utilisateur",
@@ -141,20 +141,6 @@
     "SUBMIT_BUTTON": "Soumettre",
     "EDIT_BUTTON": "Modifier"
   },
-  "SAML_PROXY": {
-    "TITLE": "Configuration du proxy SAML",
-    "LOGIN_URL": "URL de connexion",
-    "LOGOUT_URL": "Logout url",
-    "SSO_KEY_FILE_PATH": "chemin du fichier de clé SSO",
-    "TIMEOUT": "Timeout [minutes]",
-    "VIEW_BUTTON": "View",
-    "SUBMIT_BUTTON": "Soumettre",
-    "EDIT_BUTTON": "Modifier",
-    "LOGIN_URL_REQUIRED_MESSAGE": "L'URL de connexion est obligatoire",
-    "LOGOUT_URL_REQUIRED_MESSAGE": "L'URL de déconnexion est requise",
-    "SSO_KEY_REQUIRED_MESSAGE": "La clé SSO est requise",
-    "TIMEOUT_REQUIRED_MESSAGE": "Le délai d'attente est requis"
-  },
   "USERS": {
     "TITLE": "Utilisateurs",
     "USER_NAME": "Nom d'utilisateur",
@@ -162,7 +148,7 @@
     "GLOBAL_ROLE": "Rôle global",
     "ROLES": "Roles",
     "ENABLED": "Enabled",
-    "ENABLED_BUTTON": "Activé",
+    "ENABLE_BUTTON": "Activé",
     "DETAILS_BUTTON": "Détails",
     "DISABLE_BUTTON": "Disable",
     "REMOVE_FROM_DOMAIN_BUTTON": "Supprimer du domaine"
