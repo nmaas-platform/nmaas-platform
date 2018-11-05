@@ -98,8 +98,7 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/domains/{domainId}/apps/instances/user/{username}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
-    public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable)
-            throws MissingElementException {
+    public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable) {
         return getUserDomainAppInstances(domainId, username, pageable);
     }
 

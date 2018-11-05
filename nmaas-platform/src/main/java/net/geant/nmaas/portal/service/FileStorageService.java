@@ -10,8 +10,8 @@ import net.geant.nmaas.portal.persistent.entity.FileInfo;
 
 public interface FileStorageService {
 
-	FileInfo store(MultipartFile file) throws StorageException;
-	File getFile(Long id) throws MissingElementException;
+	FileInfo store(MultipartFile file);
+	File getFile(Long id);
 	FileInfo getFileInfo(Long id);
-	boolean remove(FileInfo fileInfo) throws MissingElementException, StorageException;
+	boolean remove(FileInfo fileInfo);
 }
