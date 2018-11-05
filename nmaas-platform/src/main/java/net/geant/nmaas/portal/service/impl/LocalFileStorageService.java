@@ -46,8 +46,9 @@ public class LocalFileStorageService implements FileStorageService {
 				try {
 					Files.deleteIfExists(path);
 				} catch (IOException e1) {
-					throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
+					
 				}
+            throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
 	}
 
