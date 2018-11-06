@@ -6,7 +6,6 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -19,14 +18,11 @@ import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.ApplicationInstanceService;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.NotificationService;
-import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,7 +39,6 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,21 +55,13 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
-    private NotificationService notificationService;
-
-    private UserService userService;
-
     @Autowired
     public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
-                                 ApplicationInstanceService applicationInstanceService, DomainService domains,
-                                 NotificationService notificationService,
-                                 UserService userService) {
+                                 ApplicationInstanceService applicationInstanceService, DomainService domains) {
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instances = applicationInstanceService;
         this.domains = domains;
-        this.notificationService = notificationService;
-        this.userService = userService;
     }
 
     @GetMapping("/apps/instances")
@@ -153,25 +140,15 @@ public class AppInstanceController extends AppBaseController {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
 
-        AppDeploymentSpec appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class);
-        AppDeployment appDeployment = AppDeployment.builder()
-                .domain(domain.getCodename())
-                .deploymentId(Identifier.newInstance(appInstance.getApplication().getId()))
-                .applicationId(Identifier.newInstance(appInstance.getApplication().getId()))
-                .deploymentName(appInstance.getName())
-                .configFileRepositoryRequired(appDeploymentSpec.isConfigFileRepositoryRequired())
-                .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
-                .loggedInUsersName(principal.getName())
-                .domainId(domainId)
-                .appName(app.getName())
-                .appInstanceId(appInstance.getId())
-                .appInstanceName(appInstance.getName())
-                .build();
-
-        Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
+        Identifier internalId = appLifecycleManager.deployApplication(
+                domain.getCodename(),
+                Identifier.newInstance(appInstance.getApplication().getId()),
+                appInstance.getName(),
+                modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
         appInstance.setInternalId(internalId);
 
         instances.update(appInstance);
+
         return new Id(appInstance.getId());
     }
 
@@ -387,4 +364,5 @@ public class AppInstanceController extends AppBaseController {
 
         return ai;
     }
+
 }
