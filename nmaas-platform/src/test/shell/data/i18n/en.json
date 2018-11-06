@@ -34,11 +34,11 @@
     "P15": "SSO Support",
     "P16": "If you want to login using same account for few services, not only NMaasS, You can login using SSO, where you can choose your identity provider and login using existing account.",
     "P17": "Fast & easy deployment",
-    "P18": "You can deploy your first application in few minutes - just add your configuration, get application from Market and deploy it - our services will do rest. In few minutes you will get address for your instance of application.",
+    "P18": "You can deploy your first application in few minutes - just add your configuration, get application from Market and deploy it - our services will do the rest. In few minutes you will get address for your instance of application.",
     "P19": "Monitoring",
     "P20": "NMaaS gives You solution for service monitoring - with our service tool, You can check and collect information about your services availability.",
     "P21": "Domains management",
-    "P22": "You have more then one domain to manage, but you don't have own infrastructure? There is simple solution - NMaaS support multiple domains and configurations to manage.",
+    "P22": "You have more than one domain to manage, but you don't have an own infrastructure? There is a simple solution - NMaaS support multiple domains and configurations to manage.",
     "P23": "Technologies used",
     "P24": "Security",
     "P25": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network."
