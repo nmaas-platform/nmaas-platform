@@ -24,5 +24,6 @@ curl -X POST $API_URL/management/configurations/templates --header "Authorizatio
 curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/templates/configurations/app2-template2.json
 curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/templates/configurations/app4-template1.json
 curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/templates/configurations/app4-template2.json
+curl -X POST $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/templates/configurations/app5-template1.json
 echo
 curl -X GET $API_URL/management/configurations/templates --header "Authorization: Bearer $TOKEN" | python -m json.tool

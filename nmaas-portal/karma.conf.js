@@ -53,7 +53,7 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_WARN,
         autoWatch: false,
-        browsers: ['ChromeHeadless'],
+        browsers: ['Chrome', 'ChromeHeadless'],
         singleRun: false
     }
     );
