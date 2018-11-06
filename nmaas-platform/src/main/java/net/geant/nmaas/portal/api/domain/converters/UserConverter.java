@@ -10,7 +10,15 @@ public class UserConverter extends AbstractConverter<User, net.geant.nmaas.porta
 
     @Override
     protected net.geant.nmaas.portal.api.domain.User convert(User source) {
-        return new net.geant.nmaas.portal.api.domain.User(source.getId(), source.getUsername(), convertUserRole(source), source.getSamlToken() != null && !source.getSamlToken().isEmpty());
+        return net.geant.nmaas.portal.api.domain.User.builder()
+                .id(source.getId())
+                .username(source.getUsername())
+                .firstname(source.getFirstname())
+                .lastname(source.getLastname())
+                .email(source.getEmail())
+                .roles(convertUserRole(source))
+                .ssoUser(source.getSamlToken() != null && !source.getSamlToken().isEmpty())
+                .build();
     }
 
     private Set<UserRole> convertUserRole(User source){
