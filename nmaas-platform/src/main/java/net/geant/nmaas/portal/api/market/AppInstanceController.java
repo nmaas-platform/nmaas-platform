@@ -166,11 +166,11 @@ public class AppInstanceController extends AppBaseController {
                 .appName(app.getName())
                 .appInstanceId(appInstance.getId())
                 .appInstanceName(appInstance.getName())
-                .domainCodeName(domain.getCodename())
                 .build();
 
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
         appInstance.setInternalId(internalId);
+
         instances.update(appInstance);
         return new Id(appInstance.getId());
     }

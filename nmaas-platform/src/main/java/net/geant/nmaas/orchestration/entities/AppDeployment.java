@@ -93,8 +93,7 @@ public class AppDeployment {
     private String appName;
 
     private Long appInstanceId;
+    private String accessURL;
 
     private String appInstanceName;
-
-    private String domainCodeName;
 }

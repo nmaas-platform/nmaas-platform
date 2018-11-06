@@ -46,17 +46,21 @@ public class AppDeploymentStateChangeManager {
 
     private DomainService domains;
 
+    private AppDeploymentMonitor appDeploymentMonitor;
+
     @Autowired
     public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager,
                                            ApplicationEventPublisher eventPublisher,
                                            NotificationService notificationService,
                                            UserService userService,
-                                           DomainService domains){
+                                           DomainService domains,
+                                           AppDeploymentMonitor appDeploymentMonitor){
         this.deploymentRepositoryManager = deploymentRepositoryManager;
         this.eventPublisher = eventPublisher;
         this.notificationService = notificationService;
         this.userService = userService;
         this.domains = domains;
+        this.appDeploymentMonitor = appDeploymentMonitor;
     }
 
     @EventListener
@@ -78,16 +82,18 @@ public class AppDeploymentStateChangeManager {
                         event.getErrorMessage());
                 deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(), event.getErrorMessage());
             }
-            Optional<AppDeployment> optionalAppDeployment = deploymentRepositoryManager.load(event.getDeploymentId());
-            if(optionalAppDeployment.isPresent()){
-                AppDeployment appDeployment = optionalAppDeployment.get();
-                final User user = userService.findByUsername(appDeployment.getLoggedInUsersName()).orElseThrow(ProcessingException::new);
-                final List<User> domainUsers = domains.findUsersWithDomainAdminRole(appDeployment.getDomainId());
+            if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {
+                Optional<AppDeployment> optionalAppDeployment = deploymentRepositoryManager.load(event.getDeploymentId());
+                if (optionalAppDeployment.isPresent()) {
+                    AppDeployment appDeployment = optionalAppDeployment.get();
+                    final User user = userService.findByUsername(appDeployment.getLoggedInUsersName()).orElseThrow(ProcessingException::new);
+                    final List<User> domainUsers = domains.findUsersWithDomainAdminRole(appDeployment.getDomainId());
 
-                notificationService.sendEmail(getAppInstanceReadyEmailConfirmation(user, appDeployment.getAppInstanceName(), appDeployment.getAppName(), appDeployment.getAppInstanceId(), appDeployment.getDomainCodeName()));
-                domainUsers.forEach(domainUser ->
-                        notificationService.sendEmail(getDomainAdminNotificationEmailConfirmation(domainUser, appDeployment.getAppInstanceName(), appDeployment.getAppName(), appDeployment.getAppInstanceId(), appDeployment.getDomainCodeName())));
-            };
+                    notificationService.sendEmail(getAppInstanceReadyEmailConfirmation(user, appDeployment));
+                    domainUsers.forEach(domainUser ->
+                            notificationService.sendEmail(getDomainAdminNotificationEmailConfirmation(domainUser, appDeployment)));
+                }
+            }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
@@ -140,29 +146,29 @@ public class AppDeploymentStateChangeManager {
         }
     }
 
-    private ConfirmationEmail getAppInstanceReadyEmailConfirmation(User user, String appInstanceName, String appName, Long appId, String domainName){
+    private ConfirmationEmail getAppInstanceReadyEmailConfirmation(User user, AppDeployment appDeployment){
         return ConfirmationEmail.builder()
                 .toEmail(user.getEmail())
                 .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
                 .lastName(user.getLastname())
-                .appInstanceName(appInstanceName)
-                .appName(appName)
-                .domainName(domainName)
-                .accessURL(String.format("https://portal.nmaas.qalab.geant.net/instances/%s", appId))
+                .appInstanceName(appDeployment.getAppInstanceName())
+                .appName(appDeployment.getAppName())
+                .domainName(appDeployment.getDomain())
+                .accessURL(this.appDeploymentMonitor.userAccessDetails(appDeployment.getDeploymentId()).getUrl())
                 .subject("Your app instance is ready")
                 .templateName("app-instance-ready-notification")
                 .build();
     }
 
-    private ConfirmationEmail getDomainAdminNotificationEmailConfirmation(User user, String appInstanceName, String appName, Long appId, String domainName){
+    private ConfirmationEmail getDomainAdminNotificationEmailConfirmation(User user, AppDeployment appDeployment){
         return ConfirmationEmail.builder()
                 .toEmail(user.getEmail())
                 .firstName(Optional.ofNullable(user.getFirstname()).orElse(user.getUsername()))
                 .lastName(user.getLastname())
-                .appInstanceName(appInstanceName)
-                .appName(appName)
-                .domainName(domainName)
-                .accessURL(String.format("https://portal.nmaas.qalab.geant.net/instances/%s", appId))
+                .appInstanceName(appDeployment.getAppInstanceName())
+                .appName(appDeployment.getAppName())
+                .domainName(appDeployment.getDomain())
+                .accessURL(this.appDeploymentMonitor.userAccessDetails(appDeployment.getDeploymentId()).getUrl())
                 .subject("New app instance is ready")
                 .templateName("domain-admin-notification")
                 .build();
