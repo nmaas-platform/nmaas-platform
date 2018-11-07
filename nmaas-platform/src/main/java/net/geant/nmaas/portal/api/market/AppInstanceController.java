@@ -6,6 +6,7 @@ import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
@@ -140,11 +141,22 @@ public class AppInstanceController extends AppBaseController {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
 
-        Identifier internalId = appLifecycleManager.deployApplication(
-                domain.getCodename(),
-                Identifier.newInstance(appInstance.getApplication().getId()),
-                appInstance.getName(),
-                modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
+        AppDeploymentSpec appDeploymentSpec = modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class);
+        AppDeployment appDeployment = AppDeployment.builder()
+                .domain(domain.getCodename())
+                .deploymentId(Identifier.newInstance(appInstance.getApplication().getId()))
+                .applicationId(Identifier.newInstance(appInstance.getApplication().getId()))
+                .deploymentName(appInstance.getName())
+                .configFileRepositoryRequired(appDeploymentSpec.isConfigFileRepositoryRequired())
+                .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
+                .loggedInUsersName(principal.getName())
+                .domainId(domainId)
+                .appName(app.getName())
+                .appInstanceId(appInstance.getId())
+                .appInstanceName(appInstance.getName())
+                .build();
+
+        Identifier internalId = appLifecycleManager.deployApplication(appDeployment);
         appInstance.setInternalId(internalId);
 
         instances.update(appInstance);
