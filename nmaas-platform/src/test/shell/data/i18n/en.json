@@ -25,7 +25,7 @@
     "COST_REDUCTION_HEADER": "Cost reduction",
     "COST_REDUCTION_TEXT": "With NMaaS, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
     "SECURITY_HEADER": "Security",
-    "SECURITY_TEXT": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network."
+    "SECURITY_TEXT": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network.",
     "SCALING_HEADER": "Flexible scaling",
     "SCALING_TEXT": "If You need some horizontal scaling - there is no problem with that on NMaaS. You can very easily scale Your instances in few minutes.",
     "NMAAS_FEATURES_HEADER": "NMaaS Features",
