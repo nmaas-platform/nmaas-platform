@@ -98,7 +98,7 @@ public class GitLabManager {
         this.createGitLabApi(gitLabInstance.getApiUrl(), gitLabInstance.getToken());
         try {
             this.gitLabApi.getVersion();
-            log.info("GitLab instance is running");
+            log.debug("GitLab instance is running");
         } catch (GitLabApiException e){
             throw new GitLabInvalidConfigurationException("GitLab instance is not running -> " + e.getMessage());
         }
