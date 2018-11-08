@@ -126,7 +126,7 @@
 					<ul class="nav nav-tabs">
 						<li class="active"><a data-toggle="tab" href="#configForm">{{'APP_INSTANCE.CONFIGURATION.CONFIGURATION_TAB' | translate}}</a> </li>
 						<li> <a data-toggle="tab" href="#advanced">{{'APP_INSTANCE.CONFIGURATION.ADVANCED_TAB' | translate}}</a> </li>
-						<li> <a data-toggle="tab" href="#additionalParameters">{{'APP_INSTANCE.CONFIGURATION.ADDITIONAL_TAB' | translate}}</a> </li>
+						<li *ngIf="additionalParametersTemplate"> <a data-toggle="tab" href="#additionalParameters">{{'APP_INSTANCE.CONFIGURATION.ADDITIONAL_TAB' | translate}}</a> </li>
 					</ul>
 					<div class="tab-content" style="padding-top: 10px">
 						<div id="configForm" class="tab-pane fade in active">
@@ -148,13 +148,13 @@
 								</div>
 							</form>
 						</div>
-						<div id="additionalParameters" class="tab-pane fade" style="padding-bottom: 10px">
-							<json-schema-form *ngIf="additionalParametersTemplate"
-											   [form]="additionalParametersTemplate"
-												[options]="jsonFormOptions"
-												[framework]="bootstrap-3"
-												[language]="en"
-												(onChanges)="changeAdditionalParameters($event)">
+						<div id="additionalParameters" class="tab-pane fade" style="padding-bottom: 10px" *ngIf="additionalParametersTemplate">
+							<json-schema-form
+									[form]="additionalParametersTemplate"
+									[options]="jsonFormOptions"
+									[framework]="bootstrap-3"
+									[language]="en"
+									(onChanges)="changeAdditionalParameters($event)">
 
 							</json-schema-form>
 						</div>
