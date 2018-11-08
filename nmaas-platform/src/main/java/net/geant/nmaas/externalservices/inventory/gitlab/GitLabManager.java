@@ -84,6 +84,10 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getServer();
     }
 
+    public String getGitlabSshServer() {
+        return loadSingleGitlabConfig().getSshServer();
+    }
+
     public int getGitlabPort() {
         return loadSingleGitlabConfig().getPort();
     }

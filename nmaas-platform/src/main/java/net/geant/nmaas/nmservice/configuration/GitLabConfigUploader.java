@@ -40,8 +40,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL = 30;
     static final String GITLAB_SSH_USER = "git";
-    //TODO read this property from GitLab configuration
-    static final String GITLAB_SSH_SERVER = "nmaas-conf-gitlab-shell";
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -222,7 +220,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private String generateCompleteGitCloneUrl(String gitLabRepoUrl) {
         String[] urlProtocolAndUrl = gitLabRepoUrl.split("//");
         String[] serverAndPath = urlProtocolAndUrl[1].split("/");
-        return GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], GITLAB_SSH_SERVER).replaceFirst("/", ":");
+        return GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], gitLabManager.getGitlabSshServer()).replaceFirst("/", ":");
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
