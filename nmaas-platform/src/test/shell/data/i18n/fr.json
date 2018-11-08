@@ -10,7 +10,8 @@
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profil",
     "LOGOUT": "Connectez - Out",
-    "LOGIN_REGISTER": "Connexion | S'inscrire"
+    "LOGIN_REGISTER": "Connexion | S'inscrire",
+    "LANGUAGE": "Language"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -25,7 +26,7 @@
     "COST_REDUCTION_HEADER": "RÃ©duction des coÃ»ts",
     "COST_REDUCTION_TEXT": "Avec NMaaS, les utilisateurs n'ont pas Ã  supporter les coÃ»ts de propriÃ©tÃ© et les risques liÃ©s Ã  la maintenance et au contrÃ´le de l'infrastructure de gestion de rÃ©seau.",
     "SECURITY_HEADER": "Sécurité",
-    "SECURITY_TEXT": "Avec NMaaS, vous n'avez pas à vous soucier de la sécurité. Nous fournissons une connexion sécurisée à des instances séparées par VPN sur votre réseau - afin de permettre aux institutions et aux projets de gérer le réseau en toute sécurité."
+    "SECURITY_TEXT": "Avec NMaaS, vous n'avez pas à vous soucier de la sécurité. Nous fournissons une connexion sécurisée à des instances séparées par VPN sur votre réseau - afin de permettre aux institutions et aux projets de gérer le réseau en toute sécurité.",
     "SCALING_HEADER": "Mise Ã  l'Ã©chelle intelligente",
     "SCALING_TEXT": "S'il est nÃ©cessaire d'Ã©tendre vos services-vous pouvez le faire en quelques minutes dans n'importe quel endroit, n'importe quand, en dÃ©ployant simplement de nouvelles instances",
     "NMAAS_FEATURES_HEADER": "NMaaS features",

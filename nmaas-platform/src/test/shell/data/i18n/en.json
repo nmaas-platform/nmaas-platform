@@ -10,7 +10,8 @@
     "CONFIGURATION": "Configuration",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
-    "LOGIN_REGISTER": "Login | Register"
+    "LOGIN_REGISTER": "Login | Register",
+    "LANGUAGE": "Language"
   },
   "WELCOME": {
     "LOGIN": "Login",
