@@ -298,10 +298,10 @@ public class AppInstanceController extends AppBaseController {
                 appInstanceState = AppInstanceState.CONNECTING;
                 break;
             case MANAGEMENT_VPN_CONFIGURED:
-                appInstanceState = AppInstanceState.CONFIGURATION_AWAITING;
-                break;
             case APPLICATION_CONFIGURATION_IN_PROGRESS:
             case APPLICATION_CONFIGURED:
+                appInstanceState = AppInstanceState.CONFIGURATION_AWAITING;
+                break;
             case APPLICATION_DEPLOYMENT_IN_PROGRESS:
             case APPLICATION_DEPLOYED:
             case APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS:
