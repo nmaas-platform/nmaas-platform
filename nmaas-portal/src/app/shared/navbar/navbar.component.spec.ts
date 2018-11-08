@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavbarComponent } from './navbar.component';
 import {TranslateModule} from "@ngx-translate/core";
-import {TranslateService} from "@ngx-translate/core";
 import {TranslateFakeLoader} from "@ngx-translate/core";
 import {TranslateLoader} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
@@ -46,4 +45,9 @@ describe('NavbarComponent_Shared', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should change language',() =>{
+      component.useLanguage("fr");
+      expect(component.getCurrent()).toBe("fr");
+  })
 });
