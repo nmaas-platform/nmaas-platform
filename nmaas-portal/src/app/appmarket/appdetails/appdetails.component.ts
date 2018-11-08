@@ -8,7 +8,7 @@ import {SecurePipe} from '../../pipe/index';
 import {RateComponent} from '../../shared/rate/rate.component';
 import {CommentsComponent} from '../../shared/comments/comments.component';
 import {ScreenshotsComponent} from '../../shared/screenshots/screenshots.component';
-import {AppsService, AppImagesService, AppInstanceService} from '../../service/index';
+import {AppsService, AppImagesService, AppInstanceService, AppConfigService} from '../../service/index';
 import {Application} from '../../model/application';
 import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
@@ -50,6 +50,7 @@ export class AppDetailsComponent implements OnInit {
     private appImagesService: AppImagesService,
     private appInstanceService: AppInstanceService,
     private userDataService: UserDataService,
+    private appConfig: AppConfigService,
     private authService: AuthService,
     private router: Router, private route: ActivatedRoute, private location: Location) {
   }
@@ -100,7 +101,7 @@ export class AppDetailsComponent implements OnInit {
   }
 
   protected isSubscriptionAllowed(): boolean {
-    if (isUndefined(this.domainId) || this.domainId === 0) {
+    if (isUndefined(this.domainId) || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
       return false;
     }
 
@@ -113,7 +114,7 @@ export class AppDetailsComponent implements OnInit {
   }
 
   protected isDeploymentAllowed(): boolean {
-    if (isUndefined(this.domainId) || this.domainId === 0) {
+    if (isUndefined(this.domainId) || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
       return false;
     }
 
