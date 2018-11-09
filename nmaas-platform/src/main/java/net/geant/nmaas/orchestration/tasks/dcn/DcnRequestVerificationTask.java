@@ -18,7 +18,7 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void trigger(DcnVerifyRequestActionEvent event) throws DcnRequestVerificationException {
+    public void trigger(DcnVerifyRequestActionEvent event) {
     	try{
 	        final String domain = event.getRelatedTo();
 	        dcnDeployment.verifyRequest(domain, constructDcnSpec(domain));

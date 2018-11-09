@@ -27,14 +27,14 @@ public class ConfigurationController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addConfiguration(@RequestBody ConfigurationView configuration) throws OnlyOneConfigurationSupportedException {
+    public Long addConfiguration(@RequestBody ConfigurationView configuration) {
         return this.configurationManager.addConfiguration(configuration);
     }
 
     @PutMapping(value="/{id}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody ConfigurationView configuration) throws ConfigurationNotFoundException{
+    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody ConfigurationView configuration) {
         this.configurationManager.updateConfiguration(id, configuration);
     }
 

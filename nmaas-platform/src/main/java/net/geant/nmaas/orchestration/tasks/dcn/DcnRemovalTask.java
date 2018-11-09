@@ -14,7 +14,7 @@ public class DcnRemovalTask extends BaseDcnTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(DcnRemoveActionEvent event) throws CouldNotRemoveDcnException {
+    public void trigger(DcnRemoveActionEvent event) {
     	try{
 	        final String domain = event.getRelatedTo();
 	        dcnDeployment.removeDcn(domain);

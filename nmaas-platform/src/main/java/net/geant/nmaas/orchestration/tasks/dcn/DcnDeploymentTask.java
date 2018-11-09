@@ -14,7 +14,7 @@ public class DcnDeploymentTask extends BaseDcnTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(DcnDeployActionEvent event) throws CouldNotDeployDcnException {
+    public void trigger(DcnDeployActionEvent event) {
     	try{
 	        final String domain = event.getRelatedTo();
 	        dcnDeployment.deployDcn(domain);

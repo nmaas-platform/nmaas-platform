@@ -58,7 +58,7 @@ public class BasicAuthController {
     }
 	
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public UserToken login(@RequestBody final UserLogin userLogin) throws AuthenticationException {
+	public UserToken login(@RequestBody final UserLogin userLogin) {
         User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
         validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled(), user.isTermsOfUseAccepted(), user.isPrivacyPolicyAccepted());
 
@@ -74,7 +74,7 @@ public class BasicAuthController {
 	}
 	
 	@RequestMapping(value="/token", method=RequestMethod.POST)
-	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) throws AuthenticationException, ExpiredJwtException{
+	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) {
 	    UserToken userToken = null;
         if(userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken()))
         throw new AuthenticationException("Missing token.");
@@ -97,7 +97,7 @@ public class BasicAuthController {
 	}
 
     protected void validate(final Optional<String> userName, final Optional<String> password,
-                            String actualPassword, boolean isEnabled, boolean isTermsOfUseAccepted, boolean isPrivacyPolicyAccepted) throws AuthenticationException{
+                            String actualPassword, boolean isEnabled, boolean isTermsOfUseAccepted, boolean isPrivacyPolicyAccepted) {
         boolean isValid = true;
         if(!userName.isPresent() || !password.isPresent()){
             isValid = validateAndLogMessage("Missing credentials", userName.orElse("ANONYMOUS"));
