@@ -37,8 +37,7 @@ class DockerComposeFilePreparer {
         this.repositoryManager = repositoryManager;
     }
 
-    void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate)
-            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
+    void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate) {
         final Map<String, Object> model = buildModel(input);
         try {
             DockerComposeNmServiceInfo nmServiceInfo = repositoryManager.loadService(deploymentId);
@@ -66,8 +65,7 @@ class DockerComposeFilePreparer {
         return model;
     }
 
-    private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate)
-            throws DockerComposeFileTemplateHandlingException {
+    private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
         try {
             return new Template(DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME,
                     new StringReader(dockerComposeFileTemplate.getComposeFileTemplateContent()),
@@ -77,8 +75,7 @@ class DockerComposeFilePreparer {
         }
     }
 
-    private DockerComposeFile buildComposeFileFromTemplateAndModel(Identifier deploymentId, Template template, Object model)
-            throws DockerComposeFileTemplateHandlingException {
+    private DockerComposeFile buildComposeFileFromTemplateAndModel(Identifier deploymentId, Template template, Object model) {
         Writer stringWriter = new StringWriter();
         DockerComposeFile composeFile = null;
         try {
