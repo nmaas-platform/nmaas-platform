@@ -63,7 +63,7 @@ public class AppDeploymentMonitorRestController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @RequestMapping(value = "{deploymentId}/state", method = RequestMethod.GET)
     public AppLifecycleState loadDeploymentState(
-            @PathVariable String deploymentId) throws InvalidDeploymentIdException {
+            @PathVariable String deploymentId) {
         return deploymentMonitor.state(Identifier.newInstance(deploymentId));
     }
 
@@ -78,7 +78,7 @@ public class AppDeploymentMonitorRestController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @RequestMapping(value = "{deploymentId}/access", method = RequestMethod.GET)
     public AppUiAccessDetails loadDeploymentUserAccessInfo(
-            @PathVariable String deploymentId) throws InvalidDeploymentIdException, InvalidAppStateException {
+            @PathVariable String deploymentId) {
         return deploymentMonitor.userAccessDetails(Identifier.newInstance(deploymentId));
     }
 
