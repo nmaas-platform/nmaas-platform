@@ -21,7 +21,7 @@ public class AnsiblePlaybookIdentifierConverter {
         return DatatypeConverter.printBase64Binary(plainString.getBytes(Charset.forName("UTF-8")));
     }
 
-    public static String decode(String encodedStringWithPrefix) throws AnsiblePlaybookIdentifierConverterException {
+    public static String decode(String encodedStringWithPrefix) {
         String decodedStringWithPrefix = decodeString(encodedStringWithPrefix);
         if (decodedStringWithPrefix.startsWith(CLIENT_SIDE_ROUTER_PREFIX))
             return decodedStringWithPrefix.replace(CLIENT_SIDE_ROUTER_PREFIX, "");

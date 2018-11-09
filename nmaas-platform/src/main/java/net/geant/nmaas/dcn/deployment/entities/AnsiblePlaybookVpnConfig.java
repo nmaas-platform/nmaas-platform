@@ -53,7 +53,7 @@ public class AnsiblePlaybookVpnConfig {
         this.type = type;
     }
 
-    public void validate() throws AnsiblePlaybookVpnConfigInvalidException {
+    public void validate() {
         StringBuilder exceptionMessage = new StringBuilder();
         if (targetRouter == null || targetRouter.isEmpty()) {
             nullMessage("Target Router", exceptionMessage);
@@ -163,7 +163,7 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
 
-    private void exception(String message) throws AnsiblePlaybookVpnConfigInvalidException {
+    private void exception(String message) {
         if(message.length() > 0) {
             throw new AnsiblePlaybookVpnConfigInvalidException(message);
         }
