@@ -37,10 +37,10 @@ public class HelmMonitorService implements MonitorService {
         try{
             helmCommandExecutor.executeVersionCommand();
             this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);
-            log.info("Helm instance is running");
+            log.debug("Helm instance is running");
         } catch(CommandExecutionException | IllegalStateException e){
             this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.FAILURE);
-            log.info("Helm instance is not running -> " + e.getMessage());
+            log.error("Helm instance is not running -> " + e.getMessage());
         }
     }
 

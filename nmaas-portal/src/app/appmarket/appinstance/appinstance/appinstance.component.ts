@@ -90,7 +90,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
-          this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
+          if(!isNullOrUndefined(this.app.additionalParametersTemplate)){
+              this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
+          }
           this.requiredFields = this.configurationTemplate.schema.required;
         });
       });

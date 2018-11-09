@@ -10,7 +10,6 @@ import java.net.InetAddress;
 public class KubernetesClusterView {
 
     private Long id;
-    private InetAddress helmHostAddress;
     private InetAddress restApiHostAddress;
     private int restApiPort;
 }
