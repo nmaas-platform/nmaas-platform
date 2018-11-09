@@ -33,7 +33,7 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeService(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public void removeService(Identifier deploymentId) {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         repository.delete(nmServiceInfo);
     }
@@ -43,12 +43,12 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
         repository.deleteAll();
     }
 
-    public T loadService(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public T loadService(Identifier deploymentId) {
         return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
     @EventListener
-    public void notifyStateChange(NmServiceDeploymentStateChangeEvent event) throws InvalidDeploymentIdException {
+    public void notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try{
             updateServiceState(event.getDeploymentId(), event.getState());
         }catch(Exception ex){
@@ -58,35 +58,35 @@ public abstract class NmServiceRepositoryManager<T extends NmServiceInfo> {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void updateServiceState(Identifier deploymentId, NmServiceDeploymentState state) throws InvalidDeploymentIdException {
+    public void updateServiceState(Identifier deploymentId, NmServiceDeploymentState state) {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setState(state);
         repository.save(nmServiceInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateManagedDevices(Identifier deploymentId, List<String> ipAddresses) throws InvalidDeploymentIdException {
+    public void updateManagedDevices(Identifier deploymentId, List<String> ipAddresses) {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setManagedDevicesIpAddresses(ipAddresses);
         repository.save(nmServiceInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateGitLabProject(Identifier deploymentId, GitLabProject gitLabProject) throws InvalidDeploymentIdException {
+    public void updateGitLabProject(Identifier deploymentId, GitLabProject gitLabProject) {
         T nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setGitLabProject(gitLabProject);
         repository.save(nmServiceInfo);
     }
 
-    public NmServiceDeploymentState loadCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public NmServiceDeploymentState loadCurrentState(Identifier deploymentId) {
         return repository.getStateByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
-    public String loadDomain(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public String loadDomain(Identifier deploymentId) {
         return repository.getDomainByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
-    public String loadDeploymentName(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public String loadDeploymentName(Identifier deploymentId) {
         return repository.getDeploymentNameByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
     }
 
