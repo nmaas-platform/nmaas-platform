@@ -66,7 +66,8 @@
     "PASSWORD": "Mot de passe",
     "PASSWORD_REQUIRED_MESSAGE": "Le mot de passe est requis",
     "LOGIN": "S'identifier",
-    "LOGIN_WITH": "Connectez-vous avec"
+    "LOGIN_WITH": "Connectez-vous avec",
+    "LOGIN_FAILURE_MESSAGE": "Les informations d'identification invalides"
   },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",

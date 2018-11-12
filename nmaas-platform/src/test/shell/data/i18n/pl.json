@@ -66,7 +66,8 @@
     "PASSWORD": "Hasło",
     "PASSWORD_REQUIRED_MESSAGE": "Hasło jest wymagane",
     "LOGIN": "Zaloguj się",
-    "LOGIN_WITH": "Zaloguj się przez"
+    "LOGIN_WITH": "Zaloguj się przez",
+    "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania"
   },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",

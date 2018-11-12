@@ -9,6 +9,7 @@ import {Configuration} from "../../model/configuration";
 import {isNullOrUndefined} from "util";
 import {ShibbolethService} from "../../service/shibboleth.service";
 import {ShibbolethConfig} from "../../model/shibboleth";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-login',
@@ -22,13 +23,16 @@ export class LoginComponent implements OnInit {
     error:string = '';
     configuration:Configuration;
     shibboleth:ShibbolethConfig;
-  
+    ssoLoading : boolean = false;
+    ssoError : string = '';
+    loginFailureErrorMessage = '';
 
-    ssoLoading: boolean = false;
-    ssoError:string = '';
-
-    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService) {
-    }
+  constructor(private router: Router,
+              private auth: AuthService,
+              private configService: ConfigurationService,
+              private shibbolethService: ShibbolethService,
+              private translate: TranslateService) {
+  }
 
     ngOnInit() {
         this.configService.getConfiguration().subscribe(config=>{
@@ -44,6 +48,12 @@ export class LoginComponent implements OnInit {
     }
 
     public login():void {
+        this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
+        .subscribe((response: string) => {
+          debugger;
+          // this.loginFailureErrorMessage = Object.response(response)[0];
+          this.loginFailureErrorMessage = response;
+        });
         this.loading = true;
         this.error = '';
         this.auth.login(this.model.username, this.model.password)
@@ -61,7 +71,10 @@ export class LoginComponent implements OnInit {
                 err => {
                     console.error('Unable to login. ' + err);
                     this.loading = false;
-                    this.error = err;
+                    // this.error = err;
+                    debugger;
+                    // this.error = (loginFailureErrorMessage === null ? err : this.loginFailureErrorMessage);
+                    this.error = this.loginFailureErrorMessage;
                 });
     }
 
