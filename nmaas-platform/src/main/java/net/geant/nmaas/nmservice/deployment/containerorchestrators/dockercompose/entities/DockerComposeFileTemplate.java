@@ -30,7 +30,7 @@ public class DockerComposeFileTemplate {
     private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<DcnAttachedContainer> dcnAttachedContainers = new ArrayList<DcnAttachedContainer>();
+    private List<DcnAttachedContainer> dcnAttachedContainers = new ArrayList<>();
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

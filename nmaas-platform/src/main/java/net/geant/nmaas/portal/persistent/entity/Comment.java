@@ -45,7 +45,7 @@ public class Comment implements Serializable {
 	private Comment parent;
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="parent")
-	private List<Comment> subComments = new ArrayList<Comment>();
+	private List<Comment> subComments = new ArrayList<>();
 	
 	private String comment;
 	

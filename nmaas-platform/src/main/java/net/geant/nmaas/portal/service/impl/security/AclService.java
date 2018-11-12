@@ -24,7 +24,7 @@ public class AclService implements net.geant.nmaas.portal.service.AclService {
 		boolean check(User user, Serializable targetId, String targetType, Permissions[] perm);
 	}
 	
-	private Set<PermissionCheck> permissionChecks = new HashSet<PermissionCheck>();
+	private Set<PermissionCheck> permissionChecks = new HashSet<>();
 	
 	private PermissionCheck defaultPermissionCheck = null;
 	
