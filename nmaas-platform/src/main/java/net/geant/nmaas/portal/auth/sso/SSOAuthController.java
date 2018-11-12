@@ -1,6 +1,18 @@
 package net.geant.nmaas.portal.auth.sso;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.auth.UserToken;
@@ -16,17 +28,6 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/api/auth/sso")
@@ -51,7 +52,7 @@ public class SSOAuthController {
 		this.shibbolethConfigManager = shibbolethConfigManager;
 	}
 
-	@RequestMapping(value="/login", method=RequestMethod.POST)
+	@PostMapping(value="/login")
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws IOException {
 		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
