@@ -34,7 +34,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
     static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "spec.nodeSelector.domain";
-    static final private String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
+    private static final  String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;

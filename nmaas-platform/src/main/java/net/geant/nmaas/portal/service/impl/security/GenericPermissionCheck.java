@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Component
 public class GenericPermissionCheck extends BasePermissionCheck {
 
-	final protected Map<Role, Permissions[]> permMatrix = new HashMap<>();
+	protected final Map<Role, Permissions[]> permMatrix = new HashMap<>();
 	
 	public GenericPermissionCheck() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});

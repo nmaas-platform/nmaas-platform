@@ -44,13 +44,13 @@ import java.util.Arrays;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	private final static String SSL_ENABLED = "server.ssl.enabled";
+	private static final  String SSL_ENABLED = "server.ssl.enabled";
 	
-	private final static String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
-	private final static String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
-	private final static String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
+	private static final  String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
+	private static final  String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
+	private static final  String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
 
-	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
+	private static final  String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
     private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
