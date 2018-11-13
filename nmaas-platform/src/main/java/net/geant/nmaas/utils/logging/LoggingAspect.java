@@ -19,15 +19,15 @@ import java.text.MessageFormat;
 @Component
 public class LoggingAspect {
 
-	private static String BEFORE_STRING = "ENTERING {0}";
+	private static String beforeString = "ENTERING {0}";
 	
-	private static String BEFORE_WITH_PARAMS_STRING = "ENTERING {0} PARAMS {1}";
+	private static String beforeWithParamsString = "ENTERING {0} PARAMS {1}";
 
-	private static String AFTER_THROWING = "EXCEPTION IN {0} WITH MESSAGE {1} PARAMS {2}";
+	private static String afterThrowing = "EXCEPTION IN {0} WITH MESSAGE {1} PARAMS {2}";
 
-	private static String AFTER_RETURNING = "LEAVING {0} AND RETURNING {1}";
+	private static String afterReturning = "LEAVING {0} AND RETURNING {1}";
 
-	private static String AFTER_RETURNING_VOID = "LEAVING {0}";
+	private static String afterReturningVoid = "LEAVING {0}";
 	
 	public Level loggableToLevel(Loggable loggable){
 		if (loggable != null)
@@ -56,9 +56,9 @@ public class LoggingAspect {
 		String name = joinPoint.getSignature().getName();
 		
 		if (joinPoint.getArgs() != null && joinPoint.getArgs().length == 0) {
-			logger.log(level, MessageFormat.format(BEFORE_STRING, name));
+			logger.log(level, MessageFormat.format(beforeString, name));
 		} else {
-			logger.log(level, MessageFormat.format(BEFORE_WITH_PARAMS_STRING, name, constructArgumentsString(joinPoint.getArgs())));
+			logger.log(level, MessageFormat.format(beforeWithParamsString, name, constructArgumentsString(joinPoint.getArgs())));
 		}
 	}
 
@@ -76,11 +76,11 @@ public class LoggingAspect {
 					.getSignature();
 			Class<?> returnType = signature.getReturnType();
 			if (returnType.getName().compareTo("void") == 0) {
-				logger.log(level, MessageFormat.format(AFTER_RETURNING_VOID,name));
+				logger.log(level, MessageFormat.format(afterReturningVoid,name));
 				return;
 			}
 		}
-		logger.log(level, MessageFormat.format(AFTER_RETURNING, name, constructArgumentsString(returnValue)));
+		logger.log(level, MessageFormat.format(afterReturning, name, constructArgumentsString(returnValue)));
 	}
 
 	private String constructArgumentsString(Object... arguments) {

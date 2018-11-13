@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import net.geant.nmaas.portal.api.domain.ApplicationBrief;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 

@@ -44,7 +44,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) {
         try {
             storeDcnInfoIfNotExists(domain, dcnSpec);
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
@@ -56,7 +56,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployDcn(String domain) throws CouldNotDeployDcnException {
+    public void deployDcn(String domain) {
         try {
             // needs to wait for DCN state change in database
             Thread.sleep(200);
@@ -74,13 +74,13 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDcn(String domain) throws CouldNotVerifyDcnException {
+    public void verifyDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.VERIFIED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeDcn(String domain) throws CouldNotRemoveDcnException {
+    public void removeDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.REMOVED);
     }
 
@@ -88,7 +88,7 @@ public class ManualDcnDeploymentExecutor implements DcnDeploymentProvider {
         applicationEventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain, state));
     }
 
-    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) throws InvalidDomainException {
+    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) {
         if (!dcnRepositoryManager.exists(domain)) {
             dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
         }

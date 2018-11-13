@@ -28,7 +28,7 @@ public class DockerNetworkResourceManager {
         this.dockerHostStateKeeper = dockerHostStateKeeper;
     }
 
-    public int obtainPortForClientNetwork(String domain, Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
+    public int obtainPortForClientNetwork(String domain, Identifier deploymentId) {
         final DockerHostNetwork network = networkForDomain(domain);
         try {
             return dockerHostStateKeeper.assignPortForContainer(network.getHost().getName(), deploymentId);
@@ -37,23 +37,23 @@ public class DockerNetworkResourceManager {
         }
     }
 
-    public String obtainDeploymentNameFromClientNetwork(String domain) throws ContainerOrchestratorInternalErrorException {
+    public String obtainDeploymentNameFromClientNetwork(String domain) {
         final DockerHostNetwork network = networkForDomain(domain);
         return network.getDeploymentName();
     }
 
-    public String obtainSubnetFromClientNetwork(String domain) throws ContainerOrchestratorInternalErrorException {
+    public String obtainSubnetFromClientNetwork(String domain) {
         final DockerHostNetwork network = networkForDomain(domain);
         return network.getSubnet();
     }
 
-    public String obtainGatewayFromClientNetwork(String domain) throws ContainerOrchestratorInternalErrorException {
+    public String obtainGatewayFromClientNetwork(String domain) {
         final DockerHostNetwork network = networkForDomain(domain);
         return network.getGateway();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String assignNewIpAddressForContainer(String domain) throws ContainerOrchestratorInternalErrorException {
+    public String assignNewIpAddressForContainer(String domain) {
         final DockerHostNetwork network = networkForDomain(domain);
         String address = findNewAddress(network);
         updateNetworkWithNewAssignedAddress(domain, address);
@@ -72,8 +72,7 @@ public class DockerNetworkResourceManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeAddressAssignment(String domain, String previouslyAssignedAddress)
-            throws ContainerOrchestratorInternalErrorException {
+    public void removeAddressAssignment(String domain, String previouslyAssignedAddress) {
         try {
             List<String> assignedAddresses = new ArrayList<>(repositoryManager.loadNetwork(domain).getAssignedAddresses());
             assignedAddresses.remove(previouslyAssignedAddress);
@@ -83,7 +82,7 @@ public class DockerNetworkResourceManager {
         }
     }
 
-    private DockerHostNetwork networkForDomain(String domain) throws ContainerOrchestratorInternalErrorException {
+    private DockerHostNetwork networkForDomain(String domain) {
         try {
             return repositoryManager.loadNetwork(domain);
         } catch (InvalidDomainException ide) {
@@ -91,7 +90,7 @@ public class DockerNetworkResourceManager {
         }
     }
 
-    private void updateNetworkWithNewAssignedAddress(String domain, String address) throws ContainerOrchestratorInternalErrorException {
+    private void updateNetworkWithNewAssignedAddress(String domain, String address) {
         try {
             final DockerHostNetwork network = repositoryManager.loadNetwork(domain);
             List<String> assignedAddresses = new ArrayList<>(network.getAssignedAddresses());

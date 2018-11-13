@@ -15,7 +15,7 @@ public class DockerNetworkConfigBuilder {
     private static final String DOCKER_MACVLAN_DRIVER_OPTION_MORE_VALUE = "bridge";
     private static final String DOCKER_MACVLAN_DRIVER_OPTION_PARENT_KEY = "parent";
 
-    public static NetworkConfig build(DockerHostNetwork dockerHostNetwork) throws DockerNetworkDetailsVerificationException {
+    public static NetworkConfig build(DockerHostNetwork dockerHostNetwork) {
         verifyInputDockerNetwork(dockerHostNetwork);
         final IpamConfig ipamConfig = IpamConfig.create(
                 dockerHostNetwork.getSubnet(),
@@ -37,7 +37,7 @@ public class DockerNetworkConfigBuilder {
                 .build();
     }
 
-    private static void verifyInputDockerNetwork(DockerHostNetwork dockerHostNetwork) throws DockerNetworkDetailsVerificationException {
+    private static void verifyInputDockerNetwork(DockerHostNetwork dockerHostNetwork) {
         if (dockerHostNetwork.getVlanNumber() == 0)
             throw new DockerNetworkDetailsVerificationException("VLAN is missing");
         if (dockerHostNetwork.getSubnet() == null || dockerHostNetwork.getSubnet().isEmpty())

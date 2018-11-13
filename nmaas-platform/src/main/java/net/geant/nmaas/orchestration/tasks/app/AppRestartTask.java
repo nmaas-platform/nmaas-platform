@@ -23,7 +23,7 @@ public class AppRestartTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppRestartActionEvent event) throws CouldNotRestartNmServiceException {
+    public void trigger(AppRestartActionEvent event) {
         try{
             serviceDeployment.restartNmService(event.getRelatedTo());
         }catch(Exception ex){

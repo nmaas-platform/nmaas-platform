@@ -38,7 +38,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
-    public Long addConfiguration(ConfigurationView configurationView) throws OnlyOneConfigurationSupportedException{
+    public Long addConfiguration(ConfigurationView configurationView) {
         if(repository.count() > 0){
             throw new OnlyOneConfigurationSupportedException("Configuration already exists. It can be either removed or updated");
         }
@@ -48,7 +48,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
-    public void updateConfiguration(Long id, ConfigurationView updatedConfiguration) throws ConfigurationNotFoundException{
+    public void updateConfiguration(Long id, ConfigurationView updatedConfiguration) {
         Optional<Configuration> configuration = repository.findById(id);
         if(!configuration.isPresent()){
             throw new ConfigurationNotFoundException("Configuration with id "+id+" not found in repository");

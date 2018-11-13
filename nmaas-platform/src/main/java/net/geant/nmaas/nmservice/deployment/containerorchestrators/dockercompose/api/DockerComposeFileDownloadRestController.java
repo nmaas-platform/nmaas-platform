@@ -37,7 +37,7 @@ public class DockerComposeFileDownloadRestController {
 
     @GetMapping(value = "/{deploymentId}")
     public void downloadComposeFile(@PathVariable(value = "deploymentId") String deploymentId, HttpServletResponse response)
-            throws MissingElementException, DockerComposeFileNotFoundException, IOException {
+            throws IOException {
         log.info("Received compose file download request (deploymentId -> " + deploymentId + ")");
         DockerComposeNmServiceInfo nmServiceInfo = null;
         try {

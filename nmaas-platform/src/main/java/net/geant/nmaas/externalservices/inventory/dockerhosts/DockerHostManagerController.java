@@ -62,8 +62,7 @@ public class DockerHostManagerController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @GetMapping("/{name}")
     public DockerHostDetails getDockerHost(
-            @PathVariable("name") String name)
-            throws DockerHostNotFoundException {
+            @PathVariable("name") String name) {
         return modelMapper.map(dockerHostRepositoryManager.loadByName(name), DockerHostDetails.class);
     }
 

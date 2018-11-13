@@ -51,8 +51,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec deploymentSpec)
-            throws NmServiceRequestVerificationException {
+    public void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec deploymentSpec) {
         try {
             orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(deploymentId, appDeployment, deploymentSpec);
             orchestrator.verifyRequestAndObtainInitialDeploymentDetails(deploymentId);
@@ -65,7 +64,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) throws CouldNotPrepareEnvironmentException {
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) {
         try {
             notifyStateChangeListeners(deploymentId, ENVIRONMENT_PREPARATION_INITIATED);
             orchestrator.prepareDeploymentEnvironment(deploymentId, configFileRepositoryRequired);
@@ -79,7 +78,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployNmService(Identifier deploymentId) throws CouldNotDeployNmServiceException {
+    public void deployNmService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, DEPLOYMENT_INITIATED);
             orchestrator.deployNmService(deploymentId);
@@ -93,7 +92,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException {
+    public void verifyNmService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, VERIFICATION_INITIATED);
             int currentWaitTime = 0;
@@ -120,7 +119,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws CouldNotRetrieveNmServiceAccessDetailsException {
+    public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             return orchestrator.serviceAccessDetails(deploymentId);
         } catch (ContainerOrchestratorInternalErrorException e) {
@@ -130,7 +129,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException {
+    public void removeNmService(Identifier deploymentId) {
         try {
             orchestrator.removeNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, REMOVED);
@@ -143,7 +142,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException {
+    public void restartNmService(Identifier deploymentId) {
         try {
             notifyStateChangeListeners(deploymentId, RESTART_INITIATED);
             orchestrator.restartNmService(deploymentId);

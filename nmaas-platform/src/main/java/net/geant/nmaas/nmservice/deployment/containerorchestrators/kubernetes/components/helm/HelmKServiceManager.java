@@ -34,7 +34,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
     static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "spec.nodeSelector.domain";
-    static final private String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
+    private static final  String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
@@ -57,7 +57,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void deployService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
+    public void deployService(Identifier deploymentId) {
         try {
             installHelmChart(deploymentId, repositoryManager.loadService(deploymentId));
         } catch (CommandExecutionException cee) {
@@ -65,7 +65,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
         }
     }
 
-    private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) throws CommandExecutionException {
+    private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) {
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         String domain = serviceInfo.getDomain();
         String serviceExternalURL = serviceInfo.getServiceExternalUrl();
@@ -106,7 +106,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public boolean checkServiceDeployed(Identifier deploymentId) throws KServiceManipulationException {
+    public boolean checkServiceDeployed(Identifier deploymentId) {
         try {
             HelmPackageStatus status = helmCommandExecutor.executeHelmStatusCommand(deploymentId);
             return status.equals(HelmPackageStatus.DEPLOYED);
@@ -117,7 +117,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void deleteService(Identifier deploymentId) throws KServiceManipulationException  {
+    public void deleteService(Identifier deploymentId) {
         try {
             helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
         } catch (CommandExecutionException cee) {
@@ -127,7 +127,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void upgradeService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
+    public void upgradeService(Identifier deploymentId) {
         KubernetesNmServiceInfo serviceInfo = repositoryManager.loadService(deploymentId);
         KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
         try {

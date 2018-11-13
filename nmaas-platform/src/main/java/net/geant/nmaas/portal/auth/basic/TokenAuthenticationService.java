@@ -18,8 +18,8 @@ import java.util.*;
 @Service
 public class TokenAuthenticationService {
 
-	private final static String AUTH_HEADER="Authorization";
-	private final static String AUTH_METHOD="Bearer";
+	private static final String AUTH_HEADER="Authorization";
+	private static final String AUTH_METHOD="Bearer";
 	
 	private JWTTokenService jwtTokenService;
 

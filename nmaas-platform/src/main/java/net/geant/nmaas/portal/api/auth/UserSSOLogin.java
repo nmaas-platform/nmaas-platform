@@ -25,7 +25,7 @@ public class UserSSOLogin {
 	private String signature;
 
 	@JsonCreator
-	public UserSSOLogin(@JsonProperty("userid") String userid) throws AuthenticationException {
+	public UserSSOLogin(@JsonProperty("userid") String userid) {
 		String[] id = userid.split("\\|");
 
 		if(id.length != 3)
@@ -36,7 +36,7 @@ public class UserSSOLogin {
 		this.signature = id[2];
 	}
 
-	public void validate(String key, int timeout) throws AuthenticationException {
+	public void validate(String key, int timeout) {
 		String signed = TextCodec.BASE64.encode(this.username) + "|" + Long.toString(this.time);
 
 		byte[] keyBytes = key.getBytes(Charset.forName("US-ASCII"));
