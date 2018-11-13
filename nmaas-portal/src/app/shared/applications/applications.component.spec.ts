@@ -24,6 +24,7 @@ describe('ApplicationsComponent', () => {
   let appsService: AppsService;
   let appSubscriptionsService: AppSubscriptionsService;
   let userDataService: UserDataService;
+  let tagService: TagService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -51,6 +52,8 @@ describe('ApplicationsComponent', () => {
     appsService = fixture.debugElement.injector.get(AppsService);
     appSubscriptionsService = fixture.debugElement.injector.get(AppSubscriptionsService);
     userDataService = fixture.debugElement.injector.get(UserDataService);
+    tagService = fixture.debugElement.injector.get(TagService);
+    spyOn(tagService, 'getTags').and.returnValue(Observable.of([]));
     fixture.detectChanges();
   });
 
