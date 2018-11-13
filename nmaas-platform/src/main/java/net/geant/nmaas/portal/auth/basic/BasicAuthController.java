@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,7 +92,7 @@ public class BasicAuthController {
         return userToken;
 	}
 	
-	@PostMapping(value="/ping")
+	@GetMapping(value="/ping")
 	public Pong ping(Principal principal) {
 		return new Pong(new Date(System.currentTimeMillis()), (principal != null ? principal.getName() : null));
 	}
