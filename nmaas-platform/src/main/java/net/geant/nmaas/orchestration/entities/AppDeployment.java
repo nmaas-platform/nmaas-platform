@@ -78,6 +78,18 @@ public class AppDeployment {
     /** Required storage space to be allocated for this particular instance in GB */
     private Integer storageSpace;
 
+    private String loggedInUsersName;
+
+    private Long domainId;
+
+    private String appName;
+
+    private Long appInstanceId;
+
+    private String accessURL;
+
+    private String appInstanceName;
+
     public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Integer storageSpace) {
         this.deploymentId = deploymentId;
         this.domain = domain;
@@ -86,14 +98,5 @@ public class AppDeployment {
         this.configFileRepositoryRequired = configFileRepositoryRequired;
         this.storageSpace = storageSpace;
     }
-    private String loggedInUsersName;
 
-    private Long domainId;
-
-    private String appName;
-
-    private Long appInstanceId;
-    private String accessURL;
-
-    private String appInstanceName;
 }
