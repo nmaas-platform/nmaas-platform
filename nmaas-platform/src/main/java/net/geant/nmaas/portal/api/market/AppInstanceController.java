@@ -99,8 +99,7 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/domains/{domainId}/apps/instances/user/{username}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
-    public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable)
-            throws MissingElementException {
+    public List<AppInstance> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable){
         return getUserDomainAppInstances(domainId, username, pageable);
     }
 
@@ -310,10 +309,10 @@ public class AppInstanceController extends AppBaseController {
                 appInstanceState = AppInstanceState.CONNECTING;
                 break;
             case MANAGEMENT_VPN_CONFIGURED:
-                appInstanceState = AppInstanceState.CONFIGURATION_AWAITING;
-                break;
             case APPLICATION_CONFIGURATION_IN_PROGRESS:
             case APPLICATION_CONFIGURED:
+                appInstanceState = AppInstanceState.CONFIGURATION_AWAITING;
+                break;
             case APPLICATION_DEPLOYMENT_IN_PROGRESS:
             case APPLICATION_DEPLOYED:
             case APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS:

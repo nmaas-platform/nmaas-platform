@@ -50,7 +50,7 @@ public class DockerHostStateKeeper {
      * @throws DockerHostNotFoundException when trying to add state for Docker Host that doesn't exist
      */
     @Transactional
-    public Integer assignPortForContainer(String dockerHostName, Identifier deploymentId) throws DockerHostNotFoundException {
+    public Integer assignPortForContainer(String dockerHostName, Identifier deploymentId) {
         addStateForDockerHostIfAbsent(dockerHostName);
         return assignPort(stateForDockerHost(dockerHostName), deploymentId);
     }
@@ -272,7 +272,7 @@ public class DockerHostStateKeeper {
                 .findFirst().orElse(null);
     }
 
-    private void addStateForDockerHostIfAbsent(String dockerHostName) throws DockerHostNotFoundException {
+    private void addStateForDockerHostIfAbsent(String dockerHostName) {
         if (stateForDockerHostNotExists(dockerHostName)) {
             String dockerHostBaseDataNetworkAddress =
                     dockerHostRepositoryManager.loadByName(dockerHostName).getBaseDataNetworkAddress().getHostAddress();

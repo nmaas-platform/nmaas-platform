@@ -19,7 +19,7 @@ public interface NmServiceDeploymentProvider {
      * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if service can't be deployed or some input parameters are missing
      */
-    void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec) throws NmServiceRequestVerificationException;
+    void verifyRequest(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec);
 
     /**
      * Coordinates deployment environment preparation (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -28,7 +28,7 @@ public interface NmServiceDeploymentProvider {
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      * @throws CouldNotPrepareEnvironmentException if environment could't be prepared for some reason
      */
-    void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) throws CouldNotPrepareEnvironmentException;
+    void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired);
 
     /**
      * Coordinates NM service deployment (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -36,7 +36,7 @@ public interface NmServiceDeploymentProvider {
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotDeployNmServiceException if NM service couldn't be deployed for some reason
      */
-    void deployNmService(Identifier deploymentId) throws CouldNotDeployNmServiceException;
+    void deployNmService(Identifier deploymentId);
 
     /**
      * Coordinates NM service deployment verification (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -44,7 +44,7 @@ public interface NmServiceDeploymentProvider {
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotVerifyNmServiceException if NM service deployment verification failed
      */
-    void verifyNmService(Identifier deploymentId) throws CouldNotVerifyNmServiceException;
+    void verifyNmService(Identifier deploymentId);
 
     /**
      * Retrieves deployed service access details to be presented to the client.
@@ -53,7 +53,7 @@ public interface NmServiceDeploymentProvider {
      * @return service access details
      * @throws CouldNotRetrieveNmServiceAccessDetailsException if access details are not available for any reason
      */
-    AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws CouldNotRetrieveNmServiceAccessDetailsException;
+    AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
 
     /**
      * Coordinates NM service removal (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -61,7 +61,7 @@ public interface NmServiceDeploymentProvider {
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotRemoveNmServiceException if NM service couldn't be removed for some reason
      */
-    void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException;
+    void removeNmService(Identifier deploymentId);
 
     /**
      * Coordinates NM service restart (delegates tasks to attached {@link ContainerOrchestrator}).
@@ -69,6 +69,6 @@ public interface NmServiceDeploymentProvider {
      * @param deploymentId unique identifier of service deployment
      * @throws CouldNotRestartNmServiceException if NM service couldn't be restarted for some reason
      */
-    void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException;
+    void restartNmService(Identifier deploymentId);
 
 }

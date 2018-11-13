@@ -49,8 +49,7 @@ class NmServiceConfigurationFilePreparer {
         this.nmServiceRepositoryManager = nmServiceRepositoryManager;
     }
 
-    List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
-            throws ConfigTemplateHandlingException, UserConfigHandlingException, InvalidDeploymentIdException {
+    List<String> generateAndStoreConfigFiles(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration) {
         final Map<String, Object> appConfigurationModel = createModelFromJson(appConfiguration);
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
         List<String> configIds = new ArrayList<>();
@@ -72,7 +71,7 @@ class NmServiceConfigurationFilePreparer {
         return generatedConfigId;
     }
 
-    Template convertToTemplate(NmServiceConfigurationTemplate nmServiceConfigurationTemplate) throws ConfigTemplateHandlingException {
+    Template convertToTemplate(NmServiceConfigurationTemplate nmServiceConfigurationTemplate) {
         try {
             return new Template(nmServiceConfigurationTemplate.getConfigFileName(),
                             new StringReader(nmServiceConfigurationTemplate.getConfigFileTemplateContent()),
@@ -82,7 +81,7 @@ class NmServiceConfigurationFilePreparer {
         }
     }
 
-    Map<String, Object> createModelFromJson(AppConfiguration appConfiguration) throws UserConfigHandlingException {
+    Map<String, Object> createModelFromJson(AppConfiguration appConfiguration) {
         try {
             return new ObjectMapper().readValue(appConfiguration.getJsonInput(), new TypeReference<Map<String, Object>>() {});
         } catch (IOException e) {
@@ -94,8 +93,7 @@ class NmServiceConfigurationFilePreparer {
         return templates.findAllByApplicationId(applicationId.longValue());
     }
 
-    void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel)
-            throws InvalidDeploymentIdException {
+    void updateStoredNmServiceInfoWithListOfManagedDevices(Identifier deploymentId, Map<String, Object> appConfigurationModel) {
         List<Object> devices = (List<Object>) appConfigurationModel.get(DEFAULT_MANAGED_DEVICE_KEY);
         if (devices == null)
             return;
@@ -109,8 +107,7 @@ class NmServiceConfigurationFilePreparer {
         configurations.save(configuration);
     }
 
-    NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model)
-            throws ConfigTemplateHandlingException {
+    NmServiceConfiguration buildConfigFromTemplateAndUserProvidedInput(String configId, Template template, Object model) {
         Writer stringWriter = new StringWriter();
         NmServiceConfiguration configuration = null;
         try {

@@ -94,7 +94,7 @@ public class AppLifecycleManagerRestController {
     @DeleteMapping(value = "/{deploymentId}")
     @ResponseStatus(code = HttpStatus.OK)
     public void removeApplication(
-            @PathVariable("deploymentId") String deploymentId) throws InvalidDeploymentIdException {
+            @PathVariable("deploymentId") String deploymentId) {
         lifecycleManager.removeApplication(Identifier.newInstance(deploymentId));
     }
 

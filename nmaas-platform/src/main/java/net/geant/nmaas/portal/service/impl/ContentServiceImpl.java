@@ -31,7 +31,7 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
     }
 
     @Override
-    public Content createNewContentRecord(String name, String content, String title) throws ObjectAlreadyExistsException{
+    public Content createNewContentRecord(String name, String content, String title) {
         checkParam(name);
         Optional<Content> cnt = contentRepo.findByName(name);
         if(cnt.isPresent()){
@@ -42,7 +42,7 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
     }
 
     @Override
-    public void update(Content content) throws ProcessingException{
+    public void update(Content content) {
         checkParam(content);
         checkParam(content.getId());
 
@@ -55,7 +55,7 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
     }
 
     @Override
-    public void delete(Content content) throws MissingElementException, ProcessingException{
+    public void delete(Content content) {
         checkParam(content);
         checkParam(content.getId());
 

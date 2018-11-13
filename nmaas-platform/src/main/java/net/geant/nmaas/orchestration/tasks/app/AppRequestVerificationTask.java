@@ -42,7 +42,7 @@ public class AppRequestVerificationTask {
     @EventListener
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void trigger(AppVerifyRequestActionEvent event) throws InvalidDeploymentIdException, InvalidApplicationIdException, NmServiceRequestVerificationException {
+    public void trigger(AppVerifyRequestActionEvent event) {
         try{
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));

@@ -22,6 +22,6 @@ public interface ConfigurationFileTransferProvider {
      * @throws ConfigFileNotFoundException if any of the provided configuration file identifiers doesn't match an existing file
      * @throws FileTransferException if the actual delivery of the file failed for any reason
      */
-    void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException;
+    void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired);
 
 }

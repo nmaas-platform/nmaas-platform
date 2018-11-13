@@ -40,8 +40,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL = 30;
     static final String GITLAB_SSH_USER = "git";
-    //TODO read this property from GitLab configuration
-    static final String GITLAB_SSH_SERVER = "nmaas-conf-gitlab-shell";
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -73,8 +71,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
      * @throws FileTransferException if any error occurs during communication with the git repository API
      */
     @Override
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired)
-            throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
+    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         if(configFileRepositoryRequired){
             String domain = serviceRepositoryManager.loadDomain(deploymentId);
             gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
@@ -89,7 +86,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
-    private Integer createUser(String domain, Identifier deploymentId, String password) throws FileTransferException {
+    private Integer createUser(String domain, Identifier deploymentId, String password) {
         try {
             return gitlab.getUserApi().createUser(createStandardUser(domain, deploymentId), password, limitOnProjects()).getId();
         } catch (GitLabApiException e) {
@@ -127,7 +124,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return username + "@" + DEFAULT_CLIENT_EMAIL_DOMAIN;
     }
 
-    private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) throws FileTransferException {
+    private Integer getOrCreateGroupWithMemberForUserIfNotExists(Integer gitLabUserId, String domain) {
         try {
             return gitlab.getGroupApi().getGroup(groupPath(domain)).getId();
         } catch (GitLabApiException e) {
@@ -160,7 +157,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL;
     }
 
-    private Integer createProjectWithinGroupWithMember(Integer groupId, Integer userId, Identifier deploymentId) throws FileTransferException {
+    private Integer createProjectWithinGroupWithMember(Integer groupId, Integer userId, Identifier deploymentId) {
         try {
             Project project = gitlab.getProjectApi().createProject(groupId, projectName(deploymentId));
             gitlab.getProjectApi().addMember(project.getId(), userId, fullAccessCode());
@@ -170,7 +167,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
-    private void addRepositoryAccessUserToProject(Integer projectId) throws FileTransferException{
+    private void addRepositoryAccessUserToProject(Integer projectId) {
         try{
             gitlab.getProjectApi().addMember(projectId, getUserIdByUsername(defaultRepositoryAccessUsername()), PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL);
         } catch(GitLabApiException e){
@@ -182,8 +179,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return deploymentId.value();
     }
 
-    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId)
-            throws FileTransferException {
+    private GitLabProject project(Identifier deploymentId, Integer gitLabUserId, String gitLabPassword, Integer gitLabProjectId) {
         try {
             String gitLabUser = getUser(gitLabUserId);
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
@@ -222,7 +218,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private String generateCompleteGitCloneUrl(String gitLabRepoUrl) {
         String[] urlProtocolAndUrl = gitLabRepoUrl.split("//");
         String[] serverAndPath = urlProtocolAndUrl[1].split("/");
-        return GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], GITLAB_SSH_SERVER).replaceFirst("/", ":");
+        return GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], gitLabManager.getGitlabSshServer()).replaceFirst("/", ":");
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
@@ -230,8 +226,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         return urlParts[0] + "//" + gitLabUser + ":" + gitLabPassword + "@" + urlParts[1];
     }
 
-    private void uploadConfigFilesToProject(Integer gitLabProjectId, List<String> configIds)
-            throws FileTransferException, ConfigFileNotFoundException {
+    private void uploadConfigFilesToProject(Integer gitLabProjectId, List<String> configIds) {
         for (String configId : configIds) {
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
@@ -243,7 +238,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
-    private NmServiceConfiguration loadConfigurationFromDatabase(String configId) throws ConfigFileNotFoundException {
+    private NmServiceConfiguration loadConfigurationFromDatabase(String configId) {
         return configurations.findByConfigId(configId)
                 .orElseThrow(() -> new ConfigFileNotFoundException("Required configuration file not found in repository"));
     }

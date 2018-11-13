@@ -92,7 +92,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) {
         try {
             storeDcnInfoIfNotExists(domain, dcnSpec);
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUESTED);
@@ -124,14 +124,14 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
         }
     }
 
-    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) throws InvalidDomainException {
+    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) {
         if (!dcnRepositoryManager.exists(domain))
             dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployDcn(String domain) throws CouldNotDeployDcnException {
+    public void deployDcn(String domain) {
         try {
             final DcnInfo dcnInfo = dcnRepositoryManager.loadNetwork(domain);
             removeOldAnsiblePlaybookContainers();
@@ -168,7 +168,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDcn(String domain) throws CouldNotVerifyDcnException {
+    public void verifyDcn(String domain) {
         try {
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFICATION_INITIATED);
             // TODO implement DCN verification functionality
@@ -182,7 +182,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeDcn(String domain) throws CouldNotRemoveDcnException {
+    public void removeDcn(String domain) {
         try {
             final DcnInfo dcnInfo = dcnRepositoryManager.loadNetwork(domain);
             deployAnsiblePlaybookContainers(

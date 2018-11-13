@@ -40,7 +40,7 @@ class StaticRoutingConfigManager {
     }
 
     @Loggable(LogLevel.INFO)
-    void configure(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
+    void configure(Identifier deploymentId) {
         DockerComposeNmServiceInfo service = nmServiceRepositoryManager.loadService(deploymentId);
         DomainNetworkAttachPoint customerNetwork = customerNetworks.findByDomain(service.getDomain())
                 .orElseThrow(() -> new ContainerOrchestratorInternalErrorException("No network details information found for domain " + service.getDomain()));
@@ -63,7 +63,7 @@ class StaticRoutingConfigManager {
         return new ArrayList<>(customerNetwork.getMonitoredEquipment().getAddresses());
     }
 
-    private void addRoutesForEachCustomerNetworkAddress(DockerComposeNmServiceInfo service, List<String> networks, DockerComposeServiceComponent component) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
+    private void addRoutesForEachCustomerNetworkAddress(DockerComposeNmServiceInfo service, List<String> networks, DockerComposeServiceComponent component) {
         for (String network : networks) {
             addStaticRouteOnContainer(
                     service.getDeploymentId(),
@@ -73,7 +73,7 @@ class StaticRoutingConfigManager {
         }
     }
 
-    private void addStaticRouteOnContainer(Identifier deploymentId, String containerDeploymentName, DockerHost dockerHost, String command) throws CommandExecutionException {
+    private void addStaticRouteOnContainer(Identifier deploymentId, String containerDeploymentName, DockerHost dockerHost, String command) {
         composeCommandExecutor.executeComposeExecCommand(deploymentId, dockerHost, commandBodyWithPrecedingContainerName(containerDeploymentName, command));
     }
 

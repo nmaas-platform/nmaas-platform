@@ -1,7 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
@@ -20,7 +19,6 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-@Log4j2
 @NoArgsConstructor
 public class GitLabMonitorService implements MonitorService {
 
