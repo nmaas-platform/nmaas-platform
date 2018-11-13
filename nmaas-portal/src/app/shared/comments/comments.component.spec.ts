@@ -11,6 +11,7 @@ describe('CommentComponent',()=>{
    let appConfigService:AppConfigService;
    let appsService:AppsService;
    let spy:any;
+   let spy2:any;
 
    beforeEach(async (()=>{
        TestBed.configureTestingModule({
@@ -35,6 +36,7 @@ describe('CommentComponent',()=>{
        appConfigService = fixture.debugElement.injector.get(AppConfigService);
        appsService = fixture.debugElement.injector.get(AppsService);
        spy = spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api");
+       spy2 = spyOn(appsService, 'getAppCommentsByUrl').and.callThrough();
        fixture.detectChanges();
    });
 
@@ -44,9 +46,8 @@ describe('CommentComponent',()=>{
    });
 
    it('should refresh', ()=>{
-      spy = spyOn(appsService, 'getAppCommentsByUrl').and.callThrough();
       component.refresh();
-      expect(appsService.getAppCommentsByUrl).toHaveBeenCalled();
+      expect(appsService.getAppCommentsByUrl).toHaveBeenCalledTimes(2);
    });
 
    it('should not add comment', ()=>{
