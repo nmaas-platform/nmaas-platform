@@ -11,6 +11,7 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ContentService;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.NotificationService;
 import net.geant.nmaas.portal.service.UserService;
@@ -46,17 +47,21 @@ public class RegistrationController {
 
 	private NotificationService notificationService;
 
+	private ContentService contentService;
+
 	@Autowired
 	public RegistrationController(UserService usersService,
 								  DomainService domains,
 								  PasswordEncoder passwordEncoder,
 								  ModelMapper modelMapper,
-								  NotificationService notificationService){
+								  NotificationService notificationService,
+								  ContentService contentService){
 		this.usersService = usersService;
 		this.domains = domains;
 		this.passwordEncoder = passwordEncoder;
 		this.modelMapper = modelMapper;
 		this.notificationService = notificationService;
+		this.contentService = contentService;
 	}
 	
 	@PostMapping
@@ -73,18 +78,27 @@ public class RegistrationController {
 		try {
 			newUser = usersService.register(registration.getUsername(), domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 			if(newUser == null) {
-				throw new SignupException("Unable to register new user.");
+				throw new SignupException(
+						contentService.getContent(registration.getLanguage(), "REGISTRATION",
+								"UNABLE_TO_REGISTER_MESSAGE"));
 			}
 			if(!registration.getTermsOfUseAccepted()){
-				throw new SignupException("Terms of Use were not accepted.");
+				throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
+						"TERMS_NOT_ACCEPTED_MESSAGE"));
 			}
 			if(!registration.getPrivacyPolicyAccepted()){
-				throw new SignupException("Privacy Policy were not accepted.");
+				throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
+						"PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE"));
 			}
 		} catch (ObjectAlreadyExistsException e) {
-			throw new SignupException("User already exists.");
+			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
+					"USER_ALREADY_EXISTS_MESSAGE"));
 		} catch (MissingElementException e) {
-			throw new SignupException("Domain not found.");
+			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
+					"DOMAIN_NOT_FOUND_MESSAGE"));
+		} catch(Exception e) {
+			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
+					"UNABLE_TO_FETCH_CONTENT_MESSAGE"));
 		}
 		
 		newUser.setPassword(passwordEncoder.encode(registration.getPassword()));

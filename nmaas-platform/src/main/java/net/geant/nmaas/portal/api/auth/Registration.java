@@ -25,6 +25,8 @@ public class Registration {
 
 	private Boolean privacyPolicyAccepted;
 
+	private String language;
+
 	public Registration(String username) {
 		this.username = username;
 	}
@@ -37,7 +39,8 @@ public class Registration {
 						@JsonProperty(value="lastname", required=false) String lastname,
 						@JsonProperty(value="domainId", required = false) Long domainId,
 						@JsonProperty(value="termsOfUseAccepted", required=true) Boolean termsOfUseAccepted,
-						@JsonProperty(value="privacyPolicyAccepted", required=true) Boolean privacyPolicyAccepted){
+						@JsonProperty(value="privacyPolicyAccepted", required=true) Boolean privacyPolicyAccepted,
+						@JsonProperty(value="language", required=true) String language){
 		this.username = username;
 		this.password = password;
 		this.email = email;
@@ -46,6 +49,7 @@ public class Registration {
 		this.domainId = domainId;
 		this.termsOfUseAccepted = termsOfUseAccepted;
 		this.privacyPolicyAccepted = privacyPolicyAccepted;
+		this.language = language;
 	}
 
 }

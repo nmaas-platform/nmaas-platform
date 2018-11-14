@@ -11,6 +11,7 @@ import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/mod
 import {ModalComponent} from "../../shared/modal";
 
 import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-registration',
@@ -35,14 +36,20 @@ export class RegistrationComponent implements OnInit {
   @ViewChild(ModalInfoTermsComponent)
   public readonly modalInfoTerms: ModalInfoTermsComponent;
 
-    @ViewChild(ModalInfoPolicyComponent)
-    public readonly modalInfoPolicy: ModalInfoPolicyComponent;
+  @ViewChild(ModalInfoPolicyComponent)
+  public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
 
-  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService) {
-    
+  private loginFailureErrorMessage = '';
+  private language = '';
+
+  constructor(private fb: FormBuilder,
+              private registrationService: RegistrationService,
+              private appConfig: AppConfigService,
+              private translate: TranslateService) {
+    this.language = this.translate.getBrowserLang();
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
@@ -57,6 +64,11 @@ export class RegistrationComponent implements OnInit {
       },
       {
         validator: PasswordValidator.match
+      });
+    this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
+      .subscribe((response: string) => {
+        this.loginFailureErrorMessage = Object.values(response)[0];
+        // this.loginFailureErrorMessage = response;
       });
   }
 
@@ -92,8 +104,8 @@ export class RegistrationComponent implements OnInit {
                       this.registrationForm.controls['domainId'].value,
                       this.registrationForm.controls['termsOfUseAccepted'].value,
                       this.registrationForm.controls['privacyPolicyAccepted'].value,
+                      this.language
                   );
-
                   this.registrationService.register(registration).subscribe(
                       (result) => {
                           console.log("User registred successfully.");

@@ -58,7 +58,17 @@
     "SUBMIT": "Zatwierdź",
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
-    "DONE_MESSAGE": "Gotowe"
+    "DONE_MESSAGE": "Gotowe",
+    "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
+    "TERMS__OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!",
+    "INVALID_CREDENTIALS_MESSAGE": "Nieprawidłowe dane uwierzytelniające.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Nie można zarejestrować nowego użytkownika.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Warunki użytkowania nie zostały zaakceptowane.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Polityka prywatności nie została zaakceptowana.",
+    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
   },
   "LOGIN": {
     "USERNAME": "Nazwa użytkownika",

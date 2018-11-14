@@ -50,9 +50,8 @@ export class LoginComponent implements OnInit {
     public login():void {
         this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
         .subscribe((response: string) => {
-          debugger;
-          // this.loginFailureErrorMessage = Object.response(response)[0];
-          this.loginFailureErrorMessage = response;
+          this.loginFailureErrorMessage = Object.values(response)[0];
+          // this.loginFailureErrorMessage = response;
         });
         this.loading = true;
         this.error = '';
@@ -64,7 +63,8 @@ export class LoginComponent implements OnInit {
                     this.router.navigate(['/']);
                 } else {
                     console.error('Error during login');
-                    this.error = 'Username or password is incorrect';
+                    this.error = (this.loginFailureErrorMessage === null ?
+                      'Username or password is incorrect' : this.loginFailureErrorMessage);
                     this.loading = false;
                 }
             },
@@ -72,9 +72,8 @@ export class LoginComponent implements OnInit {
                     console.error('Unable to login. ' + err);
                     this.loading = false;
                     // this.error = err;
-                    debugger;
-                    // this.error = (loginFailureErrorMessage === null ? err : this.loginFailureErrorMessage);
-                    this.error = this.loginFailureErrorMessage;
+                    this.error = (this.loginFailureErrorMessage === null ?
+                      err : this.loginFailureErrorMessage);
                 });
     }
 
