@@ -50,7 +50,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
 
-  public storageSet: boolean;
 
   public intervalCheckerSubscribtion;
 
