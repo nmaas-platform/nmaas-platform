@@ -63,7 +63,7 @@ public class PortalConfig {
 
 			@Override
 			@Transactional
-			public void afterPropertiesSet() throws ProcessingException {
+			public void afterPropertiesSet() {
 				domains.createGlobalDomain();				
 				
 				Optional<User> admin = userRepository.findByUsername("admin");

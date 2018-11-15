@@ -53,7 +53,7 @@ public class AnsiblePlaybookVpnConfig {
         this.type = type;
     }
 
-    public void validate() throws AnsiblePlaybookVpnConfigInvalidException {
+    public void validate() {
         StringBuilder exceptionMessage = new StringBuilder();
         if (targetRouter == null || targetRouter.isEmpty()) {
             nullMessage("Target Router", exceptionMessage);
@@ -163,7 +163,7 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
 
-    private void exception(String message) throws AnsiblePlaybookVpnConfigInvalidException {
+    private void exception(String message) {
         if(message.length() > 0) {
             throw new AnsiblePlaybookVpnConfigInvalidException(message);
         }
@@ -177,13 +177,13 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is too long (max " + MAX_PROPERTY_LENGTH + " characters)\n");
     }
 
-    private static String  PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+    private static String  pattern = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
     public static boolean validateIpAddress(String ipAddress) {
         if (ipAddress.contains(":")) {
             ipAddress = ipAddress.substring(0, ipAddress.indexOf(":"));
         }
-        return ipAddress.matches(PATTERN);
+        return ipAddress.matches(pattern);
     }
 
     public enum Type {

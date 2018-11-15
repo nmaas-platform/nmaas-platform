@@ -28,7 +28,7 @@ public class AppEnvironmentPreparationTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppPrepareEnvironmentActionEvent event) throws InvalidDeploymentIdException, CouldNotPrepareEnvironmentException {
+    public void trigger(AppPrepareEnvironmentActionEvent event) {
         try {
             boolean configFileRepositoryRequired = repository.findByDeploymentId(event.getRelatedTo()).orElseThrow(InvalidDeploymentIdException::new).isConfigFileRepositoryRequired();
             serviceDeployment.prepareDeploymentEnvironment(event.getRelatedTo(), configFileRepositoryRequired);

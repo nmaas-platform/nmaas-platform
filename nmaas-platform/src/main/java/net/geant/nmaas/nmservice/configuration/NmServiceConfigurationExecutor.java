@@ -41,8 +41,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired)
-            throws NmServiceConfigurationFailedException {
+    public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired) {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);

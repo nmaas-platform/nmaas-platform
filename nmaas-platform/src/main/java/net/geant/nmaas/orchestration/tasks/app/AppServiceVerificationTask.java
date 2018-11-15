@@ -24,7 +24,7 @@ public class AppServiceVerificationTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppVerifyServiceActionEvent event) throws InvalidDeploymentIdException, CouldNotVerifyNmServiceException {
+    public void trigger(AppVerifyServiceActionEvent event) {
         try{
             serviceDeployment.verifyNmService(event.getRelatedTo());
         }catch(Exception ex){

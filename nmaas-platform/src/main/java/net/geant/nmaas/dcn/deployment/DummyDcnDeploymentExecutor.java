@@ -43,25 +43,25 @@ public class DummyDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) {
         notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployDcn(String domain) throws CouldNotDeployDcnException {
+    public void deployDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDcn(String domain) throws CouldNotVerifyDcnException {
+    public void verifyDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.VERIFIED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeDcn(String domain) throws CouldNotRemoveDcnException {
+    public void removeDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.REMOVED);
     }
 

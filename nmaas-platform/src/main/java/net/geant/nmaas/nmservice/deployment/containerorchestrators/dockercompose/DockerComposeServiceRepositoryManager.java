@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 public class DockerComposeServiceRepositoryManager extends NmServiceRepositoryManager<DockerComposeNmServiceInfo> implements DockerNmServiceRepositoryManager {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateDockerHost(Identifier deploymentId, DockerHost host) throws InvalidDeploymentIdException {
+    public void updateDockerHost(Identifier deploymentId, DockerHost host) {
         DockerComposeNmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setHost(host);
         repository.save(nmServiceInfo);
     }
 
-    public DockerHost loadDockerHost(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public DockerHost loadDockerHost(Identifier deploymentId) {
         return repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId)).getHost();
     }
 
@@ -37,14 +37,14 @@ public class DockerComposeServiceRepositoryManager extends NmServiceRepositoryMa
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateDockerComposeService(Identifier deploymentId, DockerComposeService dockerComposeService) throws InvalidDeploymentIdException {
+    public void updateDockerComposeService(Identifier deploymentId, DockerComposeService dockerComposeService) {
         DockerComposeNmServiceInfo nmServiceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
         nmServiceInfo.setDockerComposeService(dockerComposeService);
         repository.save(nmServiceInfo);
     }
 
     @Override
-    public String loadAttachedVolumeName(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public String loadAttachedVolumeName(Identifier deploymentId) {
         DockerComposeService dockerComposeService = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId)).getDockerComposeService();
         if (dockerComposeService == null)
             throw new InvalidDeploymentIdException("Docker compose service is missing for deployment with id " + deploymentId);

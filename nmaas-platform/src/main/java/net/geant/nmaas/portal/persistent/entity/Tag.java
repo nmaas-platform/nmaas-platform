@@ -35,7 +35,7 @@ public class Tag implements Serializable {
 	@ManyToMany(fetch=FetchType.LAZY, mappedBy="tags")
 //	@ManyToMany(fetch=FetchType.LAZY)
 //	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns=@JoinColumn(name="application_id"))
-	Set<Application> applications = new HashSet<Application>();
+	Set<Application> applications = new HashSet<>();
 	
 	public Tag(Long id, String name) {
 		this(name);

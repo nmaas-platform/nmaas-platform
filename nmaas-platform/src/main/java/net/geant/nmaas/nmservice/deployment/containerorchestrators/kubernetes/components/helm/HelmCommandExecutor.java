@@ -34,16 +34,15 @@ public class HelmCommandExecutor {
     Boolean enableTls;
 
 
-    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(kubernetesNamespace, releaseName, template, arguments);
     }
 
-    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(kubernetesNamespace, deploymentId.value(), template, arguments);
     }
 
-    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments)
-            throws CommandExecutionException {
+    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         try {
             HelmInstallCommand command;
             if (useLocalCharts) {
@@ -86,7 +85,7 @@ public class HelmCommandExecutor {
         return helmRepositoryName + "/" + chartName;
     }
 
-    void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
+    void executeHelmDeleteCommand(Identifier deploymentId) {
         try {
             HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value(), enableTls);
             singleCommandExecutor().executeSingleCommand(command);
@@ -96,11 +95,11 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) {
         return executeHelmStatusCommand(deploymentId.value());
     }
 
-    private HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
+    private HelmPackageStatus executeHelmStatusCommand(String releaseName) {
         try {
             HelmStatusCommand command = HelmStatusCommand.command(releaseName, enableTls);
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
@@ -118,7 +117,7 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.UNKNOWN;
     }
 
-    public List<String> executeHelmListCommand() throws CommandExecutionException {
+    public List<String> executeHelmListCommand() {
         try {
             HelmListCommand command = HelmListCommand.command(enableTls);
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
@@ -129,8 +128,7 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
-            throws CommandExecutionException {
+    void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName) {
         try {
             HelmUpgradeCommand command;
             if (useLocalCharts) {
@@ -148,7 +146,7 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeVersionCommand() throws CommandExecutionException{
+    void executeVersionCommand() {
         try{
             singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command(enableTls));
         } catch(SshConnectionException e) {

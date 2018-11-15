@@ -6,8 +6,8 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 public interface DockerNmServiceRepositoryManager {
 
-    DockerHost loadDockerHost(Identifier deploymentId) throws InvalidDeploymentIdException;
+    DockerHost loadDockerHost(Identifier deploymentId);
 
-    String loadAttachedVolumeName(Identifier deploymentId) throws InvalidDeploymentIdException;
+    String loadAttachedVolumeName(Identifier deploymentId);
 
 }

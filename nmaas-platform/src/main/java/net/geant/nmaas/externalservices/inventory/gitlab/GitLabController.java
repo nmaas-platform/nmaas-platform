@@ -1,6 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabSupportedException;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;

@@ -32,7 +32,7 @@ public class AppConfigurationVerificationTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppVerifyConfigurationActionEvent event) throws InvalidDeploymentIdException {
+    public void trigger(AppVerifyConfigurationActionEvent event) {
         try{
             final Identifier deploymentId = event.getRelatedTo();
             final AppDeployment appDeployment = appDeploymentRepositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));

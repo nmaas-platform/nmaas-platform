@@ -43,7 +43,7 @@ public class AppDcnRequestOrVerificationTask {
      */
     @EventListener
     @Loggable(LogLevel.INFO)
-    public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
+    public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) {
         try{
             final Identifier deploymentId = event.getRelatedTo();
             final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);

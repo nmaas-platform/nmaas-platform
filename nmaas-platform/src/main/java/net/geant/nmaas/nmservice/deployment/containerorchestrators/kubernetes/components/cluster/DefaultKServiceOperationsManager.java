@@ -46,7 +46,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void restartService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
+    public void restartService(Identifier deploymentId) {
         String domain = repositoryManager.loadDomain(deploymentId);
         String namespace = namespaceService.namespace(domain);
         KubernetesClient client = kubernetesClusterManager.getApiClient();
@@ -54,7 +54,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
         client.pods().delete(pod);
     }
 
-    private Pod retrievePodObject(String namespace, KubernetesClient client, String releaseName) throws KServiceManipulationException {
+    private Pod retrievePodObject(String namespace, KubernetesClient client, String releaseName) {
         Map<String, String> labels = new HashMap<>();
         labels.put(SERVICE_SELECT_OPTION_RELEASE, releaseName);
         labels.put(SERVICE_SELECT_OPTION_RESTART_AWARE, SERVICE_SELECT_VALUE_RESTART_AWARE);
