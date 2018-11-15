@@ -9,6 +9,7 @@ import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable} from 'rxjs/Observable';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -18,9 +19,14 @@ export enum AppInstanceListSelection {
   selector: 'nmaas-appinstancelist',
   templateUrl: './appinstancelist.component.html',
   styleUrls: ['./appinstancelist.component.css'],
-  providers: [AppInstanceService, AppsService, DomainService, AuthService]
+  providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
 })
 export class AppInstanceListComponent implements OnInit {
+
+  public maxItemsOnPage: number = 5;
+  public pageNumber: number = 1;
+
+  public itemsPerPage: number[]  = [5,10,15,20,25,30];
 
   public AppInstanceState: typeof AppInstanceState = AppInstanceState;
   public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
@@ -73,4 +79,7 @@ export class AppInstanceListComponent implements OnInit {
     this.update(this.domainId);
   }
 
+  public setItems(item){
+    this.maxItemsOnPage = item;
+  }
 }
