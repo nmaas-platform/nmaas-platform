@@ -15,6 +15,7 @@ public interface UserService {
 	Optional<User> findByUsername(String username);
 	Optional<User> findById(Long id);
 	Optional<User> findBySamlToken(String token);
+	User findByEmail(String email);
 
 	boolean existsByUsername(String username);
 	boolean existsById(Long id);

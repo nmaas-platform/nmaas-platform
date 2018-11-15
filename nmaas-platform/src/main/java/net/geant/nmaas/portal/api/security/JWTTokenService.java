@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.security;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -52,9 +53,24 @@ public class JWTTokenService {
 					.setId(UUID.randomUUID().toString())
 					.setIssuedAt(new Date())
 					.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRefreshTokenExpTime()))
-					.claim(SCOPES, Arrays.asList(JWTSettings.Scopes.REFRESH_TOKEN))
+					.claim(SCOPES, Collections.singletonList(JWTSettings.Scopes.REFRESH_TOKEN))
 					.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 					.compact();
+	}
+
+	public String getResetToken(String email){
+		if(email == null || email.isEmpty()){
+			throw new IllegalArgumentException("Email cannot be null or empty");
+		}
+
+		return Jwts.builder()
+				.setSubject(email)
+				.setIssuer(jwtSettings.getIssuer())
+				.setId(UUID.randomUUID().toString())
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
+				.signWith(SignatureAlgorithm.HS384, jwtSettings.getResetSigningKey())
+				.compact();
 	}
 	
 	public boolean validateRefreshToken(String token) {
@@ -74,5 +90,8 @@ public class JWTTokenService {
 	public Claims getClaims(String token) {
 		return Jwts.parser().setSigningKey(jwtSettings.getSigningKey()).parseClaimsJws(token).getBody();
 	}
-	
+
+	public Claims getResetClaims(String token) {
+		return Jwts.parser().setSigningKey(jwtSettings.getResetSigningKey()).parseClaimsJws(token).getBody();
+	}
 }

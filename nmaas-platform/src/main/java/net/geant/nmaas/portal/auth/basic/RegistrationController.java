@@ -113,7 +113,7 @@ public class RegistrationController {
                     .subject("NMaaS: New account registration request")
                     .templateName("admin-notification")
                     .build();
-			notificationService.sendEmail(emailConfirmation);
+			notificationService.sendConfirmationEmail(emailConfirmation);
 
 			if(registration.getDomainId() != null) {
                 domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
