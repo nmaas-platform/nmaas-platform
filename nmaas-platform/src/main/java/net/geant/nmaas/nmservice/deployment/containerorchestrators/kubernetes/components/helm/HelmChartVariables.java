@@ -18,8 +18,7 @@ class HelmChartVariables {
     static Map<String, String> ingressVariablesMap(String ingressHost, String ingressClass, Boolean tls) {
         Map<String, String> variables = new HashMap<>();
         variables.put(INGRESS_HOSTS_KEY, PAR_OPEN + ingressHost + PAR_CLOSE);
-        //TODO: Uncomment this and pass basic auth as custom deployment setting
-        //variables.put(INGRESS_ANNOTATIONS_KEY, PAR_OPEN + getIngressAnnotationsValue(ingressClass) + PAR_CLOSE);
+        variables.put(INGRESS_ANNOTATIONS_KEY, PAR_OPEN + getIngressAnnotationsValue(ingressClass) + PAR_CLOSE);
         variables.put(INGRESS_TLS_KEY, String.valueOf(tls));
         return variables;
     }
