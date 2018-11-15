@@ -35,7 +35,7 @@ public class DockerNetworkLifecycleManager {
         this.dockerApiClient = dockerApiClient;
     }
 
-    public void declareNewNetworkForClientOnHost(String domain, DockerHost dockerHost) throws ContainerOrchestratorInternalErrorException {
+    public void declareNewNetworkForClientOnHost(String domain, DockerHost dockerHost) {
         DockerHostNetwork dockerHostNetwork = new DockerHostNetwork(domain, dockerHost);
         repositoryManager.storeNetwork(dockerHostNetwork);
         try {
@@ -57,7 +57,7 @@ public class DockerNetworkLifecycleManager {
         return repositoryManager.checkNetwork(domain);
     }
 
-    public DockerHostNetwork networkForDomain(String domain) throws ContainerOrchestratorInternalErrorException {
+    public DockerHostNetwork networkForDomain(String domain) {
         try {
             return repositoryManager.loadNetwork(domain);
         } catch (InvalidDomainException ide) {
@@ -65,7 +65,7 @@ public class DockerNetworkLifecycleManager {
         }
     }
 
-    public String deployNetworkForDomain(String domain) throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
+    public String deployNetworkForDomain(String domain) {
         try {
             final DockerHostNetwork network = networkForDomain(domain);
             if (networkAlreadyDeployed(network))
@@ -102,7 +102,7 @@ public class DockerNetworkLifecycleManager {
         return dockerApiClient.createNetwork(apiUrl, networkConfig);
     }
 
-    public void verifyNetwork(String domain) throws DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
+    public void verifyNetwork(String domain) {
         DockerHostNetwork network = null;
         try {
             network = repositoryManager.loadNetwork(domain);
@@ -125,13 +125,12 @@ public class DockerNetworkLifecycleManager {
     }
 
     private void executeCheckNetwork(String networkId, String apiUrl)
-            throws DockerNetworkCheckFailedException, DockerException, InterruptedException {
+            throws DockerException, InterruptedException {
         if (dockerApiClient.listNetworks(apiUrl).stream().noneMatch(id -> id.equals(networkId)))
             throw new DockerNetworkCheckFailedException("Network with given id " + networkId + " not exists on Docker Host");
     }
 
-    public void removeNetwork(String domain)
-            throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
+    public void removeNetwork(String domain) {
         DockerHostNetwork network = null;
         try {
             network = repositoryManager.loadNetwork(domain);

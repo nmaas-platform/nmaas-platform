@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -15,16 +14,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.UserFile;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.StorageException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.service.FileStorageService;
@@ -42,8 +43,8 @@ public class AppScreenshotsController extends AppBaseController {
 		this.fileStorage = fileStorage;
 	}
 
-	@RequestMapping(value="/logo", method=RequestMethod.GET)
-	public ResponseEntity<InputStreamResource> getLogo(@PathVariable("appId") Long appId) throws MissingElementException, FileNotFoundException {
+	@GetMapping(value="/logo")
+	public ResponseEntity<InputStreamResource> getLogo(@PathVariable("appId") Long appId) throws FileNotFoundException {
 		Application app = getApp(appId);
 		
 		if(app.getLogo() != null)
@@ -53,10 +54,10 @@ public class AppScreenshotsController extends AppBaseController {
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
-	@RequestMapping(value="/logo", method=RequestMethod.POST)
+	@PostMapping(value="/logo")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public net.geant.nmaas.portal.api.domain.FileInfo uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws MissingElementException, FileNotFoundException, StorageException {
+	public net.geant.nmaas.portal.api.domain.FileInfo uploadLogo(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
 		Application app = getApp(appId);
 		
 		if(app.getLogo() != null) {
@@ -72,10 +73,10 @@ public class AppScreenshotsController extends AppBaseController {
 		return modelMapper.map(fileInfo, net.geant.nmaas.portal.api.domain.FileInfo.class);
 	}
 	
-	@RequestMapping(value="/logo", method=RequestMethod.DELETE)
+	@DeleteMapping(value="/logo")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void deleteLogo(@PathVariable("appId") Long appId) throws MissingElementException, FileNotFoundException, StorageException {
+	public void deleteLogo(@PathVariable("appId") Long appId) {
 		Application app = getApp(appId);
 		
 		if(app.getLogo() != null) {
@@ -85,8 +86,8 @@ public class AppScreenshotsController extends AppBaseController {
 		}
 	}
 	
-	@RequestMapping(value="/screenshots", method=RequestMethod.GET)
-	public List<UserFile> getScreenshotsInfo(@PathVariable("appId") Long appId) throws MissingElementException {
+	@GetMapping(value="/screenshots")
+	public List<UserFile> getScreenshotsInfo(@PathVariable("appId") Long appId) {
 		Application app = getApp(appId);
 
 		return app.getScreenshots()
@@ -95,10 +96,10 @@ public class AppScreenshotsController extends AppBaseController {
 					.collect(Collectors.toList());
 	}	
 	
-	@RequestMapping(value="/screenshots", method=RequestMethod.POST)
+	@PostMapping(value="/screenshots")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public net.geant.nmaas.portal.api.domain.FileInfo uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) throws StorageException, MissingElementException {
+	public net.geant.nmaas.portal.api.domain.FileInfo uploadScreenshot(@PathVariable("appId") Long appId, @RequestParam("file") MultipartFile file) {
 		Application app = getApp(appId);
 		
 		FileInfo fileInfo = fileStorage.store(file);
@@ -108,8 +109,8 @@ public class AppScreenshotsController extends AppBaseController {
 		return modelMapper.map(fileInfo, net.geant.nmaas.portal.api.domain.FileInfo.class);
 	}
 
-	@RequestMapping(value="/screenshots/{screenshotId}", method=RequestMethod.GET)
-	public ResponseEntity<InputStreamResource> getScreenshot(@PathVariable("appId") Long appId, @PathVariable("screenshotId") Long screenshotId) throws MissingElementException, FileNotFoundException {
+	@GetMapping(value="/screenshots/{screenshotId}")
+	public ResponseEntity<InputStreamResource> getScreenshot(@PathVariable("appId") Long appId, @PathVariable("screenshotId") Long screenshotId) throws FileNotFoundException {
 		Application app = getApp(appId);
 		
 		for(net.geant.nmaas.portal.persistent.entity.FileInfo screenshot : app.getScreenshots()) {
@@ -122,10 +123,10 @@ public class AppScreenshotsController extends AppBaseController {
 		throw new MissingElementException("Screenshot id= " + screenshotId + " for app id=" + appId + " not found.");
 	}
 
-	@RequestMapping(value="/screenshots/{screenshotId}", method=RequestMethod.DELETE)
+	@DeleteMapping(value="/screenshots/{screenshotId}")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public void deleteScreenshot(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="screenshotId", required=true) Long screenshotId) throws MissingElementException, StorageException {
+	public void deleteScreenshot(@PathVariable(value="appId", required=true) Long appId, @PathVariable(value="screenshotId", required=true) Long screenshotId) {
 		Application app = getApp(appId);
 		FileInfo screenshotInfo = getScreenshot(app, screenshotId);
 		
@@ -134,7 +135,7 @@ public class AppScreenshotsController extends AppBaseController {
 	}	
 	
 	private ResponseEntity<InputStreamResource> getFile(FileInfo imageFile)
-			throws MissingElementException, FileNotFoundException {
+			throws FileNotFoundException {
 		File file = fileStorage.getFile(imageFile.getId());
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -142,11 +143,11 @@ public class AppScreenshotsController extends AppBaseController {
 		headers.setContentLength(file.length());
 		
 		InputStreamResource streamFile = new InputStreamResource(new FileInputStream(file));
-		return new ResponseEntity<InputStreamResource>(streamFile, headers, HttpStatus.OK);
+		return new ResponseEntity<>(streamFile, headers, HttpStatus.OK);
 	}
 	
 
-	private FileInfo getScreenshot(Application app, Long screenshotId) throws MissingElementException {
+	private FileInfo getScreenshot(Application app, Long screenshotId) {
 		for(FileInfo screenshot : app.getScreenshots()) {
 			if(screenshot.getId() == screenshotId)
 				return screenshot;

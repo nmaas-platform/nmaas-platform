@@ -25,51 +25,48 @@ public class DcnRepositoryManager {
     }
 
     @EventListener
-    public void notifyStateChange(DcnDeploymentStateChangeEvent event) throws InvalidDomainException {
+    public void notifyStateChange(DcnDeploymentStateChangeEvent event) {
         updateDcnState(event.getDomain(), event.getState());
     }
 
-    private void updateDcnState(String domain, DcnDeploymentState state) throws InvalidDomainException {
+    private void updateDcnState(String domain, DcnDeploymentState state) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setState(state);
         dcnInfoRepository.save(dcnInfo);
     }
 
-    void updateAnsiblePlaybookForClientSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
-            throws InvalidDomainException {
+    void updateAnsiblePlaybookForClientSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setPlaybookForClientSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
-    void updateAnsiblePlaybookForCloudSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig)
-            throws InvalidDomainException {
+    void updateAnsiblePlaybookForCloudSideRouter(String domain, AnsiblePlaybookVpnConfig ansiblePlaybookVpnConfig) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setPlaybookForCloudSideRouter(ansiblePlaybookVpnConfig);
         dcnInfoRepository.save(dcnInfo);
     }
 
-    void updateDcnCloudEndpointDetails(String domain, DcnCloudEndpointDetails dcnCloudEndpointDetails)
-            throws InvalidDomainException {
+    void updateDcnCloudEndpointDetails(String domain, DcnCloudEndpointDetails dcnCloudEndpointDetails) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfo.setCloudEndpointDetails(dcnCloudEndpointDetails);
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void storeDcnInfo(DcnInfo dcnInfo) throws InvalidDomainException {
+    public void storeDcnInfo(DcnInfo dcnInfo) {
         if (exists(dcnInfo.getDomain()))
             throw new InvalidDomainException("DCN information for domain " + dcnInfo.getDomain() + " already stored in database");
         dcnInfoRepository.save(dcnInfo);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeDcnInfo(String domain) throws InvalidDomainException {
+    public void removeDcnInfo(String domain) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfoRepository.delete(dcnInfo);
     }
 
-    protected DcnInfo loadNetwork(String domain) throws InvalidDomainException {
+    protected DcnInfo loadNetwork(String domain) {
         return dcnInfoRepository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
     }
 
@@ -77,11 +74,11 @@ public class DcnRepositoryManager {
         return dcnInfoRepository.findAll();
     }
 
-    public DcnDeploymentState loadCurrentState(String domain) throws InvalidDomainException {
+    public DcnDeploymentState loadCurrentState(String domain) {
         return dcnInfoRepository.getStateByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
     }
 
-    private DcnInfo loadDcnOrThrowException(String domain) throws InvalidDomainException {
+    private DcnInfo loadDcnOrThrowException(String domain) {
         return dcnInfoRepository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
     }
 

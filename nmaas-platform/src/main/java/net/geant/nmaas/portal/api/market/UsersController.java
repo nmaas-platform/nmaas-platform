@@ -48,7 +48,7 @@ public class UsersController {
 
 	private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
 	private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
-
+	private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned.";
 
 	private UserService userService;
 
@@ -180,7 +180,7 @@ public class UsersController {
 			throw new MissingElementException("Missing role");
 
 		if(userRole.getRole() == Role.ROLE_SYSTEM_COMPONENT)
-			throw new ProcessingException("Role cannot be assigned.");
+			throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
 
 		Domain domain = null;
 		if (userRole.getDomainId() == null) 
@@ -353,7 +353,7 @@ public class UsersController {
 		Role role = userRole.getRole();
 
 		if(role == Role.ROLE_SYSTEM_COMPONENT)
-			throw new ProcessingException("Role cannot be assigned.");
+			throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
 
 		if(!domainId.equals(userRole.getDomainId()))
 			throw new ProcessingException("Invalid request domain");
@@ -363,10 +363,10 @@ public class UsersController {
 		
 		if(domain.equals(globalDomain)) {
 			if(!(role == Role.ROLE_SYSTEM_ADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
-				throw new ProcessingException("Role cannot be assigned.");			
+				throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);			
 		} else {
 			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
-				throw new ProcessingException("Role cannot be assigned.");
+				throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
 		}
 			
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);

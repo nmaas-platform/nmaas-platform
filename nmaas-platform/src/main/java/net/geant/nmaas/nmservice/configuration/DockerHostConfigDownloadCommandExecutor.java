@@ -52,8 +52,7 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired)
-            throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
+    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         DockerHost host = serviceRepositoryManager.loadDockerHost(deploymentId);
         String attachedVolumeName = serviceRepositoryManager.loadAttachedVolumeName(deploymentId);
         final String targetDirectoryFullPath = constructTargetDirectoryFullPath(host, attachedVolumeName);
@@ -78,7 +77,7 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
                 configFileName);
     }
 
-    private void executeConfigDownloadCommand(ConfigDownloadCommand command, DockerHost host) throws CommandExecutionException {
+    private void executeConfigDownloadCommand(ConfigDownloadCommand command, DockerHost host) {
         try {
             SingleCommandExecutor.getExecutor(host.getPublicIpAddress().getHostAddress(), sshUsername)
                     .executeSingleCommand(command);

@@ -44,11 +44,12 @@ echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
 echo.
-echo Adding default configuration templates for app 1, app 2 and app 4
+echo Adding default configuration templates for app 1, app 2 and app 4 and app 5
 curl -X POST %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app1-template1.json
 curl -X POST %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app2-template1.json
 curl -X POST %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app2-template2.json
 curl -X POST %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app4-template1.json
 curl -X POST %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app4-template2.json
+curl -X POST %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\templates\configurations\app5-template1.json
 echo
 curl -X GET %API_URL%/management/configurations/templates --header "Authorization: Bearer %token%"

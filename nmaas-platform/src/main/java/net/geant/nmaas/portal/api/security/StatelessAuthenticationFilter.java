@@ -27,8 +27,7 @@ public class StatelessAuthenticationFilter extends AbstractAuthenticationProcess
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String reqText = request.getRequestURI() != null ? request.getRequestURI() : "empty";
 		log.debug("Request: " + reqText);
 		try {

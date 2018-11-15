@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -15,8 +13,8 @@ import net.geant.nmaas.portal.persistent.entity.User;
 
 public interface ApplicationInstanceService {
 
-	AppInstance create(Long domainId, Long applicationId, String name) throws ObjectNotFoundException, ApplicationSubscriptionNotActiveException;
-	AppInstance create(Domain domain, Application application, String name) throws ApplicationSubscriptionNotActiveException;
+	AppInstance create(Long domainId, Long applicationId, String name);
+	AppInstance create(Domain domain, Application application, String name);
 	
 	void delete(Long appInstanceId);
 
@@ -27,19 +25,19 @@ public interface ApplicationInstanceService {
 	List<AppInstance> findAll();
 	Page<AppInstance> findAll(Pageable pageable);
 	
-	List<AppInstance> findAllByOwner(Long userId) throws ObjectNotFoundException;
+	List<AppInstance> findAllByOwner(Long userId);
 	List<AppInstance> findAllByOwner(User owner);
-	List<AppInstance> findAllByOwner(Long userId, Long domainId) throws ObjectNotFoundException;
+	List<AppInstance> findAllByOwner(Long userId, Long domainId);
 	List<AppInstance> findAllByOwner(User owner, Domain domain);
 
-	Page<AppInstance> findAllByOwner(Long userId, Pageable pageable) throws ObjectNotFoundException;
+	Page<AppInstance> findAllByOwner(Long userId, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
-	Page<AppInstance> findAllByOwner(Long userId, Long domainId, Pageable pageable) throws ObjectNotFoundException;
+	Page<AppInstance> findAllByOwner(Long userId, Long domainId, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Domain domain, Pageable pageable);
 	
-	List<AppInstance> findAllByDomain(Long domainId) throws ObjectNotFoundException;
+	List<AppInstance> findAllByDomain(Long domainId);
 	List<AppInstance> findAllByDomain(Domain domain);
-	Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable) throws ObjectNotFoundException;
+	Page<AppInstance> findAllByDomain(Long domainId, Pageable pageable);
 	Page<AppInstance> findAllByDomain(Domain domain, Pageable pageable);
 	
 	

@@ -32,7 +32,7 @@ public class AppDcnRemovalIfRequiredTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public ApplicationEvent trigger(AppRemoveDcnIfRequiredEvent event) throws InvalidDeploymentIdException {
+    public ApplicationEvent trigger(AppRemoveDcnIfRequiredEvent event) {
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);

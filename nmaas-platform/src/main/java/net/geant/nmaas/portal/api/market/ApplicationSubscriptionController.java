@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import net.geant.nmaas.portal.api.domain.ApplicationBrief;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
@@ -40,7 +39,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.CREATED)
-	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
+	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) {
 		try {
 			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -52,7 +51,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@PostMapping("/request")
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'ANY')")
 	@Transactional
-	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
+	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) {
 		try {
 			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -65,7 +64,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) throws ProcessingException {
+	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) {
 		try {
 			appSubscriptions.unsubscribe(appId, domainId);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -76,7 +75,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping("/apps/{appId}/domains/{domainId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	@Transactional(readOnly=true)
-	public ResponseEntity<ApplicationSubscription> getSubscription(@PathVariable Long domainId, @PathVariable Long appId) throws MissingElementException {
+	public ResponseEntity<ApplicationSubscription> getSubscription(@PathVariable Long domainId, @PathVariable Long appId) {
 		Optional<ApplicationSubscription> appSub = appSubscriptions.getSubscription(appId, domainId).map(sub -> modelMapper.map(sub, ApplicationSubscription.class));
 		return appSub.map(applicationSubscription -> new ResponseEntity<>(applicationSubscription, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}

@@ -36,7 +36,7 @@ public class ContentController {
 
     @Transactional
     @GetMapping("/{name}")
-    public Content getContent(@PathVariable final String name) throws ProcessingException{
+    public Content getContent(@PathVariable final String name) {
         net.geant.nmaas.portal.persistent.entity.Content content = this.getContentByName(name);
         return this.modelMapper.map(content, Content.class);
     }
@@ -63,7 +63,7 @@ public class ContentController {
         return new String(Files.readAllBytes(resource.getFile().toPath()));
     }
 
-    private net.geant.nmaas.portal.persistent.entity.Content getContentByName(String name) throws ProcessingException{
+    private net.geant.nmaas.portal.persistent.entity.Content getContentByName(String name) {
         return this.contentRepo.findByName(name).orElseThrow(() -> new ProcessingException("Content not found"));
     }
 }

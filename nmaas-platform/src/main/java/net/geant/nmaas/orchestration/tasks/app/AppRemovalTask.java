@@ -23,7 +23,7 @@ public class AppRemovalTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppRemoveActionEvent event) throws CouldNotRemoveNmServiceException {
+    public void trigger(AppRemoveActionEvent event) {
         try{
             serviceDeployment.removeNmService(event.getRelatedTo());
         }catch(Exception ex){

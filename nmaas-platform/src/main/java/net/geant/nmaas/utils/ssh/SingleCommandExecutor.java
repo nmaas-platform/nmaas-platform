@@ -45,15 +45,15 @@ public class SingleCommandExecutor {
 		this.credentials = credentials;
 	}
 
-	public void executeSingleCommand(Command command) throws SshConnectionException, CommandExecutionException {
+	public void executeSingleCommand(Command command) {
         executeCommand(command);
 	}
 
-    public String executeSingleCommandAndReturnOutput(Command command) throws SshConnectionException, CommandExecutionException {
+    public String executeSingleCommandAndReturnOutput(Command command) {
         return executeCommand(command);
     }
 
-    private String executeCommand(Command command) throws SshConnectionException, CommandExecutionException {
+    private String executeCommand(Command command) {
         connect();
         String output = execute(command);
         validateOutput(output, command.isOutputCorrect());
@@ -61,17 +61,17 @@ public class SingleCommandExecutor {
         return output;
     }
 
-    private void connect() throws SshConnectionException {
-        log.info("Connecting to " + hostname);
+    private void connect() {
+        log.debug("Connecting to " + hostname);
         connector = new SshConnector(hostname, port, credentials);
 	}
 
-    private String execute(Command command) throws SshConnectionException, CommandExecutionException {
-        log.info("Executing command: " + command.asString());
+    private String execute(Command command) {
+        log.debug("Executing command: " + command.asString());
         return connector.executeSingleCommand(command.asString());
     }
 
-    void validateOutput(String output, Predicate<String> isOutputCorrect) throws CommandExecutionException {
+    void validateOutput(String output, Predicate<String> isOutputCorrect) {
         if (isOutputCorrect.negate().test(output))
             throw new CommandExecutionException("Identified problem with command execution based on output -> details: " + output + ")");
     }

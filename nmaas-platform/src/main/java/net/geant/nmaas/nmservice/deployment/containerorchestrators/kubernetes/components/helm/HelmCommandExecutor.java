@@ -1,12 +1,11 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterHelmManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -16,32 +15,43 @@ import java.util.Map;
 @Component
 public class HelmCommandExecutor {
 
-    private KClusterHelmManager clusterHelmManager;
+    @Value("${helm.address}")
+    String helmAddress;
 
-    @Autowired
-    HelmCommandExecutor(KClusterHelmManager clusterHelmManager) {
-        this.clusterHelmManager = clusterHelmManager;
-    }
+    @Value("${helm.username}")
+    String helmUsername;
 
-    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+    @Value("${helm.useLocalCharts}")
+    Boolean useLocalCharts;
+
+    @Value("${helm.repositoryName}")
+    String helmRepositoryName;
+
+    @Value("${helm.chartsDirectory}")
+    String helmChartsDirectory;
+
+    @Value("${helm.enableTls}")
+    Boolean enableTls;
+
+
+    public void executeHelmInstallCommand(String kubernetesNamespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(kubernetesNamespace, releaseName, template, arguments);
     }
 
-    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) throws CommandExecutionException {
+    void executeHelmInstallCommand(String kubernetesNamespace, Identifier deploymentId, KubernetesTemplate template, Map<String, String> arguments) {
         executeInstall(kubernetesNamespace, deploymentId.value(), template, arguments);
     }
 
-    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments)
-            throws CommandExecutionException {
+    private void executeInstall(String namespace, String releaseName, KubernetesTemplate template, Map<String, String> arguments) {
         try {
             HelmInstallCommand command;
-            if (clusterHelmManager.getUseLocalChartArchives()) {
+            if (useLocalCharts) {
                 command = HelmInstallCommand.commandWithArchive(
                         namespace,
                         releaseName,
                         arguments,
                         constructChartArchivePath(template.getArchive()),
-                        clusterHelmManager.getEnableTls()
+                        enableTls
                 );
             } else {
                 command = HelmInstallCommand.commandWithRepo(
@@ -50,7 +60,7 @@ public class HelmCommandExecutor {
                         arguments,
                         constructChartNameWithRepo(template.getChart().getName()),
                         template.getChart().getVersion(),
-                        clusterHelmManager.getEnableTls()
+                        enableTls
                 );
             }
             singleCommandExecutor().executeSingleCommand(command);
@@ -65,19 +75,19 @@ public class HelmCommandExecutor {
     }
 
     private String baseChartArchivePath() {
-        String hostChartsDirectory = clusterHelmManager.getHelmHostChartsDirectory();
+        String hostChartsDirectory = helmChartsDirectory;
         if (!hostChartsDirectory.endsWith("/"))
             return hostChartsDirectory.concat("/");
         return hostChartsDirectory;
     }
 
     private String constructChartNameWithRepo(String chartName) {
-        return clusterHelmManager.getHelmChartRepositoryName() + "/" + chartName;
+        return helmRepositoryName + "/" + chartName;
     }
 
-    void executeHelmDeleteCommand(Identifier deploymentId) throws CommandExecutionException {
+    void executeHelmDeleteCommand(Identifier deploymentId) {
         try {
-            HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value(), clusterHelmManager.getEnableTls());
+            HelmDeleteCommand command = HelmDeleteCommand.command(deploymentId.value(), enableTls);
             singleCommandExecutor().executeSingleCommand(command);
         } catch (SshConnectionException
                 | CommandExecutionException e) {
@@ -85,13 +95,13 @@ public class HelmCommandExecutor {
         }
     }
 
-    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) throws CommandExecutionException {
+    HelmPackageStatus executeHelmStatusCommand(Identifier deploymentId) {
         return executeHelmStatusCommand(deploymentId.value());
     }
 
-    private HelmPackageStatus executeHelmStatusCommand(String releaseName) throws CommandExecutionException {
+    private HelmPackageStatus executeHelmStatusCommand(String releaseName) {
         try {
-            HelmStatusCommand command = HelmStatusCommand.command(releaseName, clusterHelmManager.getEnableTls());
+            HelmStatusCommand command = HelmStatusCommand.command(releaseName, enableTls);
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return parseStatus(output);
         } catch (SshConnectionException
@@ -107,9 +117,9 @@ public class HelmCommandExecutor {
             return HelmPackageStatus.UNKNOWN;
     }
 
-    public List<String> executeHelmListCommand() throws CommandExecutionException {
+    public List<String> executeHelmListCommand() {
         try {
-            HelmListCommand command = HelmListCommand.command(clusterHelmManager.getEnableTls());
+            HelmListCommand command = HelmListCommand.command(enableTls);
             String output = singleCommandExecutor().executeSingleCommandAndReturnOutput(command);
             return Arrays.asList(output.split("\n"));
         } catch (SshConnectionException
@@ -118,15 +128,14 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName)
-            throws CommandExecutionException {
+    void executeHelmUpgradeCommand(Identifier deploymentId, String chartArchiveName) {
         try {
             HelmUpgradeCommand command;
-            if (clusterHelmManager.getUseLocalChartArchives()) {
+            if (useLocalCharts) {
                 command = HelmUpgradeCommand.commandWithArchive(
                         deploymentId.value(),
                         constructChartArchivePath(chartArchiveName),
-                        clusterHelmManager.getEnableTls()
+                        enableTls
                 );
             } else {
                 throw new CommandExecutionException("Currently only referencing local chart archive is supported");
@@ -137,16 +146,16 @@ public class HelmCommandExecutor {
         }
     }
 
-    void executeVersionCommand() throws CommandExecutionException{
+    void executeVersionCommand() {
         try{
-            singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command(clusterHelmManager.getEnableTls()));
+            singleCommandExecutor().executeSingleCommand(HelmVersionCommand.command(enableTls));
         } catch(SshConnectionException e) {
             throw new CommandExecutionException("Failed to execute helm version command -> " + e.getMessage());
         }
     }
 
     private SingleCommandExecutor singleCommandExecutor() {
-        return SingleCommandExecutor.getExecutor(clusterHelmManager.getHelmHostAddress(), clusterHelmManager.getHelmHostSshUsername());
+        return SingleCommandExecutor.getExecutor(helmAddress, helmUsername);
     }
 
 }

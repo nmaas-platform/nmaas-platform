@@ -31,7 +31,7 @@ public class DockerHostNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateNetworkIdAndNetworkName(String domain, String networkId, String networkName) throws InvalidDomainException {
+    public void updateNetworkIdAndNetworkName(String domain, String networkId, String networkName) {
         DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         dockerHostNetwork.setDeploymentId(networkId);
         dockerHostNetwork.setDeploymentName(networkName);
@@ -39,19 +39,19 @@ public class DockerHostNetworkRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateAssignedAddresses(String domain, List<String> assignedAddresses) throws InvalidDomainException {
+    public void updateAssignedAddresses(String domain, List<String> assignedAddresses) {
         DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         dockerHostNetwork.setAssignedAddresses(assignedAddresses);
         repository.save(dockerHostNetwork);
     }
 
-    DockerHostNetwork loadNetwork(String domain) throws InvalidDomainException {
+    DockerHostNetwork loadNetwork(String domain) {
         return repository.findByDomain(domain)
                 .orElseThrow(() -> new InvalidDomainException("No network found in repository for domain " + domain));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeNetwork(String domain) throws InvalidDomainException {
+    public void removeNetwork(String domain) {
         DockerHostNetwork dockerHostNetwork = repository.findByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
         repository.delete(dockerHostNetwork);
     }

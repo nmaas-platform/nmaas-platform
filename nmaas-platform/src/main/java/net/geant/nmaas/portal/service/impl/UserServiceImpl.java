@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -84,13 +82,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User register(String username, Domain domain) throws ObjectAlreadyExistsException, MissingElementException {
+	public User register(String username, Domain domain) {
 		checkParam(username);
 		return register(username, false, null, domain);
 	}
 
 	@Override
-	public User register(String username, boolean enabled, String password, Domain domain) throws ObjectAlreadyExistsException, MissingElementException {
+	public User register(String username, boolean enabled, String password, Domain domain) {
 
 		checkParam(username);
 
@@ -105,7 +103,7 @@ public class UserServiceImpl implements UserService {
 	}	
 	
 	@Override
-	public void update(User user) throws ProcessingException {
+	public void update(User user) {
 		checkParam(user);
 		checkParam(user.getId());
 				
@@ -136,7 +134,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) throws MissingElementException{
+	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) {
 		User user = userRepo.findByUsername(username).orElseThrow(()
 				-> new UsernameNotFoundException("User " + username + " not found."));
 		userRepo.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
@@ -148,7 +146,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) throws MissingElementException{
+	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) {
 		User user = userRepo.findByUsername(username).orElseThrow(()
 				-> new UsernameNotFoundException("User " + username + " not found."));
 		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
