@@ -19,4 +19,6 @@ public class Email {
     private String templateName;
 
     private String firstName;
+
+    private String userName;
 }

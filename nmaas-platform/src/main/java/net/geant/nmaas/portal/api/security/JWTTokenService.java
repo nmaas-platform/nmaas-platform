@@ -68,7 +68,7 @@ public class JWTTokenService {
 				.setIssuer(jwtSettings.getIssuer())
 				.setId(UUID.randomUUID().toString())
 				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
+				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getResetTokenExpTime()))
 				.signWith(SignatureAlgorithm.HS384, jwtSettings.getResetSigningKey())
 				.compact();
 	}

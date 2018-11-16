@@ -284,13 +284,20 @@ public class UsersController {
 				.subject("Reset your password")
 				.templateName("user-reset-password-notification")
 				.firstName(user.getFirstname())
-				.url(generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)))
+				.userName(user.getUsername())
+				.accessURL(generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)))
 				.build();
 		this.notificationService.sendResetPasswordEmail(emailTemplate);
 	}
 
 	private String generateResetPasswordUrl(HttpServletRequest request, String token){
-		return request.getHeader("referer").replace("/welcome/login", "") + "reset/" + token;
+		String url = request.getHeader("referer").replace("/welcome/login", "");
+		if(!url.endsWith("/")){
+			url += "/";
+		}
+		url += "reset/" + token;
+		log.error(url);
+		return url;
 	}
 
 	@PostMapping("/users/reset/validate")
