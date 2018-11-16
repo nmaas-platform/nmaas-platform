@@ -372,5 +372,21 @@
       "BODY": "Your acceptance of Terms of Use and Privacy Policy has been registered in the system. Please login again.",
       "CLOSE_BUTTON": "Close"
     }
+  },
+  "RESET_PASSWORD": {
+    "FORGOT_PASSWORD_BUTTON": "Forgot password",
+    "TEXT": "To reset your password, enter the email address you use to sign in to nmaas.",
+    "SUBMIT_BUTTON": "Submit",
+    "EMAIL": "Email",
+    "MODAL": {
+      "HEADER": "Please check your email",
+      "BODY": "If you have provided valid email we will send to you link for resetting password.",
+      "CLOSE_BUTTON": "Close"
+    },
+    "SITE": {
+      "HEADER": "Please provide new password",
+      "PASSWORD": "Password",
+      "CONFIRM_PASSWORD": "Confirm password"
+    }
   }
 }

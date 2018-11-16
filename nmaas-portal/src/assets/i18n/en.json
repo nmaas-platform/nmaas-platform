@@ -25,7 +25,7 @@
     "COST_REDUCTION_HEADER": "Cost reduction",
     "COST_REDUCTION_TEXT": "With NMaaS, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.",
     "SECURITY_HEADER": "Security",
-    "SECURITY_TEXT": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network."
+    "SECURITY_TEXT": "With NMaaS, you don't have to worry about security. We provide safe connection to separated instances by VPN to your network - to allow institutions and projects to safe management of network.",
     "SCALING_HEADER": "Flexible scaling",
     "SCALING_TEXT": "If You need some horizontal scaling - there is no problem with that on NMaaS. You can very easily scale Your instances in few minutes.",
     "NMAAS_FEATURES_HEADER": "NMaaS Features",
@@ -371,6 +371,22 @@
       "HEADER": "Missing approvals provided",
       "BODY": "Your acceptance of Terms of Use and Privacy Policy has been registered in the system. Please login again.",
       "CLOSE_BUTTON": "Close"
+    }
+  },
+  "RESET_PASSWORD": {
+    "FORGOT_PASSWORD_BUTTON": "Forgot password",
+    "TEXT": "To reset your password, enter the email address you use to sign in to nmaas.",
+    "SUBMIT_BUTTON": "Submit",
+    "EMAIL": "Email",
+    "MODAL": {
+      "HEADER": "Please check your email",
+      "BODY": "If you have provided valid email we will send to you link for resetting password.",
+      "CLOSE_BUTTON": "Close"
+    },
+    "SITE": {
+      "HEADER": "Please provide new password",
+      "PASSWORD": "Password",
+      "CONFIRM_PASSWORD": "Confirm password"
     }
   }
 }

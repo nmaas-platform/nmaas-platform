@@ -290,7 +290,7 @@ public class UsersController {
 	}
 
 	private String generateResetPasswordUrl(HttpServletRequest request, String token){
-		return request.getHeader("referer").replace("/welcome/login", "/reset/") + token;
+		return request.getHeader("referer").replace("/welcome/login", "") + "reset/" + token;
 	}
 
 	@PostMapping("/users/reset/validate")

@@ -6,12 +6,11 @@ import {GenericDataService} from './genericdata.service';
 import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 
-import {Id} from '../model/id';
 import {Password} from '../model/password';
 import {User} from '../model/user';
 import {UserRole, Role} from '../model/userrole';
-import {UserSignup} from '../model/usersignup';
 import {DomainService} from "./domain.service";
+import {PasswordReset} from "../model/passwordreset";
 
 @Injectable()
 export class UserService extends GenericDataService {
@@ -65,6 +64,18 @@ export class UserService extends GenericDataService {
 
   public changePassword(passwordChange:Password): Observable<void> {
     return this.post<Password, void>(this.getUsersUrl() + 'my/auth/basic/password', passwordChange);
+  }
+
+  public validateResetRequest(token:string): Observable<User> {
+    return this.post<string, User>(this.getUsersUrl() + "reset/validate", token);
+  }
+
+  public resetPassword(passwordReset:PasswordReset): Observable<any> {
+    return this.post<PasswordReset, any>(this.getUsersUrl() + "reset", passwordReset);
+  }
+
+  public resetPasswordNotification(email:string): Observable<any> {
+    return this.post<string, any>(this.getUsersUrl() + "reset/notification", email);
   }
 
   protected getUsersUrl(): string {
