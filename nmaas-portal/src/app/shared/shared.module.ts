@@ -31,6 +31,8 @@ import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-ter
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
 import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
 import {TranslateModule} from '@ngx-translate/core';
+import { SortableColumnComponent } from './sortable-column/sortable-column.component';
+import { SortableTableDirective } from './sortable-column/sortable-table.directive';
 
 @NgModule({
   imports: [
@@ -40,7 +42,7 @@ import {TranslateModule} from '@ngx-translate/core';
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
-      TranslateModule.forChild()
+    TranslateModule.forChild()
   ],
   declarations: [
     RateComponent,
@@ -63,11 +65,13 @@ import {TranslateModule} from '@ngx-translate/core';
     AppElementComponent,
     AppListComponent,
     ApplicationsViewComponent,
-      ClusterDetailsComponent,
-      GitlabDetailsComponent,
-      ModalInfoTermsComponent,
-      ModalInfoPolicyComponent,
-      ModalChangelogComponent
+    ClusterDetailsComponent,
+    GitlabDetailsComponent,
+    ModalInfoTermsComponent,
+    ModalInfoPolicyComponent,
+    ModalChangelogComponent,
+    SortableColumnComponent,
+    SortableTableDirective
   ],
   providers: [
     PasswordValidator,
@@ -91,9 +95,11 @@ import {TranslateModule} from '@ngx-translate/core';
     DomainFilterComponent,
     ApplicationsViewComponent,
     ClusterDetailsComponent,
-      GitlabDetailsComponent,
-      ModalInfoTermsComponent,
-      ModalInfoPolicyComponent
+    GitlabDetailsComponent,
+    ModalInfoTermsComponent,
+    ModalInfoPolicyComponent,
+    SortableColumnComponent,
+    SortableTableDirective,
   ]
 })
 export class SharedModule {}
