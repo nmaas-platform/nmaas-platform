@@ -27,6 +27,8 @@ export class AppInstanceListComponent implements OnInit {
   public maxItemsOnPage: number = 5;
   public pageNumber: number = 1;
 
+  public showFailed: boolean = true;
+
   public itemsPerPage: number[]  = [5,10,15,20,25,30];
 
   public AppInstanceState: typeof AppInstanceState = AppInstanceState;
@@ -90,5 +92,9 @@ export class AppInstanceListComponent implements OnInit {
         this.appInstances = Observable.of<AppInstance[]>([]);
         break;
     }
+  }
+
+  public setShowFailedField(status: boolean){
+    this.showFailed = status;
   }
 }
