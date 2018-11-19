@@ -26,11 +26,12 @@ public class User extends UserBase {
 	}
 
 	@Builder
-	public User(Long id, String username, String firstname, String lastname, String email, Set<UserRole> roles, boolean ssoUser) {
+	public User(Long id, String username, String firstname, String lastname, String email, boolean enabled, Set<UserRole> roles, boolean ssoUser) {
 		this(id, username);
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.email = email;
+		this.enabled = enabled;
 		this.roles = roles;
 		this.ssoUser = ssoUser;
 	}

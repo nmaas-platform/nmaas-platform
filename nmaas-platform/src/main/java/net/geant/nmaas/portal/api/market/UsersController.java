@@ -296,7 +296,6 @@ public class UsersController {
 			url += "/";
 		}
 		url += "reset/" + token;
-		log.error(url);
 		return url;
 	}
 
