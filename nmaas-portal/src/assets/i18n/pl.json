@@ -378,6 +378,8 @@
     "TEXT": "Aby zresetować hasło wprowadź adres email użyty przy rejestracji do nmaas.",
     "SUBMIT_BUTTON": "Prześlij",
     "EMAIL": "Email",
+    "INVALID_TOKEN": "Twoj link wygasł. Proszę ponownie wypełnij formularz resetowania hasła.",
+    "GO_BACK": "Powrót do strony NmaaS",
     "MODAL": {
       "HEADER": "Proszę sprawdź skrzynkę pocztową",
       "BODY": "Jeśli wprowadziłeś poprawny adres mailowy, link do zresetowania hasła został przesłany.",

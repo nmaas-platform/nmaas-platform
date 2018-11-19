@@ -59,4 +59,8 @@ export class PasswordResetComponent implements OnInit {
       }
   }
 
+  public goBack(){
+      this.router.navigate(['/']);
+  }
+
 }
