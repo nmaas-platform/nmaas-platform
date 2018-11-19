@@ -6,7 +6,6 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;

@@ -12,8 +12,6 @@ import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.model.ConfirmationEmail;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
-import net.geant.nmaas.portal.api.model.EmailPasswordReset;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -280,7 +278,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void sendResetPasswordNotification(HttpServletRequest request, @RequestBody String email){
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
-		EmailPasswordReset emailTemplate = EmailPasswordReset.builder()
+		ConfirmationEmail emailTemplate = ConfirmationEmail.builder()
 				.toEmail(user.getEmail())
 				.subject("Reset your password")
 				.templateName("user-reset-password-notification")
@@ -288,7 +286,7 @@ public class UsersController {
 				.userName(user.getUsername())
 				.accessURL(generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)))
 				.build();
-		this.notificationService.sendResetPasswordEmail(emailTemplate);
+		this.notificationService.sendEmail(emailTemplate);
 	}
 
 	private String generateResetPasswordUrl(HttpServletRequest request, String token){
