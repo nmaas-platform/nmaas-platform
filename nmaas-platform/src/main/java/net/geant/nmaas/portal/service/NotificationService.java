@@ -1,11 +1,12 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
-import net.geant.nmaas.portal.api.model.EmailPasswordReset;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
+import net.geant.nmaas.portal.api.model.FailureEmail;
 
 public interface NotificationService {
 
-    void sendConfirmationEmail(EmailConfirmation emailConfirmation);
+    void sendEmail(ConfirmationEmail confirmationEmail);
 
-    void sendResetPasswordEmail(EmailPasswordReset emailPasswordReset);
+    void sendFailureEmail(FailureEmail failureEmail);
+
 }

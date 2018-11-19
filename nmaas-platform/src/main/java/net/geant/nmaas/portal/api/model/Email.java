@@ -1,14 +1,18 @@
 package net.geant.nmaas.portal.api.model;
 
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
-@Getter
+import javax.validation.constraints.NotNull;
+
 @Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Email {
+
     @NotNull
     private String toEmail;
 
@@ -18,7 +22,6 @@ public class Email {
     @NotNull
     private String templateName;
 
+    @NotNull
     private String firstName;
-
-    private String userName;
 }

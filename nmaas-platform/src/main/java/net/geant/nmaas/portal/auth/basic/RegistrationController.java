@@ -5,7 +5,7 @@ import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Domain;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -104,7 +104,7 @@ public class RegistrationController {
                     registration.getEmail(),
                     registration.getDomainId()));
 
-            EmailConfirmation emailConfirmation = EmailConfirmation
+            ConfirmationEmail confirmationEmail = ConfirmationEmail
                     .builder()
                     .firstName(newUser.getFirstname())
                     .lastName(newUser.getLastname())
@@ -113,7 +113,7 @@ public class RegistrationController {
                     .subject("NMaaS: New account registration request")
                     .templateName("admin-notification")
                     .build();
-			notificationService.sendConfirmationEmail(emailConfirmation);
+			notificationService.sendEmail(confirmationEmail);
 
 			if(registration.getDomainId() != null) {
                 domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);

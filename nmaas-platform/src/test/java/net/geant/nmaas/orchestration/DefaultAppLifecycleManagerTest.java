@@ -50,7 +50,8 @@ public class DefaultAppLifecycleManagerTest {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setConfigFileRepositoryRequired(true);
         appDeploymentSpec.setDefaultStorageSpace(20);
-        appLifecycleManager.deployApplication("domain1", Identifier.newInstance(1L), "deploymentName", appDeploymentSpec);
+        AppDeployment appDeployment = AppDeployment.builder().applicationId(Identifier.newInstance(1L)).domain("domain1").deploymentName("deploymentName").storageSpace(appDeploymentSpec.getDefaultStorageSpace()).build();
+        appLifecycleManager.deployApplication(appDeployment);
         Thread.sleep(200);
     }
 

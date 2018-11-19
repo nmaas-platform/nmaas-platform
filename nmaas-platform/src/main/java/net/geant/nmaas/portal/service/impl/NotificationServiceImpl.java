@@ -1,8 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.model.Email;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
-import net.geant.nmaas.portal.api.model.EmailPasswordReset;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
+import net.geant.nmaas.portal.api.model.FailureEmail;
 import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
 import net.geant.nmaas.portal.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,10 @@ public class NotificationServiceImpl implements NotificationService {
     private String port;
 
     @Value("${notification.path}")
-    private String pathWithToken;
+    private String emailConfirmationPath;
+
+    @Value("${notification.error.path}")
+    private String failureEmailPath;
 
     private TokenAuthenticationService tokenAuthenticationService;
 
@@ -33,27 +35,27 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendConfirmationEmail(EmailConfirmation emailConfirmation) {
-        final String uri = String.format("%s:%s%s", url, port, pathWithToken);
+    public void sendEmail(ConfirmationEmail confirmationEmail) {
+        final String uri = String.format("%s:%s%s", url, port, emailConfirmationPath);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Authorization", "Bearer " + tokenAuthenticationService.getAnonymousAccessToken());
-        HttpEntity<EmailConfirmation> entity = new HttpEntity<>(emailConfirmation, headers);
+        HttpEntity<ConfirmationEmail> entity = new HttpEntity<>(confirmationEmail, headers);
 
         restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
     }
 
     @Override
-    public void sendResetPasswordEmail(EmailPasswordReset emailPasswordReset) {
-        final String uri = String.format("%s:%s%s", url, port, pathWithToken);
+    public void sendFailureEmail(FailureEmail emailConfirmation) {
+        final String uri = String.format("%s:%s%s", url, port, failureEmailPath);
 
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         headers.add("Authorization", "Bearer " + tokenAuthenticationService.getAnonymousAccessToken());
-        HttpEntity<EmailPasswordReset> entity = new HttpEntity<>(emailPasswordReset, headers);
+        HttpEntity<FailureEmail> entity = new HttpEntity<>(emailConfirmation, headers);
 
         restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
     }

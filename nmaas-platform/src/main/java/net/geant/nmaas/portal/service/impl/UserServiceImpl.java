@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -183,5 +184,19 @@ public class UserServiceImpl implements UserService {
             }
         }
         return emails;
+	}
+
+	@Override
+	public List<User> findUsersWithRoleSystemAdminAndOperator(){
+		List<User> users = new ArrayList<>();
+		for(User user : findAll()) {
+			for (UserRole userRole : user.getRoles()) {
+				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) ||
+						userRole.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())) {
+					users.add(user);
+				}
+			}
+		}
+		return users;
 	}
 }

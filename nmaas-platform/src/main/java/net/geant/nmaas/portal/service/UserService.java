@@ -34,4 +34,5 @@ public interface UserService {
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
     String findAllUsersEmailWithAdminRole();
+	List<User> findUsersWithRoleSystemAdminAndOperator();
 }

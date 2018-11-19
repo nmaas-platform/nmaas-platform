@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.model.EmailConfirmation;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -71,7 +72,7 @@ public class UsersControllerTest {
 		when(principal.getName()).thenReturn(admin.getUsername());
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
 		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
-        doNothing().when(notificationService).sendConfirmationEmail(any(EmailConfirmation.class));
+        doNothing().when(notificationService).sendEmail(any(ConfirmationEmail.class));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 	}
