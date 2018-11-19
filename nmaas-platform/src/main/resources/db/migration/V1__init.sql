@@ -32,6 +32,12 @@ create table app_deployment (
   state varchar(255) not null,
   storage_space integer,
   configuration_id bigint,
+  logged_in_users_name varchar(255),
+  domain_id bigint,
+  app_name varchar(255),
+  app_instance_id bigint,
+  app_instance_name varchar(255),
+  accessURL varchar(255),
   primary key (id));
 
 create table app_deployment_configuration (

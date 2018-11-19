@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -17,13 +18,10 @@ public interface AppLifecycleManager {
      * and {@link AppDeploymentState} for this deployment is updated once particular deployment phases
      * are completed. The current {@link AppDeploymentState} may be retrieved from {@link AppDeploymentMonitor}.
      *
-     * @param domain unique name of the client domain for which application is deployed
-     * @param applicationId unique identifier of the application to be deployed
-     * @param deploymentName name of application instance provided by the user
-     * @param appDeploymentSpec application deployment specification
+     * @param appDeployment App deployment
      * @return unique identifier of the deployed user application
      */
-    Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, AppDeploymentSpec appDeploymentSpec);
+    Identifier deployApplication(AppDeployment appDeployment);
 
     /**
      * Triggers the NMaaS application redeployment process which may take some time.This process is executed asynchronously
