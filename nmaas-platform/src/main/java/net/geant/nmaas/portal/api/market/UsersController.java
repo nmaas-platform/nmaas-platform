@@ -528,7 +528,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void isSystemComponent(final Principal principal){
-        log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
+        log.debug("User with name " + principal.getName() + " is an admin user, has validated the token");
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) {
