@@ -51,7 +51,8 @@ public class User {
 
 	private boolean termsOfUseAccepted;
 	private boolean privacyPolicyAccepted;
-	
+
+	@Builder.Default
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
 	private List<UserRole> roles = new ArrayList<>();
 	
