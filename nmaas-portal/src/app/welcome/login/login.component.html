@@ -1,5 +1,6 @@
 						<form role="form" (ngSubmit)="loginForm.form.valid && login()" #loginForm="ngForm" novalidate>
 							<fieldset>
+							<legend>Login</legend>
 							<div class="form-group form-group-sm" [ngClass]="{ 'has-error': loginForm.submitted && !username.valid }">
 								<label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
 								<input type="text" name="username" class="form-control" placeholder="{{ 'LOGIN.USERNAME' | translate }}" [(ngModel)]="model.username" #username="ngModel" required >

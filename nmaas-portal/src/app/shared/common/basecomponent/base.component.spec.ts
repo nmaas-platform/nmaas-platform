@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BaseComponent } from './base.component';
+import {ComponentMode} from "../componentmode";
 
 describe('BaseComponent', () => {
   let component: BaseComponent;
@@ -22,4 +23,17 @@ describe('BaseComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should return that VIEW is allowed', ()=>{
+    expect(component.isCurrentModeAllowed()).toBe(true);
+  });
+
+  it('should return VIEW mode', ()=>{
+    expect(component.getCurrentMode()).toBe(ComponentMode.VIEW);
+  });
+
+  it('should get mode VIEW', ()=>{
+    expect(component.getMode(undefined)).toBe(ComponentMode.VIEW);
+  });
+
 });

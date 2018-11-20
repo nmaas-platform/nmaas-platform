@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavbarComponent } from './navbar.component';
 import {TranslateModule} from "@ngx-translate/core";
-import {TranslateService} from "@ngx-translate/core";
 import {TranslateFakeLoader} from "@ngx-translate/core";
 import {TranslateLoader} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
@@ -18,6 +17,8 @@ class MockContentDisplayService{
 describe('NavbarComponent_Shared', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
+  let contentService: ContentDisplayService;
+  let spy: any;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -40,10 +41,18 @@ describe('NavbarComponent_Shared', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
+    contentService = fixture.debugElement.injector.get(ContentDisplayService);
+    spy = spyOn(contentService, 'getLanguages').and.returnValue(Observable.of(['en', 'fr', 'pl']));
+    component.useLanguage('en');
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+      expect(component).toBeTruthy();
   });
+
+  it('should change language',() =>{
+      component.useLanguage("fr");
+      expect(component.getCurrent()).toBe("fr");
+  })
 });
