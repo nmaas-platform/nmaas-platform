@@ -5,7 +5,9 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
+import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,41 +24,36 @@ import java.util.Optional;
 @Slf4j
 public class ContentServiceImpl implements net.geant.nmaas.portal.service.ContentService {
 
-	ContentRepository contentRepo;
-//    shell/data/i18n/en.json src/test/shell/data/i18n/en.json
-	@Value("classpath:data/i18n/en.json")
-	private Resource englishContent;
+	private ContentRepository contentRepository;
 
-	@Value("classpath:data/i18n/fr.json")
-	private Resource frenchContent;
-
-	@Value("classpath:data/i18n/pl.json")
-	private Resource polishContent;
+	private InternationalizationRepository internationalizationRepository;
 
 	@Autowired
-	public ContentServiceImpl(ContentRepository repository){
-		this.contentRepo = repository;
+	public ContentServiceImpl(ContentRepository contentRepository, InternationalizationRepository internationalizationRepository) {
+		this.contentRepository = contentRepository;
+		this.internationalizationRepository = internationalizationRepository;
+
 	}
 
 	@Override
 	public Optional<Content> findByName(String name){
-		return (name != null ? contentRepo.findByName(name) : Optional.empty());
+		return (name != null ? contentRepository.findByName(name) : Optional.empty());
 	}
 
 	@Override
 	public Optional<Content> findById(Long id){
-		return (id != null ? contentRepo.findById(id) : Optional.empty());
+		return (id != null ? contentRepository.findById(id) : Optional.empty());
 	}
 
 	@Override
 	public Content createNewContentRecord(String name, String content, String title) throws ObjectAlreadyExistsException{
 		checkParam(name);
-		Optional<Content> cnt = contentRepo.findByName(name);
+		Optional<Content> cnt = contentRepository.findByName(name);
 		if(cnt.isPresent()){
 			throw new ObjectAlreadyExistsException("Content with this name exists.");
 		}
 		Content newContent = new Content(name, title, content);
-		return contentRepo.save(newContent);
+		return contentRepository.save(newContent);
 	}
 
 	@Override
@@ -64,11 +61,11 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
 		checkParam(content);
 		checkParam(content.getId());
 
-		if(!contentRepo.existsById(content.getId())){
+		if(!contentRepository.existsById(content.getId())){
 			throw new ProcessingException("Content (id=" + content.getId() + ") does not exists.");
 		}
 
-		contentRepo.saveAndFlush(content);
+		contentRepository.saveAndFlush(content);
 
 	}
 
@@ -77,10 +74,10 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
 		checkParam(content);
 		checkParam(content.getId());
 
-		if(!contentRepo.existsById(content.getId())){
+		if(!contentRepository.existsById(content.getId())){
 			throw new ProcessingException("Content (id=" + content.getId() + ") does not exists.");
 		}
-		contentRepo.delete(content);
+		contentRepository.delete(content);
 	}
 
 	private void checkParam(Long id) {
@@ -98,29 +95,25 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
 			throw new IllegalArgumentException("content is null");
 	}
 
-    public String getContent(String language, String root, String key) {
-        String value = "";
-        try {
-            JSONParser jsonParser = new JSONParser();
-            Object object = null;
-            switch (language) {
-                case "en":
-                    object = jsonParser.parse(readAsString(englishContent));
-                case "fr":
-                    object = jsonParser.parse(readAsString(frenchContent));
-                case "pl":
-                    object = jsonParser.parse(readAsString(polishContent));
-            }
-            JSONObject jsonObject = (JSONObject) object;
-            JSONObject rootJSONObject = Optional.of((JSONObject) jsonObject.get(root))
-                    .orElse(new JSONObject());
-            value = Optional.of((String) ((JSONObject) rootJSONObject.get(root)).get(key))
-                    .orElse("");
-        } catch (ParseException | IOException e) {
-            log.error("Error happened while parsing the language " + language + e.getMessage());
-        }
-        return value;
-    }
+	@Override
+	public String getContent(String language, String root, String key) {
+		Optional<Internationalization> internationalizationOptional = internationalizationRepository.findByLanguageOrderByIdDesc(language);
+		return internationalizationOptional.map(internationalization -> {
+			String value = "";
+			try {
+				JSONParser jsonParser = new JSONParser();
+				Object object = jsonParser.parse(internationalization.getContent());
+				JSONObject jsonObject = (JSONObject) object;
+				JSONObject rootJSONObject = Optional.ofNullable((JSONObject) jsonObject.get(root))
+						.orElse(new JSONObject());
+				value = (String)Optional.ofNullable(rootJSONObject.get(key))
+						.orElse("Enexpected error");
+			} catch (ParseException e) {
+				log.error("Error happened while parsing the content - " + e.getMessage());
+			}
+			return value;
+		}).orElse("Enexpected error - invalid language");
+	}
 
 	private String readAsString(Resource resource) throws IOException {
 		return new String(Files.readAllBytes(resource.getFile().toPath()));
