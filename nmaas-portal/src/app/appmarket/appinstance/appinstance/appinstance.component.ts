@@ -50,6 +50,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
 
+
   public intervalCheckerSubscribtion;
 
   public configAdvancedTab: FormGroup;
@@ -109,8 +110,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appInstanceStatus = appInstanceStatus;
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
         this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
-        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
-          this.updateAppInstance();
+        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
+          if(this.storage.has("appConfig_"+this.appInstanceId.toString()))
+            this.storage.remove("appConfig_"+this.appInstanceId.toString());
+          if(!this.appInstance.url)
+            this.updateAppInstance();
         }
       }
     );
