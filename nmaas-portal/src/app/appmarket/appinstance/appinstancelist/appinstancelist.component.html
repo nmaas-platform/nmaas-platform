@@ -32,25 +32,25 @@
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 						   <thead>
 							  <tr>
-								 <th sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-								 <th sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
-								 <th sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								 <th sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								 <th sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-								 <th sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-								 <th>&nbsp;</th>
+								 <th class="col-lg-2 col-md-2 column-sortable" sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								 <th class="col-lg-1 col-md-2 column-sortable" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								 <th class="col-lg-1 col-md-2 column-sortable" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								 <th class="col-lg-3 col-md-2 column-sortable" sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								 <th class="col-lg-2 col-md-2 column-sortable" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								 <th class="col-lg-3 col-md-2 column-sortable" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
+								 <th class="col-lg-2 col-md-2 column-sortable">&nbsp;</th>
 							  </tr>
 						   </thead>
 						   <tbody>
 						   <ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber}">
 							  <tr *ngIf="appInstance?.userFriendlyState !== 'Undeployed'">
-								 <td>{{appInstance?.name}}</td>
-								 <td  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
-								 <td >{{appInstance?.owner?.username}}</td>
-								 <td >{{appInstance?.createdAt | date:'medium'}}</td>
-								 <td >{{appInstance?.applicationName}}</td>
-								 <td >{{appInstance?.userFriendlyState}}</td>
-								<td>
+								  <td class="col-lg-2 col-md-2">{{appInstance?.name}}</td>
+								  <td class="col-lg-1 col-md-2"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+								  <td class="col-lg-1 col-md-2" >{{appInstance?.owner?.username}}</td>
+								  <td class="col-lg-3 col-md-2" >{{appInstance?.createdAt | date:'medium'}}</td>
+								  <td class="col-lg-2 col-md-2">{{appInstance?.applicationName}}</td>
+								  <td class="col-lg-3 col-md-2">{{appInstance?.userFriendlyState}}</td>
+								  <td class="col-lg-2 col-md-2">
 									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 										{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
 									</a>
@@ -68,25 +68,25 @@
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 							<thead>
 							<tr>
-								<th sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
-								<th sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
-								<th sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								<th sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								<th sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-								<th sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
-								<th>&nbsp;</th>
+								<th class="col-lg-2 col-md-2 column-sortable" sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								<th class="col-lg-1 col-md-2 column-sortable" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								<th class="col-lg-1 col-md-2 column-sortable" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								<th class="col-lg-3 col-md-2 column-sortable" sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								<th class="col-lg-2 col-md-2 column-sortable" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								<th class="col-lg-3 col-md-2 column-sortable" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
+								<th class="col-lg-2 col-md-2 column-sortable">&nbsp;</th>
 							</tr>
 							</thead>
 							<tbody>
 							<ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber}">
 								<tr *ngIf="appInstance?.userFriendlyState == 'Undeployed'">
-									<td>{{appInstance?.name}}</td>
-									<td  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
-									<td >{{appInstance?.owner?.username}}</td>
-									<td >{{appInstance?.createdAt | date:'medium'}}</td>
-									<td >{{appInstance?.applicationName}}</td>
-									<td >{{appInstance?.userFriendlyState}}</td>
-									<td>
+									<td class="col-lg-2 col-md-2">{{appInstance?.name}}</td>
+									<td class="col-lg-1 col-md-2"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+									<td class="col-lg-1 col-md-2" >{{appInstance?.owner?.username}}</td>
+									<td class="col-lg-3 col-md-2" >{{appInstance?.createdAt | date:'medium'}}</td>
+									<td class="col-lg-2 col-md-2">{{appInstance?.applicationName}}</td>
+									<td class="col-lg-3 col-md-2">{{appInstance?.userFriendlyState}}</td>
+									<td class="col-lg-2 col-md-2">
 										<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 											{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
 										</a>
