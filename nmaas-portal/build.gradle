@@ -56,7 +56,7 @@ sonarqube {
     properties
 		{
 			property "sonar.sources", "src"
-			property "sonar.exclusions", "**/node_modules/**,**/*.spec.ts,**/bootstrap.js"
+			property "sonar.exclusions", "**/node_modules/**,**/*.spec.ts,**/bootstrap.js,**/src/app/service/**,**/src/app/model/**"
 			property "sonar.tests", "src"
 			property "sonar.test.inclusions", "**/*.spec.ts"
 			property "sonar.typescript.lcov.reportPaths", "coverage/lcov.info"
