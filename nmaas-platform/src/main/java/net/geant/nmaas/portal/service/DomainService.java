@@ -44,4 +44,6 @@ public interface DomainService {
 	Set<Role> getMemberRoles(Long domainId, Long userId);
 	
 	Set<Domain> getUserDomains(Long userId);
+
+	List<User> findUsersWithDomainAdminRole(Long domainId);
 }

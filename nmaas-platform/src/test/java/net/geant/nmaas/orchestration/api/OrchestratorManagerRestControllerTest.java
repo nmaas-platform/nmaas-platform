@@ -73,7 +73,7 @@ public class OrchestratorManagerRestControllerTest {
 
     @Test
     public void shouldRequestNewDeploymentAndReceiveNewDeploymentId() throws Exception {
-        when(lifecycleManager.deployApplication(any(), any(), any(), any())).thenReturn(deploymentId);
+        when(lifecycleManager.deployApplication(any())).thenReturn(deploymentId);
         ObjectMapper mapper = new ObjectMapper();
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("domain", DOMAIN);

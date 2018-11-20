@@ -1,17 +1,17 @@
 package net.geant.nmaas.portal.api.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
-@Builder
 @AllArgsConstructor
-public class EmailConfirmation {
+@NoArgsConstructor
+public class Email {
 
     @NotNull
     private String toEmail;
@@ -24,6 +24,4 @@ public class EmailConfirmation {
 
     @NotNull
     private String firstName;
-    private String lastName;
-    private String userName;
 }

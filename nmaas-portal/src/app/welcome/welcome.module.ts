@@ -18,10 +18,9 @@ import {CompleteComponent} from './complete/complete.component';
 import {ContentDisplayService} from '../service/content-display.service';
 import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
 import {ReCaptchaModule} from 'angular5-recaptcha';
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
-import {HttpClient} from '@angular/common/http';
-import {HttpLoaderFactory} from '../app.module';
+import {TranslateModule} from '@ngx-translate/core';
 import {ShibbolethService} from '../service/shibboleth.service';
+import { PasswordResetComponent } from './passwordreset/password-reset.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +32,7 @@ import {ShibbolethService} from '../service/shibboleth.service';
     ProfileComponent,
     CompleteComponent,
     TermsAcceptanceComponent,
+    PasswordResetComponent
   ],
   imports: [
     FormsModule,
