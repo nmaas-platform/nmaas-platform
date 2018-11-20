@@ -21,6 +21,7 @@ import {
     Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
 } from "angular2-json-schema-form";
 import {TranslateModule} from '@ngx-translate/core';
+import {NgxPaginationModule} from "ngx-pagination";
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import {TranslateModule} from '@ngx-translate/core';
     AuthModule,
     AppInstanceProgressModule,
     PipesModule,
+      NgxPaginationModule,
     Bootstrap3FrameworkModule,
     TranslateModule.forChild(),
     {

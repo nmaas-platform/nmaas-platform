@@ -174,7 +174,8 @@
     "APPLICATION": "Aplikacja",
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",
-    "GO_TO_APP_BUTTON": "Przejdź do aplikacji"
+    "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
+    "ITEMS_PER_PAGE": "Liczba instancji na stronę"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",
