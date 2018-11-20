@@ -16,6 +16,7 @@ public class UserConverter extends AbstractConverter<User, net.geant.nmaas.porta
                 .firstname(source.getFirstname())
                 .lastname(source.getLastname())
                 .email(source.getEmail())
+                .enabled(source.isEnabled())
                 .roles(convertUserRole(source))
                 .ssoUser(source.getSamlToken() != null && !source.getSamlToken().isEmpty())
                 .build();

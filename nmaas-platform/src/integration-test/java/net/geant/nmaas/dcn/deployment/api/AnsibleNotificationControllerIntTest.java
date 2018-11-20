@@ -63,14 +63,15 @@ public class AnsibleNotificationControllerIntTest {
 
     @Before
     public void setUp() throws JsonProcessingException {
-        appDeploymentRepository.save(
-                AppDeployment.builder()
-                        .deploymentId(deploymentId)
-                        .domain(DOMAIN)
-                        .applicationId(applicationId)
-                        .deploymentName(DEPLOYMENT_NAME)
-                        .configFileRepositoryRequired(true)
-                        .storageSpace(20).build());
+        AppDeployment appDeployment = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain(DOMAIN)
+                .applicationId(applicationId)
+                .deploymentName(DEPLOYMENT_NAME)
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+        appDeploymentRepository.save(appDeployment);
         DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));

@@ -6,6 +6,7 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -56,9 +57,11 @@ public class UsersControllerTest {
 
 	private Principal principal = mock(Principal.class);
 
+	private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
+
 	@Before
 	public void setup(){
-		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder);
+		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder, jwtTokenService);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
 		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);

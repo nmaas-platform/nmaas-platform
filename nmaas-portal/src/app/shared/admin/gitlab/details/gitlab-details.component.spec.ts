@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GitlabDetailsComponent } from './gitlab-details.component';
+import {RouterTestingModule} from "@angular/router/testing";
+import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
+import {FormsModule} from "@angular/forms";
+import {ComponentMode} from "../../..";
 
 describe('GitlabDetailsComponent', () => {
   let component: GitlabDetailsComponent;
@@ -8,7 +12,16 @@ describe('GitlabDetailsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GitlabDetailsComponent ]
+      declarations: [ GitlabDetailsComponent ],
+        imports: [
+            FormsModule,
+            RouterTestingModule,
+            TranslateModule.forRoot({
+                loader: {
+                    provide: TranslateLoader,
+                    useClass: TranslateFakeLoader
+                }
+            })]
     })
     .compileComponents();
   }));
@@ -19,7 +32,14 @@ describe('GitlabDetailsComponent', () => {
     fixture.detectChanges();
   });
 
- // it('should create', () => {
-  //  expect(component).toBeTruthy();
-  //});
+  it('should create component', () => {
+    let app = fixture.debugElement.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it('should get mode VIEW', ()=>{
+    component.onModeChange();
+    expect(component.getCurrentMode()).toBe(ComponentMode.VIEW);
+  });
+
 });

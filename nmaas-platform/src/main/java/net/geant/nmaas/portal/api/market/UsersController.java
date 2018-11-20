@@ -1,13 +1,18 @@
 package net.geant.nmaas.portal.api.market;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
+import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.User;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.model.ConfirmationEmail;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -60,17 +65,21 @@ public class UsersController {
 
     private PasswordEncoder passwordEncoder;
 
+    private JWTTokenService jwtTokenService;
+
 	@Autowired
 	public UsersController(UserService userService,
 						   DomainService domainService,
 						   NotificationService notificationService,
 						   ModelMapper modelMapper,
-						   PasswordEncoder passwordEncoder) {
+						   PasswordEncoder passwordEncoder,
+						   JWTTokenService jwtTokenService) {
 		this.userService = userService;
 		this.domainService = domainService;
 		this.notificationService = notificationService;
 		this.modelMapper = modelMapper;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtTokenService = jwtTokenService;
 	}
 
 	@GetMapping("/users")
@@ -265,6 +274,52 @@ public class UsersController {
         }
 	}
 
+	@PostMapping("/users/reset/notification")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void sendResetPasswordNotification(HttpServletRequest request, @RequestBody String email){
+		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
+		ConfirmationEmail emailTemplate = ConfirmationEmail.builder()
+				.toEmail(user.getEmail())
+				.subject("Reset your password")
+				.templateName("user-reset-password-notification")
+				.firstName(user.getFirstname())
+				.userName(user.getUsername())
+				.accessURL(generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)))
+				.build();
+		this.notificationService.sendEmail(emailTemplate);
+	}
+
+	private String generateResetPasswordUrl(HttpServletRequest request, String token){
+		String url = request.getHeader("referer").replace("/welcome/login", "");
+		if(!url.endsWith("/")){
+			url += "/";
+		}
+		url += "reset/" + token;
+		return url;
+	}
+
+	@PostMapping("/users/reset/validate")
+	@ResponseStatus(HttpStatus.OK)
+	public User validateResetRequest(@RequestBody String token){
+		try {
+			Claims claims = jwtTokenService.getResetClaims(token);
+			return modelMapper.map(userService.findByEmail(claims.getSubject()), User.class);
+		} catch(JwtException e){
+			throw new ProcessingException("Validation of reset request failed -> "+ e.getMessage());
+		}
+	}
+
+	@PostMapping("/users/reset")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	public void resetPassword(@RequestBody PasswordReset passwordReset){
+		try {
+			Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
+			net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(claims.getSubject());
+			changePassword(user, passwordReset.getPassword());
+		} catch(JwtException e){
+			throw new ProcessingException("Unable to reset password -> " + e.getMessage());
+		}
+	}
 
 	@PostMapping("/users/my/auth/basic/password")
 	@ResponseStatus(HttpStatus.ACCEPTED)

@@ -1,14 +1,13 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { FooterComponent } from '../../shared/index';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ConfigurationService} from "../../service";
+import {ConfigurationService, UserService} from "../../service";
 import {Configuration} from "../../model/configuration";
-import {isNullOrUndefined} from "util";
 import {ShibbolethService} from "../../service/shibboleth.service";
 import {ShibbolethConfig} from "../../model/shibboleth";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ModalComponent} from "../../shared/modal";
 
 @Component({
   selector: 'nmaas-login',
@@ -22,12 +21,21 @@ export class LoginComponent implements OnInit {
     error:string = '';
     configuration:Configuration;
     shibboleth:ShibbolethConfig;
+    resetPassword:boolean = false;
+    resetPasswordForm:FormGroup;
+
+    @ViewChild(ModalComponent)
+    public modal:ModalComponent;
   
 
     ssoLoading: boolean = false;
     ssoError:string = '';
 
-    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService, private shibbolethService:ShibbolethService) {
+    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService,
+                private shibbolethService:ShibbolethService, private fb:FormBuilder, private userService:UserService) {
+        this.resetPasswordForm = fb.group({
+            email: ['', [Validators.required, Validators.email]]
+        })
     }
 
     ngOnInit() {
@@ -39,7 +47,6 @@ export class LoginComponent implements OnInit {
                     this.checkSSO();
                 });
             }
-
         });
     }
 
@@ -94,4 +101,15 @@ export class LoginComponent implements OnInit {
   public triggerSSO() {
         let url = window.location.href.replace(/ssoUserId=.+/, '');
         window.location.href = this.shibboleth.loginUrl + '?return=' + url;
-  }}
+  }
+
+  public sendResetNotification(){
+      if(this.resetPasswordForm.valid){
+          this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(() => {
+              this.modal.show();
+          }, err=>{
+              this.modal.show();
+          });
+      }
+  }
+}

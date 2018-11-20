@@ -12,7 +12,7 @@ import {Observable} from 'rxjs/Observable';
 
 export enum AppInstanceListSelection {
   ALL, MY,
-};
+}
 
 @Component({
   selector: 'nmaas-appinstancelist',
