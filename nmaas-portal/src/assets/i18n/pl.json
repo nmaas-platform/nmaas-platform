@@ -373,5 +373,23 @@
       "BODY": "Polityka prywatności i warunki korzystania zostały zaakceptowane. Proszę zaloguj się ponownie do systemu.",
       "CLOSE_BUTTON": "Zamknij"
     }
+  },
+  "RESET_PASSWORD": {
+    "FORGOT_PASSWORD_BUTTON": "Nie pamiętam hasła",
+    "TEXT": "Aby zresetować hasło wprowadź adres email użyty przy rejestracji do nmaas.",
+    "SUBMIT_BUTTON": "Prześlij",
+    "EMAIL": "Email",
+    "INVALID_TOKEN": "Twoj link wygasł. Proszę ponownie wypełnij formularz resetowania hasła.",
+    "GO_BACK": "Powrót do strony NmaaS",
+    "MODAL": {
+      "HEADER": "Proszę sprawdź skrzynkę pocztową",
+      "BODY": "Jeśli wprowadziłeś poprawny adres mailowy, link do zresetowania hasła został przesłany.",
+      "CLOSE_BUTTON": "Zamknij"
+    },
+    "SITE": {
+      "HEADER": "Proszę wprowadź nowe hasło",
+      "PASSWORD": "Hasło",
+      "CONFIRM_PASSWORD": "Potwierdź nowe hasło"
+    }
   }
 }
