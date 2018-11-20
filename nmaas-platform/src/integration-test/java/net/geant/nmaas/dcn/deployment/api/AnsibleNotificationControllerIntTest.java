@@ -15,7 +15,6 @@ import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.After;
@@ -63,8 +62,15 @@ public class AnsibleNotificationControllerIntTest {
     private MockMvc mvc;
 
     @Before
-    public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidDomainException {
-        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME, true, 20));
+    public void setUp() throws JsonProcessingException {
+        appDeploymentRepository.save(
+                AppDeployment.builder()
+                        .deploymentId(deploymentId)
+                        .domain(DOMAIN)
+                        .applicationId(applicationId)
+                        .deploymentName(DEPLOYMENT_NAME)
+                        .configFileRepositoryRequired(true)
+                        .storageSpace(20).build());
         DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));

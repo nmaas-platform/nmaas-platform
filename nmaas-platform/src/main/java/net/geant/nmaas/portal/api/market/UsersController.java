@@ -108,7 +108,7 @@ public class UsersController {
 		if(userRequest == null)
 			throw new MissingElementException("User request is null");
 		try {
-        String message = getMessageWhenUserUpdated(userDetails, userRequest);
+        	String message = getMessageWhenUserUpdated(userDetails, userRequest);
 			final net.geant.nmaas.portal.persistent.entity.User adminUser = userService.findByUsername(principal.getName()).orElseThrow(ProcessingException::new);
 			final String adminRoles = getRoleAsString(adminUser.getRoles());
 			final String userRoles = getRoleAsString(userDetails.getRoles());
@@ -140,7 +140,7 @@ public class UsersController {
 			}
 				userService.update(userDetails);
 				if (!StringUtils.isEmpty(message)) {
-					log.info(String.format("Admin user name - %s with role - %s, has updated the user - %s with role - %s. The following changes are - ",
+					log.info(String.format("User [%s] with role [%s] updated data of user [%s]. The following changes are - ",
 							principal.getName(),
 							adminRoles,
 							userDetails.getUsername(),
@@ -403,9 +403,10 @@ public class UsersController {
 		final Domain domain = getDomain(domainId);
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 
-		if(role == Role.ROLE_SYSTEM_COMPONENT)
+		if(role == Role.ROLE_SYSTEM_COMPONENT) {
 			throw new ProcessingException("Role cannot be removed.");
-				
+		}
+
 		try {
 			domainService.removeMemberRole(domain.getId(), user.getId(), role);
 
@@ -414,7 +415,7 @@ public class UsersController {
 
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
-            log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
+            log.info(String.format("User [%s] with role [%s] removed role [%s] of user name [%s] in domain [%d].",
 					principal.getName(),
 					adminRoles,
 					role.authority(),
@@ -473,7 +474,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void isSystemComponent(final Principal principal){
-        log.info("User with name " + principal.getName() + " is an admin user, has validated the token");
+        log.debug("Validated system component role for user [%s].", principal.getName());
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) {
@@ -500,49 +501,38 @@ public class UsersController {
 		return role;
 	}
 	
-	protected Domain getDomain(Long domainId) {
+	Domain getDomain(Long domainId) {
 		return domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_ERROR_MESSAGE));
 	}
 	
-	protected net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) {
+	net.geant.nmaas.portal.persistent.entity.User getUser(Long userId) {
 		return userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 	}
 
-	protected String getRoleAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
+	String getRoleAsString(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
         return String.join(", ", getRoleAsList(userRoles));
     }
 	
-	protected List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
+	List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
         return rolesList.stream().map(Role::authority).collect(Collectors.toList());
     }
 
-    protected String getRequestedRoleAsString(Set<UserRole> userRoles){
+    String getRequestedRoleAsString(Set<UserRole> userRoles){
         return String.join(",", getRequestedRoleAsList(userRoles));
     }
     
-    protected List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
+    List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(UserRole::getRole).collect(Collectors.toList());
         return rolesList.stream().map(Role::authority).collect(Collectors.toList());
     }
 
-    protected String getRoleWithDomainIdAsString(Set<UserRole> userRoles){
+    String getRoleWithDomainIdAsString(Set<UserRole> userRoles){
         return String.join(", ", userRoles.stream().map(x -> x.getRole().authority() + "@domain" + x.getDomainId())
 				.collect(Collectors.toList()));
     }
 
-    private boolean isSame(String newDetail, String oldDetail){
-        newDetail  = StringUtils.isEmpty(newDetail) ? "" : newDetail;
-        oldDetail  =  StringUtils.isEmpty(oldDetail) ? "" : oldDetail;
-
-        return newDetail.equalsIgnoreCase(oldDetail);
-    }
-
-	private boolean isSame(List<String> requestRoleList, List<String> userRoleList) {
-		return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
-	}
-
-    protected String getMessageWhenUserUpdated(final net.geant.nmaas.portal.persistent.entity.User user, final UserRequest userRequest){
+    String getMessageWhenUserUpdated(final net.geant.nmaas.portal.persistent.entity.User user, final UserRequest userRequest){
         String message = "";
         String constMessageElement = " to - ";
         if(!isSame(userRequest.getUsername(), user.getUsername())){
@@ -565,5 +555,16 @@ public class UsersController {
         }
         return message;
     }
+
+    private boolean isSame(String newDetail, String oldDetail){
+        newDetail = StringUtils.isEmpty(newDetail) ? "" : newDetail;
+        oldDetail = StringUtils.isEmpty(oldDetail) ? "" : oldDetail;
+        return newDetail.equalsIgnoreCase(oldDetail);
+    }
+
+	private boolean isSame(List<String> requestRoleList, List<String> userRoleList) {
+		return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
+	}
+
 }
 
