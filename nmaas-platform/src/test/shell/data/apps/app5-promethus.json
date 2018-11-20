@@ -56,16 +56,13 @@
 				"definitions": {
 					"targets_obj": {
 						"type": "object",
-						"required": [
-							"jobName"
-						],
 						"properties": {
 							"jobName": {
 								"title": "Job name",
 								"type": "string",
 								"minLength": 1
 							},
-							"scrape_interval:": {
+							"scrape_interval": {
 								"type": "string",
 								"default": "15s"
 							},
@@ -114,12 +111,7 @@
 							}
 						}
 					}
-				},
-				"required": [
-					"targets",
-					"targets.jobName",
-					"targets.Addresses"
-				]
+				}
 			},
 			"form": [
 				{
