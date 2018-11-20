@@ -6,6 +6,7 @@ import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Id} from "../../model";
+import {AuthService} from "../../auth/auth.service";
 
 describe('CommentComponent',()=>{
    let component:CommentsComponent;
@@ -26,7 +27,7 @@ describe('CommentComponent',()=>{
                   }
               })
           ],
-          providers: [AppsService, AppConfigService]
+          providers: [AppsService, AuthService, AppConfigService]
        }).compileComponents();
    }));
 
