@@ -7,13 +7,14 @@ import {HttpClientModule} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Id} from "../../model";
 import {AuthService} from "../../auth/auth.service";
-import {JwtHelperService} from "@auth0/angular-jwt";
+import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 
 describe('CommentComponent',()=>{
    let component:CommentsComponent;
    let fixture:ComponentFixture<CommentsComponent>;
    let appConfigService:AppConfigService;
    let appsService:AppsService;
+   let authService:AuthService;
 
    beforeEach(async (()=>{
        TestBed.configureTestingModule({
@@ -21,6 +22,7 @@ describe('CommentComponent',()=>{
           imports:[
               FormsModule,
               HttpClientModule,
+              JwtModule.forRoot({}),
               TranslateModule.forRoot({
                   loader: {
                       provide: TranslateLoader,
@@ -37,6 +39,7 @@ describe('CommentComponent',()=>{
        component = fixture.componentInstance;
        appConfigService = fixture.debugElement.injector.get(AppConfigService);
        appsService = fixture.debugElement.injector.get(AppsService);
+       authService = fixture.debugElement.injector.get(AuthService);
        spyOn(appConfigService, 'getApiUrl').and.returnValue("http://localhost/api/");
        spyOn(appsService, 'getAppCommentsByUrl').and.returnValue(Observable.of([]));
        fixture.detectChanges();
