@@ -1,8 +1,5 @@
 package net.geant.nmaas.portal.service;
 
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -47,4 +44,6 @@ public interface DomainService {
 	Set<Role> getMemberRoles(Long domainId, Long userId);
 	
 	Set<Domain> getUserDomains(Long userId);
+
+	List<User> findUsersWithDomainAdminRole(Long domainId);
 }

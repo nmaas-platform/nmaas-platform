@@ -20,7 +20,7 @@ import lombok.Setter;
 @Table(name="docker_compose_file")
 public class DockerComposeFile {
 
-    public final static String DEFAULT_DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
+    public static final String DEFAULT_DOCKER_COMPOSE_FILE_NAME = "docker-compose.yml";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

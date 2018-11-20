@@ -50,6 +50,6 @@ public abstract class BasePermissionCheck implements PermissionCheck {
 		return false;
 	}
 
-	abstract protected Set<Permissions> evaluatePermissions(User user, Serializable targetId, String targetType);
+	protected abstract Set<Permissions> evaluatePermissions(User user, Serializable targetId, String targetType);
 	
 }

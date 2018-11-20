@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.security;
 
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class JWTSettings {
 	
 	@Value("${jwt.tokenValidFor}")
 	private Long tokenValidFor;
+
+	@Value("${jwt.resetTokenValidFor}")
+	private Long resetTokenExpTime;
 	
 	@Value("${jwt.issuer}")
 	private String issuer;
@@ -25,5 +29,7 @@ public class JWTSettings {
 	
 	@Value("${jwt.refreshTokenValidFor}")
 	private Long refreshTokenExpTime;
-	
+
+	@Value("${jwt.resetSigningKey}")
+	private String resetSigningKey = UUID.randomUUID().toString();
 }

@@ -44,13 +44,13 @@ import java.util.Arrays;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	private final static String SSL_ENABLED = "server.ssl.enabled";
+	private static final  String SSL_ENABLED = "server.ssl.enabled";
 	
-	private final static String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
-	private final static String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
-	private final static String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
+	private static final  String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
+	private static final  String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
+	private static final  String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
 
-	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
+	private static final  String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
     private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
@@ -101,7 +101,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/swagger-ui.html",
 			"/api/info/**",
 			"/webjars/**",
-			"/api/content/**"
+			"/api/content/**",
+			"/api/users/reset/**"
 	};
 	
 	@Override
@@ -137,6 +138,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
+				.antMatchers("/api/users/reset/**").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -163,7 +165,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/configs/**"),
 										new AntPathRequestMatcher("/api/dockercompose/files/**"),
-										new AntPathRequestMatcher("/api/content/**")
+										new AntPathRequestMatcher("/api/content/**"),
+										new AntPathRequestMatcher("/api/users/reset/**")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),

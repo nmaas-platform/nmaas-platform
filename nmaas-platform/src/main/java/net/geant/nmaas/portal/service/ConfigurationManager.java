@@ -6,8 +6,8 @@ import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 
 public interface ConfigurationManager {
 
-    Long addConfiguration(ConfigurationView configuration) throws OnlyOneConfigurationSupportedException;
+    Long addConfiguration(ConfigurationView configuration);
     ConfigurationView getConfiguration();
-    void updateConfiguration(Long id, ConfigurationView updatedConfiguration) throws ConfigurationNotFoundException;
+    void updateConfiguration(Long id, ConfigurationView updatedConfiguration);
     void deleteAllConfigurations();
 }

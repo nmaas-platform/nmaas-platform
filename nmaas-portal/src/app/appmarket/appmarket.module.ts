@@ -33,6 +33,7 @@ import {StorageServiceModule} from 'ngx-webstorage-service';
 import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
+import {SortService} from "../service/sort.service";
 
 @NgModule({
   declarations: [
@@ -55,12 +56,11 @@ import {BrowserModule} from '@angular/platform-browser';
     PipesModule,
     ClustersModule,
     GitlabModule,
-
     MonitorModule,
     ConfigurationModule,
     BrowserModule,
     HttpClientModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
   ],
   exports: [
     AppMarketComponent,
@@ -72,7 +72,8 @@ import {BrowserModule} from '@angular/platform-browser';
     UserService,
     TagService,
     UserService,
-    ClusterService
+    ClusterService,
+    SortService,
   ]
 
 })

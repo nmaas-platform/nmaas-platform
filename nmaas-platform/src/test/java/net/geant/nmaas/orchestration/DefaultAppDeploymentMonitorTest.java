@@ -88,7 +88,15 @@ public class DefaultAppDeploymentMonitorTest {
         dockerComposeService.setPublicPort(8080);
         nmServiceRepositoryManager.updateDockerComposeService(deploymentId, dockerComposeService);
         nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
-        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME, true, 20));
+        AppDeployment appDeployment = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain("domain")
+                .applicationId(Identifier.newInstance(""))
+                .deploymentName("deploymentName")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+        appDeploymentRepository.save(appDeployment);
         repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
     }
 

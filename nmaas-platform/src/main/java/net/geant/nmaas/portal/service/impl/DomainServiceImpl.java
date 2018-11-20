@@ -3,7 +3,6 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -246,6 +246,19 @@ public class DomainServiceImpl implements DomainService {
 		User user = getUser(userId);
 				
 		return user.getRoles().stream().map(UserRole::getDomain).collect(Collectors.toSet());
+	}
+
+	@Override
+	public List<User> findUsersWithDomainAdminRole(Long domainId){
+		List<User> users = new ArrayList<>();
+		for(User user : getMembers(domainId)) {
+			for (UserRole userRole : user.getRoles()) {
+				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name())) {
+					users.add(user);
+				}
+			}
+		}
+		return users;
 	}
 
 	protected void checkParam(String name) {

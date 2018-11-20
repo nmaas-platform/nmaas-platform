@@ -53,23 +53,36 @@ public class OrchestratorMonitorRestControllerTest {
     @Before
     public void setup() {
         deploymentId = Identifier.newInstance("deploymentId1");
-        AppDeployment deployment1 = new AppDeployment(
-                deploymentId,
-                "domain1",
-                Identifier.newInstance("applicationId1"),
-                "deploymentName1",true, 20);
-        AppDeployment deployment2 = new AppDeployment(
-                Identifier.newInstance("deploymentId2"),
-                "domain2",
-                Identifier.newInstance("applicationId2"),
-                "deploymentName2", true, 20);
+
+        AppDeployment deployment1 = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain("domain1")
+                .applicationId(Identifier.newInstance("applicationId1"))
+                .deploymentName("deploymentName1")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+
+        AppDeployment deployment2 = AppDeployment.builder()
+                .deploymentId(Identifier.newInstance("deploymentId2"))
+                .domain("domain2")
+                .applicationId(Identifier.newInstance("applicationId2"))
+                .deploymentName("deploymentName2")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
         deployment2.setState(AppDeploymentState.APPLICATION_DEPLOYED);
-        AppDeployment deployment3 = new AppDeployment(
-                Identifier.newInstance("deploymentId3"),
-                "domain3",
-                Identifier.newInstance("applicationId3"),
-                "deploymentName3", true, 20);
+
+        AppDeployment deployment3 = AppDeployment.builder()
+                .deploymentId(Identifier.newInstance("deploymentId3"))
+                .domain("domain3")
+                .applicationId(Identifier.newInstance("applicationId3"))
+                .deploymentName("deploymentName3")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
+
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails("http://testurl:8080");
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
@@ -128,11 +141,15 @@ public class OrchestratorMonitorRestControllerTest {
 
     @Test
     public void shouldMapAppDeploymentToAppDeploymentView() {
-        AppDeployment source = new AppDeployment(
-                Identifier.newInstance("deploymentId"),
-                "domain1",
-                Identifier.newInstance("2"),
-                "deploymentName", true, 20);
+        AppDeployment source = AppDeployment.builder()
+                .deploymentId(Identifier.newInstance("deploymentId"))
+                .domain("domain1")
+                .applicationId(Identifier.newInstance("2"))
+                .deploymentName("deploymentName")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+
         AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);
         assertThat(output.getDeploymentId(), equalTo(source.getDeploymentId().value()));
         assertThat(output.getDomain(), equalTo(source.getDomain()));

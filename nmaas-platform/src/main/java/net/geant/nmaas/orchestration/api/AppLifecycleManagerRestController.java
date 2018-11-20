@@ -3,6 +3,7 @@ package net.geant.nmaas.orchestration.api;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
@@ -58,7 +59,13 @@ public class AppLifecycleManagerRestController {
             @RequestParam("applicationid") String applicationId,
             @RequestParam("deploymentname") String deploymentName) {
         Application app = this.appRepo.findById(Long.parseLong(applicationId)).orElseThrow(()-> new IllegalArgumentException("Application not found"));
-        return lifecycleManager.deployApplication(domain, Identifier.newInstance(applicationId), deploymentName, modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class));
+        AppDeployment appDeployment = AppDeployment.builder()
+                .domain(domain)
+                .applicationId(Identifier.newInstance(applicationId))
+                .deploymentName(deploymentName)
+                .storageSpace(modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class).getDefaultStorageSpace())
+                .build();
+        return lifecycleManager.deployApplication(appDeployment);
     }
 
     /**
@@ -87,7 +94,7 @@ public class AppLifecycleManagerRestController {
     @DeleteMapping(value = "/{deploymentId}")
     @ResponseStatus(code = HttpStatus.OK)
     public void removeApplication(
-            @PathVariable("deploymentId") String deploymentId) throws InvalidDeploymentIdException {
+            @PathVariable("deploymentId") String deploymentId) {
         lifecycleManager.removeApplication(Identifier.newInstance(deploymentId));
     }
 

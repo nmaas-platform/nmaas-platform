@@ -23,7 +23,7 @@ public class AppServiceDeploymentTask {
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppDeployServiceActionEvent event) throws CouldNotDeployNmServiceException {
+    public void trigger(AppDeployServiceActionEvent event) {
         try{
             serviceDeployment.deployNmService(event.getRelatedTo());
         }catch(Exception ex){

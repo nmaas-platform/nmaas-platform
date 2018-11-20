@@ -1,15 +1,13 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { FooterComponent } from '../../shared/index';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ConfigurationService} from "../../service";
+import {ConfigurationService, UserService} from "../../service";
 import {Configuration} from "../../model/configuration";
-import {isNullOrUndefined} from "util";
 import {ShibbolethService} from "../../service/shibboleth.service";
 import {ShibbolethConfig} from "../../model/shibboleth";
-import {TranslateService} from '@ngx-translate/core';
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ModalComponent} from "../../shared/modal";
 
 @Component({
   selector: 'nmaas-login',
@@ -23,16 +21,22 @@ export class LoginComponent implements OnInit {
     error:string = '';
     configuration:Configuration;
     shibboleth:ShibbolethConfig;
-    ssoLoading : boolean = false;
-    ssoError : string = '';
-    loginFailureErrorMessage = '';
+    resetPassword:boolean = false;
+    resetPasswordForm:FormGroup;
 
-  constructor(private router: Router,
-              private auth: AuthService,
-              private configService: ConfigurationService,
-              private shibbolethService: ShibbolethService,
-              private translate: TranslateService) {
-  }
+    @ViewChild(ModalComponent)
+    public modal:ModalComponent;
+  
+
+    ssoLoading: boolean = false;
+    ssoError:string = '';
+
+    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService,
+                private shibbolethService:ShibbolethService, private fb:FormBuilder, private userService:UserService) {
+        this.resetPasswordForm = fb.group({
+            email: ['', [Validators.required, Validators.email]]
+        })
+    }
 
     ngOnInit() {
         this.configService.getConfiguration().subscribe(config=>{
@@ -43,16 +47,10 @@ export class LoginComponent implements OnInit {
                     this.checkSSO();
                 });
             }
-
         });
     }
 
     public login():void {
-        this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
-        .subscribe((response: string) => {
-          this.loginFailureErrorMessage = Object.values(response)[0];
-          // this.loginFailureErrorMessage = response;
-        });
         this.loading = true;
         this.error = '';
         this.auth.login(this.model.username, this.model.password)
@@ -63,17 +61,14 @@ export class LoginComponent implements OnInit {
                     this.router.navigate(['/']);
                 } else {
                     console.error('Error during login');
-                    this.error = (this.loginFailureErrorMessage === null ?
-                      'Username or password is incorrect' : this.loginFailureErrorMessage);
+                    this.error = 'Username or password is incorrect';
                     this.loading = false;
                 }
             },
                 err => {
                     console.error('Unable to login. ' + err);
                     this.loading = false;
-                    // this.error = err;
-                    this.error = (this.loginFailureErrorMessage === null ?
-                      err : this.loginFailureErrorMessage);
+                    this.error = err;
                 });
     }
 
@@ -106,4 +101,15 @@ export class LoginComponent implements OnInit {
   public triggerSSO() {
         let url = window.location.href.replace(/ssoUserId=.+/, '');
         window.location.href = this.shibboleth.loginUrl + '?return=' + url;
-  }}
+  }
+
+  public sendResetNotification(){
+      if(this.resetPasswordForm.valid){
+          this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(() => {
+              this.modal.show();
+          }, err=>{
+              this.modal.show();
+          });
+      }
+  }
+}

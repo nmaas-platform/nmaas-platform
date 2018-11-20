@@ -60,7 +60,16 @@ public class DockerNmServiceConfigurationTest {
     @Before
     public void setup() throws InvalidDeploymentIdException, InterruptedException {
         configuration = new AppConfiguration("");
-        appDeploymentRepositoryManager.store(new AppDeployment(deploymentId, "domain", applicationId, "deploymentName", true, 20));
+        AppDeployment appDeployment = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain("domain")
+                .applicationId(applicationId)
+                .deploymentName("deploymentName")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+
+        appDeploymentRepositoryManager.store(appDeployment);
         appDeploymentRepositoryManager.updateState(deploymentId, AppDeploymentState.MANAGEMENT_VPN_CONFIGURED);
     }
 
