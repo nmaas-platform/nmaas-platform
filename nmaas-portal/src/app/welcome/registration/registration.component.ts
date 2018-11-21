@@ -3,7 +3,7 @@ import {Domain} from '../../model/domain';
 import {Registration} from '../../model/registration';
 import {AppConfigService} from '../../service/appconfig.service';
 import {PasswordValidator} from '../../shared/common/password/password.component';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
@@ -19,7 +19,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./registration.component.css'],
     providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
-export class RegistrationComponent implements OnInit {
+export class RegistrationComponent implements OnInit, AfterViewInit{
 
 
   public sending: boolean = false;
@@ -65,11 +65,7 @@ export class RegistrationComponent implements OnInit {
       {
         validator: PasswordValidator.match
       });
-    this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
-      .subscribe((response: string) => {
-        this.loginFailureErrorMessage = Object.values(response)[0];
-        // this.loginFailureErrorMessage = response;
-      });
+
   }
 
   ngOnInit() {
@@ -77,9 +73,18 @@ export class RegistrationComponent implements OnInit {
       .map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
   }
 
+  ngAfterViewInit() {
+    this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
+      .subscribe((response) => {
+        debugger;
+        // this.loginFailureErrorMessage = Object.valueOf(response)[0];
+        this.loginFailureErrorMessage = response;
+      });
+  }
   public onSubmit(): void {
       let token = this.captcha.getResponse();
       if(token.length < 1){
+          this.sending = false;
           this.sending = false;
           this.submitted = true;
           this.success = false;
@@ -138,11 +143,11 @@ export class RegistrationComponent implements OnInit {
     this.sending = false;
     this.submitted = false;
     this.success = false;
-    this.errorMessage = '';    
+    this.errorMessage = '';
   }
 
-  public getMessage(err:string){
-      return err.match("409")?"Invalid input data":"Service is unavailable. Please try again later";
+  public getMessage(err: string) {
+      return err.match('') || err.match(null) ? err : 'Service is unavailable. Please try again later';
   }
 
 }
