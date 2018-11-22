@@ -42,7 +42,7 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
 
-  private readonly language = '';
+  private readonly language: string = '';
 
   constructor(private fb: FormBuilder,
               private registrationService: RegistrationService,

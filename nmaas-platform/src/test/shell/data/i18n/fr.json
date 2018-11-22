@@ -89,8 +89,8 @@
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
     "ENABLE_TLS": "Enable TLS",
-    "HOST_PORT": "Host port",
     "USER_REST_API": "Utiliser l'API REST",
+    "HOST_PORT": "Host port",    
     "INGRESS": "Ingress",
     "CONTROLLER_CONFIG_OPTION": "Option de configuration du contrôleur",
     "SUPPORTED_INGRESS_CLASS": "Classe d'entrée prise en charge",
@@ -170,7 +170,8 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer"
+    "REMOVE_BUTTON": "Supprimer",
+    "ADD_BUTTON": "Add"	
   },
   "APP_INSTANCES": {
     "TITLE": "Instances d'application",
@@ -408,6 +409,6 @@
     "UNAVAILABLE_MESSAGE": "Le service est indisponible. Veuillez réessayer ultérieurement",
     "INVALID_INPUT_MESSAGE": "Données d'entrée non valides",
     "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
-    "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!",
+    "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
   }
 }

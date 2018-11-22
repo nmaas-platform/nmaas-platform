@@ -409,6 +409,6 @@
     "UNAVAILABLE_MESSAGE": "Usługa jest niedostępna. Spróbuj ponownie później",
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
-    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!",
+    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
   }
 }

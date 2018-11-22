@@ -10,37 +10,39 @@
       "CONFIGURATION": "Konfiguration",
       "PROFILE": "Profil",
       "LOGOUT": "Ausloggen",
-      "LOGIN_REGISTER": "Einloggen | Registrieren"
+      "LOGIN_REGISTER": "Einloggen | Registrieren",
+	  "LANGUAGE": "Language"
     },
     "WELCOME": {
-      "LOGIN": "Login",
+      "LOGIN": "Einloggen",
       "REGISTER": "Registrieren",
-      "TITLE1": "Network Management as a Service",
-      "TITLE2": "stellt ein Portfolio an Netzwerk-Management-Anwendungen bereit welche als dedizierte Instanzen pro Benutzer in der Cloud ausgeführt werden.",
-      "P1": "Der NMaaS-Dienst von GÉANT umfasst drei Aspekte: Bereitstellung, Verwaltung und Wartung der Infrastruktur des NMaaS Service Portals, der Plattform und ausgewählter Tools. Der Benutzer wird in der Verwendung des Systems und der ausgewählten Tools unterstützt um sein eigenes Netzwerk via NMaaS zu überwachen. Es werden ebenfalls Anwender unterstützt, welche ihre Software über das NMaaS System bereitstellen möchten.",
-      "P2": "Zielbenutzer",
-      "P3": "NMaaS-Nutzer sind Organisationen, die keine eigene NMS-Infrastruktur besitzen und/oder das Netzwerkmanagement auslagern wollen, sowie Organisationen und/oder Einzelpersonen, die nach qualitativ hochwertiger Netzwerkmanagement-Software suchen oder ihre Software innerhalb der Community teilen möchten.",
-      "P4": "NMaaS Marktplatz",
-      "P5": "Der NMaaS Marktplatz ist ein frei verteilter und von der Community unterstützer Katalog verfügbarer Open-Source-Tools. Die Inhalte werden von den Administratoren ausgewählt. Sie haben aber auch die Möglichkeit neue Anwendung vorzuschlagen, um die Auswahl an Anwendungen zu vergrößern.",
-      "P6": "Kostensenkung",
-      "P7": "Mit NMaaS müssen die Benutzer nicht die Betriebskosten und Risiken im Zusammenhang mit der Wartung und Kontrolle der Netzwerk-Management-Infrastruktur tragen.",
-      "P8": "Flexible Skalierung",
-      "P9": "Eine horizontale Skalierung ist mit NMaaS kein Problem. Sie können ihre Instanzen sehr einfach und in nur wenigen Minuten skalieren.",
-      "P10": "NMaaS Funktionen",
-      "P11": "Anwendungs-Marktplatz",
-      "P12": "Im Marktplatz finden Sie von Administratoren und der Community ausgewählte Top-Anwendungen zur Verwaltung und Wartung Ihrer Netzwerkinfrastruktur.",
-      "P14": "Sie möchten Ihre Anwendung in der Community teilen? Mittels Antrag können Sie Ihre Anwendung zum NMaaS Anwendungs-Marktplatz hinzuzufügen.",
-      "P15": "SSO Support",
-      "P16": "Wenn Sie sich für SSO entscheiden, können Sie sich mit demselben Konto nicht nur bei NMaasS anmelden, sondern auch bei einigen anderen Diensten. Hierfür müssen Sie Ihren Identitäts-Provider auswählen und sich mit einem existierenden Konto anmelden.",
-      "P17": "Schnelle & einfache Bereitstellung",
-      "P18": "Sie können Ihre erste Anwendung in wenigen Minuten installieren. Fügen Sie einfach Ihre Konfiguration hinzu, holen Sie sich die Anwendung vom Markt und stellen Sie sie bereit. Unsere Services werden den Rest erledigen. In wenigen Minuten erhalten Sie die Adresse für Ihren Anwendungsbereich.",
-      "P19": "Überwachung",
-      "P20": "NMaaS bietet Ihnen eine Lösung für das Überwachen von Services. Mit unserem Servicetool können Sie Informationen über die Verfügbarkeit Ihrer Services abrufen und sammeln.",
-      "P21": "Domain Management",
-      "P22": "Sie haben mehr als eine Domain zu verwalten, aber keine eigene Infrastruktur? Es gibt eine einfache Lösung - NMaaS unterstützt die gleichzeitige Konfiguration und Verwaltung mehrerer Domains.",
-      "P23": "Verwendete Technologien",
-      "P24": "Sicherheit",
-      "P25": "Mit NMaaS müssen Sie sich keine Sorgen um Sicherheit machen. Wir bieten mittels getrennter Instanzen und VPN eine sichere Verbindung zu Ihrem Netzwerk - damit Institutionen und Projekte das Netzwerk sicher verwalten können."
+      "TITLE1": "Netzwerkmanagement als Dienst",
+      "TITLE2": "stellt ein Portfolio von Netzwerkverwaltungsanwendungen bereit, die als dedizierte Benutzerinstanzen in der Cloud ausgeführt werden.",
+      "INTRO_TEXT": "Der NMaaS-Dienst von GÉANT umfasst drei Aspekte: Bereitstellung, Verwaltung und Wartung der Infrastruktur des NMaaS-Serviceportals, der Plattform und ausgewählter Tools, Unterstützung der Benutzer bei der Verwendung des Systems und der ausgewählten Tools zur Überwachung ihrer Netzwerke über NMaaS als Benutzer, die ihre Software in das NMaaS-System einbringen. ",
+      "TARGET_USERS_HEADER": "Zielbenutzer",
+      "TARGET_USERS_TEXT": "NMaaS-Benutzer sind Organisationen, die nicht selbst eine NMS-Infrastruktur besitzen und / oder das Netzwerkmanagement auslagern möchten, sowie Organisationen und / oder Personen, die nach einer hochwertigen Netzwerkverwaltungssoftware suchen oder deren Software freigeben möchten innerhalb der Gemeinschaft. ",
+      "MARKETPLACE_HEADER": "NMaaS Marketplace",
+      "MARKETPLACE_TEXT": "NMaaS Marketplace ist ein Katalog verfügbarer Open-Source-Tools, der von der Community unterstützt wird, kostenlos verteilt und von der Verwaltung ausgewählt wird. Es gibt auch Platz für Ihre Anwendungsauswahl - Sie können neue Anwendungen vorschlagen.",
+      "COST_REDUCTION_HEADER": "Kostensenkung",
+      "COST_REDUCTION_TEXT": "Mit NMaaS müssen Benutzer die Besitzkosten und Risiken für die Wartung und Kontrolle der Netzwerkverwaltungsinfrastruktur nicht tragen.",
+      "SECURITY_HEADER": "Sicherheit",
+      "SECURITY_TEXT": "Mit NMaaS müssen Sie sich keine Sorgen um die Sicherheit machen. Wir bieten sichere Verbindungen zu separaten Instanzen per VPN zu Ihrem Netzwerk - damit Institutionen und Projekte ein sicheres Management des Netzwerks ermöglichen.",
+      "SCALING_HEADER": "Flexible Skalierung",
+      "SCALING_TEXT": "Wenn Sie eine horizontale Skalierung benötigen, gibt es bei NMaaS kein Problem. Sie können Ihre Instanzen sehr leicht in wenigen Minuten skalieren.",
+      "NMAAS_FEATURES_HEADER": "NMaaS-Funktionen",
+      "APP_MARKET_HEADER": "Application Market",
+      "APP_MARKET_TEXT": "Im Geschäft finden Sie erstklassige Anwendungen zum Verwalten und Warten Ihrer Netzwerkinfrastruktur, die von Administratoren und der Community ausgewählt werden.",
+      "OWN_APPS_HEADER": "Eigene Anwendungen",
+      "OWN_APPS_TEXT": "Sie möchten Ihre eigene Anwendung für die Community freigeben? NMaaS ist offen für das Hinzufügen neuer Anwendungen.",
+      "EDUGAIN_SUPPORT_HEADER": "eduGAIN-Unterstützung",
+      "EDUGAIN_SUPPORT_TEXT": "Sie müssen kein neues Konto erstellen. Melden Sie sich mit einem vorhandenen Konto Ihres Identitätsanbieters an, das unter eduGAIN eingebunden ist.",
+      "FAST_DEPLOYMENT_HEADER": "Schnelle und einfache Bereitstellung",
+      "FAST_DEPLOYMENT_TEXT": "Nach Ihrer Anforderung werden die Anwendungen innerhalb weniger Minuten bereitgestellt, wobei die benutzerdefinierte Konfiguration über einen einfachen Assistenten bereitgestellt wird.",
+      "WEB_PORTAL_HEADER": "Modernes Webportal",
+      "WEB_PORTAL_TEXT": "NMaaS stellt ein webbasiertes Benutzerportal bereit, das dem reaktiven Designprinzip folgt.",
+      "KUBERNETES_HEADER": "Kubernetes-Bereitstellung",
+      "KUBERNETES_TEXT": "Benutzeranwendungsinstanzen werden in einem Kubernetes-Cluster bereitgestellt, der auf einer dedizierten Hardware-Infrastruktur ausgeführt wird, die hohe Leistung und Zuverlässigkeit gewährleistet.",
+      "TECHNOLOGIES_USED_HEADER": "Eingesetzte Technologien"
     },
     "REGISTRATION": {
       "USERNAME": "Benutzername",
@@ -57,7 +59,15 @@
       "SUBMIT": "Absenden",
       "FORM_SUBMISSION": "Einreichung des Anmeldeformulars",
       "THANK_YOU_MESSAGE": "Vielen Dank, dass Sie das Anmeldeformular eingereicht haben. Ihr Konto muss noch vom Systemadministrator aktiviert werden. Das kann einige Zeit in Anspruch nehmen.",
-      "DONE_MESASAGE": "Erledigt"
+      "DONE_MESASAGE": "Erledigt",
+      "INVALID_CREDENTIALS_MESSAGE": "Ungültige Anmeldeinformationen.",
+      "UNABLE_TO_REGISTER_MESSAGE": "Neuer Benutzer kann nicht registriert werden.",
+      "TERMS_NOT_ACCEPTED_MESSAGE": "Nutzungsbedingungen wurden nicht akzeptiert.",
+      "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Datenschutzbestimmungen wurden nicht akzeptiert.",
+      "USER_ALREADY_EXISTS_MESSAGE": "Benutzer ist bereits vorhanden.",
+      "DOMAIN_NOT_FOUND_MESSAGE": "Domäne nicht gefunden.",
+      "UNABLE_TO_UPDATE_USER_MESSAGE": "Neu registrierter Benutzer kann nicht aktualisiert werden.",
+      "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Inhalt kann nicht abgerufen werden"
     },
     "LOGIN": {
       "USERNAME": "Benutzername",
@@ -65,7 +75,8 @@
       "PASSWORD": "Password",
       "PASSWORD_REQUIRED_MESSAGE": "Passwort wird benötigt",
       "LOGIN": "Login",
-      "LOGIN_WITH": "Login mit"
+      "LOGIN_WITH": "Login mit",
+      "LOGIN_FAILURE_MESSAGE": "Ungültige Anmeldeinformationen"
     },
     "CLUSTERS": {
       "TITLE": "Kubernetes Cluster Konfiguration",
@@ -140,20 +151,6 @@
       "SUBMIT_BUTTON": "Senden",
       "EDIT_BUTTON": "Bearbeiten"
     },
-    "SAML_PROXY": {
-      "TITLE": "SAML Proxy Konfiguration",
-      "LOGIN_URL": "Login url",
-      "LOGOUT_URL": "Logout url",
-      "SSO_KEY_FILE_PATH": "SSO Key Datei Pfad",
-      "TIMEOUT": "Timeout [minutes]",
-      "VIEW_BUTTON": "Ansicht",
-      "SUBMIT_BUTTON": "Senden",
-      "EDIT_BUTTON": "Bearbeiten",
-      "LOGIN_URL_REQUIRED_MESSAGE": "Login url wird benötigt",
-      "LOGOUT_URL_REQUIRED_MESSAGE": "Logout url wird benötigt",
-      "SSO_KEY_REQUIRED_MESSAGE": "SSO key wird benötigt",
-      "TIMEOUT_REQUIRED_MESSAGE": "Timeout wird benötigt"
-    },
     "USERS": {
       "TITLE": "Benutzer",
       "USER_NAME": "Benutzername",
@@ -186,7 +183,8 @@
       "APPLICATION": "Anwendung",
       "STATE": "Status",
       "DETAILS_BUTTON": "Details",
-      "GO_TO_APP_BUTTON": "Gehe zu App"
+      "GO_TO_APP_BUTTON": "Gehe zu App",
+      "ITEMS_PER_PAGE": "Instanzen pro Seite"
     },
     "MONITOR": {
       "TITLE": "Überwachungs Service",
@@ -411,6 +409,6 @@
       "UNAVAILABLE_MESSAGE": "Dienst ist nicht verfügbar. Bitte versuchen Sie es später erneut.",
       "INVALID_INPUT_MESSAGE": "Ungültige Eingabedaten",
       "NOT_ROBOT_ERROR_MESSAGE": "Sie müssen beweisen, dass Sie kein Roboter sind!",
-      "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!",
+      "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!"
     }
   }

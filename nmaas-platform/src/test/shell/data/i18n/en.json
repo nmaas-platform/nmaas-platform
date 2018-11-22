@@ -58,7 +58,6 @@
     "PRIVACY_POLICY": "Privacy Policy",
     "SUBMIT": "Submit",
     "FORM_SUBMISSION": "Registration form submission",
-
     "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
     "DONE_MESSAGE": "Done",
     "INVALID_CREDENTIALS_MESSAGE": "Invalid credentials.",
@@ -375,7 +374,6 @@
       "HEADER": "Registration completed",
       "BODY": "Your data has been registered in the system. Please login again.",
       "RETURN_BUTTON": "Return to login page"
-
     }
   },
   "TERMS_ACCEPTANCE": {
@@ -411,6 +409,6 @@
     "UNAVAILABLE_MESSAGE": "Service is unavailable. Please try again later",
     "INVALID_INPUT_MESSAGE": "Invalid input data",
     "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
-    "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!",
+    "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"
   }
 }
