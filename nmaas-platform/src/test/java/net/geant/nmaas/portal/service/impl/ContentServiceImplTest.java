@@ -161,15 +161,7 @@ public class ContentServiceImplTest {
 
 	@Test
 	public void shouldReturnERRORForInvalidLanguageAndValidRootAndKey(){
-		Internationalization internationalization = Internationalization
-				.builder()
-				.id(1L)
-				.language("en")
-				.enabled(true)
-				.content("{\"ROOT\":{\"KEY1\":\"VAL1\",\"KEY2\":\"VAL2\"}}")
-				.build();
-		when(internationalizationRepository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(internationalization));
-
+		when(internationalizationRepository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.empty());
 		assertEquals("Enexpected error - invalid language", contentService.getContent("InvalidLanguage", "ROOT", "KEY3"));
 	}
 
