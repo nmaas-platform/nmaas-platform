@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import javax.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +31,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ValidUser
 public class User {
 
 	@Id
@@ -43,6 +46,7 @@ public class User {
 
 	private String samlToken;
 
+	@Email
 	private String email;
 	private String firstname;
 	private String lastname;

@@ -82,16 +82,22 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         domains.createDomain(DOMAIN, DOMAIN);
 
         //Add extra users, default admin is already there
-        User admin = userRepo.save(new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_SYSTEM_ADMIN)));
+        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_SYSTEM_ADMIN));
+        admin.setEmail("manager@testemail.com");
+        userRepo.save(admin);
 
         User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
         userStub.setFirstname("Test");
         userStub.setLastname("Test");
         userStub.setEmail("geant.notification@gmail.com");
         userEntity = userRepo.save(userStub);
-        userRepo.save(new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER)));
+        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
+        user2.setEmail("user2@testemail.com");
+        userRepo.save(user2);
 
-        user3 = userRepo.save(new User("user3", true, "user3", domains.getGlobalDomain().get(), Role.ROLE_NOT_ACCEPTED, false, false));
+        user3 = new User("user3", true, "user3", domains.getGlobalDomain().get(), Role.ROLE_NOT_ACCEPTED, false, false);
+        user3.setEmail("user3@testemail.com");
+        userRepo.save(user3);
 
         UserToken userToken = new UserToken(jwtTokenService.getToken(admin), jwtTokenService.getRefreshToken(admin));
         token = userToken.getToken();

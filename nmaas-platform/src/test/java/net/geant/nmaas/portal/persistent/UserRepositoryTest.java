@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent;
 
+import javax.validation.ConstraintViolationException;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -66,7 +67,9 @@ public class UserRepositoryTest {
 	@Test
 	public void shouldCreateTwoUsersOneWithRoleUserAndSecondWithRoleSystemAdminAndAddSecondUserRoleUser() {
 		User tester = new User("tester", true, "test123", domains.findDomain(DOMAIN).get(), Role.ROLE_USER);
+		tester.setEmail("test@test.com");
 		User admin = new User("testadmin", true, "testadmin123", domains.getGlobalDomain().get(), Role.ROLE_SYSTEM_ADMIN);
+		admin.setEmail("admin@test.com");
 		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);
@@ -85,6 +88,7 @@ public class UserRepositoryTest {
 	public void shouldSetEnabledFlag(){
 		User enableTestUser = new User("enableTest", false, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER);
+		enableTestUser.setEmail("enableUser@test.com");
 		userRepository.save(enableTestUser);
 
 		Optional<User> enableTestUserFalse = userRepository.findByUsername("enableTest");
@@ -104,6 +108,7 @@ public class UserRepositoryTest {
 	public void shouldSetTermsOfUseAcceptedFlag(){
 		User termsOfUseAcceptedTestUser = new User("termsTest", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, false, true);
+		termsOfUseAcceptedTestUser.setEmail("terms@email.com");
 		userRepository.save(termsOfUseAcceptedTestUser);
 
 		Optional<User> termsOfUseAcceptedTestUserFalse = userRepository.findByUsername("termsTest");
@@ -123,6 +128,7 @@ public class UserRepositoryTest {
 	public void shouldSetPrivacyPolicyAcceptedFlag(){
 		User privacyPolicyAcceptedTestUser = new User("privacyTest", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		privacyPolicyAcceptedTestUser.setEmail("privacy@test.com");
 		userRepository.save(privacyPolicyAcceptedTestUser);
 
 		Optional<User> privacyPolicyAcceptedTestUserFalse = userRepository.findByUsername("privacyTest");
@@ -136,5 +142,36 @@ public class UserRepositoryTest {
 		assertTrue(privacyPolicyAcceptedTestUserTrue.get().isPrivacyPolicyAccepted());
 
 		userRepository.delete(privacyPolicyAcceptedTestUserTrue.get());
+	}
+
+	@Test
+	public void shouldSaveUserWithMail(){
+		User testUser = new User("testUser", true, "test123",
+				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		testUser.setEmail("email@email.com");
+		userRepository.save(testUser);
+	}
+
+	@Test(expected = ConstraintViolationException.class)
+	public void shouldNotSaveUserWithWrongMailFormat(){
+		User testUser = new User("testUser", true, "test123",
+				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		testUser.setEmail("emailemail.com");
+		userRepository.save(testUser);
+	}
+
+	@Test
+	public void shouldSaveUserWithSamlToken(){
+		User testUser = new User("testUser", true, "test123",
+				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		testUser.setSamlToken("test|1234|saml");
+		userRepository.save(testUser);
+	}
+
+	@Test(expected = ConstraintViolationException.class)
+	public void shouldNotSaveUserWithoutBothMailAndToken(){
+		User testUser = new User("testUser", true, "test123",
+				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		userRepository.save(testUser);
 	}
 }
