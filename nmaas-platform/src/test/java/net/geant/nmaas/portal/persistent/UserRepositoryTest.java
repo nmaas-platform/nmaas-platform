@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -173,5 +174,17 @@ public class UserRepositoryTest {
 		User testUser = new User("testUser", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
 		userRepository.save(testUser);
+	}
+
+	@Test(expected = DataIntegrityViolationException.class)
+	public void shouldNotSaveUserWithNonUnique(){
+		User testUser = new User("testUser", true, "test123",
+				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		testUser.setEmail("test@test.com");
+		userRepository.save(testUser);
+		User testUser2 = new User("testUser2", true, "test123",
+				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+		testUser2.setEmail("test@test.com");
+		userRepository.save(testUser2);
 	}
 }

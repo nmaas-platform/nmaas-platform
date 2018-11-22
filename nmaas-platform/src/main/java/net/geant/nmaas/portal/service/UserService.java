@@ -20,6 +20,7 @@ public interface UserService {
 	User findByEmail(String email);
 
 	boolean existsByUsername(String username);
+	boolean existsByEmail(String email);
 	boolean existsById(Long id);
 
 	User register(Registration registration, Domain globalDomain, Domain domain);

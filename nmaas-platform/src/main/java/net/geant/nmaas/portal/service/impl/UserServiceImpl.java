@@ -92,6 +92,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public boolean existsByEmail(String email) {
+		return userRepo.existsByEmail(email);
+	}
+
+	@Override
 	public boolean existsById(Long id) {
 		checkParam(id);
 		return userRepo.existsById(id);
@@ -100,7 +105,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User register(Registration registration, Domain globalDomain, Domain domain){
 
-		if(userRepo.existsByUsername(registration.getUsername())){
+		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
 			throw new ProcessingException("User already exists");
 		}
 

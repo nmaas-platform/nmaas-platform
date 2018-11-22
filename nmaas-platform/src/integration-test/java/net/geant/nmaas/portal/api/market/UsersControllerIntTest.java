@@ -89,7 +89,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
         userStub.setFirstname("Test");
         userStub.setLastname("Test");
-        userStub.setEmail("geant.notification@gmail.com");
+        userStub.setEmail("test@gmail.com");
         userEntity = userRepo.save(userStub);
         User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
         user2.setEmail("user2@testemail.com");

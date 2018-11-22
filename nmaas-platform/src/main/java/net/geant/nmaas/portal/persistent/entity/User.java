@@ -47,6 +47,7 @@ public class User {
 	private String samlToken;
 
 	@Email
+	@Column(unique = true)
 	private String email;
 	private String firstname;
 	private String lastname;
