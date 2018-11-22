@@ -1,5 +1,5 @@
 {
   "applicationId":5,
   "configFileName":"prometheus.yml",
-  "configFileTemplateContent":"global:\n  scrape_interval: ${global_config.global_scrape}\n  evaluation_interval: ${global_config.global_evaluation}\nalerting:\n  alertmanagers:\n    - static_configs:\n      - targets:\nrule_files:\nscrape_configs:\n<#list targets as target>\n  - job_name: '${target.jobName}'\n    metrics_path: ${target.metrics_path}\n    scrape_interval: ${target.scrape_interval}\n    static_configs:\n    - targets: [<#list target.Addresses as address>'${address.ipAddress}'<#sep>,</#list>]\n    - labels: <#list target.Labels as labels>      ${labels.label_name}: ${labels.label_value}<#sep>\n</#list><#sep>\n</#list>"
+  "configFileTemplateContent":"global:\n  scrape_interval: ${global_config.global_scrape}\n  evaluation_interval: ${global_config.global_evaluation}\nalerting:\n  alertmanagers:\n    - static_configs:\n      - targets:\nrule_files:\nscrape_configs:\n<#list targets as target>\n  - job_name: '${target.jobName}'\n    metrics_path: ${target.metrics_path}\n    scrape_interval: ${target.scrape_interval}\n    static_configs:\n    - targets: [<#list target.Addresses as address>'${address.ipAddress}'<#sep>,</#list>]\n      labels:\n<#list target.Labels as labels>        ${labels.label_name}: ${labels.label_value}<#sep>\n</#list><#sep>\n</#list>"
 }
