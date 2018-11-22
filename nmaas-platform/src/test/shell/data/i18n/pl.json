@@ -61,7 +61,7 @@
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
     "DONE_MESSAGE": "Gotowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
-    "TERMS__OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!",
+    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!",
     "INVALID_CREDENTIALS_MESSAGE": "Nieprawidłowe dane uwierzytelniające.",
     "UNABLE_TO_REGISTER_MESSAGE": "Nie można zarejestrować nowego użytkownika.",
     "TERMS_NOT_ACCEPTED_MESSAGE": "Warunki użytkowania nie zostały zaakceptowane.",

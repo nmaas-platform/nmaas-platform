@@ -61,7 +61,7 @@
     "THANK_YOU_MESSAGE": "Merci d'avoir envoyé le formulaire d'inscription. Votre compte doit être activé par l'administrateur système. Cela prend du temps.",
     "DONE_MESSAGE": "Terminé",
     "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
-    "TERMS__OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!",
+    "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!",
     "INVALID_CREDENTIALS_MESSAGE": "Informations d'identification non valides.",
     "UNABLE_TO_REGISTER_MESSAGE": "Impossible d'inscrire un nouvel utilisateur.",
     "TERMS_NOT_ACCEPTED_MESSAGE": "Les conditions d'utilisation n'ont pas été acceptées.",

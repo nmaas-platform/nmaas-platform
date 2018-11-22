@@ -50,26 +50,17 @@ export class LoginComponent implements OnInit {
         });
     }
 
-    public login():void {
-        this.loading = true;
-        this.error = '';
-        this.auth.login(this.model.username, this.model.password)
-            .subscribe(result => {
-                if (result === true) {
-                    console.log('User logged in');
-                    this.loading = false;
-                    this.router.navigate(['/']);
-                } else {
-                    console.error('Error during login');
-                    this.error = 'Username or password is incorrect';
-                    this.loading = false;
-                }
-            },
-                err => {
-                    console.error('Unable to login. ' + err);
-                    this.loading = false;
-                    this.error = err;
-                });
+    public login(): void {
+      this.loading = true;
+      this.error = '';
+      this.auth.login(this.model.username, this.model.password)
+        .subscribe(result => {
+          this.loading = false;
+          this.router.navigate(['/']);
+        }, err => {
+          this.loading = false;
+          this.error = err;
+        });
     }
 
 

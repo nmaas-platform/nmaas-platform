@@ -3,7 +3,7 @@ import {Domain} from '../../model/domain';
 import {Registration} from '../../model/registration';
 import {AppConfigService} from '../../service/appconfig.service';
 import {PasswordValidator} from '../../shared/common/password/password.component';
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
@@ -19,7 +19,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./registration.component.css'],
     providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
-export class RegistrationComponent implements OnInit, AfterViewInit{
+export class RegistrationComponent implements OnInit, AfterViewInit {
 
 
   public sending: boolean = false;
@@ -42,8 +42,9 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
 
-  private loginFailureErrorMessage = '';
-  private language = '';
+  private readonly language = '';
+  private notARobotMessage: string;
+  private termsOfUserMessage: string;
 
   constructor(private fb: FormBuilder,
               private registrationService: RegistrationService,
@@ -73,14 +74,8 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
       .map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
   }
 
-  ngAfterViewInit() {
-    this.translate.get(['LOGIN.LOGIN_FAILURE_MESSAGE'])
-      .subscribe((response) => {
-        debugger;
-        // this.loginFailureErrorMessage = Object.valueOf(response)[0];
-        this.loginFailureErrorMessage = response;
-      });
-  }
+  ngAfterViewInit() {  }
+
   public onSubmit(): void {
       let token = this.captcha.getResponse();
       if(token.length < 1){
@@ -88,14 +83,14 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
           this.sending = false;
           this.submitted = true;
           this.success = false;
-          this.errorMessage = "You have to prove that you're not a robot!";
-      }
-      else {
-          if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
+          this.errorMessage = this.translate.instant('REGISTRATION.NOT_ROBOT_ERROR_MESSAGE');
+      } else {
+          if (!this.registrationForm.controls['termsOfUseAccepted'].value ||
+            !this.registrationForm.controls['privacyPolicyAccepted'].value) {
               this.sending = false;
               this.submitted = true;
               this.success = false;
-              this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
+              this.errorMessage = this.translate.instant('REGISTRATION.TERMS_OF_USER_MESSAGE');
           } else {
               if (this.registrationForm.valid) {
                   this.sending = true;
@@ -113,7 +108,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
                   );
                   this.registrationService.register(registration).subscribe(
                       (result) => {
-                          console.log("User registred successfully.");
                           this.registrationForm.reset();
                           this.sending = false;
                           this.submitted = true;
@@ -121,7 +115,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
                           this.modal.show();
                       },
                       (err) => {
-                          console.log("Unable to register user.");
                           this.sending = false;
                           this.submitted = true;
                           this.success = false;
@@ -130,7 +123,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
                       () => {
                           this.sending = false;
                           this.submitted = true;
-                          console.log("Hmmm...");
                       }
                   );
 
@@ -146,8 +138,7 @@ export class RegistrationComponent implements OnInit, AfterViewInit{
     this.errorMessage = '';
   }
 
-  public getMessage(err: string) {
+  private getMessage(err: string) {
       return err.match('') || err.match(null) ? err : 'Service is unavailable. Please try again later';
   }
-
 }
