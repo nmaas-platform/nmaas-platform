@@ -31,4 +31,6 @@ class KClusterIngressView {
     private Boolean tlsSupported;
 
     private IngressCertificateConfigOption certificateConfigOption;
+
+    private String issuerOrWildcardName;
 }

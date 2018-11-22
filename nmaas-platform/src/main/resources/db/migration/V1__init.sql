@@ -396,6 +396,8 @@ create table k_cluster_ingress
   resource_config_option varchar(255) not null,
   supported_ingress_class varchar(255),
   tls_supported boolean,
+  certificate_config_option varchar(255),
+  issuer_or_wildcard_name varchar(255),
   primary key (id));
 
 create table kubernetes_chart (
