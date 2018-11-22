@@ -1,150 +1,149 @@
 {
-	"name": "Prometheus",
-	"version": "2.4.0",
-	"license": "Apache 2 License",
-	"briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
-	"tags": [
-		"monitoring",
-		"alerting"
-	],
-	"fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.\n\nPrometheus's main features are:\n\n\t- a multi-dimensional data model with time series data identified by metric name and key/value pairs\n\n\t- a flexible query language to leverage this dimensionality\n\n\t- no reliance on distributed storage; single server nodes are autonomous\n\n\t- time series collection happens via a pull model over HTTP\n\n\t- pushing time series is supported via an intermediary gateway\n\n\t- targets are discovered via service discovery or static configuration\n\n\t- multiple modes of graphing and dashboarding support",
-	"wwwUrl": "https://prometheus.io/",
-	"sourceUrl": "https://github.com/prometheus/prometheus",
-	"issuesUrl": "https://github.com/prometheus/prometheus/issues",
-	"appDeploymentSpec": {
-		"supportedDeploymentEnvironments": [
-			"KUBERNETES"
-		],
-		"kubernetesTemplate": {
-			"chart": {
-				"name": "nmaas-prometheus",
-				"version": "1.0.0-alfa"
-			}
-		},
-		"defaultStorageSpace": 20,
-		"configFileRepositoryRequired": true
-	},
-	"configTemplate": {
-		"template": {
-			"schema": {
-				"type": "object",
-				"properties": {
-					"global_config": {
-						"title": "Global configuration:",
-						"type": "object",
-						"properties": {
-							"global_scrape": {
-								"type": "string",
-								"default": "15s"
-							},
-							"global_evaluation": {
-								"type": "string",
-								"default": "30s"
-							}
-						}
-					},
-					"targets": {
-						"title": "Jobs",
-						"type": "array",
-						"minItems": 1,
-						"items": {
-							"$ref": "#/definitions/targets_obj",
-							"extendRefs": true
-						}
-					}
-				},
-				"definitions": {
-					"targets_obj": {
-						"type": "object",
-						"properties": {
-							"jobName": {
-								"title": "Job name",
-								"type": "string",
-								"minLength": 1
-							},
-							"scrape_interval": {
-								"type": "string",
-								"default": "15s"
-							},
-							"metrics_path": {
-								"type": "string",
-								"default": "/metrics"
-							},
-							"Addresses": {
-								"type": "array",
-								"minItems": 1,
-								"items": {
-									"$ref": "#/definitions/address_obj",
-									"extendRefs": true
-								}
-							},
-							"Labels": {
-								"type": "array",
-								"items": {
-									"$ref": "#/definitions/labels_obj",
-									"extendRefs": true
-								}
-							}
-						}
-					},
-					"address_obj": {
-						"type": "object",
-						"properties": {
-							"ipAddress": {
-								"title": "IP address and port",
-								"type": "string",
-								"minLength": 3,
-								"pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
-							}
-						}
-					},
-					"labels_obj": {
-						"type": "object",
-						"properties": {
-							"label_name": {
-								"Title": "Label name",
-								"type": "string"
-							},
-							"label_value": {
-								"Title": "Label value",
-								"type": "string"
-							}
-						}
-					}
-				}
-			},
-			"form": [
-				{
-					"key": "global_config",
-					"items": [
-						"global_config.global_scrape",
-						"global_config.global_evaluation"
-					]
-				},
-				{
-					"key": "targets",
-					"items": [
-						"targets[]",
-						"targets[].jobName",
-						"targets[].scrape_interval",
-						"targets[].metrics_path",
-						{
-							"key": "targets[].Addresses",
-							"items": [
-								"targets[].Addresses[].ipAddress"
-							]
-						},
-						{
-							"key": "targets[].Labels",
-							"items": [
-								"targets[].Labels[].label_name",
-								"targets[].Labels[].label_value"
-							]
-						}
-					]
-				}
-			]
-		}
-	}
-}
+    "name": "Prometheus",
+    "version": "2.4.0",
+    "license": "Apache 2 License",
+    "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+    "tags": [
+        "monitoring",
+        "alerting"
+    ],
+    "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.\n\nPrometheus's main features are:\n\n\t- a multi-dimensional data model with time series data identified by metric name and key/value pairs\n\n\t- a flexible query language to leverage this dimensionality\n\n\t- no reliance on distributed storage; single server nodes are autonomous\n\n\t- time series collection happens via a pull model over HTTP\n\n\t- pushing time series is supported via an intermediary gateway\n\n\t- targets are discovered via service discovery or static configuration\n\n\t- multiple modes of graphing and dashboarding support",
+    "wwwUrl": "https://prometheus.io/",
+    "sourceUrl": "https://github.com/prometheus/prometheus",
+    "issuesUrl": "https://github.com/prometheus/prometheus/issues",
+    "appDeploymentSpec": {
+        "supportedDeploymentEnvironments": [
+            "KUBERNETES"
+        ],
+        "kubernetesTemplate": {
+            "chart": {
+                "name": "nmaas-prometheus",
+                "version": "1.0.0-alfa"
+            }
+        },
+        "defaultStorageSpace": 20,
+        "configFileRepositoryRequired": true
+    },
+    "configTemplate": {
+        "template": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "global_config": {
+                        "title": "Global configuration:",
+                        "type": "object",
+                        "properties": {
+                            "global_scrape": {
+                                "type": "string",
+                                "default": "15s"
+                            },
+                            "global_evaluation": {
+                                "type": "string",
+                                "default": "30s"
+                            }
+                        }
+                    },
+                    "targets": {
+                        "title": "Jobs",
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                            "$ref": "#/definitions/targets_obj",
+                            "extendRefs": true
+                        }
+                    }
+                },
+                "definitions": {
+                    "targets_obj": {
+                        "type": "object",
+                        "properties": {
+                            "jobName": {
+                                "title": "Job name",
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "scrape_interval": {
+                                "type": "string",
+                                "default": "15s"
+                            },
+                            "metrics_path": {
+                                "type": "string",
+                                "default": "/metrics"
+                            },
+                            "Addresses": {
+                                "type": "array",
+                                "minItems": 1,
+                                "items": {
+                                    "$ref": "#/definitions/address_obj",
+                                    "extendRefs": true
+                                }
+                            },
+                            "Labels": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/labels_obj",
+                                    "extendRefs": true
+                                }
+                            }
+                        }
+                    },
+                    "address_obj": {
+                        "type": "object",
+                        "properties": {
+                            "ipAddress": {
+                                "title": "IP address and port",
+                                "type": "string",
+                                "minLength": 3,
+                                "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
+                            }
+                        }
+                    },
+                    "labels_obj": {
+                        "type": "object",
+                        "properties": {
+                            "label_name": {
+                                "Title": "Label name",
+                                "type": "string"
+                            },
+                            "label_value": {
+                                "Title": "Label value",
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "form": [
+                {
+                    "key": "global_config",
+                    "items": [
+                        "global_config.global_scrape",
+                        "global_config.global_evaluation"
+                    ]
+                },
+                {
+                    "key": "targets",
+                    "items": [
+                        "targets[]",
+                        "targets[].jobName",
+                        "targets[].scrape_interval",
+                        "targets[].metrics_path",
+                        {
+                            "key": "targets[].Addresses",
+                            "items": [
+                                "targets[].Addresses[].ipAddress"
+                            ]
+                        },
+                        {
+                            "key": "targets[].Labels",
+                            "items": [
+                                "targets[].Labels[].label_name",
+                                "targets[].Labels[].label_value"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
 }
