@@ -406,5 +406,11 @@
     },
     "SUBSCRIPTION": {
       "COMMENTS_NOT_EMPTY_MESSAGE": "Kommentar darf nicht leer sein"
+    },
+    "GENERIC_MESSAGE": {
+      "UNAVAILABLE_MESSAGE": "Dienst ist nicht verfügbar. Bitte versuchen Sie es später erneut.",
+      "INVALID_INPUT_MESSAGE": "Ungültige Eingabedaten",
+      "NOT_ROBOT_ERROR_MESSAGE": "Sie müssen beweisen, dass Sie kein Roboter sind!",
+      "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!",
     }
   }

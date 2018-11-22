@@ -81,14 +81,14 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
           this.sending = false;
           this.submitted = true;
           this.success = false;
-          this.errorMessage = this.translate.instant('REGISTRATION.NOT_ROBOT_ERROR_MESSAGE');
+          this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
       } else {
           if (!this.registrationForm.controls['termsOfUseAccepted'].value ||
             !this.registrationForm.controls['privacyPolicyAccepted'].value) {
               this.sending = false;
               this.submitted = true;
               this.success = false;
-              this.errorMessage = this.translate.instant('REGISTRATION.TERMS_OF_USER_MESSAGE');
+              this.errorMessage = this.translate.instant('GENERIC_MESSAGE.TERMS_OF_USER_MESSAGE');
           } else {
               if (this.registrationForm.valid) {
                   this.sending = true;
