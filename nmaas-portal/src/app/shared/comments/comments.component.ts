@@ -3,6 +3,7 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {AppsService} from '../../service/index';
 import {Comment, Id} from '../../model/index';
 import {isNullOrUndefined} from "util";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
     selector: 'comments',
@@ -32,7 +33,7 @@ export class CommentsComponent implements OnInit {
 
     commentErrorMsg: string;
 
-    constructor(private appsService: AppsService) {
+    constructor(private appsService: AppsService, private authService: AuthService) {
     }
 
     ngOnInit() {
