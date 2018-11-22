@@ -30,7 +30,7 @@
 				"type": "object",
 				"properties": {
 					"global_config": {
-						"title": "Global configuration",
+						"title": "Global configuration:",
 						"type": "object",
 						"properties": {
 							"global_scrape": {
