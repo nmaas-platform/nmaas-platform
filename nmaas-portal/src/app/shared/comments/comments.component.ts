@@ -4,6 +4,7 @@ import {AppsService} from '../../service/index';
 import {Comment, Id} from '../../model/index';
 import {isNullOrUndefined} from "util";
 import {AuthService} from "../../auth/auth.service";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'comments',
@@ -33,7 +34,7 @@ export class CommentsComponent implements OnInit {
 
     commentErrorMsg: string;
 
-    constructor(private appsService: AppsService, private authService: AuthService) {
+    constructor(private appsService: AppsService, private authService: AuthService, private translate: TranslateService) {
     }
 
     ngOnInit() {
@@ -46,7 +47,7 @@ export class CommentsComponent implements OnInit {
 
     public addComment(): void {
         if(isNullOrUndefined(this.newComment.comment) || this.newComment.comment === ''){
-            this.commentErrorMsg = 'Comment cannot be empty';
+            this.commentErrorMsg = this.translate.instant('SUBSCRIPTION.COMMENTS_NOT_EMPTY_MESSAGE');
         } else{
             this.appsService.addAppCommentByUrl(this.pathUrl, this.newComment)
                 .subscribe(id => {
@@ -60,8 +61,8 @@ export class CommentsComponent implements OnInit {
     }
 
     public addReply(parentId:number):void{
-        if(isNullOrUndefined(this.newReply.comment) || this.newReply.comment === ''){
-            this.replyErrorMsg = 'Comment cannot be empty';
+        if(isNullOrUndefined(this.newReply.comment) || this.newReply.comment === '') {
+            this.replyErrorMsg = this.translate.instant('SUBSCRIPTION.COMMENTS_NOT_EMPTY_MESSAGE');
         } else{
             this.newReply.parentId = parentId;
             this.appsService.addAppCommentByUrl(this.pathUrl, this.newReply)

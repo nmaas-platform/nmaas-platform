@@ -403,5 +403,8 @@
       "PASSWORD": "Hasło",
       "CONFIRM_PASSWORD": "Potwierdź nowe hasło"
     }
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Komentarz nie może być pusty"
   }
 }
