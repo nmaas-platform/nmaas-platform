@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
@@ -19,6 +20,10 @@ public interface KClusterIngressManager {
     String getExternalServiceDomain();
 
     Boolean getTlsSupported();
+
+    IngressCertificateConfigOption getCertificateConfigOption();
+
+    String getIssuerOrWildcardName();
 
     KClusterExtNetworkView reserveExternalNetwork(String domain);
 

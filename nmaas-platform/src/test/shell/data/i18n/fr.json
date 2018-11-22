@@ -80,6 +80,8 @@
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
     "ENABLE_TLS": "Enable TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "TLS certificate configuration",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "LetsEncrypt issuer or wildcard certificate name",
     "HOST_PORT": "Host port",
     "USER_REST_API": "Utiliser l'API REST",
     "INGRESS": "Ingress",

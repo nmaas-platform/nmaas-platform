@@ -4,11 +4,7 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
@@ -92,6 +88,16 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     @Override
     public Boolean getTlsSupported() {
         return loadSingleCluster().getIngress().getTlsSupported();
+    }
+
+    @Override
+    public IngressCertificateConfigOption getCertificateConfigOption() {
+        return loadSingleCluster().getIngress().getCertificateConfigOption();
+    }
+
+    @Override
+    public String getIssuerOrWildcardName() {
+        return loadSingleCluster().getIngress().getIssuerOrWildcardName();
     }
 
     @Override

@@ -79,6 +79,8 @@
     "HEML_CHARTS_DIRECTORY": "Lokalna lokalizacja chartów",
     "REST_API": "Kubernetes API",
     "ENABLE_TLS": "Włącz TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "Konfiguracja certyfikatów TLS",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "Nazwa issuera letsencrypt lub certyfikatu wildcard",
     "USER_REST_API": "Korzystaj z Kubernetes API",
     "HOST_PORT": "Host port",
     "INGRESS": "Ingress",

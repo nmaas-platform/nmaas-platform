@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 
@@ -28,4 +29,6 @@ class KClusterIngressView {
     private String externalServiceDomain;
 
     private Boolean tlsSupported;
+
+    private IngressCertificateConfigOption certificateConfigOption;
 }
