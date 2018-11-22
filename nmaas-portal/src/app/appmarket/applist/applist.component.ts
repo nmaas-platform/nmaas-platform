@@ -8,13 +8,16 @@ import { Router, ActivatedRoute } from '@angular/router';
 import {Location} from '@angular/common';
 import { Subscription } from 'rxjs/Subscription';
 import { isUndefined } from 'util';
+import {SortService} from "../../service/sort.service";
+import {SortableColumnComponent} from "../../shared/sortable-column/sortable-column.component";
+import {SortableTableDirective} from "../../shared/sortable-column/sortable-table.directive";
 
 @Component({
   selector: 'nmaas-applications',
   templateUrl: './applist.component.html',
   styleUrls: ['./applist.component.css'],
   encapsulation: ViewEncapsulation.None,
-  providers: [AppsService, AppSubscriptionsService]
+  providers: [AppsService, AppSubscriptionsService, SortService, SortableTableDirective, SortableColumnComponent]
 })
 export class AppListComponent implements OnInit, OnDestroy {
 
@@ -46,7 +49,6 @@ export class AppListComponent implements OnInit, OnDestroy {
       this.selectedDomain.unsubscribe();
     }
   }
-  
   
 //  filterAppsByName() {
 //    const searchedAppName: string = this.searchedAppName;

@@ -64,7 +64,15 @@ public class AnsibleNotificationControllerIntTest {
 
     @Before
     public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidDomainException {
-        appDeploymentRepository.save(new AppDeployment(deploymentId, DOMAIN, applicationId, DEPLOYMENT_NAME, true, 20));
+        AppDeployment appDeployment = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain(DOMAIN)
+                .applicationId(applicationId)
+                .deploymentName(DEPLOYMENT_NAME)
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+        appDeploymentRepository.save(appDeployment);
         DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));

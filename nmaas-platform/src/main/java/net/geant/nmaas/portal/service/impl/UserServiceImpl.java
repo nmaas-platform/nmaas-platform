@@ -71,6 +71,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User findByEmail(String email){
+		return userRepo.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User with mail "+email+ " not found"));
+	}
+
+	@Override
 	public boolean existsByUsername(String username) {
 		checkParam(username);
 		return userRepo.existsByUsername(username);

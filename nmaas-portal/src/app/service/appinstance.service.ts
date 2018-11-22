@@ -17,6 +17,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 import {AppConfiguration} from "../model/appconfiguration";
+import {a, b} from "@angular/core/src/render3";
 
 @Injectable()
 export class AppInstanceService extends GenericDataService {
@@ -29,8 +30,40 @@ export class AppInstanceService extends GenericDataService {
     return this.get<AppInstance[]>(this.getUrl(domainId));
   }
 
+  public getSortedAllAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
+    return this.get<AppInstance[]>(this.getUrl(domainId)).map(
+      (data) => {
+        data.sort((a, b) => {
+          if(criteria.sortDirection === 'desc'){
+            return a[criteria.sortColumn] < b[criteria.sortColumn] ? -1 : 1;
+          }
+          else {
+            return a[criteria.sortColumn] > b[criteria.sortColumn] ? -1 : 1;
+          }
+        });
+        return data;
+      }
+    )
+  }
+
   public getMyAppInstances(domainId?: number): Observable<AppInstance[]> {
     return this.get<AppInstance[]>(this.getUrl(domainId) + 'my');
+  }
+
+  public getSortedMyAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my').map(
+      (data) => {
+        data.sort((a, b) => {
+          if(criteria.sortDirection === 'desc'){
+            return a[criteria.sortColumn] < b[criteria.sortColumn] ? -1 : 1;
+          }
+          else {
+            return a[criteria.sortColumn] > b[criteria.sortColumn] ? -1 : 1;
+          }
+        });
+        return data;
+      }
+    )
   }
 
   public getUserAppInstances(username: string, domainId?: number): Observable<AppInstance[]> {
@@ -90,4 +123,9 @@ export class AppInstanceService extends GenericDataService {
     return this.post<number,any>((this.getUrl(domainId) +  appInstanceId + '/restart'), appInstanceId);
   }
 
+}
+
+export class CustomerSearchCriteria {
+  sortColumn: string;
+  sortDirection: string;
 }
