@@ -1,108 +1,67 @@
 {
-  "name": "Grafana",
-  "version": "5.3.1",
-  "license": "Apache 2 License",
-  "briefDescription": "The tool for beautiful monitoring and metric analytics.",
-  "tags": [
-    "monitoring",
-    "visualization"
-  ],
-  "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
-  "wwwUrl": "https://grafana.com/",
-  "sourceUrl": "https://github.com/grafana/grafana",
-  "issuesUrl": "https://github.com/grafana/grafana/issues",
-  "appDeploymentSpec": {
-    "supportedDeploymentEnvironments": [
-      "KUBERNETES"
+    "name": "Grafana",
+    "version": "5.3.1",
+    "license": "Apache 2 License",
+    "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+    "tags": [
+        "monitoring",
+        "visualization"
     ],
-    "kubernetesTemplate": {
-      "chart": {
-        "name": "nmaas-grafana",
-        "version": "1.0.0-alfa"
-      }
+    "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
+    "wwwUrl": "https://grafana.com/",
+    "sourceUrl": "https://github.com/grafana/grafana",
+    "issuesUrl": "https://github.com/grafana/grafana/issues",
+    "appDeploymentSpec": {
+        "supportedDeploymentEnvironments": [
+            "KUBERNETES"
+        ],
+        "kubernetesTemplate": {
+            "chart": {
+                "name": "nmaas-grafana",
+                "version": "1.0.0-alfa"
+            }
+        },
+        "defaultStorageSpace": 5,
+        "configFileRepositoryRequired": true
     },
-    "defaultStorageSpace": 5,
-    "configFileRepositoryRequired": true
-  },
-  "configTemplate": {
-    "template": {
-      "schema": {
-        "type": "object",
-        "properties": {
-          "source_name": {
-            "type": "string"
-          },
-          "source_type": {
-            "type": "string",
-            "enum": [
-              "graphite",
-              "prometheus",
-              "influx",
-              "elasticsearch"
-            ],
-            "default": "prometheus"
-          },
-          "use_name": {
-            "type": "boolean",
-            "title": "Use existing instance"
-          },
-          "prom_name": {
-            "title": "Prometheus instance name",
-            "condition": "model.use_name",
-            "type": "string"
-          },
-          "ip_addr": {
-            "title": "Instance ip address",
-            "condition": {
-              "functionBody": "try { return !model.use_name } catch(e){return false}"
+    "configTemplate": {
+        "template": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "use_name": {
+                        "type": "boolean",
+                        "title": "Use existing instance",
+                        "default": false
+                    },
+                    "source_name": {
+                        "type": "string"
+                    },
+                    "prom_name": {
+                        "title": "Prometheus instance name",
+                        "type": "string"
+                    }
+                }
             },
-            "type": "string"
-          },
-          "port_addr": {
-            "title": "Instance port",
-            "condition": {
-              "functionBody": "try { return !model.use_name } catch(e){return false}"
-            },
-            "type": "string"
-          },
-          "login": {
-            "title": "Basic auth: login",
-            "condition": {
-              "functionBody": "try { return !model.use_name } catch(e){return false}"
-            },
-            "type": "string"
-          },
-          "pwd": {
-            "title": "Basic auth: password",
-            "condition": {
-              "functionBody": "try { return !model.use_name } catch(e){return false}"
-            },
-            "type": "string"
-          }
-        }
-      },
-      "form": [
-        {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "section",
-            "items": [
-              "source_name",
-              "source_type",
-              "use_name",
-              "prom_name",
-              "ip_addr",
-              "port_addr",
-              "login",
-              {
-                "key": "pwd",
-                "type": "password"
-              }
+            "form": [
+                {
+                    "key": "use_name"
+                },
+                {
+                    "condition": "model.use_name",
+                    "type": "section",
+                    "items": [
+                        {
+                            "key": "source_name",
+                            "required": true
+                        },
+                        {
+                            "key": "prom_name",
+                            "required": true
+                        }
+                    ]
+                }
             ]
-          }
         }
-      ]
     }
-  }
 }
