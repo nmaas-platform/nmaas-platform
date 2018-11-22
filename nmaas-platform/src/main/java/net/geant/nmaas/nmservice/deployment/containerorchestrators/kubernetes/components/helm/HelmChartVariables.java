@@ -7,11 +7,11 @@ class HelmChartVariables {
 
     private static final String INGRESS_HOSTS_KEY = "ingress.hosts";
     private static final String INGRESS_ANNOTATIONS_KEY = "ingress.annotations";
-    private static final String INGRESS_TLS_KEY = "ingress.tls";
+    private static final String INGRESS_TLS_KEY = "ingress.tls.enabled";
 
     private static final String INGRESS_CLASS_ANNOTATION_KEY = "kubernetes.io/ingress.class";
-    private static final String INGRESS_LETSENCRYPT_KEY = "ingress.acme";
-    private static final String INGRESS_WILDCARD_OR_ISSUER = "ingress.certOrIssuer";
+    private static final String INGRESS_LETSENCRYPT_KEY = "ingress.tls.acme";
+    private static final String INGRESS_WILDCARD_OR_ISSUER = "ingress.tls.certOrIssuer";
 
     private static final String PAR_OPEN = "{";
     private static final String PAR_CLOSE = "}";
