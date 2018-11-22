@@ -43,8 +43,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
   public domains: Observable<Domain[]>;
 
   private readonly language = '';
-  private notARobotMessage: string;
-  private termsOfUserMessage: string;
 
   constructor(private fb: FormBuilder,
               private registrationService: RegistrationService,
