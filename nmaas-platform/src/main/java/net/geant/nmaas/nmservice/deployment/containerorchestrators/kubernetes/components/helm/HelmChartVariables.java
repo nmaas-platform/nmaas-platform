@@ -28,7 +28,7 @@ class HelmChartVariables {
     static Map<String, String> ingressVariablesAddTls(String ingressCertOrIssuer, Boolean acme) {
         Map<String, String> variables = new HashMap<>();
         variables.put(INGRESS_LETSENCRYPT_KEY, String.valueOf(acme));
-        variables.put(INGRESS_WILDCARD_OR_ISSUER, PAR_OPEN + ingressCertOrIssuer + PAR_CLOSE);
+        variables.put(INGRESS_WILDCARD_OR_ISSUER, ingressCertOrIssuer);
         return variables;
     }
 
