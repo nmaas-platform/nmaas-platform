@@ -8,20 +8,22 @@
 					<button class="btn navbar-btn" data-toggle="collapse" data-target="#login-register-panel">{{ 'NAVBAR.LOGIN_REGISTER' | translate }}</button>
 				</div>
 				<div class="pull-right navbar-btn" style="display: inline-block">
+					<ul>
 					<li class="dropdown language-selector pull-right" style="list-style-type: none; margin: 5px; vertical-align: middle;">
-						<span>Language:</span>
+						<span>{{'NAVBAR.LANGUAGE' | translate}}:</span>
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
-							<img src="{{[getPathToCurrent()]}}" class="lang-circle-icon" />
+							<img alt="language" src="{{[getPathToCurrent()]}}" class="lang-circle-icon" />
 						</a>
 						<ul class="dropdown-menu pull-right">
 							<li *ngFor="let lang of languages" [ngClass]="{'active': getCurrent() == lang}">
 								<a (click)="useLanguage(lang)">
-									<img class="lang-circle-icon" src="assets/images/country/{{lang}}_circle.png" />
+									<img alt="lang flag" class="lang-circle-icon" src="assets/images/country/{{lang}}_circle.png" />
 									<span>{{lang.toUpperCase()}}</span>
 								</a>
 							</li>
 						</ul>
 					</li>
+					</ul>
 				</div>
 
 			</div>

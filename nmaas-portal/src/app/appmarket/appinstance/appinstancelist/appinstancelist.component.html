@@ -1,40 +1,56 @@
 					<div class="col-sm-12 col-sm-12 col-md-12">
 						<h3>{{ 'APP_INSTANCES.TITLE' | translate }}</h3>
 					
-						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-							<form class = "form-inline" role = "form">
-								<label for="selectionType">{{ 'APP_INSTANCES.SHOW' | translate }}: </label>
-								<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">				
-									<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value.charAt(0) + sl.value.toLowerCase().substring(1,sl.value.length)}}</option>
-								</select>	
-							</form>
+						<div class="col-sm-12 col-sm-12 col-md-12">
+							<div style="margin-left: -10px;" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+								<form class = "form-inline" role = "form">
+									<label for="selectionType">{{ 'APP_INSTANCES.SHOW' | translate }}: </label>
+									<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">
+										<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value.charAt(0) + sl.value.toLowerCase().substring(1,sl.value.length)}}</option>
+									</select>
+								</form>
+							</div>
+							<div style="display: inline;" class="col-xs-12 col-sm-6 col-md-6 col-lg-6 pull-right text-right">
+								{{ 'APP_INSTANCES.ITEMS_PER_PAGE' | translate }}:
+								<span id="selectionItems" class="dropdown" style="vertical-align: middle; display: inline-block;">
+									<button class="dropdown-toggle btn" data-toggle="dropdown" data-close-others="true">
+										{{maxItemsOnPage}}
+									</button>
+									<ul class="dropdown-menu">
+										<li *ngFor="let item of itemsPerPage" [ngClass]="{'active': maxItemsOnPage == item}">
+											<a (click)="setItems(item)">
+												<span>{{item.toString()}}</span>
+											</a>
+										</li>
+									</ul>
+								</span>
+							</div>
 						</div>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12">
-						<table class = "table table-hover table-condensed">
-						   
+						<h4 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">Deployed instances</h4>
+						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 						   <thead>
 							  <tr>
-								 <th>{{ 'APP_INSTANCES.NAME' | translate }}</th>
-								 <th *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
-								 <th>{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								 <th>{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
-								 <th>{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
-								 <th>{{ 'APP_INSTANCES.STATE' | translate }}</th>
-								 <th>&nbsp;</th>
+								 <th class="col-lg-2 col-md-2 column-sortable" sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								 <th class="col-lg-1 col-md-2 column-sortable" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								 <th class="col-lg-1 col-md-2 column-sortable" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								 <th class="col-lg-3 col-md-2 column-sortable" sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								 <th class="col-lg-2 col-md-2 column-sortable" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								 <th class="col-lg-3 col-md-2 column-sortable" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
+								 <th class="col-lg-2 col-md-2 column-sortable">&nbsp;</th>
 							  </tr>
 						   </thead>
-						   
 						   <tbody>
-						      <ng-template ngFor let-appInstance [ngForOf]="appInstances | async">
-							  <tr>
-								 <td>{{appInstance?.name}}</td>
-								 <td *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
-								 <td>{{appInstance?.owner?.username}}</td>
-								 <td>{{appInstance?.createdAt | date:'medium'}}</td>
-								 <td>{{appInstance?.applicationName}}</td>
-								 <td>{{appInstance?.userFriendlyState}}</td>
-								<td>
+						   <ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber}">
+							  <tr *ngIf="appInstance?.userFriendlyState !== 'Undeployed'">
+								  <td class="col-lg-2 col-md-2">{{appInstance?.name}}</td>
+								  <td class="col-lg-1 col-md-2"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+								  <td class="col-lg-1 col-md-2" >{{appInstance?.owner?.username}}</td>
+								  <td class="col-lg-3 col-md-2" >{{appInstance?.createdAt | date:'medium'}}</td>
+								  <td class="col-lg-2 col-md-2">{{appInstance?.applicationName}}</td>
+								  <td class="col-lg-3 col-md-2">{{appInstance?.userFriendlyState}}</td>
+								  <td class="col-lg-2 col-md-2">
 									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 										{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
 									</a>
@@ -42,10 +58,45 @@
 								</td>
 							  </tr>
 							  </ng-template>
-						
 						   </tbody>
 						</table>
-						
+						<pagination-controls class="text-right" (pageChange)="pageNumber = $event"></pagination-controls>
+					</div>
+
+					<div class = "col-sm-12 col-sm-12 col-md-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
+						<h4>Undeployed instances</h4>
+						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
+							<thead>
+							<tr>
+								<th class="col-lg-2 col-md-2 column-sortable" sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								<th class="col-lg-1 col-md-2 column-sortable" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
+								<th class="col-lg-1 col-md-2 column-sortable" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
+								<th class="col-lg-3 col-md-2 column-sortable" sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								<th class="col-lg-2 col-md-2 column-sortable" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
+								<th class="col-lg-3 col-md-2 column-sortable" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
+								<th class="col-lg-2 col-md-2 column-sortable">&nbsp;</th>
+							</tr>
+							</thead>
+							<tbody>
+							<ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber}">
+								<tr *ngIf="appInstance?.userFriendlyState == 'Undeployed'">
+									<td class="col-lg-2 col-md-2">{{appInstance?.name}}</td>
+									<td class="col-lg-1 col-md-2"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
+									<td class="col-lg-1 col-md-2" >{{appInstance?.owner?.username}}</td>
+									<td class="col-lg-3 col-md-2" >{{appInstance?.createdAt | date:'medium'}}</td>
+									<td class="col-lg-2 col-md-2">{{appInstance?.applicationName}}</td>
+									<td class="col-lg-3 col-md-2">{{appInstance?.userFriendlyState}}</td>
+									<td class="col-lg-2 col-md-2">
+										<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
+											{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
+										</a>
+										<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">{{ 'APP_INSTANCES.GO_TO_APP_BUTTON' | translate }}</a>
+									</td>
+								</tr>
+							</ng-template>
+							</tbody>
+						</table>
+						<pagination-controls class="text-right" (pageChange)="pageNumber = $event"></pagination-controls>
 					</div>
 					
 				

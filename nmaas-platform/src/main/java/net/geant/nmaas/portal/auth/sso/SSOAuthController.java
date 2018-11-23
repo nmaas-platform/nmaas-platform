@@ -2,9 +2,9 @@ package net.geant.nmaas.portal.auth.sso;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -74,7 +74,7 @@ public class SSOAuthController {
 			// Autocreate as we trust sso
 			try {
 				byte[] array = new byte[16]; // random password
-				new Random().nextBytes(array);
+				new SecureRandom().nextBytes(array);
 				String generatedString = new String(array, Charset.forName("UTF-8"));
 				user = users.register("thirdparty-"+String.valueOf(System.currentTimeMillis()), true, generatedString, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 				user.setSamlToken(userSSOLoginData.getUsername()); //Check user ID TODO: check if it's truly unique!

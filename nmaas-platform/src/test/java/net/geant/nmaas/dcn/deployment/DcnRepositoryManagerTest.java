@@ -40,7 +40,14 @@ public class DcnRepositoryManagerTest {
 
     @Before
     public void populateRepositories() {
-        appDeploymentRepository.save(new AppDeployment(DEPLOYMENT_ID, DOMAIN, Identifier.newInstance(""), DEPLOYMENT_NAME, true, 20));
+        AppDeployment appDeployment = AppDeployment.builder().deploymentId(DEPLOYMENT_ID)
+                .domain(DOMAIN)
+                .applicationId(Identifier.newInstance(""))
+                .deploymentName(DEPLOYMENT_NAME)
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+        appDeploymentRepository.save(appDeployment);
     }
 
     @After
