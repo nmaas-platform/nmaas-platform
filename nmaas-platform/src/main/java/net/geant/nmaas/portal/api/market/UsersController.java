@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
@@ -39,12 +38,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_OPERATOR;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 
 @RestController
 @RequestMapping("/api")
@@ -280,7 +288,7 @@ public class UsersController {
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
 		ConfirmationEmail emailTemplate = ConfirmationEmail.builder()
 				.toEmail(user.getEmail())
-				.subject("Reset your password")
+				.subject("NMaaS: Password reset request")
 				.templateName("user-reset-password-notification")
 				.firstName(user.getFirstname())
 				.userName(user.getUsername())
@@ -417,13 +425,15 @@ public class UsersController {
 		final Domain globalDomain = domainService.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found"));
 		
 		if(domain.equals(globalDomain)) {
-			if(!(role == Role.ROLE_SYSTEM_ADMIN || role == Role.ROLE_TOOL_MANAGER || role == Role.ROLE_OPERATOR || role == Role.ROLE_GUEST))
-				throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);			
-		} else {
-			if(!(role == Role.ROLE_GUEST || role == Role.ROLE_USER || role == Role.ROLE_DOMAIN_ADMIN))
+			if((Stream.of(ROLE_SYSTEM_ADMIN, ROLE_TOOL_MANAGER, ROLE_OPERATOR, ROLE_GUEST).noneMatch(allowed -> allowed == role))) {
 				throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
+			}
+		} else {
+			if(Stream.of(ROLE_GUEST, ROLE_USER, ROLE_DOMAIN_ADMIN).noneMatch(allowed -> allowed == role)) {
+				throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
+			}
 		}
-			
+
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
 
 		try {
@@ -538,7 +548,7 @@ public class UsersController {
 			Long globalId = globalDomainOptional.get().getId();
 			try{
 				if(domainService.getMemberRoles(globalId, userId).isEmpty()){
-					domainService.addMemberRole(globalId, userId, Role.ROLE_GUEST);
+					domainService.addMemberRole(globalId, userId, ROLE_GUEST);
 				}
 			} catch(ObjectNotFoundException e){
 				throw new MissingElementException(e.getMessage());
@@ -588,27 +598,26 @@ public class UsersController {
     }
 
     String getMessageWhenUserUpdated(final net.geant.nmaas.portal.persistent.entity.User user, final UserRequest userRequest){
-        String message = "";
-        String constMessageElement = " to - ";
+        StringBuilder message = new StringBuilder();
         if(!isSame(userRequest.getUsername(), user.getUsername())){
-            message = message + System.lineSeparator() + "||| Username changed from - " + user.getUsername() + constMessageElement + userRequest.getUsername() + "|||" ;
+        	message.append(" Username [" + user.getUsername() + "] -> [" + userRequest.getUsername() + "]");
         }
         if(!isSame(userRequest.getEmail(), user.getEmail())){
-            message =  message + System.lineSeparator() + "||| Email changed from - " + user.getEmail() + constMessageElement + userRequest.getEmail() + "|||";
+            message.append(" Email [" + user.getEmail() + "] -> [" + userRequest.getEmail() + "]");
         }
         if(!isSame(userRequest.getFirstname(), user.getFirstname())){
-            message =  message + System.lineSeparator() + "||| First name changed from - " + user.getFirstname() + constMessageElement + userRequest.getFirstname() + "|||";
+            message.append(" First name [" + user.getFirstname() + "] -> [" + userRequest.getFirstname() + "]");
         }
         if(!isSame(userRequest.getLastname(), user.getLastname())){
-            message =  message + System.lineSeparator() + "||| Last name changed from - " + user.getLastname() + constMessageElement + userRequest.getLastname() + "|||";
+            message.append(" Last name [" + user.getLastname() + "] -> [" + userRequest.getLastname() + "]");
         }
         if(!userRequest.isEnabled() == user.isEnabled()){
-            message =  message + System.lineSeparator() + "||| Enabled flag changed from - " + user.isEnabled() + constMessageElement + userRequest.isEnabled() + "|||";
+            message.append(" Enabled flag [" + user.isEnabled() + "] -> [" + userRequest.isEnabled() + "]");
         }
         if(!isSame(getRequestedRoleAsList(userRequest.getRoles()), getRoleAsList(user.getRoles()))){
-            message = message + System.lineSeparator() + "||| Role changed from - " + getRoleAsString(user.getRoles()) + constMessageElement + getRoleWithDomainIdAsString(userRequest.getRoles()) + "|||";
+            message.append(" Roles changed [" + getRoleAsString(user.getRoles()) + "] -> [" + getRoleWithDomainIdAsString(userRequest.getRoles()) + "]");
         }
-        return message;
+        return message.toString();
     }
 
     private boolean isSame(String newDetail, String oldDetail){
