@@ -69,7 +69,7 @@ public class RegistrationController {
 			throw new SignupException("Privacy Policy were not accepted.");
 		}
 		net.geant.nmaas.portal.persistent.entity.Domain domain = null;
-		if(registration.getDomainId() == null){
+		if(registration.getDomainId() != null){
 			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("Domain not found"));
 		}
 		net.geant.nmaas.portal.persistent.entity.Domain globalDomain = domains.getGlobalDomain().orElseThrow(MissingElementException::new);

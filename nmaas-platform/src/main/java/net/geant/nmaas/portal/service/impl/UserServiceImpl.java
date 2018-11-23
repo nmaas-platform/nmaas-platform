@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
 	public User register(Registration registration, Domain globalDomain, Domain domain){
 
 		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
-			throw new ProcessingException("User already exists");
+			throw new SignupException("User already exists");
 		}
 
 		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);

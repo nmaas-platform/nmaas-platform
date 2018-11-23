@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -184,6 +185,17 @@ public class UserServiceImplTest {
         assertTrue(userService.existsById((long) 0));
     }
 
+    public void existsByEmailShouldThrowTrue(){
+        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+        assertTrue(userService.existsByEmail("test@test.com"));
+    }
+
+    @Test
+    public void existsByEmailShouldThrowFalseWhenThereIsNoUserWithSpecifiedId(){
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        assertFalse(userService.existsByEmail("test@test.com"));
+    }
+
     @Test
     public void shouldRegisterUserWithGlobalGuestRole(){
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
@@ -209,11 +221,19 @@ public class UserServiceImplTest {
         assertEquals(user.getRoles().get(1).getDomain(), domain);
     }
 
-    @Test(expected = ProcessingException.class)
+    @Test(expected = SignupException.class)
     public void shouldNotRegisterUserWhenUserAlreadyExists(){
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         when(userRepository.existsByUsername(registration.getUsername())).thenReturn(true);
+        userService.register(registration, domain, null);
+    }
+
+    @Test(expected = SignupException.class)
+    public void shouldNotRegisterUserWhenUserAlreadyExistsByMail(){
+        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
         userService.register(registration, domain, null);
     }
 
