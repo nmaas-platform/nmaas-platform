@@ -59,7 +59,15 @@
     "SUBMIT": "Submit",
     "FORM_SUBMISSION": "Registration form submission",
     "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
-    "DONE_MESSAGE": "Done"
+    "DONE_MESSAGE": "Done",
+    "INVALID_CREDENTIALS_MESSAGE": "Invalid credentials.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Unable to register new user.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Terms of Use were not accepted.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Privacy Policy were not accepted.",
+    "USER_ALREADY_EXISTS_MESSAGE": "User already exists.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Unable to update newly registered user.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Unable to fetch the content"
   },
   "LOGIN": {
     "USERNAME": "Username",
@@ -67,7 +75,8 @@
     "PASSWORD": "Password",
     "PASSWORD_REQUIRED_MESSAGE": "Password is required",
     "LOGIN": "Login",
-    "LOGIN_WITH": "Login with"
+    "LOGIN_WITH": "Login with",
+    "LOGIN_FAILURE_MESSAGE": "Invalid Credentials"
   },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
@@ -392,5 +401,14 @@
       "PASSWORD": "Password",
       "CONFIRM_PASSWORD": "Confirm password"
     }
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Comment cannot be empty"
+  },
+  "GENERIC_MESSAGE": {
+    "UNAVAILABLE_MESSAGE": "Service is unavailable. Please try again later",
+    "INVALID_INPUT_MESSAGE": "Invalid input data",
+    "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
+    "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"
   }
 }

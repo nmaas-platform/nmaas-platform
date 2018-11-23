@@ -59,7 +59,15 @@
     "SUBMIT": "Soumettre",
     "FORM_SUBMISSION": "Formulaire d'inscription",
     "THANK_YOU_MESSAGE": "Merci d'avoir envoyé le formulaire d'inscription. Votre compte doit être activé par l'administrateur système. Cela prend du temps.",
-    "DONE_MESSAGE": "Terminé"
+    "DONE_MESSAGE": "Terminé",
+    "INVALID_CREDENTIALS_MESSAGE": "Informations d'identification non valides.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Impossible d'inscrire un nouvel utilisateur.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Les conditions d'utilisation n'ont pas été acceptées.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "La politique de confidentialité n'a pas été acceptée.",
+    "USER_ALREADY_EXISTS_MESSAGE": "L'utilisateur existe déjà.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Impossible de mettre à jour l'utilisateur récemment enregistré.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Impossible d'extraire le contenu"
   },
   "LOGIN": {
     "USERNAME": "Nom d'utilisateur",
@@ -67,7 +75,8 @@
     "PASSWORD": "Mot de passe",
     "PASSWORD_REQUIRED_MESSAGE": "Le mot de passe est requis",
     "LOGIN": "S'identifier",
-    "LOGIN_WITH": "Connectez-vous avec"
+    "LOGIN_WITH": "Connectez-vous avec",
+    "LOGIN_FAILURE_MESSAGE": "Les informations d'identification invalides"
   },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",
@@ -80,8 +89,8 @@
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
     "ENABLE_TLS": "Enable TLS",
-    "HOST_PORT": "Host port",
     "USER_REST_API": "Utiliser l'API REST",
+    "HOST_PORT": "Host port",    
     "INGRESS": "Ingress",
     "CONTROLLER_CONFIG_OPTION": "Option de configuration du contrôleur",
     "SUPPORTED_INGRESS_CLASS": "Classe d'entrée prise en charge",
@@ -161,7 +170,8 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer"
+    "REMOVE_BUTTON": "Supprimer",
+    "ADD_BUTTON": "Add"	
   },
   "APP_INSTANCES": {
     "TITLE": "Instances d'application",
@@ -391,5 +401,14 @@
       "PASSWORD": "Password",
       "CONFIRM_PASSWORD": "Confirm password"
     }
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Le commentaire ne peut pas être vide"
+  },
+  "GENERIC_MESSAGE": {
+    "UNAVAILABLE_MESSAGE": "Le service est indisponible. Veuillez réessayer ultérieurement",
+    "INVALID_INPUT_MESSAGE": "Données d'entrée non valides",
+    "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
+    "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
   }
 }
