@@ -84,6 +84,12 @@ public class DomainController extends AppBaseController {
 		try {
 			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass());
 			this.domainService.storeDcnInfo(domain.getCodename());
+
+			if(domain.isDcnConfigured()){
+				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
+				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
+			}
+
 			return new Id(domain.getId());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException | InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
