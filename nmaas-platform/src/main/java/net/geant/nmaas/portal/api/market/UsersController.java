@@ -274,8 +274,7 @@ public class UsersController {
 	public void setAcceptance(@PathVariable String username) {
 	    try {
             this.setAcceptanceFlags(username);
-            String message = String.format("User %s accepted Terms of Use and Privacy Policy", username);
-            log.info(message);
+            log.info(String.format("User [%s] accepted Terms of Use and Privacy Policy", username));
         }catch(ProcessingException err){
 	        throw new MissingElementException(err.getMessage());
         }
