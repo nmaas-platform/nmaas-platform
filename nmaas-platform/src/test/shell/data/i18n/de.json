@@ -186,7 +186,8 @@
       "APPLICATION": "Anwendung",
       "STATE": "Status",
       "DETAILS_BUTTON": "Details",
-      "GO_TO_APP_BUTTON": "Gehe zu App"
+      "GO_TO_APP_BUTTON": "Gehe zu App",
+      "ACTIONS": "Aktionen"
     },
     "MONITOR": {
       "TITLE": "Überwachungs Service",
