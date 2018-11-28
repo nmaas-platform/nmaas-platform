@@ -161,12 +161,12 @@ public class UsersController {
 			}
 				userService.update(userDetails);
 				if (!StringUtils.isEmpty(message)) {
-					log.info(String.format("User [%s] with role [%s] updated data of user [%s]. The following changes are - ",
+					log.info(String.format("User [%s] with role [%s] updated data of user [%s]. The following changes are: [%s] ",
 							principal.getName(),
 							adminRoles,
 							userDetails.getUsername(),
-							userRoles));
-					log.info(message);
+							userRoles,
+                            message));
 				}
 			} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 				throw new ProcessingException("Unable to modify roles");
@@ -219,7 +219,7 @@ public class UsersController {
 
             final String adminRoles = getRoleAsString(adminUser.getRoles());
 
-            log.info(String.format("Admin user name - %s with role - %s, has removed role - %s of user name - %s. The domain id is  - %d",
+            log.info(String.format("User [%s] with role [%s] removed role [%s] from user [%s] in domain [%d]",
                     principal.getName(),
                     adminRoles,
 					userRole.getRole().authority(),
@@ -546,7 +546,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void isSystemComponent(final Principal principal){
-        log.debug("Validated system component role for user [%s].", principal.getName());
+        log.debug(String.format("Validated system component role for user [%s].", principal.getName()));
     }
 
 	private void addGlobalGuestUserRoleIfMissing(Long userId) {
