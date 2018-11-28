@@ -2,8 +2,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
-					<div class="thumbnail">
-						<img alt="App logo" [src]="appImagesService.getAppLogoUrl(app?.id) | secure" onError="this.src='assets/images/app-logo-example.png'"/>
+					<div class="thumbnail" *ngIf="app">
+						<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+					</div>
+					<div class="thumbnail" *ngIf="!app">
+						<img alt="App logo" src="assets/images/app-logo-example.png"/>
 					</div>
 				</div>
 				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
@@ -36,7 +39,7 @@
 						</div>
 					</div>
 					<hr>
-					<div class="row">
+					<div *ngIf="app" class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 							<p>
 								<span>{{'APP_INSTANCE.RATING' | translate}}:</span>
@@ -119,7 +122,7 @@
 				</table>
 			</div>
 
-            <div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || appInstanceStatus?.state > AppInstanceState.CONFIGURATION_AWAITING}" >
+			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
 				<div class="col-xs-12">
 					<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
 					<hr>
