@@ -1,6 +1,7 @@
 import {
     Cluster,
     ClusterExtNetwork,
+    IngressCertificateConfigOption,
     IngressControllerConfigOption,
     IngressResourceConfigOption,
     NamespaceConfigOption
@@ -22,6 +23,8 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     resourceConfigOption:Map<string, IngressResourceConfigOption> = new Map<string, IngressResourceConfigOption>();
 
     namespaceConfigOption:Map<string,NamespaceConfigOption> = new Map<string, NamespaceConfigOption>();
+
+    certificateConfigOption:Map<string,IngressCertificateConfigOption> = new Map<string, IngressCertificateConfigOption>();
 
     @Input()
     public cluster: Cluster = new Cluster();
@@ -93,5 +96,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
         this.namespaceConfigOption.set('Use default namespace', NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         this.namespaceConfigOption.set('Use domain namespace', NamespaceConfigOption.USE_DOMAIN_NAMESPACE);
         this.namespaceConfigOption.set('Create namespace', NamespaceConfigOption.CREATE_NAMESPACE);
+        this.certificateConfigOption.set('Use my own wildcard certificate', IngressCertificateConfigOption.USE_WILDCARD);
+        this.certificateConfigOption.set('Generate LetsEncrypt certificates automatically', IngressCertificateConfigOption.USE_LETSENCRYPT);
     }
 }
