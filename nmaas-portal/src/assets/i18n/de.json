@@ -6,12 +6,12 @@
     "DOMAINS": "Domains",
     "USERS": "Benutzer",
     "INVENTORY": "Externe Komponenten",
-    "MONITOR": "Überwachung",
-    "CONFIGURATION": "Konfiguration",
+    "MONITOR": "Monitoring",
+    "CONFIGURATION": "Einstellungen",
     "PROFILE": "Profil",
     "LOGOUT": "Ausloggen",
     "LOGIN_REGISTER": "Einloggen | Registrieren",
-    "LANGUAGE": "Language"
+    "LANGUAGE": "Sprache"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -19,29 +19,29 @@
     "TITLE1": "Network Management as a Service",
     "TITLE2": "stellt ein Portfolio an Netzwerk-Management-Anwendungen bereit welche als dedizierte Instanzen pro Benutzer in der Cloud ausgeführt werden.",
     "INTRO_TEXT": "Der NMaaS-Dienst von GÉANT umfasst drei Aspekte: Bereitstellung, Verwaltung und Wartung der Infrastruktur des NMaaS Service Portals, der Plattform und ausgewählter Tools. Der Benutzer wird in der Verwendung des Systems und der ausgewählten Tools unterstützt um sein eigenes Netzwerk via NMaaS zu überwachen. Es werden ebenfalls Anwender unterstützt, welche ihre Software über das NMaaS System bereitstellen möchten.",
-    "TARGET_USERS_HEADER": "Zielbenutzer",
+    "TARGET_USERS_HEADER": "Zielgruppe",
     "TARGET_USERS_TEXT": "NMaaS-Nutzer sind Organisationen, die keine eigene NMS-Infrastruktur besitzen und/oder das Netzwerkmanagement auslagern wollen, sowie Organisationen und/oder Einzelpersonen, die nach qualitativ hochwertiger Netzwerkmanagement-Software suchen oder ihre Software innerhalb der Community teilen möchten.",
-    "MARKETPLACE_HEADER": "NMaaS Marktplatz",
-    "MARKETPLACE_TEXT": "Der NMaaS Marktplatz ist ein frei verteilter und von der Community unterstützer Katalog verfügbarer Open-Source-Tools. Die Inhalte werden von den Administratoren ausgewählt. Sie haben aber auch die Möglichkeit neue Anwendung vorzuschlagen, um die Auswahl an Anwendungen zu vergrößern.",
+    "MARKETPLACE_HEADER": "NMaaS Marketplace",
+    "MARKETPLACE_TEXT": "Der NMaaS Marketplace ist ein frei verteilter und von der Community unterstützer Katalog verfügbarer Open-Source-Tools. Die Inhalte werden von den Administratoren ausgewählt. Sie haben aber auch die Möglichkeit neue Anwendung vorzuschlagen, um die Auswahl an Anwendungen zu vergrößern.",
     "COST_REDUCTION_HEADER": "Kostensenkung",
     "COST_REDUCTION_TEXT": "Mit NMaaS müssen die Benutzer nicht die Betriebskosten und Risiken im Zusammenhang mit der Wartung und Kontrolle der Netzwerk-Management-Infrastruktur tragen.",
-    "SECURITY_HEADER": "Flexible Skalierung",
-    "SECURITY_TEXT": "Eine horizontale Skalierung ist mit NMaaS kein Problem. Sie können ihre Instanzen sehr einfach und in nur wenigen Minuten skalieren.",
-    "SCALING_HEADER": "NMaaS Funktionen",
-    "SCALING_TEXT": "Anwendungs-Marktplatz",
-    "NMAAS_FEATURES_HEADER": "Im Marktplatz finden Sie von Administratoren und der Community ausgewählte Top-Anwendungen zur Verwaltung und Wartung Ihrer Netzwerkinfrastruktur.",
-    "APP_MARKET_HEADER": "Sie möchten Ihre Anwendung in der Community teilen? Mittels Antrag können Sie Ihre Anwendung zum NMaaS Anwendungs-Marktplatz hinzuzufügen.",
-    "APP_MARKET_TEXT": "SSO Support",
-    "OWN_APPS_HEADER": "Wenn Sie sich für SSO entscheiden, können Sie sich mit demselben Konto nicht nur bei NMaasS anmelden, sondern auch bei einigen anderen Diensten. Hierfür müssen Sie Ihren Identitäts-Provider auswählen und sich mit einem existierenden Konto anmelden.",
-    "OWN_APPS_TEXT": "Schnelle & einfache Bereitstellung",
-    "EDUGAIN_SUPPORT_HEADER": "Sie können Ihre erste Anwendung in wenigen Minuten installieren. Fügen Sie einfach Ihre Konfiguration hinzu, holen Sie sich die Anwendung vom Markt und stellen Sie sie bereit. Unsere Services werden den Rest erledigen. In wenigen Minuten erhalten Sie die Adresse für Ihren Anwendungsbereich.",
-    "EDUGAIN_SUPPORT_TEXT": "Überwachung",
-    "FAST_DEPLOYMENT_HEADER": "NMaaS bietet Ihnen eine Lösung für das Überwachen von Services. Mit unserem Servicetool können Sie Informationen über die Verfügbarkeit Ihrer Services abrufen und sammeln.",
-    "FAST_DEPLOYMENT_TEXT": "Domain Management",
-    "WEB_PORTAL_HEADER": "Sie haben mehr als eine Domain zu verwalten, aber keine eigene Infrastruktur? Es gibt eine einfache Lösung - NMaaS unterstützt die gleichzeitige Konfiguration und Verwaltung mehrerer Domains.",
-    "WEB_PORTAL_TEXT": "Verwendete Technologien",
-    "KUBERNETES_HEADER": "Sicherheit",
-    "KUBERNETES_TEXT": "Mit NMaaS müssen Sie sich keine Sorgen um Sicherheit machen. Wir bieten mittels getrennter Instanzen und VPN eine sichere Verbindung zu Ihrem Netzwerk - damit Institutionen und Projekte das Netzwerk sicher verwalten können.",
+    "SECURITY_HEADER": "Security",
+    "SECURITY_TEXT": "Mit NMaaS müssen Sie sich keine Sorgen um Sicherheit machen. Wir bieten mittels getrennter Instanzen und VPN eine sichere Verbindung zu Ihrem Netzwerk - damit Institutionen und Projekte das Netzwerk sicher verwalten können.",
+    "SCALING_HEADER": "Flexible Skalierung",
+    "SCALING_TEXT": "Eine horizontale Skalierung ist mit NMaaS kein Problem. Sie können ihre Instanzen sehr einfach und in nur wenigen Minuten skalieren.",
+    "NMAAS_FEATURES_HEADER": "NMaaS Features",
+    "APP_MARKET_HEADER": "Application Market",
+    "APP_MARKET_TEXT": "Im Marktplatz finden Sie von Administratoren und der Community ausgewählte Top-Anwendungen zur Verwaltung und Wartung Ihrer Netzwerkinfrastruktur.",
+    "OWN_APPS_HEADER": "Eigene Anwendungen",
+    "OWN_APPS_TEXT": "Sie möchten Ihre Anwendung in der Community teilen? NMaaS ist offen für neue Anwendungen.",
+    "EDUGAIN_SUPPORT_HEADER": "eduGAIN support",
+    "EDUGAIN_SUPPORT_TEXT": "Sie müssen kein neues Konto erstellen. Melden Sie sich einfach mit einem bestehenden Konto Ihres eduGAIN-Partner Identitätsanbieters an.",
+    "FAST_DEPLOYMENT_HEADER": "Schnelles & einfaches deployment",
+    "FAST_DEPLOYMENT_TEXT": "Auf Ihre Anfrage hin werden Anwendungen mit benutzerdefinierter Konfiguration mittels Assistenten innerhalb weniger Minuten bereitgestellt.",
+    "WEB_PORTAL_HEADER": "Modernes Webportal",
+    "WEB_PORTAL_TEXT": "NMaaS bietet ein webbasiertes Benutzerportal, das dem Prinzip des reaktiven Designs folgt.",
+    "KUBERNETES_HEADER": "Kubernetes deployment",
+    "KUBERNETES_TEXT": "Benutzeranwendungsinstanzen werden im Kubernetes-Cluster bereitgestellt, der auf einer dedizierten Hardware-Infrastruktur läuft, die eine hohe Leistung und Zuverlässigkeit gewährleistet.",
     "TECHNOLOGIES_USED_HEADER": "Verwendete Technologien"
   },
   "REGISTRATION": {
@@ -175,7 +175,8 @@
     "STATE": "Status",
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Gehe zu App",
-    "ITEMS_PER_PAGE": "Instanzen pro Seite"
+    "ITEMS_PER_PAGE": "Instanzen pro Seite",
+    "ACTIONS": "Aktionen"
   },
   "MONITOR": {
     "TITLE": "Überwachungs Service",
@@ -238,7 +239,7 @@
     "SUBMIT_BUTTON": "Senden",
     "NAME_IS_REQUIRED_MESSAGE": "Name wird benötigt.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename wird benötigt.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Codename muss folgende Zeichen beinhalten a-z, A-Z, 0_9, _ characters.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Codename darf nur folgende Zeichen beinhalten a-z, A-Z, 0_9 und _ .",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename muss 2-8 Zeichen lang sein."
   },
   "GIT_INFO": {
@@ -376,21 +377,21 @@
     }
   },
   "RESET_PASSWORD": {
-    "FORGOT_PASSWORD_BUTTON": "Forgot password",
-    "TEXT": "To reset your password, enter the email address you use to sign in to nmaas.",
-    "SUBMIT_BUTTON": "Submit",
+    "FORGOT_PASSWORD_BUTTON": "Passwort vergessen",
+    "TEXT": "Um Ihr Passwort zurückzusetzen geben Sie Ihre E-Mail Adresse an, welche Sie für die Registrierung bei NMaaS verwendet haben.",
+    "SUBMIT_BUTTON": "Senden",
     "EMAIL": "Email",
-    "INVALID_TOKEN": "Your link has already expired. Please fill out forget password form again.",
-    "GO_BACK": "Go back NmaaS page",
+    "INVALID_TOKEN": "Ihr Link ist bereits abgelaufen. Bitte füllen Sie das Formular für das vergessene Passwort erneut aus.",
+    "GO_BACK": "Zurück zur NMaaS Seite",
     "MODAL": {
-      "HEADER": "Please check your email",
-      "BODY": "If you have provided valid email we will send to you link for resetting password.",
-      "CLOSE_BUTTON": "Close"
+      "HEADER": "Bitte überprüfen Sie Ihre E-Mails",
+      "BODY": "Wenn Sie eine gültige E-Mail Adresse angegeben haben, werden wir Ihnen einen Link für das Zurücksetzen des Passworts senden.",
+      "CLOSE_BUTTON": "Schließen"
     },
     "SITE": {
-      "HEADER": "Please provide new password",
-      "PASSWORD": "Password",
-      "CONFIRM_PASSWORD": "Confirm password"
+      "HEADER": "Bitte neues Passwort eingeben",
+      "PASSWORD": "Passwort",
+      "CONFIRM_PASSWORD": "Passwort bestätigen"
     }
   }
 }

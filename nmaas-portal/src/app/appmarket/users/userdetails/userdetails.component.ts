@@ -16,6 +16,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   private userId: number;
   public user: User;
+  public errorMessage: string;
 
   constructor(private userService: UserService, private router: Router,
     private route: ActivatedRoute, private location: Location, public authService:AuthService) {
@@ -39,9 +40,14 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
        return;
     }
 
-    if(user.id) {
-      this.userService.updateUser(user.id, user).subscribe((value) => this.router.navigate(['/users/view/', user.id]));
-    }
+      if (user.id) {
+          this.userService.updateUser(user.id, user).subscribe(() => {
+              this.errorMessage = undefined;
+              this.router.navigate(['/users/view/', user.id])
+          }, err => {
+              this.errorMessage = err.message;
+          });
+      }
   }
 
   public remove(userId:number){
