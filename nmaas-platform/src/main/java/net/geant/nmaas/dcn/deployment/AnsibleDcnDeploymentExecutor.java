@@ -14,7 +14,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;

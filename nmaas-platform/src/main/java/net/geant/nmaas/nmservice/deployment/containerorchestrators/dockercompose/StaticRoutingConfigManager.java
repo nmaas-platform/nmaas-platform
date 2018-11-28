@@ -9,10 +9,8 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;

@@ -15,7 +15,6 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileT
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

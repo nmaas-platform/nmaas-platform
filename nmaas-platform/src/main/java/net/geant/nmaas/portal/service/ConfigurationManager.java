@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
-import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
-import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 
 public interface ConfigurationManager {
 

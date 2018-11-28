@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.dcn;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
