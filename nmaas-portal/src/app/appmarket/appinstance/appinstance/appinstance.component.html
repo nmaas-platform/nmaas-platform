@@ -53,15 +53,11 @@
 							</p>
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE]">
-								<a *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
-								<button *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]" class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
-							</div>
-							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
+							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
+								<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
 								<button class="btn btn-default" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
-							</div>
-							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<button class="btn btn-primary" (click)="this.modal.show()">{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
+								<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
 							</div>
 							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
 								<button class="btn btn-primary" (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
@@ -90,7 +86,7 @@
 				<div class="nmaas-modal-header">
 					<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
 				</div>
-				<div class="nmaas-modal-body">
+				<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
 					<json-schema-form *ngIf="appInstance && appInstance.wizard"
 									  [form]="getTemplate(appInstance.wizard.template)"
 									  [options]="jsonFormOptions"
