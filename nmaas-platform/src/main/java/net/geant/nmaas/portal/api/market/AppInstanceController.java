@@ -2,6 +2,8 @@ package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.util.RawValue;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -16,6 +18,7 @@ import net.geant.nmaas.portal.api.domain.AppInstance;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
+import net.geant.nmaas.portal.api.domain.ConfigTemplate;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -54,6 +57,8 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
+    private ObjectMapper objectMapper;
+
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
     @Autowired
@@ -63,6 +68,7 @@ public class AppInstanceController extends AppBaseController {
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instances = applicationInstanceService;
         this.domains = domains;
+        this.objectMapper = new ObjectMapper();
     }
 
     @GetMapping("/apps/instances")
@@ -120,7 +126,6 @@ public class AppInstanceController extends AppBaseController {
     public AppInstance getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                       @NotNull Principal principal) {
         net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
-
         return mapAppInstance(appInstance);
     }
 
@@ -373,6 +378,17 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
+        if(appInstance.getConfiguration() != null && !appInstance.getConfiguration().isEmpty()){
+            try{
+                ObjectNode jsonNode = (ObjectNode) objectMapper.readTree(appInstance.getApplication().getConfigTemplate().getTemplate());
+                jsonNode.putRawValue("value", new RawValue(appInstance.getConfiguration()));
+                ai.setWizard(new ConfigTemplate(objectMapper.writeValueAsString(jsonNode)));
+            } catch(IOException e){
+                throw new IllegalArgumentException(e.getMessage());
+            }
+        } else{
+            ai.setWizard(modelMapper.map(appInstance.getApplication().getConfigTemplate(),ConfigTemplate.class));
+        }
         return ai;
     }
 

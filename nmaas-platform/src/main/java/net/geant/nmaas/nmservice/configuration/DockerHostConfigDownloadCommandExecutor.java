@@ -68,6 +68,11 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
         }
     }
 
+    @Override
+    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
+        //TODO: Add update configuration for docker
+    }
+
     private ConfigDownloadCommand buildCommand(String configFileId, String configFileName, String targetDirectoryFullPath) {
         return ConfigDownloadCommand.command(
                 authorizationHash,

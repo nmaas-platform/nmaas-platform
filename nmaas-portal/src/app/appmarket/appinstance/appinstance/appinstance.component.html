@@ -54,6 +54,9 @@
 								<a *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
 								<button *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]" class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
 							</div>
+							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.CONNECTING]">
+								<button class="btn btn-primary" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+							</div>
 							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<button class="btn btn-primary" (click)="this.modal.show()">{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
 							</div>
@@ -65,7 +68,7 @@
 				</div>
 			</div>
 
-			<nmaas-modal>
+			<nmaas-modal #undeploy>
 				<div class="nmaas-modal-header">
 					<h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
 				</div>
@@ -77,6 +80,25 @@
 				<div class="nmaas-modal-footer">
 					<button type="button" class="btn btn-danger" (click)="this.undeploy()">{{'UNDEPLOY_MODAL.YES_BUTTON' | translate}}</button>
 					<button type="button" class="btn btn-primary" (click)="this.undeployModal.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
+				</div>
+			</nmaas-modal>
+
+			<nmaas-modal #updateConfig>
+				<div class="nmaas-modal-header">
+					<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
+				</div>
+				<div class="nmaas-modal-body">
+					<json-schema-form *ngIf="appInstance && appInstance.wizard"
+									  [form]="getTemplate(appInstance.wizard.template)"
+									  [options]="jsonFormOptions"
+									  [framework]="bootstrap-3"
+									  [language]="en"
+									  (onChanges)="changeConfiguration($event)">
+					</json-schema-form>
+				</div>
+				<div class="nmaas-modal-footer">
+					<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
+					<button type="button" class="btn btn-primary" (click)="this.updateConfigModal.hide()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
 				</div>
 			</nmaas-modal>
 		
@@ -130,8 +152,8 @@
 					</ul>
 					<div class="tab-content" style="padding-top: 10px">
 						<div id="configForm" class="tab-pane fade in active">
-							<json-schema-form *ngIf="configurationTemplate"
-											  [form]="configurationTemplate"
+							<json-schema-form *ngIf="appInstance && appInstance.wizard"
+											  [form]="getTemplate(appInstance.wizard.template)"
 											  [options]="jsonFormOptions"
 											  [framework]="bootstrap-3"
 											  [language]="en"

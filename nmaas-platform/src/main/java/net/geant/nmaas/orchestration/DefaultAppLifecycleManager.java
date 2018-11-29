@@ -15,9 +15,9 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
@@ -110,6 +110,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         nmServiceInfoRepository.save(serviceInfo);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
+        }
+        else if(appDeployment.getState().equals(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED)){
+            eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
         }
     }
 

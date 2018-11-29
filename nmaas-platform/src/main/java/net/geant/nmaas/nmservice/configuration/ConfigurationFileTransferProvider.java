@@ -24,4 +24,6 @@ public interface ConfigurationFileTransferProvider {
      */
     void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired);
 
+    void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired);
+
 }

@@ -86,6 +86,15 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
+    @Override
+    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
+        if(configFileRepositoryRequired){
+            gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+            GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
+            uploadConfigFilesToProject(project.getProjectId(), configIds);
+        }
+    }
+
     private Integer createUser(String domain, Identifier deploymentId, String password) {
         try {
             return gitlab.getUserApi().createUser(createStandardUser(domain, deploymentId), password, limitOnProjects()).getId();
@@ -184,7 +193,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
             String gitLabUser = getUser(gitLabUserId);
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
             String gitCloneUrl = getGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
-            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl);
+            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }

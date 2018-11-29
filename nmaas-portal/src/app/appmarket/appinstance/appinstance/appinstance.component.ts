@@ -32,8 +32,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
 
-  @ViewChild(ModalComponent)
+  @ViewChild('undeploy')
   public undeployModal: ModalComponent;
+
+  @ViewChild('updateConfig')
+  public updateConfigModal: ModalComponent;
 
   @ViewChild(RateComponent)
   public readonly appRate: RateComponent;
@@ -156,6 +159,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           console.log('Configuration applied');
           this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
         });
+    }
+  }
+
+  public updateConfiguration(): void {
+    if(this.isValid()){
+      this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+        console.log("Configuration updated");
+        this.updateConfigModal.hide();
+      });
     }
   }
 
