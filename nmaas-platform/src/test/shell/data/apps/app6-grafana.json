@@ -37,8 +37,8 @@
                     "source_name": {
                         "type": "string"
                     },
-                    "prom_name": {
-                        "title": "Prometheus instance name",
+                    "source_addr": {
+                        "title": "Prometheus instance address",
                         "type": "string"
                     }
                 }
@@ -56,7 +56,7 @@
                             "required": true
                         },
                         {
-                            "key": "prom_name",
+                            "key": "source_addr",
                             "required": true
                         }
                     ]
