@@ -218,6 +218,26 @@ public class AppInstanceController extends AppBaseController {
 		}
 	}
 
+    @PostMapping({"/apps/instances/{appInstanceId}/configure/update", "/domains/{domainId}/apps/instances/{appInstanceId}/configure/update"})
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                   @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
+        net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
+
+        if (!validJSON(configuration.getJsonInput()))
+            throw new ProcessingException("Configuration is not in valid JSON format");
+
+        appInstance.setConfiguration(configuration.getJsonInput());
+        instances.update(appInstance);
+
+        try {
+            appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration);
+        } catch (Throwable e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
     @GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional

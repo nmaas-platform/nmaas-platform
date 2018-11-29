@@ -170,7 +170,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public updateConfiguration(): void {
     if(this.isValid()){
-      this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+      this.appInstanceService.updateConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
         console.log("Configuration updated");
         this.updateConfigModal.hide();
       });

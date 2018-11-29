@@ -111,9 +111,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
-        else if(appDeployment.getState().equals(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED)){
-            eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
-        }
     }
 
     private Map<String, String> getMapFromJson(String inputJson){
@@ -138,8 +135,14 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) {
-        throw new NotImplementedException();
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
+        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        if(configuration.getJsonInput() != null && configuration.getJsonInput().isEmpty()){
+            appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
+        }
+        repositoryManager.update(appDeployment);
+        eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
     }
 
     @Override

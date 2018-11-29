@@ -11,6 +11,7 @@ import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -70,6 +71,7 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
     @Override
     public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         //TODO: Add update configuration for docker
+        throw new NotImplementedException();
     }
 
     private ConfigDownloadCommand buildCommand(String configFileId, String configFileName, String targetDirectoryFullPath) {
