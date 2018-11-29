@@ -138,7 +138,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
-        if(configuration.getJsonInput() != null && configuration.getJsonInput().isEmpty()){
+        if(configuration.getJsonInput() != null && !configuration.getJsonInput().isEmpty()){
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
         }
         repositoryManager.update(appDeployment);
