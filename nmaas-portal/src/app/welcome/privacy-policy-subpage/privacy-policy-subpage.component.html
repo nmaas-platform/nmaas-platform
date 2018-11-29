@@ -1,0 +1,7 @@
+<app-navbar></app-navbar>
+<div id="welcome-container" class="container-fluid" (window:resize)="onResize()" (window:onload)="onResize()" style="margin-bottom: 20px;">
+  <div class="card card-body col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12" style="margin-top: 15px;">
+    <div [innerHTML]="content?.content">Default content</div>
+  </div>
+</div>
+<nmaas-footer id="welcome-footer"></nmaas-footer>

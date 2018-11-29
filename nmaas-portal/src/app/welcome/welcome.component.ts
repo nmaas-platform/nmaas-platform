@@ -51,6 +51,4 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
         document.getElementById("global-footer-version").style.lineHeight = `${this.height-4}px`;
       }
   }
-
-  
 }

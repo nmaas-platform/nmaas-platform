@@ -21,6 +21,7 @@ import {ReCaptchaModule} from 'angular5-recaptcha';
 import {TranslateModule} from '@ngx-translate/core';
 import {ShibbolethService} from '../service/shibboleth.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
+import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-policy-subpage.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { PasswordResetComponent } from './passwordreset/password-reset.component
     ProfileComponent,
     CompleteComponent,
     TermsAcceptanceComponent,
-    PasswordResetComponent
+    PasswordResetComponent,
+    PrivacyPolicySubpageComponent
   ],
   imports: [
     FormsModule,

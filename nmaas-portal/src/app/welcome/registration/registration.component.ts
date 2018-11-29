@@ -52,7 +52,7 @@ export class RegistrationComponent implements OnInit {
         firstname: [''],
         lastname: [''],
         domainId: [null],
-          termsOfUseAccepted: [false],
+          termsOfUseAccepted: [true],
           privacyPolicyAccepted: [false],
       },
       {
@@ -78,7 +78,7 @@ export class RegistrationComponent implements OnInit {
               this.sending = false;
               this.submitted = true;
               this.success = false;
-              this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
+              this.errorMessage = "You have to accept Privacy Policy!"
           } else {
               if (this.registrationForm.valid) {
                   this.sending = true;
