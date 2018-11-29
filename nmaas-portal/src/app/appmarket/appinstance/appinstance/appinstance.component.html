@@ -58,7 +58,7 @@
 								<button *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]" class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
 							</div>
 							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
-								<button class="btn btn-primary" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+								<button class="btn btn-default" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
 							</div>
 							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<button class="btn btn-primary" (click)="this.modal.show()">{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
