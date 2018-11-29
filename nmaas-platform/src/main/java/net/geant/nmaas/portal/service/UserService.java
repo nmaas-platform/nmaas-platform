@@ -3,6 +3,8 @@ package net.geant.nmaas.portal.service;
 import java.util.List;
 import java.util.Optional;
 
+import net.geant.nmaas.portal.api.auth.Registration;
+import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,12 +17,14 @@ public interface UserService {
 	Optional<User> findByUsername(String username);
 	Optional<User> findById(Long id);
 	Optional<User> findBySamlToken(String token);
+	User findByEmail(String email);
 
 	boolean existsByUsername(String username);
+	boolean existsByEmail(String email);
 	boolean existsById(Long id);
-	
-	User register(String username, Domain domain);
-	User register(String username, boolean enabled, String password, Domain domain);
+
+	User register(Registration registration, Domain globalDomain, Domain domain);
+	User register(UserSSOLogin userSSO, Domain globalDomain);
 	
 	List<User> findAll();
 	Page<User> findAll(Pageable pageable);
@@ -33,4 +37,5 @@ public interface UserService {
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
     String findAllUsersEmailWithAdminRole();
+	List<User> findUsersWithRoleSystemAdminAndOperator();
 }

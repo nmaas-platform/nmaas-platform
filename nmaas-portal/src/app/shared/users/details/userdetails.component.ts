@@ -18,6 +18,9 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   @Input()
   public user: User = new User();
 
+  @Input()
+  public errorMessage: string;
+
   @Output()
   public onSave: EventEmitter<User> = new EventEmitter<User>();
 
@@ -30,9 +33,11 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   }
 
   public submit(): void {
-    console.log('submit(' + this.user.username + ')');
-    this.onSave.emit(this.user);
-    this.onModeChange();
+      console.log('submit(' + this.user.username + ')');
+      this.onSave.emit(this.user);
+      this.onSave.subscribe(() => {
+          this.onModeChange();
+      });
   }
 
   public onModeChange(): void {

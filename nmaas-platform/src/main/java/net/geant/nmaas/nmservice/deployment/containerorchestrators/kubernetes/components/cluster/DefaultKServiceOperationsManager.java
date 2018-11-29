@@ -9,7 +9,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KS
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;

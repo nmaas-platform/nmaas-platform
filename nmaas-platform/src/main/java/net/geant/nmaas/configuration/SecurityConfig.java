@@ -23,7 +23,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -70,24 +69,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private Environment env;
 
 	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "dcn_ansible".equals(p))) {
 			auth.inMemoryAuthentication()
-					.passwordEncoder(NoOpPasswordEncoder.getInstance())
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME))
+					.password(passwordEncoder.encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
 			auth.inMemoryAuthentication()
-					.passwordEncoder(NoOpPasswordEncoder.getInstance())
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME))
+					.password(passwordEncoder.encode(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 			auth.inMemoryAuthentication()
-					.passwordEncoder(NoOpPasswordEncoder.getInstance())
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME))
+					.password(passwordEncoder.encode(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
 		}
 	}
@@ -101,7 +103,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/swagger-ui.html",
 			"/api/info/**",
 			"/webjars/**",
-			"/api/content/**"
+			"/api/content/**",
+			"/api/users/reset/**"
 	};
 	
 	@Override
@@ -137,6 +140,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
+				.antMatchers("/api/users/reset/**").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -163,7 +167,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/configs/**"),
 										new AntPathRequestMatcher("/api/dockercompose/files/**"),
-										new AntPathRequestMatcher("/api/content/**")
+										new AntPathRequestMatcher("/api/content/**"),
+										new AntPathRequestMatcher("/api/users/reset/**")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),
@@ -190,11 +195,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		source.registerCorsConfiguration("/api/**", corsConfig);
 
 		return new CorsFilter(source);
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean

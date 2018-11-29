@@ -6,7 +6,8 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.model.EmailConfirmation;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -17,6 +18,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -56,9 +58,11 @@ public class UsersControllerTest {
 
 	private Principal principal = mock(Principal.class);
 
+	private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
+
 	@Before
 	public void setup(){
-		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder);
+		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder, jwtTokenService);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
 		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
@@ -68,7 +72,7 @@ public class UsersControllerTest {
 		when(principal.getName()).thenReturn(admin.getUsername());
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
 		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
-        doNothing().when(notificationService).sendEmail(any(EmailConfirmation.class));
+        doNothing().when(notificationService).sendEmail(any(ConfirmationEmail.class));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 	}
@@ -135,6 +139,16 @@ public class UsersControllerTest {
 		userRole.setRole(Role.ROLE_SYSTEM_COMPONENT);;
 		userRequest.setRoles(ImmutableSet.of(userRole));
 		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
+	}
+
+	@Test(expected = ProcessingException.class)
+	public void shouldNotUpdateUserWithNonUniqueEmail(){
+		when(userService.existsByEmail(anyString())).thenReturn(true);
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail("test@nmaas.net");
+		userRequest.setFirstname("test");
+		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
+		verify(userService, times(2)).update(userList.get(0));
 	}
 
 	@Test
@@ -204,6 +218,15 @@ public class UsersControllerTest {
 		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
 		usersController.completeRegistration(principal, userRequest);
 		verify(userService, times(1)).update(userList.get(0));
+	}
+
+	@Test(expected = ProcessingException.class)
+	public void shouldNotCompleteRegistrationWithNonUniqueMail(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail("test@test.com");
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		when(userService.existsByEmail(userRequest.getEmail())).thenReturn(true);
+		usersController.completeRegistration(principal, userRequest);
 	}
 
 	@Test

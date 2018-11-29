@@ -4,7 +4,13 @@ import {Location} from '@angular/common';
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
+import {
+    AppInstance,
+    AppInstanceProgressStage,
+    AppInstanceState,
+    AppInstanceStatus,
+    Application
+} from '../../../model/index';
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
@@ -50,6 +56,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
 
+
   public intervalCheckerSubscribtion;
 
   public configAdvancedTab: FormGroup;
@@ -79,8 +86,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.undeployModal.setModalType("warning");
-    this.undeployModal.setStatusOfIcons(true);
     this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
@@ -99,6 +104,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
       this.updateAppInstanceState();
       this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+      this.undeployModal.setModalType("warning");
+      this.undeployModal.setStatusOfIcons(true);
     });
   }
 
@@ -109,8 +116,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appInstanceStatus = appInstanceStatus;
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
         this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
-        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
-          this.updateAppInstance();
+        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
+          if(this.storage.has("appConfig_"+this.appInstanceId.toString()))
+            this.storage.remove("appConfig_"+this.appInstanceId.toString());
+          if(!this.appInstance.url)
+            this.updateAppInstance();
         }
       }
     );

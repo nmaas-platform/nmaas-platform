@@ -1,3 +1,6 @@
 legend {
 	display: none;
 }
+div > a{
+	cursor: pointer;
+}

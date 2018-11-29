@@ -1,6 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import com.google.common.collect.ImmutableSet;
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
+import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.auth.Registration;
+import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -13,23 +19,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 	
 	UserRepository userRepo;
 	
 	UserRoleRepository userRoleRepo;
 
+	PasswordEncoder passwordEncoder;
+
 	@Autowired
-	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo){
+	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder){
 		this.userRepo = userRepo;
 		this.userRoleRepo = userRoleRepo;
+		this.passwordEncoder = passwordEncoder;
 	}
 	
 	@Override
@@ -70,9 +82,19 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User findByEmail(String email){
+		return userRepo.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User with mail "+email+ " not found"));
+	}
+
+	@Override
 	public boolean existsByUsername(String username) {
 		checkParam(username);
 		return userRepo.existsByUsername(username);
+	}
+
+	@Override
+	public boolean existsByEmail(String email) {
+		return userRepo.existsByEmail(email);
 	}
 
 	@Override
@@ -82,25 +104,38 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User register(String username, Domain domain) {
-		checkParam(username);
-		return register(username, false, null, domain);
+	public User register(Registration registration, Domain globalDomain, Domain domain){
+
+		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
+			throw new SignupException("User already exists");
+		}
+
+		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);
+		newUser.setEmail(registration.getEmail());
+		newUser.setFirstname(registration.getFirstname());
+		newUser.setLastname(registration.getLastname());
+		newUser.setEnabled(false);
+		if(domain != null){
+			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
+		}
+		newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
+		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
+		userRepo.save(newUser);
+
+		return newUser;
 	}
 
 	@Override
-	public User register(String username, boolean enabled, String password, Domain domain) {
+	public User register(UserSSOLogin userSSO, Domain globalDomain){
+		byte[] array = new byte[16]; // random password
+		new SecureRandom().nextBytes(array);
+		String generatedString = new String(array, Charset.forName("UTF-8"));
+		User newUser = new User("thirdparty-"+System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
+		newUser.setSamlToken(userSSO.getUsername()); //Check user ID TODO: check if it's truly unique!
+		userRepo.save(newUser);
 
-		checkParam(username);
-
-		// check if user already exists
-		Optional<User> user = userRepo.findByUsername(username);
-		if(user.isPresent())
-			throw new ObjectAlreadyExistsException("User already exists.");
-
-		User newUser = new User(username, enabled, password, domain, Role.ROLE_GUEST);
-		
-		return userRepo.save(newUser);				
-	}	
+		return newUser;
+	}
 	
 	@Override
 	public void update(User user) {
@@ -178,5 +213,19 @@ public class UserServiceImpl implements UserService {
             }
         }
         return emails;
+	}
+
+	@Override
+	public List<User> findUsersWithRoleSystemAdminAndOperator(){
+		List<User> users = new ArrayList<>();
+		for(User user : findAll()) {
+			for (UserRole userRole : user.getRoles()) {
+				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) ||
+						userRole.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())) {
+					users.add(user);
+				}
+			}
+		}
+		return users;
 	}
 }

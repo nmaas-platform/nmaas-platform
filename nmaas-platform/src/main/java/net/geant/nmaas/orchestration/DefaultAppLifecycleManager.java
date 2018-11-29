@@ -57,9 +57,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Identifier deployApplication(String domain, Identifier applicationId, String deploymentName, AppDeploymentSpec appDeploymentSpec) {
+    public Identifier deployApplication(AppDeployment appDeployment) {
         Identifier deploymentId = generateDeploymentId();
-        AppDeployment appDeployment = new AppDeployment(deploymentId, domain, applicationId, deploymentName, appDeploymentSpec.isConfigFileRepositoryRequired(), appDeploymentSpec.getDefaultStorageSpace());
+        appDeployment.setDeploymentId(deploymentId);
         repositoryManager.store(appDeployment);
         eventPublisher.publishEvent(new AppVerifyRequestActionEvent(this, deploymentId));
         return deploymentId;

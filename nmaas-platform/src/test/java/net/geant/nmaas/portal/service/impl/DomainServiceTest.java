@@ -1,6 +1,9 @@
 package net.geant.nmaas.portal.service.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
@@ -18,8 +21,12 @@ import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -283,6 +290,24 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         Set<Domain> result = this.domainService.getUserDomains(userId);
         assertThat("Result mismatch", result.contains(domain));
+    }
+
+    @Test
+    public void  shouldFindUsersWithDomainAdminRole(){
+        Domain domain = new Domain(1L, "testdom", "testdom");
+
+        User user1 = User.builder().roles(ImmutableList.of(
+                new UserRole(User.builder().id(1L).build(), domain, Role.ROLE_DOMAIN_ADMIN),
+                new UserRole(User.builder().id(2L).build(), domain, Role.ROLE_SYSTEM_COMPONENT))).build();
+
+        User user2 = User.builder().roles(ImmutableList.of(
+                new UserRole(User.builder().id(3L).build(), domain, Role.ROLE_DOMAIN_ADMIN))).build();
+
+        List<User> users = ImmutableList.of(user1, user2);
+        when(userRoleRepo.findDomainMembers(anyLong())).thenReturn(users);
+        List<User> filteredUsers = domainService.findUsersWithDomainAdminRole(1L);
+        assertThat("Result mismatch", filteredUsers.size() == 2);
+        assertThat(filteredUsers, Matchers.containsInAnyOrder(user1, user2));
     }
 
 }

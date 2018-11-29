@@ -1,10 +1,7 @@
 package net.geant.nmaas.portal.auth.sso;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.Optional;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -22,9 +19,7 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -73,13 +68,7 @@ public class SSOAuthController {
 		if(user == null) {
 			// Autocreate as we trust sso
 			try {
-				byte[] array = new byte[16]; // random password
-				new Random().nextBytes(array);
-				String generatedString = new String(array, Charset.forName("UTF-8"));
-				user = users.register("thirdparty-"+String.valueOf(System.currentTimeMillis()), true, generatedString, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-				user.setSamlToken(userSSOLoginData.getUsername()); //Check user ID TODO: check if it's truly unique!
-				user.setNewRoles(Collections.singleton(new UserRole(user, domains.getGlobalDomain().orElseThrow(() -> new SignupException()), Role.ROLE_INCOMPLETE)));
-				users.update(user);
+				user = users.register(userSSOLoginData, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 			} catch (ObjectAlreadyExistsException e) {
 				throw new SignupException("User already exists");
 			} catch (MissingElementException e) {

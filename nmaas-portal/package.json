@@ -31,15 +31,16 @@
     "ajv": "^6.0.1",
     "angular2-json-schema-form": "0.7.0-alpha.1",
     "angular5-recaptcha": "0.0.2",
+    "bootstrap": "^3.3.7",
     "core-js": "^2.5.3",
     "hammerjs": "2.x",
     "jasmine": "^2.99.0",
+    "jquery": "^1.11.3",
     "lodash": "4.x",
+    "ngx-pagination": "^3.2.1",
     "ngx-webstorage-service": "^3.1.1",
     "rxjs": "^5.5.6",
-    "ts-helpers": "^1.1.2",
-    "bootstrap": "^3.3.7",
-    "jquery": "^1.11.3"
+    "ts-helpers": "^1.1.2"
   },
   "devDependencies": {
     "npm": "^6.4.1",
