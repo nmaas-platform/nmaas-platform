@@ -16,15 +16,12 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerNetworkResourceManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotCreateContainerNetworkException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveContainerNetworkException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;

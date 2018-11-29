@@ -48,6 +48,8 @@ class ClusterIngress {
     public externalServiceDomain: string;
     public tlsSupported: boolean = false;
     public supportedIngressClass: string;
+    public certificateConfigOption: string;
+    public issuerOrWildcardName: string;
 }
 
 export class Cluster {
@@ -82,4 +84,9 @@ export enum NamespaceConfigOption{
     USE_DEFAULT_NAMESPACE = 'USE_DEFAULT_NAMESPACE',
     USE_DOMAIN_NAMESPACE = 'USE_DOMAIN_NAMESPACE',
     CREATE_NAMESPACE = 'CREATE_NAMESPACE'
+}
+
+export enum IngressCertificateConfigOption{
+    USE_WILDCARD = 'USE_WILDCARD',
+    USE_LETSENCRYPT = 'USE_LETSENCRYPT'
 }

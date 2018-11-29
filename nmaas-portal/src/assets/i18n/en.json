@@ -175,7 +175,8 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Go to app",
-    "ITEMS_PER_PAGE": "Instances per page"
+    "ITEMS_PER_PAGE": "Instances per page",
+    "ACTIONS": "Actions"
   },
   "MONITOR": {
     "TITLE": "Monitor service",

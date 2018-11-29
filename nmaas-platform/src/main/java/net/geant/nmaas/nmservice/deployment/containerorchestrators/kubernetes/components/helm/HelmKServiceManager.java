@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
@@ -10,7 +11,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -34,7 +34,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
     static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "domain";
-    private static final  String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
+    static final String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
 
     private KubernetesRepositoryManager repositoryManager;
     private KNamespaceService namespaceService;
@@ -88,6 +88,12 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
                     ingressManager.getSupportedIngressClass(),
                     ingressManager.getTlsSupported())
             );
+            if(ingressManager.getTlsSupported()) {
+                arguments.putAll(HelmChartVariables.ingressVariablesAddTls(
+                        ingressManager.getIssuerOrWildcardName(),
+                        ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT)
+                ));
+            }
         }
         if(serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()){
             serviceInfo.getAdditionalParameters().forEach(arguments::put);

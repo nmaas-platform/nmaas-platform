@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
-import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;

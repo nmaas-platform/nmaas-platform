@@ -6,7 +6,6 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileR
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerNmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;

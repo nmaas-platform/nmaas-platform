@@ -1,7 +1,8 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import net.geant.nmaas.portal.api.auth.Registration;
+import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -12,8 +13,10 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
@@ -23,12 +26,11 @@ import java.util.Optional;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
@@ -44,7 +46,7 @@ public class UserServiceImplTest {
 
     @Before
     public void setup(){
-        userService = new UserServiceImpl(userRepository, userRoleRepository);
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder());
     }
 
     @Test
@@ -183,28 +185,65 @@ public class UserServiceImplTest {
         assertTrue(userService.existsById((long) 0));
     }
 
-    @Test(expected = ObjectAlreadyExistsException.class)
-    public void registerWithUsernameAndDomainShouldThrowExceptionThatUserAlreadyExists(){
-        User user = new User("test1", true);
-        Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
-        userService.register("test", domain);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void registerWithUsernameAndDomainShouldThrowExceptionThatUsernameIsIncorrect(){
-        Domain domain = new Domain("GLOBAL", "GLOBAL");
-        userService.register(null, domain);
+    public void existsByEmailShouldThrowTrue(){
+        when(userRepository.existsByEmail(anyString())).thenReturn(true);
+        assertTrue(userService.existsByEmail("test@test.com"));
     }
 
     @Test
-    public void registerWithUsernameAndDomainShouldRegisterAndReturnObject(){
-        User user = new User("test", true);
+    public void existsByEmailShouldThrowFalseWhenThereIsNoUserWithSpecifiedId(){
+        when(userRepository.existsByEmail(anyString())).thenReturn(false);
+        assertFalse(userService.existsByEmail("test@test.com"));
+    }
+
+    @Test
+    public void shouldRegisterUserWithGlobalGuestRole(){
+        when(userRepository.existsByUsername(anyString())).thenReturn(false);
+        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
-        when(userRepository.save(isA(User.class))).thenReturn(user);
-        User result = userService.register("test", domain);
-        assertEquals("test", result.getUsername());
-        assertNull(result.getPassword());
+        User user = userService.register(registration, domain, null);
+        verify(userRepository, times(1)).save(any());
+        assertEquals(user.getRoles().size(), 1);
+        assertEquals(user.getRoles().get(0).getRole(), Role.ROLE_GUEST);
+        assertEquals(user.getRoles().get(0).getDomain(), domain);
+    }
+
+    @Test
+    public void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain(){
+        when(userRepository.existsByUsername(anyString())).thenReturn(false);
+        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
+        Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
+        Domain domain = new Domain("Non Global", "NONGLO");
+        User user = userService.register(registration, globalDomain, domain);
+        verify(userRepository, times(1)).save(any());
+        assertEquals(user.getRoles().size(), 2);
+        assertEquals(user.getRoles().get(0).getDomain(), globalDomain);
+        assertEquals(user.getRoles().get(1).getDomain(), domain);
+    }
+
+    @Test(expected = SignupException.class)
+    public void shouldNotRegisterUserWhenUserAlreadyExists(){
+        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(userRepository.existsByUsername(registration.getUsername())).thenReturn(true);
+        userService.register(registration, domain, null);
+    }
+
+    @Test(expected = SignupException.class)
+    public void shouldNotRegisterUserWhenUserAlreadyExistsByMail(){
+        Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(userRepository.existsByEmail(registration.getEmail())).thenReturn(true);
+        userService.register(registration, domain, null);
+    }
+
+    @Test
+    public void shouldRegisterSSOUser(){
+        UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        User user = userService.register(ssoUser, domain);
+        verify(userRepository, times(1)).save(any());
+        assertEquals(user.getSamlToken(), ssoUser.getUsername());
     }
 
     @Test(expected = IllegalArgumentException.class)

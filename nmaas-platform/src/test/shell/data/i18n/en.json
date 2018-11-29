@@ -79,6 +79,8 @@
     "HEML_CHARTS_DIRECTORY": "Helm charts directory",
     "REST_API": "REST API",
     "ENABLE_TLS": "Enable TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "TLS certificate configuration",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "LetsEncrypt issuer or wildcard certificate name",
     "USER_REST_API": "Use REST API",
     "HOST_PORT": "Host port",
     "INGRESS": "Ingress",
@@ -175,7 +177,8 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Go to app",
-    "ITEMS_PER_PAGE": "Instances per page"
+    "ITEMS_PER_PAGE": "Instances per page",
+    "ACTIONS": "Actions"
   },
   "MONITOR": {
     "TITLE": "Monitor service",

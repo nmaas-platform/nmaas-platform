@@ -11,7 +11,9 @@
     "controllerChartArchive":"nginx-ingress.tgz",
     "resourceConfigOption":"DEPLOY_FROM_CHART",
     "externalServiceDomain":"nmaas.geant.net",
-    "tlsSupported":false
+    "tlsSupported":false,
+    "certificateConfigOption": "USE_LETSENCRYPT",
+    "issuerOrWildcardName": "nmaas-issuer"
   },
   "deployment": {
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",

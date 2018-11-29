@@ -4,7 +4,13 @@ import {Location} from '@angular/common';
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
+import {
+    AppInstance,
+    AppInstanceProgressStage,
+    AppInstanceState,
+    AppInstanceStatus,
+    Application
+} from '../../../model/index';
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
@@ -83,8 +89,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.undeployModal.setModalType("warning");
-    this.undeployModal.setStatusOfIcons(true);
     this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
@@ -103,6 +107,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
       this.updateAppInstanceState();
       this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+      this.undeployModal.setModalType("warning");
+      this.undeployModal.setStatusOfIcons(true);
     });
   }
 
