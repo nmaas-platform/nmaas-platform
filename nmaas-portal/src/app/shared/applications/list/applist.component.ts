@@ -35,6 +35,10 @@ export class AppListComponent implements OnInit, OnDestroy {
   @Input()
   public selected: Observable<Set<number>>;
 
+  @Input()
+  public domainId: number;
+
+
   constructor(private appSubscriptionService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {
     if (isUndefined(this.listType)) {
       this.listType = ListType.GRID;

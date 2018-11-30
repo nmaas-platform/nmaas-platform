@@ -33,6 +33,7 @@ import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelo
 import {TranslateModule} from '@ngx-translate/core';
 import { SortableColumnComponent } from './sortable-column/sortable-column.component';
 import { SortableTableDirective } from './sortable-column/sortable-table.directive';
+import {AppInstallModalComponent} from "./modal/appinstall";
 
 @NgModule({
   imports: [
@@ -64,6 +65,7 @@ import { SortableTableDirective } from './sortable-column/sortable-table.directi
     DomainFilterComponent,
     AppElementComponent,
     AppListComponent,
+    AppInstallModalComponent,
     ApplicationsViewComponent,
     ClusterDetailsComponent,
     GitlabDetailsComponent,
@@ -89,6 +91,7 @@ import { SortableTableDirective } from './sortable-column/sortable-table.directi
     UserPrivilegesComponent,
     NavbarComponent,
     UserPrivilegesComponent,
+    AppInstallModalComponent,
     RolesDirective,
     SearchComponent,
     TagFilterComponent,

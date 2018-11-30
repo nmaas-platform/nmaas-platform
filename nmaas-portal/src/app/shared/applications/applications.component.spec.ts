@@ -17,6 +17,9 @@ import {TagFilterComponent} from "../common/tagfilter/tagfilter.component";
 import {Observable} from "rxjs";
 import {SimpleChange, SimpleChanges} from "@angular/core";
 import {AppViewType} from "../common/viewtype";
+import {SharedModule} from "../shared.module";
+import {AppInstallModalComponent} from "../modal/appinstall";
+import {ModalComponent} from "../modal";
 
 describe('ApplicationsComponent', () => {
   let component: ApplicationsViewComponent;
@@ -28,7 +31,7 @@ describe('ApplicationsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchComponent, AppListComponent, AppElementComponent, ApplicationsViewComponent, RateComponent, SecurePipe, TagFilterComponent ],
+      declarations: [ AppInstallModalComponent, ModalComponent, SearchComponent, AppListComponent, AppElementComponent, ApplicationsViewComponent, RateComponent, SecurePipe, TagFilterComponent ],
       imports: [
           FormsModule,
           RouterTestingModule,
