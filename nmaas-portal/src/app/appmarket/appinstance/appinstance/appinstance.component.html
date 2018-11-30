@@ -67,7 +67,7 @@
 				</div>
 			</div>
 
-			<nmaas-modal #undeploy>
+			<nmaas-modal>
 				<div class="nmaas-modal-header">
 					<h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
 				</div>
@@ -87,7 +87,7 @@
 					<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
 				</div>
 				<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-					<json-schema-form *ngIf="appInstance && appInstance.wizard"
+					<json-schema-form *ngIf="appInstance !== undefined && appInstance.wizard !== undefined"
 									  [form]="getTemplate(appInstance.wizard.template)"
 									  [options]="jsonFormOptions"
 									  [framework]="bootstrap-3"
@@ -151,7 +151,7 @@
 					</ul>
 					<div class="tab-content" style="padding-top: 10px">
 						<div id="configForm" class="tab-pane fade in active">
-							<json-schema-form *ngIf="appInstance && appInstance.wizard"
+							<json-schema-form *ngIf="appInstance !== undefined && appInstance.wizard !== undefined"
 											  [form]="getTemplate(appInstance.wizard.template)"
 											  [options]="jsonFormOptions"
 											  [framework]="bootstrap-3"

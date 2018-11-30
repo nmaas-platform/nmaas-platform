@@ -396,7 +396,7 @@
     }
   },
   "UPDATE_CONFIG_MODAL": {
-    "HEADER": "Zaktualizuj konfiugracje",
+    "HEADER": "Zaktualizuj konfiguracje",
     "SUBMIT_BUTTON": "Prześlij",
     "CANCEL_BUTTON": "Anuluj"
   }

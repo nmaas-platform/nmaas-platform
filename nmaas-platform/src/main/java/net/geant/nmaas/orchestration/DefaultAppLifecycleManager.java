@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -38,6 +39,7 @@ import java.util.UUID;
  */
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Log4j2
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private AppDeploymentRepositoryManager repositoryManager;
@@ -137,12 +139,15 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
         if(configuration.getJsonInput() != null && !configuration.getJsonInput().isEmpty()){
+            AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
+            repositoryManager.update(appDeployment);
+            eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
+        } else {
+            log.warn("Configuration update failed -> configuration is null or empty");
         }
-        repositoryManager.update(appDeployment);
-        eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
+
     }
 
     @Override

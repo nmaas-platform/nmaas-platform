@@ -38,7 +38,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
 
-  @ViewChild('undeploy')
+  @ViewChild(ModalComponent)
   public undeployModal: ModalComponent;
 
   @ViewChild('updateConfig')
