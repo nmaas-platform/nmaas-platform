@@ -255,8 +255,8 @@ public class UsersController {
 			user.setEmail(userRequest.getEmail());
 		}
 
-		domainService.removeMemberRole(domainId, user.getId(), Role.ROLE_INCOMPLETE);
-
+		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
+		addGlobalGuestUserRoleIfMissing(user.getId());
 		userService.update(user);
 	}
 
