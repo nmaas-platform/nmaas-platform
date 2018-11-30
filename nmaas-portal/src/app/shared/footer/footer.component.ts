@@ -21,7 +21,7 @@ export class FooterComponent implements OnInit {
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
 
-  constructor(private changelogService:ChangelogService, private router:Router, private appConfigService: AppConfigService) {
+  constructor(private changelogService:ChangelogService, private router:Router, public appConfigService: AppConfigService) {
   }
 
   ngOnInit() {
