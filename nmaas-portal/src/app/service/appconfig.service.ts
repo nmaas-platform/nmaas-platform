@@ -40,4 +40,18 @@ export class AppConfigService {
       }
       return this.config.http.timeout || 10000;
     }
+
+    public getShowGitInfo(): boolean {
+      if(isNullOrUndefined(this.config)){
+          return false;
+      }
+      return this.config.showGitInfo || false;
+    }
+
+    public getShowChangelog(): boolean {
+      if(isNullOrUndefined(this.config)){
+          return false;
+      }
+      return this.config.showChangelog || false;
+    }
 }

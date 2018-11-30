@@ -6,9 +6,9 @@
 					<p>NMaaS @Geant 2017-2018</p>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="global-footer-version">
-					<a (click)="modal.show()" class="text-right">{{'GIT_INFO.VERSION' | translate}} {{gitInfo?.buildVersion}}</a>
-					<br *ngIf="!checkURL()">
-                    <a (click)="changeLog.show()" *ngIf="!checkURL()">Changelog</a>
+					<a *ngIf="appConfigService.getShowGitInfo()" (click)="modal.show()" class="text-right">{{'GIT_INFO.VERSION' | translate}} {{gitInfo?.buildVersion}}</a>
+					<br *ngIf="!checkURL() && appConfigService.getShowChangelog()">
+                    <a (click)="changeLog.show()" *ngIf="!checkURL() && appConfigService.getShowChangelog()">Changelog</a>
                 </div>
 			</div>
 		</footer>
