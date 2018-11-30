@@ -208,7 +208,10 @@
     "ALLOW_SSO_LOGIN": "Zezwól na logowanie przez SSO",
     "SUBMIT_BUTTON": "Prześlij",
     "LANGUAGE_ERROR": "Nie można zdeaktywować domyślnego, lub aktywnego języka",
-    "DEFAULT_LANGUAGE": "Domyślny język"
+    "DEFAULT_LANGUAGE": "Domyślny język",
+    "LANGUAGE_SUPPORT": "Aktywowane języki",
+    "LANGUAGE_ENABLED": "Aktywny",
+    "LANGUAGE_DISABLED": "Nieaktywny"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
