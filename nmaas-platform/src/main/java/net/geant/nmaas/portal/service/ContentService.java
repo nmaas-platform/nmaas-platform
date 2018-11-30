@@ -15,6 +15,4 @@ public interface ContentService {
 
     void update(Content content);
     void delete(Content content);
-
-    String getContent(String language, String root, String key);
 }

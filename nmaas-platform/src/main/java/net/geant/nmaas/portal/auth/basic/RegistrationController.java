@@ -71,34 +71,26 @@ public class RegistrationController {
 		if(registration == null
 				|| StringUtils.isEmpty(registration.getUsername())
 				|| StringUtils.isEmpty(registration.getPassword())) {
-			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
-					"INVALID_CREDENTIALS_MESSAGE"));
+			throw new SignupException("REGISTRATION.INVALID_CREDENTIALS_MESSAGE");
 		}
 		User newUser = null;
 		try {
 			newUser = usersService.register(registration.getUsername(), domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 			if (newUser == null) {
-				throw new SignupException(
-						contentService.getContent(registration.getLanguage(), "REGISTRATION",
-								"UNABLE_TO_REGISTER_MESSAGE"));
+				throw new SignupException("REGISTRATION.UNABLE_TO_REGISTER_MESSAGE");
 			}
 			if (!registration.getTermsOfUseAccepted()) {
-				throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
-						"TERMS_NOT_ACCEPTED_MESSAGE"));
+				throw new SignupException("REGISTRATION.TERMS_NOT_ACCEPTED_MESSAGE");
 			}
 			if (!registration.getPrivacyPolicyAccepted()) {
-				throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
-						"PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE"));
+				throw new SignupException("REGISTRATION.PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE");
 			}
 		} catch (ObjectAlreadyExistsException e) {
-			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
-					"USER_ALREADY_EXISTS_MESSAGE"));
+			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
 		} catch (MissingElementException e) {
-			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
-					"DOMAIN_NOT_FOUND_MESSAGE"));
+			throw new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE");
 		} catch (Exception e) {
-			throw new SignupException(contentService.getContent(registration.getLanguage(), "REGISTRATION",
-					"UNABLE_TO_FETCH_CONTENT_MESSAGE"));
+			throw new SignupException("REGISTRATION.UNABLE_TO_FETCH_CONTENT_MESSAGE");
 		}
 		
 		newUser.setPassword(passwordEncoder.encode(registration.getPassword()));

@@ -19,7 +19,7 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./registration.component.css'],
     providers: [ModalComponent, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
-export class RegistrationComponent implements OnInit, AfterViewInit {
+export class RegistrationComponent implements OnInit {
 
 
   public sending: boolean = false;
@@ -48,7 +48,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
               private registrationService: RegistrationService,
               private appConfig: AppConfigService,
               private translate: TranslateService) {
-    this.language = this.translate.getBrowserLang();
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
@@ -71,8 +70,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
     this.domains = this.registrationService.getDomains()
       .map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
   }
-
-  ngAfterViewInit() {  }
 
   public onSubmit(): void {
       let token = this.captcha.getResponse();
@@ -102,7 +99,6 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
                       this.registrationForm.controls['domainId'].value,
                       this.registrationForm.controls['termsOfUseAccepted'].value,
                       this.registrationForm.controls['privacyPolicyAccepted'].value,
-                      this.language
                   );
                   this.registrationService.register(registration).subscribe(
                       (result) => {
@@ -116,7 +112,8 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
                           this.sending = false;
                           this.submitted = true;
                           this.success = false;
-                          this.errorMessage = this.getMessage(err);
+                          debugger;
+                          this.errorMessage = this.translate.instant(this.getMessage(err));
                       },
                       () => {
                           this.sending = false;
@@ -136,7 +133,7 @@ export class RegistrationComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
   }
 
-  private getMessage(err: string) {
-      return err.match('') || err.match(null) ? err : 'Service is unavailable. Please try again later';
+  private getMessage(err: string): string {
+      return err.match('') || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }

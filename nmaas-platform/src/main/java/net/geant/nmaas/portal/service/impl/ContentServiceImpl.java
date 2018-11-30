@@ -89,24 +89,4 @@ public class ContentServiceImpl implements net.geant.nmaas.portal.service.Conten
         if(content == null)
             throw new IllegalArgumentException("content is null");
     }
-
-	@Override
-	public String getContent(String language, String root, String key) {
-		Optional<Internationalization> internationalizationOptional = internationalizationRepository.findByLanguageOrderByIdDesc(language);
-		return internationalizationOptional.map(internationalization -> {
-			String value = "";
-			try {
-				JSONParser jsonParser = new JSONParser();
-				Object object = jsonParser.parse(internationalization.getContent());
-				JSONObject jsonObject = (JSONObject) object;
-				JSONObject rootJSONObject = Optional.ofNullable((JSONObject) jsonObject.get(root))
-						.orElse(new JSONObject());
-				value = (String)Optional.ofNullable(rootJSONObject.get(key))
-						.orElse("Enexpected error");
-			} catch (ParseException e) {
-				log.error("Error happened while parsing the content - " + e.getMessage());
-			}
-			return value;
-		}).orElse("Enexpected error - invalid language");
-	}
 }
