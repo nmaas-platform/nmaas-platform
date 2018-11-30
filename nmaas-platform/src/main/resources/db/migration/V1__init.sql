@@ -336,6 +336,7 @@ create table gitlab_project (
   access_user varchar(255) not null,
   clone_url varchar(255) not null,
   deployment_id bytea not null,
+  project_id bigint not null,
   primary key (id));
 
 create table k_cluster (

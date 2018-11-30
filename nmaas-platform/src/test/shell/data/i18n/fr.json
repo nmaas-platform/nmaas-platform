@@ -331,6 +331,7 @@
     "UNDEPLOY_BUTTON": "Undeploy",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Redeploy",
+    "UPDATE_CONFIG_BUTTON": "Update",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
@@ -394,5 +395,10 @@
       "PASSWORD": "Password",
       "CONFIRM_PASSWORD": "Confirm password"
     }
+  },
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Update configuration",
+    "SUBMIT_BUTTON": "Submit",
+    "CANCEL_BUTTON": "Cancel"
   }
 }

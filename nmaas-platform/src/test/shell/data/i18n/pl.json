@@ -332,6 +332,7 @@
     "UNDEPLOY_BUTTON": "Zatrzymaj",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
+    "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
@@ -395,5 +396,10 @@
       "PASSWORD": "Hasło",
       "CONFIRM_PASSWORD": "Potwierdź nowe hasło"
     }
+  },
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Zaktualizuj konfiguracje",
+    "SUBMIT_BUTTON": "Prześlij",
+    "CANCEL_BUTTON": "Anuluj"
   }
 }

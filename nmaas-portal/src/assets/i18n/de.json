@@ -330,6 +330,7 @@
     "UNDEPLOY_BUTTON": "Deinstallieren",
     "RESTART_BUTTON": "Neustart",
     "REDEPLOY_BUTTON": "Neu installieren",
+    "UPDATE_CONFIG_BUTTON": "Update",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installations Fortschritt",
       "STATE": "Status",
@@ -393,5 +394,10 @@
       "PASSWORD": "Passwort",
       "CONFIRM_PASSWORD": "Passwort bestätigen"
     }
+  },
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Update configuration",
+    "SUBMIT_BUTTON": "Senden",
+    "CANCEL_BUTTON": "Zurück"
   }
 }
