@@ -59,14 +59,14 @@ public class RegistrationController {
 				|| StringUtils.isEmpty(registration.getUsername())
 				|| StringUtils.isEmpty(registration.getPassword())
 				|| StringUtils.isEmpty(registration.getEmail())) {
-			throw new SignupException("Invalid credentials.");
+			throw new SignupException("REGISTRATION.INVALID_CREDENTIALS_MESSAGE");
 		}
 
 		if(!registration.getTermsOfUseAccepted()){
-			throw new SignupException("Terms of Use were not accepted.");
+			throw new SignupException("REGISTRATION.TERMS_NOT_ACCEPTED_MESSAGE");
 		}
 		if(!registration.getPrivacyPolicyAccepted()){
-			throw new SignupException("Privacy Policy were not accepted.");
+			throw new SignupException("REGISTRATION.PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE");
 		}
 		net.geant.nmaas.portal.persistent.entity.Domain domain = null;
 		if(registration.getDomainId() != null){
@@ -95,9 +95,9 @@ public class RegistrationController {
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 			}
 		} catch (ObjectAlreadyExistsException e){
-			throw new SignupException("User already exists");
+			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
 		} catch (MissingElementException e){
-			throw new SignupException("Domain not found");
+			throw new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE");
 		}
 	}
 	

@@ -60,7 +60,7 @@ public class BasicAuthController {
 	
 	@PostMapping(value="/login")
 	public UserToken login(@RequestBody final UserLogin userLogin) {
-        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException(""));
+        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("LOGIN.LOGIN_FAILURE_MESSAGE"));
         validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled(), user.isTermsOfUseAccepted(), user.isPrivacyPolicyAccepted());
 
         if(configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN)))
