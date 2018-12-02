@@ -59,15 +59,28 @@
     "SUBMIT": "Soumettre",
     "FORM_SUBMISSION": "Formulaire d'inscription",
     "THANK_YOU_MESSAGE": "Merci d'avoir envoyé le formulaire d'inscription. Votre compte doit être activé par l'administrateur système. Cela prend du temps.",
-    "DONE_MESSAGE": "Terminé"
+    "DONE_MESSAGE": "Terminé",
+    "INVALID_CREDENTIALS_MESSAGE": "Informations d'identification non valides.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Impossible d'inscrire un nouvel utilisateur.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Les conditions d'utilisation n'ont pas été acceptées.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "La politique de confidentialité n'a pas été acceptée.",
+    "USER_ALREADY_EXISTS_MESSAGE": "L'utilisateur existe déjà.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Impossible de mettre à jour l'utilisateur récemment enregistré.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Impossible d'extraire le contenu"
   },
   "LOGIN": {
     "USERNAME": "Nom d'utilisateur",
     "USERNAME_REQUIRED_MESSAGE": "Le nom d'utilisateur est requis",
     "PASSWORD": "Mot de passe",
-    "PASSWORD_REQUIRED_MESSAGE": "Le mot de passe est requis",
-    "LOGIN": "S'identifier",
-    "LOGIN_WITH": "Connectez-vous avec"
+    "PASSWORD_REQUIRED_MESSAGE": "Un mot de passe est requis",
+    "LOGIN": "Connexion",
+    "LOGIN_WITH": "Se connecter avec",
+    "LOGIN_FAILURE_MESSAGE": "Informations d'identification non valides",
+    "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement.",
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Il est impossible de se connecter au composant système",
+    "MISSING_TOKEN_MESSAGE": "Jeton manquant.",
+    "UNABLE_TO_GENERATE_MESSAGE": "Impossible de générer de nouveaux jetons"
   },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",
@@ -163,7 +176,8 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer"
+    "REMOVE_BUTTON": "Supprimer",
+    "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
     "TITLE": "Instances d'application",
@@ -208,6 +222,15 @@
     "SUBMIT_BUTTON": "Soumettre",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language"
+  },
+  "AUTH": {
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "La méthode de connexion SSO n'est pas activée",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Les données de connexion de l'utilisateur SSO reçues sont vides",
+    "MISSING_USERNAME_MESSAGE": "Nom d'utilisateur manquant",
+    "USER_ALREADY_EXITS_MESSAGE": "L'utilisateur existe déjà",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Erreur interne du serveur",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails du domaine",
@@ -400,5 +423,14 @@
     "HEADER": "Update configuration",
     "SUBMIT_BUTTON": "Submit",
     "CANCEL_BUTTON": "Cancel"
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Le commentaire ne peut pas être vide"
+  },
+  "GENERIC_MESSAGE": {
+    "UNAVAILABLE_MESSAGE": "Le service est indisponible. Veuillez réessayer ultérieurement",
+    "INVALID_INPUT_MESSAGE": "Données d'entrée non valides",
+    "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
+    "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
   }
 }
