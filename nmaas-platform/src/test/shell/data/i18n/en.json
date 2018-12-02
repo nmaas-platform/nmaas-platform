@@ -221,12 +221,13 @@
     "DEFAULT_LANGUAGE": "Default language"
   },
   "AUTH":{
-    "SSO login method is not enabled",
-    "Received user SSO login data is empty",
-    "Missing username",
-    "User already exists",
-    "Domain not found",
-    "Internal server error"
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "SSO login method is not enabled",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Received user SSO login data is empty",
+    "MISSING_USERNAME_MESSAGE": "Missing username",
+    "USER_ALREADY_EXITS_MESSAGE": "User already exists",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Internal server error",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",

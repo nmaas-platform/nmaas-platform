@@ -216,6 +216,15 @@
       "LANGUAGE_ERROR": "Aktive- oder Standardsprache kann nicht deaktiviert werden",
       "DEFAULT_LANGUAGE": "Standard Sprache"
     },
+    "AUTH": {
+      "SSO_LOGIN_NOT_ENABLED_MESSAGE": "SSO-Anmeldemethode ist nicht aktiviert",
+      "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Empfangene Benutzer-SSO-Anmeldedaten sind leer",
+      "MISSING_USERNAME_MESSAGE": "Fehlender Benutzername",
+      "USER_ALREADY_EXITS_MESSAGE": "Benutzer ist bereits vorhanden",
+      "DOMAIN_NOT_FOUND_MESSAGE": "Domäne nicht gefunden",
+      "INTERNAL_SERVER_ERROR_MESSAGE": "Interner Serverfehler",
+      "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Die Anwendung wird gerade gewartet. Bitte versuchen Sie es später erneut."
+    },
     "DOMAIN_DETAILS": {
       "TITLE": "Domain Details",
       "NAME": "Name",

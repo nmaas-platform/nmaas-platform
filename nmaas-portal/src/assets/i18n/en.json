@@ -76,7 +76,11 @@
     "PASSWORD_REQUIRED_MESSAGE": "Password is required",
     "LOGIN": "Login",
     "LOGIN_WITH": "Login with",
-    "LOGIN_FAILURE_MESSAGE": "Invalid Credentials"
+    "LOGIN_FAILURE_MESSAGE": "Invalid Credentials",
+    "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later.",
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed",
+    "MISSING_TOKEN_MESSAGE": "Missing token.",
+    "UNABLE_TO_GENERATE_MESSAGE": "Unable to generate new tokens"
   },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
@@ -215,6 +219,15 @@
     "SUBMIT_BUTTON": "Submit",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language"
+  },
+  "AUTH":{
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "SSO login method is not enabled",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Received user SSO login data is empty",
+    "MISSING_USERNAME_MESSAGE": "Missing username",
+    "USER_ALREADY_EXITS_MESSAGE": "User already exists",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Internal server error",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",

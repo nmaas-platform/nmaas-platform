@@ -90,7 +90,7 @@
     "REST_API": "API REST",
     "ENABLE_TLS": "Enable TLS",
     "USER_REST_API": "Utiliser l'API REST",
-    "HOST_PORT": "Host port",    
+    "HOST_PORT": "Host port",
     "INGRESS": "Ingress",
     "CONTROLLER_CONFIG_OPTION": "Option de configuration du contrôleur",
     "SUPPORTED_INGRESS_CLASS": "Classe d'entrée prise en charge",
@@ -171,7 +171,7 @@
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
     "REMOVE_BUTTON": "Supprimer",
-    "ADD_BUTTON": "Add"	
+    "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
     "TITLE": "Instances d'application",
@@ -215,6 +215,15 @@
     "SUBMIT_BUTTON": "Soumettre",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language"
+  },
+  "AUTH": {
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "La méthode de connexion SSO n'est pas activée",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Les données de connexion de l'utilisateur SSO reçues sont vides",
+    "MISSING_USERNAME_MESSAGE": "Nom d'utilisateur manquant",
+    "USER_ALREADY_EXITS_MESSAGE": "L'utilisateur existe déjà",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Erreur interne du serveur",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails du domaine",

@@ -216,6 +216,15 @@
     "LANGUAGE_ERROR": "Nie można zdeaktywować domyślnego, lub aktywnego języka",
     "DEFAULT_LANGUAGE": "Domyślny język"
   },
+  "AUTH": {
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "Metoda logowania SSO nie jest włączona",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Dane logowania użytkownika otrzymanego użytkownika SSO są puste",
+    "MISSING_USERNAME_MESSAGE": "Brakująca nazwa użytkownika",
+    "USER_ALREADY_EXITS_MESSAGE": "Użytkownik już istnieje",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Błąd wewnętrzny serwera",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później."
+  },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
     "NAME": "Nazwa",
