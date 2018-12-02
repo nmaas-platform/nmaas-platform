@@ -94,6 +94,10 @@ export class AppInstanceService extends GenericDataService {
     return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);
   }
 
+  public updateConfiguration(appInstanceId: number, configuration: AppConfiguration, domainId?: number): Observable<void> {
+      return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure/update', configuration);
+  }
+
   public redeployAppInstance(appInstanceId: number, domainId?: number): Observable<void> {
     return this.post<number, any>(this.getUrl(domainId) + appInstanceId + '/redeploy', appInstanceId);
   }

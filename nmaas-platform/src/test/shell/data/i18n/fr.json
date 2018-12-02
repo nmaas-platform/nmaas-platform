@@ -59,15 +59,7 @@
     "SUBMIT": "Soumettre",
     "FORM_SUBMISSION": "Formulaire d'inscription",
     "THANK_YOU_MESSAGE": "Merci d'avoir envoyé le formulaire d'inscription. Votre compte doit être activé par l'administrateur système. Cela prend du temps.",
-    "DONE_MESSAGE": "Terminé",
-    "INVALID_CREDENTIALS_MESSAGE": "Informations d'identification non valides.",
-    "UNABLE_TO_REGISTER_MESSAGE": "Impossible d'inscrire un nouvel utilisateur.",
-    "TERMS_NOT_ACCEPTED_MESSAGE": "Les conditions d'utilisation n'ont pas été acceptées.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "La politique de confidentialité n'a pas été acceptée.",
-    "USER_ALREADY_EXISTS_MESSAGE": "L'utilisateur existe déjà.",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable.",
-    "UNABLE_TO_UPDATE_USER_MESSAGE": "Impossible de mettre à jour l'utilisateur récemment enregistré.",
-    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Impossible d'extraire le contenu"
+    "DONE_MESSAGE": "Terminé"
   },
   "LOGIN": {
     "USERNAME": "Nom d'utilisateur",
@@ -75,8 +67,7 @@
     "PASSWORD": "Mot de passe",
     "PASSWORD_REQUIRED_MESSAGE": "Le mot de passe est requis",
     "LOGIN": "S'identifier",
-    "LOGIN_WITH": "Connectez-vous avec",
-    "LOGIN_FAILURE_MESSAGE": "Les informations d'identification invalides"
+    "LOGIN_WITH": "Connectez-vous avec"
   },
   "CLUSTERS": {
     "TITLE": "Configuration du cluster Kubernetes",
@@ -89,8 +80,10 @@
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
     "ENABLE_TLS": "Enable TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "TLS certificate configuration",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "LetsEncrypt issuer or wildcard certificate name",
+    "HOST_PORT": "Host port",
     "USER_REST_API": "Utiliser l'API REST",
-    "HOST_PORT": "Host port",    
     "INGRESS": "Ingress",
     "CONTROLLER_CONFIG_OPTION": "Option de configuration du contrôleur",
     "SUPPORTED_INGRESS_CLASS": "Classe d'entrée prise en charge",
@@ -170,8 +163,7 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer",
-    "ADD_BUTTON": "Add"	
+    "REMOVE_BUTTON": "Supprimer"
   },
   "APP_INSTANCES": {
     "TITLE": "Instances d'application",
@@ -184,7 +176,8 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application",
-    "ITEMS_PER_PAGE": "Instances par page"
+    "ITEMS_PER_PAGE": "Instances par page",
+    "ACTIONS": "Action"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -215,15 +208,6 @@
     "SUBMIT_BUTTON": "Soumettre",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language"
-  },
-  "AUTH": {
-    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "La méthode de connexion SSO n'est pas activée",
-    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Les données de connexion de l'utilisateur SSO reçues sont vides",
-    "MISSING_USERNAME_MESSAGE": "Nom d'utilisateur manquant",
-    "USER_ALREADY_EXITS_MESSAGE": "L'utilisateur existe déjà",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domaine introuvable",
-    "INTERNAL_SERVER_ERROR_MESSAGE": "Erreur interne du serveur",
-    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "L'application est en cours de maintenance. Veuillez réessayer ultérieurement."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails du domaine",
@@ -347,6 +331,7 @@
     "UNDEPLOY_BUTTON": "Undeploy",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Redeploy",
+    "UPDATE_CONFIG_BUTTON": "Update",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
@@ -411,13 +396,9 @@
       "CONFIRM_PASSWORD": "Confirm password"
     }
   },
-  "SUBSCRIPTION": {
-    "COMMENTS_NOT_EMPTY_MESSAGE": "Le commentaire ne peut pas être vide"
-  },
-  "GENERIC_MESSAGE": {
-    "UNAVAILABLE_MESSAGE": "Le service est indisponible. Veuillez réessayer ultérieurement",
-    "INVALID_INPUT_MESSAGE": "Données d'entrée non valides",
-    "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
-    "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Update configuration",
+    "SUBMIT_BUTTON": "Submit",
+    "CANCEL_BUTTON": "Cancel"
   }
 }

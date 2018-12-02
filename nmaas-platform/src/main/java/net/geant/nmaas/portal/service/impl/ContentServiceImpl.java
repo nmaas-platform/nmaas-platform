@@ -1,35 +1,24 @@
 package net.geant.nmaas.portal.service.impl;
 
-import lombok.extern.slf4j.Slf4j;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
-import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class ContentServiceImpl implements net.geant.nmaas.portal.service.ContentService {
 
-	private ContentRepository contentRepo;
+    ContentRepository contentRepo;
 
-	private InternationalizationRepository internationalizationRepository;
+    @Autowired
+    public ContentServiceImpl(ContentRepository repository){
+        this.contentRepo = repository;
+    }
 
-	@Autowired
-	public ContentServiceImpl(ContentRepository contentRepo, InternationalizationRepository internationalizationRepository) {
-		this.contentRepo = contentRepo;
-		this.internationalizationRepository = internationalizationRepository;
-
-	}
     @Override
     public Optional<Content> findByName(String name){
         return (name != null ? contentRepo.findByName(name) : Optional.empty());

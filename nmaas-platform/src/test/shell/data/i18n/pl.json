@@ -59,15 +59,7 @@
     "SUBMIT": "Zatwierdź",
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
-    "DONE_MESSAGE": "Gotowe",
-    "INVALID_CREDENTIALS_MESSAGE": "Nieprawidłowe dane uwierzytelniające.",
-    "UNABLE_TO_REGISTER_MESSAGE": "Nie można zarejestrować nowego użytkownika.",
-    "TERMS_NOT_ACCEPTED_MESSAGE": "Warunki użytkowania nie zostały zaakceptowane.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Polityka prywatności nie została zaakceptowana.",
-    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje.",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona.",
-    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika.",
-    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
+    "DONE_MESSAGE": "Gotowe"
   },
   "LOGIN": {
     "USERNAME": "Nazwa użytkownika",
@@ -75,8 +67,7 @@
     "PASSWORD": "Hasło",
     "PASSWORD_REQUIRED_MESSAGE": "Hasło jest wymagane",
     "LOGIN": "Zaloguj się",
-    "LOGIN_WITH": "Zaloguj się przez",
-    "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania"
+    "LOGIN_WITH": "Zaloguj się przez"
   },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
@@ -88,6 +79,8 @@
     "HEML_CHARTS_DIRECTORY": "Lokalna lokalizacja chartów",
     "REST_API": "Kubernetes API",
     "ENABLE_TLS": "Włącz TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "Konfiguracja certyfikatów TLS",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "Nazwa issuera letsencrypt lub certyfikatu wildcard",
     "USER_REST_API": "Korzystaj z Kubernetes API",
     "HOST_PORT": "Host port",
     "INGRESS": "Ingress",
@@ -184,7 +177,8 @@
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",
     "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
-    "ITEMS_PER_PAGE": "Liczba instancji na stronę"
+    "ITEMS_PER_PAGE": "Liczba instancji na stronę",
+    "ACTIONS": "Operacje"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",
@@ -215,15 +209,6 @@
     "SUBMIT_BUTTON": "Prześlij",
     "LANGUAGE_ERROR": "Nie można zdeaktywować domyślnego, lub aktywnego języka",
     "DEFAULT_LANGUAGE": "Domyślny język"
-  },
-  "AUTH": {
-    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "Metoda logowania SSO nie jest włączona",
-    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Dane logowania użytkownika otrzymanego użytkownika SSO są puste",
-    "MISSING_USERNAME_MESSAGE": "Brakująca nazwa użytkownika",
-    "USER_ALREADY_EXITS_MESSAGE": "Użytkownik już istnieje",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona",
-    "INTERNAL_SERVER_ERROR_MESSAGE": "Błąd wewnętrzny serwera",
-    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
@@ -347,6 +332,7 @@
     "UNDEPLOY_BUTTON": "Zatrzymaj",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
+    "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
@@ -411,13 +397,9 @@
       "CONFIRM_PASSWORD": "Potwierdź nowe hasło"
     }
   },
-  "SUBSCRIPTION": {
-    "COMMENTS_NOT_EMPTY_MESSAGE": "Komentarz nie może być pusty"
-  },
-  "GENERIC_MESSAGE": {
-    "UNAVAILABLE_MESSAGE": "Usługa jest niedostępna. Spróbuj ponownie później",
-    "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
-    "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
-    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Zaktualizuj konfiguracje",
+    "SUBMIT_BUTTON": "Prześlij",
+    "CANCEL_BUTTON": "Anuluj"
   }
 }

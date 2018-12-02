@@ -22,6 +22,8 @@ public class AppInstance extends DomainAware {
 	private User owner;
 	
 	private String configuration;
+
+	private ConfigTemplate wizard;
 	
 	private AppInstanceState state;
 

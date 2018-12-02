@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 public interface DockerNmServiceRepositoryManager {
 

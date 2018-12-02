@@ -6,12 +6,12 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileR
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerNmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -66,6 +66,12 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
                 throw new FileTransferException("Failed to transfer configuration file with id " + configFileId + " -> " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
+        //TODO: Add update configuration for docker
+        throw new NotImplementedException();
     }
 
     private ConfigDownloadCommand buildCommand(String configFileId, String configFileName, String targetDirectoryFullPath) {

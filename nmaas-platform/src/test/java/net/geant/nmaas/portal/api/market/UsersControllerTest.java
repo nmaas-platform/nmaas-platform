@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Collections;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
@@ -18,6 +19,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -140,6 +142,16 @@ public class UsersControllerTest {
 		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
 	}
 
+	@Test(expected = ProcessingException.class)
+	public void shouldNotUpdateUserWithNonUniqueEmail(){
+		when(userService.existsByEmail(anyString())).thenReturn(true);
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail("test@nmaas.net");
+		userRequest.setFirstname("test");
+		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
+		verify(userService, times(2)).update(userList.get(0));
+	}
+
 	@Test
 	@Ignore
 	public void shouldDeleteUser(){
@@ -209,6 +221,15 @@ public class UsersControllerTest {
 		verify(userService, times(1)).update(userList.get(0));
 	}
 
+	@Test(expected = ProcessingException.class)
+	public void shouldNotCompleteRegistrationWithNonUniqueMail(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail("test@test.com");
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		when(userService.existsByEmail(userRequest.getEmail())).thenReturn(true);
+		usersController.completeRegistration(principal, userRequest);
+	}
+
 	@Test
 	public void shouldCompleteRegistrationAndRemoveIncompleteRole(){
 		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
@@ -216,8 +237,9 @@ public class UsersControllerTest {
 		when(principal.getName()).thenReturn(userList.get(0).getUsername());
 		when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
 		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		when(domainService.getMemberRoles(GLOBAL_DOMAIN.getId(), userRequest.getId())).thenReturn(ImmutableSet.of(Role.ROLE_GUEST));
 		usersController.completeRegistration(principal, userRequest);
-		verify(domainService, times(1)).removeMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_INCOMPLETE);
+		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
 		verify(userService, times(1)).update(userList.get(0));
 	}
 
