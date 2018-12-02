@@ -3,9 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Content;
-import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
-import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -33,12 +30,9 @@ public class ContentServiceImplTest {
     @InjectMocks
     private ContentServiceImpl contentService;
 
-    @Mock
-    private InternationalizationRepository internationalizationRepository;
-
     @Before
     public void setup(){
-        contentService = new ContentServiceImpl(contentRepository, internationalizationRepository);
+        contentService = new ContentServiceImpl(contentRepository);
     }
 
     @Test
@@ -130,53 +124,5 @@ public class ContentServiceImplTest {
         contentService.delete(testContent);
         verify(contentRepository).delete(testContent);
     }
-
-    @Test
-	public void shouldReturnValueForValidLanguageAndRootAndKey(){
-		Internationalization internationalization = Internationalization
-				.builder()
-				.id(1L)
-				.language("en")
-				.enabled(true)
-				.content("{\"ROOT\":{\"KEY1\":\"VAL1\",\"KEY2\":\"VAL2\"}}")
-				.build();
-		when(internationalizationRepository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(internationalization));
-
-		assertEquals("VAL1", contentService.getContent("en", "ROOT", "KEY1"));
-	}
-
-	@Test
-	public void shouldReturnERRORForValidLanguageAndRootAndInvalidKey(){
-		Internationalization internationalization = Internationalization
-				.builder()
-				.id(1L)
-				.language("en")
-				.enabled(true)
-				.content("{\"ROOT\":{\"KEY1\":\"VAL1\",\"KEY2\":\"VAL2\"}}")
-				.build();
-		when(internationalizationRepository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(internationalization));
-
-		assertEquals("Enexpected error", contentService.getContent("en", "ROOT", "KEY3"));
-	}
-
-	@Test
-	public void shouldReturnERRORForInvalidLanguageAndValidRootAndKey(){
-		when(internationalizationRepository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.empty());
-		assertEquals("Enexpected error - invalid language", contentService.getContent("InvalidLanguage", "ROOT", "KEY3"));
-	}
-
-	@Test
-	public void shouldReturnERRORForValidLanguageAndInvalidRootAndValidKey(){
-		Internationalization internationalization = Internationalization
-				.builder()
-				.id(1L)
-				.language("en")
-				.enabled(true)
-				.content("{\"ROOT\":{\"KEY1\":\"VAL1\",\"KEY2\":\"VAL2\"}}")
-				.build();
-		when(internationalizationRepository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(internationalization));
-
-		assertEquals("Enexpected error", contentService.getContent("en", "INVALIDROOT", "KEY2"));
-	}
 
 }
