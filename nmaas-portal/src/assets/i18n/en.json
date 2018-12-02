@@ -59,7 +59,15 @@
     "SUBMIT": "Submit",
     "FORM_SUBMISSION": "Registration form submission",
     "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
-    "DONE_MESSAGE": "Done"
+    "DONE_MESSAGE": "Done",
+    "INVALID_CREDENTIALS_MESSAGE": "Invalid credentials.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Unable to register new user.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Terms of Use were not accepted.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Privacy Policy were not accepted.",
+    "USER_ALREADY_EXISTS_MESSAGE": "User already exists.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Unable to update newly registered user.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Unable to fetch the content"
   },
   "LOGIN": {
     "USERNAME": "Username",
@@ -67,7 +75,12 @@
     "PASSWORD": "Password",
     "PASSWORD_REQUIRED_MESSAGE": "Password is required",
     "LOGIN": "Login",
-    "LOGIN_WITH": "Login with"
+    "LOGIN_WITH": "Login with",
+    "LOGIN_FAILURE_MESSAGE": "Invalid Credentials",
+    "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later.",
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed",
+    "MISSING_TOKEN_MESSAGE": "Missing token.",
+    "UNABLE_TO_GENERATE_MESSAGE": "Unable to generate new tokens"
   },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
@@ -79,6 +92,8 @@
     "HEML_CHARTS_DIRECTORY": "Helm charts directory",
     "REST_API": "REST API",
     "ENABLE_TLS": "Enable TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "TLS certificate configuration",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "LetsEncrypt issuer or wildcard certificate name",
     "USER_REST_API": "Use REST API",
     "HOST_PORT": "Host port",
     "INGRESS": "Ingress",
@@ -207,6 +222,14 @@
     "SUBMIT_BUTTON": "Submit",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
     "DEFAULT_LANGUAGE": "Default language"
+  },
+  "AUTH":{
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "SSO login method is not enabled",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Received user SSO login data is empty",
+    "MISSING_USERNAME_MESSAGE": "Missing username",
+    "USER_ALREADY_EXITS_MESSAGE": "User already exists",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Internal server error"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",
@@ -399,5 +422,14 @@
     "HEADER": "Update configuration",
     "SUBMIT_BUTTON": "Submit",
     "CANCEL_BUTTON": "Cancel"
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Comment cannot be empty"
+  },
+  "GENERIC_MESSAGE": {
+    "UNAVAILABLE_MESSAGE": "Service is unavailable. Please try again later",
+    "INVALID_INPUT_MESSAGE": "Invalid input data",
+    "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
+    "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"
   }
 }
