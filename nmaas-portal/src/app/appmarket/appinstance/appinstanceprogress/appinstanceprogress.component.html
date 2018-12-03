@@ -1,8 +1,8 @@
 <div class="stepwizard">
-	<div class="stepwizard-row">
+	<div class="row stepwizard-row">
 
 		<ng-template ngFor let-stage [ngForOf]="stages" >		 
-		<div class="stepwizard-step" *ngIf="stage.isVisible(activeState)">
+		<div class="stepwizard-step" *ngIf="stage.isVisible(activeState)" style="min-width: 180px;">
  				<a type="button" class="btn btn-circle btn-default" [ngClass]="{ 
 					'btn-success': (stage.activeState < AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE]) ||
 									(stage.activeState < AppInstanceState[previousState] && AppInstanceState[previousState] !== AppInstanceState[AppInstanceState.UNKNOWN]),
