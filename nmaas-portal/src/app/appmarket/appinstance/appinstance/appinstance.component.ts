@@ -110,11 +110,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       this.undeployModal.setModalType("warning");
       this.undeployModal.setStatusOfIcons(true);
     });
-    //document.getElementById("app-prop").scrollLeft = document.getElementById("app-prop").scrollWidth;
   }
 
   ngAfterViewChecked(): void {
-    //document.getElementById("app-prop").scrollLeft = document.getElementById("app-prop").scrollWidth;
   }
 
   private updateAppInstanceState() {
