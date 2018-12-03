@@ -175,7 +175,8 @@
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",
     "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
-    "ITEMS_PER_PAGE": "Liczba instancji na stronę"
+    "ITEMS_PER_PAGE": "Liczba instancji na stronę",
+    "ACTIONS": "Operacje"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",
@@ -329,6 +330,7 @@
     "UNDEPLOY_BUTTON": "Zatrzymaj",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
+    "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
@@ -392,5 +394,10 @@
       "PASSWORD": "Hasło",
       "CONFIRM_PASSWORD": "Potwierdź nowe hasło"
     }
+  },
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Zaktualizuj konfiguracje",
+    "SUBMIT_BUTTON": "Prześlij",
+    "CANCEL_BUTTON": "Anuluj"
   }
 }

@@ -53,6 +53,17 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         }
     }
 
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired){
+        try{
+            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
+            fileTransferor.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
+        } catch(Exception e){
+            throw new NmServiceConfigurationFailedException(e.getMessage());
+        }
+    }
+
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }

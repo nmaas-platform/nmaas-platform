@@ -80,6 +80,8 @@
     "HEML_CHARTS_DIRECTORY": "Répertoire des cartes de pilotage",
     "REST_API": "API REST",
     "ENABLE_TLS": "Enable TLS",
+    "INGRESS_CERTIFICATE_CONFIG_OPTION": "TLS certificate configuration",
+    "INGRESS_ISSUER_OR_WILDCARD_NAME": "LetsEncrypt issuer or wildcard certificate name",
     "HOST_PORT": "Host port",
     "USER_REST_API": "Utiliser l'API REST",
     "INGRESS": "Ingress",
@@ -174,7 +176,8 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application",
-    "ITEMS_PER_PAGE": "Instances par page"
+    "ITEMS_PER_PAGE": "Instances par page",
+    "ACTIONS": "Action"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -328,6 +331,7 @@
     "UNDEPLOY_BUTTON": "Undeploy",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Redeploy",
+    "UPDATE_CONFIG_BUTTON": "Update",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
@@ -391,5 +395,10 @@
       "PASSWORD": "Password",
       "CONFIRM_PASSWORD": "Confirm password"
     }
+  },
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Update configuration",
+    "SUBMIT_BUTTON": "Submit",
+    "CANCEL_BUTTON": "Cancel"
   }
 }

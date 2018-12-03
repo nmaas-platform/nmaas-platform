@@ -174,7 +174,8 @@
     "STATE": "State",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application",
-    "ITEMS_PER_PAGE": "Instances par page"
+    "ITEMS_PER_PAGE": "Instances par page",
+    "ACTIONS": "Action"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -328,6 +329,7 @@
     "UNDEPLOY_BUTTON": "Undeploy",
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Redeploy",
+    "UPDATE_CONFIG_BUTTON": "Update",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
@@ -391,5 +393,10 @@
       "PASSWORD": "Password",
       "CONFIRM_PASSWORD": "Confirm password"
     }
+  },
+  "UPDATE_CONFIG_MODAL": {
+    "HEADER": "Update configuration",
+    "SUBMIT_BUTTON": "Submit",
+    "CANCEL_BUTTON": "Cancel"
   }
 }

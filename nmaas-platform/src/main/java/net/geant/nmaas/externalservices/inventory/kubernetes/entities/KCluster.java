@@ -53,6 +53,7 @@ public class KCluster {
     public void validate() {
         ingress.getControllerConfigOption().validate(ingress);
         ingress.getResourceConfigOption().validate(ingress);
+        ingress.getCertificateConfigOption().validate(ingress);
         deployment.getNamespaceConfigOption().validate(deployment);
         if(api.isUseKClusterApi()){
             checkArgument(api.getRestApiPort() != null, "When using KCluster Api the rest api port can't be empty");

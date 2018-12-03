@@ -19,8 +19,6 @@ import {DomainService} from '../service/domain.service';
 import {TagService} from '../service/tag.service';
 import {UserService} from '../service/user.service';
 
-import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.component';
-
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
@@ -39,8 +37,7 @@ import {SortService} from "../service/sort.service";
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
-    NavbarComponent,
-    AppInstallModalComponent,
+    NavbarComponent
   ],
   imports: [
     FormsModule,

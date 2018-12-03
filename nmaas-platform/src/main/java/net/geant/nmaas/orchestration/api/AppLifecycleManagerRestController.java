@@ -85,6 +85,22 @@ public class AppLifecycleManagerRestController {
     }
 
     /**
+     * Updates application configuration
+     *
+     * @param deploymentId unique identifier of the application deployment
+     * @param configuration initial application configuration provided by the user
+     * @throws InvalidDeploymentIdException if deployment with provided identifier doesn't exist in the system
+     */
+
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PostMapping(value = "/{deploymentId}/update")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void updateConfiguration(@PathVariable("deploymentId") String deploymentId,
+                                    @RequestBody AppConfigurationView configuration) {
+        lifecycleManager.updateConfiguration(Identifier.newInstance(deploymentId), configuration);
+    }
+
+    /**
      * Requests application instance removal.
      *
      * @param deploymentId unique identifier of the application deployment

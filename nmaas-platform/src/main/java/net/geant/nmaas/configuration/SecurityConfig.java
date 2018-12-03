@@ -69,24 +69,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private Environment env;
 
 	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "dcn_ansible".equals(p))) {
 			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder())
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder().encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
+					.password(passwordEncoder.encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
 		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
 			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder())
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder().encode(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME)))
+					.password(passwordEncoder.encode(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
 			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder())
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder().encode(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME)))
+					.password(passwordEncoder.encode(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
 		}
 	}
@@ -192,11 +195,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		source.registerCorsConfiguration("/api/**", corsConfig);
 
 		return new CorsFilter(source);
-	}
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
 	}
 	
 	@Bean

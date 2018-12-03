@@ -9,6 +9,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
@@ -92,6 +93,16 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     @Override
     public Boolean getTlsSupported() {
         return loadSingleCluster().getIngress().getTlsSupported();
+    }
+
+    @Override
+    public IngressCertificateConfigOption getCertificateConfigOption() {
+        return loadSingleCluster().getIngress().getCertificateConfigOption();
+    }
+
+    @Override
+    public String getIssuerOrWildcardName() {
+        return loadSingleCluster().getIngress().getIssuerOrWildcardName();
     }
 
     @Override

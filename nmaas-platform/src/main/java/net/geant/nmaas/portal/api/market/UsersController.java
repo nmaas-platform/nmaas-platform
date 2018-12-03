@@ -129,8 +129,12 @@ public class UsersController {
 				userDetails.setFirstname(userRequest.getFirstname());
 			if (userRequest.getLastname() != null)
 				userDetails.setLastname(userRequest.getLastname());
-			if (userRequest.getEmail() != null)
+			if (userRequest.getEmail() != null && !userRequest.getEmail().equalsIgnoreCase(userDetails.getEmail())) {
+				if(userService.existsByEmail(userRequest.getEmail())){
+					throw new ProcessingException("User with mail "+ userRequest.getEmail()+ " already exists.");
+				}
 				userDetails.setEmail(userRequest.getEmail());
+			}
 			userDetails.setEnabled(userRequest.isEnabled());
 			if (userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
 				userDetails.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
@@ -245,10 +249,14 @@ public class UsersController {
 		if(userRequest.getLastname() != null)
 			user.setLastname(userRequest.getLastname());
 		if(userRequest.getEmail() != null) {
+			if(userService.existsByEmail(userRequest.getEmail())){
+				throw new ProcessingException("User with mail "+userRequest.getEmail()+" already exists");
+			}
 			user.setEmail(userRequest.getEmail());
-			domainService.removeMemberRole(domainId, user.getId(), Role.ROLE_INCOMPLETE);
 		}
 
+		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
+		addGlobalGuestUserRoleIfMissing(user.getId());
 		userService.update(user);
 	}
 
