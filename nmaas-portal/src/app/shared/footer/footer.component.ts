@@ -31,7 +31,7 @@ export class FooterComponent implements OnInit {
   }
 
   checkURL():boolean{
-    return this.router.url === "/welcome/login" || this.router.url === "/welcome/registration";
+    return this.router.url === "/welcome/login" || this.router.url === "/welcome/registration" || this.router.url === "/privacy";
   }
 
 }

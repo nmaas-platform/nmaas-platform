@@ -44,11 +44,9 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
       document.getElementById("login-out").style.paddingTop = `${navHeight}`;
       if(this.height > 90){
         document.getElementById("global-footer").style.textAlign = "center";
-        document.getElementById("global-footer-version").style.lineHeight = `inherit`;
         document.getElementById("login-out").style.maxHeight = `calc(94vh - ${this.height +  navHeight + 10}px)`;
       }else{
         document.getElementById("global-footer").style.textAlign = "right";
-        document.getElementById("global-footer-version").style.lineHeight = `${this.height-4}px`;
       }
   }
 }
