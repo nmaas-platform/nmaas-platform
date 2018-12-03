@@ -206,7 +206,10 @@
     "ALLOW_SSO_LOGIN": "Erlaube SSO login",
     "SUBMIT_BUTTON": "Senden",
     "LANGUAGE_ERROR": "Aktive- oder Standardsprache kann nicht deaktiviert werden",
-    "DEFAULT_LANGUAGE": "Standard Sprache"
+    "DEFAULT_LANGUAGE": "Standard Sprache",
+    "LANGUAGE_SUPPORT": "Language support",
+    "LANGUAGE_ENABLED": "Enabled",
+    "LANGUAGE_DISABLED": "Disabled"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain Details",

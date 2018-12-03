@@ -205,7 +205,10 @@
     "ALLOW_SSO_LOGIN": "Autoriser la connexion SSO",
     "SUBMIT_BUTTON": "Soumettre",
     "LANGUAGE_ERROR": "Cannot disable active or default language",
-    "DEFAULT_LANGUAGE": "Default language"
+    "DEFAULT_LANGUAGE": "Default language",
+    "LANGUAGE_SUPPORT": "Language support",
+    "LANGUAGE_ENABLED": "Enabled",
+    "LANGUAGE_DISABLED": "Disabled"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Détails du domaine",
