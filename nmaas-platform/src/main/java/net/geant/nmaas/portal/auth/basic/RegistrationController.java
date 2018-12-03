@@ -70,7 +70,7 @@ public class RegistrationController {
 		}
 		net.geant.nmaas.portal.persistent.entity.Domain domain = null;
 		if(registration.getDomainId() != null){
-			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("Domain not found"));
+			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE"));
 		}
 		net.geant.nmaas.portal.persistent.entity.Domain globalDomain = domains.getGlobalDomain().orElseThrow(MissingElementException::new);
 		try {

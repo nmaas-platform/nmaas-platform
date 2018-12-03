@@ -134,6 +134,6 @@ export class RegistrationComponent implements OnInit {
   }
 
   private getMessage(err: string): string {
-      return err.match('') || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+      return err.match('') || err.match(undefined) || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }
