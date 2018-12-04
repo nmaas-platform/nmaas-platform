@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
@@ -108,6 +109,13 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 serviceInfo.getAdditionalParameters().putAll(this.getMapFromJson(configuration.getAdditionalParameters()));
             }
         }
+        if(configuration.getMandatoryParameters() != null && !configuration.getMandatoryParameters().isEmpty()){
+            if(serviceInfo.getAdditionalParameters() == null){
+                serviceInfo.setAdditionalParameters(replaceUnderscoreToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
+            } else {
+                serviceInfo.getAdditionalParameters().putAll(replaceUnderscoreToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
+            }
+        }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
@@ -121,6 +129,14 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
+    }
+
+    private Map<String, String> replaceUnderscoreToDotsInMapKeys(Map<String, String> map){
+        Map<String, String> newMap = new HashMap<>();
+        for(Map.Entry<String, String> entry: map.entrySet()){
+            newMap.put(entry.getKey().replace("_","."), entry.getValue());
+        }
+        return newMap;
     }
 
     @Override
