@@ -56,8 +56,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
   public additionalParametersTemplate: any;
+  public additionalMandatoryTemplate: any;
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
+  public mandatoryFields: any[];
 
 
   public intervalCheckerSubscribtion;
@@ -100,6 +102,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
           if(!isNullOrUndefined(this.app.additionalParametersTemplate)){
               this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
+          }
+          if(!isNullOrUndefined(this.app.additionalMandatoryTemplate.template)){
+            this.additionalMandatoryTemplate = this.getTemplate(this.app.additionalMandatoryTemplate.template);
+            this.mandatoryFields = this.additionalMandatoryTemplate.schema.required;
           }
           this.requiredFields = this.configurationTemplate.schema.required;
         });
@@ -158,6 +164,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     this.appConfiguration.additionalParameters = additionalParameters;
   }
 
+  public changeMandatoryParameters(mandatoryParameters: string): void{
+    this.appConfiguration.mandatoryParameters = mandatoryParameters;
+  }
+
   public applyConfiguration(): void {
     if(this.isValid()){
       this.appConfiguration.storageSpace = this.configAdvancedTab.controls['storageSpace'].value;
@@ -196,7 +206,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   }
 
   public isValid(): boolean {
-    if(isNullOrUndefined(this.requiredFields)){
+    if(isNullOrUndefined(this.requiredFields) && isNullOrUndefined(this.mandatoryFields)){
       return true;
     }
     for(let value of this.requiredFields){
@@ -218,6 +228,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 }
             }
         }
+      }
+    }
+    if(!isNullOrUndefined(this.mandatoryFields)){
+      for(let value of this.mandatoryFields){
+          if(!this.appConfiguration.mandatoryParameters.hasOwnProperty(value)){
+              return false;
+          }
       }
     }
     return true;

@@ -93,6 +93,7 @@ create table application (
   version varchar(255),
   www_url varchar(255),
   additional_parameters_template_id bigint,
+  additional_mandatory_template_id bigint,
   app_deployment_spec_id bigint,
   config_template_id bigint,
   logo_id bigint,

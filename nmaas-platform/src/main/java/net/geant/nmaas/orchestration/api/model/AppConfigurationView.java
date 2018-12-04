@@ -16,11 +16,16 @@ public class AppConfigurationView {
     private Integer storageSpace;
     @JsonProperty("additionalParameters")
     private String additionalParameters;
+    @JsonProperty("mandatoryParameters")
+    private String mandatoryParameters;
 
     @JsonSetter("additionalParameters")
     public void setAdditionalParameters(JsonNode data){
         this.additionalParameters = data.toString();
     }
+
+    @JsonSetter("mandatoryParameters")
+    public void setMandatoryParameters(JsonNode data) { this.mandatoryParameters = data.toString();}
 
     public void setStorageSpace(Integer storageSpace){
         this.storageSpace = storageSpace;
