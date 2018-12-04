@@ -104,7 +104,7 @@
 			<div class='row'>
 				<h3>{{'APP_INSTANCE.INSTALLATION_PROGRESS.HEADER' | translate}}</h3>
 				<hr>
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
 					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 				</div>
 				<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus?.userFriendlyState : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
