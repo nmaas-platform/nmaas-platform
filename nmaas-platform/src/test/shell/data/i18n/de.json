@@ -59,15 +59,28 @@
     "SUBMIT": "Absenden",
     "FORM_SUBMISSION": "Einreichung des Anmeldeformulars",
     "THANK_YOU_MESSAGE": "Vielen Dank, dass Sie das Anmeldeformular eingereicht haben. Ihr Konto muss noch vom Systemadministrator aktiviert werden. Das kann einige Zeit in Anspruch nehmen.",
-    "DONE_MESASAGE": "Erledigt"
+    "DONE_MESASAGE": "Erledigt",
+    "INVALID_CREDENTIALS_MESSAGE": "Ungültige Anmeldeinformationen.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Neuer Benutzer kann nicht registriert werden.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Nutzungsbedingungen wurden nicht akzeptiert.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Datenschutzbestimmungen wurden nicht akzeptiert.",
+    "USER_ALREADY_EXISTS_MESSAGE": "Benutzer ist bereits vorhanden.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domäne nicht gefunden.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Neu registrierter Benutzer kann nicht aktualisiert werden.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Inhalt kann nicht abgerufen werden"
   },
   "LOGIN": {
     "USERNAME": "Benutzername",
-    "USERNAME_REQUIRED_MESSAGE": "Benutzername wird benötigt",
-    "PASSWORD": "Password",
-    "PASSWORD_REQUIRED_MESSAGE": "Passwort wird benötigt",
-    "LOGIN": "Login",
-    "LOGIN_WITH": "Login mit"
+    "USERNAME_REQUIRED_MESSAGE": "Benutzername ist erforderlich",
+    "PASSWORD": "Passwort",
+    "PASSWORD_REQUIRED_MESSAGE": "Passwort ist erforderlich",
+    "LOGIN": "Einloggen",
+    "LOGIN_WITH": "Anmelden mit",
+    "LOGIN_FAILURE_MESSAGE": "Ungültige Anmeldeinformationen",
+    "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Die Anwendung wird gerade gewartet. Bitte versuchen Sie es später erneut.",
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Systemkomponenten-Login kann nicht durchgeführt werden",
+    "MISSING_TOKEN_MESSAGE": "Fehlender Token",
+    "UNABLE_TO_GENERATE_MESSAGE": "Neue Token können nicht generiert werden"
   },
   "CLUSTERS": {
     "TITLE": "Kubernetes Cluster Konfiguration",
@@ -212,6 +225,15 @@
     "LANGUAGE_SUPPORT": "Language support",
     "LANGUAGE_ENABLED": "Enabled",
     "LANGUAGE_DISABLED": "Disabled"
+  },
+  "AUTH": {
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "SSO-Anmeldemethode ist nicht aktiviert",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Empfangene Benutzer-SSO-Anmeldedaten sind leer",
+    "MISSING_USERNAME_MESSAGE": "Fehlender Benutzername",
+    "USER_ALREADY_EXITS_MESSAGE": "Benutzer ist bereits vorhanden",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domäne nicht gefunden",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Interner Serverfehler",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Die Anwendung wird gerade gewartet. Bitte versuchen Sie es später erneut."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain Details",
@@ -404,5 +426,14 @@
     "HEADER": "Update configuration",
     "SUBMIT_BUTTON": "Submit",
     "CANCEL_BUTTON": "Cancel"
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Kommentar darf nicht leer sein"
+  },
+  "GENERIC_MESSAGE": {
+    "UNAVAILABLE_MESSAGE": "Dienst ist nicht verfügbar. Bitte versuchen Sie es später erneut.",
+    "INVALID_INPUT_MESSAGE": "Ungültige Eingabedaten",
+    "NOT_ROBOT_ERROR_MESSAGE": "Sie müssen beweisen, dass Sie kein Roboter sind!",
+    "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!"
   }
 }

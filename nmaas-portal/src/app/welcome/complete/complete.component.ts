@@ -75,9 +75,8 @@ export class CompleteComponent extends BaseComponent implements OnInit {
             this.sending = false;
             this.submitted = true;
             this.success = false;
-            this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
-        }
-        else {
+            this.errorMessage = this.translate.instant('GENERIC_MESSAGE.TERMS_OF_USER_MESSAGE');
+        } else {
             if (this.registrationForm.valid) {
                 this.user.enabled = false;
                 this.user.username = this.registrationForm.controls['username'].value;
@@ -89,17 +88,17 @@ export class CompleteComponent extends BaseComponent implements OnInit {
 
                 this.userService.completeRegistration(this.user).subscribe(
                     (result) => {
-                        console.log("Data updated successfully.");
                         this.success = true;
                         this.authService.logout();
                         this.modal.show();
                     },
                     (err) => {
-                        console.log("Unable to finish user registration");
                         this.sending = false;
                         this.submitted = true;
                         this.success = false;
-                        this.errorMessage = err.statusCode == 406 ? 'Invalid input data' : 'Service is unavailable. Please try again later';
+                        this.errorMessage = err.statusCode === 406 ?
+                            this.translate.instant('GENERIC_MESSAGE.INVALID_INPUT_MESSAGE') :
+                            this.translate.instant('GENERIC_MESSAGE.UNAVAILABLE_MESSAGE');
                     },
                     () => {
                         this.sending = false;

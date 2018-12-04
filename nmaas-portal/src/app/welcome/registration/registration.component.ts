@@ -3,7 +3,7 @@ import {Domain} from '../../model/domain';
 import {Registration} from '../../model/registration';
 import {AppConfigService} from '../../service/appconfig.service';
 import {PasswordValidator} from '../../shared/common/password/password.component';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterContentInit, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
@@ -11,6 +11,7 @@ import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/mod
 import {ModalComponent} from "../../shared/modal";
 
 import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-registration',
@@ -35,14 +36,18 @@ export class RegistrationComponent implements OnInit {
   @ViewChild(ModalInfoTermsComponent)
   public readonly modalInfoTerms: ModalInfoTermsComponent;
 
-    @ViewChild(ModalInfoPolicyComponent)
-    public readonly modalInfoPolicy: ModalInfoPolicyComponent;
+  @ViewChild(ModalInfoPolicyComponent)
+  public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
   public registrationForm: FormGroup;
   public domains: Observable<Domain[]>;
 
-  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private appConfig: AppConfigService) {
-    
+  private readonly language: string = '';
+
+  constructor(private fb: FormBuilder,
+              private registrationService: RegistrationService,
+              private appConfig: AppConfigService,
+              private translate: TranslateService) {
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
@@ -58,6 +63,7 @@ export class RegistrationComponent implements OnInit {
       {
         validator: PasswordValidator.match
       });
+
   }
 
   ngOnInit() {
@@ -69,16 +75,17 @@ export class RegistrationComponent implements OnInit {
       let token = this.captcha.getResponse();
       if(token.length < 1){
           this.sending = false;
+          this.sending = false;
           this.submitted = true;
           this.success = false;
-          this.errorMessage = "You have to prove that you're not a robot!";
-      }
-      else {
-          if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
+          this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
+      } else {
+          if (!this.registrationForm.controls['termsOfUseAccepted'].value ||
+            !this.registrationForm.controls['privacyPolicyAccepted'].value) {
               this.sending = false;
               this.submitted = true;
               this.success = false;
-              this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
+              this.errorMessage = this.translate.instant('GENERIC_MESSAGE.TERMS_OF_USER_MESSAGE');
           } else {
               if (this.registrationForm.valid) {
                   this.sending = true;
@@ -93,10 +100,8 @@ export class RegistrationComponent implements OnInit {
                       this.registrationForm.controls['termsOfUseAccepted'].value,
                       this.registrationForm.controls['privacyPolicyAccepted'].value,
                   );
-
                   this.registrationService.register(registration).subscribe(
                       (result) => {
-                          console.log("User registred successfully.");
                           this.registrationForm.reset();
                           this.sending = false;
                           this.submitted = true;
@@ -104,16 +109,15 @@ export class RegistrationComponent implements OnInit {
                           this.modal.show();
                       },
                       (err) => {
-                          console.log("Unable to register user.");
                           this.sending = false;
                           this.submitted = true;
                           this.success = false;
-                          this.errorMessage = this.getMessage(err);
+                          debugger;
+                          this.errorMessage = this.translate.instant(this.getMessage(err));
                       },
                       () => {
                           this.sending = false;
                           this.submitted = true;
-                          console.log("Hmmm...");
                       }
                   );
 
@@ -126,11 +130,10 @@ export class RegistrationComponent implements OnInit {
     this.sending = false;
     this.submitted = false;
     this.success = false;
-    this.errorMessage = '';    
+    this.errorMessage = '';
   }
 
-  public getMessage(err:string){
-      return err.match("409")?"Invalid input data":"Service is unavailable. Please try again later";
+  private getMessage(err: string): string {
+      return err.match('') || err.match(undefined) || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
-
 }

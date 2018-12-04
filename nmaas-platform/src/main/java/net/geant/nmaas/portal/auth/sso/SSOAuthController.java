@@ -51,13 +51,13 @@ public class SSOAuthController {
 	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws IOException {
 		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
-			throw new AuthenticationException("SSO login method is not enabled");
+			throw new AuthenticationException("AUTH.SSO_LOGIN_NOT_ENABLED_MESSAGE");
 
 		if(userSSOLoginData == null)
-			throw new AuthenticationException("Received user SSO login data is empty");
+			throw new AuthenticationException("AUTH.EMPTY_SSO_LOGIN_DATA_MESSAGE");
 
 		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
-			throw new AuthenticationException("Missing username");
+			throw new AuthenticationException("AUTH.MISSING_USERNAME_MESSAGE");
 
 		shibbolethConfigManager.checkParam();
 		userSSOLoginData.validate(shibbolethConfigManager.getKey(), shibbolethConfigManager.getTimeout());
@@ -70,11 +70,11 @@ public class SSOAuthController {
 			try {
 				user = users.register(userSSOLoginData, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
 			} catch (ObjectAlreadyExistsException e) {
-				throw new SignupException("User already exists");
+				throw new SignupException("AUTH.USER_ALREADY_EXITS_MESSAGE");
 			} catch (MissingElementException e) {
-				throw new SignupException("Domain not found");
+				throw new SignupException("AUTH.DOMAIN_NOT_FOUND_MESSAGE");
 			} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-				throw new SignupException("Internal server error");
+				throw new SignupException("AUTH.INTERNAL_SERVER_ERROR_MESSAGE");
 			}
 		}
 
@@ -82,7 +82,7 @@ public class SSOAuthController {
 			throw new AuthenticationException("User is not active.");
 
 		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN")) && configuration.isMaintenance())
-			throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
+			throw new AuthenticationException("AUTH.APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE");
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
