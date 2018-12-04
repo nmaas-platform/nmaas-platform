@@ -113,7 +113,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngAfterViewChecked(): void {
-    document.getElementById("app-prop").scrollLeft = document.getElementById("app-prop").scrollWidth;
   }
 
   private updateAppInstanceState() {
@@ -121,8 +120,19 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       appInstanceStatus => {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
+        if(this.appInstanceStatus.state != this.appInstanceProgress.activeState
+          && this.appInstanceStatus.state != this.appInstanceProgress.previousState){
+        }
+        if(this.appInstanceStatus.state == this.AppInstanceState.FAILURE){
+          document.getElementById("app-prop").scrollLeft =
+            (document.getElementsByClassName("stepwizard-btn-success").length * 180 +
+              document.getElementsByClassName("stepwizard-btn-danger").length * 180);
+        }
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
         this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
+        document.getElementById("app-prop").scrollLeft =
+          (document.getElementsByClassName("stepwizard-btn-success").length * 180 +
+            document.getElementsByClassName("stepwizard-btn-danger").length * 180);
         if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
           if(this.storage.has("appConfig_"+this.appInstanceId.toString()))
             this.storage.remove("appConfig_"+this.appInstanceId.toString());

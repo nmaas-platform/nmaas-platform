@@ -4,11 +4,11 @@
 		<ng-template ngFor let-stage [ngForOf]="stages" >		 
 		<div class="stepwizard-step" *ngIf="stage.isVisible(activeState)" style="min-width: 180px;">
  				<a type="button" class="btn btn-circle btn-default" [ngClass]="{ 
-					'btn-success': (stage.activeState < AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE]) ||
+					'btn-success stepwizard-btn-success': (stage.activeState < AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE]) ||
 									(stage.activeState < AppInstanceState[previousState] && AppInstanceState[previousState] !== AppInstanceState[AppInstanceState.UNKNOWN]),
-					'btn-primary': (stage.activeState === AppInstanceState[activeState] && activeState != AppInstanceState[AppInstanceState.FAILURE]), 
-					'btn-danger': (activeState === AppInstanceState[AppInstanceState.FAILURE] && stage.activeState === AppInstanceState[previousState]),
-					'btn-default':  (stage.activeState > AppInstanceState[previousState] && previousState !== AppInstanceState[AppInstanceState.UNKNOWN] )
+					'btn-primary stepwizard-btn-primary': (stage.activeState === AppInstanceState[activeState] && activeState != AppInstanceState[AppInstanceState.FAILURE]),
+					'btn-danger stepwizard-btn-danger': (activeState === AppInstanceState[AppInstanceState.FAILURE] && stage.activeState === AppInstanceState[previousState]),
+					'btn-default stepwizard-btn-default':  (stage.activeState > AppInstanceState[previousState] && previousState !== AppInstanceState[AppInstanceState.UNKNOWN] )
 									|| (stage.activeState > AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE])
 									|| (activeState == AppInstanceState[AppInstanceState.UNKNOWN]) || (stage.activeState === AppInstanceState.REQUESTED) || (!stage?.activeState)
 				}">{{stage.activeState}}</a> 
