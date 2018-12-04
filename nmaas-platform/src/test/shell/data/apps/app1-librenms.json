@@ -86,6 +86,11 @@
 					"librenms_default_password" : {
 						"type" : "string",
 						"title" : "Default user password"
+					},
+					"librenms_default_email" : {
+						"format" : "email",
+						"type" : "string",
+						"title" : "Default email"
 					}
 				},
 				"required" : [
@@ -97,7 +102,8 @@
 				{
 					"key": "librenms_default_password",
 					"type": "password"
-				}
+				},
+				"librenms_default_email"
 			]
 		}
 	}
