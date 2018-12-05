@@ -20,4 +20,13 @@ public interface NmServiceConfigurationProvider {
      */
     void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration configuration, boolean configFileRepositoryRequired);
 
+    /**
+     * Updates NM service configuration
+     *
+     * @param deploymentId unique identifier of service deployment
+     * @param applicationId identifier of the application / service
+     * @param appConfiguration requesting user specific configuration to be applied
+     * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
+     */
+    void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired);
 }

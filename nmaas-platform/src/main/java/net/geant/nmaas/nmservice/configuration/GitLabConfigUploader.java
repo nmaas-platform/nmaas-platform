@@ -86,6 +86,15 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
+    @Override
+    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
+        if(configFileRepositoryRequired){
+            gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+            GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
+            uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
+        }
+    }
+
     private Integer createUser(String domain, Identifier deploymentId, String password) {
         try {
             return gitlab.getUserApi().createUser(createStandardUser(domain, deploymentId), password, limitOnProjects()).getId();
@@ -184,7 +193,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
             String gitLabUser = getUser(gitLabUserId);
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
             String gitCloneUrl = getGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
-            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl);
+            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
@@ -238,6 +247,18 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
+    private void uploadUpdateConfigFilesToProject(Integer gitLabProjectId, List<String> configIds){
+        for (String configId : configIds) {
+            NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
+            RepositoryFile file = committedFile(configuration);
+            try {
+                gitlab.getRepositoryFileApi().updateFile(file, gitLabProjectId, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
+            } catch (GitLabApiException e) {
+                throw new FileTransferException("Could not commit file " + configuration.getConfigFileName() + " due to exception: " + e.getMessage());
+            }
+        }
+    }
+
     private NmServiceConfiguration loadConfigurationFromDatabase(String configId) {
         return configurations.findByConfigId(configId)
                 .orElseThrow(() -> new ConfigFileNotFoundException("Required configuration file not found in repository"));
@@ -256,6 +277,10 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private String commitMessage(String fileName) {
         return "Initial commit of " + fileName;
+    }
+
+    private String updateCommitMessage(String fileName) {
+        return "Update commit of " + fileName;
     }
 
     void setGitlab(GitLabApi gitlab) {

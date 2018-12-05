@@ -153,10 +153,10 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 
 echo.
 echo App5
-curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app5-promethus.json
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app5-prometheus.json
 echo.
 echo App5 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\prometheus_logo.svg;type=image/svg+xml" %API_URL%/apps/5/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\prometheus.svg;type=image/svg+xml" %API_URL%/apps/5/logo
 echo.
 echo App5 screenshots
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_1.png;type=image/png" $API_URL/apps/5/screenshots

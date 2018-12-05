@@ -6,6 +6,8 @@
 	},
 	"http": {
 		"timeout": 10000
-	}
+	},
+    "showGitInfo": true,
+    "showChangelog": true
 }
 

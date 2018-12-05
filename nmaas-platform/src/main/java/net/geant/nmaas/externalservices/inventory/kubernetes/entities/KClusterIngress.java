@@ -50,7 +50,6 @@ public class KClusterIngress {
     /** Indicates if TLS for ingress is supported */
     private Boolean tlsSupported;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private IngressCertificateConfigOption certificateConfigOption;
 

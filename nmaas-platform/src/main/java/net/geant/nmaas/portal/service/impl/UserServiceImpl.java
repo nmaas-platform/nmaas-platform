@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
 	public User register(Registration registration, Domain globalDomain, Domain domain){
 
 		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
-			throw new SignupException("User already exists");
+			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
 		}
 
 		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);

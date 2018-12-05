@@ -2,6 +2,8 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -15,9 +17,9 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
+import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
@@ -38,6 +40,7 @@ import java.util.UUID;
  */
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Log4j2
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private AppDeploymentRepositoryManager repositoryManager;
@@ -106,6 +109,13 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 serviceInfo.getAdditionalParameters().putAll(this.getMapFromJson(configuration.getAdditionalParameters()));
             }
         }
+        if(configuration.getMandatoryParameters() != null && !configuration.getMandatoryParameters().isEmpty()){
+            if(serviceInfo.getAdditionalParameters() == null){
+                serviceInfo.setAdditionalParameters(replaceUnderscoreToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
+            } else {
+                serviceInfo.getAdditionalParameters().putAll(replaceUnderscoreToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
+            }
+        }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
@@ -119,6 +129,14 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         } catch (IOException e) {
             throw new UserConfigHandlingException("Wasn't able to map additional parameters to model map -> " + e.getMessage());
         }
+    }
+
+    private Map<String, String> replaceUnderscoreToDotsInMapKeys(Map<String, String> map){
+        Map<String, String> newMap = new HashMap<>();
+        for(Map.Entry<String, String> entry: map.entrySet()){
+            newMap.put(entry.getKey().replace("_","."), entry.getValue());
+        }
+        return newMap;
     }
 
     @Override
@@ -135,8 +153,17 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateConfiguration(Identifier deploymentId, AppConfiguration configuration) {
-        throw new NotImplementedException();
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
+        if(configuration.getJsonInput() != null && !configuration.getJsonInput().isEmpty()){
+            AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+            appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
+            repositoryManager.update(appDeployment);
+            eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
+        } else {
+            log.warn("Configuration update failed -> configuration is null or empty");
+        }
+
     }
 
     @Override

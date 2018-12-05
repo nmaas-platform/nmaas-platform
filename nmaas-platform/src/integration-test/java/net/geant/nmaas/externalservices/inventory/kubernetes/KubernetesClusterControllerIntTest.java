@@ -2,6 +2,7 @@ package net.geant.nmaas.externalservices.inventory.kubernetes;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
@@ -66,7 +67,9 @@ public class KubernetesClusterControllerIntTest {
                         "\"controllerChartArchive\":\"chart.tgz\"," +
                         "\"resourceConfigOption\":\"DEPLOY_FROM_CHART\"," +
                         "\"externalServiceDomain\":\"test.net\"," +
-                        "\"tlsSupported\":false" +
+                        "\"tlsSupported\":false," +
+                        "\"certificateConfigOption\": \"USE_LETSENCRYPT\"," +
+                        "\"issuerOrWildcardName\": \"test-issuer\"" +
                     "}," +
                     "\"deployment\": {" +
                         "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
@@ -74,7 +77,7 @@ public class KubernetesClusterControllerIntTest {
                         "\"defaultStorageClass\":\"storageClass\"," +
                         "\"useInClusterGitLabInstance\":\"false\"," +
                         "\"forceDedicatedWorkers\":\"false\"," +
-                        "\"smtpServerHostname\": \"nmaas-postfix\"," +
+                        "\"smtpServerHostname\": \"test-postfix\"," +
                         "\"smtpServerPort\": 587" +
                     "}," +
                     "\"attachPoint\":{" +
@@ -253,6 +256,8 @@ public class KubernetesClusterControllerIntTest {
         ingress.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
         ingress.setExternalServiceDomain("test.net");
         ingress.setTlsSupported(false);
+        ingress.setCertificateConfigOption(IngressCertificateConfigOption.USE_LETSENCRYPT);
+        ingress.setIssuerOrWildcardName("test-issuer");
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
         deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
