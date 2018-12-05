@@ -15,7 +15,6 @@ import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.After;
@@ -63,7 +62,7 @@ public class AnsibleNotificationControllerIntTest {
     private MockMvc mvc;
 
     @Before
-    public void setUp() throws JsonProcessingException, InvalidDeploymentIdException, InvalidDomainException {
+    public void setUp() throws JsonProcessingException {
         AppDeployment appDeployment = AppDeployment.builder()
                 .deploymentId(deploymentId)
                 .domain(DOMAIN)

@@ -11,7 +11,8 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 @Getter
 @NoArgsConstructor
 public class UserRole extends DomainAware {
-	@NotNull
+
+    @NotNull
 	Role role;
 
 	public UserRole(Role role, Long domainId){

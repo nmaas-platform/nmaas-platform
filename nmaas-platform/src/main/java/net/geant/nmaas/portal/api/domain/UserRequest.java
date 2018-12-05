@@ -15,7 +15,6 @@ public class UserRequest extends User {
 	public UserRequest(Long id, String username, String password) {
 		super(id, username);
 		this.password = password;
-	}	
+	}
 
-	
 }

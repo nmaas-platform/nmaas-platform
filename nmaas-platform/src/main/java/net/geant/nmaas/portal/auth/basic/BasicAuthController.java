@@ -69,7 +69,7 @@ public class BasicAuthController {
         if(user.getRoles().stream().anyMatch(role -> role.getRole().equals(Role.ROLE_SYSTEM_COMPONENT)))
             throw new AuthenticationException("LOGIN.LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE");
 
-        log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
+        log.info(String.format("User [%s] logged in with role [%s]", userLogin.getUsername(),
                 user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
         return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
