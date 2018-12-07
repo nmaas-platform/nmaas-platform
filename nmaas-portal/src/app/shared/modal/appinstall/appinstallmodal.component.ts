@@ -4,7 +4,7 @@ import {Router, ActivatedRoute, Params} from '@angular/router';
 
 import {Application} from '../../../model/application';
 import {Domain} from '../../../model/domain';
-import {ModalComponent} from '../../../shared/modal/index';
+import {ModalComponent} from '..';
 import {AppInstanceService} from '../../../service/appinstance.service';
 import {DomainService} from '../../../service/domain.service';
 import { UserDataService } from '../../../service/userdata.service';

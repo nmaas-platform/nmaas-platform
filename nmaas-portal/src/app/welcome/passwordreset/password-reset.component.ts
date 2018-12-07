@@ -6,6 +6,7 @@ import {PasswordReset} from "../../model/passwordreset";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../../shared";
 import {ReCaptchaComponent} from "angular5-recaptcha";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-passwordreset',
@@ -28,7 +29,11 @@ export class PasswordResetComponent implements OnInit {
 
   public errorMessage: string;
 
-  constructor(private fb: FormBuilder, private userService:UserService, private router: Router, private route: ActivatedRoute) {
+  constructor(private fb: FormBuilder,
+              private userService: UserService,
+              private router: Router,
+              private route: ActivatedRoute,
+              private translate: TranslateService) {
       this.form = fb.group(
           {
               newPassword: ['', Validators.required],
@@ -42,14 +47,15 @@ export class PasswordResetComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.token = params['token'];
-      this.userService.validateResetRequest(params['token']).subscribe(result => this.user = result, error1 => this.errorMessage = error1.message);
+      this.userService.validateResetRequest(params['token'])
+          .subscribe(result => this.user = result, error1 => this.errorMessage = error1.message);
     });
   }
 
   public resetPassword(){
       let token = this.captcha.getResponse();
       if(token.length < 1){
-          this.errorMessage = "You have to prove that you're not a robot!";
+          this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
       } else {
           if(this.form.valid){
               this.passwordReset.password = this.form.controls['newPassword'].value;

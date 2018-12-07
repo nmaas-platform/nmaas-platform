@@ -42,7 +42,7 @@ public class ServiceDeploymentWithDockerComposeTest {
 	@Test
 	public void shouldConfirmSupportForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-		AppDeployment appDeployment = new AppDeployment(Identifier.newInstance(1L), "domain", Identifier.newInstance("app"), "deploy", false, 20);
+		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setDockerComposeFileTemplate(new DockerComposeFileTemplate());
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("did"), appDeployment, appDeploymentSpec);
@@ -51,9 +51,19 @@ public class ServiceDeploymentWithDockerComposeTest {
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnDockerCompose() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-		AppDeployment appDeployment = new AppDeployment(Identifier.newInstance(1L), "domain", Identifier.newInstance("app"), "deploy", false, 20);
+		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES));
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, appDeployment, appDeploymentSpec);
+	}
+
+	private AppDeployment appDeployment() {
+		return AppDeployment.builder()
+				.deploymentId(Identifier.newInstance(1L))
+				.domain("domain")
+				.applicationId(Identifier.newInstance("app"))
+				.deploymentName("deploy")
+				.configFileRepositoryRequired(false)
+				.storageSpace(20).build();
 	}
 
 }

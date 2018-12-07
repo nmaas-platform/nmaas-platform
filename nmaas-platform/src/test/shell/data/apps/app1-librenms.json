@@ -73,5 +73,38 @@
 				}
 			]
 		}
+	},
+	"additionalMandatoryTemplate": {
+		"template" : {
+			"schema" : {
+				"type" : "object",
+				"properties" : {
+					"librenms_default_user" : {
+						"type" : "string",
+						"title" : "Default username"
+					},
+					"librenms_default_password" : {
+						"type" : "string",
+						"title" : "Default user password"
+					},
+					"librenms_default_email" : {
+						"format" : "email",
+						"type" : "string",
+						"title" : "Default email"
+					}
+				},
+				"required" : [
+					"librenms_default_user", "librenms_default_password"
+				]
+			},
+			"form" : [
+				"librenms_default_user",
+				{
+					"key": "librenms_default_password",
+					"type": "password"
+				},
+				"librenms_default_email"
+			]
+		}
 	}
 }

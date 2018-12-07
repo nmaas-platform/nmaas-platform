@@ -10,6 +10,8 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,6 +102,25 @@ public class OrchestratorManagerRestControllerTest {
         verify(lifecycleManager, times(1)).applyConfiguration(deploymentIdCaptor.capture(), appConfigurationCaptor.capture());
         assertThat(deploymentIdCaptor.getValue(), equalTo(deploymentId));
         assertThat(appConfigurationCaptor.getValue().getJsonInput(), equalTo(appConfiguration.getJsonInput()));
+    }
+
+    @Test
+    public void shouldUpdateConfigurationForDeploymentWithGivenDeploymentId() throws Throwable {
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}", deploymentId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(CONFIGURATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        mvc.perform(post("/api/orchestration/deployments/{deploymentId}/update", deploymentId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"jsonInput\":{\"id\":\"newtestvalue" + "\"}," + "\"storageSpace\":null" + "}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        ArgumentCaptor<Identifier> deploymentIdCaptor = ArgumentCaptor.forClass(Identifier.class);
+        ArgumentCaptor<AppConfigurationView> appDeploymentCaptor = ArgumentCaptor.forClass(AppConfigurationView.class);
+        verify(lifecycleManager, times(1)).updateConfiguration(deploymentIdCaptor.capture(), appDeploymentCaptor.capture());
+        assertEquals(deploymentId, deploymentIdCaptor.getValue());
+        assertTrue(appDeploymentCaptor.getValue().getJsonInput().contains("newtestvalue"));
     }
 
     @Test

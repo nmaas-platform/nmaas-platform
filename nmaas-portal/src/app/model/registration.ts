@@ -7,7 +7,7 @@ export class Registration {
     public domainId: number = undefined;
     public termsOfUseAccepted: boolean = undefined;
     public privacyPolicyAccepted: boolean = undefined;
-  
+
 
     constructor(username: string, password: string, email: string, firstname?: string, lastname?:string, domainId?: number, termsOfUseAccepted?: boolean, privacyPolicyAccepted?: boolean) {
       this.username = username;

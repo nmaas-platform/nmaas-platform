@@ -13,6 +13,7 @@ export class RegistrationService {
   constructor(private http: HttpClient, private appConfig: AppConfigService) {}
   
   public register(registration: Registration): Observable<any> {
+    debugger;
     return this.http.post(this.getUrl(), registration, {headers: RegistrationService.headers})
       .timeout(this.appConfig.getHttpTimeout())
       .catch(this.handleError);
@@ -25,7 +26,7 @@ export class RegistrationService {
   }
 
   protected handleError(error: Response | any) {
-    const errorMsg = (typeof error.json === 'function' ? error.json().message : error.message || 'Server error');
+    const errorMsg = error.error.message;
     return Observable.throw(errorMsg);
   }
 

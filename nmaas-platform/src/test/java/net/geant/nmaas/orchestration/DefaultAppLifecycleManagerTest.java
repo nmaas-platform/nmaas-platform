@@ -44,8 +44,7 @@ public class DefaultAppLifecycleManagerTest {
     @Test
     public void shouldFailToDeployApplicationInstance() throws InterruptedException {
         when(appRepository.findById(1L)).thenReturn(Optional.of(new Application("appName")));
-        when(appDepRepository.findByDeploymentId(Matchers.any())).thenReturn(Optional.of(
-                new AppDeployment(Identifier.newInstance("deploymentId"), "domain1", Identifier.newInstance(1L), "deploymentName", true, 20)));
+        when(appDepRepository.findByDeploymentId(Matchers.any())).thenReturn(Optional.of(appDeployment()));
         when(appDepRepositoryManager.load(Matchers.any())).thenReturn(Optional.empty());
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setConfigFileRepositoryRequired(true);
@@ -53,6 +52,16 @@ public class DefaultAppLifecycleManagerTest {
         AppDeployment appDeployment = AppDeployment.builder().applicationId(Identifier.newInstance(1L)).domain("domain1").deploymentName("deploymentName").storageSpace(appDeploymentSpec.getDefaultStorageSpace()).build();
         appLifecycleManager.deployApplication(appDeployment);
         Thread.sleep(200);
+    }
+
+    private AppDeployment appDeployment() {
+        return AppDeployment.builder()
+                .deploymentId(Identifier.newInstance(1L))
+                .domain("domain")
+                .applicationId(Identifier.newInstance("app"))
+                .deploymentName("deploy")
+                .configFileRepositoryRequired(false)
+                .storageSpace(20).build();
     }
 
 }
