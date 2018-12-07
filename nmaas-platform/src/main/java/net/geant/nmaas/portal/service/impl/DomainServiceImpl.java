@@ -3,10 +3,12 @@ package net.geant.nmaas.portal.service.impl;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
@@ -174,6 +176,21 @@ public class DomainServiceImpl implements DomainService {
 		if(userRoleRepo.findByDomainAndUserAndRole(domain, user, role) == null) {
 			removePreviousRoleInDomain(domain, user);
 			userRoleRepo.save(new UserRole(user, domain, role));
+		}
+	}
+
+	@Override
+	public void addGlobalGuestUserRoleIfMissing(Long userId) {
+		Optional<Domain> globalDomainOptional = this.getGlobalDomain();
+		if(globalDomainOptional.isPresent()){
+			Long globalId = globalDomainOptional.get().getId();
+			try{
+				if(this.getMemberRoles(globalId, userId).isEmpty()){
+					this.addMemberRole(globalId, userId, ROLE_GUEST);
+				}
+			} catch(ObjectNotFoundException e){
+				throw new MissingElementException(e.getMessage());
+			}
 		}
 	}
 

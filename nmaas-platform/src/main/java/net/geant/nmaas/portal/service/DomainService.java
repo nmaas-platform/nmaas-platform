@@ -37,6 +37,7 @@ public interface DomainService {
 	List<User> getMembers(Long id);
 	
 	void addMemberRole(Long domainId, Long userId, Role role);
+	void addGlobalGuestUserRoleIfMissing(Long userId);
 	void removeMemberRole(Long domainId, Long userId, Role role);
 	void removeMember(Long domainId, Long userId);
 	
