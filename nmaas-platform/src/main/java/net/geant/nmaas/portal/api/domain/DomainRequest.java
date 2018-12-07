@@ -21,6 +21,8 @@ public class DomainRequest {
 	private String kubernetesNamespace;
 
 	private String kubernetesStorageClass;
+
+	private String externalServiceDomain;
 	
 	private boolean active = true;
 

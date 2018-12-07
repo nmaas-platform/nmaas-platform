@@ -16,7 +16,7 @@ public interface IngressResourceManager {
      * @param externalServiceDomain base domain name for external services
      * @return URL under which deployed service is available
      */
-    String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain);
+    String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain, boolean ingressPerDomain);
 
     /**
      * Creates a new ingress resource for given domain or updates an existing one with new entry.

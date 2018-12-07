@@ -98,11 +98,11 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public Domain createDomain(String name, String codename, boolean active) {
-		return createDomain(name, codename, active, false, null, null);
+		return createDomain(name, codename, active, false, null, null, null);
 	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
 		checkParam(name);
 		checkParam(codename);
 
@@ -110,7 +110,7 @@ public class DomainServiceImpl implements DomainService {
 			throw new ProcessingException("Domain codename is not valid");
 		}
 		try {
-			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass));
+			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass, externalServiceDomain));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}

@@ -23,7 +23,7 @@ public interface DomainService {
 	
 	Domain createDomain(String name, String codename);
 	Domain createDomain(String name, String codename, boolean active);
-	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass);
+	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain);
 
 	void storeDcnInfo(String domain);
 
