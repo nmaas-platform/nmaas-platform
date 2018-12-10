@@ -242,6 +242,7 @@
     "ACTIVE": "Aktywna",
     "ID_IN_DB": "Id",
     "KUBERNETES_NAMESPACE": "Kubernetes namespace",
+    "KUBERNETES_NAMESPACE_PLACEHOLDER": "Wartość domyślna: skrót",
     "KUBERNETES_STORAGE_CLASS": "Kubernetes storage class",
     "DCN_STATUS": "Status DCN",
     "DCN_CONFIGURED": "DCN skonfigurowany",

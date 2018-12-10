@@ -159,11 +159,11 @@ echo App5 logo
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\prometheus.svg;type=image/svg+xml" %API_URL%/apps/5/logo
 echo.
 echo App5 screenshots
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_1.png;type=image/png" $API_URL/apps/5/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/prometheus/prometheus_1.png;type=image/png" %API_URL%/apps/5/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_2.png;type=image/png" $API_URL/apps/5/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/prometheus/prometheus_2.png;type=image/png" %API_URL%/apps/5/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/prometheus/prometheus_3.png;type=image/png" $API_URL/apps/5/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/prometheus/prometheus_3.png;type=image/png" %API_URL%/apps/5/screenshots
 echo.
 
 echo.
@@ -174,11 +174,11 @@ echo App6 logo
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\grafana.svg;type=image/svg+xml" %API_URL%/apps/6/logo
 echo.
 echo App6 screenshots
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana_1.png;type=image/png" $API_URL/apps/6/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/grafana/grafana_1.png;type=image/png" %API_URL%/apps/6/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana_2.png;type=image/png" $API_URL/apps/6/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/grafana/grafana_2.png;type=image/png" %API_URL%/apps/6/screenshots
 echo.
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/grafana/grafana_3.png;type=image/png" $API_URL/apps/6/screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/grafana/grafana_3.png;type=image/png" %API_URL%/apps/6/screenshots
 echo.
 
 echo.

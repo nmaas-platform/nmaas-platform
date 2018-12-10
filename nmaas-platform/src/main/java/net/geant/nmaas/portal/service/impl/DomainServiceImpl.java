@@ -109,6 +109,9 @@ public class DomainServiceImpl implements DomainService {
 		if(!Optional.ofNullable(validator).map(v -> v.valid(codename)).filter(result -> result).isPresent()){
 			throw new ProcessingException("Domain codename is not valid");
 		}
+		if(kubernetesNamespace == null || kubernetesNamespace.isEmpty()){
+			kubernetesNamespace = codename;
+		}
 		try {
 			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass));
 		} catch(Exception ex) {
@@ -150,6 +153,9 @@ public class DomainServiceImpl implements DomainService {
 		checkGlobal(domain);
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
+		if(domain.getKubernetesNamespace() == null || domain.getKubernetesNamespace().isEmpty()){
+			domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
+		}
 		domainRepo.save(domain);
 	}
 
