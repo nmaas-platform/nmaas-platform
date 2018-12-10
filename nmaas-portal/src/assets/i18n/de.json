@@ -103,6 +103,7 @@
     "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Ressourcen config Option",
     "EXTERNAL_SERVICE_DOMAIN": "Externe Service Domain",
+    "INGRESS_PER_DOMAIN": "Ingress per domain",
     "TLS_SUPPORTED": "TLS unterstützt",
     "DEPLOYMENT": "Deployment",
     "NAMESPACE_CONFIG_OPTION": "Namespace config Option",
@@ -268,7 +269,8 @@
     "NAME_IS_REQUIRED_MESSAGE": "Name wird benötigt.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename wird benötigt.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Codename darf nur folgende Zeichen beinhalten a-z, A-Z, 0_9 und _ .",
-    "CODE_NAME_PATTERN_MESSAGE_2": "Codename muss 2-8 Zeichen lang sein."
+    "CODE_NAME_PATTERN_MESSAGE_2": "Codename muss 2-8 Zeichen lang sein.",
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",

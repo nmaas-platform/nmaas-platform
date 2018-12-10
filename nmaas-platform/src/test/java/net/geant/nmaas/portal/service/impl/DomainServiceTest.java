@@ -115,9 +115,9 @@ public class DomainServiceTest {
         String codename = "testdom";
         String kubernetesNamespace = "default-namespace";
         String kubernetesStorageClass = "kub-stor-class";
-        Domain domain = new Domain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass);
+        Domain domain = new Domain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass);
+        Domain result = this.domainService.createDomain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null);
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));
         assertThat("Active flag is incorrect", !result.isActive());

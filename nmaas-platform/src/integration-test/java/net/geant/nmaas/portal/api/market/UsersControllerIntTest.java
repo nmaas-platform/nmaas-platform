@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 
 import static net.geant.nmaas.portal.persistent.entity.Role.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -161,16 +160,36 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testUpdateUserPasswordAndRole() throws ProcessingException, MissingElementException {
-        String newPass = "newPass";
-        String oldPass = userEntity.getPassword();
-        userController.updateUser(userEntity.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, userEntity.getUsername(), newPass), principal);
+    public void shouldUpdateUserWithNewFirstNameAndLastName() {
+        String newFirstName = "TestFirstName";
+        String newLastName = "TestLastName";
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setFirstname(newFirstName);
+        userRequest.setLastname(newLastName);
+        userController.updateUser(userEntity.getId(), userRequest, principal);
         User modUser1 = userRepo.findById(userEntity.getId()).get();
 
-        assertEquals(userEntity.getUsername(), modUser1.getUsername());
-        assertNotEquals(oldPass, modUser1.getPassword());
-        assertEquals(1, modUser1.getRoles().size());
-        //assertEquals(Role.TOOL_MANAGER, modUser1.getRoles().get(0).getRole());
+        assertEquals(modUser1.getFirstname(), newFirstName);
+        assertEquals(modUser1.getLastname(), newLastName);
+    }
+
+    @Test
+    public void shouldUpdateUserWithNewEmail(){
+        String newEmail = "admin@testemail.com";
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail(newEmail);
+        userController.updateUser(userEntity.getId(), userRequest, principal);
+        User modUser1 = userRepo.findById(userEntity.getId()).get();
+
+        assertEquals(modUser1.getEmail(), newEmail);
+    }
+
+    @Test(expected = ProcessingException.class)
+    public void shouldNotUpdateUserWithTakenEmail(){
+        String newEmail = user3.getEmail();
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail(newEmail);
+        userController.updateUser(userEntity.getId(), userRequest, principal);
     }
 
     @Test

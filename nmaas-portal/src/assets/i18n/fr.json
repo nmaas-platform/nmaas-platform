@@ -104,6 +104,7 @@
     "CONTROLLER_CHART_ARCHIVE": "Archive du graphique du contrôleur",
     "RESOURCE_CONFIG_OPTION": "Option de configuration de ressource",
     "EXTERNAL_SERVICE_DOMAIN": "Domaine de service externe",
+    "INGRESS_PER_DOMAIN": "Ingress per domain",
     "TLS_SUPPORTED": "TLS supporté",
     "DEPLOYMENT": "Deployment",
     "NAMESPACE_CONFIG_OPTION": "Option de configuration d'espace de noms",
@@ -268,7 +269,8 @@
     "NAME_IS_REQUIRED_MESSAGE": "Le nom est requis.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Le nom de code est requis.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Le nom de code doit contenir les caractères a-z, A-Z, 0_9, _.",
-    "CODE_NAME_PATTERN_MESSAGE_2": "Le nom de code doit comporter entre 2 et 8 caractères."
+    "CODE_NAME_PATTERN_MESSAGE_2": "Le nom de code doit comporter entre 2 et 8 caractères.",
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",

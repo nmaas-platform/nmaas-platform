@@ -33,4 +33,6 @@ class KClusterIngressView {
     private IngressCertificateConfigOption certificateConfigOption;
 
     private String issuerOrWildcardName;
+
+    private Boolean ingressPerDomain;
 }

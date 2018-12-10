@@ -20,10 +20,11 @@ public interface DomainService {
 	
 	boolean existsDomain(String name);
 	boolean existsDomainByCodename(String codename);
+	boolean existsDomainByExternalServiceDomain(String externalServiceDomain);
 	
 	Domain createDomain(String name, String codename);
 	Domain createDomain(String name, String codename, boolean active);
-	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass);
+	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain);
 
 	void storeDcnInfo(String domain);
 
@@ -37,6 +38,7 @@ public interface DomainService {
 	List<User> getMembers(Long id);
 	
 	void addMemberRole(Long domainId, Long userId, Role role);
+	void addGlobalGuestUserRoleIfMissing(Long userId);
 	void removeMemberRole(Long domainId, Long userId, Role role);
 	void removeMember(Long domainId, Long userId);
 	
