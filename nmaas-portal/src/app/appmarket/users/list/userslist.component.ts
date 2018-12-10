@@ -69,16 +69,4 @@ export class UsersListComponent implements OnInit {
       this.userService.removeRole($event.id, $event.roles.find(value => value.domainId===this.domainId).role,this.domainId).subscribe(()=> this.update(this.domainId))
   }
 
-    public onSave($event) {
-        const user: User = $event;
-
-        if (!user) {
-            return;
-        }
-        if(user.id) {
-          user.enabled = !user.enabled;
-          this.userService.updateUser(user.id, user).subscribe();
-        }
-    }
-
 }

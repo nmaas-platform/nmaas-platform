@@ -5,7 +5,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Observable} from "rxjs/Observable";
 import {Domain} from "../../model/domain";
 import {RegistrationService} from "../../auth/registration.service";
-import {UserService} from "../../service";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {Router} from "@angular/router";
 import {AuthService} from "../../auth/auth.service";
@@ -46,7 +45,6 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     constructor(private fb: FormBuilder,
                 private registrationService: RegistrationService,
                 protected profileService: ProfileService,
-                private userService: UserService,
                 private authService: AuthService,
                 private router: Router,
                 private translate: TranslateService,
@@ -86,7 +84,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 this.user.termsOfUseAccepted = this.registrationForm.controls['termsOfUseAccepted'].value;
                 this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
 
-                this.userService.completeRegistration(this.user).subscribe(
+                this.registrationService.completeRegistration(this.user).subscribe(
                     (result) => {
                         this.success = true;
                         this.authService.logout();

@@ -106,7 +106,7 @@ public class UsersControllerTest {
 		userRequest.setEmail("test@nmaas.net");
 		userRequest.setFirstname("test");
 		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
-		verify(userService, times(2)).update(userList.get(0));
+		verify(userService, times(1)).update(userList.get(0));
 	}
 
 	@Test(expected = MissingElementException.class)
@@ -129,17 +129,6 @@ public class UsersControllerTest {
 	public void shouldNotUpdateWithNullUserRequest(){
 		Long userId = 1L;
 		usersController.updateUser(userId, null, principal);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void shouldNotUpdateWithSystemComponentRole(){
-		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
-		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-		UserRole userRole = new UserRole();
-		userRole.setDomainId(GLOBAL_DOMAIN.getId());
-		userRole.setRole(Role.ROLE_SYSTEM_COMPONENT);;
-		userRequest.setRoles(ImmutableSet.of(userRole));
-		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
 	}
 
 	@Test(expected = ProcessingException.class)
@@ -178,7 +167,7 @@ public class UsersControllerTest {
 		userRole.setRole(Role.ROLE_OPERATOR);
 		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).removeMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_OPERATOR);
-		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
+		verify(domainService, times(1)).addGlobalGuestUserRoleIfMissing(userList.get(0).getId());
 	}
 
 	@Test
@@ -211,36 +200,6 @@ public class UsersControllerTest {
 		userRole.setRole(Role.ROLE_OPERATOR);
 		when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
 		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
-	}
-
-	@Test
-	public void shouldCompleteRegistration(){
-		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-		usersController.completeRegistration(principal, userRequest);
-		verify(userService, times(1)).update(userList.get(0));
-	}
-
-	@Test(expected = ProcessingException.class)
-	public void shouldNotCompleteRegistrationWithNonUniqueMail(){
-		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-		userRequest.setEmail("test@test.com");
-		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-		when(userService.existsByEmail(userRequest.getEmail())).thenReturn(true);
-		usersController.completeRegistration(principal, userRequest);
-	}
-
-	@Test
-	public void shouldCompleteRegistrationAndRemoveIncompleteRole(){
-		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-		userRequest.setEmail("test@nmaas.net");
-		when(principal.getName()).thenReturn(userList.get(0).getUsername());
-		when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
-		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-		when(domainService.getMemberRoles(GLOBAL_DOMAIN.getId(), userRequest.getId())).thenReturn(ImmutableSet.of(Role.ROLE_GUEST));
-		usersController.completeRegistration(principal, userRequest);
-		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
-		verify(userService, times(1)).update(userList.get(0));
 	}
 
 	@Test

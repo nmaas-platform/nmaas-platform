@@ -1,9 +1,12 @@
 package net.geant.nmaas.portal.api.market;
 
+import java.security.Principal;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Domain;
+import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
@@ -15,6 +18,7 @@ import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,17 +104,51 @@ public class RegistrationController {
 			throw new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE");
 		}
 	}
+
+
+	@PostMapping(value="/complete")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
+	@Transactional
+	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) {
+		net.geant.nmaas.portal.persistent.entity.User user = usersService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+		try {
+			Long domainId = domains.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
+			completeRegistration(userRequest, user, domainId);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
+			throw new ProcessingException("Unable to complete your registration");
+		}
+	}
+
+	private void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) {
+		if(usersService.existsByUsername(userRequest.getUsername())) {
+			throw new net.geant.nmaas.portal.exceptions.ProcessingException("User with same username already exists");
+		} else {
+			user.setUsername(userRequest.getUsername());
+		}
+		if(userRequest.getFirstname() != null)
+			user.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			user.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null) {
+			if(usersService.existsByEmail(userRequest.getEmail())){
+				throw new ProcessingException("User with mail "+userRequest.getEmail()+" already exists");
+			}
+			user.setEmail(userRequest.getEmail());
+		}
+
+		domains.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
+		domains.addGlobalGuestUserRoleIfMissing(user.getId());
+		usersService.update(user);
+	}
 	
 	@GetMapping("/domains")
 	@Transactional(readOnly=true)
 	public List<Domain> getDomains() {
 		Optional<Domain> globalDomain = domains.getGlobalDomain().map(domain -> modelMapper.map(domain, Domain.class));
 		final Long globalDomainId;
-		
-		if(globalDomain.isPresent())
-			globalDomainId = globalDomain.get().getId();
-		else
-			globalDomainId = null;
+
+		globalDomainId = globalDomain.map(Domain::getId).orElse(null);
 		
 		return domains.getDomains().stream()
 						.map(domain -> modelMapper.map(domain, Domain.class))
