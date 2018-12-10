@@ -1,10 +1,9 @@
 <h3><strong>NMaaS Privacy Notice</strong></h3>
-
 <h4><strong>Description of the NMaaS Service</strong></h4>
 <p><a href="https://www.geant.org/NMaaS">Network Management as a Service (NMaaS)</a> provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure. </p>
 <p>NMaaS simplifies domain network management by providing the infrastructure and tools via a cloud-based, multi-tenant and secure network management system. It enables the deployment of network management tools, as well as management and monitoring of client networks, although NMaaS does not monitor and manage the network by itself. </p>
 <p>To view the general Privacy Notice for GÉANT, please visit the <a href="https://www.geant.org/privacy-notice">GÉANT website</a>.</p>
-
+<br>
 <h4><strong>Why We Process Personal Data</strong></h4>
 <p>NMaaS processes personal data: <ul>
 <li>to fulfill the service and user support processes; </li>
@@ -14,7 +13,7 @@
 <li>to monitor the use of the NMaaS service for improved resource and performance optimizations; </li>
 <li>to track personal data related events (new user registration, user data update and role assignment or revocation). </li>
 </ul></p>
-
+<br>
 <h4><strong>What Personal Data We Process</strong></h4>
 <p>NMaaS user data is stored in a central relational database and application log files.</br>
 The database contains the following user personal data:<ul>
@@ -28,14 +27,14 @@ The database contains the following user personal data:<ul>
 <p>The service log files contain the following user personal data: username, user identifier, first name, last name and email address. </p>
 <p>The purpose of NMaaS is to facilitate automated deployment of network management and monitoring applications. It should be noted that the data collected and stored by particular applications deployed through NMaaS is neither controlled nor processed by NMaaS service and the NMaaS Operational Team however it might contain user personal data. NMaaS does not take any responsibility for the data being collected and stored by those applications. </p>
 <p>During the application deployment process NMaaS provides a configuration wizard functionality to ease the initial setup of the application. Wizard prompts the user to provide different type of data about the equipment to be managed depending on the application being deployed and this data may include for example device access credentials. It should be noted that it is not advised to provide in the wizard any user personal data and use generic device access accounts if possible. NMaaS does not take any responsibility for the data being provided by the user in the wizard. </p>
-
+<br>
 <h4><strong>Who Do We Share Data With?</strong></h4>
 <p>Personal data persisted in the database and in the log files is processed according to the clearly defined goals by the NMaaS service Operational Team and is not shared with any third party. </p>
-
+<br>
 <h4><strong>Personal Data Retention</strong></h4>
 <p>NMaaS user personal data is retained in the database for the period in which particular user uses the service. Since the moment of reception of user account removal request the data is still kept in the database for a period of 6 months after which it is removed. </p>
 <p>Log files are retained for a period of 6 months. </p>
-
+<br>
 <h4><strong>Security</strong></h4>
 <p>We support the following processes to ensure the security of your data:
 <ul>
@@ -51,7 +50,7 @@ The database contains the following user personal data:<ul>
 <li>Your data is secure;</li>
 <li>Your personal data is securely destroyed when no longer required</li></ul></p>
 <p>You also have the right to ask what personal data we hold about you, and to complain to the Supervisory Authority (Autoriteit Persoonsgegevens at <a href="https://autoriteitpersoonsgegevens.nl">https://autoriteitpersoonsgegevens.nl</a>) about our data processing activities if you feel your data is not being managed as described here. </p>
-
+<br>
 <h4><strong>Contact Information</strong></h4>
 <p>Data Controller and Contact<br>
 <strong>Data Protection Officer</strong><br>
