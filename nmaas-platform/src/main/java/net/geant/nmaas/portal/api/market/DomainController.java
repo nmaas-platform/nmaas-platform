@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,7 +111,12 @@ public class DomainController extends AppBaseController {
 		domain.setActive(domainUpdate.isActive());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
-		domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		if(domainUpdate.getExternalServiceDomain() == null || domainUpdate.getExternalServiceDomain().isEmpty()){
+			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		} else {
+			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getExternalServiceDomain()), "External service domain is not unique");
+			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		}
 		try {
 			domainService.updateDomain(domain);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {

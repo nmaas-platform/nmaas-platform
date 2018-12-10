@@ -20,6 +20,7 @@ public interface DomainService {
 	
 	boolean existsDomain(String name);
 	boolean existsDomainByCodename(String codename);
+	boolean existsDomainByExternalServiceDomain(String externalServiceDomain);
 	
 	Domain createDomain(String name, String codename);
 	Domain createDomain(String name, String codename, boolean active);

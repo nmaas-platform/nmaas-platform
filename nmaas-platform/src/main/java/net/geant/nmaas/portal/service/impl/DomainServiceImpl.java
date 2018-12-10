@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
@@ -92,6 +93,11 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
+	public boolean existsDomainByExternalServiceDomain(String externalServiceDomain) {
+		return domainRepo.existsByExternalServiceDomain(externalServiceDomain);
+	}
+
+	@Override
 	public Domain createDomain(String name, String codename) {
 		return createDomain(name, codename, true);
 	}
@@ -108,6 +114,9 @@ public class DomainServiceImpl implements DomainService {
 
 		if(!Optional.ofNullable(validator).map(v -> v.valid(codename)).filter(result -> result).isPresent()){
 			throw new ProcessingException("Domain codename is not valid");
+		}
+		if(externalServiceDomain != null && !externalServiceDomain.isEmpty()){
+			checkArgument(!domainRepo.existsByExternalServiceDomain(externalServiceDomain), "External service domain is not unique");
 		}
 		try {
 			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass, externalServiceDomain));

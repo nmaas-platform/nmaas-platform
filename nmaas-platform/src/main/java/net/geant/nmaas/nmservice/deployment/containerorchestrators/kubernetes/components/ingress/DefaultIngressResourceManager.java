@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
@@ -57,11 +58,12 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      * @param domain name of the client domain for this deployment
      * @param deploymentName name of the deployment provided by the user
      * @param externalServiceDomain base domain name for external services
-     * @param ingressPerDomain
+     * @param ingressPerDomain indicates which external service domain should be used
      * @return URL under which deployed service is available
      */
     @Override
     public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain, boolean ingressPerDomain) {
+        checkArgument(externalServiceDomain != null && !externalServiceDomain.isEmpty(), "External service domain cannot be null or empty");
         return externalUrl(deploymentName.toLowerCase(), domain, externalServiceDomain.toLowerCase(), ingressPerDomain);
     }
 
