@@ -14,5 +14,6 @@ public interface DomainRepository extends JpaRepository<Domain, Long> {
 	Optional<Domain> findByName(String name);
 	
 	boolean existsByCodename(String name);
+	boolean existsByExternalServiceDomain(String externalServiceDomain);
 	Optional<Domain> findByCodename(String name);
 }

@@ -1,15 +1,15 @@
-import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 import {
-    AppInstance,
-    AppInstanceProgressStage,
-    AppInstanceState,
-    AppInstanceStatus,
-    Application
+  AppInstance,
+  AppInstanceProgressStage,
+  AppInstanceState,
+  AppInstanceStatus,
+  Application
 } from '../../../model/index';
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
@@ -28,7 +28,7 @@ import {ModalComponent} from "../../../shared/modal";
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
   providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
 })
-export class AppInstanceComponent implements OnInit, OnDestroy {
+export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   public AppInstanceState = AppInstanceState;
 
@@ -56,8 +56,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
   public additionalParametersTemplate: any;
+  public additionalMandatoryTemplate: any;
   public appConfiguration: AppConfiguration;
   public requiredFields: any[];
+  public mandatoryFields: any[];
 
 
   public intervalCheckerSubscribtion;
@@ -101,6 +103,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
           if(!isNullOrUndefined(this.app.additionalParametersTemplate)){
               this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
           }
+          if(!isNullOrUndefined(this.app.additionalMandatoryTemplate.template)){
+            this.additionalMandatoryTemplate = this.getTemplate(this.app.additionalMandatoryTemplate.template);
+            this.mandatoryFields = this.additionalMandatoryTemplate.schema.required;
+          }
           this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
@@ -112,13 +118,27 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewChecked(): void {
+  }
+
   private updateAppInstanceState() {
     this.appInstanceService.getAppInstanceState(this.appInstanceId).subscribe(
       appInstanceStatus => {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
+        if(this.appInstanceStatus.state != this.appInstanceProgress.activeState
+          && this.appInstanceStatus.state != this.appInstanceProgress.previousState){
+        }
+        if(this.appInstanceStatus.state == this.AppInstanceState.FAILURE){
+          document.getElementById("app-prop").scrollLeft =
+            (document.getElementsByClassName("stepwizard-btn-success").length * 180 +
+              document.getElementsByClassName("stepwizard-btn-danger").length * 180);
+        }
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
         this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
+        document.getElementById("app-prop").scrollLeft =
+          (document.getElementsByClassName("stepwizard-btn-success").length * 180 +
+            document.getElementsByClassName("stepwizard-btn-danger").length * 180);
         if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
           if(this.storage.has("appConfig_"+this.appInstanceId.toString()))
             this.storage.remove("appConfig_"+this.appInstanceId.toString());
@@ -156,6 +176,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public changeAdditionalParameters(additionalParameters: string): void{
     this.appConfiguration.additionalParameters = additionalParameters;
+  }
+
+  public changeMandatoryParameters(mandatoryParameters: string): void{
+    this.appConfiguration.mandatoryParameters = mandatoryParameters;
   }
 
   public applyConfiguration(): void {
@@ -196,7 +220,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   }
 
   public isValid(): boolean {
-    if(isNullOrUndefined(this.requiredFields)){
+    if(isNullOrUndefined(this.requiredFields) && isNullOrUndefined(this.mandatoryFields)){
       return true;
     }
     for(let value of this.requiredFields){
@@ -218,6 +242,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
                 }
             }
         }
+      }
+    }
+    if(!isNullOrUndefined(this.mandatoryFields)){
+      for(let value of this.mandatoryFields){
+          if(!this.appConfiguration.mandatoryParameters.hasOwnProperty(value)){
+              return false;
+          }
       }
     }
     return true;

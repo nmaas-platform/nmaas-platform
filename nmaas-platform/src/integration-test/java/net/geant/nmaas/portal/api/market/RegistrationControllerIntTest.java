@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.auth.basic;
+package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.BaseControllerTestSetup;
 import org.apache.commons.lang.RandomStringUtils;

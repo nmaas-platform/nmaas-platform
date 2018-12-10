@@ -34,9 +34,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static net.geant.nmaas.portal.persistent.entity.Role.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,20 +84,20 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         domains.createDomain(DOMAIN, DOMAIN);
 
         //Add extra users, default admin is already there
-        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(Role.ROLE_SYSTEM_ADMIN));
+        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(ROLE_SYSTEM_ADMIN));
         admin.setEmail("manager@testemail.com");
         userRepo.save(admin);
 
-        User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
+        User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Arrays.asList(ROLE_USER));
         userStub.setFirstname("Test");
         userStub.setLastname("Test");
         userStub.setEmail("test@gmail.com");
         userEntity = userRepo.save(userStub);
-        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(Role.ROLE_USER));
+        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(ROLE_USER));
         user2.setEmail("user2@testemail.com");
         userRepo.save(user2);
 
-        user3 = new User("user3", true, "user3", domains.getGlobalDomain().get(), Role.ROLE_NOT_ACCEPTED, false, false);
+        user3 = new User("user3", true, "user3", domains.getGlobalDomain().get(), ROLE_NOT_ACCEPTED, false, false);
         user3.setEmail("user3@testemail.com");
         userRepo.save(user3);
 
@@ -158,16 +160,36 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
-    public void testUpdateUserPasswordAndRole() throws ProcessingException, MissingElementException {
-        String newPass = "newPass";
-        String oldPass = userEntity.getPassword();
-        userController.updateUser(userEntity.getId(), new net.geant.nmaas.portal.api.domain.UserRequest(null, userEntity.getUsername(), newPass), principal);
+    public void shouldUpdateUserWithNewFirstNameAndLastName() {
+        String newFirstName = "TestFirstName";
+        String newLastName = "TestLastName";
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setFirstname(newFirstName);
+        userRequest.setLastname(newLastName);
+        userController.updateUser(userEntity.getId(), userRequest, principal);
         User modUser1 = userRepo.findById(userEntity.getId()).get();
 
-        assertEquals(userEntity.getUsername(), modUser1.getUsername());
-        assertNotEquals(oldPass, modUser1.getPassword());
-        assertEquals(1, modUser1.getRoles().size());
-        //assertEquals(Role.TOOL_MANAGER, modUser1.getRoles().get(0).getRole());
+        assertEquals(modUser1.getFirstname(), newFirstName);
+        assertEquals(modUser1.getLastname(), newLastName);
+    }
+
+    @Test
+    public void shouldUpdateUserWithNewEmail(){
+        String newEmail = "admin@testemail.com";
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail(newEmail);
+        userController.updateUser(userEntity.getId(), userRequest, principal);
+        User modUser1 = userRepo.findById(userEntity.getId()).get();
+
+        assertEquals(modUser1.getEmail(), newEmail);
+    }
+
+    @Test(expected = ProcessingException.class)
+    public void shouldNotUpdateUserWithTakenEmail(){
+        String newEmail = user3.getEmail();
+        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+        userRequest.setEmail(newEmail);
+        userController.updateUser(userEntity.getId(), userRequest, principal);
     }
 
     @Test
@@ -183,9 +205,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testGetRolesAsString(){
-        Role role1 = Role.ROLE_USER;
-        Role role2 = Role.ROLE_SYSTEM_ADMIN;
-        Role role3 = Role.ROLE_DOMAIN_ADMIN;
+        Role role1 = ROLE_USER;
+        Role role2 = ROLE_SYSTEM_ADMIN;
+        Role role3 = ROLE_DOMAIN_ADMIN;
         UserRole userRole1 = new UserRole(new User("TEST1"), new Domain("TEST", "TEST"), role1);
         UserRole userRole2 = new UserRole(new User("TEST2"), new Domain("TEST", "TEST"), role2);
         UserRole userRole3 = new UserRole(new User("TEST3"), new Domain("TEST", "TEST"), role3);
@@ -200,17 +222,17 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testGetMessageWhenUserUpdated(){
-        Role role1 = Role.ROLE_USER;
+        Role role1 = ROLE_USER;
         UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
 
-        Role role2 = Role.ROLE_TOOL_MANAGER;
+        Role role2 = ROLE_TOOL_MANAGER;
         UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
 
         List<UserRole> userRoles1 = new ArrayList<>();
         userRoles1.add(userRole1);
         userRoles1.add(userRole2);
 
-        Role role3 = Role.ROLE_DOMAIN_ADMIN;
+        Role role3 = ROLE_DOMAIN_ADMIN;
         net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
         userRole3.setRole(role3);
         userRole3.setDomainId(1L);
@@ -232,68 +254,47 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
         String message = userController.getMessageWhenUserUpdated(user, userRequest);
         assertEquals(
-                System.lineSeparator() + "||| Username changed from - user1 to - user2|||" +
-                        System.lineSeparator() + "||| Email changed from - email@email.com to - email1@email.com|||" +
-                        System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
-                        System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
-                        System.lineSeparator() + "||| Enabled flag changed from - true to - false|||" +
-                        System.lineSeparator() + "||| Role changed from - ROLE_USER, ROLE_TOOL_MANAGER to - ROLE_DOMAIN_ADMIN@domain1|||", message);
+                " Username [user1] -> [user2] Email [email@email.com] -> [email1@email.com] First name [FirstName] -> [FirstName1] Last name [Lastname] -> [LastName1] Enabled flag [true] -> [false] Roles changed [ROLE_USER, ROLE_TOOL_MANAGER] -> [ROLE_DOMAIN_ADMIN@domain1]",
+                message
+        );
     }
 
     @Test
     public void testGetMessageWhenUserUpdatedWithSameRolesInDifferentOrder(){
-        Role role1 = Role.ROLE_USER;
-        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role1);
-
-        Role role2 = Role.ROLE_TOOL_MANAGER;
-        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), role2);
-
-        List<UserRole> userRoles1 = new ArrayList<>();
-        userRoles1.add(userRole1);
-        userRoles1.add(userRole2);
-
-        Role role3 = Role.ROLE_TOOL_MANAGER;
-        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole3.setRole(role3);
-
-        Role role4 = Role.ROLE_USER;
-        net.geant.nmaas.portal.api.domain.UserRole userRole4 = new net.geant.nmaas.portal.api.domain.UserRole();
-        userRole4.setRole(role4);
-
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles2 = new HashSet<>();
-        userRoles2.add(userRole3);
-        userRoles2.add(userRole4);
+        UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
+        UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
 
         net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
         user.setFirstname("FirstName");
         user.setLastname("Lastname");
         user.setEmail("email@email.com");
-        user.setRoles(userRoles1);
+        user.setRoles(Stream.of(userRole1, userRole2).collect(Collectors.toList()));
         user.setEnabled(true);
 
+        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole(ROLE_TOOL_MANAGER, 1L);
+        net.geant.nmaas.portal.api.domain.UserRole userRole4 = new net.geant.nmaas.portal.api.domain.UserRole(ROLE_USER, 1L);
+
         UserRequest userRequest = new UserRequest(2L, "user2", "password");
-        userRequest.setEmail("email1@email.com");
         userRequest.setFirstname("FirstName1");
         userRequest.setLastname("LastName1");
-        userRequest.setRoles(userRoles2);
+        userRequest.setEmail("email1@email.com");
+        userRequest.setRoles(Stream.of(userRole3, userRole4).collect(Collectors.toSet()));
 
         String message = userController.getMessageWhenUserUpdated(user, userRequest);
         assertEquals(
-                System.lineSeparator() + "||| Username changed from - user1 to - user2|||" +
-                        System.lineSeparator() + "||| Email changed from - email@email.com to - email1@email.com|||" +
-                        System.lineSeparator() + "||| First name changed from - FirstName to - FirstName1|||" +
-                        System.lineSeparator() + "||| Last name changed from - Lastname to - LastName1|||" +
-                        System.lineSeparator() + "||| Enabled flag changed from - true to - false|||", message);
+                " Username [user1] -> [user2] Email [email@email.com] -> [email1@email.com] First name [FirstName] -> [FirstName1] Last name [Lastname] -> [LastName1] Enabled flag [true] -> [false]",
+                message
+        );
     }
 
     @Test
     public void testGetRoleWithDomainIdAsString(){
-        Role role1 = Role.ROLE_USER;
+        Role role1 = ROLE_USER;
         net.geant.nmaas.portal.api.domain.UserRole userRole1 = new net.geant.nmaas.portal.api.domain.UserRole();
         userRole1.setRole(role1);
         userRole1.setDomainId(1L);
 
-        Role role2 = Role.ROLE_GUEST;
+        Role role2 = ROLE_GUEST;
         net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
         userRole2.setRole(role2);
         userRole2.setDomainId(2L);

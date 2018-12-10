@@ -39,7 +39,10 @@ public class Domain {
 	@NotNull
 	@Column(nullable = false, unique=true)
 	String name;
-	
+
+	@Column(unique = true)
+	private String externalServiceDomain;
+
 	@Embedded
 	DomainTechDetails domainTechDetails;
 	
@@ -72,9 +75,10 @@ public class Domain {
 		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
 	}
 
-	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
 		this(name, codename, active);
 		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
+		this.externalServiceDomain = externalServiceDomain;
 	}
 
 	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
