@@ -1,123 +1,71 @@
-<h4><strong>Description of the NMaas Service</strong></h4>
-<p>
-The eduGAIN interfederation service connects identity federations around the world, simplifying access to content,
-services and resources for the global research and education community. The eduGAIN consortium is comprised of
-many legal entities.
-</p><p>
-GÉANT is the body which is responsible for the international coordination and interoperability of the eduGAIN,
-and operates a number of services for the eduGAIN consortium globally. These central services are maintained by
-eduGAIN Operations Team (OT). <strong>This privacy policy concerns part of the eduGAIN consortium that is operated and
-maintained by GÉANT</strong> including, but not limited to, the following services: eduGAIN metadata distribution service,
-supporting tools available at the eduGAIN Technical site, secretarial services and support for eduGAIN users.
-</p><p>
-We are fans of privacy, and we are proud to say that the eduGAIN service is designed for minimal disclosure of
-end users personal data. eduGAIN DOES NOT process or have access to any transaction between an Identity Provider
-and Service Provider or any end user personal data as part of the authorisation process. eduGAIN provides advice
-and guidance to Identity Providers and Service Providers on how to meet GDPR requirements as part of its
-<a href="https://wiki.geant.org/display/eduGAIN/eduGAIN+GDPR+Impact+Assessment">Best Current Practice documentation.</a>
-</p><p>
-To view the general Privacy Notice for GÉANT, please visit the <a href="https://www.geant.org/privacy-notice"
-target="_blank">GÉANT website.</a>
-</p><br>
+<h3><strong>NMaaS Privacy Notice</strong></h3>
+
+<h4><strong>Description of the NMaaS Service</strong></h4>
+<p><a href="https://www.geant.org/NMaaS">Network Management as a Service (NMaaS)</a> provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure. </p>
+<p>NMaaS simplifies domain network management by providing the infrastructure and tools via a cloud-based, multi-tenant and secure network management system. It enables the deployment of network management tools, as well as management and monitoring of client networks, although NMaaS does not monitor and manage the network by itself. </p>
+<p>To view the general Privacy Notice for GÉANT, please visit the <a href="https://www.geant.org/privacy-notice">GÉANT website</a>.</p>
+
 <h4><strong>Why We Process Personal Data</strong></h4>
-<p>
-eduGAIN processes personal data to support running the eduGAIN Steering Group and the administration of the
-eduGAIN service.
-</p><p>
-eduGAIN processes a small amount of end user personal data to monitor use of its website for security and
-statistical purposes.
-</p><p>
-eduGAIN processes personal data that is made available in metadata aggregates provided by identity federations
-that participate in eduGAIN. This data is publicly available, but eduGAIN has specific permission to use this
-metadata via the signed eduGAIN Declaration with each member federation.
-</p><br>
-<h4><strong>What Personal Data We Process</strong></h4>
-<p>
-eduGAIN processes the following information:
-<ul>
-    <li>Statistical information and logs for the edugain.org and technical.edugain.org website.
-    We collect the <strong>usual web server logs</strong>, i.e. timestamp of access, IP address which
-    requested the page, the page being requested, the HTML result code, etc.  GÉANT has a <strong>legitimate
-    interest</strong> in this data processing.</li>
-    <li><strong>Contact name, surname, email and affiliation</strong> of eduGAIN Steering Group contacts.
-    eduGAIN asks for the <strong>consent</strong> of individuals on the Steering Group
-    before publishing and using this data.</li>
-    <li>Personal data made available by identity federations participating in eduGAIN in publicly available
-    metadata streams is processed as part of the <a href="https://technical.edugain.org/entities" target="_blank">
-    eduGAIN Technical Database</a> and the creation of the eduGAIN metadata
-    aggregate. This data may include <strong>name, surname, email, phone number and affiliation</strong> to the entity.
-    eduGAIN strongly advises identity federations to use function contacts rather than the personal ones.
-    GÉANT has a <strong>legitimate interest</strong> in this data processing.</li>
-</ul></p><br>
-<h4><strong>Who Do We Share Data With?</strong></h4>
-<p>
-Personal data gathered for website statistics is only shared within the GÉANT Association and with the eduGAIN
-Operational Team for management and communication purposes.
-</p><p>
-eduGAIN Steering Group delegate personal data is shared with other members of the eduGAIN Steering Group and the
-eduGAIN Operations Team. This data may also be made publicly available on the eduGAIN Technical website with the
-consent of the SG member in question.
-</p><p>
-Personal data in federation metadata is made publicly available by the identity federations in question.
-To view this data, please see the <a href="https://technical.edugain.org/entities" target="_blank">
-eduGAIN Technical Database.</a>
-</p><br>
-<h4><strong>Personal Data Retention</strong></h4>
-<p>
-Analytical data for website statistics is currently retained permanently.
-</p><p>
-Data relating to eduGAIN Steering Group members is retained for the period of membership of the Steering Group.
-<p><br>
-<h4><strong>Security</strong></h4>
-<p>
-We support the following processes to ensure the security of your data:
-<ul>
-    <li>Minimisation of personal data we collect;</li>
-    <li>Managing, limiting and controlling access to personal data;</li>
-    <li>Resilience of processing systems and services;</li>
-    <li>Regular testing of the effectiveness of measures implemented.</li>
-<p></ul><br>
-<h4><strong>Your Rights</strong></h4>
-<p>
-You have the right to ensure:
-<ul>
-    <li>We process your data fairly and lawfully;</li>
-    <li>Your data is accurate (to rectify data released by your home organisation, please contact directly);</li>
-    <li>The data we collect is not excessive but only the data we require to provide the service;</li>
-    <li>Your data is secure;</li>
-    <li>Your personal data is securely destroyed when no longer required</li>
+<p>NMaaS processes personal data: <ul>
+<li>to fulfill the service and user support processes; </li>
+<li>for user authentication and authorization purposes; </li>
+<li>for personalized notification purposes (email communication enabling the change of password, email notification about events in the system relevant for user operations, e.g. deployed applications and  email notification about general events in the system, e.g. planned downtime, maintenance); </li>
+<li>to monitor the use of the NMaaS service for security purposes; </li>
+<li>to monitor the use of the NMaaS service for improved resource and performance optimizations; </li>
+<li>to track personal data related events (new user registration, user data update and role assignment or revocation). </li>
 </ul></p>
-<p>
-You also have the right to ask what personal data we hold about you, and to complain to the Supervisory
-Authority (Autoriteit Persoonsgegevens at <a href="https://autoriteitpersoonsgegevens.nl"
-target="_blank">https://autoriteitpersoonsgegevens.nl</a>) about our data processing
-activities if you feel your data is not being managed as described here.
-</p>
-<br>
+
+<h4><strong>What Personal Data We Process</strong></h4>
+<p>NMaaS user data is stored in a central relational database and application log files.</br>
+The database contains the following user personal data:<ul>
+<li>username, </li>
+<li>user identifier – unique identifier assigned internally by NMaaS, </li>
+<li>user IdP identifier – unique identifier assigned by the Identity Provided used by the user to log in to the NMaaS Portal (applicable if eduGAIN log in option is used), </li>
+<li>password – user password used to log in to the NMaaS Portal (applicable if user account is being registered directly in NMaaS), </li>
+<li>first name (optional), </li>
+<li>last name (optional), </li>
+<li>email address. </li></ul></p>
+<p>The service log files contain the following user personal data: username, user identifier, first name, last name and email address. </p>
+<p>The purpose of NMaaS is to facilitate automated deployment of network management and monitoring applications. It should be noted that the data collected and stored by particular applications deployed through NMaaS is neither controlled nor processed by NMaaS service and the NMaaS Operational Team however it might contain user personal data. NMaaS does not take any responsibility for the data being collected and stored by those applications. </p>
+<p>During the application deployment process NMaaS provides a configuration wizard functionality to ease the initial setup of the application. Wizard prompts the user to provide different type of data about the equipment to be managed depending on the application being deployed and this data may include for example device access credentials. It should be noted that it is not advised to provide in the wizard any user personal data and use generic device access accounts if possible. NMaaS does not take any responsibility for the data being provided by the user in the wizard. </p>
+
+<h4><strong>Who Do We Share Data With?</strong></h4>
+<p>Personal data persisted in the database and in the log files is processed according to the clearly defined goals by the NMaaS service Operational Team and is not shared with any third party. </p>
+
+<h4><strong>Personal Data Retention</strong></h4>
+<p>NMaaS user personal data is retained in the database for the period in which particular user uses the service. Since the moment of reception of user account removal request the data is still kept in the database for a period of 6 months after which it is removed. </p>
+<p>Log files are retained for a period of 6 months. </p>
+
+<h4><strong>Security</strong></h4>
+<p>We support the following processes to ensure the security of your data:
+<ul>
+<li>Minimisation of personal data we collect;</li>
+<li>Managing, limiting and controlling access to personal data;</li>
+<li>Resilience of processing systems and services;</li>
+<li>Regular testing of the effectiveness of measures implemented. </li></ul></p>
+<h4><strong>Your Rights</strong></h4>
+<p>You have the right to ensure:<ul>
+<li>We process your data fairly and lawfully;</li>
+<li>Your data is accurate;</li>
+<li>The data we collect is not excessive but only the data we require to provide the service;</li>
+<li>Your data is secure;</li>
+<li>Your personal data is securely destroyed when no longer required</li></ul></p>
+<p>You also have the right to ask what personal data we hold about you, and to complain to the Supervisory Authority (Autoriteit Persoonsgegevens at <a href="https://autoriteitpersoonsgegevens.nl">https://autoriteitpersoonsgegevens.nl</a>) about our data processing activities if you feel your data is not being managed as described here. </p>
+
 <h4><strong>Contact Information</strong></h4>
-<table class="table">
-<tr>
-    <td><strong style="vertical-align: middle">Data Controller and Contact</strong></td>
-    <td>
-    <strong>Data Protection Officer</strong><br>
-    <p>GÉANT Association<br>
-    Hoekenrode 3<br>
-    1102 BR<br>
-    Amsterdam – Zuidoost<br>
-    Netherlands<br>
-    Telephone number: +31 20 530 4488<br>
-    email: <a href="mailto:gdpr@geant.org">gdpr@geant.org</a></p>
-    </td>
-</tr>
-<tr>
-    <td><strong style="vertical-align: middle">Jurisdiction</strong></td>
-    <td>
-    <strong>Netherlands</strong>
-    <p>
-    Dutch Data Protection Authority<br>
-    Autoriteit Persoonsgegevens<br>
-    Postbus 93374 2509 AJ DEN HAAG.<br>
-    Telephone number: (+31) – (0)70 – 888 85 00.</p>
-    </td>
-</tr>
-</table>
+<p>Data Controller and Contact<br>
+<strong>Data Protection Officer</strong><br>
+GÉANT Association<br>
+Hoekenrode 3<br>
+1102 BR<br>
+Amsterdam – Zuidoost<br>
+Netherlands<br>
+Telephone number: +31 20 530 4488<br>
+email: gdpr@geant.org<br></p>
+
+<p>Jurisdiction<br>
+<strong>Netherlands</strong><br>
+Dutch Data Protection Authority <br>
+Autoriteit Persoonsgegevens<br>
+Postbus 93374 2509 AJ DEN HAAG.<br>
+Telephone number: (+31) – (0)70 – 888 85 00. <br></p>
