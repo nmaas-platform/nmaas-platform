@@ -105,7 +105,7 @@ echo App4
 curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app4-opennti.json
 echo
 echo App4 logo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/open_nti.png;type=image/svg+xml" $API_URL/apps/4/logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/open_nti.png;type=image/png" $API_URL/apps/4/logo
 echo
 echo App4 screenshots
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/opennti/opennti1.png;type=image/png" $API_URL/apps/4/screenshots
