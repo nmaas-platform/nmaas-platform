@@ -130,9 +130,6 @@ public class UsersController {
 			final String adminRoles = getRoleAsString(adminUser.getRoles());
 			final String userRoles = getRoleAsString(userDetails.getRoles());
 
-			if (userRequest.getPassword() != null)
-				userDetails.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-
 			if (userRequest.getFirstname() != null)
 				userDetails.setFirstname(userRequest.getFirstname());
 			if (userRequest.getLastname() != null)
@@ -143,33 +140,17 @@ public class UsersController {
 				}
 				userDetails.setEmail(userRequest.getEmail());
 			}
-			userDetails.setEnabled(userRequest.isEnabled());
-			if (userRequest.getRoles() != null && !userRequest.getRoles().isEmpty())
-				userDetails.clearRoles(); //we have to update it in two transactions, otherwise hibernate won't remove orphans
-
-				userService.update(userDetails);
-
-			if (userRequest.getRoles() != null && !userRequest.getRoles().isEmpty()) {
-				Set<net.geant.nmaas.portal.persistent.entity.UserRole> roles = userRequest.getRoles().stream()
-						.map(ur -> new net.geant.nmaas.portal.persistent.entity.UserRole(
-								userDetails,
-								domainService.findDomain(ur.getDomainId()).orElseThrow(() -> new ProcessingException(DOMAIN_NOT_FOUND_ERROR_MESSAGE)),
-								ur.getRole()))
-						.collect(Collectors.toSet());
-
-				userDetails.setNewRoles(roles);
-			}
-				userService.update(userDetails);
-				if (!StringUtils.isEmpty(message)) {
-					log.info(String.format("User [%s] with role [%s] updated data of user [%s]. The following changes are: [%s] ",
-							principal.getName(),
-							adminRoles,
-							userDetails.getUsername(),
-							userRoles,
-                            message));
+			userService.update(userDetails);
+			if (!StringUtils.isEmpty(message)) {
+				log.info(String.format("User [%s] with role [%s] updated data of user [%s] with roles [%s]. The following changes are: [%s] ",
+						principal.getName(),
+						adminRoles,
+						userDetails.getUsername(),
+						userRoles,
+						message));
 				}
 			} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-				throw new ProcessingException("Unable to modify roles");
+				throw new ProcessingException("Unable to update user -> " + e.getMessage());
 			}
 	}
 	
@@ -226,46 +207,10 @@ public class UsersController {
                     user.getUsername(),
                     userRole.getDomainId()));
 
-			addGlobalGuestUserRoleIfMissing(userId);
+			domainService.addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}		
-	}
-
-	@PostMapping(value="/users/my/complete")
-	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
-	@Transactional
-	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) {
-		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
-		try {
-			Long domainId = domainService.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
-			completeRegistration(userRequest, user, domainId);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
-			throw new ProcessingException("Unable to complete your registration");
-		}
-	}
-
-	private void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) {
-		if(userService.existsByUsername(userRequest.getUsername())) {
-			throw new net.geant.nmaas.portal.exceptions.ProcessingException("User with same username already exists");
-		} else {
-			user.setUsername(userRequest.getUsername());
-		}
-		if(userRequest.getFirstname() != null)
-			user.setFirstname(userRequest.getFirstname());
-		if(userRequest.getLastname() != null)
-			user.setLastname(userRequest.getLastname());
-		if(userRequest.getEmail() != null) {
-			if(userService.existsByEmail(userRequest.getEmail())){
-				throw new ProcessingException("User with mail "+userRequest.getEmail()+" already exists");
-			}
-			user.setEmail(userRequest.getEmail());
-		}
-
-		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
-		addGlobalGuestUserRoleIfMissing(user.getId());
-		userService.update(user);
 	}
 
 	@PostMapping(value="/users/terms/{username}")
@@ -494,7 +439,7 @@ public class UsersController {
 					user.getUsername(),
 					domainId)
 			);
-			addGlobalGuestUserRoleIfMissing(userId);
+			domainService.addGlobalGuestUserRoleIfMissing(userId);
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}
@@ -549,21 +494,8 @@ public class UsersController {
         log.debug(String.format("Validated system component role for user [%s].", principal.getName()));
     }
 
-	private void addGlobalGuestUserRoleIfMissing(Long userId) {
-		Optional<Domain> globalDomainOptional = domainService.getGlobalDomain();
-		if(globalDomainOptional.isPresent()){
-			Long globalId = globalDomainOptional.get().getId();
-			try{
-				if(domainService.getMemberRoles(globalId, userId).isEmpty()){
-					domainService.addMemberRole(globalId, userId, ROLE_GUEST);
-				}
-			} catch(ObjectNotFoundException e){
-				throw new MissingElementException(e.getMessage());
-			}
-		}
-	}
 
-	protected Role convertRole(String userRole) {
+	private Role convertRole(String userRole) {
 		Role role = null;
 		try {
 			role = Role.valueOf(userRole);
