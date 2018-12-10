@@ -181,7 +181,8 @@ public class KubernetesManager implements ContainerOrchestrator {
             String serviceExternalUrl = ingressResourceManager.generateServiceExternalURL(
                     service.getDomain(),
                     service.getDeploymentName(),
-                    clusterIngressManager.getExternalServiceDomain());
+                    clusterIngressManager.getExternalServiceDomain(service.getDomain()),
+                    clusterIngressManager.getIngressPerDomain());
             repositoryManager.updateKServiceExternalUrl(deploymentId, serviceExternalUrl);
             serviceLifecycleManager.deployService(deploymentId);
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {

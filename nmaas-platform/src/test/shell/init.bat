@@ -272,3 +272,6 @@ echo
 echo Create polish language content
 curl -X POST %API_URL%/i18n/pl --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
 echo
+echo Create german language content
+curl -X POST %API_URL%/i18n/de --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
+echo

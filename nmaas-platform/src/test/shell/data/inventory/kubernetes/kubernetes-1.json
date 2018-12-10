@@ -13,7 +13,8 @@
     "externalServiceDomain":"nmaas.geant.net",
     "tlsSupported":false,
     "certificateConfigOption": "USE_LETSENCRYPT",
-    "issuerOrWildcardName": "nmaas-issuer"
+    "issuerOrWildcardName": "nmaas-issuer",
+    "ingressPerDomain": false
   },
   "deployment": {
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",

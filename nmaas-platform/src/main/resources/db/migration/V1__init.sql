@@ -287,6 +287,7 @@ create table domain (
   kubernetes_namespace varchar(255),
   kubernetes_storage_class varchar(255),
   name varchar(255) not null unique,
+  external_service_domain varchar(255) unique,
   primary key (id));
 
 create table domain_network_attach_point (
@@ -398,6 +399,7 @@ create table k_cluster_ingress
   resource_config_option varchar(255) not null,
   supported_ingress_class varchar(255),
   tls_supported boolean,
+  ingress_per_domain boolean,
   certificate_config_option varchar(255),
   issuer_or_wildcard_name varchar(255),
   primary key (id));
