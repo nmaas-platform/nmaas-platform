@@ -95,6 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	private static final String[] AUTH_WHITELIST = {
+			"/favicon.ico",
 			"/v2/api-docs",
 			"/swagger-resources",
 			"/swagger-resources/**",
@@ -162,6 +163,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/configuration/security"),
 										new AntPathRequestMatcher("/swagger-ui.html"),
 										new AntPathRequestMatcher("/webjars/**"),
+										new AntPathRequestMatcher("/favicon.ico"),
 										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
 										new AntPathRequestMatcher("/api/info/**"),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
