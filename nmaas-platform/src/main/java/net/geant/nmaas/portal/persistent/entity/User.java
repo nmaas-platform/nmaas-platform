@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
+import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name = "users")
@@ -30,6 +31,7 @@ import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
 @Setter
 @Builder
 @AllArgsConstructor
+@Audited
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ValidUser
 public class User {

@@ -16,9 +16,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import org.hibernate.envers.Audited;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Audited
 public class UserRole {
 
 	@NoArgsConstructor
@@ -26,6 +28,7 @@ public class UserRole {
 	@EqualsAndHashCode
 	@Setter(AccessLevel.PROTECTED)
 	@Getter
+	@Audited
 	@Embeddable
 	public static class Id implements Serializable {
 

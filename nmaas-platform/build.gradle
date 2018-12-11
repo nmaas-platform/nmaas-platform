@@ -58,6 +58,7 @@ dependencies {
 	
 	runtime('com.h2database:h2')
 	runtime('org.postgresql:postgresql')
+	compile('org.hibernate:hibernate-envers')
 
 
 	compile('io.jsonwebtoken:jjwt:0.7.0')
