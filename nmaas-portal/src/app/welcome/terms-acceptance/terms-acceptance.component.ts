@@ -45,7 +45,7 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
         super();
         this.registrationForm = fb.group(
             {
-                termsOfUseAccepted: [false],
+                termsOfUseAccepted: [true],
                 privacyPolicyAccepted: [false],
             });
     }
