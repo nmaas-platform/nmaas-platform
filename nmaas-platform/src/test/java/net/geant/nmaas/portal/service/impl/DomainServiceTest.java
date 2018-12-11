@@ -19,6 +19,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -129,7 +130,7 @@ public class DomainServiceTest {
     public void shouldUpdateDomain() throws ProcessingException{
         String name = "testdomain";
         String codename = "testdom";
-        Domain domain = new Domain(1L, name, codename);
+        Domain domain = new Domain(1L, name, codename, true, "default", "default");
         this.domainService.updateDomain(domain);
         verify(domainRepository, times(1)).save(domain);
     }

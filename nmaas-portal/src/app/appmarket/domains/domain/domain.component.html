@@ -52,7 +52,7 @@
 			<label for="kubernetesNamespace" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.KUBERNETES_NAMESPACE' | translate }}</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesNamespace"
-				name="kubernetesNamespace" [(ngModel)]="domain.kubernetesNamespace">
+				name="kubernetesNamespace" [(ngModel)]="domain.kubernetesNamespace" placeholder="{{'DOMAIN_DETAILS.KUBERNETES_NAMESPACE_PLACEHOLDER' | translate}}">
 			</div>
 		</div>
 
