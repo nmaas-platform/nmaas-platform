@@ -54,8 +54,8 @@
     "DOMAIN": "Domain",
     "NOT_SELECTED": "Not selected",
     "TERMS": "Terms of Use",
-    "AGREEMENT_MESSAGE": "I agree to the",
-    "PRIVACY_POLICY": "Privacy Policy",
+    "AGREEMENT_MESSAGE": "I read the",
+    "PRIVACY_POLICY": "Privacy Notice",
     "SUBMIT": "Submit",
     "FORM_SUBMISSION": "Registration form submission",
     "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
@@ -63,7 +63,7 @@
     "INVALID_CREDENTIALS_MESSAGE": "Invalid credentials.",
     "UNABLE_TO_REGISTER_MESSAGE": "Unable to register new user.",
     "TERMS_NOT_ACCEPTED_MESSAGE": "Terms of Use were not accepted.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Privacy Policy were not accepted.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Please confirm that you read Privacy Notice",
     "USER_ALREADY_EXISTS_MESSAGE": "User already exists.",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found.",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Unable to update newly registered user.",
@@ -399,10 +399,10 @@
     }
   },
   "TERMS_ACCEPTANCE": {
-    "HEADER": "Please read and accept the following documents before accessing the system",
+    "HEADER": "Please read the Privacy Notice before accessing the system",
     "MODAL": {
-      "HEADER": "Missing approvals provided",
-      "BODY": "Your acceptance of Terms of Use and Privacy Policy has been registered in the system. Please login again.",
+      "HEADER": "Missing confirmation provided",
+      "BODY": "Please login again",
       "CLOSE_BUTTON": "Close"
     }
   },

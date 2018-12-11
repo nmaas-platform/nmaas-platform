@@ -57,7 +57,7 @@ export class RegistrationComponent implements OnInit {
         firstname: [''],
         lastname: [''],
         domainId: [null],
-          termsOfUseAccepted: [false],
+          termsOfUseAccepted: [true],
           privacyPolicyAccepted: [false],
       },
       {
