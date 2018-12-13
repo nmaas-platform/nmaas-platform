@@ -57,7 +57,7 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
     }
 
     public onSubmit(): void {
-        if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value){
+        if (!this.registrationForm.controls['privacyPolicyAccepted'].value){
             this.sending = false;
             this.submitted = true;
             this.success = false;

@@ -97,7 +97,7 @@ export class RegistrationComponent implements OnInit {
                       this.registrationForm.controls['firstname'].value,
                       this.registrationForm.controls['lastname'].value,
                       this.registrationForm.controls['domainId'].value,
-                      this.registrationForm.controls['termsOfUseAccepted'].value,
+                      true,
                       this.registrationForm.controls['privacyPolicyAccepted'].value,
                   );
                   this.registrationService.register(registration).subscribe(
