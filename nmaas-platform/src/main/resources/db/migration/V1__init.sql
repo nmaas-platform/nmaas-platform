@@ -507,13 +507,13 @@ create table user_role_aud (
   role varchar(255) not null,
   user_id bigint not null,
   rev integer not null,
-  revtype tinyint,
+  revtype smallint,
   primary key (domain_id, role, user_id, rev));
 
 create table users_aud (
   id bigint not null,
   rev integer not null,
-  revtype tinyint,
+  revtype smallint,
   email varchar(255),
   enabled boolean,
   firstname varchar(255),
