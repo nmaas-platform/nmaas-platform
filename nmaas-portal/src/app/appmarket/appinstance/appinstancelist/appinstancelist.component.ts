@@ -27,6 +27,8 @@ export class AppInstanceListComponent implements OnInit {
   public maxItemsOnPage: number = 5;
   public pageNumber: number = 1;
 
+  public secondPageNumber: number = 1;
+
   public showFailed: boolean = true;
 
   public itemsPerPage: number[]  = [5,10,15,20,25,30];
