@@ -1,38 +1,67 @@
 {
-  "name":"Grafana",
-  "version":"5.3.1",
-  "license":"Apache 2 License",
-  "briefDescription":"The tool for beautiful monitoring and metric analytics.",
-  "tags": [ "monitoring", "visualization"],
-  "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
-  "wwwUrl": "https://grafana.com/",
-  "sourceUrl": "https://github.com/grafana/grafana",
-  "issuesUrl": "https://github.com/grafana/grafana/issues",
-  "appDeploymentSpec": {
-    "supportedDeploymentEnvironments": [
-      "KUBERNETES"
+    "name": "Grafana",
+    "version": "5.3.1",
+    "license": "Apache 2 License",
+    "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+    "tags": [
+        "monitoring",
+        "visualization"
     ],
-    "kubernetesTemplate": {
-      "chart": {
-        "name": "nmaas-grafana",
-        "version": "1.0.0-alfa"
-      }
+    "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
+    "wwwUrl": "https://grafana.com/",
+    "sourceUrl": "https://github.com/grafana/grafana",
+    "issuesUrl": "https://github.com/grafana/grafana/issues",
+    "appDeploymentSpec": {
+        "supportedDeploymentEnvironments": [
+            "KUBERNETES"
+        ],
+        "kubernetesTemplate": {
+            "chart": {
+                "name": "nmaas-grafana",
+                "version": "1.0.0-alfa"
+            }
+        },
+        "defaultStorageSpace": 5,
+        "configFileRepositoryRequired": true
     },
-    "defaultStorageSpace":5,
-    "configFileRepositoryRequired":true
-  },
-  "configTemplate": {
-    "template": {
-      "schema": {
-        "type": "object",
-        "properties": {	}
-      },
-      "form": [
-        {
-          "type":"help",
-          "helpvalue":"All required configuration should be applied using Grafana graphical interface"
+    "configTemplate": {
+        "template": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "use_name": {
+                        "type": "boolean",
+                        "title": "Use existing instance",
+                        "default": false
+                    },
+                    "source_name": {
+                        "type": "string"
+                    },
+                    "source_addr": {
+                        "title": "Prometheus instance address",
+                        "type": "string"
+                    }
+                }
+            },
+            "form": [
+                {
+                    "key": "use_name"
+                },
+                {
+                    "condition": "model.use_name",
+                    "type": "section",
+                    "items": [
+                        {
+                            "key": "source_name",
+                            "required": true
+                        },
+                        {
+                            "key": "source_addr",
+                            "required": true
+                        }
+                    ]
+                }
+            ]
         }
-      ]
     }
-  }
 }

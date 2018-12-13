@@ -4,7 +4,7 @@
 	"license":"Apache",
 	"briefDescription":"LibreNMS is an autodiscovering SNMP based network monitoring tool",
 	"tags": [ "management", "monitoring"],
-	"fullDescription": "LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring \nwhich includes support for a wide range of network hardware and \noperating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.\nLibreNMS is a community-based fork of Observium.\n\nWe intend LibreNMS to be a viable project and community that:\n\nencourages contribution,\nfocuses on the needs of its users, and\noffers a welcoming, friendly environment for everyone.\nThe Debian Social Contract will be the basis of our priority system, \nand mutual respect is the basis of our behaviour towards others.\nFor more about the culture we're trying to build, please read the Freenode philosophy,\nincluding guidelines for running an IRC channel and being a community catalyst.\n",
+	"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring<br>which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users, and</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>",
 	"wwwUrl": "http://www.librenms.org/",
 	"sourceUrl": "https://github.com/librenms/librenms",
 	"issuesUrl": "https://github.com/librenms/librenms/issues",
@@ -71,6 +71,39 @@
 						"targets[].snmpVersion"
 					]
 				}
+			]
+		}
+	},
+	"additionalMandatoryTemplate": {
+		"template" : {
+			"schema" : {
+				"type" : "object",
+				"properties" : {
+					"librenms_default_USER" : {
+						"type" : "string",
+						"title" : "Default username"
+					},
+					"librenms_default_PASSWORD" : {
+						"type" : "string",
+						"title" : "Default user password"
+					},
+					"librenms_default_EMAIL" : {
+						"format" : "email",
+						"type" : "string",
+						"title" : "Default email"
+					}
+				},
+				"required" : [
+					"librenms_default_USER", "librenms_default_PASSWORD"
+				]
+			},
+			"form" : [
+				"librenms_default_USER",
+				{
+					"key": "librenms_default_PASSWORD",
+					"type": "password"
+				},
+				"librenms_default_EMAIL"
 			]
 		}
 	}

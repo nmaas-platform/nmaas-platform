@@ -104,7 +104,7 @@
 			<div class='row'>
 				<h3>{{'APP_INSTANCE.INSTALLATION_PROGRESS.HEADER' | translate}}</h3>
 				<hr>
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
 					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 				</div>
 				<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus?.userFriendlyState : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
@@ -151,6 +151,13 @@
 					</ul>
 					<div class="tab-content" style="padding-top: 10px">
 						<div id="configForm" class="tab-pane fade in active">
+							<json-schema-form *ngIf="additionalMandatoryTemplate"
+								[form]="additionalMandatoryTemplate"
+								[options]="jsonFormOptions"
+								[framework]="bootstrap-3"
+								[language]="en"
+								(onChanges)="changeMandatoryParameters($event)">
+							</json-schema-form>
 							<json-schema-form *ngIf="appInstance !== undefined && appInstance.wizard !== undefined"
 											  [form]="getTemplate(appInstance.wizard.template)"
 											  [options]="jsonFormOptions"

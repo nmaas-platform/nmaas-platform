@@ -5,7 +5,6 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Observable} from "rxjs/Observable";
 import {Domain} from "../../model/domain";
 import {RegistrationService} from "../../auth/registration.service";
-import {UserService} from "../../service";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {Router} from "@angular/router";
 import {AuthService} from "../../auth/auth.service";
@@ -46,7 +45,6 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     constructor(private fb: FormBuilder,
                 private registrationService: RegistrationService,
                 protected profileService: ProfileService,
-                private userService: UserService,
                 private authService: AuthService,
                 private router: Router,
                 private translate: TranslateService,
@@ -75,9 +73,8 @@ export class CompleteComponent extends BaseComponent implements OnInit {
             this.sending = false;
             this.submitted = true;
             this.success = false;
-            this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
-        }
-        else {
+            this.errorMessage = this.translate.instant('GENERIC_MESSAGE.TERMS_OF_USER_MESSAGE');
+        } else {
             if (this.registrationForm.valid) {
                 this.user.enabled = false;
                 this.user.username = this.registrationForm.controls['username'].value;
@@ -87,19 +84,19 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 this.user.termsOfUseAccepted = this.registrationForm.controls['termsOfUseAccepted'].value;
                 this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
 
-                this.userService.completeRegistration(this.user).subscribe(
+                this.registrationService.completeRegistration(this.user).subscribe(
                     (result) => {
-                        console.log("Data updated successfully.");
                         this.success = true;
                         this.authService.logout();
                         this.modal.show();
                     },
                     (err) => {
-                        console.log("Unable to finish user registration");
                         this.sending = false;
                         this.submitted = true;
                         this.success = false;
-                        this.errorMessage = err.statusCode == 406 ? 'Invalid input data' : 'Service is unavailable. Please try again later';
+                        this.errorMessage = err.statusCode === 406 ?
+                            this.translate.instant('GENERIC_MESSAGE.INVALID_INPUT_MESSAGE') :
+                            this.translate.instant('GENERIC_MESSAGE.UNAVAILABLE_MESSAGE');
                     },
                     () => {
                         this.sending = false;

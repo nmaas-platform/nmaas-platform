@@ -60,16 +60,16 @@ public class BasicAuthController {
 	
 	@PostMapping(value="/login")
 	public UserToken login(@RequestBody final UserLogin userLogin) {
-        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("Invalid Credentials."));
+        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("LOGIN.LOGIN_FAILURE_MESSAGE"));
         validate(Optional.of(userLogin.getUsername()), Optional.of(userLogin.getPassword()), user.getPassword(), user.isEnabled(), user.isTermsOfUseAccepted(), user.isPrivacyPolicyAccepted());
 
         if(configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN)))
-            throw new AuthenticationException("Application is undergoing maintenance right now. Please try again later.");
+            throw new AuthenticationException("LOGIN.APPLICATION_UNDER_MAINTENANCE_MESSAGE");
 
         if(user.getRoles().stream().anyMatch(role -> role.getRole().equals(Role.ROLE_SYSTEM_COMPONENT)))
-            throw new AuthenticationException("System component login cannot be performed");
+            throw new AuthenticationException("LOGIN.LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE");
 
-        log.info(String.format("The user who logged in is - %s, and the role is - %s", userLogin.getUsername(),
+        log.info(String.format("User [%s] logged in with role [%s]", userLogin.getUsername(),
                 user.getRoles().stream().map(role -> role.getRole().name()).collect(Collectors.toList())));
         return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
 	}
@@ -78,7 +78,7 @@ public class BasicAuthController {
 	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) {
 	    UserToken userToken = null;
         if(userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken()))
-        throw new AuthenticationException("Missing token.");
+        throw new AuthenticationException("LOGIN.MISSING_TOKEN_MESSAGE");
 
         if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
             final Claims claims = jwtTokenService.getClaims(userRefreshToken.getRefreshToken());
@@ -87,7 +87,7 @@ public class BasicAuthController {
                 userToken = new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
             }
         } else {
-            throw new AuthenticationException("Unable to generate new tokens");
+            throw new AuthenticationException("LOGIN.UNABLE_TO_GENERATE_MESSAGE");
         }
         return userToken;
 	}

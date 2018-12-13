@@ -14,4 +14,5 @@ public class Domain {
 	boolean dcnConfigured;
 	String kubernetesNamespace;
 	String kubernetesStorageClass;
+	String externalServiceDomain;
 }

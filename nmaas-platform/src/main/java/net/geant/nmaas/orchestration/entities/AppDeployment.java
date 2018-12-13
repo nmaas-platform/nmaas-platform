@@ -90,13 +90,4 @@ public class AppDeployment {
 
     private String appInstanceName;
 
-    public AppDeployment(Identifier deploymentId, String domain, Identifier applicationId, String deploymentName, boolean configFileRepositoryRequired, Integer storageSpace) {
-        this.deploymentId = deploymentId;
-        this.domain = domain;
-        this.applicationId = applicationId;
-        this.deploymentName = deploymentName;
-        this.configFileRepositoryRequired = configFileRepositoryRequired;
-        this.storageSpace = storageSpace;
-    }
-
 }

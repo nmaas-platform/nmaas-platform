@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +83,8 @@ public class DomainController extends AppBaseController {
 		
 		net.geant.nmaas.portal.persistent.entity.Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass());
+			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(),
+					domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain());
 			this.domainService.storeDcnInfo(domain.getCodename());
 
 			if(domain.isDcnConfigured()){
@@ -109,6 +111,12 @@ public class DomainController extends AppBaseController {
 		domain.setActive(domainUpdate.isActive());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
+		if(domainUpdate.getExternalServiceDomain() == null || domainUpdate.getExternalServiceDomain().isEmpty()){
+			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		} else {
+			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getExternalServiceDomain()), "External service domain is not unique");
+			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		}
 		try {
 			domainService.updateDomain(domain);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {

@@ -50,6 +50,7 @@ class ClusterIngress {
     public supportedIngressClass: string;
     public certificateConfigOption: string;
     public issuerOrWildcardName: string;
+    public ingressPerDomain: boolean = false;
 }
 
 export class Cluster {

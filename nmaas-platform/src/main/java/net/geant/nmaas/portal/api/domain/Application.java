@@ -12,6 +12,7 @@ public class Application extends ApplicationBrief {
 	String fullDescription;
 	ConfigTemplate configTemplate;
 	ConfigTemplate additionalParametersTemplate;
+	ConfigTemplate additionalMandatoryTemplate;
 	AppDeploymentSpec appDeploymentSpec;
 	
 }

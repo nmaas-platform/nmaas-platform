@@ -27,9 +27,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   public domainId: number;
 
   @Output()
-  public onSave: EventEmitter<User> = new EventEmitter<User>();
-
-  @Output()
   public onDelete: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
@@ -93,11 +90,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
-
-   public submit(user:User): void {
-       console.log('submit(' + user.username + ')');
-       this.onSave.emit(user);
-   }
 
     public changeUserStatus(user: User, enabled: boolean): void {
       this.userService.changeUserStatus(user.id, enabled).subscribe();

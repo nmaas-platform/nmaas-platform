@@ -1,12 +1,15 @@
 package net.geant.nmaas.portal.service.impl;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
@@ -92,25 +95,36 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
+	public boolean existsDomainByExternalServiceDomain(String externalServiceDomain) {
+		return domainRepo.existsByExternalServiceDomain(externalServiceDomain);
+	}
+
+	@Override
 	public Domain createDomain(String name, String codename) {
 		return createDomain(name, codename, true);
 	}
 
 	@Override
 	public Domain createDomain(String name, String codename, boolean active) {
-		return createDomain(name, codename, active, false, null, null);
+		return createDomain(name, codename, active, false, null, null, null);
 	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
 		checkParam(name);
 		checkParam(codename);
 
 		if(!Optional.ofNullable(validator).map(v -> v.valid(codename)).filter(result -> result).isPresent()){
 			throw new ProcessingException("Domain codename is not valid");
 		}
+		if(kubernetesNamespace == null || kubernetesNamespace.isEmpty()){
+			kubernetesNamespace = codename;
+		}
+		if(externalServiceDomain != null && !externalServiceDomain.isEmpty()){
+			checkArgument(!domainRepo.existsByExternalServiceDomain(externalServiceDomain), "External service domain is not unique");
+		}
 		try {
-			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass));
+			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass, externalServiceDomain));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
@@ -150,6 +164,9 @@ public class DomainServiceImpl implements DomainService {
 		checkGlobal(domain);
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
+		if(domain.getKubernetesNamespace() == null || domain.getKubernetesNamespace().isEmpty()){
+			domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
+		}
 		domainRepo.save(domain);
 	}
 
@@ -174,6 +191,21 @@ public class DomainServiceImpl implements DomainService {
 		if(userRoleRepo.findByDomainAndUserAndRole(domain, user, role) == null) {
 			removePreviousRoleInDomain(domain, user);
 			userRoleRepo.save(new UserRole(user, domain, role));
+		}
+	}
+
+	@Override
+	public void addGlobalGuestUserRoleIfMissing(Long userId) {
+		Optional<Domain> globalDomainOptional = this.getGlobalDomain();
+		if(globalDomainOptional.isPresent()){
+			Long globalId = globalDomainOptional.get().getId();
+			try{
+				if(this.getMemberRoles(globalId, userId).isEmpty()){
+					this.addMemberRole(globalId, userId, ROLE_GUEST);
+				}
+			} catch(ObjectNotFoundException e){
+				throw new MissingElementException(e.getMessage());
+			}
 		}
 	}
 

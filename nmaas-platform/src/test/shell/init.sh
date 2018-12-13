@@ -29,7 +29,7 @@ echo Register User First with username user1
 curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
 echo
 echo Enable User First
-curl -X PUT $API_URL/users/3 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+curl -X PUT $API_URL/users/status/3?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json"
 echo
 echo Set User First an ADMIN role on Domain One
 curl -X POST $API_URL/domains/2/users/3/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
@@ -38,7 +38,7 @@ echo Register User Second with username user2
 curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2.json
 echo
 echo Enable User Second
-curl -X PUT $API_URL/users/4 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+curl -X PUT $API_URL/users/status/4?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json"
 echo
 echo Set User Second an USER role on Domain One
 curl -X POST $API_URL/domains/2/users/4/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
@@ -47,7 +47,7 @@ echo Register Operator with username operator
 curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3.json
 echo
 echo Enable Operator
-curl -X PUT $API_URL/users/5 --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+curl -X PUT $API_URL/users/status/5?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json"
 echo
 echo Set Operator an OPERATOR role on Global Domain
 curl -X POST $API_URL/domains/1/users/5/roles --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
@@ -105,7 +105,7 @@ echo App4
 curl -X POST $API_URL/apps --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/apps/app4-opennti.json
 echo
 echo App4 logo
-curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/juniper.svg;type=image/svg+xml" $API_URL/apps/4/logo
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/logo/open-nti.svg;type=image/svg+xml" $API_URL/apps/4/logo
 echo
 echo App4 screenshots
 curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/apps/images/screenshots/opennti/opennti1.png;type=image/png" $API_URL/apps/4/screenshots
@@ -233,3 +233,6 @@ curl -X POST $API_URL/i18n/fr --header "Authorization: Bearer $TOKEN" --header "
 echo
 echo Create polish language content
 curl -X POST $API_URL/i18n/pl --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
+echo
+echo Create german language content
+curl -X POST $API_URL/i18n/de --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json

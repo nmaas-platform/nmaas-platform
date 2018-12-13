@@ -8,6 +8,7 @@ import {ShibbolethService} from "../../service/shibboleth.service";
 import {ShibbolethConfig} from "../../model/shibboleth";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ModalComponent} from "../../shared/modal";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-login',
@@ -25,14 +26,17 @@ export class LoginComponent implements OnInit {
     resetPasswordForm:FormGroup;
 
     @ViewChild(ModalComponent)
-    public modal:ModalComponent;
-  
-
+    public modal: ModalComponent;
     ssoLoading: boolean = false;
-    ssoError:string = '';
+    ssoError: string = '';
 
-    constructor(private router: Router, private auth: AuthService, private configService:ConfigurationService,
-                private shibbolethService:ShibbolethService, private fb:FormBuilder, private userService:UserService) {
+    constructor(private router: Router,
+                private auth: AuthService,
+                private configService: ConfigurationService,
+                private shibbolethService: ShibbolethService,
+                private fb: FormBuilder,
+                private userService: UserService,
+                private translate: TranslateService) {
         this.resetPasswordForm = fb.group({
             email: ['', [Validators.required, Validators.email]]
         })
@@ -50,26 +54,18 @@ export class LoginComponent implements OnInit {
         });
     }
 
-    public login():void {
-        this.loading = true;
-        this.error = '';
-        this.auth.login(this.model.username, this.model.password)
-            .subscribe(result => {
-                if (result === true) {
-                    console.log('User logged in');
-                    this.loading = false;
-                    this.router.navigate(['/']);
-                } else {
-                    console.error('Error during login');
-                    this.error = 'Username or password is incorrect';
-                    this.loading = false;
-                }
-            },
-                err => {
-                    console.error('Unable to login. ' + err);
-                    this.loading = false;
-                    this.error = err;
-                });
+    public login(): void {
+      this.loading = true;
+      this.error = '';
+      this.auth.login(this.model.username, this.model.password)
+        .subscribe(result => {
+          this.loading = false;
+          this.router.navigate(['/']);
+        }, err => {
+          this.loading = false;
+          debugger;
+          this.error = this.translate.instant(this.getMessage(err));
+        });
     }
 
 
@@ -91,7 +87,6 @@ export class LoginComponent implements OnInit {
                 }
             },
                 err => {
-                    console.error('Unable to propagate SSO user id. ' + err);
                     this.ssoLoading = false;
                     this.ssoError = err;
                 });
@@ -111,5 +106,9 @@ export class LoginComponent implements OnInit {
               this.modal.show();
           });
       }
+  }
+
+  private getMessage(err: string): string {
+    return err.match('') || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }

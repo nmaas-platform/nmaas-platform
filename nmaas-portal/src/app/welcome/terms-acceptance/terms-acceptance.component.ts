@@ -10,6 +10,7 @@ import {UserService} from "../../service";
 import {AuthService} from "../../auth/auth.service";
 import {Router} from "@angular/router";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-terms-acceptance',
@@ -36,11 +37,15 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
     @ViewChild(ModalInfoPolicyComponent)
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
-    constructor(private fb: FormBuilder, private userService: UserService,  private auth: AuthService, private router: Router) {
+    constructor(private fb: FormBuilder,
+                private userService: UserService,
+                private auth: AuthService,
+                private router: Router,
+                private translate: TranslateService) {
         super();
         this.registrationForm = fb.group(
             {
-                termsOfUseAccepted: [false],
+                termsOfUseAccepted: [true],
                 privacyPolicyAccepted: [false],
             });
     }
@@ -56,21 +61,21 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
             this.sending = false;
             this.submitted = true;
             this.success = false;
-            this.errorMessage = "You have to accept Terms of Use and Privacy Policy!"
-        }else{
+            this.errorMessage = this.translate.instant('TERMS_OF_USER_MESSAGE.TERMS_OF_USER_MESSAGE')
+        } else {
           this.userService.completeAcceptance(this.auth.getUsername()).subscribe(
               (result) => {
-                  console.log("Data updated successfully.");
                   this.success = true;
                   this.auth.logout();
                   this.modal.show();
               },
               (err) => {
-                  console.log("Unable to change acceptance of terms.");
                   this.sending = false;
                   this.submitted = true;
                   this.success = false;
-                  this.errorMessage = err.statusCode==406?'Invalid input data':'Service is unavailable. Please try again later';
+                  this.errorMessage = err.statusCode === 406 ?
+                      this.translate.instant('GENERIC_MESSAGE.INVALID_INPUT_MESSAGE') :
+                      this.translate.instant('GENERIC_MESSAGE.UNAVAILABLE_MESSAGE');
               },
               () => {
                   this.sending = false;
@@ -80,7 +85,7 @@ export class TermsAcceptanceComponent extends BaseComponent implements OnInit {
         }
     }
 
-    public hide(): void{
+    public hide(): void {
       this.router.navigate(['/welcome/login']);
     }
 }

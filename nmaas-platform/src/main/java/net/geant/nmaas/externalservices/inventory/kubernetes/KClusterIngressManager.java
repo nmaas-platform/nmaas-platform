@@ -17,9 +17,11 @@ public interface KClusterIngressManager {
 
     IngressResourceConfigOption getResourceConfigOption();
 
-    String getExternalServiceDomain();
+    String getExternalServiceDomain(String codename);
 
     Boolean getTlsSupported();
+
+    Boolean getIngressPerDomain();
 
     IngressCertificateConfigOption getCertificateConfigOption();
 

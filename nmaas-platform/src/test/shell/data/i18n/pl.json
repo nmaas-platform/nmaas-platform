@@ -59,7 +59,15 @@
     "SUBMIT": "Zatwierdź",
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
-    "DONE_MESSAGE": "Gotowe"
+    "DONE_MESSAGE": "Gotowe",
+    "INVALID_CREDENTIALS_MESSAGE": "Nieprawidłowe dane uwierzytelniające.",
+    "UNABLE_TO_REGISTER_MESSAGE": "Nie można zarejestrować nowego użytkownika.",
+    "TERMS_NOT_ACCEPTED_MESSAGE": "Warunki użytkowania nie zostały zaakceptowane.",
+    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Polityka prywatności nie została zaakceptowana.",
+    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje.",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona.",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika.",
+    "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
   },
   "LOGIN": {
     "USERNAME": "Nazwa użytkownika",
@@ -67,7 +75,12 @@
     "PASSWORD": "Hasło",
     "PASSWORD_REQUIRED_MESSAGE": "Hasło jest wymagane",
     "LOGIN": "Zaloguj się",
-    "LOGIN_WITH": "Zaloguj się przez"
+    "LOGIN_WITH": "Zaloguj się za pomocą",
+    "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania",
+    "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później.",
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Logowanie komponentu systemu nie może być wykonane",
+    "MISSING_TOKEN_MESSAGE": "Brakujący token.",
+    "UNABLE_TO_GENERATE_MESSAGE": "Nie można wygenerować nowych tokenów"
   },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
@@ -90,6 +103,7 @@
     "CONTROLLER_CHART_ARCHIVE": "Controller chart archive",
     "RESOURCE_CONFIG_OPTION": "Resource config option",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "INGRESS_PER_DOMAIN": "Ingress per domain",
     "TLS_SUPPORTED": "TLS supported",
     "DEPLOYMENT": "Deployment",
     "NAMESPACE_CONFIG_OPTION": "Namespace config option",
@@ -213,6 +227,15 @@
     "LANGUAGE_ENABLED": "Aktywny",
     "LANGUAGE_DISABLED": "Nieaktywny"
   },
+  "AUTH": {
+    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "Metoda logowania SSO nie jest włączona",
+    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Dane logowania użytkownika otrzymanego użytkownika SSO są puste",
+    "MISSING_USERNAME_MESSAGE": "Brakująca nazwa użytkownika",
+    "USER_ALREADY_EXITS_MESSAGE": "Użytkownik już istnieje",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona",
+    "INTERNAL_SERVER_ERROR_MESSAGE": "Błąd wewnętrzny serwera",
+    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później."
+  },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
     "NAME": "Nazwa",
@@ -220,6 +243,7 @@
     "ACTIVE": "Aktywna",
     "ID_IN_DB": "Id",
     "KUBERNETES_NAMESPACE": "Kubernetes namespace",
+    "KUBERNETES_NAMESPACE_PLACEHOLDER": "Wartość domyślna: skrót",
     "KUBERNETES_STORAGE_CLASS": "Kubernetes storage class",
     "DCN_STATUS": "Status DCN",
     "DCN_CONFIGURED": "DCN skonfigurowany",
@@ -245,7 +269,8 @@
     "NAME_IS_REQUIRED_MESSAGE": "Nazwa jest wymagana.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Skrót dla domeny jest wymagany.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z, A-Z, 0_9, _.",
-    "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków."
+    "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków.",
+    "EXTERNAL_SERVICE_DOMAIN": "Domena zewnętrzna serwisu"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -404,5 +429,14 @@
     "HEADER": "Zaktualizuj konfiguracje",
     "SUBMIT_BUTTON": "Prześlij",
     "CANCEL_BUTTON": "Anuluj"
+  },
+  "SUBSCRIPTION": {
+    "COMMENTS_NOT_EMPTY_MESSAGE": "Komentarz nie może być pusty"
+  },
+  "GENERIC_MESSAGE": {
+    "UNAVAILABLE_MESSAGE": "Usługa jest niedostępna. Spróbuj ponownie później",
+    "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
+    "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
+    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
   }
 }

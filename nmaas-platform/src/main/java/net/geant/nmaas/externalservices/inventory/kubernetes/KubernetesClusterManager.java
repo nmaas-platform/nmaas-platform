@@ -10,6 +10,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
@@ -86,14 +87,22 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     }
 
     @Override
-    public String getExternalServiceDomain() {
-        return loadSingleCluster().getIngress().getExternalServiceDomain();
+    public String getExternalServiceDomain(String codename) {
+        KClusterIngress cluster = loadSingleCluster().getIngress();
+        if(cluster.getIngressPerDomain()){
+            return domainService.findDomainByCodename(codename)
+                .orElseThrow(()-> new IllegalArgumentException("Domain not found")).getExternalServiceDomain();
+        }
+        return cluster.getExternalServiceDomain();
     }
 
     @Override
     public Boolean getTlsSupported() {
         return loadSingleCluster().getIngress().getTlsSupported();
     }
+
+    @Override
+    public Boolean getIngressPerDomain(){ return loadSingleCluster().getIngress().getIngressPerDomain(); }
 
     @Override
     public IngressCertificateConfigOption getCertificateConfigOption() {

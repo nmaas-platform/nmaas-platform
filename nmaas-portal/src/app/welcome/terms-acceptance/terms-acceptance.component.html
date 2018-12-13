@@ -9,7 +9,7 @@
       <h5 class="text-center">{{'TERMS_ACCEPTANCE.HEADER' | translate}}:</h5>
       <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
 
-        <div class="form-group form-group-sm">
+        <div class="form-group form-group-sm" style="display: none;">
           <input id="termsOfUseAccepted" type="checkbox" class="checkbox-inline" formControlName="termsOfUseAccepted">
           <label class="control-label">{{'REGISTRATION.AGREEMENT_MESSAGE' | translate}} <a (click)="modalInfoTerms.show()">{{'REGISTRATION.TERMS' | translate}}</a>*</label>
         </div>
