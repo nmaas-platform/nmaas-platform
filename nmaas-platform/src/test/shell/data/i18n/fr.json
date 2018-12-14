@@ -266,7 +266,7 @@
     "SUBMIT_BUTTON": "Soumettre",
     "NAME_IS_REQUIRED_MESSAGE": "Le nom est requis.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "L'identifiant est requis.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "L'identifiant doit contenir les caractères a-z, A-Z, 0_9, _.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "L'identifiant doit contenir les caractères a-z, A-Z, 0-9.",
     "CODE_NAME_PATTERN_MESSAGE_2": "L'identifiant doit comporter entre 2 et 8 caractères.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
@@ -339,7 +339,7 @@
   "INSTALL_MODAL": {
     "HEADER": "Déployer une nouvelle instance de ",
     "INSTANCE_NAME": "Nom de l'instance",
-    "INSTANCE_NAME_PATTERN_ERROR": "Le nom de l'Instance name ne doit contenir que des lettres alphanumériques: a-z, A-Z, 0_9, _ et - .",
+    "INSTANCE_NAME_PATTERN_ERROR": "Le nom de l'Instance name ne doit contenir que des lettres alphanumériques: a-z, A-Z, 0-9 et - .",
     "INSTANCE_NAME_LENGTH_ERROR": "Le nom de l'Instance doit être long de 3-10 caractères.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
     "DOMAIN": "Organisation",

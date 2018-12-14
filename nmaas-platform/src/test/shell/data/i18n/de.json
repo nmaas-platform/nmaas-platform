@@ -268,7 +268,7 @@
     "SUBMIT_BUTTON": "Senden",
     "NAME_IS_REQUIRED_MESSAGE": "Name wird benötigt.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename wird benötigt.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Codename darf nur folgende Zeichen beinhalten a-z, A-Z, 0_9 und _ .",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Codename darf nur folgende Zeichen beinhalten a-z, A-Z, 0-9.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename muss 2-8 Zeichen lang sein.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
@@ -341,7 +341,7 @@
   "INSTALL_MODAL": {
     "HEADER": "Installiere neue Instanz von ",
     "INSTANCE_NAME": "Name der Instanz",
-    "INSTANCE_NAME_PATTERN_ERROR": "Name der Instanz muss folgende Zeichen beinhalten a-z, A-Z, 0_9, _ and - .",
+    "INSTANCE_NAME_PATTERN_ERROR": "Name der Instanz muss folgende Zeichen beinhalten a-z, A-Z, 0-9 and - .",
     "INSTANCE_NAME_LENGTH_ERROR": "Name der Instanz muss 3-10 Zeichen lang sein.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Name der Instanz wird benötigt.",
     "DOMAIN": "Domain",

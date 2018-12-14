@@ -267,7 +267,7 @@
     "SUBMIT_BUTTON": "Submit",
     "NAME_IS_REQUIRED_MESSAGE": "Name is required.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename is required.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only a-z, A-Z, 0_9 and _ characters.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only a-z, A-Z, 0-9 characters.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
@@ -340,7 +340,7 @@
   "INSTALL_MODAL": {
     "HEADER": "Deploy new instance of ",
     "INSTANCE_NAME": "Instance name",
-    "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0_9, _ and - characters.",
+    "INSTANCE_NAME_PATTERN_ERROR": "Instance name must only contain a-z, A-Z, 0-9 and - characters.",
     "INSTANCE_NAME_LENGTH_ERROR": "Instance name has to be 3-10 characters long.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required.",
     "DOMAIN": "Domain",

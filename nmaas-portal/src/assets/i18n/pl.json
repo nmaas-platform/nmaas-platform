@@ -268,7 +268,7 @@
     "SUBMIT_BUTTON": "Prześlij",
     "NAME_IS_REQUIRED_MESSAGE": "Nazwa jest wymagana.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Skrót dla domeny jest wymagany.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z, A-Z, 0_9, _.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z, A-Z, 0-9.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków.",
     "EXTERNAL_SERVICE_DOMAIN": "Domena zewnętrzna serwisu"
   },
@@ -341,7 +341,7 @@
   "INSTALL_MODAL": {
     "HEADER": "Uruchom nową instancje ",
     "INSTANCE_NAME": "Nazwa instancji",
-    "INSTANCE_NAME_PATTERN_ERROR": "Nazwa instancji może zawierać tylko znaki a-z, A-Z, 0_9, _ and -.",
+    "INSTANCE_NAME_PATTERN_ERROR": "Nazwa instancji może zawierać tylko znaki a-z, A-Z, 0-9 and -.",
     "INSTANCE_NAME_LENGTH_ERROR": "Nazwa instancji może mieć długość od 3 do 10 znaków.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana.",
     "DOMAIN": "Domena",
