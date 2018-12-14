@@ -35,7 +35,9 @@ public class AppDcnRemovalIfRequiredTask {
         try {
             final Identifier deploymentId = event.getRelatedTo();
             final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
-            return dockerHostNetworkRepositoryManager.checkNetwork(domain) ? null : new DcnRemoveActionEvent(this, domain);
+            //TODO: refactor method
+            //return dockerHostNetworkRepositoryManager.checkNetwork(domain) ? null : new DcnRemoveActionEvent(this, domain);
+            return null;
         } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
