@@ -17,6 +17,7 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +39,8 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	CodenameValidator validator;
+
+	CodenameValidator namespaceValidator;
 	
 	@Value("${domain.global:GLOBAL}")
 	String globalDomain;
@@ -51,8 +54,9 @@ public class DomainServiceImpl implements DomainService {
 	DcnRepositoryManager dcnRepositoryManager;
 
 	@Autowired
-	public DomainServiceImpl(CodenameValidator validator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, DcnRepositoryManager dcnRepositoryManager){
+	public DomainServiceImpl(CodenameValidator validator, @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, DcnRepositoryManager dcnRepositoryManager){
 		this.validator = validator;
+		this.namespaceValidator = namespaceValidator;
 		this.domainRepo = domainRepo;
 		this.users = users;
 		this.userRoleRepo = userRoleRepo;
@@ -73,7 +77,7 @@ public class DomainServiceImpl implements DomainService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Domain createGlobalDomain() {
 		Optional<Domain> globalDomainOptional = getGlobalDomain();
-		return globalDomainOptional.orElseGet(() -> createDomain(this.globalDomain, this.globalDomain));
+		return globalDomainOptional.orElseGet(() -> createDomain(this.globalDomain, this.globalDomain.toLowerCase()));
 	}
 	
 	@Override
@@ -119,6 +123,9 @@ public class DomainServiceImpl implements DomainService {
 		}
 		if(kubernetesNamespace == null || kubernetesNamespace.isEmpty()){
 			kubernetesNamespace = codename;
+		}
+		if(!namespaceValidator.valid(kubernetesNamespace)){
+			throw new ProcessingException("Kubernetes namespace is not valid");
 		}
 		if(externalServiceDomain != null && !externalServiceDomain.isEmpty()){
 			checkArgument(!domainRepo.existsByExternalServiceDomain(externalServiceDomain), "External service domain is not unique");
@@ -166,6 +173,9 @@ public class DomainServiceImpl implements DomainService {
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
 		if(domain.getKubernetesNamespace() == null || domain.getKubernetesNamespace().isEmpty()){
 			domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
+		}
+		if(!namespaceValidator.valid(domain.getKubernetesNamespace())){
+			throw new ProcessingException("Namespace is not valid.");
 		}
 		domainRepo.save(domain);
 	}

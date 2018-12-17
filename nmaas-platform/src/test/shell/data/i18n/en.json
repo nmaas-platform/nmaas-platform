@@ -136,6 +136,8 @@
     "REST_API_HOST_ADDRESS_REQUIRED_MESSAGE": "REST API host address is required",
     "REST_API_HOST_ADDRESS_VALIDATION_MESSAGE": "REST API host address must contain only numbers and dots",
     "REST_API_PORT_REQUIRED_MESSAGE": "REST API host port is required",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
     "IP_REQUIRED_MESSAGE": "IP is required",
     "IP_VALIDATION_MESSAGE": "IP must contain only digits and dots",
     "NETWORK_REQUIRED_MESSAGE": "Network is required",
@@ -269,6 +271,8 @@
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename is required.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only a-z, A-Z, 0-9 characters.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long.",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
   "GIT_INFO": {

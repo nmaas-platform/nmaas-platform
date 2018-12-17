@@ -38,6 +38,8 @@ public class DomainServiceTest {
 
     DomainServiceImpl.CodenameValidator validator;
 
+    DomainServiceImpl.CodenameValidator namespaceValidator;
+
     DomainRepository domainRepository = mock(DomainRepository.class);
 
     UserService userService = mock(UserService.class);
@@ -50,18 +52,19 @@ public class DomainServiceTest {
 
     @Before
     public void setup(){
-        validator = new DefaultCodenameValidator("[\\p{Alnum}_]{2,8}");
-        domainService = new DomainServiceImpl(validator, domainRepository, userService, userRoleRepo, dcnRepositoryManager);
+        validator = new DefaultCodenameValidator("[a-z-]{2,8}");
+        namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
+        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, userService, userRoleRepo, dcnRepositoryManager);
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
     @Test
     public void shouldCreateGlobalDomain() throws ProcessingException{
         when(domainRepository.findByName(anyString())).thenReturn(Optional.empty());
-        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        Domain domain = new Domain("GLOBAL", "global");
         when(domainRepository.save(domain)).thenReturn(domain);
         Domain result = this.domainService.createGlobalDomain();
-        assertThat("Codename mismatch", result.getCodename().equals("GLOBAL"));
+        assertThat("Codename mismatch", result.getCodename().equals("global"));
     }
 
     @Test

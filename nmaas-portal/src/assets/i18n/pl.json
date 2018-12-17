@@ -136,6 +136,8 @@
     "REST_API_HOST_ADDRESS_REQUIRED_MESSAGE": "REST API host address jest wymagany",
     "REST_API_HOST_ADDRESS_VALIDATION_MESSAGE": "REST API host address może zawierać tylko cyfry i kropki",
     "REST_API_PORT_REQUIRED_MESSAGE": "REST API host port jest wymagany",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru kubernetes namespace to 64.",
     "IP_REQUIRED_MESSAGE": "Adres IP jest wymagany",
     "IP_VALIDATION_MESSAGE": "Adres IP może zawierać tylko cyfry i kropki",
     "NETWORK_REQUIRED_MESSAGE": "Network jest wymagany",
@@ -270,6 +272,8 @@
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Skrót dla domeny jest wymagany.",
     "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z, A-Z, 0-9.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków.",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru kubernetes namespace to 64.",
     "EXTERNAL_SERVICE_DOMAIN": "Domena zewnętrzna serwisu"
   },
   "GIT_INFO": {
