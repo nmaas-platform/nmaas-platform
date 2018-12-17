@@ -60,7 +60,7 @@
 							  </ng-template>
 						   </tbody>
 						</table>
-						<pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="first"></pagination-controls>
+						<pagination-controls class="text-right" (pageChange)="pageNumber = $event" [id]="first"></pagination-controls>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
 						<h4>Undeployed instances</h4>
@@ -95,7 +95,7 @@
 							</ng-template>
 							</tbody>
 						</table>
-						<pagination-controls class="text-right" (pageChange)="secondPageNumber = $event" id="second"></pagination-controls>
+						<pagination-controls class="text-right" (pageChange)="secondPageNumber = $event" [id]="second"></pagination-controls>
 					</div>
 					
 				
