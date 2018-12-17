@@ -24,6 +24,9 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
+  public p_first: string;
+  public p_second: string;
+
   public maxItemsOnPage: number = 5;
   public pageNumber: number = 1;
 
@@ -73,12 +76,12 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public setItems(item){
-    //console.log("Max items per page: " + this.maxItemsOnPage.toString() + " -> " + item.toString())
     this.maxItemsOnPage = item;
   }
 
   onSorted($event){
     this.getInstances($event)
+
   }
 
   getInstances(criteria: CustomerSearchCriteria){

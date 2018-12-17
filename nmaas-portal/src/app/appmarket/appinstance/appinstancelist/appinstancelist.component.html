@@ -42,7 +42,7 @@
 							  </tr>
 						   </thead>
 						   <tbody>
-						   <ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: 'first'}">
+						   <ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: 'p_first'}">
 							  <tr *ngIf="appInstance?.userFriendlyState !== 'Undeployed'">
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
 								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
@@ -60,7 +60,7 @@
 							  </ng-template>
 						   </tbody>
 						</table>
-						<pagination-controls class="text-right" (pageChange)="pageNumber = $event" [id]="first"></pagination-controls>
+						<pagination-controls class="text-right" (pageChange)="pageNumber = $event" [id]="p_first"></pagination-controls>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
 						<h4>Undeployed instances</h4>
@@ -77,7 +77,7 @@
 							</tr>
 							</thead>
 							<tbody>
-							<ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: secondPageNumber, id: 'second'}">
+							<ng-template ngFor let-appInstance [ngForOf]="appInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: secondPageNumber, id: 'p_second'}">
 								<tr *ngIf="appInstance?.userFriendlyState == 'Undeployed'">
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
 									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
@@ -95,7 +95,7 @@
 							</ng-template>
 							</tbody>
 						</table>
-						<pagination-controls class="text-right" (pageChange)="secondPageNumber = $event" [id]="second"></pagination-controls>
+						<pagination-controls class="text-right" (pageChange)="secondPageNumber = $event" [id]="p_second"></pagination-controls>
 					</div>
 					
 				
