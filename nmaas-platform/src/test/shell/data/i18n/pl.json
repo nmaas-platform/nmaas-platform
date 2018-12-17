@@ -268,7 +268,7 @@
     "SUBMIT_BUTTON": "Prześlij",
     "NAME_IS_REQUIRED_MESSAGE": "Nazwa jest wymagana.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Skrót dla domeny jest wymagany.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z, A-Z, 0-9.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Skrót dla domeny musi zawierać jedynie znaki a-z lub znak -.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu dla domeny musi zawierać się w przedziale od 2 do 8 znaków.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru kubernetes namespace to 64.",

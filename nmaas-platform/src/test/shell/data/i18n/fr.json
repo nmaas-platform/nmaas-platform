@@ -268,7 +268,7 @@
     "SUBMIT_BUTTON": "Soumettre",
     "NAME_IS_REQUIRED_MESSAGE": "Le nom est requis.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "L'identifiant est requis.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "L'identifiant doit contenir les caractères a-z, A-Z, 0-9.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "L'identifiant doit contenir les caractères a-z.",
     "CODE_NAME_PATTERN_MESSAGE_2": "L'identifiant doit comporter entre 2 et 8 caractères.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",

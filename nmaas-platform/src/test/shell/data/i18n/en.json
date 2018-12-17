@@ -269,7 +269,7 @@
     "SUBMIT_BUTTON": "Submit",
     "NAME_IS_REQUIRED_MESSAGE": "Name is required.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "Codename is required.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only a-z, A-Z, 0-9 characters.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "Codename must contain only lower case letters and - character.",
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
