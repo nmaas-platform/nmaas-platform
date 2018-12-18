@@ -42,6 +42,7 @@ configurations {
 	integrationTestRuntime.extendsFrom testRuntime
 	all {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'ch.qos.logback', module: 'logback-classic'
 	}
 }
 
@@ -52,6 +53,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('org.springframework.boot:spring-boot-starter-quartz')
+	compile('org.springframework.boot:spring-boot-starter-log4j2')
 
 	compile('org.modelmapper:modelmapper:2.2.0')
 	compile('org.modelmapper.extensions:modelmapper-spring:2.2.0')
@@ -71,9 +73,6 @@ dependencies {
 
 	compile('io.springfox:springfox-swagger2:2.8.0')
 	compile('io.springfox:springfox-swagger-ui:2.8.0')
-    compile ('org.apache.logging.log4j:log4j-api:2.11.1')
-    compile ('org.apache.logging.log4j:log4j-core:2.11.1')
-	compile ('org.apache.logging.log4j:log4j-jul:2.11.1')
 	compile ('org.projectlombok:lombok:1.18.2')
 	compile ("org.flywaydb:flyway-core:5.2.0")
 
