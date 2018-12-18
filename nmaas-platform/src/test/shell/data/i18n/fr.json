@@ -135,6 +135,8 @@
     "REST_API_HOST_ADDRESS_REQUIRED_MESSAGE": "L'adresse de l'API REST est requise",
     "REST_API_HOST_ADDRESS_VALIDATION_MESSAGE": "L'adresse de l'API REST doit contenir uniquement des chiffres et des points",
     "REST_API_PORT_REQUIRED_MESSAGE": "Le port de l'API REST est requis",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
     "IP_REQUIRED_MESSAGE": "L'adresse IP est requise",
     "IP_VALIDATION_MESSAGE": "L'adresse IP ne doit contenir que des chiffres et des points",
     "NETWORK_REQUIRED_MESSAGE": "Le réseau est requis",
@@ -266,8 +268,10 @@
     "SUBMIT_BUTTON": "Soumettre",
     "NAME_IS_REQUIRED_MESSAGE": "Le nom est requis.",
     "CODE_NAME_IS_REQUIRED_MESSAGE": "L'identifiant est requis.",
-    "CODE_NAME_PATTERN_MESSAGE_1": "L'identifiant doit contenir les caractères a-z, A-Z, 0_9, _.",
+    "CODE_NAME_PATTERN_MESSAGE_1": "L'identifiant doit contenir les caractères a-z.",
     "CODE_NAME_PATTERN_MESSAGE_2": "L'identifiant doit comporter entre 2 et 8 caractères.",
+    "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
+    "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain"
   },
   "GIT_INFO": {
@@ -339,7 +343,7 @@
   "INSTALL_MODAL": {
     "HEADER": "Déployer une nouvelle instance de ",
     "INSTANCE_NAME": "Nom de l'instance",
-    "INSTANCE_NAME_PATTERN_ERROR": "Le nom de l'Instance name ne doit contenir que des lettres alphanumériques: a-z, A-Z, 0_9, _ et - .",
+    "INSTANCE_NAME_PATTERN_ERROR": "Le nom de l'Instance name ne doit contenir que des lettres alphanumériques: a-z, A-Z, 0-9 et - .",
     "INSTANCE_NAME_LENGTH_ERROR": "Le nom de l'Instance doit être long de 3-10 caractères.",
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
     "DOMAIN": "Organisation",
