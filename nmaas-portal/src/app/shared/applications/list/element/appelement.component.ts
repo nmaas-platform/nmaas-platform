@@ -9,6 +9,7 @@ import {SecurePipe} from '../../../../pipe/index';
 import {Router} from "@angular/router";
 import {AppInstallModalComponent} from "../../../modal/appinstall";
 import {AppConfigService} from "../../../../service";
+import {AuthService} from "../../../../auth/auth.service";
 
 @Component({
   selector: 'nmaas-applist-element',
@@ -31,7 +32,7 @@ export class AppElementComponent implements OnInit {
   @ViewChild(AppInstallModalComponent)
   public readonly modal:AppInstallModalComponent;
 
-  constructor(public appImagesService: AppImagesService, public AppConfigService: AppConfigService, public router:Router) {
+  constructor(public appImagesService: AppImagesService, public AppConfigService: AppConfigService, public router:Router, public authService:AuthService) {
   }
 
   ngOnInit() {
@@ -41,6 +42,6 @@ export class AppElementComponent implements OnInit {
   }
 
   public showDeployButton():boolean {
-    return this.domainId !== this.AppConfigService.getNmaasGlobalDomainId();
+    return this.domainId !== this.AppConfigService.getNmaasGlobalDomainId() && !this.authService.hasDomainRole(this.domainId, 'ROLE_GUEST');
   }
 }
