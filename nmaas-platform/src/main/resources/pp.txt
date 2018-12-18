@@ -1,4 +1,4 @@
-<h3><strong>NMaaS Privacy Notice</strong></h3>
+<h2><strong>NMaaS Privacy Notice</strong></h2>
 <h4><strong>Description of the NMaaS Service</strong></h4>
 <p><a href="https://www.geant.org/NMaaS" target="_blank">Network Management as a Service (NMaaS)</a> provides a
 portfolio of network management applications run on a per-user, secured network monitoring infrastructure. </p>
@@ -62,8 +62,8 @@ Since the moment of reception of user account removal request the data is still 
 <li>Minimisation of personal data we collect;</li>
 <li>Managing, limiting and controlling access to personal data;</li>
 <li>Resilience of processing systems and services;</li>
-<li>Regular testing of the effectiveness of measures implemented. </li></ul></p>
-<h4><strong>Your Rights</strong></h4>
+<li>Regular testing of the effectiveness of measures implemented. </li></ul></p><br>
+<h4 ><strong>Your Rights</strong></h4>
 <p>You have the right to ensure:<ul>
 <li>We process your data fairly and lawfully;</li>
 <li>Your data is accurate;</li>
@@ -76,19 +76,27 @@ https://autoriteitpersoonsgegevens.nl</a>) about our data processing activities 
 being managed as described here. </p>
 <br>
 <h4><strong>Contact Information</strong></h4>
-<p>Data Controller and Contact<br>
-<strong>Data Protection Officer</strong><br>
-GÉANT Association<br>
-Hoekenrode 3<br>
-1102 BR<br>
-Amsterdam – Zuidoost<br>
-Netherlands<br>
-Telephone number: +31 20 530 4488<br>
-email: gdpr@geant.org<br></p>
-
-<p>Jurisdiction<br>
-<strong>Netherlands</strong><br>
-Dutch Data Protection Authority <br>
-Autoriteit Persoonsgegevens<br>
-Postbus 93374 2509 AJ DEN HAAG.<br>
-Telephone number: (+31) – (0)70 – 888 85 00. <br></p>
+<br>
+<table class="table table-responsive">
+    <tr>
+        <td><p><strong style="vertical-align: middle">Data Controller and Contact</strong><br></td>
+        <td>
+            <strong>Data Protection Officer</strong><br>
+            GÉANT Association<br>
+            Hoekenrode 3<br>
+            1102 BR<br>
+            Amsterdam – Zuidoost<br>
+            Netherlands<br>
+            Telephone number: +31 20 530 4488<br>
+            email: <a href="mailto:gdpr@geant.org">gdpr@geant.org</a></p>
+        </td>
+    </tr>
+    <tr>
+        <td><p><strong style="vertical-align: middle">Jurisdiction</strong><br></td>
+        <td><strong>Netherlands</strong><br>
+            Dutch Data Protection Authority <br>
+            Autoriteit Persoonsgegevens<br>
+            Postbus 93374 2509 AJ DEN HAAG.<br>
+            Telephone number: (+31) – (0)70 – 888 85 00. <br></p></td>
+    </tr>
+</table>
