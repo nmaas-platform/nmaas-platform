@@ -29,6 +29,7 @@
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
     "ajv": "^6.0.1",
+    "angular-password-strength-meter": "0.0.4",
     "angular2-json-schema-form": "0.7.0-alpha.1",
     "angular5-recaptcha": "0.0.2",
     "bootstrap": "^3.3.7",
@@ -40,7 +41,8 @@
     "ngx-pagination": "^3.2.1",
     "ngx-webstorage-service": "^3.1.1",
     "rxjs": "^5.5.6",
-    "ts-helpers": "^1.1.2"
+    "ts-helpers": "^1.1.2",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "npm": "^6.4.1",
