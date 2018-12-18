@@ -10,7 +10,9 @@
  					 	'has-success': registrationForm.controls.newPassword.valid && registrationForm.controls.newPassword.dirty}">
 		<label for="newPassword" class="control-label">{{ 'REGISTRATION.PASSWORD' | translate }} *</label>
 		<input id="newPassword" type="password" class="form-control" placeholder="{{ 'REGISTRATION.PASSWORD' | translate }}" formControlName="newPassword">
+		<span class="text-muted" style="font-size: 9px;">Minimum of 6 characters length</span>
 	</div>
+	<password-strength-meter [colors]="['darkred', 'red', 'orange', 'yellowgreen', 'green']" [minPasswordLength]="6" [password]="this.registrationForm.controls['newPassword'].value"></password-strength-meter>
 	<div class="form-group form-group-sm"
 			[ngClass]="{'has-error':  registrationForm.controls.confirmPassword.invalid && (registrationForm.controls.confirmPassword.dirty || registrationForm.controls.newPassword.dirty) ,
  					 	'has-success': registrationForm.controls.confirmPassword.valid && registrationForm.controls.confirmPassword.dirty}">

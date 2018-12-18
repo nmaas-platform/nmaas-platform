@@ -10,6 +10,7 @@ import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {ModalComponent} from "../../shared/modal";
 
+import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from 'angular-password-strength-meter';
 import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
 import {TranslateService} from '@ngx-translate/core';
 
@@ -29,6 +30,9 @@ export class RegistrationComponent implements OnInit {
 
   @ViewChild(ReCaptchaComponent)
   captcha: ReCaptchaComponent;
+
+  @ViewChild(PasswordStrengthMeterComponent)
+  passwordMeter: PasswordStrengthMeterComponent;
 
   @ViewChild(ModalComponent)
   public readonly  modal: ModalComponent;
@@ -51,7 +55,7 @@ export class RegistrationComponent implements OnInit {
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
-        newPassword: ['', Validators.required],
+        newPassword: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         firstname: [''],

@@ -22,6 +22,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {ShibbolethService} from '../service/shibboleth.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
 import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-policy-subpage.component';
+import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-
     PipesModule,
     AppMarketModule,
     ReCaptchaModule,
+    PasswordStrengthMeterModule,
     TranslateModule.forChild()
   ],
   exports: [
