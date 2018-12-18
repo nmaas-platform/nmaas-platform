@@ -19,8 +19,10 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClu
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -41,11 +43,13 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     private KubernetesClusterRepository repository;
     private DomainService domainService;
     private ModelMapper modelMapper;
+    private DomainServiceImpl.CodenameValidator namespaceValidator;
 
     @Autowired
-    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, DomainService domainService) {
+    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, @Qualifier("NamespaceValidator") DomainServiceImpl.CodenameValidator namespaceValidator, DomainService domainService) {
         this.repository = repository;
         this.domainService = domainService;
+        this.namespaceValidator = namespaceValidator;
         this.modelMapper = modelMapper;
     }
 
@@ -220,6 +224,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     }
 
     public void addNewCluster(KCluster newKubernetesCluster) {
+        if(!namespaceValidator.valid(newKubernetesCluster.getDeployment().getDefaultNamespace())){
+            throw new IllegalArgumentException("Default namespace is invalid.");
+        }
         if(repository.count() > 0)
             throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
         repository.save(newKubernetesCluster);
@@ -251,6 +258,9 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     }
 
     public void updateCluster(Long id, KCluster updatedKubernetesCluster) {
+        if(!namespaceValidator.valid(updatedKubernetesCluster.getDeployment().getDefaultNamespace())){
+            throw new IllegalArgumentException("Default namespace is invalid.");
+        }
         Optional<KCluster> existingKubernetesCluster = repository.findById(id);
         if (!existingKubernetesCluster.isPresent())
             throw new KubernetesClusterNotFoundException(clusterNotFoundMessage(id));

@@ -73,7 +73,7 @@ public class KubernetesClusterControllerIntTest {
                     "}," +
                     "\"deployment\": {" +
                         "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
-                        "\"defaultNamespace\":\"testNamespace\"," +
+                        "\"defaultNamespace\":\"test-namespace\"," +
                         "\"defaultStorageClass\":\"storageClass\"," +
                         "\"useInClusterGitLabInstance\":\"false\"," +
                         "\"forceDedicatedWorkers\":\"false\"," +
@@ -225,7 +225,7 @@ public class KubernetesClusterControllerIntTest {
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
-                "testNamespace",
+                "test-namespace",
                 ((KCluster) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<KCluster>() {})).getDeployment().getDefaultNamespace());
     }
 
@@ -261,7 +261,7 @@ public class KubernetesClusterControllerIntTest {
         cluster.setIngress(ingress);
         KClusterDeployment deployment = new KClusterDeployment();
         deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
-        deployment.setDefaultNamespace("testNamespace");
+        deployment.setDefaultNamespace("test-namespace");
         deployment.setDefaultStorageClass("storageClass");
         deployment.setUseInClusterGitLabInstance(false);
         deployment.setForceDedicatedWorkers(false);

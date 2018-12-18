@@ -103,7 +103,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
           if(!isNullOrUndefined(this.app.additionalParametersTemplate)){
               this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
           }
-          if(!isNullOrUndefined(this.app.additionalMandatoryTemplate.template)){
+          if(!isNullOrUndefined(this.app.additionalMandatoryTemplate) && !isNullOrUndefined(this.app.additionalMandatoryTemplate.template)){
             this.additionalMandatoryTemplate = this.getTemplate(this.app.additionalMandatoryTemplate.template);
             this.mandatoryFields = this.additionalMandatoryTemplate.schema.required;
           }

@@ -3,7 +3,7 @@
 	<div class="nmaas-modal-body">
 		<div class="form-group">
 			<label for="instance_name" class="control-label">{{'INSTALL_MODAL.INSTANCE_NAME' | translate}}</label>
-			<input type="text" class="form-control" id="instance_name" name="instance_name" pattern="[a-zA-Z0-9_-]*" [(ngModel)]="name" #instance_name="ngModel" minlength="3" maxlength="10" required>
+			<input type="text" class="form-control" id="instance_name" name="instance_name" pattern="[a-zA-Z0-9-]*" [(ngModel)]="name" #instance_name="ngModel" minlength="3" maxlength="10" required>
 			<div *ngIf="instance_name.invalid && (instance_name.dirty || instance_name.touched)"
 				 class="alert alert-danger">
 				<div *ngIf="instance_name.errors.pattern">{{'INSTALL_MODAL.INSTANCE_NAME_PATTERN_ERROR' | translate}}</div>
