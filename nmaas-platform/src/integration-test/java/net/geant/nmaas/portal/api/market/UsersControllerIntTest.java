@@ -53,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Rollback
 public class UsersControllerIntTest extends BaseControllerTestSetup {
 
-    final static String DOMAIN = "DOMAIN";
+    final static String DOMAIN = "domain";
 
     @Autowired
     private UserRepository userRepo;

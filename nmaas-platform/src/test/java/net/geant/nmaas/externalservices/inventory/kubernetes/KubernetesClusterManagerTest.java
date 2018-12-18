@@ -14,6 +14,8 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
+import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +40,7 @@ public class KubernetesClusterManagerTest {
     private static final String HELM_HOST_SSH_USERNAME = "test";
     private static final String DOMAIN = "testDomain";
 
+    DomainServiceImpl.CodenameValidator namespaceValidator;
     private KubernetesClusterRepository repository = mock(KubernetesClusterRepository.class);
     private DomainService domainService = mock(DomainService.class);
 
@@ -45,7 +48,8 @@ public class KubernetesClusterManagerTest {
 
     @Before
     public void setup() {
-        manager = new KubernetesClusterManager(repository, null, domainService);
+        namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
+        manager = new KubernetesClusterManager(repository, null, namespaceValidator, domainService);
     }
 
     @Test
