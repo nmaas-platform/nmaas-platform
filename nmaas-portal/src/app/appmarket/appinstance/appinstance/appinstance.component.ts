@@ -126,9 +126,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       appInstanceStatus => {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
-        if(this.appInstanceStatus.state != this.appInstanceProgress.activeState
-          && this.appInstanceStatus.state != this.appInstanceProgress.previousState){
-        }
         if(this.appInstanceStatus.state == this.AppInstanceState.FAILURE){
           document.getElementById("app-prop").scrollLeft =
             (document.getElementsByClassName("stepwizard-btn-success").length * 180 +

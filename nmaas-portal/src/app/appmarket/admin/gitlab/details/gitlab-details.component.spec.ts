@@ -37,8 +37,8 @@ export class MockGitLabConfig{
     public repositoryAccessUsername:string = "nmaas-conf-automation";
 }
 
-//import { GitlabDetailsComponent } from './gitlab-details.component';
-import { GitlabDetailsComponent } from '../../../../shared/admin/gitlab/details/gitlab-details.component'
+import { GitlabDetailsComponent } from './gitlab-details.component';
+import { GitlabDetailsComponent as GitlabSharedDetailsComponent} from '../../../../shared/admin/gitlab/details/gitlab-details.component'
 import {FormsModule} from "@angular/forms";
 import {RouterTestingModule} from "@angular/router/testing";
 import {AppConfigService, ConfigurationService} from "../../../../service";
@@ -47,12 +47,7 @@ import {GitlabService} from "../../../../service/gitlab.service";
 import {Observable} from "rxjs";
 import {GitLabConfig} from "../../../../model/gitlab";
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
-import {TranslateLoaderImpl} from "../../../../service/translate-loader-impl.service";
-import {CommonModule} from "@angular/common";
-import {RouterModule} from "@angular/router";
-import {SharedModule} from "../../../../shared";
-import {AuthModule} from "../../../../auth/auth.module";
-import {PipesModule} from "../../../../pipe/pipes.module";
+
 
 describe('GitlabDetailsComponent', () => {
   let component: GitlabDetailsComponent;
@@ -60,7 +55,7 @@ describe('GitlabDetailsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-        declarations: [ GitlabDetailsComponent ],
+        declarations: [ GitlabDetailsComponent, GitlabSharedDetailsComponent ],
         imports: [
             FormsModule,
             RouterTestingModule,
