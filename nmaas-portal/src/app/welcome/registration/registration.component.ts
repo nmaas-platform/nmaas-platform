@@ -112,7 +112,6 @@ export class RegistrationComponent implements OnInit {
                           this.sending = false;
                           this.submitted = true;
                           this.success = false;
-                          debugger;
                           this.errorMessage = this.translate.instant(this.getMessage(err));
                       },
                       () => {

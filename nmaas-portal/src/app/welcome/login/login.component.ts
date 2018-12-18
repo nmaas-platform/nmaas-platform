@@ -63,7 +63,6 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/']);
         }, err => {
           this.loading = false;
-          debugger;
           this.error = this.translate.instant(this.getMessage(err));
         });
     }

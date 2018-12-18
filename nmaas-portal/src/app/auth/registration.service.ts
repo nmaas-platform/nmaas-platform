@@ -14,7 +14,6 @@ export class RegistrationService {
   constructor(private http: HttpClient, private appConfig: AppConfigService) {}
   
   public register(registration: Registration): Observable<any> {
-    debugger;
     return this.http.post(this.getUrl(), registration, {headers: RegistrationService.headers})
       .timeout(this.appConfig.getHttpTimeout())
       .catch(this.handleError);
