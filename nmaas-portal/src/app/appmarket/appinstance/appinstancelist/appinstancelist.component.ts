@@ -11,6 +11,9 @@ import {UserDataService} from '../../../service/userdata.service';
 import {Observable} from 'rxjs/Observable';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {CustomerSearchCriteria} from "../../../service/index";
+import "rxjs/add/observable/of";
+import {forEach} from "angular2-json-schema-form";
+import {element} from "protractor";
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -24,8 +27,14 @@ export enum AppInstanceListSelection {
 })
 export class AppInstanceListComponent implements OnInit {
 
+  public p_first: string = "p_first";
+  public p_second: string = "p_second";
+
   public maxItemsOnPage: number = 5;
+  public maxItemsOnPageSec: number = 5;
   public pageNumber: number = 1;
+
+  public secondPageNumber: number = 1;
 
   public showFailed: boolean = true;
 
@@ -35,6 +44,8 @@ export class AppInstanceListComponent implements OnInit {
   public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
 
   public appInstances: Observable<AppInstance[]>;
+  public appDeployedInstances: Observable<AppInstance[]>;
+  public appUndeployedInstances: Observable<AppInstance[]>;
 
   public listSelection: AppInstanceListSelection = AppInstanceListSelection.MY;
 
@@ -71,16 +82,16 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public setItems(item){
-    //console.log("Max items per page: " + this.maxItemsOnPage.toString() + " -> " + item.toString())
     this.maxItemsOnPage = item;
+    this.maxItemsOnPageSec = item;
   }
 
   onSorted($event){
     this.getInstances($event)
+
   }
 
   getInstances(criteria: CustomerSearchCriteria){
-    //console.log("Change to: " + criteria.sortColumn.toString() + " and " + criteria.sortDirection.toString())
     switch (+this.listSelection) {
       case AppInstanceListSelection.ALL:
         this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
@@ -92,7 +103,12 @@ export class AppInstanceListComponent implements OnInit {
         this.appInstances = Observable.of<AppInstance[]>([]);
         break;
     }
+    this.appDeployedInstances = this.appInstances.map(AppInstances => AppInstances.filter(
+      app => app.userFriendlyState != 'Undeployed'));
+    this.appUndeployedInstances = this.appInstances.map(AppInstances => AppInstances.filter(
+      app => app.userFriendlyState == 'Undeployed'));
   }
+
 
   public setShowFailedField(status: boolean){
     this.showFailed = status;
