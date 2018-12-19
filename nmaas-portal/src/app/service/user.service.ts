@@ -40,7 +40,7 @@ export class UserService extends GenericDataService {
   }
 
   public completeRegistration(user: User): Observable<any> {
-    return this.http.post<User>(this.getUsersUrl()+'/complete', user)
+    return this.http.post<User>(this.getUsersUrl()+'complete', user)
         .timeout(this.appConfig.getHttpTimeout())
         .catch(this.handleError);
   }
