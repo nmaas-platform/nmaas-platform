@@ -13,12 +13,13 @@ import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {TranslateService} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
+import {UserService} from "../../service";
 
 @Component({
     selector: 'app-complete',
     templateUrl: './complete.component.html',
     styleUrls: ['./complete.component.css'],
-    providers:[ProfileService, ModalInfoTermsComponent, ModalInfoPolicyComponent]
+    providers:[ProfileService, UserService, ModalInfoTermsComponent, ModalInfoPolicyComponent]
 })
 
 export class CompleteComponent extends BaseComponent implements OnInit {
@@ -43,7 +44,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
     public readonly modalInfoPolicy: ModalInfoPolicyComponent;
 
     constructor(private fb: FormBuilder,
-                private registrationService: RegistrationService,
+                protected userService: UserService,
                 protected profileService: ProfileService,
                 private authService: AuthService,
                 private router: Router,
@@ -84,7 +85,7 @@ export class CompleteComponent extends BaseComponent implements OnInit {
                 this.user.termsOfUseAccepted = true;
                 this.user.privacyPolicyAccepted = this.registrationForm.controls['privacyPolicyAccepted'].value;
 
-                this.registrationService.completeRegistration(this.user).subscribe(
+                this.userService.completeRegistration(this.user).subscribe(
                     (result) => {
                         this.success = true;
                         this.authService.logout();

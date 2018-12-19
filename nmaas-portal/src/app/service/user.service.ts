@@ -39,6 +39,12 @@ export class UserService extends GenericDataService {
     return this.put<User, any>(this.getUsersUrl() + userId, user);
   }
 
+  public completeRegistration(user: User): Observable<any> {
+    return this.http.post<User>(this.getUsersUrl()+'complete', user)
+        .timeout(this.appConfig.getHttpTimeout())
+        .catch(this.handleError);
+  }
+
   public changeUserStatus(userId: number, enabled: boolean): Observable<any> {
     return this.put(this.getEnableOrDisableUsersUrl(userId, enabled), {params: null});
   }
