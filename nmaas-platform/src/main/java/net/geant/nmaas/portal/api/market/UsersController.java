@@ -234,6 +234,42 @@ public class UsersController {
         }
 	}
 
+	@PostMapping(value="/users/complete")
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@PreAuthorize("hasRole('ROLE_INCOMPLETE')")
+	@Transactional
+	public void completeRegistration(Principal principal, @RequestBody UserRequest userRequest) {
+		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("Internal error. User not found."));
+		try {
+			Long domainId = domainService.getGlobalDomain().orElseThrow(ProcessingException::new).getId();
+			completeRegistration(userRequest, user, domainId);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) { //TODO: Refactor exceptions not to have same names
+			throw new ProcessingException("Unable to complete your registration");
+		}
+	}
+
+	private void completeRegistration(UserRequest userRequest, net.geant.nmaas.portal.persistent.entity.User user, Long domainId) {
+		if(userService.existsByUsername(userRequest.getUsername())) {
+			throw new net.geant.nmaas.portal.exceptions.ProcessingException("User with same username already exists");
+		} else {
+			user.setUsername(userRequest.getUsername());
+		}
+		if(userRequest.getFirstname() != null)
+			user.setFirstname(userRequest.getFirstname());
+		if(userRequest.getLastname() != null)
+			user.setLastname(userRequest.getLastname());
+		if(userRequest.getEmail() != null) {
+			if(userService.existsByEmail(userRequest.getEmail())){
+				throw new ProcessingException("User with mail "+userRequest.getEmail()+" already exists");
+			}
+			user.setEmail(userRequest.getEmail());
+		}
+
+		domainService.addMemberRole(domainId, user.getId(), Role.ROLE_GUEST);
+		domainService.addGlobalGuestUserRoleIfMissing(user.getId());
+		userService.update(user);
+	}
+
 	@PostMapping("/users/reset/notification")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void sendResetPasswordNotification(HttpServletRequest request, @RequestBody String email){

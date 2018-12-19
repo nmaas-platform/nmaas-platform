@@ -61,34 +61,8 @@ public class RegistrationControllerTest {
         when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
     }
 
-    @Test
-    public void shouldCompleteRegistration(){
-        UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        registrationController.completeRegistration(principal, userRequest);
-        verify(userService, times(1)).update(userList.get(0));
-    }
-
-    @Test(expected = ProcessingException.class)
-    public void shouldNotCompleteRegistrationWithNonUniqueMail(){
-        UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-        userRequest.setEmail("test@test.com");
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        when(userService.existsByEmail(userRequest.getEmail())).thenReturn(true);
-        registrationController.completeRegistration(principal, userRequest);
-    }
-
-    @Test
-    public void shouldCompleteRegistrationAndRemoveIncompleteRole(){
-        UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
-        userRequest.setEmail("test@nmaas.net");
-        when(principal.getName()).thenReturn(userList.get(0).getUsername());
-        when(userService.findByUsername(userList.get(0).getUsername())).thenReturn(Optional.of(userList.get(0)));
-        when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
-        when(domainService.getMemberRoles(GLOBAL_DOMAIN.getId(), userRequest.getId())).thenReturn(ImmutableSet.of(Role.ROLE_GUEST));
-        registrationController.completeRegistration(principal, userRequest);
-        verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
-        verify(userService, times(1)).update(userList.get(0));
-    }
+    /**
+     * TODO: add some tests
+     */
 
 }

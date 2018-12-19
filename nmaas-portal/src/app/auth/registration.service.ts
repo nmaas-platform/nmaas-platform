@@ -4,7 +4,6 @@ import { AppConfigService } from '../service/appconfig.service';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import {User} from "../model";
 
 @Injectable()
 export class RegistrationService {
@@ -17,12 +16,6 @@ export class RegistrationService {
     return this.http.post(this.getUrl(), registration, {headers: RegistrationService.headers})
       .timeout(this.appConfig.getHttpTimeout())
       .catch(this.handleError);
-  }
-
-  public completeRegistration(user: User): Observable<any> {
-    return this.http.post<User>(this.getUrl()+'/complete', user, {headers: RegistrationService.headers})
-        .timeout(this.appConfig.getHttpTimeout())
-        .catch(this.handleError);
   }
 
   public getDomains(): Observable<Domain[]> {
