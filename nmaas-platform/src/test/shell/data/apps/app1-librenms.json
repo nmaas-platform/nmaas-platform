@@ -15,7 +15,7 @@
 		],
 		"kubernetesTemplate": {
 			"chart": {
-				"name": "nmaas-librenms",
+				"name": "nmaas-librenms-v2",
 				"version": "1.0.0-alfa"
 			}
 		},
