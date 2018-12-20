@@ -59,7 +59,6 @@ public class GitLabManagerTest {
         GitLab config = new GitLab();
         config.setPort(80);
         config.setServer("10.10.1.1");
-        config.setSshServer("10.10.10.1");
         config.setToken("testtoken");
         config.setRepositoryAccessUsername("nmaas-conf-automation");
         return config;
