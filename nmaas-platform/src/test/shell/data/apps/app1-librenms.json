@@ -30,80 +30,130 @@
 		"configFileRepositoryRequired":true
 	},
 	"configTemplate": {
-		"template": {
-			"schema": {
-				"type": "object",
-				"properties": {
-					"targets": {
-						"title": "Routers",
-						"type": "array",
-						"minItems": 1,
-						"items": {
-							"type": "object",
-							"properties": {
-								"ipAddress": {
-									"title": "IP address",
-									"type": "string",
-									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-								},
-								"snmpCommunity": {
-									"title": "SNMP community",
-									"type": "string"
-								},
-								"snmpVersion": {
-									"title": "SNMP version",
-									"type": "string"
-								}
-							},
-							"required": ["ipAddress", "snmpCommunity", "snmpVersion"]
-						}
-					}
-				},
-				"required": ["targets"]
-			},
-			"form": [
+		"template":{
+			"components": [
 				{
+					"label": "Targets",
+					"hideLabel": true,
+					"disableAddingRemovingRows": false,
+					"defaultOpen": false,
+					"addAnother": "Add routers",
+					"addAnotherPosition": "bottom",
+					"multiple": true,
+					"mask": false,
+					"tableView": true,
+					"alwaysEnabled": false,
+					"type": "datagrid",
+					"input": true,
 					"key": "targets",
-					"items":[
-						"targets[]",
-						"targets[].ipAddress",
-						"targets[].snmpCommunity",
-						"targets[].snmpVersion"
+					"validate": {
+						"required": true,
+						"unique": false,
+						"customMessage": "",
+						"json": ""
+					},
+					"conditional": {
+						"show": "",
+						"when": "",
+						"json": ""
+					},
+					"components": [
+						{
+							"label": "Router",
+							"hideLabel": true,
+							"showWordCount": false,
+							"showCharCount": false,
+							"tableView": true,
+							"alwaysEnabled": false,
+							"type": "textfield",
+							"input": true,
+							"key": "ipAddress",
+							"defaultValue": "",
+							"validate": {
+								"required": true,
+								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+								"unique": false,
+								"customMessage": "",
+								"json": ""
+							},
+							"conditional": {
+								"show": "",
+								"when": "",
+								"json": ""
+							},
+							"inputFormat": "plain",
+							"encrypted": false,
+							"properties": {},
+							"tags": [],
+							"customConditional": "",
+							"logic": []
+						},
+						{
+							"label": "SNMP community",
+							"type": "textfield",
+							"input": true,
+							"key": "snmpCommunity",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						},
+						{
+							"label": "SNMP version",
+							"type": "textfield",
+							"input": true,
+							"key": "snmpVersion",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						}
 					]
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
 				}
 			]
 		}
 	},
 	"additionalMandatoryTemplate": {
-		"template" : {
-			"schema" : {
-				"type" : "object",
-				"properties" : {
-					"librenms_default_USER" : {
-						"type" : "string",
-						"title" : "Default username"
-					},
-					"librenms_default_PASSWORD" : {
-						"type" : "string",
-						"title" : "Default user password"
-					},
-					"librenms_default_EMAIL" : {
-						"format" : "email",
-						"type" : "string",
-						"title" : "Default email"
-					}
-				},
-				"required" : [
-					"librenms_default_USER", "librenms_default_PASSWORD"
-				]
-			},
-			"form" : [
-				"librenms_default_USER",
+		"template": {
+			"components": [
 				{
-					"key": "librenms_default_PASSWORD",
-					"type": "password"
+					"label": "Default username",
+					"type": "textfield",
+					"input": true,
+					"key": "librenms_default_USER",
+					"validate": {
+						"required": true
+					},
+					"inputFormat": "plain"
 				},
-				"librenms_default_EMAIL"
+				{
+					"label": "Default user password",
+					"type": "password",
+					"input": true,
+					"key": "librenms_default_PASSWORD",
+					"validate": {
+						"required": true
+					},
+					"inputFormat": "plain"
+				},
+				{
+					"label": "Default email",
+					"type": "email",
+					"input": true,
+					"key": "librenms_default_EMAIL",
+					"validate": {
+						"required": false
+					},
+					"inputFormat": "plain"
+				}
 			]
 		}
 	}

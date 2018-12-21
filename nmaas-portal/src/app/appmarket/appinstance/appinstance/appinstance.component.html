@@ -87,13 +87,7 @@
 					<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
 				</div>
 				<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-					<json-schema-form *ngIf="appInstance !== undefined && appInstance.wizard !== undefined"
-									  [form]="getTemplate(appInstance.wizard.template)"
-									  [options]="jsonFormOptions"
-									  [framework]="bootstrap-3"
-									  [language]="en"
-									  (onChanges)="changeConfiguration($event)">
-					</json-schema-form>
+					<!--TODO:Add form for updating config-->
 				</div>
 				<div class="nmaas-modal-footer">
 					<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
@@ -151,20 +145,14 @@
 					</ul>
 					<div class="tab-content" style="padding-top: 10px">
 						<div id="configForm" class="tab-pane fade in active">
-							<json-schema-form *ngIf="additionalMandatoryTemplate"
-								[form]="additionalMandatoryTemplate"
-								[options]="jsonFormOptions"
-								[framework]="bootstrap-3"
-								[language]="en"
-								(onChanges)="changeMandatoryParameters($event)">
-							</json-schema-form>
-							<json-schema-form *ngIf="appInstance !== undefined && appInstance.wizard !== undefined"
-											  [form]="getTemplate(appInstance.wizard.template)"
-											  [options]="jsonFormOptions"
-											  [framework]="bootstrap-3"
-											  [language]="en"
-											  (onChanges)="changeConfiguration($event)">
-							</json-schema-form>
+							<formio *ngIf="additionalMandatoryTemplate !== undefined"
+									[form]="additionalMandatoryTemplate"
+									(change)="changeMandatoryParameters($event.data)">
+							</formio>
+							<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
+									[form]="configurationTemplate"
+									(submit)="applyConfiguration($event.data)">
+							</formio>
 						</div>
 						<div id="advanced" class="tab-pane fade" style="padding-bottom: 10px">
 							<form [formGroup]="configAdvancedTab">
@@ -177,17 +165,10 @@
 							</form>
 						</div>
 						<div id="additionalParameters" class="tab-pane fade" style="padding-bottom: 10px" *ngIf="additionalParametersTemplate">
-							<json-schema-form
-									[form]="additionalParametersTemplate"
-									[options]="jsonFormOptions"
-									[framework]="bootstrap-3"
-									[language]="en"
-									(onChanges)="changeAdditionalParameters($event)">
-
-							</json-schema-form>
+							<formio [form]="additionalParametersTemplate"
+									(change)="changeAdditionalParameters($event)">
+							</formio>
 						</div>
-						<p *ngIf="requiredFields"><strong class="text-danger">*</strong> = {{'APP_INSTANCE.REQUIRED_FIELDS' | translate}}</p>
-						<button type="button" class="btn btn-success" [disabled]="!isValid() || !configAdvancedTab.valid" (click)="applyConfiguration()">{{'APP_INSTANCE.APPLY_CONFIG_BUTTON' | translate}}</button>
 					</div>
 				</div>
 			</div>

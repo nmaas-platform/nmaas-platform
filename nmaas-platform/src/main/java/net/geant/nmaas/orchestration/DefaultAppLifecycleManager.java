@@ -134,7 +134,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private Map<String, String> replaceUnderscoreToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
-            newMap.put(entry.getKey().replace("_","."), entry.getValue());
+            if(entry.getValue() != null && !entry.getValue().isEmpty()){
+                newMap.put(entry.getKey().replace("_","."), entry.getValue());
+            }
         }
         return newMap;
     }
