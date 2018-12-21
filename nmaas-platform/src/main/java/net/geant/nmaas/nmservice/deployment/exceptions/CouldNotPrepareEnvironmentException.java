@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
-public class CouldNotPrepareEnvironmentException extends Exception {
+public class CouldNotPrepareEnvironmentException extends RuntimeException {
 
     public CouldNotPrepareEnvironmentException(String message) {
         super(message);

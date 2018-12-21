@@ -3,10 +3,6 @@ package net.geant.nmaas.dcn.deployment;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
-import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -17,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Executor used when DCN is being configured by network operator.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("dcn_none")
@@ -45,25 +39,25 @@ public class DummyDcnDeploymentExecutor implements DcnDeploymentProvider {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) {
         notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployDcn(String domain) throws CouldNotDeployDcnException {
+    public void deployDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDcn(String domain) throws CouldNotVerifyDcnException {
+    public void verifyDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.VERIFIED);
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeDcn(String domain) throws CouldNotRemoveDcnException {
+    public void removeDcn(String domain) {
         notifyStateChangeListeners(domain, DcnDeploymentState.REMOVED);
     }
 

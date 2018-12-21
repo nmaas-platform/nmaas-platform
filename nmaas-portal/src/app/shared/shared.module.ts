@@ -27,6 +27,13 @@ import { ApplicationsViewComponent } from './applications/applications.component
 import { AppElementComponent } from './applications/list/element/appelement.component';
 import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
 import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
+import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
+import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
+import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
+import {TranslateModule} from '@ngx-translate/core';
+import { SortableColumnComponent } from './sortable-column/sortable-column.component';
+import { SortableTableDirective } from './sortable-column/sortable-table.directive';
+import {AppInstallModalComponent} from "./modal/appinstall";
 
 @NgModule({
   imports: [
@@ -35,7 +42,8 @@ import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.comp
     FormsModule,
     ServicesModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TranslateModule.forChild()
   ],
   declarations: [
     RateComponent,
@@ -57,9 +65,15 @@ import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.comp
     DomainFilterComponent,
     AppElementComponent,
     AppListComponent,
+    AppInstallModalComponent,
     ApplicationsViewComponent,
     ClusterDetailsComponent,
-      GitlabDetailsComponent
+    GitlabDetailsComponent,
+    ModalInfoTermsComponent,
+    ModalInfoPolicyComponent,
+    ModalChangelogComponent,
+    SortableColumnComponent,
+    SortableTableDirective
   ],
   providers: [
     PasswordValidator,
@@ -77,13 +91,18 @@ import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.comp
     UserPrivilegesComponent,
     NavbarComponent,
     UserPrivilegesComponent,
+    AppInstallModalComponent,
     RolesDirective,
     SearchComponent,
     TagFilterComponent,
     DomainFilterComponent,
     ApplicationsViewComponent,
     ClusterDetailsComponent,
-      GitlabDetailsComponent
+    GitlabDetailsComponent,
+    ModalInfoTermsComponent,
+    ModalInfoPolicyComponent,
+    SortableColumnComponent,
+    SortableTableDirective,
   ]
 })
 export class SharedModule {}

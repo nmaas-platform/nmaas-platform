@@ -1,15 +1,8 @@
 {
-  "name":"K8S-NAME-1",
-  "helm": {
-    "helmHostAddress":"10.134.241.6",
-    "helmHostSshUsername":"nmaas",
-    "useLocalChartArchives":true,
-    "helmChartRepositoryName":"nmaas-test",
-    "helmHostChartsDirectory":"/home/nmaas/charts"
-  },
   "api": {
     "restApiHostAddress":"10.134.241.6",
-    "restApiPort":8080
+    "restApiPort":8080,
+    "useKClusterApi":false
   },
   "ingress": {
     "controllerConfigOption":"USE_EXISTING",
@@ -18,14 +11,19 @@
     "controllerChartArchive":"nginx-ingress.tgz",
     "resourceConfigOption":"DEPLOY_FROM_CHART",
     "externalServiceDomain":"nmaas.geant.net",
-    "tlsSupported":false
+    "tlsSupported":false,
+    "certificateConfigOption": "USE_LETSENCRYPT",
+    "issuerOrWildcardName": "nmaas-issuer",
+    "ingressPerDomain": false
   },
   "deployment": {
-    "useDefaultNamespace":true,
-    "defaultNamespace":"default",
     "namespaceConfigOption":"USE_DEFAULT_NAMESPACE",
-    "defaultPersistenceClass":"nmaas-nfs-storage",
-    "useInClusterGitLabInstance":true
+    "defaultNamespace":"default",
+    "defaultStorageClass":"nmaas-nfs-storage",
+    "useInClusterGitLabInstance":false,
+    "forceDedicatedWorkers":false,
+    "smtpServerHostname": "nmaas-postfix",
+    "smtpServerPort": "587"
   },
   "attachPoint": {
     "routerName":"R3",

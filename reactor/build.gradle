@@ -3,7 +3,7 @@ apply plugin: 'idea'
 apply plugin: "jacoco"
 apply plugin: 'eclipse'
 
-version = '0.4.0'
+version = '1.0.0'
 group = 'net.geant.nmaas'
 
 sourceCompatibility = 1.8
@@ -11,17 +11,4 @@ targetCompatibility = 1.8
 
 repositories {
 	mavenCentral()
-}
-
-dependencies {
-	testCompile('junit:junit:4.12')
-	testCompile('org.mockito:mockito-core:1.10.19')
-}
-
-test {
-    systemProperties 'property': 'value'    
-    afterTest { desc, result ->
-        println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
-    }
-    ignoreFailures = true
 }

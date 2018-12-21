@@ -11,14 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription.Id;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
-import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRespository;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
@@ -26,74 +24,75 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 @Service
 public class ApplicationSubscriptionServiceImpl implements ApplicationSubscriptionService {
 
-	@Autowired
-	ApplicationSubscriptionRespository appSubRepo;
+	private static final String APP_NOT_FOUND_ERR_MESSAGE = "Application subscription not found.";
+
+    private ApplicationSubscriptionRepository appSubRepo;
 	
-	@Autowired
-	DomainService domains;
+	private DomainService domains;
 	
+	private ApplicationService applications;
+
 	@Autowired
-	ApplicationService applications;
+	public ApplicationSubscriptionServiceImpl(ApplicationSubscriptionRepository appSubRepo,
+											  DomainService domains, ApplicationService applications) {
+		this.appSubRepo = appSubRepo;
+		this.domains = domains;
+		this.applications = applications;
+	}
 	
 	
 	@Override
 	public boolean isActive(Id id) {
-		boolean isActive = Optional.ofNullable(appSubRepo.findOne(id))
-									.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive()))
-									.orElse(false);
-		return isActive;
+		return appSubRepo.findById(id).map(appInstance ->
+				(!appInstance.isDeleted() && appInstance.isActive())).orElse(false);
 	}
 
 	@Override
 	public boolean isActive(Long applicationId, Long domainId) {
-		boolean isActive = appSubRepo.findOne(domainId, applicationId)
-									.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive()))
-									.orElse(false);
-		return isActive;
+		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId).map(appInstance ->
+				(!appInstance.isDeleted() && appInstance.isActive())).orElse(false);
 	}
 
 	@Override
 	public boolean isActive(Application application, Domain domain) {
-		boolean isActive = appSubRepo.findOne(domain, application)
-				.map((appInstance) -> (!appInstance.isDeleted() && appInstance.isActive()))
-				.orElse(false);
-		return isActive;
+		return appSubRepo.findByDomainAndApplication(domain, application).map(appInstance ->
+				(!appInstance.isDeleted() && appInstance.isActive())).orElse(false);
 	}
 
 	@Override
 	public boolean existsSubscription(Id id) {
 		checkParam(id);
-		return appSubRepo.exists(id);
+		return appSubRepo.existsById(id);
 	}
 
 	@Override
 	public boolean existsSubscription(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
-		return appSubRepo.exists(domainId, applicationId);
+		return appSubRepo.existsByDomainAndApplicationId(domainId, applicationId);
 	}
 
 	@Override
 	public boolean existsSubscription(Application application, Domain domain) {
 		checkParam(application, domain);
-		return appSubRepo.exists(domain, application);
+		return appSubRepo.existsByDomainAndApplication(domain, application);
 	}
 
 	@Override
 	public Optional<ApplicationSubscription> getSubscription(Id id) {
 		checkParam(id);
-		return Optional.ofNullable(appSubRepo.findOne(id));
+		return appSubRepo.findById(id);
 	}
 
 	@Override
 	public Optional<ApplicationSubscription> getSubscription(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
-		return appSubRepo.findOne(domainId, applicationId);
+		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
 	}
 
 	@Override
 	public Optional<ApplicationSubscription> getSubscription(Application application, Domain domain) {
 		checkParam(application, domain);
-		return appSubRepo.findOne(domain, application);
+		return appSubRepo.findByDomainAndApplication(domain, application);
 	}
 	
 	@Override
@@ -109,71 +108,70 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 	@Override
 	public List<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId) {
-		if(domainId == null && applicationId == null)
-			return appSubRepo.findAll();
+		if(domainId != null && applicationId != null) {
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
+			return Arrays.asList(res.orElse(null));
+		}
 		else if(domainId != null)
 			return appSubRepo.findAllByDomain(domainId);
 		else if(applicationId != null)
 			return appSubRepo.findAllByApplication(applicationId);
-		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domainId, applicationId);
-			return Arrays.asList(res.orElse(null));
-		}
+		else
+			return appSubRepo.findAll();
 	}
 
 	@Override
 	public Page<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId, Pageable pageable) {
-		if(domainId == null && applicationId == null)
-			return appSubRepo.findAll(pageable);
+		if(domainId != null && applicationId != null) {
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
+			return new PageImpl<>(Arrays.asList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
+		}
 		else if(domainId != null)
 			return appSubRepo.findAllByDomain(domainId, pageable);
 		else if(applicationId != null)
 			return appSubRepo.findAllByApplication(applicationId, pageable);
-		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domainId, applicationId);
-			return new PageImpl<ApplicationSubscription>(Arrays.asList(res.orElse(null)), 
-														pageable, 
-														res.isPresent() ? 1 : 0);
-		}
+		else
+			return appSubRepo.findAll(pageable);
 	}
 
 	@Override
 	public List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application) {
-		if(domain == null && application == null)
-			return appSubRepo.findAll();
+		if(domain != null && application != null) {
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
+			return Arrays.asList(res.orElse(null));
+		}
 		else if(domain != null)
 			return appSubRepo.findAllByDomain(domain);
 		else if(application != null)
 			return appSubRepo.findAllByApplication(application);
-		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domain, application);
-			return Arrays.asList(res.orElse(null));
-		}		
+		else
+			return appSubRepo.findAll();
 	}
 
 	@Override
 	public Page<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application, Pageable pageable) {
-		if(domain == null && application == null)
-			return appSubRepo.findAll(pageable);
+		if(domain != null && application != null) {
+			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
+			return new PageImpl<>(Arrays.asList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
+		}
 		else if(domain != null)
 			return appSubRepo.findAllByDomain(domain, pageable);
 		else if(application != null)
 			return appSubRepo.findAllByApplication(application, pageable);
-		else {
-			Optional<ApplicationSubscription> res = appSubRepo.findOne(domain, application);
-			return new PageImpl<ApplicationSubscription>(Arrays.asList(res.orElse(null)), 
-														pageable, 
-														res.isPresent() ? 1 : 0);
-		}
+		else
+			return appSubRepo.findAll(pageable);
 	}
 
 	@Override
-	public ApplicationSubscription subscribe(ApplicationSubscription appSub) throws ObjectAlreadyExistsException, ProcessingException {
+	public ApplicationSubscription subscribe(ApplicationSubscription appSub) {
 		checkParam(appSub);
-		
-		if(appSubRepo.exists(appSub.getId()))
-			appSub = appSubRepo.findOne(appSub.getId());
-		
+
+		if(appSubRepo.existsById(appSub.getId())) {
+			Optional<ApplicationSubscription> appSubOptional = appSubRepo.findById(appSub.getId());
+			if(appSubOptional.isPresent()) {
+				appSub = appSubOptional.get();
+			}
+		}
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);
 			
@@ -187,59 +185,58 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	}
 
 	@Override
-	public ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active) throws ObjectAlreadyExistsException, ObjectNotFoundException, ProcessingException {
+	public ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active) {
 		Domain domain = getDomain(domainId);
 		Application application = getApplication(applicationId);
 
-		ApplicationSubscription appSub = appSubRepo.findOne(domainId, applicationId).orElse(new ApplicationSubscription(domain, application));
+		ApplicationSubscription appSub = appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElse(new ApplicationSubscription(domain, application));
 
 		return subscribe(appSub);
 	}
 
 	@Override
-	public ApplicationSubscription subscribe(Application application, Domain domain, boolean active) throws ObjectAlreadyExistsException, ProcessingException {
+	public ApplicationSubscription subscribe(Application application, Domain domain, boolean active) {
 		checkParam(application, domain);
 		
-		ApplicationSubscription appSub = appSubRepo.findOne(domain, application).orElse(new ApplicationSubscription(domain, application));
+		ApplicationSubscription appSub = appSubRepo.findByDomainAndApplication(domain, application).orElse(new ApplicationSubscription(domain, application));
 
 		return subscribe(appSub);
 	}
 
 	@Override
-	public boolean unsubscribe(ApplicationSubscription appSub) throws ProcessingException, ObjectNotFoundException {
+	public void unsubscribe(ApplicationSubscription appSub) {
 		checkParam(appSub);
 
-		if(appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication()))
-			return true;
-		else if(!appSubRepo.exists(appSub.getId()))
-			throw new ObjectNotFoundException("Application subscription not found.");
-		
-		appSub.setActive(false);
-		appSub.setDeleted(true);
+		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
+			if(!appSubRepo.existsById(appSub.getId()))
+				throw new ObjectNotFoundException("Application subscription not found.");
 
-		try {
-			appSubRepo.save(appSub);
-			return true;
-		}catch(Exception ex) {
-			throw new ProcessingException("Unable to unsubscribe application", ex);
+			appSub.setActive(false);
+			appSub.setDeleted(true);
+
+			try {
+				appSubRepo.save(appSub);
+			} catch(Exception ex) {
+				throw new ProcessingException("Unable to unsubscribe application", ex);
+			}
 		}
 	}
 
 	@Override
-	public boolean unsubscribe(Long applicationId, Long domainId) throws ProcessingException, ObjectNotFoundException {
+	public void unsubscribe(Long applicationId, Long domainId) {
 		checkParam(applicationId, domainId);
 
 		ApplicationSubscription appSub = findApplicationSubscription(applicationId, domainId);
 
-		return unsubscribe(appSub);
+		unsubscribe(appSub);
 	}
 
 	@Override
-	public boolean unsubscribe(Application application, Domain domain) throws ProcessingException, ObjectNotFoundException {		
+	public void unsubscribe(Application application, Domain domain) {
 		checkParam(application, domain);
 		
 		ApplicationSubscription appSub = findApplicationSubscription(application, domain);		
-		return unsubscribe(appSub);
+		unsubscribe(appSub);
 	}
 
 
@@ -253,32 +250,33 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		return (domainId != null ? appSubRepo.findApplicationBriefAllByDomain(domainId) : appSubRepo.findApplicationBriefAllBy());
 	}
 
-	protected ApplicationSubscription findApplicationSubscription(Id id) throws ObjectNotFoundException {
-		ApplicationSubscription appSub = appSubRepo.findOne(id);
-		if(appSub == null)
-			throw new ObjectNotFoundException("Application subscription not found.");
-		return appSub;			
+	protected ApplicationSubscription findApplicationSubscription(Id id) {
+		return appSubRepo.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
 	
-	private ApplicationSubscription findApplicationSubscription(Long applicationId, Long domainId)
-			throws ObjectNotFoundException {
-		return appSubRepo.findOne(domainId, applicationId).orElseThrow(() -> new ObjectNotFoundException("Application subscription not found."));
-	}
-	
-	private ApplicationSubscription findApplicationSubscription(Application application, Domain domain)
-			throws ObjectNotFoundException {		
-		return appSubRepo.findOne(domain, application).orElseThrow(() -> new ObjectNotFoundException("Application subscription not found."));
-	}
-	
-	protected Domain getDomain(Long domainId) throws ObjectNotFoundException {
-		checkParam(domainId, "domainId");
-		return domains.findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain " + domainId + " not found."));
+	private ApplicationSubscription findApplicationSubscription(Long applicationId, Long domainId) {
+		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElseThrow(() ->
+                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
 	}
 
-	protected Application getApplication(Long applicationId) throws ObjectNotFoundException {
+
+	@SuppressWarnings("unused")
+	private ApplicationSubscription findApplicationSubscription(Application application, Domain domain) {
+		return appSubRepo.findByDomainAndApplication(domain, application).orElseThrow(() ->
+                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
+	}
+	
+	protected Domain getDomain(Long domainId) {
+		checkParam(domainId, "domainId");
+		return domains.findDomain(domainId).orElseThrow(() ->
+                new ObjectNotFoundException("Domain " + domainId + " not found."));
+	}
+
+	protected Application getApplication(Long applicationId) {
 		checkParam(applicationId, "applicationId");
-		return applications.findApplication(applicationId)
-				.orElseThrow(() -> new ObjectNotFoundException("Application " + applicationId + " not found."));
+		return applications.findApplication(applicationId).orElseThrow(() ->
+                new ObjectNotFoundException("Application " + applicationId + " not found."));
 	}
 
 	

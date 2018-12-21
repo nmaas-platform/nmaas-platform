@@ -1,14 +1,20 @@
 package net.geant.nmaas.nmservice.deployment;
 
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
  * Defines a set of methods each container orchestrator has to implement in order to support NM service deployment.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface ContainerOrchestrator {
 
@@ -24,13 +30,11 @@ public interface ContainerOrchestrator {
      * for NM service being requested and if so creates proper NM service info object.
      *
      * @param deploymentId unique identifier of service deployment
-     * @param deploymentName name of application instance provided by the user
-     * @param domain name of the client domain for this deployment
+     * @param appDeployment deployment details provided by user
      * @param appDeploymentSpec additional information specific to given application deployment
      * @throws NmServiceRequestVerificationException if current deployment environment is not supported by the application
      */
-    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
-            throws NmServiceRequestVerificationException;
+    void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec);
 
     /**
      * Checks if requested NM service deployment is possible taking into account available resources, currently
@@ -40,18 +44,17 @@ public interface ContainerOrchestrator {
      * @throws NmServiceRequestVerificationException if service deployment is currently not possible
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
-            throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException;
+    void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId);
 
     /**
      * Executes all initial configuration steps in order to enable further deployment of the NM service.
      *
      * @param deploymentId unique identifier of service deployment
+     * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      * @throws CouldNotPrepareEnvironmentException if any of the environment preparation steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void prepareDeploymentEnvironment(Identifier deploymentId)
-            throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException;
+    void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired);
 
     /**
      * Performs the actual NM service containers deployment.
@@ -60,8 +63,7 @@ public interface ContainerOrchestrator {
      * @throws CouldNotDeployNmServiceException if any of the service deployment steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void deployNmService(Identifier deploymentId)
-            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException;
+    void deployNmService(Identifier deploymentId);
 
     /**
      * Checks if NM service was successfully deployed and is running.
@@ -71,8 +73,7 @@ public interface ContainerOrchestrator {
      * @throws DockerNetworkCheckFailedException if service network was not configured successfully
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void checkService(Identifier deploymentId)
-            throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException;
+    void checkService(Identifier deploymentId);
 
     /**
      * Retrieves deployed service access details to be presented to the client.
@@ -81,7 +82,7 @@ public interface ContainerOrchestrator {
      * @return service access details
      * @throws ContainerOrchestratorInternalErrorException if access details are not available for any reason
      */
-    AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException;
+    AppUiAccessDetails serviceAccessDetails(Identifier deploymentId);
 
     /**
      * Triggers all the required actions to remove given NM service from the system.
@@ -90,8 +91,7 @@ public interface ContainerOrchestrator {
      * @throws CouldNotRemoveNmServiceException if any of the service removal steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void removeNmService(Identifier deploymentId)
-            throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException;
+    void removeNmService(Identifier deploymentId);
 
     /**
      * Triggers all the required actions to restart given NM service.
@@ -100,6 +100,5 @@ public interface ContainerOrchestrator {
      * @throws CouldNotRestartNmServiceException if any of the service restart steps failed
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
-    void restartNmService(Identifier deploymentId)
-            throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException;
+    void restartNmService(Identifier deploymentId);
 }

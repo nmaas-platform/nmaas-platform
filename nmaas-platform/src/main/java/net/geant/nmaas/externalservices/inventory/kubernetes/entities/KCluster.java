@@ -1,29 +1,34 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import javax.persistence.*;
+import static com.google.common.base.Preconditions.checkArgument;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Set of properties describing a Kubernetes cluster deployed in the system
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Entity
 @Table(name="k_cluster")
+@Getter
+@Setter
 public class KCluster {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
-
-    /** Some unique human readable name assigned for the cluster */
-    @Column(nullable = false, unique = true)
-    private String name;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
-    private KClusterHelm helm;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
     private KClusterApi api;
@@ -48,71 +53,14 @@ public class KCluster {
     public void validate() {
         ingress.getControllerConfigOption().validate(ingress);
         ingress.getResourceConfigOption().validate(ingress);
+        ingress.getCertificateConfigOption().validate(ingress);
         deployment.getNamespaceConfigOption().validate(deployment);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public KClusterHelm getHelm() {
-        return helm;
-    }
-
-    public void setHelm(KClusterHelm helm) {
-        this.helm = helm;
-    }
-
-    public KClusterApi getApi() {
-        return api;
-    }
-
-    public void setApi(KClusterApi api) {
-        this.api = api;
-    }
-
-    public KClusterIngress getIngress() {
-        return ingress;
-    }
-
-    public void setIngress(KClusterIngress ingress) {
-        this.ingress = ingress;
-    }
-
-    public KClusterDeployment getDeployment() {
-        return deployment;
-    }
-
-    public void setDeployment(KClusterDeployment deployment) {
-        this.deployment = deployment;
-    }
-
-    public KClusterAttachPoint getAttachPoint() {
-        return attachPoint;
-    }
-
-    public void setAttachPoint(KClusterAttachPoint attachPoint) {
-        this.attachPoint = attachPoint;
-    }
-
-    public List<KClusterExtNetwork> getExternalNetworks() {
-        return externalNetworks;
-    }
-
-    public void setExternalNetworks(List<KClusterExtNetwork> externalNetworks) {
-        this.externalNetworks = externalNetworks;
+        if(api.isUseKClusterApi()){
+            checkArgument(api.getRestApiPort() != null, "When using KCluster Api the rest api port can't be empty");
+            checkArgument(api.getRestApiHostAddress() != null, "When using KCluster Api the rest api host address can't be empty");
+        }
+        checkArgument(deployment.getSmtpServerHostname() != null && !deployment.getSmtpServerHostname().isEmpty(), "SMTP server hostname can't be empty");
+        checkArgument(deployment.getSmtpServerPort() != null && deployment.getSmtpServerPort() > 0, "SMTP server port must be greater than 0");
     }
 
 }

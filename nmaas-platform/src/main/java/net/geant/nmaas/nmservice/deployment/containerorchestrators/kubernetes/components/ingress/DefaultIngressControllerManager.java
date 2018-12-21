@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
@@ -17,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 public class DefaultIngressControllerManager implements IngressControllerManager {
 
@@ -40,13 +37,13 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     @Override
-    public void deployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
+    public void deployIngressControllerIfMissing(String domain) {
         if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
             executeDeployIngressControllerIfMissing(domain);
         }
     }
 
-    private void executeDeployIngressControllerIfMissing(String domain) throws IngressControllerManipulationException {
+    private void executeDeployIngressControllerIfMissing(String domain) {
         try {
             String ingressControllerName = ingressControllerName(domain);
             if (checkIfIngressControllerForClientIsMissing(ingressControllerName)) {
@@ -64,7 +61,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         }
     }
 
-    private String obtainExternalIpAddressForClient(String domain) throws ExternalNetworkNotFoundException {
+    private String obtainExternalIpAddressForClient(String domain) {
         KClusterExtNetworkView externalNetwork = clusterIngressManager.reserveExternalNetwork(domain);
         return externalNetwork.getExternalIp().getHostAddress();
     }
@@ -73,7 +70,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
         return NMAAS_INGRESS_CONTROLLER_NAME_PREFIX + domain.toLowerCase();
     }
 
-    private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) throws CommandExecutionException {
+    private boolean checkIfIngressControllerForClientIsMissing(String ingressControllerName) {
         List<String> currentReleases = helmCommandExecutor.executeHelmListCommand();
         return !currentReleases.contains(ingressControllerName);
     }
@@ -83,7 +80,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     // TODO add support for installation from repo or from archive
-    private void installIngressControllerHelmChart(String namespace, String releaseName, String ingressClass, String externalIpAddress) throws CommandExecutionException {
+    private void installIngressControllerHelmChart(String namespace, String releaseName, String ingressClass, String externalIpAddress) {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_INGRESS_CLASS, ingressClass);
         arguments.put(HELM_INSTALL_OPTION_INGRESS_CONTROLLER_EXTERNAL_IPS, "{" + externalIpAddress + "}");
@@ -99,7 +96,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     @Override
-    public void deleteIngressController(String domain) throws IngressControllerManipulationException {
+    public void deleteIngressController(String domain) {
         if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
             executeDeleteIngressController(domain);
         }

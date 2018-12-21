@@ -2,7 +2,7 @@ package net.geant.nmaas.externalservices.inventory.dockerhosts;
 
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostStateNotFoundException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.junit.After;
 import org.junit.Before;
@@ -19,12 +19,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-engine.properties")
+@TestPropertySource("classpath:application-test-compose.properties")
 public class DockerHostStateKeeperTest {
 
     private static final String DOCKER_HOST_NAME_1 = "GN4-DOCKER-1";
@@ -48,10 +45,12 @@ public class DockerHostStateKeeperTest {
     }
 
     @After
-    public void clean() throws DockerHostStateNotFoundException {
-        DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
-        dockerHostStateKeeper.removeAllAssignments(DOCKER_HOST_NAME_1);
-        dockerHostStateKeeper.removeAllAssignments(DOCKER_HOST_NAME_2);
+    public void clean() {
+        try {
+            dockerHostStateKeeper.removeAllAssignments(DOCKER_HOST_NAME_1);
+            dockerHostStateKeeper.removeAllAssignments(DOCKER_HOST_NAME_2);
+            DockerHostRepositoryInit.removeDefaultDockerHost(dockerHostRepositoryManager);
+        } catch (DockerHostStateNotFoundException e) {}
     }
 
     @Test

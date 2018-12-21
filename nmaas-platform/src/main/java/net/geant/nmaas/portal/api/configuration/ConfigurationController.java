@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.api.configuration;
 
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
-import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,22 +20,21 @@ public class ConfigurationController {
     }
 
     @GetMapping
-    public Configuration getMaintenance(){
+    public ConfigurationView getConfiguration(){
         return this.configurationManager.getConfiguration();
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addConfiguration(@RequestBody Configuration configuration) throws OnlyOneConfigurationSupportedException {
-        this.configurationManager.addConfiguration(configuration);
-        return configuration.getId();
+    public Long addConfiguration(@RequestBody ConfigurationView configuration) {
+        return this.configurationManager.addConfiguration(configuration);
     }
 
     @PutMapping(value="/{id}")
-    @PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody Configuration configuration) throws ConfigurationNotFoundException{
+    public void updateConfiguration(@PathVariable("id") Long id, @RequestBody ConfigurationView configuration) {
         this.configurationManager.updateConfiguration(id, configuration);
     }
 

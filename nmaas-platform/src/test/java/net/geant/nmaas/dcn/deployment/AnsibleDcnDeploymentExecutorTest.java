@@ -17,12 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-engine.properties")
+@TestPropertySource("classpath:application-test-compose.properties")
 public class AnsibleDcnDeploymentExecutorTest {
 
     @Autowired
@@ -61,7 +58,6 @@ public class AnsibleDcnDeploymentExecutorTest {
     @Test
     public void shouldCheckCurrentDcnState() throws InvalidDomainException {
         String domain = "domain";
-        assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
         DcnInfo dcnInfo = new DcnInfo();
         dcnInfo.setDomain("domain2");
         dcnInfo.setName("name");
@@ -70,7 +66,7 @@ public class AnsibleDcnDeploymentExecutorTest {
         dcnInfo.setDomain(domain);
         dcnInfo.setName("name2");
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
-        assertThat(executor.checkState(domain), equalTo(DcnState.PROCESSED));
+        assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, domain, DcnDeploymentState.VERIFIED));
         assertThat(executor.checkState(domain), equalTo(DcnState.DEPLOYED));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, domain, DcnDeploymentState.REMOVED));

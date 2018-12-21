@@ -1,14 +1,14 @@
 <nmaas-modal>
-    <div class="nmaas-modal-header">Restart confirmation</div>
+    <div class="nmaas-modal-header">{{'RESTART_MODAL.HEADER' | translate}}</div>
     <div class="nmaas-modal-body">
         <div class="form-group">
             <div>
-                <p>Do you want to restart this application instance?</p>
+                <p>{{'RESTART_MODAL.BODY' | translate}}</p>
             </div>
         </div>
     </div>
     <div class="nmaas-modal-footer">
-        <button type="button" class="btn btn-danger" (click)="restart()">Yes</button>
-        <button type="button" class="btn btn-primary" (click)="modal.hide()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="restart()">{{'RESTART_MODAL.YES_BUTTON' | translate}}</button>
+        <button type="button" class="btn btn-primary" (click)="modal.hide()">{{'RESTART_MODAL.CANCEL_BUTTON' | translate}}</button>
     </div>
 </nmaas-modal>

@@ -14,9 +14,6 @@ import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
 
-
-
-
 @Component({
   selector: 'nmaas-userslist',
   templateUrl: './userslist.component.html',
@@ -30,9 +27,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   public domainId: number;
 
   @Output()
-  public onSave: EventEmitter<User> = new EventEmitter<User>();
-
-  @Output()
   public onDelete: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
@@ -40,7 +34,10 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-  constructor(private userService: UserService, private domainService: DomainService, private userDataService:UserDataService, private authService:AuthService) {
+  constructor(private userService: UserService,
+              public domainService: DomainService,
+              private userDataService: UserDataService,
+              private authService: AuthService) {
     super();
     userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
@@ -52,7 +49,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     console.log('UsersList:onChanges ' + changes.toString());
     this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
-  
   public getDomainName(domainId: number): Observable<string> {
     //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
@@ -65,17 +61,17 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public filterDomainNames(user:User):UserRole[]{
+  public filterDomainNames(user: User): UserRole[]{
     return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId());
   }
 
-  public getOnlyDomainRoles(user:User):UserRole[]{
-    return user.roles.filter(role=>role.domainId===this.domainId);
+  public getOnlyDomainRoles(user: User): UserRole[]{
+    return user.roles.filter(role => role.domainId===this.domainId);
   }
 
-  public getGlobalRole(user:User):String{
-    let userRole:UserRole[] = user.roles.filter(role=>role.domainId===this.domainService.getGlobalDomainId());
-    return userRole[0].role.toString() === Role[Role.ROLE_GUEST]?'-':userRole[0].role.toString().slice(5);
+  public getGlobalRole(user: User): string{
+    let userRole: UserRole[] = user.roles.filter(role => role.domainId === this.domainService.getGlobalDomainId());
+    return userRole[0].role.toString() === Role[Role.ROLE_GUEST] ?'-' : userRole[0].role.toString().slice(5);
   }
 
   public getUserDomainIds(user: User): number[] {
@@ -86,7 +82,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     }
   }
 
-  public remove(user:User) {
+  public remove(user: User) {
     this.onDelete.emit(user);
   }
 
@@ -95,9 +91,9 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     this.onView.emit(userId);
   }
 
-   public submit(user:User): void {
-       console.log('submit(' + user.username + ')');
-       this.onSave.emit(user);
-   }
+    public changeUserStatus(user: User, enabled: boolean): void {
+      this.userService.changeUserStatus(user.id, enabled).subscribe();
+      user.enabled = enabled;
+    }
 
 }

@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
-import net.geant.nmaas.orchestration.entities.*;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentState;
+import net.geant.nmaas.orchestration.entities.AppLifecycleState;
+import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.junit.Before;
@@ -31,9 +35,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class OrchestratorMonitorRestControllerTest {
@@ -52,23 +53,36 @@ public class OrchestratorMonitorRestControllerTest {
     @Before
     public void setup() {
         deploymentId = Identifier.newInstance("deploymentId1");
-        AppDeployment deployment1 = new AppDeployment(
-                deploymentId,
-                "domain1",
-                Identifier.newInstance("applicationId1"),
-                "deploymentName1");
-        AppDeployment deployment2 = new AppDeployment(
-                Identifier.newInstance("deploymentId2"),
-                "domain2",
-                Identifier.newInstance("applicationId2"),
-                "deploymentName2");
+
+        AppDeployment deployment1 = AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain("domain1")
+                .applicationId(Identifier.newInstance("applicationId1"))
+                .deploymentName("deploymentName1")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+
+        AppDeployment deployment2 = AppDeployment.builder()
+                .deploymentId(Identifier.newInstance("deploymentId2"))
+                .domain("domain2")
+                .applicationId(Identifier.newInstance("applicationId2"))
+                .deploymentName("deploymentName2")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
         deployment2.setState(AppDeploymentState.APPLICATION_DEPLOYED);
-        AppDeployment deployment3 = new AppDeployment(
-                Identifier.newInstance("deploymentId3"),
-                "domain3",
-                Identifier.newInstance("applicationId3"),
-                "deploymentName3");
+
+        AppDeployment deployment3 = AppDeployment.builder()
+                .deploymentId(Identifier.newInstance("deploymentId3"))
+                .domain("domain3")
+                .applicationId(Identifier.newInstance("applicationId3"))
+                .deploymentName("deploymentName3")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
         deployment3.setState(AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
+
         deployments = Arrays.asList(deployment1, deployment2, deployment3);
         accessDetails = new AppUiAccessDetails("http://testurl:8080");
         mvc = MockMvcBuilders.standaloneSetup(new AppDeploymentMonitorRestController(deploymentMonitor, modelMapper)).build();
@@ -127,11 +141,15 @@ public class OrchestratorMonitorRestControllerTest {
 
     @Test
     public void shouldMapAppDeploymentToAppDeploymentView() {
-        AppDeployment source = new AppDeployment(
-                Identifier.newInstance("deploymentId"),
-                "domain1",
-                Identifier.newInstance("2"),
-                "deploymentName");
+        AppDeployment source = AppDeployment.builder()
+                .deploymentId(Identifier.newInstance("deploymentId"))
+                .domain("domain1")
+                .applicationId(Identifier.newInstance("2"))
+                .deploymentName("deploymentName")
+                .configFileRepositoryRequired(true)
+                .storageSpace(20)
+                .build();
+
         AppDeploymentView output = modelMapper.map(source, AppDeploymentView.class);
         assertThat(output.getDeploymentId(), equalTo(source.getDeploymentId().value()));
         assertThat(output.getDomain(), equalTo(source.getDomain()));

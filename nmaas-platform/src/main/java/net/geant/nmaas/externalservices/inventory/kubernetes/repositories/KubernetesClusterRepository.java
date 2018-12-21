@@ -6,12 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Repository
 public interface KubernetesClusterRepository extends JpaRepository<KCluster, Long> {
-
-    Optional<KCluster> findByName(String name);
-
+    Optional<KCluster> findById(Long id);
 }

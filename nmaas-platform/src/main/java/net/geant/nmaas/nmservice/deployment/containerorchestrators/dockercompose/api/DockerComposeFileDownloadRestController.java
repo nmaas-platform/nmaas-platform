@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.api;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
@@ -7,33 +8,36 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @Profile("env_docker-compose")
 @RequestMapping(value = "/api/dockercompose/files")
+@Log4j2
 public class DockerComposeFileDownloadRestController {
 
-    private final static Logger log = LogManager.getLogger(DockerComposeFileDownloadRestController.class);
+    private DockerComposeServiceRepositoryManager repositoryManager;
 
     @Autowired
-    private DockerComposeServiceRepositoryManager repositoryManager;
+    public DockerComposeFileDownloadRestController(DockerComposeServiceRepositoryManager repositoryManager){
+        this.repositoryManager = repositoryManager;
+    }
 
     @GetMapping(value = "/{deploymentId}")
     public void downloadComposeFile(@PathVariable(value = "deploymentId") String deploymentId, HttpServletResponse response)
-            throws MissingElementException, DockerComposeFileNotFoundException, IOException {
+            throws IOException {
         log.info("Received compose file download request (deploymentId -> " + deploymentId + ")");
         DockerComposeNmServiceInfo nmServiceInfo = null;
         try {

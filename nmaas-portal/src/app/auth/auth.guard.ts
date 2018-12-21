@@ -12,15 +12,19 @@ export class AuthGuard implements CanActivate {
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.auth.isLogged()) {
       this.maintenanceService.getConfiguration().subscribe(value => {
-         if (!this.auth.hasRole('ROLE_SUPERADMIN') && value.maintenance) {
+         if (!this.auth.hasRole('ROLE_SYSTEM_ADMIN') && value.maintenance) {
              this.auth.logout();
              this.router.navigate(['/welcome/login']);
              return false;
          }
       });
       if(this.auth.hasRole('ROLE_INCOMPLETE') && route.url.toString() !== 'complete') {
-           this.router.navigate(['/complete']);
-           return false;
+          this.router.navigate(['/complete']);
+          return false;
+      }
+      if(this.auth.hasRole("ROLE_NOT_ACCEPTED") && route.url.toString() !== 'terms-acceptance'){
+          this.router.navigate(['/terms-acceptance']);
+          return false;
       }
       else
           return true;

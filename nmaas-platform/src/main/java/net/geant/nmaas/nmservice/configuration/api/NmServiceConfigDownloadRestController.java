@@ -1,33 +1,37 @@
 package net.geant.nmaas.nmservice.configuration.api;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RestController
 @RequestMapping(value = "/api/configs")
+@Log4j2
 public class NmServiceConfigDownloadRestController {
 
-    private final static Logger log = LogManager.getLogger(NmServiceConfigDownloadRestController.class);
+    private NmServiceConfigFileRepository configurations;
 
     @Autowired
-    private NmServiceConfigFileRepository configurations;
+    public NmServiceConfigDownloadRestController(NmServiceConfigFileRepository configurations){
+        this.configurations = configurations;
+    }
 
     @GetMapping(value = "/{configId}")
     public void downloadConfigurationFile(@PathVariable String configId, HttpServletResponse response)
-            throws ConfigFileNotFoundException, IOException {
+            throws IOException {
         log.info("Received configuration download request (configId -> " + configId + ")");
         final NmServiceConfiguration configuration
                 = configurations.findByConfigId(configId).orElseThrow(() -> new ConfigFileNotFoundException(configId));

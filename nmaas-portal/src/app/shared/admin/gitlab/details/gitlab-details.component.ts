@@ -12,15 +12,15 @@ import {Router} from "@angular/router";
 export class GitlabDetailsComponent extends BaseComponent implements OnInit {
 
   @Input()
-  gitLabConfig:GitLabConfig = new GitLabConfig();
+  gitLabConfig: GitLabConfig = new GitLabConfig();
 
   @Output()
-  onSave:EventEmitter<GitLabConfig> = new EventEmitter<GitLabConfig>();
+  onSave: EventEmitter<GitLabConfig> = new EventEmitter<GitLabConfig>();
 
   @Output()
-  onDelete:EventEmitter<number> = new EventEmitter<number>();
+  onDelete: EventEmitter<number> = new EventEmitter<number>();
 
-  constructor(private router:Router) {
+  constructor(private router: Router) {
     super();
   }
 

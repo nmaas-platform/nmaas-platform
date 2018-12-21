@@ -15,8 +15,7 @@ export class AppImagesService {
 
     constructor(private http: HttpClient, private appConfig: AppConfigService) { }
 
-    public getAppLogoUrl(id: Number):string {
-        console.debug('Getting logo: '+id);
+    public getAppLogoUrl(id: number):string {
         return this.appConfig.getApiUrl() + '/apps/' + id + '/logo';
     }
     
@@ -24,7 +23,7 @@ export class AppImagesService {
         return this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + screenshotId;
     }
     
-    public getAppScreenshotsUrls(id: Number): Observable<string[]> {
+    public getAppScreenshotsUrls(id: number): Observable<string[]> {
         return this.http.get<FileInfo>(this.appConfig.getApiUrl() + '/apps' + id + '/screenshots')
             .timeout(10000)
             .map(res=> {

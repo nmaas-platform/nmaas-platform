@@ -1,7 +1,13 @@
 package net.geant.nmaas.portal.api.domain;
 
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class DomainRequest {
 
 	@NotNull
@@ -10,17 +16,15 @@ public class DomainRequest {
 	@NotNull
 	private String codename;
 
-	@NotNull
+	private boolean dcnConfigured;
+
 	private String kubernetesNamespace;
 
-	@NotNull
-	private boolean dcnConfigured;
+	private String kubernetesStorageClass;
+
+	private String externalServiceDomain;
 	
 	private boolean active = true;
-	
-	public DomainRequest() {
-		super();
-	}
 
 	public DomainRequest(String name, String codename) {
 		super();
@@ -33,45 +37,5 @@ public class DomainRequest {
 		this.name = name;
 		this.codename = codename;
 		this.active = active;
-	}	
-	
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCodename() {
-		return codename;
-	}
-
-	public void setCodename(String codename) {
-		this.codename = codename;
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	public String getKubernetesNamespace() {
-		return kubernetesNamespace;
-	}
-
-	public void setKubernetesNamespace(String kubernetesNamespace) {
-		this.kubernetesNamespace = kubernetesNamespace;
-	}
-
-	public boolean isDcnConfigured() {
-		return dcnConfigured;
-	}
-
-	public void setDcnConfigured(boolean dcnConfigured) {
-		this.dcnConfigured = dcnConfigured;
 	}
 }

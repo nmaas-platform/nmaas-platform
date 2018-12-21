@@ -47,7 +47,7 @@ export class UsersListComponent implements OnInit {
 
     let users: Observable<User[]> = null;
 
-    if (this.authService.hasRole(Role[Role.ROLE_SUPERADMIN])) {      
+    if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN])) {      
       users = this.userService.getAll(this.domainId);
     } else if (!isNullOrUndefined(this.domainId) && this.authService.hasDomainRole(this.domainId, Role[Role.ROLE_DOMAIN_ADMIN])) {
       users = this.userService.getAll(this.domainId);
@@ -68,17 +68,5 @@ export class UsersListComponent implements OnInit {
   public onUserDelete($event): void {
       this.userService.removeRole($event.id, $event.roles.find(value => value.domainId===this.domainId).role,this.domainId).subscribe(()=> this.update(this.domainId))
   }
-
-    public onSave($event) {
-        const user: User = $event;
-
-        if (!user) {
-            return;
-        }
-        if(user.id) {
-          user.enabled = !user.enabled;
-          this.userService.updateUser(user.id, user).subscribe();
-        }
-    }
 
 }

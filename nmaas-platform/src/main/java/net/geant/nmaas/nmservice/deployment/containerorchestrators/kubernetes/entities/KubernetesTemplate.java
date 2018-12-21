@@ -1,10 +1,19 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
-import javax.persistence.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 public class KubernetesTemplate {
 
@@ -23,9 +32,6 @@ public class KubernetesTemplate {
      */
     private String archive;
 
-    public KubernetesTemplate() {
-    }
-
     public KubernetesTemplate(KubernetesChart chart, String archive) {
         this.chart = chart;
         this.archive = archive;
@@ -36,33 +42,9 @@ public class KubernetesTemplate {
         this.archive = archive;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public KubernetesChart getChart() {
-        return chart;
-    }
-
-    private void setChart(KubernetesChart chart) {
-        this.chart = chart;
-    }
-
-    public String getArchive() {
-        return archive;
-    }
-
-    private void setArchive(String archive) {
-        this.archive = archive;
-    }
-
     public static KubernetesTemplate copy(KubernetesTemplate toCopy) {
         KubernetesTemplate template = new KubernetesTemplate();
-        if (toCopy.getArchive() != null) {
+        if (toCopy.getChart() != null) {
             template.setChart(KubernetesChart.copy(toCopy.getChart()));
         }
         template.setArchive(toCopy.getArchive());

@@ -1,9 +1,14 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
-import { FooterComponent } from '../../shared/index';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {ConfigurationService, UserService} from "../../service";
+import {Configuration} from "../../model/configuration";
+import {ShibbolethService} from "../../service/shibboleth.service";
+import {ShibbolethConfig} from "../../model/shibboleth";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ModalComponent} from "../../shared/modal";
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'nmaas-login',
@@ -15,48 +20,51 @@ export class LoginComponent implements OnInit {
     model: any = {};
     loading: boolean = false;
     error:string = '';
-  
+    configuration:Configuration;
+    shibboleth:ShibbolethConfig;
+    resetPassword:boolean = false;
+    resetPasswordForm:FormGroup;
 
+    @ViewChild(ModalComponent)
+    public modal: ModalComponent;
     ssoLoading: boolean = false;
-    ssoError:string = '';
+    ssoError: string = '';
 
-    constructor(private router: Router, private auth: AuthService) { }
-
-    ngOnInit() {
-
-      if(this.auth.getUsername() && this.auth.allowsSSO()) {
-        window.location.href = this.auth.getSSOLogoutUrl();
-        this.auth.logout();
-        return;
-      }
-
-      this.auth.logout();
-
-      if(this.auth.allowsSSO()) {
-        this.checkSSO();
-      }
+    constructor(private router: Router,
+                private auth: AuthService,
+                private configService: ConfigurationService,
+                private shibbolethService: ShibbolethService,
+                private fb: FormBuilder,
+                private userService: UserService,
+                private translate: TranslateService) {
+        this.resetPasswordForm = fb.group({
+            email: ['', [Validators.required, Validators.email]]
+        })
     }
 
-    public login():void {
-        this.loading = true;
-        this.error = '';
-        this.auth.login(this.model.username, this.model.password)
-            .subscribe(result => {
-                if (result === true) {
-                    console.log('User logged in');
-                    this.loading = false;
-                    this.router.navigate(['/']);
-                } else {
-                    console.error('Error during login');
-                    this.error = 'Username or password is incorrect';
-                    this.loading = false;
-                }
-            },
-                err => {
-                    console.error('Unable to login. ' + err);
-                    this.loading = false;
-                    this.error = err;
+    ngOnInit() {
+        this.configService.getConfiguration().subscribe(config=>{
+            this.configuration = config;
+            if(config.ssoLoginAllowed){
+                this.shibbolethService.getOne().subscribe(shibboleth => {
+                    this.shibboleth = shibboleth;
+                    this.checkSSO();
                 });
+            }
+        });
+    }
+
+    public login(): void {
+      this.loading = true;
+      this.error = '';
+      this.auth.login(this.model.username, this.model.password)
+        .subscribe(result => {
+          this.loading = false;
+          this.router.navigate(['/']);
+        }, err => {
+          this.loading = false;
+          this.error = this.translate.instant(this.getMessage(err));
+        });
     }
 
 
@@ -78,19 +86,28 @@ export class LoginComponent implements OnInit {
                 }
             },
                 err => {
-                    console.error('Unable to propagate SSO user id. ' + err);
                     this.ssoLoading = false;
                     this.ssoError = err;
                 });
-
-      } else if(!this.auth.allowsBasic()) {
-        this.triggerSSO();
       }
     }
 
   public triggerSSO() {
-    // Need to start login process
-    var url = window.location.href.replace(/ssoUserId=.+/, '');
-    // Shibboleth SP uses parameter 'target' instead of 'return'
-    window.location.href = this.auth.getSSOLoginUrl() + '?return=' + url;
-  }}
+        let url = window.location.href.replace(/ssoUserId=.+/, '');
+        window.location.href = this.shibboleth.loginUrl + '?return=' + url;
+  }
+
+  public sendResetNotification(){
+      if(this.resetPasswordForm.valid){
+          this.userService.resetPasswordNotification(this.resetPasswordForm.controls['email'].value).subscribe(() => {
+              this.modal.show();
+          }, err=>{
+              this.modal.show();
+          });
+      }
+  }
+
+  private getMessage(err: string): string {
+    return err.match('') || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+  }
+}

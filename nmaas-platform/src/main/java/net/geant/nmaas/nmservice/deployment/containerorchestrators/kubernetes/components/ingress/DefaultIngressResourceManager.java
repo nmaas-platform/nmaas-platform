@@ -1,10 +1,16 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
-import io.fabric8.kubernetes.api.model.extensions.*;
+import io.fabric8.kubernetes.api.model.extensions.HTTPIngressPath;
+import io.fabric8.kubernetes.api.model.extensions.HTTPIngressRuleValue;
+import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.extensions.IngressBackend;
+import io.fabric8.kubernetes.api.model.extensions.IngressRule;
+import io.fabric8.kubernetes.api.model.extensions.IngressSpec;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
@@ -24,8 +30,6 @@ import java.util.stream.Collectors;
 
 /**
  * Uses the Kubernetes REST API to create, update and delete ingress resource.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DefaultIngressResourceManager implements IngressResourceManager {
@@ -54,11 +58,13 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      * @param domain name of the client domain for this deployment
      * @param deploymentName name of the deployment provided by the user
      * @param externalServiceDomain base domain name for external services
+     * @param ingressPerDomain indicates which external service domain should be used
      * @return URL under which deployed service is available
      */
     @Override
-    public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain) {
-        return externalUrl(deploymentName, domain, externalServiceDomain);
+    public String generateServiceExternalURL(String domain, String deploymentName, String externalServiceDomain, boolean ingressPerDomain) {
+        checkArgument(externalServiceDomain != null && !externalServiceDomain.isEmpty(), "External service domain cannot be null or empty");
+        return externalUrl(deploymentName.toLowerCase(), domain, externalServiceDomain.toLowerCase(), ingressPerDomain);
     }
 
     /**
@@ -75,8 +81,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl)
-            throws IngressResourceManipulationException {
+    public synchronized void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl) {
         KubernetesClient client = clusterApiManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
         String ingressResourceName = ingressResourceName(domain);
@@ -100,7 +105,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
                         servicePort);
             } else {
                 ingress.getMetadata().setResourceVersion(null);
-                IngressRule rule = prepareNewRule(serviceExternalUrl, serviceName, servicePort);
+                IngressRule rule = prepareNewRule(serviceExternalUrl.toLowerCase(), serviceName.toLowerCase(), servicePort);
                 ingress.getSpec().getRules().add(rule);
                 deleteIngressResource(client, ingress);
             }
@@ -114,15 +119,18 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
         return NMAAS_INGRESS_RESOURCE_NAME_PREFIX + domain.toLowerCase();
     }
 
-    private String externalUrl(String deploymentName, String domain, String externalServiceDomain) {
-        return deploymentName + "." + domain.toLowerCase() + "." + externalServiceDomain;
+    private String externalUrl(String deploymentName, String domain, String externalServiceDomain, boolean ingressPerDomain) {
+        if(ingressPerDomain){
+            return deploymentName.toLowerCase() + "." + externalServiceDomain.toLowerCase();
+        }
+        return deploymentName.toLowerCase() + "-" + domain.toLowerCase() + "." + externalServiceDomain.toLowerCase();
     }
 
     private String ingressClassName(String domain) {
         return NMAAS_INGRESS_CLASS_NAME_PREFIX + domain.toLowerCase();
     }
 
-    private Service retrieveServiceObject(String namespace, KubernetesClient client, String releaseName) throws IngressResourceManipulationException {
+    private Service retrieveServiceObject(String namespace, KubernetesClient client, String releaseName) {
         Map<String, String> labels = new HashMap<>();
         labels.put(SERVICE_SELECT_OPTION_RELEASE, releaseName);
         labels.put(SERVICE_SELECT_OPTION_ACCESS, SERVICE_SELECT_VALUE_ACCESS_FOR_INGRESS);
@@ -161,7 +169,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public synchronized void deleteIngressRule(String externalServiceUrl, String domain) throws IngressResourceManipulationException {
+    public synchronized void deleteIngressRule(String externalServiceUrl, String domain) {
         KubernetesClient client = clusterApiManager.getApiClient();
         String namespace = namespaceService.namespace(domain);
         String ingressResourceName = ingressResourceName(domain);
@@ -197,7 +205,7 @@ public class DefaultIngressResourceManager implements IngressResourceManager {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void deleteIngressResource(String domain) throws IngressResourceManipulationException {
+    public void deleteIngressResource(String domain) {
         KubernetesClient client = clusterApiManager.getApiClient();
         String ingressResourceName = ingressResourceName(domain);
         try {

@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl.security;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +24,9 @@ public class AclService implements net.geant.nmaas.portal.service.AclService {
 		boolean check(User user, Serializable targetId, String targetType, Permissions[] perm);
 	}
 	
-	Set<PermissionCheck> permissionChecks = new HashSet<PermissionCheck>();
+	private Set<PermissionCheck> permissionChecks = new HashSet<>();
 	
-	PermissionCheck defaultPermissionCheck = null;
+	private PermissionCheck defaultPermissionCheck = null;
 	
 	public void add(PermissionCheck permissionCheck) {
 		permissionChecks.add(permissionCheck);
@@ -33,35 +34,34 @@ public class AclService implements net.geant.nmaas.portal.service.AclService {
 	
 	@Override
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions perm) {
-		
-		User user = users.findById(userId).get();
-		if(user == null)
-			return false;
-		
-		
-		for(PermissionCheck permCheck : permissionChecks) {
-			if(permCheck.supports(targetType))
-				if(permCheck.check(user, targetId, targetType, perm))
+
+		Optional<User> userOptional = users.findById(userId);
+		if(userOptional.isPresent()) {
+			for (PermissionCheck permCheck : permissionChecks) {
+				if (permCheck.supports(targetType) && permCheck.check(userOptional.get(), targetId, targetType, perm))
 					return true;
+			}
+
+			return (defaultPermissionCheck != null && defaultPermissionCheck.check(userOptional.get(), targetId, targetType, perm));
+		}else{
+			return false;
 		}
-		
-		return (defaultPermissionCheck != null ? defaultPermissionCheck.check(user, targetId, targetType, perm) : false);
 	}
 
 	@Override
 	public boolean isAuthorized(Long userId, Serializable targetId, String targetType, Permissions[] perms) {
-		User user = users.findById(userId).get();
-		if(user == null)
+		Optional<User> userOptional = users.findById(userId);
+		if(userOptional.isPresent()) {
+			for (PermissionCheck permCheck : permissionChecks) {
+				if (permCheck.supports(targetType))
+					if (permCheck.check(userOptional.get(), targetId, targetType, perms))
+						return true;
+			}
+
+			return (defaultPermissionCheck != null && defaultPermissionCheck.check(userOptional.get(), targetId, targetType, perms));
+		}else{
 			return false;
-		
-		
-		for(PermissionCheck permCheck : permissionChecks) {
-			if(permCheck.supports(targetType))
-				if(permCheck.check(user, targetId, targetType, perms))
-					return true;
 		}
-		
-		return (defaultPermissionCheck != null ? defaultPermissionCheck.check(user, targetId, targetType, perms) : false);
 	}
 
 	public PermissionCheck getDefaultPermissionCheck() {

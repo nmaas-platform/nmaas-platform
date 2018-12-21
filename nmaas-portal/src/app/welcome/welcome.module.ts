@@ -12,9 +12,17 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {ProfileComponent} from './profile/profile.component';
-import {AppMarketModule} from "../appmarket";
-import {UserService} from "../service";
-import {CompleteComponent} from "./complete/complete.component";
+import {AppMarketModule} from '../appmarket';
+import {UserService} from '../service';
+import {CompleteComponent} from './complete/complete.component';
+import {ContentDisplayService} from '../service/content-display.service';
+import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
+import {ReCaptchaModule} from 'angular5-recaptcha';
+import {TranslateModule} from '@ngx-translate/core';
+import {ShibbolethService} from '../service/shibboleth.service';
+import { PasswordResetComponent } from './passwordreset/password-reset.component';
+import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-policy-subpage.component';
+import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 
 @NgModule({
   declarations: [
@@ -24,7 +32,10 @@ import {CompleteComponent} from "./complete/complete.component";
     ChangelogComponent,
     RegistrationComponent,
     ProfileComponent,
-    CompleteComponent
+    CompleteComponent,
+    TermsAcceptanceComponent,
+    PasswordResetComponent,
+    PrivacyPolicySubpageComponent
   ],
   imports: [
     FormsModule,
@@ -33,7 +44,10 @@ import {CompleteComponent} from "./complete/complete.component";
     RouterModule,
     SharedModule,
     PipesModule,
-      AppMarketModule
+    AppMarketModule,
+    ReCaptchaModule,
+    PasswordStrengthMeterModule,
+    TranslateModule.forChild()
   ],
   exports: [
     WelcomeComponent
@@ -41,7 +55,9 @@ import {CompleteComponent} from "./complete/complete.component";
   providers: [
     RegistrationService,
     UserService,
-    ChangelogService
+    ChangelogService,
+    ContentDisplayService,
+    ShibbolethService
   ]
 })
 export class WelcomeModule {}

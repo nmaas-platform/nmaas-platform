@@ -3,15 +3,14 @@ import {isUndefined} from 'util';
 import {Observable} from 'rxjs/Observable';
 import {GenericDataService} from './genericdata.service';
 
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 import {AppConfigService} from './appconfig.service';
 
-import {Id} from '../model/id';
 import {Password} from '../model/password';
 import {User} from '../model/user';
 import {UserRole, Role} from '../model/userrole';
-import {UserSignup} from '../model/usersignup';
 import {DomainService} from "./domain.service";
+import {PasswordReset} from "../model/passwordreset";
 
 @Injectable()
 export class UserService extends GenericDataService {
@@ -36,16 +35,22 @@ export class UserService extends GenericDataService {
     return this.get<UserRole[]>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles');
   }
 
-  public addUser(username: string, domainId?: number): Observable<Id> {
-    return this.post<UserSignup, Id>(this.getUsersUrl(), new UserSignup(username, domainId));
-  }
-
   public updateUser(userId: number, user: User): Observable<any> {
     return this.put<User, any>(this.getUsersUrl() + userId, user);
   }
 
   public completeRegistration(user: User): Observable<any> {
-    return this.post<User, any>(this.getUsersUrl()+'my/complete', user);
+    return this.http.post<User>(this.getUsersUrl()+'complete', user)
+        .timeout(this.appConfig.getHttpTimeout())
+        .catch(this.handleError);
+  }
+
+  public changeUserStatus(userId: number, enabled: boolean): Observable<any> {
+    return this.put(this.getEnableOrDisableUsersUrl(userId, enabled), {params: null});
+  }
+
+  public completeAcceptance(username: string): Observable<any>{
+    return this.post(this.getUserAcceptanceUrl() + username, {});
   }
 
   public addRole(userId: number, role: Role, domainId?: number): Observable<any> {
@@ -59,8 +64,20 @@ export class UserService extends GenericDataService {
     return this.delete<void>((isUndefined(domainId) ? this.getUsersUrl() : this.getDomainUsersUrl(domainId)) + userId + '/roles/' + role);
   }
 
-  public changePassword(userId: number, password: string): Observable<void> {
-    return this.post<Password, void>(this.getUsersUrl() + userId + '/auth/basic/password', new Password(password));
+  public changePassword(passwordChange:Password): Observable<void> {
+    return this.post<Password, void>(this.getUsersUrl() + 'my/auth/basic/password', passwordChange);
+  }
+
+  public validateResetRequest(token:string): Observable<User> {
+    return this.post<string, User>(this.getUsersUrl() + "reset/validate", token);
+  }
+
+  public resetPassword(passwordReset:PasswordReset): Observable<any> {
+    return this.post<PasswordReset, any>(this.getUsersUrl() + "reset", passwordReset);
+  }
+
+  public resetPasswordNotification(email:string): Observable<any> {
+    return this.post<string, any>(this.getUsersUrl() + "reset/notification", email);
   }
 
   protected getUsersUrl(): string {
@@ -71,4 +88,11 @@ export class UserService extends GenericDataService {
     return this.appConfig.getApiUrl() + '/domains/' + domainId + '/users/';
   }
 
+  protected getUserAcceptanceUrl(): string{
+    return this.appConfig.getApiUrl() + '/users/terms/';
+  }
+
+  protected getEnableOrDisableUsersUrl(userId: number, enabled: boolean): string {
+      return this.appConfig.getApiUrl() + '/users/status/' + userId + '?enabled=' + enabled;
+  }
 }

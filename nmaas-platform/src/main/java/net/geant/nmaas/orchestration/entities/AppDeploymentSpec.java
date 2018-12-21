@@ -1,20 +1,34 @@
 package net.geant.nmaas.orchestration.entities;
 
+import java.util.Map;
+import javax.persistence.Column;
+import lombok.Getter;
+import lombok.Setter;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
- * {@link AppDeploymentEnv} and all required templates ({@link DockerContainerTemplate}, {@link DockerComposeFileTemplate}
+ * {@link AppDeploymentEnv} and all required templates {@link DockerComposeFileTemplate}
  * and/or {@link KubernetesTemplate}) according to the supported deployment environments.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 public class AppDeploymentSpec implements Serializable {
 
@@ -27,51 +41,17 @@ public class AppDeploymentSpec implements Serializable {
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DockerContainerTemplate dockerContainerTemplate;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private DockerComposeFileTemplate dockerComposeFileTemplate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesTemplate kubernetesTemplate;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(nullable = false)
+    private Integer defaultStorageSpace;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @ElementCollection
+    @Fetch(FetchMode.SELECT)
+    private Map<ParameterType, String> deployParameters;
 
-    public List<AppDeploymentEnv> getSupportedDeploymentEnvironments() {
-        return supportedDeploymentEnvironments;
-    }
-
-    public void setSupportedDeploymentEnvironments(List<AppDeploymentEnv> supportedDeploymentEnvironments) {
-        this.supportedDeploymentEnvironments = supportedDeploymentEnvironments;
-    }
-
-    public DockerContainerTemplate getDockerContainerTemplate() {
-        return dockerContainerTemplate;
-    }
-
-    public void setDockerContainerTemplate(DockerContainerTemplate dockerContainerTemplate) {
-        this.dockerContainerTemplate = dockerContainerTemplate;
-    }
-
-    public DockerComposeFileTemplate getDockerComposeFileTemplate() {
-        return dockerComposeFileTemplate;
-    }
-
-    public void setDockerComposeFileTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
-        this.dockerComposeFileTemplate = dockerComposeFileTemplate;
-    }
-
-    public KubernetesTemplate getKubernetesTemplate() {
-        return kubernetesTemplate;
-    }
-
-    public void setKubernetesTemplate(KubernetesTemplate kubernetesTemplate) {
-        this.kubernetesTemplate = kubernetesTemplate;
-    }
+    private boolean configFileRepositoryRequired;
 }

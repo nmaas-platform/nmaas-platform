@@ -5,9 +5,6 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class HelmCommandExecutorTest {
 
     private static final String EXAMPLE_HELM_STATUS_COMMAND_OUTPUT =
@@ -31,13 +28,13 @@ public class HelmCommandExecutorTest {
 
     @Test
     public void shouldReturnDeployedStatusFromInputString() {
-        HelmCommandExecutor executor = new HelmCommandExecutor(null);
+        HelmCommandExecutor executor = new HelmCommandExecutor();
         assertThat(executor.parseStatus(EXAMPLE_HELM_STATUS_COMMAND_OUTPUT), equalTo(HelmPackageStatus.DEPLOYED));
     }
 
     @Test
     public void shouldReturnUnknownStatusFromInputString() {
-        HelmCommandExecutor executor = new HelmCommandExecutor(null);
+        HelmCommandExecutor executor = new HelmCommandExecutor();
         assertThat(executor.parseStatus("this is some example string"), equalTo(HelmPackageStatus.UNKNOWN));
     }
 }

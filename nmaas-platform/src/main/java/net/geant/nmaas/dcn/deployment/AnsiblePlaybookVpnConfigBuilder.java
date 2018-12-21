@@ -4,9 +4,6 @@ import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 class AnsiblePlaybookVpnConfigBuilder {
 
     private static final String COMMON_ID_PREFIX = "NMAAS-C-AS";

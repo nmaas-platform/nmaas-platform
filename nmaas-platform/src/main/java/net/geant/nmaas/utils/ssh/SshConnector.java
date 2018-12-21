@@ -1,5 +1,6 @@
 package net.geant.nmaas.utils.ssh;
 
+import lombok.NoArgsConstructor;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -7,22 +8,18 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+@NoArgsConstructor
 public class SshConnector {
 
 	private SSHClient ssh;
 
-	SshConnector(String hostname, int port, BasicCredentials credentials) throws SshConnectionException {
+	SshConnector(String hostname, int port, BasicCredentials credentials) {
 		connect(hostname, port);
 		if(isConnected())
 			authenticate(credentials);
 	}
 
-	public SshConnector() {}
-	
-	private void connect(String hostname, int port) throws SshConnectionException {
+	private void connect(String hostname, int port) {
 		try {
 			ssh = new SSHClient();
 			ssh.addHostKeyVerifier((arg0, arg1, arg2) -> true);
@@ -33,7 +30,7 @@ public class SshConnector {
 		}
 	}
 	
-	private void authenticate(BasicCredentials credentials) throws SshConnectionException {
+	private void authenticate(BasicCredentials credentials) {
 		if (ssh == null || !isConnected())
 			throw new SshConnectionException("Not connected.");
 		try {
@@ -43,7 +40,7 @@ public class SshConnector {
 		}
 	}
 	
-	String executeSingleCommand(String command) throws SshConnectionException, CommandExecutionException {
+	String executeSingleCommand(String command) {
 		if(!isAuthenticated())
 			throw new SshConnectionException("Not authenticated connection to " + ssh.getRemoteAddress());
 		try (Session session = ssh.startSession()){

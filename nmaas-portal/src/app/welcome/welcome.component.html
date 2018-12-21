@@ -1,34 +1,150 @@
-
 <app-navbar></app-navbar>
-<div class="container-fluid">
+<div class="container-fluid" (window:resize)="onResize()" (window:onload)="onResize()" style="margin-bottom: 20px;">
 	<div class="row">
-		<div class="col-lg-offset-1 col-lg-10 col-md-10 col-md-offset-1 col-sm-10 col-sm-offset-1 col-xs-12 login-vertical-offset">
-			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 panel panel-default" style="height: calc(100vh - 135px); overflow: auto">
-				<div class="panel-heading text-center" style="background: none">
-					<img src="assets/images/NMaaSMarket.png" style="width: 250px">
-				</div>
-				<div class="panel-body">
-					<p>Network Management as a Service (NMaaS) provides a portfolio of network management applications run on a per-user, secured network monitoring infrastructure. GÉANT’s NMaaS service includes three aspects: providing, managing and maintaining the infrastructure of the NMaaS service portal, platform and selected tools, supporting users in using the system, and the selected tools for monitoring their networks via NMaaS, as well as supporting users that contribute their software to NMaaS system.</p>
-					<p>NMaaS users are organisations that do not want to own NMS infrastructure themselves and/or want to outsource network management, as well as organisations and/or individuals that are searching for quality network management software or who want to share their software within the community.</p>
-					<p>NMaaS provides multiple benefits, as a system, an application marketplace, and as a service. NMaaS simplifies domain network management by providing the infrastructure and tools via a cloud-based, multi-tenant and secure network management system. It enables the deployment of network management tools, as well as management and monitoring of client networks, although NMaaS does not monitor and manage the network by itself. The selection of tools that is and/or can be made available to users is not limited to network management tools and can be easily extended. With NMaaS, users do not have to bear the ownership costs and risks related to maintenance and control of the network management infrastructure.</p>
-					<div class="text-center">
-						<img src="assets/images/nmaas-infra-1.png" style="height: 290px; margin-bottom: 20px">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 vertical-offset" id="welcome-container" style="text-align: justify; font-size: large;">
+			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12" >
+				<div style="display: block;" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 panel-body">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px;">
+						<h2><strong>{{ 'WELCOME.TITLE1' | translate }}</strong> (<a href="https://www.geant.org/NMaaS" target="_blank">NMaaS</a>)
+							{{ 'WELCOME.TITLE2'| translate }}</h2>
 					</div>
-					<p>NMaaS is being developed as a part of the GÉANT Network 4, Phase 2 project (GN4-2) within the Network Services Development (JRA2) project activity. This document provides more information about the NMaaS service, including technical and service description, benefits, operational details and future roadmap.</p>
+					<div style="padding-left: 10px;" class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+						<p>
+							{{ 'WELCOME.INTRO_TEXT' | translate }}
+						</p>
+					</div>
+					<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 ">
+                        <img src="../../assets/images/landing/nmaas_schema_simple_text.png" class="center-block glyphicon-align-center landing-img-sm"
+                             style="width: 100%; height: 100%; max-width: 800px; max-height: 600px;" alt="NMaaS Schema">
+					</div>
 				</div>
-				<div class="panel-footer text-center" style="background: none">
-					<img src="assets/images/geant-logo-small.png">
-					<h2 class="panel-title">NMaaS AppMarket</h2>
+				<br>
+				<div style="display: block;" class="col-lg-12 panel-body landing-block-padding">
+					<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12 ">
+						<img src="../../assets/images/landing/people_2.png" alt="Users" class="center-block landing-img-sm landing-img-left">
+					</div>
+					<div style="padding-left: 10px;" class="col-lg-9 col-md-8 col-sm-12 col-xs-12">
+						<h3>{{ 'WELCOME.TARGET_USERS_HEADER' | translate }}</h3>
+						<p>
+							{{ 'WELCOME.TARGET_USERS_TEXT' | translate }}
+						</p>
+					</div>
+				</div>
+				<br>
+				<div style="display: block;" class="col-lg-12 panel-body landing-block-padding">
+					<div style="padding-left: 10px;" class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+						<h3>{{ 'WELCOME.MARKETPLACE_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.MARKETPLACE_TEXT' | translate }}</p>
+					</div>
+					<div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+						<img src="../../assets/images/landing/shop_2.png" alt="Marketplace icon" class="glyphicon-align-center center-block landing-img-sm landing-img-right">
+					</div>
+				</div>
+				<br>
+				<div style="display: block;" class="col-lg-12 panel-body landing-block-padding">
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+						<img src="../../assets/images/landing/costs_3.png" alt="Cost reduction icon" class="center-block landing-img-sm landing-img-left">
+					</div>
+					<div style="padding-left: 10px;" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+						<h3>{{ 'WELCOME.COST_REDUCTION_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.COST_REDUCTION_TEXT' | translate }}</p>
+					</div>
+				</div>
+				<div style="display: block;" class="col-lg-12 panel-body landing-block-padding">
+					<div style="padding-left: 10px;" class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+						<h3>{{ 'WELCOME.SECURITY_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.SECURITY_TEXT' | translate }}</p>
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+						<img src="../../assets/images/landing/security.png" alt="Security icon" class="center-block landing-img-sm landing-img-right" />
+					</div>
+				</div>
+				<br>
+			</div>
+			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12"
+                 style="border-top: solid 1px #6c757d; margin-top: 20px;">
+				<div class="col-lg-offset-4 col-lg-4 col-md-offset-2 col-md-8 col-sm-offset-1 col-sm-10 text-center features-bottom-padding features-top-padding">
+					<h2>{{ 'WELCOME.NMAAS_FEATURES_HEADER' | translate }}</h2>
+				</div>
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 features-bottom-padding features-top-padding">
+					<div class="col-lg-offset-1 col-md-offset-1 col-lg-5 col-md-5 col-sm-6 col-xs-12">
+						<h3>{{ 'WELCOME.APP_MARKET_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.APP_MARKET_TEXT' | translate }}</p>
+					</div>
+					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
+						<h3>{{ 'WELCOME.OWN_APPS_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.OWN_APPS_TEXT' | translate }}</p>
+					</div>
+				</div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 features-bottom-padding features-top-padding">
+					<div class="col-lg-offset-1 col-md-offset-1 col-lg-5 col-md-5 col-sm-6 col-xs-12">
+						<h3>{{ 'WELCOME.EDUGAIN_SUPPORT_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.EDUGAIN_SUPPORT_TEXT' | translate }}<p>
+					</div>
+					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
+						<h3>{{ 'WELCOME.FAST_DEPLOYMENT_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.FAST_DEPLOYMENT_TEXT' | translate }}</p>
+					</div>
+				</div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 features-bottom-padding features-top-padding">
+					<div class="col-lg-offset-1 col-md-offset-1 col-lg-5 col-md-5 col-sm-6 col-xs-12">
+						<h3>{{ 'WELCOME.WEB_PORTAL_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.WEB_PORTAL_TEXT' | translate }}</p>
+					</div>
+					<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
+						<h3>{{ 'WELCOME.KUBERNETES_HEADER' | translate }}</h3>
+						<p>{{ 'WELCOME.KUBERNETES_TEXT' | translate }}</p>
+					</div>
 				</div>
 			</div>
-			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+			<div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-12"
+                 style="border-top: solid 1px #6c757d; margin-top: 20px;">
+                <div class="col-lg-offset-4 col-lg-4 col-md-offset-4 col-md-4 col-sm-offset-2 col-sm-8 col-xs-12 text-center" style="padding-top: 15px;
+                    padding-bottom: 10px;"><h2>{{ 'WELCOME.TECHNOLOGIES_USED_HEADER' | translate }}</h2></div>
+                <div class="center-block col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://angular.io/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/angular.png" alt="Angular logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://getbootstrap.com/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/bootstrap.png" alt="Bootstrap logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://spring.io/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/spring.png" alt="Spring logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://www.postgresql.org/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/postgres.png" alt="PostgreSQL logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://www.docker.com/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/docker.png" alt="Docker logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://kubernetes.io/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/kuber.png" alt="Kubernetes logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://about.gitlab.com/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/gitlab.png" alt="Gitlab logo" class="landing-img-logo"></a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6">
+                        <a href="https://www.ansible.com/" target="_blank" rel="nofollow">
+                            <img src="../../assets/images/logo/ansible.png" alt="Ansible logo" class="landing-img-logo"></a>
+                    </div>
+                </div>
+			</div>
+			<div id="login-register-panel" class="col-lg-3 col-md-5 col-sm-6 col-xs-12 collapse pull-right login-vertical-offset"
+				 style="z-index: 800; position: fixed; right: 1px; padding-top: 15px; max-height: 50vh; font-size: 14px		;">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 					</div>
-					<div class="panel-body">
+					<div class="panel-body" id="login-out" style="overflow-y: auto;">
 						<ul class="nav nav-tabs nav-justified">
-							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['login']">Login</a></li>
-							<li role="registration" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['registration']">Register</a></li>
+							<li role="login" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['login']">{{ 'WELCOME.LOGIN' | translate }}</a></li>
+							<li role="registration" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}"><a [routerLink]="['registration']">{{ 'WELCOME.REGISTER' | translate }}</a></li>
 						</ul>
 						<router-outlet></router-outlet>
 					</div>
@@ -37,4 +153,4 @@
 		</div>
 	</div>
 </div>
-<nmaas-footer></nmaas-footer>
+<nmaas-footer id="welcome-footer"></nmaas-footer>

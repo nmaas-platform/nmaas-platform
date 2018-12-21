@@ -12,6 +12,7 @@ import {DomainsListComponent} from './list/domainslist.component';
 import {DomainComponent} from './domain/domain.component';
 
 import {DomainService} from '../../service/domain.service';
+import {TranslateModule} from '@ngx-translate/core';
 
 
 
@@ -27,9 +28,10 @@ import {DomainService} from '../../service/domain.service';
     SharedModule,
     AuthModule,
     PipesModule,
+    TranslateModule.forChild()
   ],
   exports: [
-    DomainsListComponent,
+    DomainsListComponent
   ],
   providers: [
     DomainService,

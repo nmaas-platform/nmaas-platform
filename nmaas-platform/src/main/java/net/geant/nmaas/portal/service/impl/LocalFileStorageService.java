@@ -27,7 +27,7 @@ public class LocalFileStorageService implements FileStorageService {
 	FileInfoRepository fileRepo;
 	
 	@Override
-	public FileInfo store(MultipartFile file) throws StorageException {
+	public FileInfo store(MultipartFile file) {
 		Path path = null;
 		try {
             if (file.isEmpty()) {
@@ -37,7 +37,7 @@ public class LocalFileStorageService implements FileStorageService {
             FileInfo fileInfo = new FileInfo(file.getOriginalFilename(), file.getContentType());
             fileInfo = fileRepo.save(fileInfo);
 
-            Paths.get(uploadDir + File.separator + fileInfo.getId());
+            path = Paths.get(uploadDir + File.separator + fileInfo.getId());
             Files.copy(file.getInputStream(), getPath(fileInfo.getId()));
             
             return fileInfo;
@@ -58,15 +58,15 @@ public class LocalFileStorageService implements FileStorageService {
 	}
 
 	@Override
-	public File getFile(Long id) throws MissingElementException {
+	public File getFile(Long id) {
 		if(this.getFileInfo(id) != null)
 			return new File(uploadDir + File.separator + id);
 		throw new MissingElementException("File id=" + id + " not found.");
 	}
 
 	@Override
-	public boolean remove(FileInfo fileInfo) throws MissingElementException, StorageException {
-		if(fileInfo != null && fileRepo.exists(fileInfo.getId())) {
+	public boolean remove(FileInfo fileInfo) {
+		if(fileInfo != null && fileRepo.existsById(fileInfo.getId())) {
 			fileRepo.delete(fileInfo);
 		
 			try {

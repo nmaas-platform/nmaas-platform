@@ -4,29 +4,30 @@
 	"license":"MIT",
 	"briefDescription":"Oxidized is a network device configuration backup tool",
 	"tags": [ "management", "backup", "configuration"],
-	"fullDescription": "Oxidized is a network device configuration backup tool. It's a RANCID replacement!\n\n>- automatically adds/removes threads to meet configured retrieval interval\n- restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])\n-\n\t- syslog udp+file example to catch config change event (ios/junos) and trigger config fetch\n-\n\t- will signal ios/junos user who made change, which output modules can use (via POST)\n-\n\t- The git output module uses this info - 'git blame' will for each line show who made the change and when\n- restful API to reload list of nodes (GET /reload)\n- restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])\n- restful API to show list of nodes (GET /nodes)\n- restful API to show list of version for a node (/node/version[NODE]) and diffs\n",
+	"fullDescription": "Oxidized is a network device configuration backup tool. It's a great RANCID replacement.<br>Main features:<ul><li>automatically adds/removes threads to meet configured retrieval interval</li><li>restful API to move node immediately to head-of-queue (GET/POST /node/next/[NODE])</li><li>syslog udp+file example to catch config change event (ios/junos) and trigger config fetch</li><li>will signal ios/junos user who made change, which output modules can use (via POST)</li><li>The git output module uses this info - 'git blame' will for each line show who made the change and when</li><li>restful API to reload list of nodes (GET /reload)</li><li>restful API to fetch configurations (/node/fetch/[NODE] or /node/fetch/group/[NODE])</li><li>restful API to show list of nodes (GET /nodes)</li><li>restful API to show list of version for a node (/node/version[NODE]) and diffs</li></ul>",
 	"wwwUrl": "https://github.com/ytti/oxidized/wiki",
 	"sourceUrl": "https://github.com/ytti/oxidized",
 	"issuesUrl": "https://github.com/ytti/oxidized/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_ENGINE",
 			"DOCKER_COMPOSE",
 			"KUBERNETES"
 		],
-		"dockerContainerTemplate": {
-			"image": "oxidized/oxidized:latest",
-			"exposedPort": {
-				"protocol": "TCP",
-				"targetPort": 8888
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-oxidized",
+				"version": "1.0.1-alfa"
 			},
-			"envVariables": [
-				"CONFIG_RELOAD_INTERVAL=600"
+			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
+		},
+		"dockerComposeFileTemplate": {
+			"dcnAttachedContainers": [
+				{"name": "oxidized", "description": "oxidized"}
 			],
-			"containerVolumes": [
-				"/root/.config/oxidized"
-			]
-		}
+			"composeFileTemplateContent":"version: \"2\"\n\nservices:\n  ${oxidized.container_name}:\n    restart: always\n    image: oxidized/oxidized:latest\n    ports:\n      - ${port}:8888/tcp\n    environment:\n      CONFIG_RELOAD_INTERVAL: 600\n    volumes:\n      - ${volume}:/root/.config/oxidized\n    networks:\n      nmaas-ext-access:\n      nmaas-dcn:\n        ipv4_address: ${oxidized.container_ip_address}\n    privileged: true\n\nnetworks:\n  nmaas-ext-access:\n    external:\n      name: ${nmaas_ext_access_network}\n  nmaas-dcn:\n    external:\n      name: ${nmaas_dcn_network}"
+		},
+		"defaultStorageSpace":20,
+		"configFileRepositoryRequired":true
 	},
 	"configTemplate": {
 		"template": {
@@ -73,10 +74,6 @@
 						"targets[]",
 						"targets[].ipAddress"
 					]
-				},
-				{
-					"type": "submit",
-					"title": "Apply configuration"
 				}
 			]
 		}

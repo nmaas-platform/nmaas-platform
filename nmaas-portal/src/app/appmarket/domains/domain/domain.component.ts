@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+  import {Component, OnInit, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Domain} from '../../../model/domain';
@@ -7,11 +7,12 @@ import { BaseComponent } from '../../../shared/common/basecomponent/base.compone
 import {isUndefined} from 'util';
 import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
 import {User} from "../../../model";
-import {UserService} from "../../../service";
+import {AppConfigService, UserService} from '../../../service';
 import {Observable} from "rxjs/Observable";
 import {Role, UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
 import {AuthService} from "../../../auth/auth.service";
+import {ModalComponent} from '../../../shared/modal';
 
 
 @Component({
@@ -23,15 +24,20 @@ import {AuthService} from "../../../auth/auth.service";
 export class DomainComponent extends BaseComponent implements OnInit {
 
   private domainId: number;
-  private domain: Domain;
+  public domain: Domain;
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
 
-    constructor(protected domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService:AuthService) {
-    super();
-  }
+  @ViewChild(ModalComponent)
+  public modal:ModalComponent;
+
+    constructor(public domainService: DomainService, protected userService: UserService, private router: Router, private route: ActivatedRoute, private location: Location, private authService: AuthService) {
+      super();
+    }
 
   ngOnInit() {
+      this.modal.setModalType("warning");
+      this.modal.setStatusOfIcons(true);
     this.mode = this.getMode(this.route);
     this.route.params.subscribe(params => {
       if (!isUndefined(params['id'])) {
@@ -52,11 +58,19 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
   protected submit(): void {
     if (!isUndefined(this.domainId)) {
-      this.authService.hasRole('ROLE_SUPERADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.authService.hasRole('ROLE_SYSTEM_ADMIN')?this.domainService.update(this.domain).subscribe(() => this.router.navigate(['domains/'])):this.domainService.updateTechDetails(this.domain).subscribe(() => this.router.navigate(['domains/']));
     } else {
       this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
     }
     this.domainService.setUpdateRequiredFlag(true);
+  }
+
+  public updateDcnConfigured(): void {
+      this.domain.dcnConfigured = !this.domain.dcnConfigured;
+      this.domainService.updateDcnConfigured(this.domain).subscribe((value) => {
+        this.modal.hide();
+        this.router.navigate(['domains/edit/'+value.id])
+      });
   }
 
   protected getDomainRoleNames(roles:UserRole[]):UserRole[]{

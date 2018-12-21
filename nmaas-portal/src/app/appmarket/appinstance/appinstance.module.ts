@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AuthModule} from '../../auth/auth.module';
 import {SharedModule} from '../../shared/shared.module';
 import {PipesModule} from '../../pipe/pipes.module';
@@ -20,6 +20,8 @@ import {
     Bootstrap3Framework,
     Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
 } from "angular2-json-schema-form";
+import {TranslateModule} from '@ngx-translate/core';
+import {NgxPaginationModule} from "ngx-pagination";
 
 @NgModule({
   declarations: [
@@ -30,12 +32,15 @@ import {
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     RouterModule,
     SharedModule,
     AuthModule,
     AppInstanceProgressModule,
     PipesModule,
+      NgxPaginationModule,
     Bootstrap3FrameworkModule,
+    TranslateModule.forChild(),
     {
       ngModule: JsonSchemaFormModule,
       providers: [

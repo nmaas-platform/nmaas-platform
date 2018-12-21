@@ -27,12 +27,12 @@ public class ProfileController {
     }
 
     @GetMapping("/user")
-    public User retrieveLoggedUser(@NotNull Principal principal) throws ProcessingException{
+    public User retrieveLoggedUser(@NotNull Principal principal) {
         net.geant.nmaas.portal.persistent.entity.User user = this.getUser(principal.getName());
         return this.modelMapper.map(user, User.class);
     }
 
-    private net.geant.nmaas.portal.persistent.entity.User getUser(String username) throws ProcessingException{
+    private net.geant.nmaas.portal.persistent.entity.User getUser(String username) {
         return users.findByUsername(username).orElseThrow(() -> new ProcessingException("User not found."));
     }
 }

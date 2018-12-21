@@ -1,9 +1,13 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.After;
@@ -12,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,9 +38,9 @@ public class AppTemplatePermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(applications.findOne(UsersHelper.APP1.getId())).thenReturn(UsersHelper.APP1);
-		when(applications.findOne(UsersHelper.APP2.getId())).thenReturn(UsersHelper.APP2);
-		when(applications.findOne(UsersHelper.APP3.getId())).thenReturn(UsersHelper.APP3);
+		when(applications.findById(UsersHelper.APP1.getId())).thenReturn(Optional.of(UsersHelper.APP1));
+		when(applications.findById(UsersHelper.APP2.getId())).thenReturn(Optional.of(UsersHelper.APP2));
+		when(applications.findById(UsersHelper.APP3.getId())).thenReturn(Optional.of(UsersHelper.APP3));
 	}
 
 	@After
@@ -56,7 +59,7 @@ public class AppTemplatePermissionCheckTest {
 
 	
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = atpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.APP1.getId(), AppTemplatePermissionCheck.APPTEMPLATE);
 		assertEquals(5, perms.size());

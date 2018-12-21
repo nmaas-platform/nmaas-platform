@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
-public class InternalErrorException extends Exception {
+public class InternalErrorException extends RuntimeException {
 
     public InternalErrorException(String message) {
         super(message);

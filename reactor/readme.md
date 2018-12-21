@@ -5,3 +5,4 @@
 #### Build
 ---
   + In order to build the software run *gradlew clean build* in reactor directory.
+  + To build production configuration, add *-Pprod* flag.

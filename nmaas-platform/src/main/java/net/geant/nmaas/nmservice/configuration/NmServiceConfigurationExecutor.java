@@ -15,8 +15,6 @@ import java.util.List;
 
 /**
  * Default implementation of the {@link NmServiceConfigurationProvider} interface.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class NmServiceConfigurationExecutor implements NmServiceConfigurationProvider {
@@ -38,25 +36,40 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
      * @param deploymentId unique identifier of service deployment
      * @param applicationId identifier of the application / service
      * @param appConfiguration application instance configuration data provided by the user
+     * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      * @throws NmServiceConfigurationFailedException if any error condition occurs
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration)
-            throws NmServiceConfigurationFailedException {
+    public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired) {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
-            fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers);
+            fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (Exception e) {
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED);
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED, e.getMessage());
+            throw new NmServiceConfigurationFailedException(e.getMessage());
+        }
+    }
+
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired){
+        try{
+            List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
+            fileTransferor.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
+        } catch(Exception e){
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
     }
 
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
-        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state));
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
+    }
+
+    private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state, String errorMessage) {
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, errorMessage));
     }
 
 }

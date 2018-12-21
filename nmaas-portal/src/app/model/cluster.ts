@@ -1,14 +1,12 @@
 export class ClusterInfo {
-    public helmHostAddress: string;
-    public name: string;
-    public restApiHostAddress: string;
-    public restApiPort: number;
+    public id: number;
 }
 
 class ClusterApi {
     public id: number;
     public restApiHostAddress: string;
     public restApiPort: number;
+    public useKClusterApi: boolean = false;
 }
 
 class ClusterAttachPoint {
@@ -19,11 +17,16 @@ class ClusterAttachPoint {
 }
 
 class ClusterDeployment {
+    public smtpServerHostname: string="";
+    public smtpServerPort: string="";
+    public smtpServerUsername: string="";
+    public smtpServerPassword: string="";
     public defaultNamespace: string="";
-    public defaultPersistenceClass: string="";
+    public defaultStorageClass: string="";
     public id: number;
     public namespaceConfigOption: string;
     public useInClusterGitLabInstance: boolean = false;
+    public forceDedicatedWorkers: boolean = false;
 }
 
 export class ClusterExtNetwork {
@@ -36,15 +39,6 @@ export class ClusterExtNetwork {
     public id: number;
 }
 
-class ClusterHelm {
-    public helmHostAddress: string;
-    public helmHostChartsDirectory: string;
-    public helmHostSshUsername: string;
-    public helmChartRepositoryName: string;
-    public id: number;
-    public useLocalChartArchives: boolean = false;
-}
-
 class ClusterIngress {
     public id: number;
     public controllerConfigOption: string;
@@ -54,6 +48,9 @@ class ClusterIngress {
     public externalServiceDomain: string;
     public tlsSupported: boolean = false;
     public supportedIngressClass: string;
+    public certificateConfigOption: string;
+    public issuerOrWildcardName: string;
+    public ingressPerDomain: boolean = false;
 }
 
 export class Cluster {
@@ -61,16 +58,13 @@ export class Cluster {
     public attachPoint: ClusterAttachPoint;
     public deployment: ClusterDeployment;
     public externalNetworks: ClusterExtNetwork[];
-    public helm: ClusterHelm;
     public id: number;
     public ingress: ClusterIngress;
-    public name: string;
     constructor(){
         this.api = new ClusterApi();
         this.attachPoint = new ClusterAttachPoint();
         this.deployment = new ClusterDeployment();
         this.externalNetworks = [];
-        this.helm = new ClusterHelm();
         this.ingress = new ClusterIngress();
     }
 }
@@ -91,4 +85,9 @@ export enum NamespaceConfigOption{
     USE_DEFAULT_NAMESPACE = 'USE_DEFAULT_NAMESPACE',
     USE_DOMAIN_NAMESPACE = 'USE_DOMAIN_NAMESPACE',
     CREATE_NAMESPACE = 'CREATE_NAMESPACE'
+}
+
+export enum IngressCertificateConfigOption{
+    USE_WILDCARD = 'USE_WILDCARD',
+    USE_LETSENCRYPT = 'USE_LETSENCRYPT'
 }

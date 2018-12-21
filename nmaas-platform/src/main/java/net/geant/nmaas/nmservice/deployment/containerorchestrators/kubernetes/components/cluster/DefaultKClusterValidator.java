@@ -15,8 +15,6 @@ import java.util.List;
 
 /**
  * Uses the Kubernetes REST API to verify if configured cluster is in proper state and meets all requirements.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DefaultKClusterValidator implements KClusterValidator {
@@ -40,7 +38,7 @@ public class DefaultKClusterValidator implements KClusterValidator {
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void checkClusterStatusAndPrerequisites() throws KClusterCheckException {
+    public void checkClusterStatusAndPrerequisites() {
         KubernetesClient client = clusterApiManager.getApiClient();
         try {
             atLeastGivenNumberOfWorkers(client, MIN_NUMBER_OF_WORKERS_IN_CLUSTER);
@@ -50,16 +48,16 @@ public class DefaultKClusterValidator implements KClusterValidator {
         }
     }
 
-    private void atLeastGivenNumberOfWorkers(KubernetesClient client, int expectedNumber) throws KClusterCheckException, KubernetesClientException {
+    private void atLeastGivenNumberOfWorkers(KubernetesClient client, int expectedNumber) {
         if (getClusterNodes(client).size() < expectedNumber)
             throw new KClusterCheckException("Not enough worker nodes in the cluster (" + getClusterNodes(client).size() + ")");
     }
 
-    private List<Node> getClusterNodes(KubernetesClient client) throws KubernetesClientException {
+    private List<Node> getClusterNodes(KubernetesClient client) {
         return client.nodes().list().getItems();
     }
 
-    private void isStorageClassDeployed(KubernetesClient client) throws KClusterCheckException {
+    private void isStorageClassDeployed(KubernetesClient client) {
         // TODO waiting for new library release with storageClass support
     }
 

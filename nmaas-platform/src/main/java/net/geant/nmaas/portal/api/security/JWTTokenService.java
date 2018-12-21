@@ -1,37 +1,34 @@
 package net.geant.nmaas.portal.api.security;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.jsonwebtoken.*;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
 import net.geant.nmaas.portal.persistent.entity.User;
 
 @Service("jwtTokenService")
+@NoArgsConstructor
 public class JWTTokenService {
 
+	private JWTSettings jwtSettings;
+
+	private static final String SCOPES = "scopes";
+
 	@Autowired
-	JWTSettings jwtSettings;
-	
-	public JWTTokenService() {
-	}
-	
-	protected JWTTokenService(JWTSettings jwtSettings) {
+	public JWTTokenService(JWTSettings jwtSettings){
 		this.jwtSettings = jwtSettings;
 	}
-	
+
 	public String getToken(User user) {
 		if(user == null || StringUtils.isEmpty(user.getUsername())) 
 			throw new IllegalArgumentException("User or username is not set");
@@ -41,7 +38,7 @@ public class JWTTokenService {
 		.setIssuer(jwtSettings.getIssuer())
 		.setIssuedAt(new Date())
 		.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
-		.claim("scopes", user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
+		.claim(SCOPES, user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
 		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 		.compact();
 	}
@@ -56,26 +53,31 @@ public class JWTTokenService {
 					.setId(UUID.randomUUID().toString())
 					.setIssuedAt(new Date())
 					.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRefreshTokenExpTime()))
-					.claim("scopes", Arrays.asList(JWTSettings.Scopes.REFRESH_TOKEN))
+					.claim(SCOPES, Collections.singletonList(JWTSettings.Scopes.REFRESH_TOKEN))
 					.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 					.compact();
 	}
-	
-	public boolean validateToken(String token) {
-		try {
-			getClaims(token);
-			return true;
-		} catch(JwtException e) {
-			return false;
+
+	public String getResetToken(String email){
+		if(email == null || email.isEmpty()){
+			throw new IllegalArgumentException("Email cannot be null or empty");
 		}
+
+		return Jwts.builder()
+				.setSubject(email)
+				.setIssuer(jwtSettings.getIssuer())
+				.setId(UUID.randomUUID().toString())
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getResetTokenExpTime()))
+				.signWith(SignatureAlgorithm.HS384, jwtSettings.getResetSigningKey())
+				.compact();
 	}
 	
 	public boolean validateRefreshToken(String token) {
 		try {
 			Claims claims = getClaims(token);
-			Object scope = claims.get("scopes");
-			if(scope instanceof List<?>) {
-				if(((List<String>)scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name()))
+			Object scope = claims.get(SCOPES);
+			if(scope instanceof List<?> && ((List<String>)scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name())) {
 					return true;
 			} 
 			return false;
@@ -88,5 +90,8 @@ public class JWTTokenService {
 	public Claims getClaims(String token) {
 		return Jwts.parser().setSigningKey(jwtSettings.getSigningKey()).parseClaimsJws(token).getBody();
 	}
-	
+
+	public Claims getResetClaims(String token) {
+		return Jwts.parser().setSigningKey(jwtSettings.getResetSigningKey()).parseClaimsJws(token).getBody();
+	}
 }

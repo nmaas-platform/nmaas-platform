@@ -6,12 +6,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Set of properties describing details of service deployment in Kubernetes cluster
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 @Table(name="k_cluster_deployment")
 public class KClusterDeployment {
@@ -25,54 +27,31 @@ public class KClusterDeployment {
     @Column(nullable = false)
     private NamespaceConfigOption namespaceConfigOption;
 
-    /** Kubernetes namespace for NMaaS deployments */
+    /** Kubernetes default namespace for NMaaS deployments */
     private String defaultNamespace;
 
-    /** Kubernetes persistence storage class to be used by PVCs */
-    @Column(nullable = false)
-    private String defaultPersistenceClass;
+    /** Kubernetes default storage class to be used by PVCs */
+    private String defaultStorageClass;
 
     /** Flag indicating if a GitLab instance deployed within the cluster should be used for configuration storage */
     @Column(nullable = false)
     private Boolean useInClusterGitLabInstance;
 
-    public Long getId() {
-        return id;
-    }
+    /** The IP address / hostname of the SMTP server */
+    @Column(nullable = false)
+    private String smtpServerHostname;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /** Port on which SMTP server is exposed */
+    @Column(nullable = false)
+    private Integer smtpServerPort;
 
-    public NamespaceConfigOption getNamespaceConfigOption() {
-        return namespaceConfigOption;
-    }
+    /** SMTP server username */
+    private String smtpServerUsername;
 
-    public void setNamespaceConfigOption(NamespaceConfigOption namespaceConfigOption) {
-        this.namespaceConfigOption = namespaceConfigOption;
-    }
+    /** SMTP server user password */
+    private String smtpServerPassword;
 
-    public String getDefaultNamespace() {
-        return defaultNamespace;
-    }
-
-    public void setDefaultNamespace(String defaultNamespace) {
-        this.defaultNamespace = defaultNamespace;
-    }
-
-    public String getDefaultPersistenceClass() {
-        return defaultPersistenceClass;
-    }
-
-    public void setDefaultPersistenceClass(String defaultPersistenceClass) {
-        this.defaultPersistenceClass = defaultPersistenceClass;
-    }
-
-    public Boolean getUseInClusterGitLabInstance() {
-        return useInClusterGitLabInstance;
-    }
-
-    public void setUseInClusterGitLabInstance(Boolean useInClusterGitLabInstance) {
-        this.useInClusterGitLabInstance = useInClusterGitLabInstance;
-    }
+    /** Flag indicating if service should deploy on dedicated workers */
+    @Column(nullable = false)
+    private Boolean forceDedicatedWorkers;
 }

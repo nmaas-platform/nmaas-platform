@@ -1,40 +1,52 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.Embedded;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table (
-		uniqueConstraints = { @UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})}
-)
+@Table(uniqueConstraints = {
+		@UniqueConstraint(columnNames={"name"}), @UniqueConstraint(columnNames={"codename"})
+})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Domain {
 
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY )
 	Long id;
-	
+
+	@EqualsAndHashCode.Include
 	@NotNull
     @Column(nullable = false, unique = true)
     private String codename;
-	
+
+	@EqualsAndHashCode.Include
 	@NotNull
 	@Column(nullable = false, unique=true)
 	String name;
-	
+
+	@Column(unique = true)
+	private String externalServiceDomain;
+
 	@Embedded
 	DomainTechDetails domainTechDetails;
 	
 	boolean active;
-	
-	protected Domain() {		
-	}
 
 	public Domain(String name, String codename) {
 		super();
@@ -58,95 +70,31 @@ public class Domain {
 		this.active = active;
 	}
 
-	public Domain(String name, String codename, String kubernetesNamespace, boolean dcnConfigured){
-		this(name,codename);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	public Domain(String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
+		this(name, codename);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
 	}
 
-	public Domain(String name, String codename, boolean active, String kubernetesNamespace, boolean dcnConfigured) {
-		this(name,codename,active);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
+	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
+		this(name, codename, active);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
+		this.externalServiceDomain = externalServiceDomain;
 	}
 
-	public Domain(Long id, String name, String codename, String kubernetesNamespace, boolean dcnConfigured) {
-		this(id,name,codename);
-		this.domainTechDetails = new DomainTechDetails(kubernetesNamespace, dcnConfigured);
-	}
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getCodename() {
-		return codename;
-	}
-
-	public void setCodename(String codename) {
-		this.codename = codename;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-
-	public DomainTechDetails getDomainTechDetails(){
-		return this.domainTechDetails;
-	}
-
-	public String getKubernetesNamespace(){
-		return this.domainTechDetails.getKubernetesNamespace();
+	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+		this(id, name, codename);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
 	}
 
 	public boolean isDcnConfigured(){
 		return this.domainTechDetails.isDcnConfigured();
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((codename == null) ? 0 : codename.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+	public String getKubernetesNamespace(){
+		return this.domainTechDetails.getKubernetesNamespace();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Domain other = (Domain) obj;
-		if (codename == null) {
-			if (other.codename != null)
-				return false;
-		} else if (!codename.equals(other.codename))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+	public String getKubernetesStorageClass(){return this.domainTechDetails.getKubernetesStorageClass();}
 
 }
 

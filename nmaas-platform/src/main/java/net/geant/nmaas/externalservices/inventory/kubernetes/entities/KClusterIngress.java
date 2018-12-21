@@ -8,12 +8,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Set of properties describing a Kubernetes cluster ingress handling
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@Getter
+@Setter
 @Entity
 @Table(name="k_cluster_ingress")
 public class KClusterIngress {
@@ -48,67 +50,10 @@ public class KClusterIngress {
     /** Indicates if TLS for ingress is supported */
     private Boolean tlsSupported;
 
-    public Long getId() {
-        return id;
-    }
+    @Enumerated(EnumType.STRING)
+    private IngressCertificateConfigOption certificateConfigOption;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String issuerOrWildcardName;
 
-    public IngressControllerConfigOption getControllerConfigOption() {
-        return controllerConfigOption;
-    }
-
-    public void setControllerConfigOption(IngressControllerConfigOption controllerConfigOption) {
-        this.controllerConfigOption = controllerConfigOption;
-    }
-
-    public String getSupportedIngressClass() {
-        return supportedIngressClass;
-    }
-
-    public void setSupportedIngressClass(String supportedIngressClass) {
-        this.supportedIngressClass = supportedIngressClass;
-    }
-
-    public String getControllerChartName() {
-        return controllerChartName;
-    }
-
-    public void setControllerChartName(String controllerChartName) {
-        this.controllerChartName = controllerChartName;
-    }
-
-    public String getControllerChartArchive() {
-        return controllerChartArchive;
-    }
-
-    public void setControllerChartArchive(String controllerChartArchive) {
-        this.controllerChartArchive = controllerChartArchive;
-    }
-
-    public IngressResourceConfigOption getResourceConfigOption() {
-        return resourceConfigOption;
-    }
-
-    public void setResourceConfigOption(IngressResourceConfigOption resourceConfigOption) {
-        this.resourceConfigOption = resourceConfigOption;
-    }
-
-    public String getExternalServiceDomain() {
-        return externalServiceDomain;
-    }
-
-    public void setExternalServiceDomain(String externalServiceDomain) {
-        this.externalServiceDomain = externalServiceDomain;
-    }
-
-    public Boolean getTlsSupported() {
-        return tlsSupported;
-    }
-
-    public void setTlsSupported(Boolean tlsSupported) {
-        this.tlsSupported = tlsSupported;
-    }
+    private Boolean ingressPerDomain;
 }

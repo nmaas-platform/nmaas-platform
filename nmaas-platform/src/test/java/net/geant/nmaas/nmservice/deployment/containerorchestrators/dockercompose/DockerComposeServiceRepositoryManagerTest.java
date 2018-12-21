@@ -14,9 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource("classpath:application-test-compose.properties")
@@ -31,13 +28,13 @@ public class DockerComposeServiceRepositoryManagerTest {
 
     @Test
     public void shouldAddUpdateAndRemoveNmServiceInfo() throws InvalidDeploymentIdException {
-        DockerComposeNmServiceInfo info = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, null);
+        DockerComposeNmServiceInfo info = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         manager.storeService(info);
         DockerComposeNmServiceInfo storedInfo = manager.loadService(deploymentId);
         assertThat(storedInfo, is(notNullValue()));
         assertThat(storedInfo.getDockerComposeFileTemplate(), is(nullValue()));
         storedInfo.setDockerComposeFileTemplate(new DockerComposeFileTemplate("testContent"));
-        manager.storeService(storedInfo);
+        manager.updateService(storedInfo);
         storedInfo = manager.loadService(deploymentId);
         assertThat(storedInfo.getDockerComposeFileTemplate(), is(notNullValue()));
         manager.removeAllServices();

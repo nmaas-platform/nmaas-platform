@@ -1,20 +1,26 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-
 import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
-
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
-
-import {AppInstance, AppInstanceProgressStage, AppInstanceState, AppInstanceStatus, Application} from '../../../model/index';
-
+import {
+  AppInstance,
+  AppInstanceProgressStage,
+  AppInstanceState,
+  AppInstanceStatus,
+  Application
+} from '../../../model/index';
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-
 // import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
+import {AppConfiguration} from "../../../model/appconfiguration";
+import {isNullOrUndefined} from "util";
+import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ModalComponent} from "../../../shared/modal";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -22,7 +28,7 @@ import {RateComponent} from '../../../shared/rate/rate.component';
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
   providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
 })
-export class AppInstanceComponent implements OnInit, OnDestroy {
+export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   public AppInstanceState = AppInstanceState;
 
@@ -31,6 +37,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   @ViewChild(AppRestartModalComponent)
   public modal:AppRestartModalComponent;
+
+  @ViewChild(ModalComponent)
+  public undeployModal: ModalComponent;
+
+  @ViewChild('updateConfig')
+  public updateConfigModal: ModalComponent;
 
   @ViewChild(RateComponent)
   public readonly appRate: RateComponent;
@@ -43,8 +55,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
+  public additionalParametersTemplate: any;
+  public additionalMandatoryTemplate: any;
+  public appConfiguration: AppConfiguration;
+  public requiredFields: any[];
+  public mandatoryFields: any[];
+
 
   public intervalCheckerSubscribtion;
+
+  public configAdvancedTab: FormGroup;
 
   jsonFormOptions: any = {
     addSubmit: false, // Add a submit button if layout does not have one
@@ -62,9 +82,16 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location) {}
+    private location: Location,
+    @Inject(LOCAL_STORAGE) public storage: StorageService,
+              private fb: FormBuilder) {
+      this.configAdvancedTab = fb.group({
+      storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
+    });
+  }
 
   ngOnInit() {
+    this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
 
@@ -73,12 +100,25 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
+          if(!isNullOrUndefined(this.app.additionalParametersTemplate)){
+              this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
+          }
+          if(!isNullOrUndefined(this.app.additionalMandatoryTemplate) && !isNullOrUndefined(this.app.additionalMandatoryTemplate.template)){
+            this.additionalMandatoryTemplate = this.getTemplate(this.app.additionalMandatoryTemplate.template);
+            this.mandatoryFields = this.additionalMandatoryTemplate.schema.required;
+          }
+          this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
 
       this.updateAppInstanceState();
       this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+      this.undeployModal.setModalType("warning");
+      this.undeployModal.setStatusOfIcons(true);
     });
+  }
+
+  ngAfterViewChecked(): void {
   }
 
   private updateAppInstanceState() {
@@ -86,14 +126,26 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
       appInstanceStatus => {
         console.log('Type: ' + typeof appInstanceStatus.state + ', ' + appInstanceStatus.state);
         this.appInstanceStatus = appInstanceStatus;
+        if(this.appInstanceStatus.state == this.AppInstanceState.FAILURE){
+          document.getElementById("app-prop").scrollLeft =
+            (document.getElementsByClassName("stepwizard-btn-success").length * 180 +
+              document.getElementsByClassName("stepwizard-btn-danger").length * 180);
+        }
         this.appInstanceProgress.activeState = this.appInstanceStatus.state;
-        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING] && !this.appInstance.url) {
-          this.updateAppInstance();
+        this.appInstanceProgress.previousState = this.appInstanceStatus.previousState;
+        document.getElementById("app-prop").scrollLeft =
+          (document.getElementsByClassName("stepwizard-btn-success").length * 180 +
+            document.getElementsByClassName("stepwizard-btn-danger").length * 180);
+        if (AppInstanceState[AppInstanceState[this.appInstanceStatus.state]] === AppInstanceState[AppInstanceState.RUNNING]) {
+          if(this.storage.has("appConfig_"+this.appInstanceId.toString()))
+            this.storage.remove("appConfig_"+this.appInstanceId.toString());
+          if(!this.appInstance.url)
+            this.updateAppInstance();
         }
       }
     );
      this.appInstanceService.getAppInstanceHistory(this.appInstanceId).subscribe(history => {
-        this.appInstanceStateHistory = history.reverse();
+        this.appInstanceStateHistory = [...history].reverse();
      });
   }
 
@@ -111,13 +163,44 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
     }
   }
 
-  public applyConfiguration(configuration: string): void {
-    this.appInstanceService.applyConfiguration(this.appInstanceId, configuration).subscribe(() => console.log('Configuration applied'));
+  public redeploy(): void{
+    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log("Redeployed"));
+  }
+
+  public changeConfiguration(configuration: string): void{
+    this.appConfiguration.jsonInput = configuration;
+  }
+
+  public changeAdditionalParameters(additionalParameters: string): void{
+    this.appConfiguration.additionalParameters = additionalParameters;
+  }
+
+  public changeMandatoryParameters(mandatoryParameters: string): void{
+    this.appConfiguration.mandatoryParameters = mandatoryParameters;
+  }
+
+  public applyConfiguration(): void {
+    if(this.isValid()){
+      this.appConfiguration.storageSpace = this.configAdvancedTab.controls['storageSpace'].value;
+        this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+          console.log('Configuration applied');
+          this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
+        });
+    }
+  }
+
+  public updateConfiguration(): void {
+    if(this.isValid()){
+      this.appInstanceService.updateConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+        console.log("Configuration updated");
+        this.updateConfigModal.hide();
+      });
+    }
   }
 
   public undeploy(): void {
     if (this.appInstanceId) {
-      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/']));
+      this.appInstanceService.removeAppInstance(this.appInstanceId).subscribe(() => this.router.navigate(['/instances']));
     }
   }
 
@@ -131,6 +214,41 @@ export class AppInstanceComponent implements OnInit, OnDestroy {
 
   public onRateChanged(): void {
         this.appRate.refresh();
+  }
+
+  public isValid(): boolean {
+    if(isNullOrUndefined(this.requiredFields) && isNullOrUndefined(this.mandatoryFields)){
+      return true;
+    }
+    for(let value of this.requiredFields){
+      if(!this.appConfiguration.jsonInput.hasOwnProperty(value)){
+        return false;
+      }
+      if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items)){
+        for(let val of this.appConfiguration.jsonInput[value]) {
+            if (!isNullOrUndefined(val.ipAddress) && !val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])) {
+                return false;
+            }
+        }
+        if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items.required)){
+            for(let valReq of this.configurationTemplate.schema.properties[value].items.required){
+                for(let val of this.appConfiguration.jsonInput[value]){
+                    if(!val.hasOwnProperty(valReq)){
+                        return false;
+                    }
+                }
+            }
+        }
+      }
+    }
+    if(!isNullOrUndefined(this.mandatoryFields)){
+      for(let value of this.mandatoryFields){
+          if(!this.appConfiguration.mandatoryParameters.hasOwnProperty(value)){
+              return false;
+          }
+      }
+    }
+    return true;
   }
 
 }

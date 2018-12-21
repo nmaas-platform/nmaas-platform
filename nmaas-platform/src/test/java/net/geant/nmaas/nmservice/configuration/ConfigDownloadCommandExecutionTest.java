@@ -8,11 +8,10 @@ import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerEngineServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainer;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerTemplate;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerContainerVolumesDetails;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerEngineNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
@@ -38,18 +37,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-engine.properties")
+@TestPropertySource("classpath:application-test-compose.properties")
 public class ConfigDownloadCommandExecutionTest {
 
     @Autowired
     private DockerHostRepositoryManager dockerHostRepositoryManager;
     @Autowired
-    private DockerEngineServiceRepositoryManager serviceRepositoryManager;
+    private DockerComposeServiceRepositoryManager serviceRepositoryManager;
     @Autowired
     private NmServiceConfigFileRepository configurations;
     @Autowired
@@ -62,18 +58,22 @@ public class ConfigDownloadCommandExecutionTest {
 
     // for password: testpass
     private static final String CORRECT_CONFIG_DOWNLOAD_COMMAND =
-            "mkdir -p /home/mgmt/volumes/volume/ && wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic Y29uZmlnVGVzdDp0ZXN0cGFzcw==\" http://portal.nmaas.gn4.net:-1/api/configs/id1 -O /home/mgmt/volumes/volume/fileName1";
+            "mkdir -p /home/mgmt/volumes/testVolumeName/ && wget --connect-timeout=3 --tries=2 --header=\"Authorization: Basic Y29uZmlnVGVzdDp0ZXN0cGFzcw==\" http://localhost:9000/api/configs/id1 -O /home/mgmt/volumes/testVolumeName/fileName1";
 
     @Before
     public void setup() throws UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {
         dockerHostRepositoryManager.addDockerHost(dockerHost());
-        DockerEngineNmServiceInfo nmServiceInfo = new DockerEngineNmServiceInfo(
+        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(
                 deploymentId,
                 "deploymentName",
                 "domain",
-                new DockerContainerTemplate("app/image"));
+                20,
+                new DockerComposeFileTemplate("testContent"));
         nmServiceInfo.setHost(dockerHostRepositoryManager.loadPreferredDockerHost());
-        nmServiceInfo.setDockerContainer(dockerContainer());
+        DockerComposeService dockerComposeService = new DockerComposeService();
+        dockerComposeService.setAttachedVolumeName("testVolumeName");
+        dockerComposeService.setPublicPort(8080);
+        nmServiceInfo.setDockerComposeService(dockerComposeService);
         serviceRepositoryManager.storeService(nmServiceInfo);
         NmServiceConfiguration conf1 = new NmServiceConfiguration(configId1, "fileName1", "fileContent1");
         configurations.save(conf1);
@@ -90,7 +90,7 @@ public class ConfigDownloadCommandExecutionTest {
 
     @Test
     public void shouldPrepareConfigDownloadCommandString() throws FileTransferException, ConfigFileNotFoundException, InvalidDeploymentIdException, SshConnectionException, CommandExecutionException {
-        configDownloadCommandExecutor.transferConfigFiles(deploymentId, Arrays.asList(configId1));
+        configDownloadCommandExecutor.transferConfigFiles(deploymentId, Arrays.asList(configId1),true);
         ArgumentCaptor<Command> commandArgumentCaptor = ArgumentCaptor.forClass(Command.class);
         verify(executor, times(1)).executeSingleCommand(commandArgumentCaptor.capture());
         assertThat(commandArgumentCaptor.getValue().asString(), equalTo(CORRECT_CONFIG_DOWNLOAD_COMMAND));
@@ -108,12 +108,6 @@ public class ConfigDownloadCommandExecutionTest {
                 "/home/mgmt/scripts",
                 "/home/mgmt/volumes",
                 true);
-    }
-
-    private static DockerContainer dockerContainer() {
-        DockerContainer dockerContainer = new DockerContainer();
-        dockerContainer.setVolumesDetails(new DockerContainerVolumesDetails("volume"));
-        return dockerContainer;
     }
 
 }

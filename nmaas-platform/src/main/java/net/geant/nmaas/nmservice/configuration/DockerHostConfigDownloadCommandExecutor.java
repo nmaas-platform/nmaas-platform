@@ -3,15 +3,15 @@ package net.geant.nmaas.nmservice.configuration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerNmServiceRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerNmServiceRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;
+import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -26,19 +26,23 @@ import java.util.List;
 /**
  * Implementation of the {@link ConfigurationFileTransferProvider} interface tailored for deployments for which
  * configuration files should be put in a shared volume directory on a Docker Host.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
-@Profile("conf_download")
+@Profile("env_docker-compose")
 public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFileTransferProvider {
 
-    @Autowired
     private Environment env;
-    @Autowired
+
     private DockerNmServiceRepositoryManager serviceRepositoryManager;
-    @Autowired
+
     private NmServiceConfigFileRepository configurations;
+
+    @Autowired
+    public DockerHostConfigDownloadCommandExecutor(Environment env, DockerNmServiceRepositoryManager serviceRepositoryManager, NmServiceConfigFileRepository configurations){
+        this.env = env;
+        this.serviceRepositoryManager = serviceRepositoryManager;
+        this.configurations = configurations;
+    }
 
     private String authorizationHash;
     @Value("${app.config.download.url}")
@@ -48,8 +52,7 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void transferConfigFiles(Identifier deploymentId, List<String> configIds)
-            throws InvalidDeploymentIdException, ConfigFileNotFoundException, FileTransferException {
+    public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         DockerHost host = serviceRepositoryManager.loadDockerHost(deploymentId);
         String attachedVolumeName = serviceRepositoryManager.loadAttachedVolumeName(deploymentId);
         final String targetDirectoryFullPath = constructTargetDirectoryFullPath(host, attachedVolumeName);
@@ -65,6 +68,12 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
         }
     }
 
+    @Override
+    public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
+        //TODO: Add update configuration for docker
+        throw new NotImplementedException();
+    }
+
     private ConfigDownloadCommand buildCommand(String configFileId, String configFileName, String targetDirectoryFullPath) {
         return ConfigDownloadCommand.command(
                 authorizationHash,
@@ -74,7 +83,7 @@ public class DockerHostConfigDownloadCommandExecutor implements ConfigurationFil
                 configFileName);
     }
 
-    private void executeConfigDownloadCommand(ConfigDownloadCommand command, DockerHost host) throws CommandExecutionException {
+    private void executeConfigDownloadCommand(ConfigDownloadCommand command, DockerHost host) {
         try {
             SingleCommandExecutor.getExecutor(host.getPublicIpAddress().getHostAddress(), sshUsername)
                     .executeSingleCommand(command);

@@ -3,17 +3,19 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompos
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFile;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplateVariable;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -22,26 +24,26 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
+
 @Component
 @Profile("env_docker-compose")
 class DockerComposeFilePreparer {
 
-    @Autowired
     private DockerComposeServiceRepositoryManager repositoryManager;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate)
-            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InternalErrorException {
+    @Autowired
+    DockerComposeFilePreparer(DockerComposeServiceRepositoryManager repositoryManager){
+        this.repositoryManager = repositoryManager;
+    }
+
+    void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService input, DockerComposeFileTemplate dockerComposeFileTemplate) {
         final Map<String, Object> model = buildModel(input);
         try {
             DockerComposeNmServiceInfo nmServiceInfo = repositoryManager.loadService(deploymentId);
             Template template = convertToTemplate(dockerComposeFileTemplate);
             DockerComposeFile composeFile = buildComposeFileFromTemplateAndModel(deploymentId, template, model);
             nmServiceInfo.setDockerComposeFile(composeFile);
-            repositoryManager.storeService(nmServiceInfo);
+            repositoryManager.updateService(nmServiceInfo);
         } catch (InvalidDeploymentIdException e) {
             throw new InternalErrorException("NM service info for deployment with id " + deploymentId + " not found");
         }
@@ -62,8 +64,7 @@ class DockerComposeFilePreparer {
         return model;
     }
 
-    private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate)
-            throws DockerComposeFileTemplateHandlingException {
+    private Template convertToTemplate(DockerComposeFileTemplate dockerComposeFileTemplate) {
         try {
             return new Template(DockerComposeFile.DEFAULT_DOCKER_COMPOSE_FILE_NAME,
                     new StringReader(dockerComposeFileTemplate.getComposeFileTemplateContent()),
@@ -73,8 +74,7 @@ class DockerComposeFilePreparer {
         }
     }
 
-    private DockerComposeFile buildComposeFileFromTemplateAndModel(Identifier deploymentId, Template template, Object model)
-            throws DockerComposeFileTemplateHandlingException {
+    private DockerComposeFile buildComposeFileFromTemplateAndModel(Identifier deploymentId, Template template, Object model) {
         Writer stringWriter = new StringWriter();
         DockerComposeFile composeFile = null;
         try {

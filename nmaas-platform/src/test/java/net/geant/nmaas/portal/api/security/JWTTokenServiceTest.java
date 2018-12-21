@@ -1,15 +1,14 @@
 package net.geant.nmaas.portal.api.security;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.jsonwebtoken.Claims;
@@ -59,7 +57,7 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_SYSTEM_ADMIN);
 		roles.add(Role.ROLE_USER);
 		User tester = new User("tester", true, "test123", new Domain(DOMAIN, DOMAIN), roles);
 		
@@ -79,7 +77,7 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testInvalidToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_SYSTEM_ADMIN);
 		roles.add(Role.ROLE_USER);
 		User tester = new User("tester", true, "test123", new Domain(DOMAIN, DOMAIN), roles);
 		
@@ -97,7 +95,7 @@ public class JWTTokenServiceTest {
 	@Test
 	public void testValidateRefreshToken() {
 		List<Role> roles = new ArrayList<Role>();
-		roles.add(Role.ROLE_SUPERADMIN);
+		roles.add(Role.ROLE_SYSTEM_ADMIN);
 		roles.add(Role.ROLE_USER);
 		User tester = new User("tester", true, "test123", new Domain(DOMAIN, DOMAIN), roles);
 

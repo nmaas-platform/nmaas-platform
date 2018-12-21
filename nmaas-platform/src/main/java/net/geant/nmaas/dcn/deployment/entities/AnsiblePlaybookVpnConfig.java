@@ -1,18 +1,25 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.entities.DockerNetworkIpam;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 
-import javax.persistence.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * VPN configuration properties for Ansible playbooks.
- *
- * @author Jakub Gutkowski <jgutkow@man.poznan.pl>
  */
 @Entity
 @Table(name="ansible_playbook_vpn_config")
+@NoArgsConstructor
+@Getter
+@Setter
 public class AnsiblePlaybookVpnConfig {
 
     public static final int MAX_PROPERTY_LENGTH = 50;
@@ -42,173 +49,11 @@ public class AnsiblePlaybookVpnConfig {
     private String policyStatementImport;
     private String policyStatementExport;
 
-    public AnsiblePlaybookVpnConfig() {}
-
     public AnsiblePlaybookVpnConfig(Type type) {
         this.type = type;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public String getTargetRouter() {
-        return targetRouter;
-    }
-
-    public void setTargetRouter(String targetRouter) {
-        this.targetRouter = targetRouter;
-    }
-
-    public String getTargetRouterId() {
-        return targetRouterId;
-    }
-
-    public void setTargetRouterId(String targetRouterId) {
-        this.targetRouterId = targetRouterId;
-    }
-
-    public String getVrfId() {
-        return vrfId;
-    }
-
-    public void setVrfId(String vrfId) {
-        this.vrfId = vrfId;
-    }
-
-    public String getLogicalInterface() {
-        return logicalInterface;
-    }
-
-    public void setLogicalInterface(String logicalInterface) {
-        this.logicalInterface = logicalInterface;
-    }
-
-    public String getVrfRd() {
-        return vrfRd;
-    }
-
-    public void setVrfRd(String vrfRd) {
-        this.vrfRd = vrfRd;
-    }
-
-    public String getVrfRt() {
-        return vrfRt;
-    }
-
-    public void setVrfRt(String vrfRt) {
-        this.vrfRt = vrfRt;
-    }
-
-    public String getBgpGroupId() {
-        return bgpGroupId;
-    }
-
-    public void setBgpGroupId(String bgpGroupId) {
-        this.bgpGroupId = bgpGroupId;
-    }
-
-    public String getBgpNeighborIp() {
-        return bgpNeighborIp;
-    }
-
-    public void setBgpNeighborIp(String bgpNeighborIp) {
-        this.bgpNeighborIp = bgpNeighborIp;
-    }
-
-    public String getAsn() {
-        return asn;
-    }
-
-    public void setAsn(String asn) {
-        this.asn = asn;
-    }
-
-    public String getPhysicalInterface() {
-        return physicalInterface;
-    }
-
-    public void setPhysicalInterface(String physicalInterface) {
-        this.physicalInterface = physicalInterface;
-    }
-
-    public String getInterfaceUnit() {
-        return interfaceUnit;
-    }
-
-    public void setInterfaceUnit(String interfaceUnit) {
-        this.interfaceUnit = interfaceUnit;
-    }
-
-    public String getInterfaceVlan() {
-        return interfaceVlan;
-    }
-
-    public void setInterfaceVlan(String interfaceVlan) {
-        this.interfaceVlan = interfaceVlan;
-    }
-
-    public String getBgpLocalIp() {
-        return bgpLocalIp;
-    }
-
-    public void setBgpLocalIp(String bgpLocalIp) {
-        this.bgpLocalIp = bgpLocalIp;
-    }
-
-    public String getBgpLocalCidr() {
-        return bgpLocalCidr;
-    }
-
-    public void setBgpLocalCidr(String bgpLocalCidr) {
-        this.bgpLocalCidr = bgpLocalCidr;
-    }
-
-    public String getPolicyCommunityOptions() {
-        return policyCommunityOptions;
-    }
-
-    public void setPolicyCommunityOptions(String policyCommunityOptions) {
-        this.policyCommunityOptions = policyCommunityOptions;
-    }
-
-    public String getPolicyStatementConnected() {
-        return policyStatementConnected;
-    }
-
-    public void setPolicyStatementConnected(String policyStatementConnected) {
-        this.policyStatementConnected = policyStatementConnected;
-    }
-
-    public String getPolicyStatementImport() {
-        return policyStatementImport;
-    }
-
-    public void setPolicyStatementImport(String policyStatementImport) {
-        this.policyStatementImport = policyStatementImport;
-    }
-
-    public String getPolicyStatementExport() {
-        return policyStatementExport;
-    }
-
-    public void setPolicyStatementExport(String policyStatementExport) {
-        this.policyStatementExport = policyStatementExport;
-    }
-
-    public void validate() throws AnsiblePlaybookVpnConfigInvalidException {
+    public void validate() {
         StringBuilder exceptionMessage = new StringBuilder();
         if (targetRouter == null || targetRouter.isEmpty()) {
             nullMessage("Target Router", exceptionMessage);
@@ -318,7 +163,7 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is not in proper format\n");
     }
 
-    private void exception(String message) throws AnsiblePlaybookVpnConfigInvalidException {
+    private void exception(String message) {
         if(message.length() > 0) {
             throw new AnsiblePlaybookVpnConfigInvalidException(message);
         }
@@ -332,16 +177,13 @@ public class AnsiblePlaybookVpnConfig {
         exceptionMessage.append(fieldName).append(" is too long (max " + MAX_PROPERTY_LENGTH + " characters)\n");
     }
 
+    private static String  pattern = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+
     public static boolean validateIpAddress(String ipAddress) {
-        try {
-            if (ipAddress.contains(":")) {
-                ipAddress = ipAddress.substring(0, ipAddress.indexOf(":"));
-            }
-            InetAddress.getByName(ipAddress);
-            return true;
-        } catch (UnknownHostException e) {
-            return false;
+        if (ipAddress.contains(":")) {
+            ipAddress = ipAddress.substring(0, ipAddress.indexOf(":"));
         }
+        return ipAddress.matches(pattern);
     }
 
     public enum Type {
@@ -354,9 +196,9 @@ public class AnsiblePlaybookVpnConfig {
         REMOVE
     }
 
-    public class AnsiblePlaybookVpnConfigInvalidException extends Exception {
+    public class AnsiblePlaybookVpnConfigInvalidException extends RuntimeException {
 
-        public AnsiblePlaybookVpnConfigInvalidException(String message) {
+        AnsiblePlaybookVpnConfigInvalidException(String message) {
             super(message);
         }
 

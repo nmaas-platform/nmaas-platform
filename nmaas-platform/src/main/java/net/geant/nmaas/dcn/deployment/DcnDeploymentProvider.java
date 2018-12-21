@@ -9,8 +9,6 @@ import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException
 
 /**
  * Defines a set of methods to manage DCN deployment lifecycle.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 public interface DcnDeploymentProvider {
 
@@ -29,7 +27,7 @@ public interface DcnDeploymentProvider {
      * @param dcnSpec specification of the DCN
      * @throws DcnRequestVerificationException if request verification failed
      */
-    void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException;
+    void verifyRequest(String domain, DcnSpec dcnSpec);
 
     /**
      * Performs actual deployment of the DCN for given domain.
@@ -37,7 +35,7 @@ public interface DcnDeploymentProvider {
      * @param domain name of the domain
      * @throws CouldNotDeployDcnException if DCN deployment couldn't be completed due to any reason
      */
-    void deployDcn(String domain) throws CouldNotDeployDcnException;
+    void deployDcn(String domain);
 
     /**
      * Verifies the successful deployment of the DCN for given domain.
@@ -45,7 +43,7 @@ public interface DcnDeploymentProvider {
      * @param domain name of the domain
      * @throws CouldNotVerifyDcnException if DCN deployment couldn't be verified
      */
-    void verifyDcn(String domain) throws CouldNotVerifyDcnException;
+    void verifyDcn(String domain);
 
     /**
      * Removes the DCN for given domain. Removal is only possible if there are no NM services currently deployed
@@ -54,6 +52,6 @@ public interface DcnDeploymentProvider {
      * @param domain name of the domain
      * @throws CouldNotRemoveDcnException if DCN removal process failed
      */
-    void removeDcn(String domain) throws CouldNotRemoveDcnException;
+    void removeDcn(String domain);
 
 }

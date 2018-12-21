@@ -4,6 +4,7 @@ import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
+import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -16,26 +17,35 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Default {@link AppDeploymentMonitor} implementation.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
-    @Autowired
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
-    @Autowired
     private NmServiceDeploymentProvider serviceDeployment;
 
+    @Autowired
+    public DefaultAppDeploymentMonitor(AppDeploymentRepositoryManager appDeploymentRepositoryManager, NmServiceDeploymentProvider serviceDeployment){
+        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
+        this.serviceDeployment = serviceDeployment;
+    }
+
     @Override
-    public AppLifecycleState state(Identifier deploymentId) throws InvalidDeploymentIdException {
+    public AppLifecycleState state(Identifier deploymentId) {
         return retrieveCurrentState(deploymentId);
+    }
+
+    @Override
+    public AppLifecycleState previousState(Identifier deploymentId) {
+        return retrievePreviousState(deploymentId);
     }
 
     @Override
@@ -46,7 +56,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public AppUiAccessDetails userAccessDetails(Identifier deploymentId) throws InvalidAppStateException, InvalidDeploymentIdException {
+    public AppUiAccessDetails userAccessDetails(Identifier deploymentId) {
         if (AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED.equals(retrieveCurrentState(deploymentId)))
             return retrieveAccessDetails(deploymentId);
         else
@@ -54,17 +64,26 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
-    public List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) throws InvalidDeploymentIdException{
+    public List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) {
         return appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
                 .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousStateString(), value.getCurrentStateString()))
                 .collect(Collectors.toList());
     }
 
-    private AppLifecycleState retrieveCurrentState(Identifier deploymentId) throws InvalidDeploymentIdException {
+    private AppLifecycleState retrievePreviousState(Identifier deploymentId) {
+        Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
+                .max(Comparator.comparing(AppDeploymentHistory::getTimestamp));
+        if(history.isPresent() && history.get().getPreviousState() != null){
+            return history.get().getPreviousState().lifecycleState();
+        }
+        return AppLifecycleState.UNKNOWN;
+    }
+
+    private AppLifecycleState retrieveCurrentState(Identifier deploymentId) {
         return appDeploymentRepositoryManager.loadState(deploymentId).lifecycleState();
     }
 
-    private AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) throws InvalidDeploymentIdException {
+    private AppUiAccessDetails retrieveAccessDetails(Identifier deploymentId) {
         try {
             return serviceDeployment.serviceAccessDetails(deploymentId);
         } catch (CouldNotRetrieveNmServiceAccessDetailsException e) {

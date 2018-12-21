@@ -1,9 +1,13 @@
 package net.geant.nmaas.configuration;
 
-import net.geant.nmaas.portal.api.security.*;
+import net.geant.nmaas.portal.api.security.JWTSettings;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
+import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
+import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,22 +43,20 @@ import java.util.Arrays;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	private final static String SSL_ENABLED = "server.ssl.enabled";
+	private static final  String SSL_ENABLED = "server.ssl.enabled";
 	
-	private final static String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
-	private final static String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
-	private final static String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
-	private final static String APP_LOGO = "/api/apps/{appId:[\\d+]}/logo";
-	private final static String APP_SCREENSHOTS = "/api/apps/{appId:[\\d+]}/screenshots/**";
+	private static final  String AUTH_BASIC_LOGIN = "/api/auth/basic/login";
+	private static final  String AUTH_BASIC_SIGNUP = "/api/auth/basic/registration/**";
+	private static final  String AUTH_BASIC_TOKEN = "/api/auth/basic/token";
 
-	private final static String AUTH_SSO_LOGIN = "/api/auth/sso/login";
+	private static final  String AUTH_SSO_LOGIN = "/api/auth/sso/login";
 
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
-    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME = "ansible.notification.client.password";
+    private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
 	private static final String APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.config.download.client.username";
-	private static final String APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.config.download.client.password";
+	private static final String APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME = "app.config.download.client.password";
 	private static final String APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.compose.download.client.username";
-	private static final String APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME = "app.compose.download.client.password";
+	private static final String APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME = "app.compose.download.client.password";
 
 	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
 	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
@@ -67,27 +69,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private Environment env;
 
 	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("dcn_ansible"))) {
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "dcn_ansible".equals(p))) {
 			auth.inMemoryAuthentication()
+					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASSWORD_PROPERTY_NAME))
+					.password(passwordEncoder.encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
 		}
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("conf_download"))) {
+		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
 			auth.inMemoryAuthentication()
-					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_CONFIG_DOWNLOAD_PASSWORD_PROPERTY_NAME))
-					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
-		}
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> p.equals("env_docker-compose"))) {
-			auth.inMemoryAuthentication().withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(env.getProperty(APP_COMPOSE_DOWNLOAD_PASSWORD_PROPERTY_NAME))
+					.passwordEncoder(passwordEncoder)
+					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.password(passwordEncoder.encode(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
+			auth.inMemoryAuthentication()
+					.passwordEncoder(passwordEncoder)
+					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
+					.password(passwordEncoder.encode(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME)))
+					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
 		}
 	}
 
 	private static final String[] AUTH_WHITELIST = {
+			"/favicon.ico",
 			"/v2/api-docs",
 			"/swagger-resources",
 			"/swagger-resources/**",
@@ -95,7 +103,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/configuration/security",
 			"/swagger-ui.html",
 			"/api/info/**",
-			"/webjars/**"
+			"/webjars/**",
+			"/api/content/**",
+			"/api/users/reset/**"
 	};
 	
 	@Override
@@ -123,13 +133,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(AUTH_BASIC_TOKEN).permitAll()
 				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(AUTH_SSO_LOGIN).permitAll()
-//				.antMatchers(HttpMethod.GET, APP_LOGO).permitAll()
-//				.antMatchers(HttpMethod.GET, APP_SCREENSHOTS).permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/state").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
+				.antMatchers("/api/users/reset/**").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**/state").authenticated()
@@ -142,6 +154,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_BASIC_LOGIN),
 										new AntPathRequestMatcher(AUTH_BASIC_SIGNUP),
 										new AntPathRequestMatcher(AUTH_BASIC_TOKEN),
+										new AntPathRequestMatcher("/api/configuration/**", "GET"),
+										new AntPathRequestMatcher("/api/management/shibboleth/", "GET"),
 										new AntPathRequestMatcher("/v2/api-docs"),
 										new AntPathRequestMatcher("/swagger-resources"),
 										new AntPathRequestMatcher("/swagger-resources/**"),
@@ -149,13 +163,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/configuration/security"),
 										new AntPathRequestMatcher("/swagger-ui.html"),
 										new AntPathRequestMatcher("/webjars/**"),
+										new AntPathRequestMatcher("/favicon.ico"),
 										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
 										new AntPathRequestMatcher("/api/info/**"),
-//										new AntPathRequestMatcher(APP_LOGO, HttpMethod.GET.name()),
-//										new AntPathRequestMatcher(APP_SCREENSHOTS, HttpMethod.GET.name()),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/configs/**"),
-										new AntPathRequestMatcher("/api/dockercompose/files/**")
+										new AntPathRequestMatcher("/api/dockercompose/files/**"),
+										new AntPathRequestMatcher("/api/content/**"),
+										new AntPathRequestMatcher("/api/users/reset/**")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),
@@ -185,19 +200,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	@Bean
 	public JWTSettings jwtSettings() {
 		return new JWTSettings();
 	}
 
 	@Bean
 	@Autowired
-	public TokenAuthenticationService tokenAuthenticationService(JWTTokenService jwtTokenService) {
-		return new TokenAuthenticationService(jwtTokenService);
+	public TokenAuthenticationService tokenAuthenticationService(JWTTokenService jwtTokenService, UserRepository userRepository) {
+		return new TokenAuthenticationService(jwtTokenService, userRepository);
 	}
 	
 }

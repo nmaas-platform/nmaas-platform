@@ -9,31 +9,55 @@ import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable} from 'rxjs/Observable';
+import {NgxPaginationModule} from 'ngx-pagination';
+import {CustomerSearchCriteria} from "../../../service/index";
+import "rxjs/add/observable/of";
+import {forEach} from "angular2-json-schema-form";
+import {element} from "protractor";
 
 export enum AppInstanceListSelection {
-  ALL,
-  MY,
-};
+  ALL, MY,
+}
 
 @Component({
   selector: 'nmaas-appinstancelist',
   templateUrl: './appinstancelist.component.html',
   styleUrls: ['./appinstancelist.component.css'],
-  providers: [AppInstanceService, AppsService, DomainService, AuthService]
+  providers: [AppInstanceService, AppsService, DomainService, AuthService, NgxPaginationModule]
 })
 export class AppInstanceListComponent implements OnInit {
+
+  public p_first: string = "p_first";
+  public p_second: string = "p_second";
+
+  public maxItemsOnPage: number = 5;
+  public maxItemsOnPageSec: number = 5;
+  public pageNumber: number = 1;
+
+  public secondPageNumber: number = 1;
+
+  public showFailed: boolean = true;
+
+  public itemsPerPage: number[]  = [5,10,15,20,25,30];
 
   public AppInstanceState: typeof AppInstanceState = AppInstanceState;
   public AppInstanceListSelection: typeof AppInstanceListSelection = AppInstanceListSelection;
 
   public appInstances: Observable<AppInstance[]>;
+  public appDeployedInstances: Observable<AppInstance[]>;
+  public appUndeployedInstances: Observable<AppInstance[]>;
 
   public listSelection: AppInstanceListSelection = AppInstanceListSelection.MY;
 
   public selectedUsername: string;
   public domainId: number = 0;
 
-  constructor(private appInstanceService: AppInstanceService, private domainService: DomainService, private userDataService: UserDataService, private authService: AuthService, private appConfig: AppConfigService) {}
+  constructor(private appInstanceService: AppInstanceService,
+              private domainService: DomainService,
+              private userDataService: UserDataService,
+              private authService: AuthService,
+              private appConfig: AppConfigService) {
+  }
 
   ngOnInit() {
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
@@ -46,27 +70,47 @@ export class AppInstanceListComponent implements OnInit {
     } else {
       this.domainId = domainId;
     }
-
-    switch (+this.listSelection) {
-      case AppInstanceListSelection.ALL:
-        this.appInstances = this.appInstanceService.getAllAppInstances(this.domainId);
-        break;
-      case AppInstanceListSelection.MY:
-        this.appInstances = this.appInstanceService.getMyAppInstances(this.domainId);
-        break;
-      default:
-        this.appInstances = Observable.of<AppInstance[]>([]);
-        break;
-    }
-
+    this.getInstances({sortColumn: 'name', sortDirection:'asc'})
   }
 
-  public checkPrivileges(app){
-    return app.owner.username === this.authService.getUsername() || this.authService.hasRole("ROLE_SUPERADMIN") || this.authService.hasDomainRole(app.domainId, "ROLE_DOMAIN_ADMIN");
+  public checkPrivileges(app) {
+    return app.owner.username === this.authService.getUsername() || this.authService.hasRole('ROLE_SYSTEM_ADMIN') || this.authService.hasDomainRole(app.domainId, 'ROLE_DOMAIN_ADMIN');
   }
 
   public onSelectionChange(event) {
     this.update(this.domainId);
   }
 
+  public setItems(item){
+    this.maxItemsOnPage = item;
+    this.maxItemsOnPageSec = item;
+  }
+
+  onSorted($event){
+    this.getInstances($event)
+
+  }
+
+  getInstances(criteria: CustomerSearchCriteria){
+    switch (+this.listSelection) {
+      case AppInstanceListSelection.ALL:
+        this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
+        break;
+      case AppInstanceListSelection.MY:
+        this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
+        break;
+      default:
+        this.appInstances = Observable.of<AppInstance[]>([]);
+        break;
+    }
+    this.appDeployedInstances = this.appInstances.map(AppInstances => AppInstances.filter(
+      app => app.userFriendlyState != 'Undeployed'));
+    this.appUndeployedInstances = this.appInstances.map(AppInstances => AppInstances.filter(
+      app => app.userFriendlyState == 'Undeployed'));
+  }
+
+
+  public setShowFailedField(status: boolean){
+    this.showFailed = status;
+  }
 }

@@ -1,15 +1,12 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
+import com.google.common.collect.ImmutableSet;
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
+import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.portal.api.auth.Registration;
+import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -17,22 +14,38 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements net.geant.nmaas.portal.service.UserService {
-
-	@Autowired
-	DomainService domains;
+@Log4j2
+public class UserServiceImpl implements UserService {
 	
-	@Autowired
 	UserRepository userRepo;
 	
-	@Autowired
 	UserRoleRepository userRoleRepo;
+
+	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder){
+		this.userRepo = userRepo;
+		this.userRoleRepo = userRoleRepo;
+		this.passwordEncoder = passwordEncoder;
+	}
 	
 	@Override
-	public boolean hasPriviledge(User user, Domain domain, Role role) {
+	public boolean hasPrivilege(User user, Domain domain, Role role) {
 		if(user == null || domain == null || role == null)
 			return false;
 		
@@ -60,12 +73,17 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	
 	@Override
 	public Optional<User> findById(Long id) {
-		return (id != null ? Optional.ofNullable(userRepo.findOne(id)) : Optional.empty());
+		return (id != null ? userRepo.findById(id) : Optional.empty());
 	}
 
 	@Override
 	public Optional<User> findBySamlToken(String token) {
 		return (token != null ? userRepo.findBySamlToken(token) : Optional.empty());
+	}
+
+	@Override
+	public User findByEmail(String email){
+		return userRepo.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User with mail "+email+ " not found"));
 	}
 
 	@Override
@@ -75,40 +93,56 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 	}
 
 	@Override
+	public boolean existsByEmail(String email) {
+		return userRepo.existsByEmail(email);
+	}
+
+	@Override
 	public boolean existsById(Long id) {
 		checkParam(id);
-		return userRepo.exists(id);
+		return userRepo.existsById(id);
 	}
 
 	@Override
-	public User register(String username) throws ObjectAlreadyExistsException, MissingElementException {
-		checkParam(username);
-		return register(username, false, null, null);				
+	public User register(Registration registration, Domain globalDomain, Domain domain){
+
+		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
+			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
+		}
+
+		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);
+		newUser.setEmail(registration.getEmail());
+		newUser.setFirstname(registration.getFirstname());
+		newUser.setLastname(registration.getLastname());
+		newUser.setEnabled(false);
+		if(domain != null){
+			newUser.setNewRoles(ImmutableSet.of(new UserRole(newUser, domain, Role.ROLE_GUEST)));
+		}
+		newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
+		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
+		userRepo.save(newUser);
+
+		return newUser;
 	}
 
 	@Override
-	public User register(String username, boolean enabled, String password, Long domainId) throws ObjectAlreadyExistsException, MissingElementException {
-		checkParam(username);
-		
-		Domain domain = (domainId != null ? domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found")) 
-											: domains.getGlobalDomain().orElseThrow(() -> new MissingElementException("Global domain not found")));
+	public User register(UserSSOLogin userSSO, Domain globalDomain){
+		byte[] array = new byte[16]; // random password
+		new SecureRandom().nextBytes(array);
+		String generatedString = new String(array, Charset.forName("UTF-8"));
+		User newUser = new User("thirdparty-"+System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
+		newUser.setSamlToken(userSSO.getUsername()); //Check user ID TODO: check if it's truly unique!
+		userRepo.save(newUser);
 
-		// check if user already exists
-		Optional<User> user = userRepo.findByUsername(username);
-		if(user.isPresent())
-			throw new ObjectAlreadyExistsException("User already exists.");
-
-		User newUser = new User(username, enabled, password, domain, Role.ROLE_GUEST);
-		
-		return userRepo.save(newUser);				
-	}	
+		return newUser;
+	}
 	
 	@Override
-	public void update(User user) throws ProcessingException {
+	public void update(User user) {
 		checkParam(user);
 		checkParam(user.getId());
 				
-		if(!userRepo.exists(user.getId()))
+		if(!userRepo.existsById(user.getId()))
 			throw new ProcessingException("User (id=" + user.getId() + " does not exists.");
 		
 		userRepo.saveAndFlush(user);
@@ -122,21 +156,76 @@ public class UserServiceImpl implements net.geant.nmaas.portal.service.UserServi
 		userRepo.delete(user);
 	}
 
-	protected void checkParam(Long id) {
+
+	@Override
+	@Transactional
+	public void setEnabledFlag(Long userId, boolean isEnabled) {
+		userRepo.setEnabledFlag(userId, isEnabled);
+	}
+
+	@Override
+	@Transactional
+	public void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag){ userRepo.setTermsOfUseAcceptedFlag(userId, termsOfUseAcceptedFlag);}
+
+	@Override
+	@Transactional
+	public void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag) {
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setTermsOfUseAcceptedFlag(user.getId(), termsOfUseAcceptedFlag);
+	}
+
+	@Override
+	@Transactional
+	public void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag){ userRepo.setPrivacyPolicyAcceptedFlag(userId, privacyPolicyAcceptedFlag);}
+
+	@Override
+	@Transactional
+	public void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag) {
+		User user = userRepo.findByUsername(username).orElseThrow(()
+				-> new UsernameNotFoundException("User " + username + " not found."));
+		userRepo.setPrivacyPolicyAcceptedFlag(user.getId(), privacyPolicyAcceptedFlag);
+	}
+
+	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
 	
-	protected void checkParam(String username) {
+	private void checkParam(String username) {
 		if(username == null)
 			throw new IllegalArgumentException("username is null");
 	}
 	
-	protected void checkParam(User user) {
+	private void checkParam(User user) {
 		if(user == null)
 			throw new IllegalArgumentException("user is null");
 	}
 
-	 
-	
+	@Override
+	public String findAllUsersEmailWithAdminRole(){
+        String emails = "";
+        for(User user: findAll()){
+            for(UserRole userRole: user.getRoles()){
+                if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())){
+                    emails = emails + userRole.getUser().getEmail() + ",";
+                }
+            }
+        }
+        return emails;
+	}
+
+	@Override
+	public List<User> findUsersWithRoleSystemAdminAndOperator(){
+		List<User> users = new ArrayList<>();
+		for(User user : findAll()) {
+			for (UserRole userRole : user.getRoles()) {
+				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) ||
+						userRole.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())) {
+					users.add(user);
+				}
+			}
+		}
+		return users;
+	}
 }

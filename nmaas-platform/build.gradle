@@ -1,6 +1,8 @@
 apply from: '../reactor/build.gradle'
 apply plugin: 'org.springframework.boot'
-apply plugin: "com.gorylenko.gradle-git-properties"
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.gorylenko.gradle-git-properties'
+apply plugin: 'org.sonarqube'
 
 buildscript {
 	repositories {
@@ -10,8 +12,9 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.6.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
+		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
 	}
 }
 
@@ -19,8 +22,8 @@ gitProperties {
 	gitPropertiesDir = "src/main/resources"
 }
 
-jar {
-	baseName = 'nmaas-platform'
+bootJar {
+	mainClassName = 'net.geant.nmaas.NmaasPlatform'
 }
 
 sourceSets {
@@ -39,6 +42,7 @@ configurations {
 	integrationTestRuntime.extendsFrom testRuntime
 	all {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+		exclude group: 'ch.qos.logback', module: 'logback-classic'
 	}
 }
 
@@ -47,17 +51,21 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('org.springframework.boot:spring-boot-devtools')
+	compile('org.springframework.boot:spring-boot-starter-quartz')
+	compile('org.springframework.boot:spring-boot-starter-log4j2')
 
-	compile('org.modelmapper:modelmapper:1.1.0')
-	compile('org.modelmapper.extensions:modelmapper-spring:1.1.0')
+	compile('org.modelmapper:modelmapper:2.2.0')
+	compile('org.modelmapper.extensions:modelmapper-spring:2.2.0')
 	
 	runtime('com.h2database:h2')
-	runtime('mysql:mysql-connector-java')
 	runtime('org.postgresql:postgresql')
-	
+	compile('org.hibernate:hibernate-envers')
+
+
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 	compile('com.spotify:docker-client:8.8.0')
-	compile('org.freemarker:freemarker:2.3.20')
+	compile('org.freemarker:freemarker:2.3.28')
 	compile('com.hierynomus:sshj:0.21.1')
 	compile('org.gitlab4j:gitlab4j-api:4.8.30')
 	compile('io.fabric8:kubernetes-client:3.1.8')
@@ -65,32 +73,51 @@ dependencies {
 
 	compile('io.springfox:springfox-swagger2:2.8.0')
 	compile('io.springfox:springfox-swagger-ui:2.8.0')
-    compile ('org.apache.logging.log4j:log4j-api:2.11.1')
-    compile ('org.apache.logging.log4j:log4j-core:2.11.1')
-
+	compile ('org.projectlombok:lombok:1.18.2')
+	compile ("org.flywaydb:flyway-core:5.2.0")
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.springframework.security:spring-security-test:4.2.1.RELEASE')
+	testCompile('org.springframework.security:spring-security-test')
+}
+
+test {
+	systemProperties 'property': 'value'
+	ignoreFailures = true
+	afterTest { desc, result ->
+		println "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+	}
+	jacoco {
+		append = true
+		destinationFile = file("$buildDir/jacoco/test.exec")
+	}
 }
 
 task integrationTest(type: Test) {
-	testClassesDir = sourceSets.integrationTest.output.classesDir
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	outputs.upToDateWhen { false }
 	afterTest { desc, result ->
 		println "Executing itest ${desc.name} [${desc.className}] with result: ${result.resultType}"
 	}
+	dependsOn(test)
+}
+
+jacoco {
+	toolVersion = "0.8.1"
+	reportsDir = file("$buildDir/jacoco")
 }
 
 jacocoTestReport {
 	reports {
 		xml.enabled false
 		csv.enabled false
-		html.destination "${buildDir}/reports/jacoco/jacocoHtml"
+		html.destination file("${buildDir}/jacocoHtml")
 	}
 	executionData(test, integrationTest)
 }
 
-// removed integrationTest task from build
-// check.dependsOn integrationTest
-integrationTest.mustRunAfter test
+sonarqube {
+	properties {
+		property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/test.exec,${project.buildDir}/jacoco/integrationTest.exec"
+	}
+}

@@ -2,7 +2,6 @@
 <form class="form-inline" role="form" (submit)="onSubmit()">
 	<div class="form-group">
 		<input type="text" name="search" class="form-control"
-			[(ngModel)]="value" placeholder="Search" (ngModelChange)="onChange()">
-			<!-- [(ngModel)]="value" placeholder="Search" (change)="onChange()"> -->
+			[(ngModel)]="value" placeholder="{{'SEARCH' | translate}}" (ngModelChange)="onChange()">
 	</div>
 </form>

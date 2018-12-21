@@ -5,14 +5,9 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import net.geant.nmaas.portal.exceptions.ProcessingException;
-import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 
 public interface ApplicationSubscriptionService {
 	
@@ -37,13 +32,13 @@ public interface ApplicationSubscriptionService {
 	List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application);	
 	Page<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application, Pageable pageable);
 	
-	ApplicationSubscription subscribe(ApplicationSubscription appSub) throws ObjectAlreadyExistsException, ProcessingException;
-	ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active) throws ObjectAlreadyExistsException, ProcessingException, ObjectNotFoundException;
-	ApplicationSubscription subscribe(Application application, Domain domain, boolean active) throws ObjectAlreadyExistsException, ProcessingException;
+	ApplicationSubscription subscribe(ApplicationSubscription appSub);
+	ApplicationSubscription subscribe(Long applicationId, Long domainId, boolean active);
+	ApplicationSubscription subscribe(Application application, Domain domain, boolean active);
 	
-	boolean unsubscribe(ApplicationSubscription appSub) throws ProcessingException, ObjectNotFoundException;
-	boolean unsubscribe(Long applicationId, Long domainId) throws ProcessingException, ObjectNotFoundException;
-	boolean unsubscribe(Application application, Domain domain) throws ProcessingException, ObjectNotFoundException;
+	void unsubscribe(ApplicationSubscription appSub);
+	void unsubscribe(Long applicationId, Long domainId);
+	void unsubscribe(Application application, Domain domain);
 		
 	List<Application> getSubscribedApplications();
 	List<Application> getSubscribedApplications(Long domainId);

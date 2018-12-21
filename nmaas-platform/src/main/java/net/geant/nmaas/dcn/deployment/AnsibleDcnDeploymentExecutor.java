@@ -4,25 +4,28 @@ import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.Container;
 import com.spotify.docker.client.messages.ContainerConfig;
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
-import net.geant.nmaas.dcn.deployment.entities.*;
+import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
+import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
+import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
-import net.geant.nmaas.dcn.deployment.exceptions.CouldNotVerifyDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.DockerApiClient;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,19 +34,25 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.*;
-import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.*;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForClientSideRouterConfig;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForClientSideRouterConfigRemoval;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForCloudSideRouterConfig;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookContainerBuilder.buildContainerForCloudSideRouterConfigRemoval;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.AnsiblePlaybookIdentifierConverterException;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.decode;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.wasEncodedForClientSideRouter;
+import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.wasEncodedForCloudSideRouter;
 
 /**
  * Executor used when DCN should be configured by Ansible playbooks.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
 @Component
 @Profile("dcn_ansible")
+@Log4j2
 public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, AnsiblePlaybookExecutionStateListener {
 
-    private static final Logger log = LogManager.getLogger(AnsibleDcnDeploymentExecutor.class);
     private static final String DEFAULT_ANSIBLE_CONTAINER_NAME = "nmaas-ansible-test";
 
     private DcnRepositoryManager dcnRepositoryManager;
@@ -82,12 +91,12 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequest(String domain, DcnSpec dcnSpec) throws DcnRequestVerificationException {
+    public void verifyRequest(String domain, DcnSpec dcnSpec) {
         try {
             storeDcnInfoIfNotExists(domain, dcnSpec);
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUESTED);
             final DockerHostNetwork dockerHostNetwork = dockerHostNetworkRepository
-                    .findByDomain(dcnSpec.getDomain())
+                    .findByDomain(domain)
                     .orElseThrow(() -> new InvalidDomainException("No Docker network found for domain " + domain));
             final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerHostNetwork);
             dcnRepositoryManager.updateDcnCloudEndpointDetails(domain, dcnCloudEndpointDetails);
@@ -114,14 +123,14 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
         }
     }
 
-    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) throws InvalidDomainException {
+    private void storeDcnInfoIfNotExists(String domain, DcnSpec dcnSpec) {
         if (!dcnRepositoryManager.exists(domain))
             dcnRepositoryManager.storeDcnInfo(new DcnInfo(dcnSpec));
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void deployDcn(String domain) throws CouldNotDeployDcnException {
+    public void deployDcn(String domain) {
         try {
             final DcnInfo dcnInfo = dcnRepositoryManager.loadNetwork(domain);
             removeOldAnsiblePlaybookContainers();
@@ -134,10 +143,11 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
                             encodeForCloudSideRouter(domain)));
             notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYMENT_INITIATED);
         } catch ( InvalidDomainException
-                | InterruptedException
                 | DockerException anyException) {
             notifyStateChangeListeners(domain, DcnDeploymentState.DEPLOYMENT_FAILED);
             throw new CouldNotDeployDcnException("Exception during DCN deployment -> " + anyException.getMessage());
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -148,15 +158,16 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
                 log.debug("Removing old container " + container.id());
                 dockerApiClient.removeContainer(ansibleDockerApiUrl, container.id());
             }
-        } catch (DockerException
-                | InterruptedException e) {
+        } catch (DockerException e) {
             log.warn("Failed to remove old Ansible containers", e);
+        } catch(InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDcn(String domain) throws CouldNotVerifyDcnException {
+    public void verifyDcn(String domain) {
         try {
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFICATION_INITIATED);
             // TODO implement DCN verification functionality
@@ -164,12 +175,13 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFIED);
         } catch (InterruptedException e) {
             notifyStateChangeListeners(domain, DcnDeploymentState.VERIFICATION_FAILED);
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void removeDcn(String domain) throws CouldNotRemoveDcnException {
+    public void removeDcn(String domain) {
         try {
             final DcnInfo dcnInfo = dcnRepositoryManager.loadNetwork(domain);
             deployAnsiblePlaybookContainers(
@@ -177,10 +189,11 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
                     buildContainerForCloudSideRouterConfigRemoval(dcnInfo.getPlaybookForCloudSideRouter(), encodeForCloudSideRouter(domain)));
             notifyStateChangeListeners(domain, DcnDeploymentState.REMOVAL_INITIATED);
         } catch ( InvalidDomainException
-                | InterruptedException
                 | DockerException e) {
             notifyStateChangeListeners(domain, DcnDeploymentState.REMOVAL_FAILED);
             throw new CouldNotRemoveDcnException("Exception during DCN removal -> " + e.getMessage());
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
         }
     }
 

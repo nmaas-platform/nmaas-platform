@@ -11,9 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Repository
 public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Long> {
 
@@ -27,4 +24,6 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
     @Query("SELECT a.domain FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<String> getDomainByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
+    @Query("SELECT a.errorMessage FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
+    Optional<String> getErrorMessageByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 }

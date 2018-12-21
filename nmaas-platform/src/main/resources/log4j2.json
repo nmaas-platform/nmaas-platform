@@ -7,7 +7,7 @@
       ]
     },
     "ThresholdFilter":{
-      "level": "debug"
+      "level": "info"
     },
     "appenders":{
         "Console": {
@@ -22,7 +22,7 @@
           "filePattern": "${logsDir}/nmaas.%d{yyyy-MM-dd}.log",
           "immediateFlush":true,
           "patternLayout": {
-            "pattern": "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n"
+            "pattern": "%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %m%n"
           },
           "TimeBasedTriggeringPolicy": {
             "interval": "1",
@@ -56,7 +56,98 @@
         },
         {
           "name": "org.springframework",
-          "level": "debug",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.hibernate",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "sun.rmi",
+          "level": "error",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.apache",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef": [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.flyway.core",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef" : [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "com.zaxxer.hikari",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef" : [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.quartz",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef" : [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "springfox.documentation",
+          "level": "info",
           "additivity": "false",
           "AppenderRef": [
             {
@@ -82,7 +173,7 @@
         }
       ],
       "root": {
-        "level": "debug",
+        "level": "info",
         "AppenderRef": [
           {
             "ref": "nmaas-file"

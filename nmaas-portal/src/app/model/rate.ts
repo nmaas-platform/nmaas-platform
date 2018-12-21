@@ -1,4 +1,4 @@
 export class Rate {
-    constructor(public rate: Number) { 
+    constructor(public rate: number) {
     }
 }

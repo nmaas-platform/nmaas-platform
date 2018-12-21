@@ -1,6 +1,12 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.api.domain.converters.*;
+import net.geant.nmaas.portal.api.domain.converters.ApplicationSubscriptionConverter;
+import net.geant.nmaas.portal.api.domain.converters.InetAddressConverter;
+import net.geant.nmaas.portal.api.domain.converters.InetAddressInverseConverter;
+import net.geant.nmaas.portal.api.domain.converters.RoleInverseConverter;
+import net.geant.nmaas.portal.api.domain.converters.TagConverter;
+import net.geant.nmaas.portal.api.domain.converters.TagInverseConverter;
+import net.geant.nmaas.portal.api.domain.converters.UserConverter;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 
 import org.modelmapper.Conditions;
@@ -12,8 +18,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConvertersConfig {
 	
-	@Autowired
 	TagRepository tagRepo;
+
+	@Autowired
+	public ConvertersConfig(TagRepository tagRepo){
+		this.tagRepo = tagRepo;
+	}
 	
 	@Bean
 	public ModelMapper modelMapper() {
@@ -25,6 +35,7 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressConverter());
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
+	    modelMapper.addConverter(new UserConverter());
 	    return modelMapper;
 	}
 	

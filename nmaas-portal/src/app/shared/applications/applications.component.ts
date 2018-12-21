@@ -8,7 +8,7 @@ import {ListType} from '../common/listtype';
 import {AppViewType} from '../common/viewtype';
 import {Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {isUndefined} from 'util';
+import {isNullOrUndefined, isUndefined} from 'util';
 
 @Component({
   selector: 'nmaas-applications-view',
@@ -30,14 +30,15 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public domainId: number;
 
-  protected applications: Observable<Application[]>;
+  public applications: Observable<Application[]>;
   protected copy_applications: Observable<Application[]>;
-  protected selected: Observable<Set<number>>;
+  public selected: Observable<Set<number>>;
 
-  protected searchedAppName: string = "";
+  public searchedAppName: string = "";
   protected searchedTag: string = "all";
 
-  constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {}
+  constructor(private appsService: AppsService, private appSubsService: AppSubscriptionsService, private userDataService: UserDataService, private appConfig: AppConfigService) {
+  }
 
   ngOnInit() {
     // this.updateDomain();
@@ -77,22 +78,24 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
   protected updateSelected(apps: Application[]) {
 
     let subscriptions: Observable<AppSubscription[]>;
-    if (isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
-      subscriptions = this.appSubsService.getAll();
-    } else {
-      subscriptions = this.appSubsService.getAllByDomain(this.domainId);
-    }
-    
-    subscriptions.subscribe((appSubs) => {
-
-      const selected: Set<number> = new Set<number>();
-
-      for (let i = 0; i < appSubs.length; i++) {
-        selected.add(appSubs[i].applicationId);
+      if (!(isUndefined(this.domainId) || this.domainId === 0 || this.domainId === this.appConfig.getNmaasGlobalDomainId())) {
+          subscriptions = this.appSubsService.getAllByDomain(this.domainId);
       }
-      
-      this.selected = Observable.of<Set<number>>(selected);
-    });
+
+      if(!isNullOrUndefined(subscriptions)){
+          subscriptions.subscribe((appSubs) => {
+
+              const selected: Set<number> = new Set<number>();
+
+              for (let i = 0; i < appSubs.length; i++) {
+                  selected.add(appSubs[i].applicationId);
+              }
+
+              this.selected = Observable.of<Set<number>>(selected);
+          });
+      } else{
+        this.selected = undefined;
+      }
 
   }
 
@@ -118,13 +121,13 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  protected filterAppsByName(typed: string): void {
+  public filterAppsByName(typed: string): void {
 
     this.searchedAppName = typed;
     this.doSearch();
   }
 
-  protected filterAppsByTag(tag: string): void {
+  public filterAppsByTag(tag: string): void {
 
     this.searchedAppName = "";
     this.searchedTag = tag;

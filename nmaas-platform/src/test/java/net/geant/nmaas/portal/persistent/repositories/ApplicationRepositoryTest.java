@@ -1,10 +1,19 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
+import java.util.HashSet;
+import java.util.List;
 import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.persistent.entity.*;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.Comment;
+import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.service.DomainService;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +28,8 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -56,11 +62,11 @@ public class ApplicationRepositoryTest {
 	@BeforeTransaction
 	public void setUp() throws Exception {
 //		domains.createGlobalDomain();
-//		userRepo.save(new User("admin", "admin", domains.getGlobalDomain().get(), Role.ROLE_SUPERADMIN));
+//		userRepo.save(new User("admin", "admin", domains.getGlobalDomain().get(), Role.ROLE_SYSTEM_ADMIN));
 	}
 
 	@Test
-	@WithMockUser(username="admin", roles={"SUPERADMIN"})
+	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})
 	public void testAddApplication() {
 		Application app1 = new Application("zabbix");
 		app1.setTags(new HashSet<Tag>());
@@ -76,7 +82,7 @@ public class ApplicationRepositoryTest {
 		Comment comment1 = new Comment(app1, "comment1");
 		commentRepo.save(comment1);
 		
-		app1 = appRepo.findOne(app1.getId());
+		app1 = appRepo.findById(app1.getId()).get();
 		Comment subComment1 = new Comment(app1, comment1, "comment2");
 		commentRepo.save(subComment1);
 		

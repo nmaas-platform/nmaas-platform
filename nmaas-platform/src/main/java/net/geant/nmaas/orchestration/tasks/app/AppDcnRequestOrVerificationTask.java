@@ -1,9 +1,11 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
@@ -15,10 +17,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
+@Log4j2
 public class AppDcnRequestOrVerificationTask {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
@@ -43,17 +43,22 @@ public class AppDcnRequestOrVerificationTask {
      */
     @EventListener
     @Loggable(LogLevel.INFO)
-    public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) throws InvalidDeploymentIdException {
-        final Identifier deploymentId = event.getRelatedTo();
-        final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
-        switch(dcnDeployment.checkState(domain)) {
-            case NONE:
-            case REMOVED:
-                return dcnDeploymentEvent(domain);
-            case DEPLOYED:
-                return dcnReadyNotificationEvent(deploymentId);
-            case PROCESSED:
-                return noEvent();
+    public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) {
+        try{
+            final Identifier deploymentId = event.getRelatedTo();
+            final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+            switch(dcnDeployment.checkState(domain)) {
+                case NONE:
+                case REMOVED:
+                    return dcnDeploymentEvent(domain);
+                case DEPLOYED:
+                    return dcnReadyNotificationEvent(deploymentId);
+                case PROCESSED:
+                    return noEvent();
+            }
+        } catch(Exception ex){
+            long timestamp = System.currentTimeMillis();
+            log.error("Error reported at " + timestamp, ex);
         }
         return noEvent();
     }
@@ -63,7 +68,11 @@ public class AppDcnRequestOrVerificationTask {
     }
 
     private NmServiceDeploymentStateChangeEvent dcnReadyNotificationEvent(Identifier deploymentId) {
-        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT);
+        AppDeployment appDeployment = appDeploymentRepositoryManager.load(deploymentId).orElseThrow(InvalidDeploymentIdException::new);
+        if(appDeployment.getConfiguration() != null){
+            return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURED, "");
+        }
+        return new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.READY_FOR_DEPLOYMENT, "");
     }
 
     private ApplicationEvent noEvent() {

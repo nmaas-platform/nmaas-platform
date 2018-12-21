@@ -4,6 +4,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.In
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -43,17 +44,29 @@ public class ServiceDeploymentWithKubernetesTest {
 	@Test
 	public void shouldConfirmSupportForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
+		AppDeployment appDeployment = appDeployment();
 		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("1"), null, null, appDeploymentSpec);
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("1"), appDeployment, appDeploymentSpec);
 	}
 
 	@Test(expected = NmServiceRequestVerificationException.class)
 	public void shouldNotifyIncompatibilityForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE, AppDeploymentEnv.DOCKER_ENGINE));
+		AppDeployment appDeployment = appDeployment();
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
-		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, null, null, appDeploymentSpec);
+		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, appDeployment, appDeploymentSpec);
+	}
+
+	private AppDeployment appDeployment() {
+		return AppDeployment.builder()
+				.deploymentId(Identifier.newInstance(1L))
+				.domain("domain")
+				.applicationId(Identifier.newInstance("app"))
+				.deploymentName("deploy")
+				.configFileRepositoryRequired(false)
+				.storageSpace(20).build();
 	}
 
 }

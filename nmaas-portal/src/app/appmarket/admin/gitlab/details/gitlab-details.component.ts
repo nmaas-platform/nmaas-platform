@@ -12,7 +12,7 @@ import {ComponentMode} from "../../../../shared";
 })
 export class GitlabDetailsComponent extends BaseComponent implements OnInit {
   private config_id:number;
-  private gitLabConfig:GitLabConfig;
+  public gitLabConfig:GitLabConfig;
 
   constructor(private gitLabService:GitlabService, private route:ActivatedRoute, private router:Router) { super();}
 

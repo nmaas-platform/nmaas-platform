@@ -3,9 +3,6 @@ package net.geant.nmaas.dcn.deployment;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public class AnsiblePlaybookIdentifierConverter {
 
     private static final String CLIENT_SIDE_ROUTER_PREFIX = "CLIENT-ROUTER";
@@ -24,7 +21,7 @@ public class AnsiblePlaybookIdentifierConverter {
         return DatatypeConverter.printBase64Binary(plainString.getBytes(Charset.forName("UTF-8")));
     }
 
-    public static String decode(String encodedStringWithPrefix) throws AnsiblePlaybookIdentifierConverterException {
+    public static String decode(String encodedStringWithPrefix) {
         String decodedStringWithPrefix = decodeString(encodedStringWithPrefix);
         if (decodedStringWithPrefix.startsWith(CLIENT_SIDE_ROUTER_PREFIX))
             return decodedStringWithPrefix.replace(CLIENT_SIDE_ROUTER_PREFIX, "");
@@ -46,7 +43,7 @@ public class AnsiblePlaybookIdentifierConverter {
         return new String(DatatypeConverter.parseBase64Binary(encodedString));
     }
 
-    public static class AnsiblePlaybookIdentifierConverterException extends Exception {
+    public static class AnsiblePlaybookIdentifierConverterException extends RuntimeException {
         public AnsiblePlaybookIdentifierConverterException(String message) {
             super(message);
         }

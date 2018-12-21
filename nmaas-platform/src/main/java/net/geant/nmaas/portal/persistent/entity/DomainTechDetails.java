@@ -1,36 +1,22 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class DomainTechDetails {
-
-    private String kubernetesNamespace;
 
     private boolean dcnConfigured;
 
-    public DomainTechDetails(String kubernetesNamespace, boolean dcnConfigured){
-        this.kubernetesNamespace = kubernetesNamespace;
-        this.dcnConfigured = dcnConfigured;
-    }
+    private String kubernetesNamespace;
 
-    public DomainTechDetails(){}
+    private String kubernetesStorageClass;
 
-    public String getKubernetesNamespace() {
-        return kubernetesNamespace;
-    }
-
-    public void setKubernetesNamespace(String kubernetesNamespace) {
-        this.kubernetesNamespace = kubernetesNamespace;
-    }
-
-    public boolean isDcnConfigured() {
-        return dcnConfigured;
-    }
-
-    public void setDcnConfigured(boolean dcnConfigured) {
-        this.dcnConfigured = dcnConfigured;
-    }
 }

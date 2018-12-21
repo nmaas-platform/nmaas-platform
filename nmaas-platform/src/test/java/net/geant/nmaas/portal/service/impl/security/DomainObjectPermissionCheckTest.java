@@ -1,7 +1,10 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -15,12 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import net.geant.nmaas.configuration.SecurityConfig;
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.PortalConfig;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
@@ -72,7 +70,7 @@ public class DomainObjectPermissionCheckTest {
 	}
 
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = dopch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(5, perms.size());

@@ -16,6 +16,8 @@ import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
+import {AppConfiguration} from "../model/appconfiguration";
+import {a, b} from "@angular/core/src/render3";
 
 @Injectable()
 export class AppInstanceService extends GenericDataService {
@@ -28,15 +30,47 @@ export class AppInstanceService extends GenericDataService {
     return this.get<AppInstance[]>(this.getUrl(domainId));
   }
 
+  public getSortedAllAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
+    return this.get<AppInstance[]>(this.getUrl(domainId)).map(
+      (data) => {
+        data.sort((a, b) => {
+          if(criteria.sortDirection === 'desc'){
+            return a[criteria.sortColumn] < b[criteria.sortColumn] ? -1 : 1;
+          }
+          else {
+            return a[criteria.sortColumn] > b[criteria.sortColumn] ? -1 : 1;
+          }
+        });
+        return data;
+      }
+    )
+  }
+
   public getMyAppInstances(domainId?: number): Observable<AppInstance[]> {
     return this.get<AppInstance[]>(this.getUrl(domainId) + 'my');
+  }
+
+  public getSortedMyAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my').map(
+      (data) => {
+        data.sort((a, b) => {
+          if(criteria.sortDirection === 'desc'){
+            return a[criteria.sortColumn] < b[criteria.sortColumn] ? -1 : 1;
+          }
+          else {
+            return a[criteria.sortColumn] > b[criteria.sortColumn] ? -1 : 1;
+          }
+        });
+        return data;
+      }
+    )
   }
 
   public getUserAppInstances(username: string, domainId?: number): Observable<AppInstance[]> {
     return this.get<AppInstance[]>(this.getUrl(domainId) + 'user/' + username);
   }
 
-  public getAppInstanceState(id: Number, domainId?: number): Observable<AppInstanceStatus> {
+  public getAppInstanceState(id: number, domainId?: number): Observable<AppInstanceStatus> {
     return this.get<AppInstanceStatus>(this.getUrl(domainId) + id + '/state');
   }
 
@@ -48,16 +82,24 @@ export class AppInstanceService extends GenericDataService {
     return this.post<AppInstanceRequest, Id>(this.getUrl(domainId), new AppInstanceRequest(appId, name));
   }
 
-  public removeAppInstance(appInstanceId: Number, domainId?: number): Observable<any> {
+  public removeAppInstance(appInstanceId: number, domainId?: number): Observable<any> {
     return this.delete<any>(this.getUrl(domainId) + appInstanceId);      
   }
 
-  public getAppInstance(appInstanceId: Number, domainId?: number): Observable<AppInstance> {
+  public getAppInstance(appInstanceId: number, domainId?: number): Observable<AppInstance> {
     return this.get<AppInstance>(this.getUrl(domainId) + appInstanceId);
   }
 
-  public applyConfiguration(appInstanceId: Number, configuration: string, domainId?: number): Observable<void> {
-    return this.post<String, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);                
+  public applyConfiguration(appInstanceId: number, configuration: AppConfiguration, domainId?: number): Observable<void> {
+    return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);
+  }
+
+  public updateConfiguration(appInstanceId: number, configuration: AppConfiguration, domainId?: number): Observable<void> {
+      return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure/update', configuration);
+  }
+
+  public redeployAppInstance(appInstanceId: number, domainId?: number): Observable<void> {
+    return this.post<number, any>(this.getUrl(domainId) + appInstanceId + '/redeploy', appInstanceId);
   }
 
   protected getUrl(domainId?: number): string {
@@ -85,4 +127,9 @@ export class AppInstanceService extends GenericDataService {
     return this.post<number,any>((this.getUrl(domainId) +  appInstanceId + '/restart'), appInstanceId);
   }
 
+}
+
+export class CustomerSearchCriteria {
+  sortColumn: string;
+  sortDirection: string;
 }

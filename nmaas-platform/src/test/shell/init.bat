@@ -45,13 +45,39 @@ echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
 echo
-echo Configuration
-curl -X POST %API_URL%/configuration --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\configuration.json
+echo Domain1
+curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
 echo.
 
 echo
-echo Domain1
-curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain1.json
+echo Domain2
+curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\domains\domain2.json
+echo.
+
+echo
+echo Register User First with username user1
+curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
+echo.
+echo
+echo Enable User First
+curl -X PUT %API_URL%/users/status/3?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+echo.
+echo
+echo Set User First an ADMIN role on Domain One
+curl -X POST %API_URL%/domains/2/users/3/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
+echo.
+
+echo
+echo Register User Second with username user2
+curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2.json
+echo.
+echo
+echo Enable User Second
+curl -X PUT %API_URL%/users/status/4?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+echo.
+echo
+echo Set User Second an USER role on Domain One
+curl -X POST %API_URL%/domains/2/users/4/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
 echo.
 
 echo
@@ -60,11 +86,11 @@ curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: applicati
 echo.
 echo
 echo Enable Operator
-curl -X PUT %API_URL%/users/2 --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/enable.json
+curl -X PUT %API_URL%/users/status/5?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
 echo.
 echo
 echo Set Operator an OPERATOR role on Global Domain
-curl -X POST %API_URL%/domains/1/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
+curl -X POST %API_URL%/domains/1/users/5/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
 echo.
 
 echo.
@@ -116,7 +142,7 @@ echo App4
 curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app4-opennti.json
 echo.
 echo App4 logo
-curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\juniper.svg;type=image/svg+xml" %API_URL%/apps/4/logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\open-nti.svg;type=image/svg+xml" %API_URL%/apps/4/logo
 echo.
 echo App4 screenshots
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\opennti\opennti1.png;type=image/jpg" %API_URL%/apps/4/screenshots
@@ -125,19 +151,35 @@ curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images
 echo.
 curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\opennti\opennti3.png;type=image/png" %API_URL%/apps/4/screenshots
 
-rem echo.
-rem echo App5
-rem curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app5-pmacct.json
-rem echo.
-rem echo App5 logo
-rem curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\pmacct.svg;type=image/svg+xml" %API_URL%/apps/5/logo
-rem echo.
-rem echo App5 screenshots
-rem curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\pmacct\pmacct1.jpg;type=image/jpg" %API_URL%/apps/3/screenshots
-rem echo.
-rem curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\pmacct\pmacct2.png;type=image/png" %API_URL%/apps/3/screenshots
-rem echo.
-rem curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\screenshots\pmacct\pmacct3.jpg;type=image/png"  %API_URL%/apps/3/screenshots
+echo.
+echo App5
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app5-prometheus.json
+echo.
+echo App5 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\prometheus.svg;type=image/svg+xml" %API_URL%/apps/5/logo
+echo.
+echo App5 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/prometheus/prometheus_1.png;type=image/png" %API_URL%/apps/5/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/prometheus/prometheus_2.png;type=image/png" %API_URL%/apps/5/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/prometheus/prometheus_3.png;type=image/png" %API_URL%/apps/5/screenshots
+echo.
+
+echo.
+echo App6
+curl -X POST %API_URL%/apps --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\app6-grafana.json
+echo.
+echo App6 logo
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\apps\images\logo\grafana.svg;type=image/svg+xml" %API_URL%/apps/6/logo
+echo.
+echo App6 screenshots
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/grafana/grafana_1.png;type=image/png" %API_URL%/apps/6/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/grafana/grafana_2.png;type=image/png" %API_URL%/apps/6/screenshots
+echo.
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data/apps/images/screenshots/grafana/grafana_3.png;type=image/png" %API_URL%/apps/6/screenshots
+echo.
 
 echo.
 echo ---------------------
@@ -156,7 +198,7 @@ curl -X POST %API_URL%/apps/1/comments --header "Authorization: Bearer %token%" 
 echo.
 echo ---------------------
 echo Get second app
-curl -X GET %API_URL%/apps/2/complete --header "Authorization: Bearer %token%"
+curl -X GET %API_URL%/apps/2/ --header "Authorization: Bearer %token%"
 
 echo.
 echo ---------------------
@@ -201,28 +243,35 @@ echo ---------------------
 echo By tag:
 curl -X GET %API_URL%/tags/management --header "Authorization: Bearer %token%" --header "Accept: application/json"
 
-rem echo.
-rem echo ---------------------
-rem echo Create app2 instance
-rem curl -X POST %API_URL%/domains/2/apps/instances --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\apps\instances\instance1.json
-rem echo.
-rem echo ---------------------
-rem echo Get app instance 1 state
-rem curl -X GET %API_URL%/domains/2/apps/instances/1/state --header "Authorization: Bearer %token%" --header "Accept: application/json"
-rem echo.
-rem echo ---------------------
-rem echo Get app instance 1
-rem curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
-rem echo.
-rem echo ---------------------
-rem echo Send configuration to instance 1
-rem curl -X POST %API_URL%/domains/2/apps/instances/1/configure --header "Authorization: Bearer %token%" --header "Content-Type: application/json" -d @data\apps\instances\instance1-config.json
-rem echo.
-rem echo ---------------------
-rem echo Get app instance 1
-rem curl -X GET %API_URL%/domains/2/apps/instances/1 --header "Authorization: Bearer %token%" --header "Accept: application/json"
+echo.
+echo ---------------------
+echo Create app1 aubscription to Domain One
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub1.json
+echo
+echo Create app2 aubscription to Domain One
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub2.json
+echo
+echo Create app3 aubscription to Domain One
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub3.json
+echo
+echo Create app3 aubscription to Domain Two
+curl -X POST %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/subscriptions/sub4.json
+echo
+echo Get all subscriptions
+curl -X GET %API_URL%/subscriptions --header "Authorization: Bearer %token%" --header "Accept: application/json"
+
 
 echo.
 echo ---------------------
-echo Get app 1 logo without token
-curl -X GET %API_URL%/apps/1/logo
+echo Create english language content
+curl -X POST %API_URL%/i18n/en --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/en.json
+echo
+echo Create french language content
+curl -X POST %API_URL%/i18n/fr --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/fr.json
+echo
+echo Create polish language content
+curl -X POST %API_URL%/i18n/pl --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
+echo
+echo Create german language content
+curl -X POST %API_URL%/i18n/de --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
+echo

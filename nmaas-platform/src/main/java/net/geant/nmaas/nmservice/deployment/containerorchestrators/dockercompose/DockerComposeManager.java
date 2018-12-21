@@ -4,15 +4,26 @@ import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostReposito
 import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostStateKeeper;
 import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.*;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DcnAttachedContainer;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeServiceComponent;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateHandlingException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.DockerComposeFileTemplateNotFoundException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions.InternalErrorException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkLifecycleManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockerengine.network.DockerNetworkResourceManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerNetworkLifecycleManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.network.DockerNetworkResourceManager;
 import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.exceptions.*;
+import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotCreateContainerNetworkException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveContainerNetworkException;
+import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
+import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
@@ -31,43 +42,66 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Profile("env_docker-compose")
 public class DockerComposeManager implements ContainerOrchestrator {
 
-    @Autowired
     private DockerComposeServiceRepositoryManager repositoryManager;
-    @Autowired
+
     private DockerHostRepositoryManager dockerHosts;
-    @Autowired
+
     private DockerHostStateKeeper dockerHostStateKeeper;
-    @Autowired
+
     private DockerComposeFilePreparer composeFilePreparer;
-    @Autowired
+
     private DockerComposeCommandExecutor composeCommandExecutor;
-    @Autowired
+
     private DockerNetworkLifecycleManager dockerNetworkLifecycleManager;
-    @Autowired
+
     private DockerNetworkResourceManager dockerNetworkResourceManager;
-    @Autowired
+
     private StaticRoutingConfigManager routingConfigManager;
-    @Autowired
+
     private ApplicationRepository applicationRepository;
+
+    @Autowired
+    public DockerComposeManager(DockerComposeServiceRepositoryManager repositoryManager,
+                                DockerHostRepositoryManager dockerHosts,
+                                DockerHostStateKeeper dockerHostStateKeeper,
+                                DockerComposeFilePreparer composeFilePreparer,
+                                DockerComposeCommandExecutor composeCommandExecutor,
+                                DockerNetworkLifecycleManager dockerNetworkLifecycleManager,
+                                DockerNetworkResourceManager dockerNetworkResourceManager,
+                                StaticRoutingConfigManager routingConfigManager,
+                                ApplicationRepository applicationRepository){
+        this.repositoryManager = repositoryManager;
+        this.dockerHosts = dockerHosts;
+        this.dockerHostStateKeeper = dockerHostStateKeeper;
+        this.composeFilePreparer = composeFilePreparer;
+        this.composeCommandExecutor = composeCommandExecutor;
+        this.dockerNetworkLifecycleManager = dockerNetworkLifecycleManager;
+        this.dockerNetworkResourceManager = dockerNetworkResourceManager;
+        this.routingConfigManager = routingConfigManager;
+        this.applicationRepository = applicationRepository;
+    }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, String deploymentName, String domain, AppDeploymentSpec appDeploymentSpec)
-            throws NmServiceRequestVerificationException {
+    public void verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier deploymentId, AppDeployment appDeployment, AppDeploymentSpec appDeploymentSpec) {
         if(!appDeploymentSpec.getSupportedDeploymentEnvironments().contains(AppDeploymentEnv.DOCKER_COMPOSE))
             throw new NmServiceRequestVerificationException(
                     "Service deployment not possible with currently used container orchestrator");
+        if(appDeploymentSpec.getDockerComposeFileTemplate() == null){
+            throw new NmServiceRequestVerificationException("File template cannot be null");
+        }
+        if(appDeployment == null){
+            throw new NmServiceRequestVerificationException("App deployment cannot be null");
+        }
         DockerComposeNmServiceInfo serviceInfo = new DockerComposeNmServiceInfo(
                 deploymentId,
-                deploymentName,
-                domain,
+                appDeployment.getDeploymentName(),
+                appDeployment.getDomain(),
+                appDeployment.getStorageSpace(),
                 DockerComposeFileTemplate.copy(appDeploymentSpec.getDockerComposeFileTemplate())
         );
         repositoryManager.storeService(serviceInfo);
@@ -75,8 +109,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId)
-            throws NmServiceRequestVerificationException, ContainerOrchestratorInternalErrorException {
+    public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId) {
         try {
             final String domain = repositoryManager.loadDomain(deploymentId);
             declareNewNetworkForClientIfNotExists(domain);
@@ -96,8 +129,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
         }
     }
 
-    private void declareNewNetworkForClientIfNotExists(String domain)
-            throws ContainerOrchestratorInternalErrorException, DockerHostNotFoundException {
+    private void declareNewNetworkForClientIfNotExists(String domain) {
         if (!dockerNetworkLifecycleManager.networkForDomainAlreadyConfigured(domain))
             dockerNetworkLifecycleManager.declareNewNetworkForClientOnHost(domain, dockerHosts.loadPreferredDockerHost());
     }
@@ -109,8 +141,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void prepareDeploymentEnvironment(Identifier deploymentId)
-            throws CouldNotPrepareEnvironmentException, ContainerOrchestratorInternalErrorException {
+    public void prepareDeploymentEnvironment(Identifier deploymentId, boolean configFileRepositoryRequired) {
         try {
             final DockerComposeNmServiceInfo service = loadService(deploymentId);
             String networkName = deployNetworkForClientOnDockerHostIfNotDoneBefore(service);
@@ -146,33 +177,30 @@ public class DockerComposeManager implements ContainerOrchestrator {
         }
     }
 
-    private DockerComposeNmServiceInfo loadService(Identifier deploymentId) throws InvalidDeploymentIdException {
+    private DockerComposeNmServiceInfo loadService(Identifier deploymentId) {
         return repositoryManager.loadService(deploymentId);
     }
 
-    private String deployNetworkForClientOnDockerHostIfNotDoneBefore(NmServiceInfo service)
-            throws CouldNotCreateContainerNetworkException, ContainerOrchestratorInternalErrorException {
+    private String deployNetworkForClientOnDockerHostIfNotDoneBefore(NmServiceInfo service) {
         return dockerNetworkLifecycleManager.deployNetworkForDomain(service.getDomain());
     }
 
-    private void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService service, DockerComposeFileTemplate dockerComposeFileTemplate)
-            throws DockerComposeFileTemplateHandlingException, DockerComposeFileTemplateNotFoundException, InvalidDeploymentIdException, InternalErrorException {
+    private void buildAndStoreComposeFile(Identifier deploymentId, DockerComposeService service, DockerComposeFileTemplate dockerComposeFileTemplate) {
         composeFilePreparer.buildAndStoreComposeFile(deploymentId, service, dockerComposeFileTemplate);
     }
 
-    private void downloadComposeFileOnDockerHost(DockerComposeNmServiceInfo service) throws CommandExecutionException {
+    private void downloadComposeFileOnDockerHost(DockerComposeNmServiceInfo service) {
         composeCommandExecutor.executeComposeFileDownloadCommand(service.getDeploymentId(), service.getHost());
     }
 
-    private void downloadContainerImageOnDockerHost(DockerComposeNmServiceInfo service) throws CommandExecutionException {
+    private void downloadContainerImageOnDockerHost(DockerComposeNmServiceInfo service) {
         composeCommandExecutor.executeComposePullCommand(service.getDeploymentId(), service.getHost());
     }
 
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void deployNmService(Identifier deploymentId)
-            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException {
+    public void deployNmService(Identifier deploymentId) {
         try {
             final DockerComposeNmServiceInfo service = loadService(deploymentId);
             deployContainers(service);
@@ -186,26 +214,24 @@ public class DockerComposeManager implements ContainerOrchestrator {
         }
     }
 
-    private void deployContainers(DockerComposeNmServiceInfo service) throws CommandExecutionException {
+    private void deployContainers(DockerComposeNmServiceInfo service) {
         composeCommandExecutor.executeComposeUpCommand(service.getDeploymentId(), service.getHost());
     }
 
-    private void configureRoutingOnStartedContainer(NmServiceInfo service)
-            throws CouldNotDeployNmServiceException, ContainerOrchestratorInternalErrorException, CommandExecutionException, InvalidDeploymentIdException {
+    private void configureRoutingOnStartedContainer(NmServiceInfo service) {
         routingConfigManager.configure(service.getDeploymentId());
     }
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void checkService(Identifier deploymentId)
-            throws ContainerCheckFailedException, DockerNetworkCheckFailedException, ContainerOrchestratorInternalErrorException {
+    public void checkService(Identifier deploymentId) {
         // TODO implement relevant checks
     }
 
     @Override
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeNmService(Identifier deploymentId) throws CouldNotRemoveNmServiceException, ContainerOrchestratorInternalErrorException {
+    public void removeNmService(Identifier deploymentId) {
         try {
             final DockerComposeNmServiceInfo service = loadService(deploymentId);
             stopAndRemoveContainers(service);
@@ -222,15 +248,14 @@ public class DockerComposeManager implements ContainerOrchestrator {
         }
     }
 
-    private void stopAndRemoveContainers(DockerComposeNmServiceInfo service) throws CommandExecutionException, ContainerOrchestratorInternalErrorException {
+    private void stopAndRemoveContainers(DockerComposeNmServiceInfo service) {
         composeCommandExecutor.executeComposeDownCommand(service.getDeploymentId(), service.getHost());
         for(DockerComposeServiceComponent component : service.getDockerComposeService().getServiceComponents()) {
             dockerNetworkResourceManager.removeAddressAssignment(service.getDomain(), component.getIpAddressOfContainer());
         }
     }
 
-    private void removeNetworkIfNoContainerAttached(NmServiceInfo justRemovedService)
-            throws CouldNotRemoveContainerNetworkException, ContainerOrchestratorInternalErrorException {
+    private void removeNetworkIfNoContainerAttached(NmServiceInfo justRemovedService) {
         List<DockerComposeNmServiceInfo> runningServices = repositoryManager.loadAllRunningServicesInDomain(justRemovedService.getDomain());
         if (noRunningClientServices(justRemovedService, runningServices)) {
             dockerNetworkLifecycleManager.removeNetwork(justRemovedService.getDomain());
@@ -249,7 +274,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
 
     @Override
     @Loggable(LogLevel.INFO)
-    public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) throws ContainerOrchestratorInternalErrorException {
+    public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             final DockerComposeNmServiceInfo service = repositoryManager.loadService(deploymentId);
             return accessDetails(service);
@@ -260,7 +285,7 @@ public class DockerComposeManager implements ContainerOrchestrator {
     }
 
     @Override
-    public void restartNmService(Identifier deploymentId) throws CouldNotRestartNmServiceException, ContainerOrchestratorInternalErrorException {
+    public void restartNmService(Identifier deploymentId) {
         throw new NotImplementedException();
     }
 

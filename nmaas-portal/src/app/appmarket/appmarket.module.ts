@@ -19,25 +19,29 @@ import {DomainService} from '../service/domain.service';
 import {TagService} from '../service/tag.service';
 import {UserService} from '../service/user.service';
 
-import {AppInstallModalComponent} from './modals/appinstall/appinstallmodal.component';
-
 import {PipesModule} from '../pipe/pipes.module';
 import {DomainsModule} from './domains/domains.module';
 import {UsersModule} from './users/users.module';
-import {ClustersModule} from "./admin/clusters/clusters.module";
-import {ClusterService} from "../service/cluster.service";
-import {GitlabModule} from "./admin/gitlab/gitlab.module";
-import {ConfigurationModule} from "./admin/configuration/configuration.module";
+import {ClustersModule} from './admin/clusters/clusters.module';
+import {ClusterService} from '../service/cluster.service';
+import {GitlabModule} from './admin/gitlab/gitlab.module';
+import {ConfigurationModule} from './admin/configuration/configuration.module';
+import {MonitorModule} from './admin/monitor/monitor.module';
+import {StorageServiceModule} from 'ngx-webstorage-service';
+import {TranslateModule} from '@ngx-translate/core';
+import {HttpClientModule} from '@angular/common/http';
+import {BrowserModule} from '@angular/platform-browser';
+import {SortService} from "../service/sort.service";
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
-    NavbarComponent,
-    AppInstallModalComponent,
+    NavbarComponent
   ],
   imports: [
     FormsModule,
+    StorageServiceModule,
     CommonModule,
     RouterModule,
     SharedModule,
@@ -48,8 +52,12 @@ import {ConfigurationModule} from "./admin/configuration/configuration.module";
     AuthModule,
     PipesModule,
     ClustersModule,
-      GitlabModule,
-      ConfigurationModule
+    GitlabModule,
+    MonitorModule,
+    ConfigurationModule,
+    BrowserModule,
+    HttpClientModule,
+    TranslateModule.forChild(),
   ],
   exports: [
     AppMarketComponent,
@@ -61,7 +69,8 @@ import {ConfigurationModule} from "./admin/configuration/configuration.module";
     UserService,
     TagService,
     UserService,
-    ClusterService
+    ClusterService,
+    SortService,
   ]
 
 })

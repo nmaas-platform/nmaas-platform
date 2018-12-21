@@ -1,3 +1,12 @@
 .subscribed {
 	background-color: #f7fff9;
 }
+
+hr {
+	margin-top: 1px;
+	margin-bottom: 2px;
+}
+
+.caption {
+	padding: 5px !important;
+}

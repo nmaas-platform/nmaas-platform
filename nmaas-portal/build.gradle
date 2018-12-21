@@ -2,7 +2,7 @@ import org.gradle.internal.os.OperatingSystem;
 
 plugins {
 	id "com.moowork.node" version "1.0.1"
-	id 'java'
+	id "org.sonarqube" version "2.6.2"
 }
 
 apply from: '../reactor/build.gradle'
@@ -15,17 +15,53 @@ task buildGUI(type: Exec) {
 	} else {
 		commandLine 'ng', 'build', '--base-href', '/', '--deploy-url', '/'
 	}	
-	
+	dependsOn(npm_install)
 }
-buildGUI.dependsOn(npm_install)
+
+task buildGUIprod(type: Exec) {
+	println 'Building prod platform'
+
+	if ( OperatingSystem.current().isWindows() ) {
+		commandLine 'cmd', '/c', 'ng', 'build', '--base-href', '/', '--deploy-url', '/', '--prod'
+	} else {
+		commandLine 'ng', 'build', '--base-href', '/', '--deploy-url', '/', '--prod'
+	}
+	dependsOn(npm_install)
+}
 
 task dist(type: Zip) {
-	from 'build/app' 
+	from 'build/app'
 	baseName project.name
 	version project.version
+
+	if(project.hasProperty('prod'))
+		dependsOn(buildGUIprod)
+	else
+		dependsOn(buildGUI)
 }
-buildGUI.doLast { tasks.dist.execute() }
 
-build.dependsOn(buildGUI)
-build.dependsOn(npm_install)
+task testCoverage(type: Exec) {
+	println 'Testing with code coverage analysis'
 
+	if ( OperatingSystem.current().isWindows() ) {
+		commandLine 'cmd', '/c', 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', ' --sourcemaps=false', '/'
+	} else {
+		commandLine 'ng', 'test', '--browser', 'ChromeHeadless', '--watch=false', '--code-coverage', ' --sourcemaps=false', '/'
+	}
+
+	dependsOn(npm_install)
+}
+
+sonarqube {
+    properties
+		{
+			property "sonar.sources", "src"
+			property "sonar.exclusions", "**/node_modules/**,**/*.spec.ts,**/bootstrap.js,**/src/app/service/**,**/src/app/model/**"
+			property "sonar.tests", "src"
+			property "sonar.test.inclusions", "**/*.spec.ts"
+			property "sonar.typescript.lcov.reportPaths", "coverage/lcov.info"
+		}
+}
+
+build.dependsOn(dist)
+build.dependsOn(testCoverage)

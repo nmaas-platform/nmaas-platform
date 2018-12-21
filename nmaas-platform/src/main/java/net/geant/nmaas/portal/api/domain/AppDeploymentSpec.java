@@ -1,39 +1,31 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ParameterType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import java.util.List;
 
+@Getter
+@Setter
 public class AppDeploymentSpec {
 
     private Long id;
 
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
-    private DockerServiceTemplate dockerContainerTemplate;
+    private KubernetesTemplate kubernetesTemplate;
 
-    public Long getId() {
-        return id;
-    }
+    private DockerComposeFileTemplate dockerComposeFileTemplate;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private Integer defaultStorageSpace;
 
-    public List<AppDeploymentEnv> getSupportedDeploymentEnvironments() {
-        return supportedDeploymentEnvironments;
-    }
+    private Map<ParameterType, String> deployParameters;
 
-    public void setSupportedDeploymentEnvironments(List<AppDeploymentEnv> supportedDeploymentEnvironments) {
-        this.supportedDeploymentEnvironments = supportedDeploymentEnvironments;
-    }
-
-    public DockerServiceTemplate getDockerContainerTemplate() {
-        return dockerContainerTemplate;
-    }
-
-    public void setDockerContainerTemplate(DockerServiceTemplate dockerContainerTemplate) {
-        this.dockerContainerTemplate = dockerContainerTemplate;
-    }
+    private boolean configFileRepositoryRequired;
 
 }

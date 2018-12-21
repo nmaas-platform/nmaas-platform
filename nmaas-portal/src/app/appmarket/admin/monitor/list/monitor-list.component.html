@@ -1,0 +1,57 @@
+<div class="col-sm-12 col-sm-12 col-md-12">
+    <h3>{{ 'MONITOR.TITLE' | translate }}</h3>
+    <a [routerLink]="['add']" class="btn btn-primary" role="button">{{ 'MONITOR.ADD_JOB_BUTTON' | translate }}</a>
+    <br>
+    <table class="table table-hover table-condensed">
+        <thead>
+            <tr>
+                <th>{{ 'MONITOR.SERVICE_NAME' | translate }}</th>
+                <th>{{ 'MONITOR.LAST_CHECK' | translate }}</th>
+                <th>{{ 'MONITOR.LAST_SUCCESS' | translate }}</th>
+                <th>{{ 'MONITOR.CHECK_INTERVAL' | translate }}</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <ng-template ngFor let-entry [ngForOf]="monitorEntries">
+                <tr *ngIf="entry.status === null || entry.status === undefined">
+                    <td>{{services[entry.serviceName]}}</td>
+                    <td>
+                        <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
+                        <span *ngIf="!entry.lastCheck">---</span>
+                    </td>
+                    <td>
+                        <span *ngIf="entry.lastSuccess">{{entry.lastSuccess | date:'medium'}}</span>
+                        <span *ngIf="!entry.lastSuccess">---</span>
+                    </td>
+                    <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
+                    <td class="text-right">
+                        <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">{{ 'MONITOR.VIEW_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">{{ 'MONITOR.CHECK_NOW_BUTTON' | translate }}</a>
+                        <a [routerLink]="['edit/', entry.serviceName.toString()]" class="btn btn-success" role="button">{{ 'MONITOR.EDIT_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="removeJob(entry.serviceName.toString())" class="btn btn-danger" role="button">{{ 'MONITOR.REMOVE_BUTTON' | translate }}</a>
+                    </td>
+                </tr>
+                <tr *ngIf="entry.status !== null && entry.status !== undefined" [style.background-color]="entry.status.toString() === 'SUCCESS'?'#99ff99':'#FF6651'">
+                    <td>{{services[entry.serviceName]}}</td>
+                    <td>
+                        <span *ngIf="entry.lastCheck">{{entry.lastCheck | date:'medium'}}</span>
+                        <span *ngIf="!entry.lastCheck">---</span>
+                    </td>
+                    <td>
+                        <span *ngIf="entry.lastSuccess && entry.status.toString() === 'FAILURE'">{{entry.lastSuccess | date:'medium'}}</span>
+                        <span *ngIf="!entry.lastSuccess || entry.status.toString() === 'SUCCESS'"></span>
+                    </td>
+                    <td>{{getIntervalCheck(entry.checkInterval, entry.timeFormat)}}</td>
+                    <td class="text-right">
+                        <a [routerLink]="['view/', entry.serviceName.toString()]" class="btn btn-primary" role="button">{{ 'MONITOR.VIEW_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="executeJob(entry.serviceName.toString())" class="btn btn-warning" role="button">{{ 'MONITOR.CHECK_NOW_BUTTON' | translate }}</a>
+                        <a [routerLink]="['edit/', entry.serviceName.toString()]" class="btn btn-success" role="button">{{ 'MONITOR.EDIT_SETTINGS_BUTTON' | translate }}</a>
+                        <a (click)="removeJob(entry.serviceName.toString())" class="btn btn-danger" role="button">{{ 'MONITOR.REMOVE_BUTTON' | translate }}</a>
+                    </td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </table>
+</div>

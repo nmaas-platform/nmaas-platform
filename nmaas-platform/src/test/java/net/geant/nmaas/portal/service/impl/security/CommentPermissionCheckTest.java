@@ -5,6 +5,10 @@ import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 import net.geant.nmaas.portal.service.AclService.Permissions;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,10 +18,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -36,9 +40,9 @@ public class CommentPermissionCheckTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		when(comments.findOne(UsersHelper.COMMENT1.getId())).thenReturn(UsersHelper.COMMENT1);
-		when(comments.findOne(UsersHelper.COMMENT2.getId())).thenReturn(UsersHelper.COMMENT2);
-		when(comments.findOne(UsersHelper.COMMENT3.getId())).thenReturn(UsersHelper.COMMENT3);
+		when(comments.findById(UsersHelper.COMMENT1.getId())).thenReturn(Optional.of(UsersHelper.COMMENT1));
+		when(comments.findById(UsersHelper.COMMENT2.getId())).thenReturn(Optional.of(UsersHelper.COMMENT2));
+		when(comments.findById(UsersHelper.COMMENT3.getId())).thenReturn(Optional.of(UsersHelper.COMMENT3));
 	}
 
 	@After
@@ -56,7 +60,7 @@ public class CommentPermissionCheckTest {
 	}
 
 	@Test
-	public void testSuperAdminEvaluatePermissions() {
+	public void testSystemAdminEvaluatePermissions() {
 	
 		Set<Permissions> perms = cpch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.COMMENT1.getId(), CommentPermissionCheck.COMMENT);
 		assertEquals(5, perms.size());

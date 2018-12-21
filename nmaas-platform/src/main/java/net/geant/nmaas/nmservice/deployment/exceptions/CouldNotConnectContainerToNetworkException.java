@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
-public class CouldNotConnectContainerToNetworkException extends Exception {
+public class CouldNotConnectContainerToNetworkException extends RuntimeException {
 
     public CouldNotConnectContainerToNetworkException(String message) {
         super(message);

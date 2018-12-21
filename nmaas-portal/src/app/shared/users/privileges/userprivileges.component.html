@@ -1,16 +1,10 @@
-<div
-	class="panel panel-default">
-	<div class="panel-heading">Privileges</div>
+<div style="margin-bottom: 120px;" class="panel panel-default">
+	<div class="panel-heading">{{'USER_PRIVILEGES.HEADER' | translate}}</div>
 	<div class="panel-body">
 		<div *ngIf="isModeAllowed(ComponentMode.CREATE)">
 			<form *ngIf="user" [formGroup]="newPrivilegeForm" (submit)="add()" class="form-inline row">
-				<div *ngIf="user?.id" class="form-group col-lg-2">
-					<label>User:</label>
-					<p class="form-control-static">{{user.username}}</p>
-				</div>
-
 				<div class="form-group col-lg-3">
-					<label for="domainId">Domain:</label>
+					<label for="domainId">{{'USER_PRIVILEGES.DOMAIN' | translate}}:</label>
 					<select class="form-control" [formGroup]="newPrivilegeForm"
 						id="domainId" name="domainId" formControlName="domainId" style="min-width: 170px">
 						<option *ngFor="let domain of domains" [value]="domain.id">{{domain.name}}</option>
@@ -19,7 +13,7 @@
 				</div>
 
 				<div class="form-group col-lg-3">
-					<label for="role" >Role:</label>
+					<label for="role" >{{'USER_PRIVILEGES.ROLE' | translate}}:</label>
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
 						name="role" formControlName="role" style="min-width: 170px">
@@ -27,7 +21,7 @@
 					</select>
 				</div>
 				<div class="col-lg-3">
-					<button type="submit" class="btn btn-danger">Add</button>
+					<button type="submit" class="btn btn-danger">{{'USER_PRIVILEGES.ADD_BUTTON' | translate}}</button>
 				</div>
 			</form>
 			<hr>
@@ -38,32 +32,32 @@
 			<table class="table table-hover table-condensed">
 				<thead>
 					<tr>
-						<th>Domain</th>
-						<th>Role</th>
+						<th>{{'USER_PRIVILEGES.DOMAIN' | translate}}</th>
+						<th>{{'USER_PRIVILEGES.ROLE' | translate}}</th>
 						<th>&nbsp;</th>
 					</tr>
 				</thead>
 
-				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SUPERADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
+				<tbody *ngIf="(domainId == domainService.getGlobalDomainId() && authService.hasRole('ROLE_SYSTEM_ADMIN')) || isInMode(ComponentMode.PROFILVIEW)">
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
 						<td>{{getDomainName(userrole.domainId)|async}}</td>
 						<td>{{userrole.role | slice:5}}</td>
 						<td *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="text-right"><button type="button"
 								class="btn btn-danger"
-								(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button></td>
+								(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button></td>
 					</tr>
 					</ng-template>
 				</tbody>
 
-				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SUPERADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
+				<tbody *ngIf="domainId != domainService.getGlobalDomainId() && ((authService.hasDomainRole(domainId, 'ROLE_DOMAIN_ADMIN') || authService.hasRole('ROLE_SYSTEM_ADMIN'))) && !isInMode(ComponentMode.PROFILVIEW)">
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 						<tr *ngIf="domainId == userrole.domainId">
 							<td>{{getDomainName(userrole.domainId)|async}}</td>
 							<td>{{userrole.role | slice:5}}</td>
 							<td class="text-right">
 								<button type="button" class="btn btn-danger"
-										(click)="remove(user.id, userrole.role, userrole.domainId)">Remove</button>
+										(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button>
 							</td>
 						</tr>
 					</ng-template>

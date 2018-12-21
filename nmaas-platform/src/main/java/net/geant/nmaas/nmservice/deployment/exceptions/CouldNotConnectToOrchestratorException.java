@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
-public class CouldNotConnectToOrchestratorException extends Exception {
+public class CouldNotConnectToOrchestratorException extends RuntimeException {
 
     public CouldNotConnectToOrchestratorException(String message) {
         super(message);

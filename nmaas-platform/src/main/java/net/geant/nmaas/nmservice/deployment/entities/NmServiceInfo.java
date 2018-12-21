@@ -1,19 +1,34 @@
 package net.geant.nmaas.nmservice.deployment.entities;
 
+import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
 import java.util.List;
 
 /**
  * Abstract Network Management Service deployment information.
  * Extended by each {@link net.geant.nmaas.nmservice.deployment.ContainerOrchestrator}.
- *
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
  */
+@NoArgsConstructor
+@Setter
+@Getter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class NmServiceInfo {
@@ -52,80 +67,33 @@ public abstract class NmServiceInfo {
     @Fetch(FetchMode.SELECT)
     private List<String> managedDevicesIpAddresses;
 
+    /** Required storage space to be allocated for this particular instance in GB */
+    @Column(nullable = false)
+    private Integer storageSpace;
+
     /** GitLab project information created to store configuration files for this service (deployment) */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private GitLabProject gitLabProject;
 
-    public NmServiceInfo() { }
+    /** Map of additional parameters provided by user during wizard completion */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
+    private Map<String, String> additionalParameters;
 
-    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace) {
         this.name = deploymentId.value();
         this.deploymentId = deploymentId;
         this.deploymentName = deploymentName;
         this.domain = domain;
+        this.storageSpace = storageSpace;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public NmServiceDeploymentState getState() {
-        return state;
-    }
-
-    public void setState(NmServiceDeploymentState state) {
-        this.state = state;
-    }
-
-    public Identifier getDeploymentId() {
-        return deploymentId;
-    }
-
-    public void setDeploymentId(Identifier deploymentId) {
+    public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace, Map <String, String> additionalParameters) {
+        this.name = deploymentId.value();
         this.deploymentId = deploymentId;
-    }
-
-    public String getDeploymentName() {
-        return deploymentName;
-    }
-
-    public void setDeploymentName(String deploymentName) {
         this.deploymentName = deploymentName;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
         this.domain = domain;
-    }
-
-    public List<String> getManagedDevicesIpAddresses() {
-        return managedDevicesIpAddresses;
-    }
-
-    public void setManagedDevicesIpAddresses(List<String> managedDevicesIpAddresses) {
-        this.managedDevicesIpAddresses = managedDevicesIpAddresses;
-    }
-
-    public GitLabProject getGitLabProject() {
-        return gitLabProject;
-    }
-
-    public void setGitLabProject(GitLabProject gitLabProject) {
-        this.gitLabProject = gitLabProject;
+        this.storageSpace = storageSpace;
+        this.additionalParameters = additionalParameters;
     }
 }

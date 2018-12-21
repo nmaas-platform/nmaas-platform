@@ -1,9 +1,9 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import net.geant.nmaas.portal.PersistentConfig;
+import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,16 +13,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.PortalConfig;
-import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
-import net.geant.nmaas.portal.persistent.entity.Domain;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,7 +27,6 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 @EnableAutoConfiguration
 @Transactional
 @Rollback
-@TestPropertySource({"classpath:db.properties"})
 public class ApplicationSubscriptionRepositoryTest {
 
 	@Autowired
@@ -43,12 +39,11 @@ public class ApplicationSubscriptionRepositoryTest {
 	DomainRepository domainRepo;
 	
 	@Autowired
-	ApplicationSubscriptionRespository appSubRepo;
+	ApplicationSubscriptionRepository appSubRepo;
 	
 	Application app1, app2, app3;
 	Domain domain1, domain2, domain3;
 	ApplicationSubscription appSub1, appSub2, appSub3;
-	
 	
 	@Before
 	public void setUp() {
@@ -58,33 +53,15 @@ public class ApplicationSubscriptionRepositoryTest {
 		app3 = appRepo.save(new Application("APP3"));
 		appRepo.flush();
 
-		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1","testnamespace",false));
-		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2","testnamespace",false));
-		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3","testnamespace",false));
+		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false,"testnamespace","teststorageclass"));
+		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2",false,"testnamespace","teststorageclass"));
+		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3",false,"testnamespace","teststorageclass"));
 		domainRepo.flush();
 		
 		appSub1 = appSubRepo.save(new ApplicationSubscription(domain1, app1, true));
 		appSub2 = appSubRepo.save(new ApplicationSubscription(domain2, app1, false));
 		appSub3 = appSubRepo.save(new ApplicationSubscription(domain1, app2, true));
 		appSubRepo.flush();
-
-		
-//		appRepo.save(UsersHelper.APP1);
-//		appRepo.save(UsersHelper.APP2);
-//		appRepo.save(UsersHelper.APP3);
-//		appRepo.flush();
-//		
-//		domainRepo.save(UsersHelper.DOMAIN1);
-//		domainRepo.save(UsersHelper.DOMAIN2);
-//		domainRepo.flush();
-//		
-//		appSubRepo.save(new ApplicationSubscription(UsersHelper.DOMAIN1, UsersHelper.APP1, true));
-//		appSubRepo.save(new ApplicationSubscription(UsersHelper.DOMAIN2, UsersHelper.APP1, false));
-//		appSubRepo.save(new ApplicationSubscription(UsersHelper.DOMAIN1, UsersHelper.APP2, true));
-//		appSubRepo.flush();
-		
-		//assertEquals(3, appSubRepo.count());
-		
 	}
 	
 	@After
@@ -96,14 +73,14 @@ public class ApplicationSubscriptionRepositoryTest {
 	
 	@Test
 	public void testExistsDomainApplication() {
-		assertTrue(appSubRepo.exists(domain1, app1));
-		assertFalse(appSubRepo.exists(domain1, app3));
+		assertTrue(appSubRepo.existsByDomainAndApplication(domain1, app1));
+		assertFalse(appSubRepo.existsByDomainAndApplication(domain1, app3));
 	}
 
 	@Test
 	public void testFindOneDomainApplication() {
-		assertTrue(appSubRepo.findOne(domain1, app2).isPresent());
-		assertFalse(appSubRepo.findOne(domain1, app3).isPresent());
+		assertTrue(appSubRepo.findByDomainAndApplication(domain1, app2).isPresent());
+		assertFalse(appSubRepo.findByDomainAndApplication(domain1, app3).isPresent());
 	}
 
 	@Test
@@ -164,7 +141,6 @@ public class ApplicationSubscriptionRepositoryTest {
 		
 		assertEquals(0, appSubRepo.findAllByIdApplicationAndActive(app3, true, null).getContent().size());
 		assertEquals(0, appSubRepo.findAllByIdApplicationAndActive(app3, false, null).getContent().size());
-
 	}
 	
 	@Test

@@ -9,7 +9,6 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KS
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
      */
     @Override
     @Loggable(LogLevel.INFO)
-    public void restartService(Identifier deploymentId) throws KServiceManipulationException, InvalidDeploymentIdException {
+    public void restartService(Identifier deploymentId) {
         String domain = repositoryManager.loadDomain(deploymentId);
         String namespace = namespaceService.namespace(domain);
         KubernetesClient client = kubernetesClusterManager.getApiClient();
@@ -54,7 +53,7 @@ public class DefaultKServiceOperationsManager implements KServiceOperationsManag
         client.pods().delete(pod);
     }
 
-    private Pod retrievePodObject(String namespace, KubernetesClient client, String releaseName) throws KServiceManipulationException {
+    private Pod retrievePodObject(String namespace, KubernetesClient client, String releaseName) {
         Map<String, String> labels = new HashMap<>();
         labels.put(SERVICE_SELECT_OPTION_RELEASE, releaseName);
         labels.put(SERVICE_SELECT_OPTION_RESTART_AWARE, SERVICE_SELECT_VALUE_RESTART_AWARE);

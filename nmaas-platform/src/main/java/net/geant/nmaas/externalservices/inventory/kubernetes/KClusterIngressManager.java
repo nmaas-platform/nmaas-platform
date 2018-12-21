@@ -1,9 +1,9 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 
 public interface KClusterIngressManager {
 
@@ -17,12 +17,18 @@ public interface KClusterIngressManager {
 
     IngressResourceConfigOption getResourceConfigOption();
 
-    String getExternalServiceDomain();
+    String getExternalServiceDomain(String codename);
 
     Boolean getTlsSupported();
 
-    KClusterExtNetworkView reserveExternalNetwork(String domain) throws ExternalNetworkNotFoundException;
+    Boolean getIngressPerDomain();
 
-    KClusterExtNetworkView getReservedExternalNetwork(String domain) throws ExternalNetworkNotFoundException;
+    IngressCertificateConfigOption getCertificateConfigOption();
+
+    String getIssuerOrWildcardName();
+
+    KClusterExtNetworkView reserveExternalNetwork(String domain);
+
+    KClusterExtNetworkView getReservedExternalNetwork(String domain);
 
 }

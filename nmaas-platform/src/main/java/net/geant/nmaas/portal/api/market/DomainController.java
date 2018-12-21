@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -7,18 +8,24 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
+import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
+import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
+import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.Domain;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.Id;
@@ -33,12 +40,22 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
-	@Autowired
 	UserService userService;
 	
-	@Autowired
 	DomainService domainService;
-	
+
+	ApplicationEventPublisher eventPublisher;
+
+	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
+	private static final String DOMAIN_NOT_FOUND = "Domain not found.";
+
+	@Autowired
+	public DomainController(UserService userService, DomainService domainService, ApplicationEventPublisher eventPublisher){
+		this.userService = userService;
+		this.domainService = domainService;
+		this.eventPublisher = eventPublisher;
+	}
+
 	@GetMapping
 	@Transactional(readOnly = true)
 	public List<Domain> getDomains() {
@@ -47,7 +64,7 @@ public class DomainController extends AppBaseController {
 	
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
-	public List<Domain> getMyDomains(@NotNull Principal principal) throws ProcessingException, MissingElementException {
+	public List<Domain> getMyDomains(@NotNull Principal principal) {
 		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 					
 		try {
@@ -59,33 +76,47 @@ public class DomainController extends AppBaseController {
 	
 	@PostMapping
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) throws ProcessingException {
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public Id createDomain(@RequestBody(required=true) DomainRequest domainRequest) {
 		if(domainService.existsDomain(domainRequest.getName())) 
 			throw new ProcessingException("Domain already exists.");
 		
 		net.geant.nmaas.portal.persistent.entity.Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.getKubernetesNamespace(), domainRequest.isDcnConfigured());
+			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(),
+					domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain());
+			this.domainService.storeDcnInfo(domain.getCodename());
+
+			if(domain.isDcnConfigured()){
+				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
+				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
+			}
+
 			return new Id(domain.getId());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException | InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
 		}
 	}
 	
 	@PutMapping("/{domainId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) throws ProcessingException, MissingElementException {
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId()))
-			throw new ProcessingException("Unable to change domain id");
+			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
-		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
+		if(domainUpdate.getExternalServiceDomain() == null || domainUpdate.getExternalServiceDomain().isEmpty()){
+			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		} else {
+			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getExternalServiceDomain()), "External service domain is not unique");
+			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		}
 		try {
 			domainService.updateDomain(domain);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -98,15 +129,39 @@ public class DomainController extends AppBaseController {
 	@PatchMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR')")
-	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) throws ProcessingException, MissingElementException{
+	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId())){
-			throw new ProcessingException("Unable to change domain id");
+			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
-		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
 		try {
 			domainService.updateDomain(domain);
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new ProcessingException(e.getMessage());
+		}
+
+		return new Id(domainId);
+	}
+
+	@PatchMapping("/{domainId}/dcn")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
+	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) {
+		if(!domainId.equals(domainUpdate.getId())){
+			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
+		}
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
+		try{
+			domainService.updateDomain(domain);
+			if(domain.isDcnConfigured()){
+				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
+				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
+			} else{
+				this.eventPublisher.publishEvent(new DcnRemoveActionEvent(this, domain.getCodename()));
+			}
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}
@@ -116,8 +171,8 @@ public class DomainController extends AppBaseController {
 	
 	@DeleteMapping("/{domainId}")
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	public void deleteDomain(@PathVariable Long domainId) throws MissingElementException {		
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	public void deleteDomain(@PathVariable Long domainId) {		
 		if(!domainService.removeDomain(domainId))
 			throw new MissingElementException("Unable to delete domain");
 	}
@@ -125,8 +180,8 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)	
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public Domain getDomain(@PathVariable Long domainId) throws MissingElementException {	
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found."));
+	public Domain getDomain(@PathVariable Long domainId) {	
+		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		return modelMapper.map(domain, Domain.class);
 	}
 	

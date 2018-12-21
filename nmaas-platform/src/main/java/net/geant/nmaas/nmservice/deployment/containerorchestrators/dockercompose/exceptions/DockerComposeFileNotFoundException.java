@@ -1,9 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.exceptions;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
-public class DockerComposeFileNotFoundException extends Exception {
+public class DockerComposeFileNotFoundException extends RuntimeException {
 
     public DockerComposeFileNotFoundException(String message) {
         super(message);

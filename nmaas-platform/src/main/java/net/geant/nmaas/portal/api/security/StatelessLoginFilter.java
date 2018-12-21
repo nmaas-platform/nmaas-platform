@@ -7,29 +7,20 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.http.HttpRequest;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.geant.nmaas.portal.api.auth.UserLogin;
 import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSupportedException;
 import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
 
 public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-	private final static String AUTH_HEADER="Authorization";
-	private final static String AUTH_METHOD="Basic";
+	private static final  String AUTH_HEADER="Authorization";
+	private static final String AUTH_METHOD="Basic";
 	
 	UserDetailsService userDetailsService;
 	
@@ -42,9 +33,9 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException, IOException, ServletException {
+			throws IOException, ServletException {
 		
-		HttpServletRequest httpRequest = (HttpServletRequest)request;
+		HttpServletRequest httpRequest = request;
 		
 		String authHeader = httpRequest.getHeader(AUTH_HEADER);
 		if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith(AUTH_METHOD + " "))
@@ -71,9 +62,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 		if(password != user.getPassword())
 			throw new BasicAuthenticationException("Invalid credentials.");	
 						
-		UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
-				
-		return userToken;
+		return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
 	}
 
 	

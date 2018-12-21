@@ -1,10 +1,12 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import net.geant.nmaas.portal.api.domain.ApplicationBrief;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
@@ -27,16 +28,20 @@ import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 @RequestMapping("/api/subscriptions")
 public class ApplicationSubscriptionController extends AppBaseController {
 	
-	@Autowired
 	ApplicationSubscriptionService appSubscriptions;
+
+	@Autowired
+	public ApplicationSubscriptionController(ApplicationSubscriptionService appSubscriptions){
+		this.appSubscriptions = appSubscriptions;
+	}
 	
 	@PostMapping
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.CREATED)
-	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
+	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) {
 		try {
-			net.geant.nmaas.portal.persistent.entity.ApplicationSubscription appSub = appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
+			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
 		}
@@ -46,9 +51,9 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@PostMapping("/request")
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'ANY')")
 	@Transactional
-	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) throws ProcessingException {
+	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) {
 		try {
-			net.geant.nmaas.portal.persistent.entity.ApplicationSubscription appSub = appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
+			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
 		}		
@@ -59,9 +64,9 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
 	@Transactional
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) throws ProcessingException {
+	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) {
 		try {
-			boolean result = appSubscriptions.unsubscribe(appId, domainId);
+			appSubscriptions.unsubscribe(appId, domainId);
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException("Unable to unsubscribe. " + e.getMessage());
 		}
@@ -70,9 +75,9 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping("/apps/{appId}/domains/{domainId}")
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
 	@Transactional(readOnly=true)
-	public ApplicationSubscription getSubscription(@PathVariable Long domainId, @PathVariable Long appId) throws MissingElementException {
-		return appSubscriptions.getSubscription(appId, domainId).map(appSub -> modelMapper.map(appSub, ApplicationSubscription.class))
-				.orElseThrow(() -> new MissingElementException("Subscription not found"));
+	public ResponseEntity<ApplicationSubscription> getSubscription(@PathVariable Long domainId, @PathVariable Long appId) {
+		Optional<ApplicationSubscription> appSub = appSubscriptions.getSubscription(appId, domainId).map(sub -> modelMapper.map(sub, ApplicationSubscription.class));
+		return appSub.map(applicationSubscription -> new ResponseEntity<>(applicationSubscription, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 	
 	@GetMapping

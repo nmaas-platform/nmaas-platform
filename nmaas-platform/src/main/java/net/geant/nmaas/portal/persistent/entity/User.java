@@ -1,10 +1,16 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import javax.validation.constraints.Email;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,16 +18,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Column;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
+import org.hibernate.envers.Audited;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@Audited
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ValidUser
 public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
+	@EqualsAndHashCode.Include
 	@Column(unique = true, nullable = false)
 	private String username;
 	
@@ -29,17 +48,19 @@ public class User {
 
 	private String samlToken;
 
-	private String email;	
+	@Email
+	@Column(unique = true)
+	private String email;
 	private String firstname;
 	private String lastname;
 	
 	private boolean enabled;
-	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
-	private List<UserRole> roles = new ArrayList<UserRole>();
 
-	protected User() {
-	}
+	private boolean termsOfUseAccepted;
+	private boolean privacyPolicyAccepted;
+
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
+	private List<UserRole> roles = new ArrayList<>();
 	
 	public User(String username) {
 		this.username = username;
@@ -63,6 +84,21 @@ public class User {
 			this.roles.add(new UserRole(this, domain, role));
 		}	
 	}
+
+	public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted) {
+		this(username, enabled);
+		this.password = password;
+		this.termsOfUseAccepted = termsOfUseAccepted;
+		this.roles.add(new UserRole(this, domain, role));
+	}
+
+    public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted, boolean privacyPolicyAccepted) {
+        this(username, enabled);
+        this.password = password;
+        this.termsOfUseAccepted = termsOfUseAccepted;
+        this.privacyPolicyAccepted = privacyPolicyAccepted;
+        this.roles.add(new UserRole(this, domain, role));
+    }
 	
 	protected User(Long id, String username, boolean enabled, Domain domain, Role role) {
 		this.id = id;
@@ -79,105 +115,14 @@ public class User {
 		this.roles = roles;
 	}
 
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public void clearRoles() {
 		this.roles.clear();
 	}
 
 	public void setNewRoles(Set<UserRole> roles) {
+		if(roles.stream().anyMatch(role-> role.getRole() == Role.ROLE_SYSTEM_COMPONENT))
+			throw new IllegalStateException("This role cannot be assigned");
 		this.roles.addAll(roles);
 	}
-	
-	public void setRoles(List<UserRole> roles) {
-		this.roles = roles;
-	}
 
-	public String getUsername() {
-		return username;
-	}
-
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getSamlToken() { return samlToken; }
-
-	public void setSamlToken(String samlToken) { this.samlToken = samlToken; }
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getFirstname() {
-		return firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public List<UserRole> getRoles() {
-		return roles;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		User other = (User) obj;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		return true;
-	}	
-	
-	
 }

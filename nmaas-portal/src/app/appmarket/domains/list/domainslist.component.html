@@ -1,14 +1,13 @@
-<div class="row">
-
-	<h3>Domains</h3>
-	<a *roles="['ROLE_SUPERADMIN']" [routerLink]="['add']" class="btn btn-primary" role="button">Add</a>
+<div class="col-sm-12 col-sm-offset-1 col-sm-10 col-md-offset-1 col-md-10">
+	<h3>{{ 'DOMAINS.TITLE' | translate }}</h3>
+	<a *roles="['ROLE_SYSTEM_ADMIN']" [routerLink]="['add']" class="btn btn-primary" role="button">{{'DOMAINS.ADD_BUTTON' | translate}}</a>
 	<br>
 	<table class="table table-hover table-condensed">
 		<thead>
 			<tr>
-				<th>Codename</th>
-				<th>Name</th>
-				<th>Active</th>
+				<th>{{ 'DOMAINS.CODE_NAME' | translate }}</th>
+				<th>{{ 'DOMAINS.NAME' | translate }}</th>
+				<th>{{ 'DOMAINS.ACTIVATE' | translate }}</th>
 				<th>&nbsp;</th>
 			</tr>
 		</thead>
@@ -20,9 +19,9 @@
 				<td>{{domain?.name}}</td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="domain?.active"></span><span class="glyphicon glyphicon-remove" *ngIf="!(domain?.active)"></span></td>				
 				<td class="text-right">
-					<a [routerLink]="['view/', domain.id]" class="btn btn-sm btn-primary" role="button">Details</a>
-					<a *roles="['ROLE_SUPERADMIN', 'ROLE_OPERATOR']" [routerLink]="['edit/', domain.id]" class="btn btn-sm btn-success" role="button">Edit</a>
-					<a *roles="['ROLE_SUPERADMIN']" (click)="remove(domain.id)" class="btn btn-sm btn-danger" role="button">Remove</a>
+					<a [routerLink]="['view/', domain.id]" class="btn btn-sm btn-primary" role="button">{{ 'DOMAINS.DETAILS_BUTTON' | translate }}</a>
+					<a *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLink]="['edit/', domain.id]" class="btn btn-sm btn-success" role="button">{{ 'DOMAINS.EDIT_BUTTON' | translate }}</a>
+					<a *roles="['ROLE_SYSTEM_ADMIN']" (click)="remove(domain.id)" class="btn btn-sm btn-danger" role="button">{{ 'DOMAINS.REMOVE_BUTTON' | translate }}</a>
 				</td>
 			</tr>
 			</ng-template>

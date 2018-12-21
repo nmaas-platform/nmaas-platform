@@ -5,21 +5,21 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 @Component
 @Profile("env_kubernetes")
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class KubernetesRepositoryManager extends NmServiceRepositoryManager<KubernetesNmServiceInfo> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    void updateKServiceExternalUrl(Identifier deploymentId, String serviceExternalUrl) throws InvalidDeploymentIdException {
+    public void updateKServiceExternalUrl(Identifier deploymentId, String serviceExternalUrl) {
         KubernetesNmServiceInfo serviceInfo = repository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException(deploymentId));
-        serviceInfo.setServiceExternalUrl(serviceExternalUrl);
+        serviceInfo.setServiceExternalUrl(serviceExternalUrl.toLowerCase());
         repository.save(serviceInfo);
     }
 

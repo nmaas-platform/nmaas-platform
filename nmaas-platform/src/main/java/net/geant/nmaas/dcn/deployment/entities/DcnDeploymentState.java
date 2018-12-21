@@ -1,8 +1,5 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
-/**
- * @author Lukasz Lopatowski <llopat@man.poznan.pl>
- */
 public enum DcnDeploymentState {
 
     INIT,
@@ -10,6 +7,7 @@ public enum DcnDeploymentState {
     REQUEST_VERIFIED,
     REQUEST_VERIFICATION_FAILED,
     DEPLOYMENT_INITIATED,
+    WAITING_FOR_OPERATOR_CONFIRMATION,
     ANSIBLE_PLAYBOOK_CONFIG_FOR_CLIENT_SIDE_ROUTER_COMPLETED,
     ANSIBLE_PLAYBOOK_CONFIG_FOR_CLOUD_SIDE_ROUTER_COMPLETED,
     DEPLOYED,

@@ -17,7 +17,12 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
-import { HttpClientModule } from '@angular/common/http';
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {TranslateService} from "@ngx-translate/core";
+import {TranslateLoaderImpl} from "./service/translate-loader-impl.service";
+
 
 export function appConfigFactory( config: AppConfigService) {
   return function create() {
@@ -50,7 +55,14 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     AppMarketModule,
     SharedModule,
     WelcomeModule,
-    routing
+    routing,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient, AppConfigService]
+      }
+    })
   ],
   providers: [
     AuthGuard,
@@ -60,9 +72,19 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
         provide: APP_INITIALIZER,
         useFactory: appConfigFactory,
         deps: [ AppConfigService ],
-        multi: true
-    }
+        multi: true,
+    },
+      TranslateService
   ],
+    exports:[
+      TranslateModule
+    ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
+
+export function HttpLoaderFactory(httpClient: HttpClient, appConfig: AppConfigService) {
+    // return new TranslateHttpLoader(httpClient);// Use this if you want to get the language json from local asset folder
+  return new TranslateLoaderImpl(httpClient, appConfig);
+}
+

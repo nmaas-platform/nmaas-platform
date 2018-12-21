@@ -7,6 +7,8 @@ import {SharedModule} from '../../../shared';
 import {AuthModule} from '../../../auth/auth.module';
 import {PipesModule} from '../../../pipe/pipes.module';
 import {FormsModule} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
+import {InternationalizationService} from "../../../service/internationalization.service";
 
 @NgModule({
     declarations: [
@@ -14,14 +16,16 @@ import {FormsModule} from '@angular/forms';
     ],
   imports: [
     CommonModule,
-      RouterModule,
-      SharedModule,
-      AuthModule,
-      FormsModule,
-      PipesModule,
+    RouterModule,
+    SharedModule,
+    AuthModule,
+    FormsModule,
+    PipesModule,
+    TranslateModule.forChild()
   ],
   providers: [
       ConfigurationService,
+      InternationalizationService
   ]
 })
 export class ConfigurationModule { }

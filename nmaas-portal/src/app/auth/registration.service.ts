@@ -25,7 +25,7 @@ export class RegistrationService {
   }
 
   protected handleError(error: Response | any) {
-    const errorMsg = (typeof error.json === 'function' ? error.json().message : error.message || 'Server error');
+    const errorMsg = error.error.message;
     return Observable.throw(errorMsg);
   }
 

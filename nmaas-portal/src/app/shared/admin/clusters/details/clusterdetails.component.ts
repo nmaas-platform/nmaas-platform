@@ -1,6 +1,7 @@
 import {
     Cluster,
     ClusterExtNetwork,
+    IngressCertificateConfigOption,
     IngressControllerConfigOption,
     IngressResourceConfigOption,
     NamespaceConfigOption
@@ -8,7 +9,7 @@ import {
 import {BaseComponent} from '../../../common/basecomponent/base.component';
 import {ComponentMode} from '../../../common/componentmode';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'nmaas-clusterdetails',
@@ -23,6 +24,8 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
 
     namespaceConfigOption:Map<string,NamespaceConfigOption> = new Map<string, NamespaceConfigOption>();
 
+    certificateConfigOption:Map<string,IngressCertificateConfigOption> = new Map<string, IngressCertificateConfigOption>();
+
     @Input()
     public cluster: Cluster = new Cluster();
 
@@ -35,10 +38,10 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
     @Output()
     public onDelete: EventEmitter<string> = new EventEmitter<string>();
 
-    constructor(private router:Router) {
-        super();
-        this.initializeMaps();
-    }
+  constructor(private router: Router) {
+    super();
+    this.initializeMaps();
+  }
 
     ngOnInit() {
 
@@ -93,5 +96,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
         this.namespaceConfigOption.set('Use default namespace', NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         this.namespaceConfigOption.set('Use domain namespace', NamespaceConfigOption.USE_DOMAIN_NAMESPACE);
         this.namespaceConfigOption.set('Create namespace', NamespaceConfigOption.CREATE_NAMESPACE);
+        this.certificateConfigOption.set('Use my own wildcard certificate', IngressCertificateConfigOption.USE_WILDCARD);
+        this.certificateConfigOption.set('Generate LetsEncrypt certificates automatically', IngressCertificateConfigOption.USE_LETSENCRYPT);
     }
 }

@@ -16,9 +16,13 @@ import net.geant.nmaas.portal.service.ApplicationService;
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
 
-	@Autowired
 	ApplicationRepository appRepo;
-	
+
+	@Autowired
+	public ApplicationServiceImpl(ApplicationRepository applicationRepository){
+		this.appRepo = applicationRepository;
+	}
+
 	@Override
 	public Application create(String name) {
 		checkParam(name);
@@ -34,13 +38,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public void delete(Long id) {
 		checkParam(id);
-		Optional.ofNullable(appRepo.findOne(id)).ifPresent((app) -> { app.setDeleted(true); appRepo.save(app); });
+		appRepo.findById(id).ifPresent((app) -> { app.setDeleted(true); appRepo.save(app); });
 	}
 
 	@Override
 	public Optional<Application> findApplication(Long applicationId) {
-		if (applicationId != null) 
-			return Optional.ofNullable(appRepo.findOne(applicationId));
+		if (applicationId != null)
+			return appRepo.findById(applicationId);
 		else
 			throw new IllegalArgumentException("applicationId is null");
 	}
@@ -78,22 +82,22 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return appRepo.findAll();
 	}
 
-	protected void checkParam(String name) {
+	private void checkParam(String name) {
 		if(name == null)
 			throw new IllegalArgumentException("name is null");
 	}
 	
-	protected void checkParam(Long id) {
+	private void checkParam(Long id) {
 		if(id == null)
 			throw new IllegalArgumentException("id is null");
 	}
 	
-	protected void checkParam(Application app) {
+	private void checkParam(Application app) {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
 	}
 	
-	protected void checkParam(List<Long> ids) {
+	private void checkParam(List<Long> ids) {
 		if(ids == null)
 			throw new IllegalArgumentException("ids list is null");		
 	}

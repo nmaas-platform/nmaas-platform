@@ -8,11 +8,11 @@ import static org.mockito.Matchers.any;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasicAuthControllerTest {
@@ -29,26 +29,26 @@ public class BasicAuthControllerTest {
 
     @Test
     public void testValidateWithValidUserNameAndPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true);
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST", true, true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithInvalidUserNameAndValidPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.empty(), Optional.of("TEST"), "TEST",true);
+        basicAuthController.validate(Optional.empty(), Optional.of("TEST"), "TEST",true, true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithValidUserNameAndInvalidPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.empty(), "TEST",true);
+        basicAuthController.validate(Optional.of("TEST"), Optional.empty(), "TEST",true, true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithInvalidUserNameAndInvalidPassword() throws AuthenticationException {
-        basicAuthController.validate(Optional.empty(), Optional.empty(), "TEST",true);
+        basicAuthController.validate(Optional.empty(), Optional.empty(), "TEST",true, true, true);
     }
 
     @Test(expected = AuthenticationException.class)
     public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
-        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false);
+        basicAuthController.validate(Optional.of("TEST"), Optional.of("TEST"), "TEST",false, true, true);
     }
 }
