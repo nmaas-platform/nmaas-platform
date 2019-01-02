@@ -38,7 +38,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL = 30;
-    static final String GITLAB_SSH_USER = "git";
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
