@@ -128,7 +128,7 @@
 					"label": "Default username",
 					"type": "textfield",
 					"input": true,
-					"key": "librenms_default_USER",
+					"key": "librenms#default#USER",
 					"validate": {
 						"required": true
 					},
@@ -138,7 +138,7 @@
 					"label": "Default user password",
 					"type": "password",
 					"input": true,
-					"key": "librenms_default_PASSWORD",
+					"key": "librenms#default#PASSWORD",
 					"validate": {
 						"required": true
 					},
@@ -148,7 +148,7 @@
 					"label": "Default email",
 					"type": "email",
 					"input": true,
-					"key": "librenms_default_EMAIL",
+					"key": "librenms#default#EMAIL",
 					"validate": {
 						"required": false
 					},

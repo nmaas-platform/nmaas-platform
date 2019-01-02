@@ -36,37 +36,40 @@
 	},
 	"configTemplate": {
 		"template": {
-			"schema": {
-				"type": "object",
-				"properties": {	}
-			},
-			"form": [
+			"components": [
 				{
-					"type":"help",
-					"helpvalue":"All required configuration should be applied using NAV graphical interface"
+					"type": "htmlelement",
+					"input": false,
+					"content": "<p>All required configuration should be applied using NAV graphical interface</p>"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
 				}
 			]
 		}
 	},
 	"additionalParametersTemplate": {
 		"template": {
-			"schema": {
-				"type": "object",
-				"properties":{
-					"nav.config.ADMIN_MAIL": {
-						"type": "string",
-						"format": "email",
-						"title": "Admin email"
-					},
-					"nav.config.DEFAULT_FROM_EMAIL": {
-						"type": "string",
-						"format": "email",
-						"title": "Default sender email"
-					}
+			"components": [
+				{
+					"label": "Admin email",
+					"type": "email",
+					"input": true,
+					"key": "nav#config#ADMIN_MAIL",
+					"inputFormat": "plain"
+				},
+				{
+					"label": "Default sender email",
+					"type": "email",
+					"input": true,
+					"key": "nav#config#DEFAULT_FROM_EMAIL",
+					"inputFormat": "plain"
 				}
-			},
-			"form":[
-				"*"
 			]
 		}
 	}

@@ -26,122 +26,214 @@
     },
     "configTemplate": {
         "template": {
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "global_config": {
-                        "title": "Global configuration:",
-                        "type": "object",
-                        "properties": {
-                            "global_scrape": {
-                                "type": "string",
-                                "default": "15s"
+            "components": [
+                    {
+                        "title": "Global configuration",
+                        "type": "container",
+                        "persistent": true,
+                        "key": "global_config",
+                        "components": [
+                            {
+                                "label": "Global scrape",
+                                "type": "textfield",
+                                "input": true,
+                                "inputFormat": "plain",
+                                "defaultValue": "15s",
+                                "key": "global_scrape",
+                                "validate": {
+                                    "required": true
+                                }
                             },
-                            "global_evaluation": {
-                                "type": "string",
-                                "default": "30s"
+                            {
+                                "label": "Global evaluation",
+                                "type": "textfield",
+                                "input": true,
+                                "inputFormat": "plain",
+                                "defaultValue": "30s",
+                                "key": "global_evaluation",
+                                "validate": {
+                                    "required": true
+                                }
                             }
-                        }
+                        ]
                     },
-                    "targets": {
-                        "title": "Jobs",
-                        "type": "array",
-                        "minItems": 1,
-                        "items": {
-                            "$ref": "#/definitions/targets_obj",
-                            "extendRefs": true
-                        }
-                    }
-                },
-                "definitions": {
-                    "targets_obj": {
-                        "type": "object",
-                        "properties": {
-                            "jobName": {
-                                "title": "Job name",
-                                "type": "string",
+                {
+                    "label": "Targets",
+                    "hideLabel": true,
+                    "disableAddingRemovingRows": false,
+                    "defaultOpen": false,
+                    "addAnother": "Add jobs",
+                    "addAnotherPosition": "bottom",
+                    "multiple": true,
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "type": "datagrid",
+                    "input": true,
+                    "key": "targets",
+                    "validate": {
+                        "required": true
+                    },
+                    "components": [
+                        {
+                            "label": "Job name",
+                            "type": "textfield",
+                            "input": true,
+                            "inputFormat": "plain",
+                            "key": "jobName",
+                            "validate": {
+                                "required": true,
                                 "minLength": 1
                             },
-                            "scrape_interval": {
-                                "type": "string",
-                                "default": "15s"
-                            },
-                            "metrics_path": {
-                                "type": "string",
-                                "default": "/metrics"
-                            },
-                            "Addresses": {
-                                "type": "array",
-                                "minItems": 1,
-                                "items": {
-                                    "$ref": "#/definitions/address_obj",
-                                    "extendRefs": true
-                                }
-                            },
-                            "Labels": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/labels_obj",
-                                    "extendRefs": true
-                                }
-                            }
-                        }
-                    },
-                    "address_obj": {
-                        "type": "object",
-                        "properties": {
-                            "ipAddress": {
-                                "title": "IP address and port",
-                                "type": "string",
-                                "minLength": 3,
-                                "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
-                            }
-                        }
-                    },
-                    "labels_obj": {
-                        "type": "object",
-                        "properties": {
-                            "label_name": {
-                                "Title": "Label name",
-                                "type": "string"
-                            },
-                            "label_value": {
-                                "Title": "Label value",
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "form": [
-                {
-                    "key": "global_config",
-                    "items": [
-                        "global_config.global_scrape",
-                        "global_config.global_evaluation"
-                    ]
-                },
-                {
-                    "key": "targets",
-                    "items": [
-                        "targets[]",
-                        "targets[].jobName",
-                        "targets[].scrape_interval",
-                        "targets[].metrics_path",
-                        {
-                            "key": "targets[].Addresses",
-                            "items": [
-                                "targets[].Addresses[].ipAddress"
-                            ]
+                            "row": "0-0"
                         },
                         {
-                            "key": "targets[].Labels",
-                            "items": [
-                                "targets[].Labels[].label_name",
-                                "targets[].Labels[].label_value"
-                            ]
+                            "label": "Scrape interval",
+                            "type": "textfield",
+                            "input": true,
+                            "defaultValue": "15s",
+                            "inputFormat": "plain",
+                            "key": "scrape_interval",
+                            "validate": {
+                                "required": true
+                            },
+                            "row": "0-1"
+                        },
+                        {
+                            "label": "Metrics path",
+                            "type": "textfield",
+                            "input": true,
+                            "defaultValue": "/metrics",
+                            "inputFormat": "plain",
+                            "key": "metrics_path",
+                            "validate": {
+                                "required": true
+                            },
+                            "row": "0-2"
+                        },
+                        {
+                            "label": "Addresses",
+                            "hideLabel": false,
+                            "disableAddingRemovingRows": false,
+                            "defaultOpen": false,
+                            "addAnother": "Add address",
+                            "addAnotherPosition": "bottom",
+                            "multiple": true,
+                            "mask": false,
+                            "tableView": true,
+                            "alwaysEnabled": false,
+                            "type": "datagrid",
+                            "input": true,
+                            "key": "Addresses",
+                            "defaultValue": [
+                                {
+                                    "ipAddress": ""
+                                }
+                            ],
+                            "validate": {
+                                "required": true
+                            },
+                            "components": [
+                                {
+                                    "label": "IP address and port",
+                                    "hideLabel": false,
+                                    "showWordCount": false,
+                                    "showCharCount": false,
+                                    "tableView": true,
+                                    "alwaysEnabled": false,
+                                    "type": "textfield",
+                                    "input": true,
+                                    "key": "ipAddress",
+                                    "defaultValue": "",
+                                    "validate": {
+                                        "required": true,
+                                        "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
+                                    },
+                                    "conditional": {
+                                        "show": "",
+                                        "when": "",
+                                        "json": ""
+                                    },
+                                    "inputFormat": "plain",
+                                    "encrypted": false,
+                                    "properties": {},
+                                    "tags": [],
+                                    "customConditional": "",
+                                    "logic": [],
+                                    "row": "0-0"
+                                }
+                            ],
+                            "encrypted": false,
+                            "properties": {},
+                            "tags": [],
+                            "customConditional": "",
+                            "logic": [],
+                            "row": "0-3"
+                        },
+                        {
+                            "label": "Labels",
+                            "hideLabel": false,
+                            "disableAddingRemovingRows": false,
+                            "defaultOpen": false,
+                            "addAnother": "Add label",
+                            "addAnotherPosition": "bottom",
+                            "multiple": true,
+                            "mask": false,
+                            "tableView": true,
+                            "alwaysEnabled": false,
+                            "type": "datagrid",
+                            "input": true,
+                            "key": "Labels",
+                            "validate": {
+                                "required": true
+                            },
+                            "components": [
+                                {
+                                    "label": "Label name",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "inputFormat": "plain",
+                                    "key": "label_name",
+                                    "validate": {
+                                        "required": true,
+                                        "minLength": 1
+                                    },
+                                    "row": "0-4"
+                                },
+                                {
+                                    "label": "Label value",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "inputFormat": "plain",
+                                    "key": "label_value",
+                                    "validate": {
+                                        "required": true,
+                                        "minLength": 1
+                                    },
+                                    "row": "0-0"
+                                }
+                            ],
+                            "encrypted": false,
+                            "properties": {},
+                            "tags": [],
+                            "customConditional": "",
+                            "logic": [],
+                            "row": "0-5"
                         }
-                    ]
+                    ],
+                    "encrypted": false,
+                    "properties": {},
+                    "tags": [],
+                    "customConditional": "",
+                    "logic": []
+                },
+                {
+                    "type": "button",
+                    "label": "Apply configuration",
+                    "disableOnInvalid": true,
+                    "theme": "primary",
+                    "input": false,
+                    "tableView": true
                 }
             ]
         }

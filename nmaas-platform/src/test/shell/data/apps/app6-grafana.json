@@ -26,42 +26,58 @@
     },
     "configTemplate": {
         "template": {
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "use_name": {
-                        "type": "boolean",
-                        "title": "Use existing instance",
-                        "default": false
+            "components": [
+                    {
+                        "label": "Use existing instance",
+                        "type": "checkbox",
+                        "defaultValue": false,
+                        "key": "use_name",
+                        "input": true,
+                        "inputFormat": "plain"
                     },
-                    "source_name": {
-                        "type": "string"
-                    },
-                    "source_addr": {
-                        "title": "Prometheus instance address",
-                        "type": "string"
-                    }
-                }
-            },
-            "form": [
-                {
-                    "key": "use_name"
-                },
-                {
-                    "condition": "model.use_name",
-                    "type": "section",
-                    "items": [
-                        {
-                            "key": "source_name",
+                    {
+                        "label": "Source name",
+                        "type": "textfield",
+                        "defaultValue": "",
+                        "input": true,
+                        "key": "source_name",
+                        "validate": {
                             "required": true
                         },
-                        {
-                            "key": "source_addr",
-                            "required": true
+                        "inputFormat": "plain",
+                        "conditional": {
+                            "show": true,
+                            "when": "use_name",
+                            "eq": true,
+                            "json": ""
                         }
-                    ]
-                }
-            ]
+                    },
+                    {
+                        "label": "Prometheus instance address",
+                        "type": "textfield",
+                        "defaultValue": "",
+                        "input": true,
+                        "key": "source_addr",
+                        "validate": {
+                            "required": true
+                        },
+                        "inputFormat": "plain",
+                        "conditional": {
+                            "show": true,
+                            "when": "use_name",
+                            "eq": true,
+                            "json": ""
+                        }
+                    },
+                    {
+                        "type": "button",
+                        "label": "Apply configuration",
+                        "disableOnInvalid": true,
+                        "theme": "primary",
+                        "input": false,
+                        "tableView": true
+                    }
+                ]
+            }
         }
-    }
 }

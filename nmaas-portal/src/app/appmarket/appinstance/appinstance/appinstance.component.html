@@ -166,7 +166,7 @@
 						</div>
 						<div id="additionalParameters" class="tab-pane fade" style="padding-bottom: 10px" *ngIf="additionalParametersTemplate">
 							<formio [form]="additionalParametersTemplate"
-									(change)="changeAdditionalParameters($event)">
+									(change)="changeAdditionalParameters($event.data)">
 							</formio>
 						</div>
 					</div>
