@@ -48,7 +48,7 @@ public class AppConfigurationController {
         }
     }
 
-    @PostMapping("/domains/{domainId}/apps/instances/{appInstanceId}/configure")
+    @PostMapping({"/apps/instances/{appInstanceId}/configure", "/domains/{domainId}/apps/instances/{appInstanceId}/configure"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -74,7 +74,7 @@ public class AppConfigurationController {
 
     }
 
-    @PostMapping("/domains/{domainId}/apps/instances/{appInstanceId}/configure/update")
+    @PostMapping({"/apps/instances/{appInstanceId}/configure/update", "/domains/{domainId}/apps/instances/{appInstanceId}/configure/update"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
