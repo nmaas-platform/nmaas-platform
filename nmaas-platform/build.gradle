@@ -13,10 +13,10 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.6.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.5'
+		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.7'
 	}
 }
 
@@ -26,7 +26,7 @@ gitProperties {
 
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc:3.5.1-1"
+		artifact = "com.google.protobuf:protoc:3.6.0"
 	}
 	plugins {
 		grpc {
