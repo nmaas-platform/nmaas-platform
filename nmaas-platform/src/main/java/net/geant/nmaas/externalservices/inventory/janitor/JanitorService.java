@@ -41,4 +41,17 @@ public class JanitorService {
         if(response.getStatus() != JanitorManager.Status.OK)
             throw new ConfigMapCreationException(response.getMessage());
     }
-}
+
+    public void deleteConfigMap(Identifier deploymentId, String namespace, String domain) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(janitorHost, Integer.parseInt(janitorPort)).usePlaintext().build();
+        ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
+
+        JanitorManager.Instance instance = JanitorManager.Instance.newBuilder().setNamespace(namespace).setUid(deploymentId.value()).setDomain(domain).build();
+        JanitorManager.ConfigUpdateRequest request = JanitorManager.ConfigUpdateRequest.newBuilder().setApi("v1").setDeployment(instance).build();
+
+        JanitorManager.ConfigUpdateResponse response = stub.delete(request);
+        channel.shutdown();
+
+        if(response.getStatus() != JanitorManager.Status.OK)
+            throw new ConfigMapCreationException(response.getMessage());
+    }}

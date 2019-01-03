@@ -64,10 +64,15 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
 
     @Override
     @Loggable(LogLevel.INFO)
-    public void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired){
+    public void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
+                                String namespace, String domain, boolean configFileRepositoryRequired){
         try{
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileTransferor.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
+            if(configFileRepositoryRequired)
+                janitorService.updateConfigMap(deploymentId, namespace, domain);
+
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.VERIFIED);
         } catch(Exception e){
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }

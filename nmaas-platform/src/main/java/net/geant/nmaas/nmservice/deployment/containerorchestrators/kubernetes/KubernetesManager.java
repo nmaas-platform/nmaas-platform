@@ -4,9 +4,11 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.externalservices.inventory.janitor.JanitorService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
@@ -56,6 +58,8 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterApiManager clusterApiManager;
     private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
+    private JanitorService janitorService;
+    private KNamespaceService namespaceService;
 
     @Autowired
     public KubernetesManager(KubernetesRepositoryManager repositoryManager,
@@ -67,7 +71,9 @@ public class KubernetesManager implements ContainerOrchestrator {
                              IngressResourceManager ingressResourceManager,
                              KClusterApiManager clusterApiManager,
                              KClusterDeploymentManager deploymentManager,
-                             GitLabManager gitLabManager) {
+                             GitLabManager gitLabManager,
+                             JanitorService janitorService,
+                             KNamespaceService namespaceService) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
         this.serviceLifecycleManager = serviceLifecycleManager;
@@ -78,6 +84,8 @@ public class KubernetesManager implements ContainerOrchestrator {
         this.clusterApiManager = clusterApiManager;
         this.deploymentManager = deploymentManager;
         this.gitLabManager = gitLabManager;
+        this.janitorService = janitorService;
+        this.namespaceService = namespaceService;
     }
 
     @Override
@@ -216,6 +224,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteService(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
+            janitorService.deleteConfigMap(deploymentId, namespaceService.namespace(service.getDomain()), service.getDomain());
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }

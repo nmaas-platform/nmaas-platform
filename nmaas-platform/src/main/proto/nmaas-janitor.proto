@@ -3,6 +3,7 @@ package v1;
 
 option java_package = "net.geant.nmaas.externalservices.inventory.janitor";
 option java_outer_classname = "JanitorManager";
+
 enum Status {
     FAILED = 0;
     OK = 1;
@@ -28,4 +29,5 @@ message ConfigUpdateResponse{
 service ConfigService {
     rpc Create(ConfigUpdateRequest) returns (ConfigUpdateResponse);
     rpc Update(ConfigUpdateRequest) returns (ConfigUpdateResponse);
+    rpc Delete(ConfigUpdateRequest) returns (ConfigUpdateResponse);
 }

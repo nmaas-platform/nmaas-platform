@@ -31,5 +31,6 @@ public interface NmServiceConfigurationProvider {
      * @param appConfiguration requesting user specific configuration to be applied
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      */
-    void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration, boolean configFileRepositoryRequired);
+    void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
+                         String namespace, String domain, boolean configFileRepositoryRequired);
 }
