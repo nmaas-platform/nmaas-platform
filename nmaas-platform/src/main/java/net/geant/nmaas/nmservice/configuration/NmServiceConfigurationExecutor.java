@@ -52,7 +52,8 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
-            janitorService.createConfigMap(deploymentId, namespace, domain);
+            if(configFileRepositoryRequired)
+                janitorService.createConfigMap(deploymentId, namespace, domain);
 
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (Exception e) {
