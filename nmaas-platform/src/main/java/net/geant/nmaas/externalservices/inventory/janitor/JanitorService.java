@@ -14,7 +14,7 @@ public class JanitorService {
     @Value("${janitor.port}")
     private String janitorPort;
 
-    public void createConfigMap(Identifier deploymentId, String domain, String namespace) {
+    public void createConfigMap(Identifier deploymentId, String namespace, String domain) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(janitorHost, Integer.parseInt(janitorPort)).usePlaintext().build();
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
 
@@ -28,7 +28,7 @@ public class JanitorService {
             throw new ConfigMapCreationException(response.getMessage());
     }
 
-    public void updateConfigMap(Identifier deploymentId, String domain, String namespace) {
+    public void updateConfigMap(Identifier deploymentId, String namespace, String domain) {
         ManagedChannel channel = ManagedChannelBuilder.forAddress(janitorHost, Integer.parseInt(janitorPort)).usePlaintext().build();
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
 
