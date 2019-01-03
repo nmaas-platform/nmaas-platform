@@ -47,13 +47,13 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     @Override
     @Loggable(LogLevel.INFO)
     public void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
-                                   String namespace, String domain, boolean configFileRepositoryRequired) {
+                                   String domain, boolean configFileRepositoryRequired) {
         try {
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_INITIATED);
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired)
-                janitorService.createConfigMap(deploymentId, namespace, domain);
+                janitorService.createConfigMap(deploymentId, domain);
 
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (Exception e) {
@@ -65,12 +65,12 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
     @Override
     @Loggable(LogLevel.INFO)
     public void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
-                                String namespace, String domain, boolean configFileRepositoryRequired){
+                                String domain, boolean configFileRepositoryRequired){
         try{
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileTransferor.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired)
-                janitorService.updateConfigMap(deploymentId, namespace, domain);
+                janitorService.updateConfigMap(deploymentId, domain);
 
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.VERIFIED);
         } catch(Exception e){

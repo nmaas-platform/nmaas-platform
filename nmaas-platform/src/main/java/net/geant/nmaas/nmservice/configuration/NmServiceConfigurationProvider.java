@@ -15,13 +15,12 @@ public interface NmServiceConfigurationProvider {
      * @param deploymentId unique identifier of service deployment
      * @param applicationId identifier of the application / service
      * @param configuration requesting user specific configuration to be applied
-     * @param namespace kubernetes namespace to create ConfigMap in
      * @param domain logic nmaas domain to create configuration in
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      * @throws NmServiceConfigurationFailedException if NM service couldn't be configured for some reason
      */
     void configureNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration configuration,
-                            String namespace, String domain, boolean configFileRepositoryRequired);
+                            String domain, boolean configFileRepositoryRequired);
 
     /**
      * Updates NM service configuration
@@ -32,5 +31,5 @@ public interface NmServiceConfigurationProvider {
      * @param configFileRepositoryRequired indicates if GitLab instance is required during deployment
      */
     void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
-                         String namespace, String domain, boolean configFileRepositoryRequired);
+                         String domain, boolean configFileRepositoryRequired);
 }

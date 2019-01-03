@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -20,17 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class AppConfigurationTask {
 
     private NmServiceConfigurationProvider serviceConfiguration;
-    private KNamespaceService namespaceService;
     private AppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
     public AppConfigurationTask(
             NmServiceConfigurationProvider serviceConfiguration,
-            AppDeploymentRepositoryManager repositoryManager,
-            KNamespaceService namespaceService) {
+            AppDeploymentRepositoryManager repositoryManager) {
         this.serviceConfiguration = serviceConfiguration;
         this.repositoryManager = repositoryManager;
-        this.namespaceService = namespaceService;
     }
 
     @EventListener
@@ -44,7 +40,6 @@ public class AppConfigurationTask {
                     deploymentId,
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
-                    namespaceService.namespace(appDeployment.getDomain()),
                     appDeployment.getDomain(),
                     appDeployment.isConfigFileRepositoryRequired());
         } catch(Exception ex){

@@ -59,7 +59,6 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
-    private KNamespaceService namespaceService;
 
     @Autowired
     public KubernetesManager(KubernetesRepositoryManager repositoryManager,
@@ -72,8 +71,7 @@ public class KubernetesManager implements ContainerOrchestrator {
                              KClusterApiManager clusterApiManager,
                              KClusterDeploymentManager deploymentManager,
                              GitLabManager gitLabManager,
-                             JanitorService janitorService,
-                             KNamespaceService namespaceService) {
+                             JanitorService janitorService) {
         this.repositoryManager = repositoryManager;
         this.clusterValidator = clusterValidator;
         this.serviceLifecycleManager = serviceLifecycleManager;
@@ -85,7 +83,6 @@ public class KubernetesManager implements ContainerOrchestrator {
         this.deploymentManager = deploymentManager;
         this.gitLabManager = gitLabManager;
         this.janitorService = janitorService;
-        this.namespaceService = namespaceService;
     }
 
     @Override
@@ -224,7 +221,7 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             serviceLifecycleManager.deleteService(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
-            janitorService.deleteConfigMap(deploymentId, namespaceService.namespace(service.getDomain()), service.getDomain());
+            janitorService.deleteConfigMap(deploymentId, service.getDomain());
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
             }

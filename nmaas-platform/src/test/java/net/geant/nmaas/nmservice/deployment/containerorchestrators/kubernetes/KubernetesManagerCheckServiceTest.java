@@ -34,7 +34,6 @@ public class KubernetesManagerCheckServiceTest {
     private KClusterDeploymentManager deploymentManager = mock(KClusterDeploymentManager.class);
     private GitLabManager gitLabManager = mock(GitLabManager.class);
     private JanitorService janitorService = mock(JanitorService.class);
-    private KNamespaceService namespaceService = mock(KNamespaceService.class);
 
     @Before
     public void setup() {
@@ -48,8 +47,7 @@ public class KubernetesManagerCheckServiceTest {
                 clusterApiManager,
                 deploymentManager,
                 gitLabManager,
-                janitorService,
-                namespaceService);
+                janitorService);
     }
 
     @Test
