@@ -22,7 +22,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -40,7 +39,7 @@ import java.util.Arrays;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:application.properties")
 @Order(Ordered.LOWEST_PRECEDENCE-100)
-@ComponentScan(basePackages={"net.geant.nmaas.portal.api.security"})
+@ComponentScan(basePackages = {"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private static final  String SSL_ENABLED = "server.ssl.enabled";
@@ -53,14 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME = "ansible.notification.client.username";
     private static final String ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME = "ansible.notification.client.password";
-	private static final String APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.config.download.client.username";
-	private static final String APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME = "app.config.download.client.password";
-	private static final String APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME = "app.compose.download.client.username";
-	private static final String APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME = "app.compose.download.client.password";
 
 	private static final String AUTH_ROLE_ANSIBLE_CLIENT = "ANSIBLE_CLIENT";
-	private static final String AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT = "CONFIG_DOWNLOAD_CLIENT";
-	private static final String AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT = "COMPOSE_DOWNLOAD_CLIENT";
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
@@ -79,18 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))
 					.password(passwordEncoder.encode(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_PASS_PROPERTY_NAME)))
 					.roles(AUTH_ROLE_ANSIBLE_CLIENT);
-		}
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "env_docker-compose".equals(p))) {
-			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder)
-					.withUser(env.getProperty(APP_COMPOSE_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder.encode(env.getProperty(APP_COMPOSE_DOWNLOAD_PASS_PROPERTY_NAME)))
-					.roles(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT);
-			auth.inMemoryAuthentication()
-					.passwordEncoder(passwordEncoder)
-					.withUser(env.getProperty(APP_CONFIG_DOWNLOAD_USERNAME_PROPERTY_NAME))
-					.password(passwordEncoder.encode(env.getProperty(APP_CONFIG_DOWNLOAD_PASS_PROPERTY_NAME)))
-					.roles(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT);
 		}
 	}
 
@@ -123,8 +104,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.authorizeRequests()
 	            .antMatchers("/api/dcns/notifications/**/status").hasRole(AUTH_ROLE_ANSIBLE_CLIENT)
-				.antMatchers("/api/configs/**").hasRole(AUTH_ROLE_CONFIG_DOWNLOAD_CLIENT)
-				.antMatchers("/api/dockercompose/files/**").hasRole(AUTH_ROLE_COMPOSE_DOWNLOAD_CLIENT)
 	            .and().httpBasic()
 			.and()
 				.authorizeRequests()
@@ -167,8 +146,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher(AUTH_SSO_LOGIN),
 										new AntPathRequestMatcher("/api/info/**"),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
-										new AntPathRequestMatcher("/api/configs/**"),
-										new AntPathRequestMatcher("/api/dockercompose/files/**"),
 										new AntPathRequestMatcher("/api/content/**"),
 										new AntPathRequestMatcher("/api/users/reset/**")
 								}),

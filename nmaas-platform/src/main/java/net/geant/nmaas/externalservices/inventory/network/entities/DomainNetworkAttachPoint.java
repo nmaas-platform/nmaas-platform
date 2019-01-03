@@ -3,7 +3,12 @@ package net.geant.nmaas.externalservices.inventory.network.entities;
 import lombok.Setter;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Setter
 @Entity
@@ -12,39 +17,35 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable=false, unique=true)
+    @Column(nullable = false, unique = true)
     private String domain;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerId;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String asNumber;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerInterfaceName;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerInterfaceUnit;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String routerInterfaceVlan;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String bgpLocalIp;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String bgpNeighborIp;
-
-    // TODO move to a class representing the whole domain
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DomainNetworkMonitoredEquipment monitoredEquipment;
 
     public Long getId() {
         return id;
@@ -92,10 +93,6 @@ public class DomainNetworkAttachPoint implements NetworkAttachPoint {
     @Override
     public String getBgpNeighborIp() {
         return bgpNeighborIp;
-    }
-
-    public DomainNetworkMonitoredEquipment getMonitoredEquipment() {
-        return monitoredEquipment;
     }
 
     public DomainNetworkAttachPoint update(DomainNetworkAttachPoint domainNetworkAttachPoint) {

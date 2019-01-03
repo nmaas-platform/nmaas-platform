@@ -10,7 +10,6 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -23,8 +22,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-
-import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.*;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.DEPLOYMENT_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFICATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFIED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTARTED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.RESTART_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFICATION_INITIATED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.VERIFIED;
 
 /**
  * Default implementation of the {@link NmServiceDeploymentProvider}. Coordinates NM service deployment workflow and
@@ -108,7 +121,6 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
             }
             throw new ContainerCheckFailedException("Maximum wait time for container deployment exceeded");
         } catch (ContainerCheckFailedException
-                | DockerNetworkCheckFailedException
                 | ContainerOrchestratorInternalErrorException e) {
             notifyStateChangeListeners(deploymentId, VERIFICATION_FAILED, e.getMessage());
             throw new CouldNotVerifyNmServiceException("NM Service deployment verification failed -> " + e.getMessage());

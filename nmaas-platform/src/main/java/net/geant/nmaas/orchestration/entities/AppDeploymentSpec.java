@@ -1,14 +1,14 @@
 package net.geant.nmaas.orchestration.entities;
 
-import java.util.Map;
-import javax.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeFileTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,13 +19,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.List;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import java.util.Map;
 
 /**
  * Application deployment specification. Contains information about supported deployment options represented by
- * {@link AppDeploymentEnv} and all required templates {@link DockerComposeFileTemplate}
- * and/or {@link KubernetesTemplate}) according to the supported deployment environments.
+ * {@link AppDeploymentEnv} and all required templates like {@link KubernetesTemplate} and additional deployment
+ * parameters.
  */
 @Getter
 @Setter
@@ -39,9 +38,6 @@ public class AppDeploymentSpec implements Serializable {
     @ElementCollection(targetClass = AppDeploymentEnv.class)
     @Enumerated(EnumType.STRING)
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private DockerComposeFileTemplate dockerComposeFileTemplate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private KubernetesTemplate kubernetesTemplate;

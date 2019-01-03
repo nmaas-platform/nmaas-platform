@@ -1,6 +1,0 @@
-{
-    "dockerHostName":"GN4-DOCKER-1",
-    "routerName":"R3",
-    "routerId":"172.16.3.3",
-    "routerInterfaceName":"ge-0/0/4"
-}

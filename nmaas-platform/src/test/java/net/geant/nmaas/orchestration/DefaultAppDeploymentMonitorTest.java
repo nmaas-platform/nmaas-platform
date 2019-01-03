@@ -1,14 +1,8 @@
 package net.geant.nmaas.orchestration;
 
-import net.geant.nmaas.externalservices.inventory.dockerhosts.DockerHostRepositoryManager;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostAlreadyExistsException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostInvalidException;
-import net.geant.nmaas.externalservices.inventory.dockerhosts.exceptions.DockerHostNotFoundException;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerComposeServiceRepositoryManager;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeNmServiceInfo;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerComposeService;
-import net.geant.nmaas.nmservice.deployment.entities.DockerHost;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
@@ -32,18 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-compose.properties")
 public class DefaultAppDeploymentMonitorTest {
 
     @MockBean
@@ -66,28 +55,21 @@ public class DefaultAppDeploymentMonitorTest {
     @Autowired
     private AppDeploymentMonitor monitor;
     @Autowired
-    private DockerComposeServiceRepositoryManager nmServiceRepositoryManager;
+    private KubernetesRepositoryManager kubernetesRepositoryManager;
     @Autowired
     private ApplicationEventPublisher publisher;
     @Autowired
     private AppDeploymentRepository appDeploymentRepository;
-    @Autowired
-    private DockerHostRepositoryManager dockerHostRepositoryManager;
 
     private static final String DOMAIN = "domain1";
     private static final String DEPLOYMENT_NAME = "this-is-example-deployment-name";
+    private static final int DELAY = 200;
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
 
     @Before
-    public void setup() throws InvalidDeploymentIdException, UnknownHostException, DockerHostAlreadyExistsException, DockerHostInvalidException, DockerHostNotFoundException {
-        dockerHostRepositoryManager.addDockerHost(dockerHost());
-        DockerComposeNmServiceInfo nmServiceInfo = new DockerComposeNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
-        nmServiceRepositoryManager.storeService(nmServiceInfo);
-        DockerComposeService dockerComposeService = new DockerComposeService();
-        dockerComposeService.setAttachedVolumeName("testVolumeName");
-        dockerComposeService.setPublicPort(8080);
-        nmServiceRepositoryManager.updateDockerComposeService(deploymentId, dockerComposeService);
-        nmServiceRepositoryManager.updateDockerHost(deploymentId, dockerHostRepositoryManager.loadByName("dh"));
+    public void setup() throws InvalidDeploymentIdException {
+        KubernetesNmServiceInfo nmServiceInfo = new KubernetesNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
+        kubernetesRepositoryManager.storeService(nmServiceInfo);
         AppDeployment appDeployment = AppDeployment.builder()
                 .deploymentId(deploymentId)
                 .domain("domain")
@@ -101,13 +83,10 @@ public class DefaultAppDeploymentMonitorTest {
     }
 
     @After
-    public void cleanRepository() throws InvalidDeploymentIdException, DockerHostNotFoundException, DockerHostInvalidException {
+    public void cleanRepository() throws InvalidDeploymentIdException {
         appDeploymentRepository.deleteAll();
-        nmServiceRepositoryManager.removeService(deploymentId);
-        dockerHostRepositoryManager.removeDockerHost("dh");
+        kubernetesRepositoryManager.removeService(deploymentId);
     }
-
-    private static final int DELAY = 200;
 
     @Test
     public void shouldTransitStatesAndReturnCorrectOverallState() throws InvalidDeploymentIdException, InterruptedException {
@@ -165,26 +144,6 @@ public class DefaultAppDeploymentMonitorTest {
     public void shouldThrowExceptionWhenReadingAccessDetailsInWrongAppState() throws InvalidAppStateException, InvalidDeploymentIdException {
         repository.updateState(deploymentId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
         monitor.userAccessDetails(deploymentId);
-    }
-
-    @Test
-    public void shouldBuildProperAccessDetails() throws InvalidAppStateException, InvalidDeploymentIdException {
-        repository.updateState(deploymentId, AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED);
-        assertThat(monitor.userAccessDetails(deploymentId).getUrl(), equalTo("http://192.168.0.1:8080"));
-    }
-
-    public static DockerHost dockerHost() throws UnknownHostException {
-        return new DockerHost(
-                "dh",
-                InetAddress.getByName("192.168.0.1"),
-                9999,
-                InetAddress.getByName("192.168.0.1"),
-                "eth0",
-                "eth1",
-                InetAddress.getByName("192.168.1.1"),
-                "/home/mgmt/scripts",
-                "/home/mgmt/volumes",
-                false);
     }
 
 }

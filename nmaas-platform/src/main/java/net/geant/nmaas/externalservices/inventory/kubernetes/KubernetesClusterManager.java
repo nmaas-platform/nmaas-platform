@@ -4,12 +4,13 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
  * At this point it is assumed that exactly one cluster should exist.
  */
 @Component
-public class KubernetesClusterManager implements KClusterApiManager, KClusterIngressManager,
+public class KubernetesClusterManager implements KClusterAttachPointManager, KClusterApiManager, KClusterIngressManager,
         KClusterDeploymentManager, KNamespaceService {
 
     private static final String NMAAS_NAMESPACE_PREFIX = "nmaas-ns-";
@@ -54,6 +55,11 @@ public class KubernetesClusterManager implements KClusterApiManager, KClusterIng
     }
 
     private KubernetesClient client;
+
+    @Override
+    public KClusterAttachPoint getAttachPoint() {
+        return loadSingleCluster().getAttachPoint();
+    }
 
     @Override
     public KubernetesClient getApiClient() {

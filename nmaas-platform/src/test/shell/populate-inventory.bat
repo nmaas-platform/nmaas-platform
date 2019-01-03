@@ -46,14 +46,6 @@ echo Ping
 curl -X GET %API_URL%/auth/basic/ping --header "Authorization: Bearer %token%"
 
 echo.
-echo Adding default Docker Hosts
-curl -X POST %API_URL%/management/dockerhosts --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\dockerhosts\docker-host-1.json
-curl -X POST %API_URL%/management/dockerhosts --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\dockerhosts\docker-host-2.json
-curl -X POST %API_URL%/management/dockerhosts --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\dockerhosts\docker-host-3.json
-echo
-curl -X GET %API_URL%/management/dockerhosts --header "Authorization: Bearer %token%"
-
-echo.
 echo Adding default Kubernetes
 curl -X POST %API_URL%/management/kubernetes --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\kubernetes\kubernetes-1.json
 echo
@@ -64,12 +56,6 @@ echo Adding default GitLab configuration
 curl -X POST %API_URL%/management/gitlab --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\gitlab\gitlab-1.json
 echo
 curl -X GET %API_URL%/management/gitlab --header "Authorization: Bearer %token%"
-
-echo.
-echo Adding default Docker Host attachment points
-curl -X POST %API_URL%/management/network/dockerhosts --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data\inventory\dockerhosts\docker-host-1-attach-point.json
-echo
-curl -X GET %API_URL%/management/network/dockerhosts --header "Authorization: Bearer %token%"
 
 echo.
 echo Adding default network attachment point to default domain Domain One

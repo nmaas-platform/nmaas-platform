@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -36,7 +35,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-compose.properties")
 public class AppDcnRequestOrVerificationTaskTest {
 
     @Autowired
@@ -58,7 +56,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     @Before
     public void setup() {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
+        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES));
         appDeploymentSpec.setDefaultStorageSpace(20);
         Application application = new Application("testOxidized");
         application.setAppDeploymentSpec(appDeploymentSpec);

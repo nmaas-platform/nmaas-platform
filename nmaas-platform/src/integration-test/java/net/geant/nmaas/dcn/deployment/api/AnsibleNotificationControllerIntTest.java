@@ -12,7 +12,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
-import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
@@ -25,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-compose.properties")
+@ActiveProfiles({"env_kubernetes", "dcn_ansible", "db_memory"})
 public class AnsibleNotificationControllerIntTest {
 
     @Autowired
@@ -50,8 +49,6 @@ public class AnsibleNotificationControllerIntTest {
     private AppDeploymentRepository appDeploymentRepository;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-    @Autowired
-    private DockerHostNetworkRepository dockerHostNetworkRepository;
 
     private static final String DOMAIN = "domain";
     private static final String DEPLOYMENT_NAME = "deploymentName";
@@ -75,7 +72,7 @@ public class AnsibleNotificationControllerIntTest {
         DcnSpec spec = new DcnSpec(DCN_NAME, DOMAIN);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
         dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
-        AnsiblePlaybookExecutionStateListener coordinator = new AnsibleDcnDeploymentExecutor(dcnRepositoryManager, null, null, applicationEventPublisher, dockerHostNetworkRepository, null);
+        AnsiblePlaybookExecutionStateListener coordinator = new AnsibleDcnDeploymentExecutor(dcnRepositoryManager, applicationEventPublisher, null, null, null);
         statusUpdateJsonContent = new ObjectMapper().writeValueAsString(new AnsiblePlaybookStatus("success"));
         mvc = MockMvcBuilders.standaloneSetup(new AnsibleNotificationController(coordinator)).build();
     }

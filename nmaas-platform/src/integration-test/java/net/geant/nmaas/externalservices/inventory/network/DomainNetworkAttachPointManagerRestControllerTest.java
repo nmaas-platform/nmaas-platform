@@ -3,7 +3,6 @@ package net.geant.nmaas.externalservices.inventory.network;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkMonitoredEquipment;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -12,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,10 +21,7 @@ import javax.ws.rs.core.MediaType;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.collection.IsEmptyCollection.emptyCollectionOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-compose.properties")
 public class DomainNetworkAttachPointManagerRestControllerTest {
 
     private static final String CORRECT_DOMAIN_NAME = "domainName";
@@ -53,14 +47,6 @@ public class DomainNetworkAttachPointManagerRestControllerTest {
             "\"bgpLocalIp\":\"192.168.144.4\"," +
             "\"bgpNeighborIp\":\"192.168.144.14\"," +
             "\"asNumber\":\"64522\"," +
-            "\"monitoredEquipment\": {" +
-            "\"addresses\": [" +
-            "\"11.11.11.11\"," +
-            "\"22.22.22.22\"," +
-            "\"33.33.33.33\"," +
-            "\"44.44.44.44\"," +
-            "\"55.55.55.55\"" +
-            "]," +
             "\"networks\": []" +
             "}" +
             "}";
@@ -116,10 +102,6 @@ public class DomainNetworkAttachPointManagerRestControllerTest {
         assertThat(
                 repository.findByDomain(CORRECT_DOMAIN_NAME).get().getAsNumber(),
                 equalTo("64522"));
-        DomainNetworkMonitoredEquipment monitoredEquipment = repository.findByDomain(CORRECT_DOMAIN_NAME).get().getMonitoredEquipment();
-        assertThat(monitoredEquipment, is(notNullValue()));
-        assertThat(monitoredEquipment.getNetworks(), emptyCollectionOf(String.class));
-        assertThat(monitoredEquipment.getAddresses(), contains("11.11.11.11", "22.22.22.22", "33.33.33.33", "44.44.44.44", "55.55.55.55"));
     }
 
     @Test

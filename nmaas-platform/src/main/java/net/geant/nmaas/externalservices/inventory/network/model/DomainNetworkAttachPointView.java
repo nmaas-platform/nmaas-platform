@@ -31,5 +31,4 @@ public class DomainNetworkAttachPointView {
 
     private String bgpNeighborIp;
 
-    private DomainNetworkMonitoredEquipmentView monitoredEquipment;
 }
