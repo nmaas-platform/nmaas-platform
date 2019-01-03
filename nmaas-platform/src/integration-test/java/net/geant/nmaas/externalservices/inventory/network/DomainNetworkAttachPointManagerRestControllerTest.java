@@ -46,9 +46,7 @@ public class DomainNetworkAttachPointManagerRestControllerTest {
             "\"routerInterfaceVlan\":\"8\"," +
             "\"bgpLocalIp\":\"192.168.144.4\"," +
             "\"bgpNeighborIp\":\"192.168.144.14\"," +
-            "\"asNumber\":\"64522\"," +
-            "\"networks\": []" +
-            "}" +
+            "\"asNumber\":\"64522\"" +
             "}";
 
     @Autowired

@@ -7,15 +7,5 @@
   "routerInterfaceVlan":"8",
   "bgpLocalIp":"192.168.144.4",
   "bgpNeighborIp":"192.168.144.14",
-  "asNumber":"64522",
-  "monitoredEquipment": {
-    "addresses": [
-      "11.11.11.11",
-      "22.22.22.22",
-      "33.33.33.33",
-      "44.44.44.44",
-      "55.55.55.55"
-    ],
-    "networks": []
-  }
+  "asNumber":"64522"
 }
