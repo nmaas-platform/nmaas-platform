@@ -138,38 +138,10 @@
 				<div class="col-xs-12">
 					<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
 					<hr>
-					<ul class="nav nav-tabs">
-						<li class="active"><a data-toggle="tab" href="#configForm">{{'APP_INSTANCE.CONFIGURATION.CONFIGURATION_TAB' | translate}}</a> </li>
-						<li> <a data-toggle="tab" href="#advanced">{{'APP_INSTANCE.CONFIGURATION.ADVANCED_TAB' | translate}}</a> </li>
-						<li *ngIf="additionalParametersTemplate"> <a data-toggle="tab" href="#additionalParameters">{{'APP_INSTANCE.CONFIGURATION.ADDITIONAL_TAB' | translate}}</a> </li>
-					</ul>
-					<div class="tab-content" style="padding-top: 10px">
-						<div id="configForm" class="tab-pane fade in active">
-							<formio *ngIf="additionalMandatoryTemplate !== undefined"
-									[form]="additionalMandatoryTemplate"
-									(change)="changeMandatoryParameters($event.data)">
-							</formio>
-							<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
-									[form]="configurationTemplate"
-									(submit)="applyConfiguration($event.data)">
-							</formio>
-						</div>
-						<div id="advanced" class="tab-pane fade" style="padding-bottom: 10px">
-							<form [formGroup]="configAdvancedTab">
-								<div class="form-group" [ngClass]="{'has-error': configAdvancedTab.controls.storageSpace.invalid && configAdvancedTab.controls.storageSpace.dirty,
-																	'has-success': configAdvancedTab.controls.storageSpace.valid && configAdvancedTab.controls.storageSpace.dirty}">
-									<label class="control-label" for="storageSpace">{{'APP_INSTANCE.CONFIGURATION.STORAGE_SPACE' | translate}} (GB):</label>
-									<input type="text" class="form-control" placeholder="{{'APP_INSTANCE.DEFAULT_VALUE' | translate}}: {{app?.appDeploymentSpec.defaultStorageSpace}}"
-										   formControlName="storageSpace" id="storageSpace">
-								</div>
-							</form>
-						</div>
-						<div id="additionalParameters" class="tab-pane fade" style="padding-bottom: 10px" *ngIf="additionalParametersTemplate">
-							<formio [form]="additionalParametersTemplate"
-									(change)="changeAdditionalParameters($event.data)">
-							</formio>
-						</div>
-					</div>
+					<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
+							[form]="configurationTemplate"
+							(submit)="applyConfiguration($event.data)">
+					</formio>
 				</div>
 			</div>
 			<hr>

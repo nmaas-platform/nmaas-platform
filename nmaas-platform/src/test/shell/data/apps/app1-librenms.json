@@ -33,82 +33,156 @@
 		"template":{
 			"components": [
 				{
-					"label": "Targets",
-					"hideLabel": true,
-					"disableAddingRemovingRows": false,
-					"defaultOpen": false,
-					"addAnother": "Add routers",
-					"addAnotherPosition": "bottom",
-					"multiple": true,
-					"mask": false,
-					"tableView": true,
-					"alwaysEnabled": false,
-					"type": "datagrid",
-					"input": true,
-					"key": "targets",
-					"validate": {
-						"required": true,
-						"unique": false,
-						"customMessage": "",
-						"json": ""
-					},
-					"conditional": {
-						"show": "",
-						"when": "",
-						"json": ""
-					},
+					"label": "Tabs",
 					"components": [
 						{
-							"label": "Router",
-							"hideLabel": true,
-							"showWordCount": false,
-							"showCharCount": false,
-							"tableView": true,
-							"alwaysEnabled": false,
-							"type": "textfield",
-							"input": true,
-							"key": "ipAddress",
-							"defaultValue": "",
-							"validate": {
-								"required": true,
-								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-								"unique": false,
-								"customMessage": "",
-								"json": ""
-							},
-							"conditional": {
-								"show": "",
-								"when": "",
-								"json": ""
-							},
-							"inputFormat": "plain",
-							"encrypted": false,
-							"properties": {},
-							"tags": [],
-							"customConditional": "",
-							"logic": []
+							"label": "Configuration",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Mandatory parameters",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "mandatoryParameters",
+									"components": [
+										{
+											"label": "Default username",
+											"type": "textfield",
+											"input": true,
+											"key": "librenms#default#USER",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Default user password",
+											"type": "password",
+											"input": true,
+											"key": "librenms#default#PASSWORD",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Default email",
+											"type": "email",
+											"input": true,
+											"key": "librenms#default#EMAIL",
+											"tab": 0,
+											"validate": {
+												"required": false
+											},
+											"inputFormat": "plain"
+										}
+									]
+								},
+								{
+									"label": "Configuration",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "configuration",
+									"components": [
+										{
+											"label": "Targets",
+											"hideLabel": true,
+											"tab": 0,
+											"disableAddingRemovingRows": false,
+											"addAnother": "Add routers",
+											"addAnotherPosition": "bottom",
+											"multiple": true,
+											"tableView": true,
+											"type": "datagrid",
+											"input": true,
+											"key": "targets",
+											"validate": {
+												"required": true
+											},
+											"components": [
+												{
+													"label": "Router",
+													"hideLabel": true,
+													"tableView": true,
+													"type": "textfield",
+													"input": true,
+													"tab": 0,
+													"key": "ipAddress",
+													"defaultValue": "",
+													"validate": {
+														"required": true,
+														"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+														"unique": false,
+														"customMessage": "",
+														"json": ""
+													},
+													"inputFormat": "plain"
+												},
+												{
+													"label": "SNMP community",
+													"type": "textfield",
+													"input": true,
+													"key": "snmpCommunity",
+													"tab": 0,
+													"validate": {
+														"required": true
+													},
+													"inputFormat": "plain"
+												},
+												{
+													"label": "SNMP version",
+													"type": "textfield",
+													"input": true,
+													"key": "snmpVersion",
+													"tab": 0,
+													"validate": {
+														"required": true
+													},
+													"inputFormat": "plain"
+												}
+											]
+										}
+									]
+								}
+							]
 						},
 						{
-							"label": "SNMP community",
-							"type": "textfield",
-							"input": true,
-							"key": "snmpCommunity",
-							"validate": {
-								"required": true
-							},
-							"inputFormat": "plain"
-						},
-						{
-							"label": "SNMP version",
-							"type": "textfield",
-							"input": true,
-							"key": "snmpVersion",
-							"validate": {
-								"required": true
-							},
-							"inputFormat": "plain"
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 20GB",
+											"tab": 1
+										}
+									]
+								}
+							]
 						}
-					]
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
 				},
 				{
 					"type": "button",
@@ -117,42 +191,6 @@
 					"theme": "primary",
 					"input": false,
 					"tableView": true
-				}
-			]
-		}
-	},
-	"additionalMandatoryTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Default username",
-					"type": "textfield",
-					"input": true,
-					"key": "librenms#default#USER",
-					"validate": {
-						"required": true
-					},
-					"inputFormat": "plain"
-				},
-				{
-					"label": "Default user password",
-					"type": "password",
-					"input": true,
-					"key": "librenms#default#PASSWORD",
-					"validate": {
-						"required": true
-					},
-					"inputFormat": "plain"
-				},
-				{
-					"label": "Default email",
-					"type": "email",
-					"input": true,
-					"key": "librenms#default#EMAIL",
-					"validate": {
-						"required": false
-					},
-					"inputFormat": "plain"
 				}
 			]
 		}

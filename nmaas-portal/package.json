@@ -29,7 +29,7 @@
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^2.0.1",
     "ajv": "^6.0.1",
-    "angular-formio": "^3.9.4",
+    "angular-formio": "^3.9.5",
     "angular-password-strength-meter": "0.0.4",
     "angular5-recaptcha": "0.0.2",
     "bootstrap": "^3.3.7",

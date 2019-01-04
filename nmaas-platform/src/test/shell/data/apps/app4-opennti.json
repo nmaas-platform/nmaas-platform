@@ -26,92 +26,127 @@
 		"template": {
 			"components": [
 				{
-					"label": "Username",
-					"type": "textfield",
-					"input": true,
-					"key": "openntiUsername",
-					"validate": {
-						"required": true
-					},
-					"inputFormat": "plain"
-				},
-				{
-					"label": "Password",
-					"type": "password",
-					"input": true,
-					"key": "openntiPassword",
-					"validate": {
-						"required": true
-					}
-				},
-				{
-					"label": "Targets",
-					"hideLabel": true,
-					"disableAddingRemovingRows": false,
-					"defaultOpen": false,
-					"addAnother": "Add routers",
-					"addAnotherPosition": "bottom",
-					"multiple": true,
-					"mask": false,
-					"tableView": true,
-					"alwaysEnabled": false,
-					"type": "datagrid",
-					"input": true,
-					"key": "targets",
-					"defaultValue": [
-						{
-							"ipAddress": ""
-						}
-					],
-					"validate": {
-						"required": true,
-						"unique": false,
-						"customMessage": "",
-						"json": ""
-					},
-					"conditional": {
-						"show": "",
-						"when": "",
-						"json": ""
-					},
+					"label": "Tabs",
 					"components": [
 						{
-							"label": "Router",
-							"hideLabel": true,
-							"showWordCount": false,
-							"showCharCount": false,
-							"tableView": true,
-							"alwaysEnabled": false,
-							"type": "textfield",
-							"input": true,
-							"key": "ipAddress",
-							"defaultValue": "",
-							"validate": {
-								"required": true,
-								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
-								"unique": false,
-								"customMessage": "",
-								"json": ""
-							},
-							"conditional": {
-								"show": "",
-								"when": "",
-								"json": ""
-							},
-							"inputFormat": "plain",
-							"encrypted": false,
-							"properties": {},
-							"tags": [],
-							"customConditional": "",
-							"logic": [],
-							"row": "0-0"
-						}
+							"label": "Configuration",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Configuration",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "configuration",
+									"components": [
+										{
+											"label": "Username",
+											"type": "textfield",
+											"input": true,
+											"key": "openntiUsername",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Password",
+											"type": "password",
+											"input": true,
+											"key": "openntiPassword",
+											"tab": 0,
+											"validate": {
+												"required": true
+											}
+										},
+										{
+											"label": "Targets",
+											"hideLabel": true,
+											"disableAddingRemovingRows": false,
+											"defaultOpen": false,
+											"addAnother": "Add routers",
+											"addAnotherPosition": "bottom",
+											"multiple": true,
+											"mask": false,
+											"tableView": true,
+											"alwaysEnabled": false,
+											"type": "datagrid",
+											"input": true,
+											"key": "targets",
+											"tab": 0,
+											"defaultValue": [
+												{
+													"ipAddress": ""
+												}
+											],
+											"validate": {
+												"required": true
+											},
+											"components": [
+												{
+													"label": "Router",
+													"hideLabel": true,
+													"showWordCount": false,
+													"showCharCount": false,
+													"tableView": true,
+													"alwaysEnabled": false,
+													"type": "textfield",
+													"input": true,
+													"key": "ipAddress",
+													"defaultValue": "",
+													"validate": {
+														"required": true,
+														"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+													},
+													"inputFormat": "plain",
+													"row": "0-0"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+                      {
+                        "label": "Advanced",
+                        "key": "advancedTab",
+                        "components": [
+                          {
+                            "label": "Advanced",
+                            "hideLabel": true,
+                            "tableView": true,
+                            "type": "container",
+                            "input": true,
+                            "tab": 1,
+                            "key": "advanced",
+                            "components": [
+                              {
+                                "label": "Storage space (GB):",
+                                "type": "number",
+                                "input": true,
+                                "key": "storageSpace",
+                                "placeholder": "Default value: 20GB",
+                                "tab": 1
+                              }
+                            ]
+                          }
+                        ]
+                      }
 					],
-					"encrypted": false,
-					"properties": {},
-					"tags": [],
-					"customConditional": "",
-					"logic": []
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
 				}
 			]
 		}

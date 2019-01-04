@@ -27,57 +27,96 @@
     "configTemplate": {
         "template": {
             "components": [
-                    {
-                        "label": "Use existing instance",
-                        "type": "checkbox",
-                        "defaultValue": false,
-                        "key": "use_name",
-                        "input": true,
-                        "inputFormat": "plain"
-                    },
-                    {
-                        "label": "Source name",
-                        "type": "textfield",
-                        "defaultValue": "",
-                        "input": true,
-                        "key": "source_name",
-                        "validate": {
-                            "required": true
+                {
+                    "label": "Tabs",
+                    "components": [
+                        {
+                            "label": "Configuration",
+                            "key": "configTab",
+                            "components": [
+                                {
+                                    "label": "Use existing instance",
+                                    "type": "checkbox",
+                                    "defaultValue": false,
+                                    "key": "use_name",
+                                    "input": true,
+                                    "inputFormat": "plain"
+                                },
+                                {
+                                    "label": "Source name",
+                                    "type": "textfield",
+                                    "defaultValue": "",
+                                    "input": true,
+                                    "key": "source_name",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "inputFormat": "plain",
+                                    "conditional": {
+                                        "show": true,
+                                        "when": "use_name",
+                                        "eq": true,
+                                        "json": ""
+                                    }
+                                },
+                                {
+                                    "label": "Prometheus instance address",
+                                    "type": "textfield",
+                                    "defaultValue": "",
+                                    "input": true,
+                                    "key": "source_addr",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "inputFormat": "plain",
+                                    "conditional": {
+                                        "show": true,
+                                        "when": "use_name",
+                                        "eq": true,
+                                        "json": ""
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "label": "Apply configuration",
+                                    "disableOnInvalid": true,
+                                    "theme": "primary",
+                                    "input": false,
+                                    "tableView": true
+                                }
+                            ]
                         },
-                        "inputFormat": "plain",
-                        "conditional": {
-                            "show": true,
-                            "when": "use_name",
-                            "eq": true,
-                            "json": ""
+                        {
+                            "label": "Advanced",
+                            "key": "advancedTab",
+                            "components": [
+                                {
+                                    "label": "Advanced",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 1,
+                                    "key": "advanced",
+                                    "components": [
+                                        {
+                                            "label": "Storage space (GB):",
+                                            "type": "number",
+                                            "input": true,
+                                            "key": "storageSpace",
+                                            "placeholder": "Default value: 20GB",
+                                            "tab": 1
+                                        }
+                                    ]
+                                }
+                            ]
                         }
-                    },
-                    {
-                        "label": "Prometheus instance address",
-                        "type": "textfield",
-                        "defaultValue": "",
-                        "input": true,
-                        "key": "source_addr",
-                        "validate": {
-                            "required": true
-                        },
-                        "inputFormat": "plain",
-                        "conditional": {
-                            "show": true,
-                            "when": "use_name",
-                            "eq": true,
-                            "json": ""
-                        }
-                    },
-                    {
-                        "type": "button",
-                        "label": "Apply configuration",
-                        "disableOnInvalid": true,
-                        "theme": "primary",
-                        "input": false,
-                        "tableView": true
-                    }
-                ]
-            }
+                    ],
+                    "type": "tabs",
+                    "input": false,
+                    "key": "tabs"
+                }
+            ]
         }
+    }
 }

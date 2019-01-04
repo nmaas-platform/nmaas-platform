@@ -38,9 +38,81 @@
 		"template": {
 			"components": [
 				{
-					"type": "htmlelement",
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Configuration",
+							"key": "configTab",
+							"components": [
+								{
+									"type": "htmlelement",
+									"input": false,
+									"content": "<p>All required configuration should be applied using NAV graphical interface</p>",
+									"tab": 0
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 20GB",
+											"tab": 1
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Additional parameters",
+							"key": "additionalParametersTab",
+							"components": [
+								{
+									"label": "additionalParameters",
+									"hideLabel": true,
+									"type": "container",
+									"input": true,
+									"tab": 2,
+									"key": "additionalParameters",
+									"components": [
+										{
+											"label": "Admin email",
+											"type": "email",
+											"input": true,
+											"key": "nav#config#ADMIN_MAIL",
+											"inputFormat": "plain",
+											"tab": 2
+										},
+										{
+											"label": "Default sender email",
+											"type": "email",
+											"input": true,
+											"key": "nav#config#DEFAULT_FROM_EMAIL",
+											"inputFormat": "plain",
+											"tab": 2
+										}
+									]
+								}
+							]
+						}
+					],
+					"type": "tabs",
 					"input": false,
-					"content": "<p>All required configuration should be applied using NAV graphical interface</p>"
+					"key": "tabs"
 				},
 				{
 					"type": "button",
@@ -49,26 +121,6 @@
 					"theme": "primary",
 					"input": false,
 					"tableView": true
-				}
-			]
-		}
-	},
-	"additionalParametersTemplate": {
-		"template": {
-			"components": [
-				{
-					"label": "Admin email",
-					"type": "email",
-					"input": true,
-					"key": "nav#config#ADMIN_MAIL",
-					"inputFormat": "plain"
-				},
-				{
-					"label": "Default sender email",
-					"type": "email",
-					"input": true,
-					"key": "nav#config#DEFAULT_FROM_EMAIL",
-					"inputFormat": "plain"
 				}
 			]
 		}

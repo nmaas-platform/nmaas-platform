@@ -19,7 +19,6 @@ import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ModalComponent} from "../../../shared/modal";
 
 @Component({
@@ -61,20 +60,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   public intervalCheckerSubscribtion;
 
-  public configAdvancedTab: FormGroup;
-
   constructor(private appsService: AppsService,
     public appImagesService: AppImagesService,
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject(LOCAL_STORAGE) public storage: StorageService,
-              private fb: FormBuilder) {
-      this.configAdvancedTab = fb.group({
-      storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
-    });
-  }
+    @Inject(LOCAL_STORAGE) public storage: StorageService) {}
 
   ngOnInit() {
     this.appConfiguration = new AppConfiguration();
@@ -163,9 +155,21 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
   }
 
+  public changeConfiguration(configuration: any): void{
+    if(!isNullOrUndefined(configuration)){
+      this.appConfiguration.jsonInput = configuration;
+    } else{
+      this.appConfiguration.jsonInput = {};
+    }
+  }
+
   public applyConfiguration(input:any): void {
-    this.appConfiguration.storageSpace = this.configAdvancedTab.controls['storageSpace'].value;
-    this.appConfiguration.jsonInput = input;
+    if(!isNullOrUndefined(input['advanced'])){
+      this.appConfiguration.storageSpace = input['advanced'].storageSpace;
+    }
+    this.changeMandatoryParameters(input['mandatoryParameters']);
+    this.changeAdditionalParameters(input['additionalParameters']);
+    this.changeConfiguration(input['configuration']);
     this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
       console.log('Configuration applied');
       this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
