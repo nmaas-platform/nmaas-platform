@@ -20,3 +20,4 @@ drop table docker_host_network;
 drop table docker_host_attach_point;
 drop table docker_host;
 drop table docker_network_ipam_spec;
+drop table number_assignment;
