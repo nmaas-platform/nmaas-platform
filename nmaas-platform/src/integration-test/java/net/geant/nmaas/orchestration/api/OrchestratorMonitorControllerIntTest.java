@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class OrchestratorMonitorRestControllerTest {
+public class OrchestratorMonitorControllerIntTest {
 
     @Mock
     private AppDeploymentMonitor deploymentMonitor;
@@ -99,7 +99,7 @@ public class OrchestratorMonitorRestControllerTest {
         List<AppDeploymentView> retrievedDeployments = mapper.readValue(result.getResponse().getContentAsString(), type);
         assertThat(retrievedDeployments.size(), equalTo(deployments.size()));
         assertThat(
-                retrievedDeployments.stream().map(d -> d.getDeploymentId()).collect(Collectors.toList()),
+                retrievedDeployments.stream().map(AppDeploymentView::getDeploymentId).collect(Collectors.toList()),
                 contains("deploymentId1", "deploymentId2", "deploymentId3"));
     }
 

@@ -8,16 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import javax.servlet.Filter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -28,26 +22,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
-public class NmServiceConfigurationTemplateAdminRestControllerTest extends BaseControllerTestSetup {
-
-    @Autowired
-    private WebApplicationContext context;
-
-    @Autowired
-    private Filter springSecurityFilterChain;
+public class NmServiceConfigurationTemplateAdminControllerSecTest extends BaseControllerTestSetup {
 
     @Autowired
     private NmServiceConfigFileTemplatesRepository templatesRepository;
 
-    private MockMvc mvc;
-
     @Before
     public void setup() {
-        mvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .addFilters(springSecurityFilterChain)
-                .build();
+        createMVC();
     }
 
     @After

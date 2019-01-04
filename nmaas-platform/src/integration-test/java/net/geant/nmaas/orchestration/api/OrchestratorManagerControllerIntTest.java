@@ -1,7 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Optional;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
@@ -10,8 +9,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,17 +23,25 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class OrchestratorManagerRestControllerTest {
+public class OrchestratorManagerControllerIntTest {
 
     @Mock
     private AppLifecycleManager lifecycleManager;
@@ -50,7 +55,6 @@ public class OrchestratorManagerRestControllerTest {
     private Identifier applicationId;
     private Identifier deploymentId;
     private AppConfiguration appConfiguration;
-    private ModelMapper modelMapper;
 
     private static final String CONFIGURATION_JSON = "" +
             "{" +
@@ -60,12 +64,11 @@ public class OrchestratorManagerRestControllerTest {
 
     @Before
     public void setup() {
-        modelMapper = new ModelMapper();
         applicationId = Identifier.newInstance(15L);
         deploymentId = Identifier.newInstance("deploymentId1");
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
-        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, modelMapper)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, new ModelMapper())).build();
         Application application = new Application("testapp");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.getAppDeploymentSpec().setDefaultStorageSpace(20);

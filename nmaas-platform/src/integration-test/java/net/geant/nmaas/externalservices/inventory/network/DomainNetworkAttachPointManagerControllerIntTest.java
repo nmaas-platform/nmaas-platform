@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DomainNetworkAttachPointManagerRestControllerTest {
+public class DomainNetworkAttachPointManagerControllerIntTest {
 
     private static final String CORRECT_DOMAIN_NAME = "domainName";
     private static final String CORRECT_URL = "/api/management/domains/" + CORRECT_DOMAIN_NAME + "/network";

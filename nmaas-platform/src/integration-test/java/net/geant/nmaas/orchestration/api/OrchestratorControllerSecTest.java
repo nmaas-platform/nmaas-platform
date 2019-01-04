@@ -18,15 +18,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class OrchestratorApiSecurityTest extends BaseControllerTestSetup {
-
-    @Before
-    public void setup() {
-        mvc = createMVC();
-    }
+public class OrchestratorControllerSecTest extends BaseControllerTestSetup {
 
     @MockBean
     private AppDeploymentRepositoryManager repository;
+
+    @Before
+    public void setup() {
+        createMVC();
+    }
 
     @Test
     public void shouldAuthorizeAdminProperUser() throws Exception {
