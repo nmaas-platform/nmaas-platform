@@ -150,5 +150,73 @@
 				}
 			]
 		}
+	},
+	"configurationUpdateTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Username",
+					"type": "textfield",
+					"input": true,
+					"key": "openntiUsername",
+					"validate": {
+						"required": true
+					},
+					"inputFormat": "plain"
+				},
+				{
+					"label": "Password",
+					"type": "password",
+					"input": true,
+					"key": "openntiPassword",
+					"validate": {
+						"required": true
+					}
+				},
+				{
+					"label": "Targets",
+					"hideLabel": true,
+					"disableAddingRemovingRows": false,
+					"defaultOpen": false,
+					"addAnother": "Add routers",
+					"addAnotherPosition": "bottom",
+					"multiple": true,
+					"mask": false,
+					"tableView": true,
+					"alwaysEnabled": false,
+					"type": "datagrid",
+					"input": true,
+					"key": "targets",
+					"defaultValue": [
+						{
+							"ipAddress": ""
+						}
+					],
+					"validate": {
+						"required": true
+					},
+					"components": [
+						{
+							"label": "Router",
+							"hideLabel": true,
+							"showWordCount": false,
+							"showCharCount": false,
+							"tableView": true,
+							"alwaysEnabled": false,
+							"type": "textfield",
+							"input": true,
+							"key": "ipAddress",
+							"defaultValue": "",
+							"validate": {
+								"required": true,
+								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+							},
+							"inputFormat": "plain",
+							"row": "0-0"
+						}
+					]
+				}
+			]
+		}
 	}
 }

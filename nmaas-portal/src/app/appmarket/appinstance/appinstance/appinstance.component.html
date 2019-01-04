@@ -87,7 +87,11 @@
 					<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
 				</div>
 				<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-					<!--TODO:Add form for updating config-->
+					<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined"
+							[form]="configurationUpdateTemplate"
+							[submission]="submission"
+							(submit)="changeConfiguration($event.data)">
+					</formio>
 				</div>
 				<div class="nmaas-modal-footer">
 					<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>

@@ -194,5 +194,65 @@
 				}
 			]
 		}
+	},
+	"configurationUpdateTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Targets",
+					"hideLabel": true,
+					"disableAddingRemovingRows": false,
+					"addAnother": "Add routers",
+					"addAnotherPosition": "bottom",
+					"multiple": true,
+					"tableView": true,
+					"type": "datagrid",
+					"input": true,
+					"key": "targets",
+					"validate": {
+						"required": true
+					},
+					"components": [
+						{
+							"label": "Router",
+							"hideLabel": true,
+							"tableView": true,
+							"type": "textfield",
+							"input": true,
+							"key": "ipAddress",
+							"defaultValue": "",
+							"validate": {
+								"required": true,
+								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+								"unique": false,
+								"customMessage": "",
+								"json": ""
+							},
+							"inputFormat": "plain"
+						},
+						{
+							"label": "SNMP community",
+							"type": "textfield",
+							"input": true,
+							"key": "snmpCommunity",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						},
+						{
+							"label": "SNMP version",
+							"type": "textfield",
+							"input": true,
+							"key": "snmpVersion",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						}
+					]
+				}
+			]
+		}
 	}
 }
