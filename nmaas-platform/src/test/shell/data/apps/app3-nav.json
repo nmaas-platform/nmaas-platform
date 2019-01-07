@@ -41,7 +41,7 @@
 					"label": "Tabs",
 					"components": [
 						{
-							"label": "Configuration",
+							"label": "Base",
 							"key": "configTab",
 							"components": [
 								{
@@ -53,32 +53,7 @@
 							]
 						},
 						{
-							"label": "Advanced",
-							"key": "advancedTab",
-							"components": [
-								{
-									"label": "Advanced",
-									"hideLabel": true,
-									"tableView": true,
-									"type": "container",
-									"input": true,
-									"tab": 1,
-									"key": "advanced",
-									"components": [
-										{
-											"label": "Storage space (GB):",
-											"type": "number",
-											"input": true,
-											"key": "storageSpace",
-											"placeholder": "Default value: 20GB",
-											"tab": 1
-										}
-									]
-								}
-							]
-						},
-						{
-							"label": "Additional parameters",
+							"label": "Additional",
 							"key": "additionalParametersTab",
 							"components": [
 								{
@@ -104,6 +79,31 @@
 											"key": "nav#config#DEFAULT_FROM_EMAIL",
 											"inputFormat": "plain",
 											"tab": 2
+										}
+									]
+								}
+							]
+						},
+						{
+							"label": "Advanced",
+							"key": "advancedTab",
+							"components": [
+								{
+									"label": "Advanced",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 1,
+									"key": "advanced",
+									"components": [
+										{
+											"label": "Storage space (GB):",
+											"type": "number",
+											"input": true,
+											"key": "storageSpace",
+											"placeholder": "Default value: 20GB",
+											"tab": 1
 										}
 									]
 								}

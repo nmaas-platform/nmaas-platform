@@ -29,7 +29,7 @@
 					"label": "Tabs",
 					"components": [
 						{
-							"label": "Configuration",
+							"label": "Base",
 							"key": "configTab",
 							"components": [
 								{

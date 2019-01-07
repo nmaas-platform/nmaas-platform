@@ -21,7 +21,7 @@
                 "version": "1.0.1-alfa"
             }
         },
-        "defaultStorageSpace": 5,
+        "defaultStorageSpace": 1,
         "configFileRepositoryRequired": true
     },
     "configTemplate": {
@@ -31,11 +31,11 @@
                     "label": "Tabs",
                     "components": [
                         {
-                            "label": "Configuration",
+                            "label": "Base",
                             "key": "configTab",
                             "components": [
                                 {
-                                    "label": "Use existing instance",
+                                    "label": "Connect to existing Prometheus instance",
                                     "type": "checkbox",
                                     "defaultValue": false,
                                     "key": "use_name",
@@ -43,7 +43,7 @@
                                     "inputFormat": "plain"
                                 },
                                 {
-                                    "label": "Source name",
+                                    "label": "Data Source name",
                                     "type": "textfield",
                                     "defaultValue": "",
                                     "input": true,
@@ -96,7 +96,7 @@
                                             "type": "number",
                                             "input": true,
                                             "key": "storageSpace",
-                                            "placeholder": "Default value: 20GB",
+                                            "placeholder": "Default value: 1GB",
                                             "tab": 1
                                         }
                                     ]
@@ -123,7 +123,7 @@
         "template": {
             "components": [
                 {
-                    "label": "Use existing instance",
+                    "label": "Connect to existing Prometheus instance",
                     "type": "checkbox",
                     "defaultValue": false,
                     "key": "use_name",
@@ -131,7 +131,7 @@
                     "inputFormat": "plain"
                 },
                 {
-                    "label": "Source name",
+                    "label": "Data Source name",
                     "type": "textfield",
                     "defaultValue": "",
                     "input": true,

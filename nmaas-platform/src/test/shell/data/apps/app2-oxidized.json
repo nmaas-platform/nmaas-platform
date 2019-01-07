@@ -36,7 +36,7 @@
 					"label": "Tabs",
 					"components": [
 						{
-							"label": "Configuration",
+							"label": "Base",
 							"key": "configTab",
 							"components": [
 								{
@@ -73,7 +73,7 @@
 											"label": "Targets",
 											"hideLabel": true,
 											"disableAddingRemovingRows": false,
-											"addAnother": "Add routers",
+											"addAnother": "Add device",
 											"addAnotherPosition": "bottom",
 											"multiple": true,
 											"tableView": true,
@@ -92,12 +92,13 @@
 											},
 											"components": [
 												{
-													"label": "Router",
+													"label": "Device (IP address)",
 													"hideLabel": true,
 													"tableView": true,
 													"type": "textfield",
 													"input": true,
 													"key": "ipAddress",
+													"placeholder": "127.0.0.1",
 													"tab": 0,
 													"defaultValue": "",
 													"validate": {
@@ -180,7 +181,7 @@
 					"label": "Targets",
 					"hideLabel": true,
 					"disableAddingRemovingRows": false,
-					"addAnother": "Add routers",
+					"addAnother": "Add device",
 					"addAnotherPosition": "bottom",
 					"multiple": true,
 					"tableView": true,
@@ -198,8 +199,9 @@
 					},
 					"components": [
 						{
-							"label": "Router",
+							"label": "Device (IP address)",
 							"hideLabel": true,
+							"placeholder": "127.0.0.1",
 							"tableView": true,
 							"type": "textfield",
 							"input": true,

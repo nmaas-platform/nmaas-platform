@@ -31,7 +31,7 @@
                     "label": "Tabs",
                     "components": [
                         {
-                            "label": "Configuration",
+                            "label": "Base",
                             "key": "configTab",
                             "components": [
                                 {
@@ -44,7 +44,8 @@
                                     "key": "configuration",
                                     "components": [
                                         {
-                                            "title": "Global configuration",
+                                            "label": "Global configuration",
+                                            "hideLabel": true,
                                             "type": "container",
                                             "persistent": true,
                                             "key": "global_config",
@@ -55,10 +56,7 @@
                                                     "input": true,
                                                     "inputFormat": "plain",
                                                     "defaultValue": "15s",
-                                                    "key": "global_scrape",
-                                                    "validate": {
-                                                        "required": true
-                                                    }
+                                                    "key": "global_scrape"
                                                 },
                                                 {
                                                     "label": "Global evaluation",
@@ -66,16 +64,12 @@
                                                     "input": true,
                                                     "inputFormat": "plain",
                                                     "defaultValue": "30s",
-                                                    "key": "global_evaluation",
-                                                    "validate": {
-                                                        "required": true
-                                                    }
+                                                    "key": "global_evaluation"
                                                 }
                                             ]
                                         },
                                         {
-                                            "label": "Targets",
-                                            "hideLabel": true,
+                                            "label": "Jobs",
                                             "disableAddingRemovingRows": false,
                                             "addAnother": "Add jobs",
                                             "addAnotherPosition": "bottom",
@@ -125,7 +119,7 @@
                                                     "row": "0-2"
                                                 },
                                                 {
-                                                    "label": "Addresses",
+                                                    "label": "Targets",
                                                     "hideLabel": false,
                                                     "disableAddingRemovingRows": false,
                                                     "defaultOpen": false,
@@ -158,6 +152,7 @@
                                                             "input": true,
                                                             "key": "ipAddress",
                                                             "defaultValue": "",
+                                                            "placeholder": "127.0.0.1:9001",
                                                             "validate": {
                                                                 "required": true,
                                                                 "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
@@ -180,9 +175,6 @@
                                                     "type": "datagrid",
                                                     "input": true,
                                                     "key": "Labels",
-                                                    "validate": {
-                                                        "required": true
-                                                    },
                                                     "components": [
                                                         {
                                                             "label": "Label name",
@@ -190,10 +182,6 @@
                                                             "input": true,
                                                             "inputFormat": "plain",
                                                             "key": "label_name",
-                                                            "validate": {
-                                                                "required": true,
-                                                                "minLength": 1
-                                                            },
                                                             "row": "0-4"
                                                         },
                                                         {
@@ -202,10 +190,6 @@
                                                             "input": true,
                                                             "inputFormat": "plain",
                                                             "key": "label_value",
-                                                            "validate": {
-                                                                "required": true,
-                                                                "minLength": 1
-                                                            },
                                                             "row": "0-0"
                                                         }
                                                     ],
@@ -262,7 +246,8 @@
         "template": {
             "components": [
                 {
-                    "title": "Global configuration",
+                    "label": "Global configuration",
+                    "hideLabel": true,
                     "type": "container",
                     "persistent": true,
                     "key": "global_config",
@@ -292,7 +277,7 @@
                     ]
                 },
                 {
-                    "label": "Targets",
+                    "label": "Jobs",
                     "hideLabel": true,
                     "disableAddingRemovingRows": false,
                     "addAnother": "Add jobs",
@@ -343,9 +328,10 @@
                             "row": "0-2"
                         },
                         {
-                            "label": "Addresses",
+                            "label": "IP address and port",
                             "hideLabel": false,
                             "disableAddingRemovingRows": false,
+                            "placeholder": "127.0.0.1:9001",
                             "defaultOpen": false,
                             "addAnother": "Add address",
                             "addAnotherPosition": "bottom",
@@ -398,9 +384,6 @@
                             "type": "datagrid",
                             "input": true,
                             "key": "Labels",
-                            "validate": {
-                                "required": true
-                            },
                             "components": [
                                 {
                                     "label": "Label name",
@@ -408,10 +391,6 @@
                                     "input": true,
                                     "inputFormat": "plain",
                                     "key": "label_name",
-                                    "validate": {
-                                        "required": true,
-                                        "minLength": 1
-                                    },
                                     "row": "0-4"
                                 },
                                 {
@@ -420,10 +399,6 @@
                                     "input": true,
                                     "inputFormat": "plain",
                                     "key": "label_value",
-                                    "validate": {
-                                        "required": true,
-                                        "minLength": 1
-                                    },
                                     "row": "0-0"
                                 }
                             ],

@@ -36,7 +36,7 @@
 					"label": "Tabs",
 					"components": [
 						{
-							"label": "Configuration",
+							"label": "Base",
 							"key": "configTab",
 							"components": [
 								{
@@ -71,7 +71,7 @@
 											"inputFormat": "plain"
 										},
 										{
-											"label": "Default email",
+											"label": "Default user email",
 											"type": "email",
 											"input": true,
 											"key": "librenms#default#EMAIL",
@@ -97,7 +97,7 @@
 											"hideLabel": true,
 											"tab": 0,
 											"disableAddingRemovingRows": false,
-											"addAnother": "Add routers",
+											"addAnother": "Add device",
 											"addAnotherPosition": "bottom",
 											"multiple": true,
 											"tableView": true,
@@ -109,13 +109,14 @@
 											},
 											"components": [
 												{
-													"label": "Router",
+													"label": "Device (IP address)",
 													"hideLabel": true,
 													"tableView": true,
 													"type": "textfield",
 													"input": true,
 													"tab": 0,
 													"key": "ipAddress",
+													"placeholder": "127.0.0.1",
 													"defaultValue": "",
 													"validate": {
 														"required": true,
@@ -202,7 +203,7 @@
 					"label": "Targets",
 					"hideLabel": true,
 					"disableAddingRemovingRows": false,
-					"addAnother": "Add routers",
+					"addAnother": "Add device",
 					"addAnotherPosition": "bottom",
 					"multiple": true,
 					"tableView": true,
@@ -214,7 +215,8 @@
 					},
 					"components": [
 						{
-							"label": "Router",
+							"label": "Device (IP address)",
+							"placeholder": "127.0.0.1",
 							"hideLabel": true,
 							"tableView": true,
 							"type": "textfield",
