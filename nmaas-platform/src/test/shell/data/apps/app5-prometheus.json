@@ -122,21 +122,14 @@
                                                     "label": "Targets",
                                                     "hideLabel": false,
                                                     "disableAddingRemovingRows": false,
-                                                    "defaultOpen": false,
                                                     "addAnother": "Add address",
                                                     "addAnotherPosition": "bottom",
                                                     "multiple": true,
-                                                    "mask": false,
                                                     "tableView": true,
                                                     "alwaysEnabled": false,
                                                     "type": "datagrid",
                                                     "input": true,
                                                     "key": "Addresses",
-                                                    "defaultValue": [
-                                                        {
-                                                            "ipAddress": ""
-                                                        }
-                                                    ],
                                                     "validate": {
                                                         "required": true
                                                     },
@@ -144,14 +137,10 @@
                                                         {
                                                             "label": "IP address and port",
                                                             "hideLabel": false,
-                                                            "showWordCount": false,
-                                                            "showCharCount": false,
                                                             "tableView": true,
-                                                            "alwaysEnabled": false,
                                                             "type": "textfield",
                                                             "input": true,
                                                             "key": "ipAddress",
-                                                            "defaultValue": "",
                                                             "placeholder": "127.0.0.1:9001",
                                                             "validate": {
                                                                 "required": true,
@@ -332,21 +321,14 @@
                             "hideLabel": false,
                             "disableAddingRemovingRows": false,
                             "placeholder": "127.0.0.1:9001",
-                            "defaultOpen": false,
                             "addAnother": "Add address",
                             "addAnotherPosition": "bottom",
                             "multiple": true,
-                            "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
                             "type": "datagrid",
                             "input": true,
                             "key": "Addresses",
-                            "defaultValue": [
-                                {
-                                    "ipAddress": ""
-                                }
-                            ],
                             "validate": {
                                 "required": true
                             },
@@ -354,14 +336,10 @@
                                 {
                                     "label": "IP address and port",
                                     "hideLabel": false,
-                                    "showWordCount": false,
-                                    "showCharCount": false,
                                     "tableView": true,
-                                    "alwaysEnabled": false,
                                     "type": "textfield",
                                     "input": true,
                                     "key": "ipAddress",
-                                    "defaultValue": "",
                                     "validate": {
                                         "required": true,
                                         "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
