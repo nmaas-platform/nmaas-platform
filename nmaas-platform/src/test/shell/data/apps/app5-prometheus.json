@@ -164,6 +164,7 @@
                                                     "type": "datagrid",
                                                     "input": true,
                                                     "key": "Labels",
+                                                    "defaultValue": [],
                                                     "components": [
                                                         {
                                                             "label": "Label name",
@@ -362,6 +363,7 @@
                             "type": "datagrid",
                             "input": true,
                             "key": "Labels",
+                            "defaultValue": [],
                             "components": [
                                 {
                                     "label": "Label name",
