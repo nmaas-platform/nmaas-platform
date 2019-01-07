@@ -91,7 +91,8 @@
 					<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined"
 							[form]="configurationUpdateTemplate"
 							[submission]="submission"
-							(submit)="changeConfiguration($event.data)">
+                           [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+                           (submit)="changeConfiguration($event.data)">
 					</formio>
 				</div>
 				<div class="nmaas-modal-footer">
