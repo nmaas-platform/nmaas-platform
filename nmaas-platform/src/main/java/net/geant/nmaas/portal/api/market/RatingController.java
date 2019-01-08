@@ -39,7 +39,7 @@ public class RatingController extends AppBaseController {
 	public AppRate getAppRating(@PathVariable("appId") Long appId) {
 		Application app = getApp(appId);
 		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
-		return (rateList.length > 0 ? new AppRate(getAverageRate(rateList), getRatingMap(rateList)) : new AppRate());
+		return new AppRate(getAverageRate(rateList), getRatingMap(rateList));
 	}
 	
 	@GetMapping(value="/my")
@@ -58,7 +58,7 @@ public class RatingController extends AppBaseController {
 		net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId appRateId = new net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId(app.getId(), user.getId());
 		Optional<net.geant.nmaas.portal.persistent.entity.AppRate> appRate = ratingRepo.findById(appRateId);
 		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
-		return appRate.map(appRate1 -> new AppRate(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(AppRate::new);
+		return appRate.map(appRate1 -> new AppRate(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(() -> new AppRate(getAverageRate(rateList), getRatingMap(rateList)));
 	}
 
 	@PostMapping(value="/my/{rate}")
