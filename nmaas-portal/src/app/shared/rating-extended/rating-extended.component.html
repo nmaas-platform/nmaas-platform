@@ -1,0 +1,61 @@
+<div class="text-center col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  <h4>Average user rating</h4>
+  <div><span style="font-size: 36px;">{{rate?.rate | number:'1.0-1'}}</span> <span style="font-size: small">/5</span></div>
+  <div class="rate-container">
+    <span class="fa-star-button" [ngClass]="(rate?.rate >= 1) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(1)"></span>
+    <span class="fa-star-button" [ngClass]="(rate?.rate >= 2) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(2)"></span>
+    <span class="fa-star-button" [ngClass]="(rate?.rate >= 3) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(3)"></span>
+    <span class="fa-star-button" [ngClass]="(rate?.rate >= 4) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(4)"></span>
+    <span class="fa-star-button" [ngClass]="(rate?.rate >= 5) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(5)"></span>
+    <div class="text text-muted" style="font-size: small;">Click star to rate an application</div>
+  </div>
+</div>
+<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+  <h4 class="text-center">Rating breakdown</h4>
+  <div class="col-xs-12 col-sm-11 col-md-11-col-lg-11">
+    <div class="progress-bar-container">
+      <span class="progress-bar-label">5<span class="fa fa-star fa-star-small fa-star-checked"></span></span>
+      <span class="progress-bar-after-label">{{ fiveStarCount}}</span>
+       <div class="progress">
+          <div id="five-star-progress" class="progress-bar" role="progressbar" aria-valuenow=""
+               aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+          </div>
+       </div>
+    </div>
+    <div class="progress-bar-container">
+      <span class="progress-bar-label">4<span class="fa fa-star fa-star-small fa-star-checked"></span></span>
+      <span class="progress-bar-after-label">{{ fourStarCount}}</span>
+      <div class="progress">
+        <div id="four-star-progress" class="progress-bar" role="progressbar" aria-valuenow=""
+             aria-valuemin="0" aria-valuemax="100" style="width:0%">
+        </div>
+      </div>
+    </div>
+    <div class="progress-bar-container">
+      <span class="progress-bar-label">3<span class="fa fa-star fa-star-small fa-star-checked"></span></span>
+      <span class="progress-bar-after-label">{{ threeStarCount }}</span>
+      <div class="progress">
+        <div id="three-star-progress" class="progress-bar" role="progressbar" aria-valuenow=""
+             aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+        </div>
+      </div>
+    <div class="progress-bar-container">
+      <span class="progress-bar-label">2<span class="fa fa-star fa-star-small fa-star-checked"></span></span>
+      <span class="progress-bar-after-label">{{ twoStarCount }}</span>
+      <div class="progress">
+        <div id="two-star-progress" class="progress-bar" role="progressbar" aria-valuenow=""
+             aria-valuemin="0" aria-valuemax="100" style="width:0%">
+        </div>
+      </div>
+    </div>
+    <div class="progress-bar-container">
+      <span class="progress-bar-label">1<span class="fa fa-star fa-star-small fa-star-checked"></span></span>
+      <span class="progress-bar-after-label">{{ oneStarCount }}</span>
+      <div class="progress">
+        <div id="one-star-progress" class="progress-bar" role="progressbar" aria-valuenow=""
+             aria-valuemin="0" aria-valuemax="100" style="width:0%">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
