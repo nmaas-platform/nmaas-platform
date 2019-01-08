@@ -72,7 +72,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             if(configFileRepositoryRequired)
                 janitorService.updateConfigMap(deploymentId, domain);
 
-            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.VERIFIED);
+            //notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.VERIFIED);
         } catch(Exception e){
             throw new NmServiceConfigurationFailedException(e.getMessage());
         }
