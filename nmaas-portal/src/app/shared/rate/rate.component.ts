@@ -6,7 +6,7 @@ import { Rate } from '../../model/rate';
 @Component({
   selector: 'rate',
   templateUrl: './rate.component.html',
-  styleUrls: ['./rate.component.css'],
+  styleUrls: ['./rate.component.css', '../rating-extended/rating-extended.component.css'],
   encapsulation: ViewEncapsulation.None,
   providers: [ AppsService ]
 })
@@ -22,6 +22,8 @@ export class RateComponent implements OnInit, OnChanges {
     
     @Output()
     onChange = new EventEmitter<boolean>()
+
+    private
     
     
   constructor(private appsService:AppsService) { }

@@ -8,7 +8,7 @@ import {HttpResponse} from "selenium-webdriver/http";
 
 class MockAppService{
   public getAppRateByUrl(urlPath: string): Observable<Rate> {
-    return Observable.of(new Rate(1));
+    return Observable.of(new Rate(1, 1, new Map()));
   }
 
   public setMyAppRateByUrl(urlPath: string): Observable<any> {

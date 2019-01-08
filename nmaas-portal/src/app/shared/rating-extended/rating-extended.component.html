@@ -1,6 +1,6 @@
 <div class="text-center col-xs-12 col-sm-6 col-md-6 col-lg-6">
   <h4>Average user rating</h4>
-  <div><span style="font-size: 36px;">{{rate?.rate | number:'1.0-1'}}</span> <span style="font-size: small">/5</span></div>
+  <div><span style="font-size: 36px;">{{rate?.averageRate | number:'1.0-1'}}</span> <span style="font-size: small">/5</span></div>
   <div class="rate-container">
     <span class="fa-star-button" [ngClass]="(rate?.rate >= 1) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(1)"></span>
     <span class="fa-star-button" [ngClass]="(rate?.rate >= 2) ? 'fa fa-star fa-star-checked' : 'fa fa-star'" (click)="update(2)"></span>
