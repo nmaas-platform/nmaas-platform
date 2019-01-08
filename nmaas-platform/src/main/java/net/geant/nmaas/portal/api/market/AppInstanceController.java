@@ -341,17 +341,6 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
-        if(appInstance.getConfiguration() != null && !appInstance.getConfiguration().isEmpty()){
-            try{
-                ObjectNode jsonNode = (ObjectNode) objectMapper.readTree(appInstance.getApplication().getConfigTemplate().getTemplate());
-                jsonNode.putRawValue("value", new RawValue(appInstance.getConfiguration()));
-                ai.setWizard(new ConfigTemplate(objectMapper.writeValueAsString(jsonNode)));
-            } catch(IOException e){
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        } else{
-            ai.setWizard(modelMapper.map(appInstance.getApplication().getConfigTemplate(),ConfigTemplate.class));
-        }
         return ai;
     }
 

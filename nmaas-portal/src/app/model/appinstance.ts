@@ -23,7 +23,6 @@ export class AppInstance {
   public createdAt: Date = undefined;
   public owner: User = undefined;
   public configuration: string = undefined;
-  public wizard: any = undefined;
   public state: AppInstanceState = undefined;
   public userFriendlyState = undefined;
   public url: string = undefined;

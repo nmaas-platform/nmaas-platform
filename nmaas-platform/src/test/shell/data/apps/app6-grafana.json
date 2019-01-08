@@ -21,45 +21,148 @@
                 "version": "1.0.1-alfa"
             }
         },
-        "defaultStorageSpace": 5,
+        "defaultStorageSpace": 1,
         "configFileRepositoryRequired": true
     },
     "configTemplate": {
         "template": {
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "use_name": {
-                        "type": "boolean",
-                        "title": "Use existing instance",
-                        "default": false
-                    },
-                    "source_name": {
-                        "type": "string"
-                    },
-                    "source_addr": {
-                        "title": "Prometheus instance address",
-                        "type": "string"
-                    }
-                }
-            },
-            "form": [
+            "components": [
                 {
-                    "key": "use_name"
-                },
-                {
-                    "condition": "model.use_name",
-                    "type": "section",
-                    "items": [
+                    "label": "Tabs",
+                    "components": [
                         {
-                            "key": "source_name",
-                            "required": true
+                            "label": "Base",
+                            "key": "configTab",
+                            "components": [
+                                {
+                                    "label": "Connect to existing Prometheus instance",
+                                    "type": "checkbox",
+                                    "defaultValue": false,
+                                    "key": "use_name",
+                                    "input": true,
+                                    "inputFormat": "plain"
+                                },
+                                {
+                                    "label": "Data Source name",
+                                    "type": "textfield",
+                                    "defaultValue": "",
+                                    "input": true,
+                                    "key": "source_name",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "inputFormat": "plain",
+                                    "conditional": {
+                                        "show": true,
+                                        "when": "use_name",
+                                        "eq": true,
+                                        "json": ""
+                                    }
+                                },
+                                {
+                                    "label": "Prometheus instance address",
+                                    "type": "textfield",
+                                    "defaultValue": "",
+                                    "input": true,
+                                    "key": "source_addr",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "inputFormat": "plain",
+                                    "conditional": {
+                                        "show": true,
+                                        "when": "use_name",
+                                        "eq": true,
+                                        "json": ""
+                                    }
+                                }
+                            ]
                         },
                         {
-                            "key": "source_addr",
-                            "required": true
+                            "label": "Advanced",
+                            "key": "advancedTab",
+                            "components": [
+                                {
+                                    "label": "Advanced",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 1,
+                                    "key": "advanced",
+                                    "components": [
+                                        {
+                                            "label": "Storage space (GB):",
+                                            "type": "number",
+                                            "input": true,
+                                            "key": "storageSpace",
+                                            "placeholder": "Default value: 1GB",
+                                            "tab": 1
+                                        }
+                                    ]
+                                }
+                            ]
                         }
-                    ]
+                    ],
+                    "type": "tabs",
+                    "input": false,
+                    "key": "tabs"
+                },
+                {
+                    "type": "button",
+                    "label": "Apply configuration",
+                    "disableOnInvalid": true,
+                    "theme": "primary",
+                    "input": false,
+                    "tableView": true
+                }
+            ]
+        }
+    },
+    "configurationUpdateTemplate": {
+        "template": {
+            "components": [
+                {
+                    "label": "Connect to existing Prometheus instance",
+                    "type": "checkbox",
+                    "defaultValue": false,
+                    "key": "use_name",
+                    "input": true,
+                    "inputFormat": "plain"
+                },
+                {
+                    "label": "Data Source name",
+                    "type": "textfield",
+                    "defaultValue": "",
+                    "input": true,
+                    "key": "source_name",
+                    "validate": {
+                        "required": true
+                    },
+                    "inputFormat": "plain",
+                    "conditional": {
+                        "show": true,
+                        "when": "use_name",
+                        "eq": true,
+                        "json": ""
+                    }
+                },
+                {
+                    "label": "Prometheus instance address",
+                    "type": "textfield",
+                    "defaultValue": "",
+                    "input": true,
+                    "key": "source_addr",
+                    "validate": {
+                        "required": true
+                    },
+                    "inputFormat": "plain",
+                    "conditional": {
+                        "show": true,
+                        "when": "use_name",
+                        "eq": true,
+                        "json": ""
+                    }
                 }
             ]
         }
