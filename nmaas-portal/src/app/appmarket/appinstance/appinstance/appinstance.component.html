@@ -55,7 +55,7 @@
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
-								<button class="btn btn-default" style="display: none" (click)="this.updateConfigModal.show()" disabled>{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+								<button class="btn btn-default" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
 								<button class="btn btn-primary" style="display: none" (click)="this.modal.show()" disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
 								<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
 							</div>
