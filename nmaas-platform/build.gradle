@@ -41,7 +41,7 @@ protobuf {
 }
 
 bootJar {
-	mainClassName = 'net.geant.nmaas.NmaasPlatform'
+	mainClassName = 'net.geant.nmaas.MainConfig'
 }
 
 sourceSets {
