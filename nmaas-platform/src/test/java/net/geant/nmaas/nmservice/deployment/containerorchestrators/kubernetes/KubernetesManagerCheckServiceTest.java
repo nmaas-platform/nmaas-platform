@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;

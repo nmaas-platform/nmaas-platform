@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
-import net.geant.nmaas.externalservices.inventory.janitor.JanitorService;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.NmServiceConfigurationFailedException;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;

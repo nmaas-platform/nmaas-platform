@@ -1,7 +1,7 @@
 syntax = "proto3";
 package v1;
 
-option java_package = "net.geant.nmaas.externalservices.inventory.janitor";
+option java_package = "net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor";
 option java_outer_classname = "JanitorManager";
 
 enum Status {

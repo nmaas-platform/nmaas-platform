@@ -1,4 +1,4 @@
-package net.geant.nmaas.externalservices.inventory.janitor;
+package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
 
 public class ConfigMapCreationException extends RuntimeException {
     public ConfigMapCreationException(String message) {
