@@ -3,6 +3,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'org.sonarqube'
+apply plugin: 'com.google.protobuf'
 
 buildscript {
 	repositories {
@@ -12,14 +13,31 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.0.6.RELEASE')
+		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
+		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.7'
 	}
 }
 
 gitProperties {
 	gitPropertiesDir = "src/main/resources"
+}
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:3.6.0"
+	}
+	plugins {
+		grpc {
+			artifact = 'io.grpc:protoc-gen-grpc-java:1.17.1'
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {}
+		}
+	}
 }
 
 bootJar {
@@ -75,6 +93,10 @@ dependencies {
 	compile('io.springfox:springfox-swagger-ui:2.8.0')
 	compile ('org.projectlombok:lombok:1.18.2')
 	compile ("org.flywaydb:flyway-core:5.2.0")
+	compile ('com.google.protobuf:protobuf-java:3.6.0')
+	compile ('io.grpc:grpc-netty-shaded:1.17.1')
+	compile ('io.grpc:grpc-protobuf:1.17.1')
+	compile ('io.grpc:grpc-stub:1.17.1')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')

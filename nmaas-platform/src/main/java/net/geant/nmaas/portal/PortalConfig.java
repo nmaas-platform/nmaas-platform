@@ -32,7 +32,7 @@ import java.util.Optional;
 @ComponentScan(basePackages={"net.geant.nmaas.portal.service"})
 public class PortalConfig {
 
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	public PortalConfig(PasswordEncoder passwordEncoder){
@@ -145,18 +145,4 @@ public class PortalConfig {
 			}
 		};
 	}
-
-	@Bean
-	public FileStorageService localFileStorageService() {
-		return new LocalFileStorageService();
-	}
-
-	@Bean
-	public Filter characterEncodingFilter() {
-		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-		characterEncodingFilter.setEncoding("UTF-8");
-		characterEncodingFilter.setForceEncoding(true);
-		return characterEncodingFilter;
-	}
-
 }

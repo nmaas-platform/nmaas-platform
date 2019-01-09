@@ -11,14 +11,28 @@ import org.springframework.stereotype.Service;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.UserService;
 
-
 @Service
 public class AclService implements net.geant.nmaas.portal.service.AclService {
 
 	@Autowired
-	UserService users;	
-	
-	public static interface PermissionCheck {
+	UserService users;
+
+	@Autowired
+	public AclService(DomainObjectPermissionCheck domainObjectPermissionCheck,
+					  CommentPermissionCheck commentPermissionCheck,
+					  AppInstancePermissionCheck appInstancePermissionCheck,
+					  AppTemplatePermissionCheck appTemplatePermissionCheck) {
+
+		add(domainObjectPermissionCheck);
+		add(commentPermissionCheck);
+		add(appInstancePermissionCheck);
+		add(appTemplatePermissionCheck);
+
+		setDefaultPermissionCheck(new GenericPermissionCheck());
+	}
+
+
+	public interface PermissionCheck {
 		boolean supports(String targetType);
 		boolean check(User user, Serializable targetId, String targetType, Permissions perm);
 		boolean check(User user, Serializable targetId, String targetType, Permissions[] perm);

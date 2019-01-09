@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
@@ -39,22 +38,18 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
     private static final int PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL = 30;
-    static final String GITLAB_SSH_USER = "git";
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
     private GitLabManager gitLabManager;
-    private KClusterDeploymentManager kClusterDeployment;
 
     @Autowired
     GitLabConfigUploader(NmServiceRepositoryManager serviceRepositoryManager,
                          NmServiceConfigFileRepository configurations,
-                         GitLabManager gitLabManager,
-                         KClusterDeploymentManager kClusterDeployment) {
+                         GitLabManager gitLabManager) {
         this.serviceRepositoryManager = serviceRepositoryManager;
         this.configurations = configurations;
         this.gitLabManager = gitLabManager;
-        this.kClusterDeployment = kClusterDeployment;
     }
 
     private GitLabApi gitlab;
@@ -200,9 +195,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     String getGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
-        return kClusterDeployment.getUseInClusterGitLabInstance()
-                        ? generateCompleteGitCloneUrl(gitLabRepoUrl)
-                        : generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
+        return generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
     }
 
     private String defaultRepositoryAccessUsername(){
@@ -222,12 +215,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         String[] urlParts = urlFromGitlabApiParts[1].split("/");
         urlParts[0] = gitLabManager.getGitlabServer() + ":" + gitLabManager.getGitlabPort();
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
-    }
-
-    private String generateCompleteGitCloneUrl(String gitLabRepoUrl) {
-        String[] urlProtocolAndUrl = gitLabRepoUrl.split("//");
-        String[] serverAndPath = urlProtocolAndUrl[1].split("/");
-        return GITLAB_SSH_USER + "@" + urlProtocolAndUrl[1].replace(serverAndPath[0], gitLabManager.getGitlabSshServer()).replaceFirst("/", ":");
     }
 
     private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {

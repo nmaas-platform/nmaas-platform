@@ -12,7 +12,6 @@ import {Observable} from 'rxjs/Observable';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {CustomerSearchCriteria} from "../../../service/index";
 import "rxjs/add/observable/of";
-import {forEach} from "angular2-json-schema-form";
 import {element} from "protractor";
 
 export enum AppInstanceListSelection {

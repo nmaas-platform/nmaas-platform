@@ -26,9 +26,6 @@ public class GitLab {
     private String server;
 
     @Column(nullable = false)
-    private String sshServer;
-
-    @Column(nullable = false)
     private String token;
 
     @Column(nullable = false)

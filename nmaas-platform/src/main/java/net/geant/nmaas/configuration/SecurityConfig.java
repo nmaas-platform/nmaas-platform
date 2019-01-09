@@ -180,11 +180,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public JWTSettings jwtSettings() {
 		return new JWTSettings();
 	}
-
-	@Bean
-	@Autowired
-	public TokenAuthenticationService tokenAuthenticationService(JWTTokenService jwtTokenService, UserRepository userRepository) {
-		return new TokenAuthenticationService(jwtTokenService, userRepository);
-	}
-	
 }
