@@ -1,4 +1,4 @@
-package net.geant.nmaas.configuration;
+package net.geant.nmaas;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

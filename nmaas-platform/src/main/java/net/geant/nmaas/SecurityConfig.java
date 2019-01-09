@@ -1,12 +1,10 @@
-package net.geant.nmaas.configuration;
+package net.geant.nmaas;
 
 import net.geant.nmaas.portal.api.security.JWTSettings;
-import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
 import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,7 +36,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @PropertySource("classpath:application.properties")
-@Order(Ordered.LOWEST_PRECEDENCE-100)
+@Order(Ordered.LOWEST_PRECEDENCE - 100)
 @ComponentScan(basePackages = {"net.geant.nmaas.portal.api.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
