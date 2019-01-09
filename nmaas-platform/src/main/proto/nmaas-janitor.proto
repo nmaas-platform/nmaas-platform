@@ -1,0 +1,33 @@
+syntax = "proto3";
+package v1;
+
+option java_package = "net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor";
+option java_outer_classname = "JanitorManager";
+
+enum Status {
+    FAILED = 0;
+    OK = 1;
+}
+
+message Instance {
+    string namespace = 1;
+    string uid = 2;
+    string domain = 3;
+}
+
+message ConfigUpdateRequest{
+    string api = 1;
+    Instance deployment = 2;
+}
+
+message ConfigUpdateResponse{
+    string api = 1;
+    Status status = 2;
+    string message = 3;
+}
+
+service ConfigService {
+    rpc Create(ConfigUpdateRequest) returns (ConfigUpdateResponse);
+    rpc Update(ConfigUpdateRequest) returns (ConfigUpdateResponse);
+    rpc Delete(ConfigUpdateRequest) returns (ConfigUpdateResponse);
+}

@@ -11,17 +11,17 @@ import {ComponentMode} from "../../../../shared";
   styleUrls: ['./gitlab-details.component.css']
 })
 export class GitlabDetailsComponent extends BaseComponent implements OnInit {
-  private config_id:number;
-  public gitLabConfig:GitLabConfig;
+  private config_id: number;
+  public gitLabConfig: GitLabConfig;
 
-  constructor(private gitLabService:GitlabService, private route:ActivatedRoute, private router:Router) { super();}
+  constructor(private gitLabService: GitlabService, private route: ActivatedRoute, private router: Router) { super(); }
 
   ngOnInit() {
-    this.gitLabService.getAll().subscribe(config =>{
-      if(config.length > 0){
+    this.gitLabService.getAll().subscribe(config => {
+      if(config.length > 0) {
         this.gitLabConfig = config[0];
         this.config_id = this.gitLabConfig.id;
-        this.router.navigate(['admin/gitlab',this.config_id])
+        this.router.navigate(['admin/gitlab', this.config_id])
       } else{
         this.gitLabConfig = new GitLabConfig();
         this.mode = ComponentMode.CREATE;
@@ -29,23 +29,23 @@ export class GitlabDetailsComponent extends BaseComponent implements OnInit {
     });
   }
 
-  public onDelete($event){
+  public onDelete($event) {
     this.gitLabService.remove($event).subscribe((response) => this.router.navigate(['/admin/gitlab']));
   }
 
-  public onSave($event){
+  public onSave($event) {
     const newGitLabConfig = $event;
 
-    if(!newGitLabConfig){
+    if (!newGitLabConfig) {
       return;
     }
-    if(newGitLabConfig.id){
+    if (newGitLabConfig.id) {
       this.gitLabService.update(newGitLabConfig)
-          .subscribe(e=>this.router.navigate(['/admin/gitlab']));
-    } else{
+          .subscribe(e => this.router.navigate(['/admin/gitlab']));
+    } else {
       newGitLabConfig.id = this.config_id;
       this.gitLabService.add(newGitLabConfig)
-          .subscribe(id=>this.router.navigate(['/admin/gitlab/', id]));
+          .subscribe(id => this.router.navigate(['/admin/gitlab/', id]));
     }
   }
 

@@ -84,10 +84,6 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getServer();
     }
 
-    public String getGitlabSshServer() {
-        return loadSingleGitlabConfig().getSshServer();
-    }
-
     public int getGitlabPort() {
         return loadSingleGitlabConfig().getPort();
     }
@@ -98,7 +94,6 @@ public class GitLabManager {
         checkArgument(gitLabInstance.getPort() != null, "GitLab port is null");
         checkArgument(gitLabInstance.getServer() != null && !gitLabInstance.getServer().isEmpty(), "GitLab server is null or empty");
         checkArgument(gitLabInstance.getToken() != null && !gitLabInstance.getToken().isEmpty(), "GitLab token is null or empty");
-        checkArgument(gitLabInstance.getSshServer() != null && !gitLabInstance.getSshServer().isEmpty(), "GitLab ssh server is null or empty");
         this.createGitLabApi(gitLabInstance.getApiUrl(), gitLabInstance.getToken());
         try {
             this.gitLabApi.getVersion();

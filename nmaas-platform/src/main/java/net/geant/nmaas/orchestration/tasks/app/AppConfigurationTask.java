@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AppConfigurationTask {
 
     private NmServiceConfigurationProvider serviceConfiguration;
-
     private AppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
@@ -41,6 +40,7 @@ public class AppConfigurationTask {
                     deploymentId,
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
+                    appDeployment.getDomain(),
                     appDeployment.isConfigFileRepositoryRequired());
         } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
