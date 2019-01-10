@@ -10,14 +10,13 @@
 	"issuesUrl": "https://github.com/Juniper/open-nti/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE"
+			"KUBERNETES"
 		],
-		"dockerComposeFileTemplate": {
-			"dcnAttachedContainers": [
-				{"name": "snmp", "description": "snmp"},
-				{"name": "opennti", "description": "opennti"}
-			],
-			"composeFileTemplateContent": "version: '2'\nservices:\n  jti:\n    image: llopat/geant-nmaas-opennti-input-jti:1.0\n    environment:\n      - \"INFLUXDB_ADDR=opennti\"\n      - \"OUTPUT_INFLUXDB=true\"\n      - \"OUTPUT_STDOUT=false\"\n    volumes:\n      - /etc/localtime:/etc/localtime:ro\n    networks:\n      nmaas-inter-container:\n    privileged: true\n\n  syslog:\n    image: llopat/geant-nmaas-opennti-input-syslog:1.0\n    environment:\n      - \"INFLUXDB_ADDR=opennti\"\n      - \"OUTPUT_INFLUXDB=true\"\n      - \"OUTPUT_STDOUT=false\"\n    volumes:\n      - /etc/localtime:/etc/localtime\n    networks:\n      nmaas-inter-container:\n    privileged: true\n\n  ${snmp.container_name}:\n    image: llopat/geant-nmaas-opennti-input-snmp:1.0\n    volumes:\n      - /etc/localtime:/etc/localtime:ro\n    networks:\n      nmaas-dcn:\n        ipv4_address: ${snmp.container_ip_address}\n      nmaas-inter-container:\n    privileged: true\n\n  input-internal:\n    image: llopat/geant-nmaas-opennti-input-internal:1.0\n    environment:\n      - \"HOST_PROC=/rootfs/proc\"\n      - \"HOST_SYS=/rootfs/sys\"\n      - \"HOST_ETC=/rootfs/etc\"\n    volumes:\n      - /etc/localtime:/etc/localtime:ro\n      - /var/run/docker.sock:/var/run/docker.sock:ro\n      - /sys:/rootfs/sys:ro\n      - /proc:/rootfs/proc:ro\n      - /etc:/rootfs/etc:ro\n    networks:\n      nmaas-inter-container:\n\n  ${opennti.container_name}:\n    image: llopat/geant-nmaas-opennti:1.0\n    volumes:\n      - ${volume}:/opt/open-nti/data\n      - /etc/localtime:/etc/localtime:ro\n    ports:\n      - ${port}:80\n    networks:\n      nmaas-ext-access:\n      nmaas-dcn:\n          ipv4_address: ${opennti.container_ip_address}\n      nmaas-inter-container:\n    privileged: true\n\nnetworks:\n  nmaas-ext-access:\n    external:\n      name: ${nmaas_ext_access_network}\n  nmaas-dcn:\n    external:\n      name: ${nmaas_dcn_network}\n  nmaas-inter-container:\n"
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-opennti",
+				"version": "0.0.1-alfa"
+			}
 		},
 		"defaultStorageSpace":20,
 		"configFileRepositoryRequired":true
