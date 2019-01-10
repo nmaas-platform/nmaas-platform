@@ -35,6 +35,7 @@ import { SortableColumnComponent } from './sortable-column/sortable-column.compo
 import { SortableTableDirective } from './sortable-column/sortable-table.directive';
 import {AppInstallModalComponent} from "./modal/appinstall";
 import { RatingExtendedComponent } from './rating-extended/rating-extended.component';
+import {TooltipModule} from "ng2-tooltip-directive";
 
 @NgModule({
   imports: [
@@ -44,7 +45,8 @@ import { RatingExtendedComponent } from './rating-extended/rating-extended.compo
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    TooltipModule
   ],
   declarations: [
     RateComponent,
@@ -75,7 +77,7 @@ import { RatingExtendedComponent } from './rating-extended/rating-extended.compo
     ModalChangelogComponent,
     SortableColumnComponent,
     SortableTableDirective,
-    RatingExtendedComponent
+    RatingExtendedComponent,
   ],
   providers: [
     PasswordValidator,

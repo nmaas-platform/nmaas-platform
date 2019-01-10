@@ -3,6 +3,7 @@ import {Rate} from "../../model";
 import {AppsService} from "../../service";
 import {isNullOrUndefined} from "util";
 
+
 @Component({
   selector: 'rating-extended',
   templateUrl: './rating-extended.component.html',
@@ -15,6 +16,12 @@ export class RatingExtendedComponent implements OnInit, OnChanges {
 
   @Input()
   editable: boolean = false;
+
+  defaultTooltipOptions = {
+    'placement': 'bottom',
+    'show-delay': "500",
+    'theme': 'dark'
+  }
 
   rate: Rate;
 
@@ -75,7 +82,6 @@ export class RatingExtendedComponent implements OnInit, OnChanges {
   public refresh(): void {
     this.appsService.getAppRateByUrl(this.pathUrl).subscribe(rate => {
       this.rate = rate;
-      console.log(rate);
       this.updateBreakdownValues();
     });
   }

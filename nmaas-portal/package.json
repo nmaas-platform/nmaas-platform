@@ -38,6 +38,7 @@
     "jasmine": "^2.99.0",
     "jquery": "^1.11.3",
     "lodash": "4.x",
+    "ng2-tooltip-directive": "^2.1.6",
     "ngx-pagination": "^3.2.1",
     "ngx-webstorage-service": "^3.1.1",
     "rxjs": "^5.5.6",
