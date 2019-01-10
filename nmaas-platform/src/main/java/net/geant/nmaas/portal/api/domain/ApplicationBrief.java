@@ -14,6 +14,7 @@ public class ApplicationBrief {
 	String version;
 	
 	String license;
+	String licenseUrl;
 
 	String wwwUrl;
 	String sourceUrl;

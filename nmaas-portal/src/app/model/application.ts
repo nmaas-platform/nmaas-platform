@@ -6,7 +6,7 @@ export class Application {
   public name: string = undefined;
   public version: string = undefined;
   public license: string = undefined;
-  public licenseLink: string = undefined;
+  public licenseUrl: string = undefined;
   public wwwUrl: string = undefined;
   public sourceUrl: string = undefined;
   public issuesUrl: string = undefined;

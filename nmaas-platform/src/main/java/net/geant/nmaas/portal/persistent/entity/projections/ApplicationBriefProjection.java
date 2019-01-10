@@ -11,6 +11,7 @@ public interface ApplicationBriefProjection {
 	String getName();
 	String getVersion();
 	String getLicense();
+	String getLicenseUrl();
 	String getWwwUrl();
 	String getSourceUrl();
 	String getIssuesUrl();
