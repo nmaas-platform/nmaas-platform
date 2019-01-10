@@ -13,14 +13,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"env_docker-compose", "dcn_none"})
+@ActiveProfiles({"env_kubernetes", "dcn_none"})
 public class DummyDcnDeploymentExecutorWorkflowIntTest {
 
     @Autowired
@@ -34,7 +34,7 @@ public class DummyDcnDeploymentExecutorWorkflowIntTest {
     private static final String DOMAIN = "domain";
 
     @Test
-    public void shouldCompleteDcnWorkflowWithDummyExecutor() throws Exception {
+    public void shouldCompleteDcnWorkflowWithDummyExecutor() {
         when(appDeploymentRepositoryManager.loadDomainByDeploymentId(any())).thenReturn(DOMAIN);
         when(dcnRepositoryManager.loadCurrentState(DOMAIN)).thenThrow(new InvalidDomainException());
         eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));

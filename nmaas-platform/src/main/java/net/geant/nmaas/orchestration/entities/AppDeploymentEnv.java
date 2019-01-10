@@ -5,7 +5,6 @@ package net.geant.nmaas.orchestration.entities;
  */
 public enum AppDeploymentEnv {
 
-    DOCKER_COMPOSE,
     KUBERNETES
 
 }

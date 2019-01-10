@@ -9,15 +9,14 @@ import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-k8s.properties")
 public class GitLabManagerTest {
+
     @Autowired
     private GitLabRepository repository;
 
@@ -51,8 +50,8 @@ public class GitLabManagerTest {
     @Test
     public void shouldRetrieveGitlabDetails(){
         repository.save(simpleGitlabConfig());
-        assertThat("GitLab token is wrong",manager.getGitLabApiToken().equals("testtoken"));
-        assertThat("GitLab url is wrong",manager.getGitLabApiUrl().equals("http://10.10.1.1:80"));
+        assertThat("GitLab token is wrong", manager.getGitLabApiToken().equals("testtoken"));
+        assertThat("GitLab url is wrong", manager.getGitLabApiUrl().equals("http://10.10.1.1:80"));
     }
 
     private GitLab simpleGitlabConfig(){

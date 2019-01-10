@@ -404,7 +404,7 @@
     }
   },
   "TERMS_ACCEPTANCE": {
-    "HEADER": "Bitte lesen und akzeptieren Sie die folgenden Dokumente, bevor Sie auf das System zugreifen.",
+    "HEADER": "Bitte lesen Sie die folgenden Dokumente, bevor Sie auf das System zugreifen.",
     "MODAL": {
       "HEADER": "Fehlende Zustimmungen liegen vor",
       "BODY": "Ihre Zustimmung zu den Nutzungsbedingungen und der Datenschutzerklärung wurde im System registriert. Bitte melden Sie sich erneut an.",
@@ -430,9 +430,9 @@
     }
   },
   "UPDATE_CONFIG_MODAL": {
-    "HEADER": "Update configuration",
-    "SUBMIT_BUTTON": "Submit",
-    "CANCEL_BUTTON": "Cancel"
+    "HEADER": "Konfiguration aktualisieren",
+    "SUBMIT_BUTTON": "Senden",
+    "CANCEL_BUTTON": "Abbrechen"
   },
   "SUBSCRIPTION": {
     "COMMENTS_NOT_EMPTY_MESSAGE": "Kommentar darf nicht leer sein"
