@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
@@ -15,6 +14,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerOrchestratorInternalErrorException;

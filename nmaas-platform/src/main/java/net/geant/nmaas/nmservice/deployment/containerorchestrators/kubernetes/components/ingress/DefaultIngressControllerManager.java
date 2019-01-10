@@ -3,8 +3,8 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.IngressControllerManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmCommandExecutor;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
@@ -90,7 +90,8 @@ public class DefaultIngressControllerManager implements IngressControllerManager
                 new KubernetesTemplate(
                         clusterIngressManager.getControllerChart(),
                         null,
-                        clusterIngressManager.getControllerChartArchive()),
+                        clusterIngressManager.getControllerChartArchive()
+                ),
                 arguments
         );
     }
@@ -103,7 +104,6 @@ public class DefaultIngressControllerManager implements IngressControllerManager
     }
 
     private void executeDeleteIngressController(String domain) {
-        // TODO add missing functionality
         throw new NotImplementedException();
     }
 
