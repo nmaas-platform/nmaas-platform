@@ -2,13 +2,6 @@ export class ClusterInfo {
     public id: number;
 }
 
-class ClusterApi {
-    public id: number;
-    public restApiHostAddress: string;
-    public restApiPort: number;
-    public useKClusterApi: boolean = false;
-}
-
 class ClusterAttachPoint {
     public id: number;
     public routerId: string="";
@@ -54,14 +47,12 @@ class ClusterIngress {
 }
 
 export class Cluster {
-    public api: ClusterApi;
     public attachPoint: ClusterAttachPoint;
     public deployment: ClusterDeployment;
     public externalNetworks: ClusterExtNetwork[];
     public id: number;
     public ingress: ClusterIngress;
     constructor(){
-        this.api = new ClusterApi();
         this.attachPoint = new ClusterAttachPoint();
         this.deployment = new ClusterDeployment();
         this.externalNetworks = [];

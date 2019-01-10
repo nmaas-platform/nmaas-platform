@@ -3,25 +3,23 @@ package net.geant.nmaas.externalservices.inventory.kubernetes;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterApi;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
-import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,14 +31,8 @@ import static org.mockito.Mockito.when;
 
 public class KubernetesClusterManagerTest {
 
-    private static final String REST_API_HOST_ADDRESS = "10.10.1.1";
-    private static final int REST_API_PORT = 9000;
-    private static final String HELM_HOST_CHARTS_DIRECTORY = "/home/charts";
-    private static final String HELM_HOST_ADDRESS = "10.10.1.2";
-    private static final String HELM_HOST_SSH_USERNAME = "test";
     private static final String DOMAIN = "testDomain";
 
-    DomainServiceImpl.CodenameValidator namespaceValidator;
     private KubernetesClusterRepository repository = mock(KubernetesClusterRepository.class);
     private DomainService domainService = mock(DomainService.class);
 
@@ -48,14 +40,13 @@ public class KubernetesClusterManagerTest {
 
     @Before
     public void setup() {
-        namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        manager = new KubernetesClusterManager(repository, null, namespaceValidator, domainService);
+        manager = new KubernetesClusterManager(repository, null, null, domainService);
     }
 
     @Test
     public void shouldReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
+        when(repository.findAll()).thenReturn(Collections.singletonList(simpleKubernetesCluster()));
         String domain10 = "domain10";
         KClusterExtNetworkView network10 = manager.reserveExternalNetwork(domain10);
         String domain20 = "domain20";
@@ -126,10 +117,6 @@ public class KubernetesClusterManagerTest {
 
     private KCluster simpleKubernetesCluster() throws UnknownHostException {
         KCluster cluster = new KCluster();
-        KClusterApi api = new KClusterApi();
-        api.setRestApiHostAddress(InetAddress.getByName(REST_API_HOST_ADDRESS));
-        api.setRestApiPort(REST_API_PORT);
-        cluster.setApi(api);
         KClusterIngress ingress = new KClusterIngress();
         ingress.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
         ingress.setControllerChartArchive("chart.tgz");

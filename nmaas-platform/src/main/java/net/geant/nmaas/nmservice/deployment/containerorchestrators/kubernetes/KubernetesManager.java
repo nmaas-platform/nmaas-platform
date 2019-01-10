@@ -1,11 +1,10 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterApiManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
@@ -13,7 +12,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressRes
 import net.geant.nmaas.nmservice.deployment.ContainerOrchestrator;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.cluster.KClusterCheckException;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressControllerManipulationException;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressResourceManipulationException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
@@ -32,7 +31,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +43,7 @@ import java.util.Map;
 @Component
 @Profile("env_kubernetes")
 @Log4j2
+@AllArgsConstructor
 public class KubernetesManager implements ContainerOrchestrator {
 
     private KubernetesRepositoryManager repositoryManager;
@@ -54,35 +53,9 @@ public class KubernetesManager implements ContainerOrchestrator {
     private KClusterIngressManager clusterIngressManager;
     private IngressControllerManager ingressControllerManager;
     private IngressResourceManager ingressResourceManager;
-    private KClusterApiManager clusterApiManager;
     private KClusterDeploymentManager deploymentManager;
     private GitLabManager gitLabManager;
     private JanitorService janitorService;
-
-    @Autowired
-    public KubernetesManager(KubernetesRepositoryManager repositoryManager,
-                             KClusterValidator clusterValidator,
-                             KServiceLifecycleManager serviceLifecycleManager,
-                             KServiceOperationsManager serviceOperationsManager,
-                             KClusterIngressManager clusterIngressManager,
-                             IngressControllerManager ingressControllerManager,
-                             IngressResourceManager ingressResourceManager,
-                             KClusterApiManager clusterApiManager,
-                             KClusterDeploymentManager deploymentManager,
-                             GitLabManager gitLabManager,
-                             JanitorService janitorService) {
-        this.repositoryManager = repositoryManager;
-        this.clusterValidator = clusterValidator;
-        this.serviceLifecycleManager = serviceLifecycleManager;
-        this.serviceOperationsManager = serviceOperationsManager;
-        this.clusterIngressManager = clusterIngressManager;
-        this.ingressControllerManager = ingressControllerManager;
-        this.ingressResourceManager = ingressResourceManager;
-        this.clusterApiManager = clusterApiManager;
-        this.deploymentManager = deploymentManager;
-        this.gitLabManager = gitLabManager;
-        this.janitorService = janitorService;
-    }
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -123,25 +96,24 @@ public class KubernetesManager implements ContainerOrchestrator {
         Map<String, String> additionalParameters = new HashMap<>();
         deployParameters.forEach((k,v) ->{
             switch (k){
-                case SMTP_HOSTNAME: {
+                case SMTP_HOSTNAME:
                     additionalParameters.put(v, deploymentManager.getSMTPServerHostname());
                     break;
-                } case SMTP_PORT: {
+                case SMTP_PORT:
                     additionalParameters.put(v, deploymentManager.getSMTPServerPort().toString());
                     break;
-                } case SMTP_USERNAME: {
+                case SMTP_USERNAME:
                     deploymentManager.getSMTPServerUsername().ifPresent(username->{
                         if(!username.isEmpty())
                             additionalParameters.put(v, username);
                     });
                     break;
-                } case SMTP_PASSWORD: {
+                case SMTP_PASSWORD:
                     deploymentManager.getSMTPServerPassword().ifPresent(value->{
                         if(!value.isEmpty())
                             additionalParameters.put(v, value);
                     });
                     break;
-                }
             }
         });
         return additionalParameters;
@@ -151,9 +123,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void verifyRequestAndObtainInitialDeploymentDetails(Identifier deploymentId) {
         try {
-            if(this.clusterApiManager.getUseClusterApi()) {
-                clusterValidator.checkClusterStatusAndPrerequisites();
-            }
+            clusterValidator.checkClusterStatusAndPrerequisites();
         } catch (KClusterCheckException e) {
             throw new ContainerOrchestratorInternalErrorException(e.getMessage());
         }
@@ -197,8 +167,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
-        } catch (KServiceManipulationException
-                | IngressResourceManipulationException e) {
+        } catch (KServiceManipulationException e) {
             throw new CouldNotDeployNmServiceException(e.getMessage());
         }
     }
@@ -226,8 +195,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             }
         } catch (InvalidDeploymentIdException idie) {
             throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
-        } catch (KServiceManipulationException
-                | IngressResourceManipulationException e) {
+        } catch (KServiceManipulationException e) {
             throw new CouldNotRemoveNmServiceException(e.getMessage());
         }
     }
