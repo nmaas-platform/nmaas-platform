@@ -12,6 +12,31 @@
     margin-right: 0;
 }
 
+.progress-green{
+    background-color: rgb(0, 190, 19) !important;
+    background-image: linear-gradient(rgb(0, 190, 19), rgb(0, 190, 19));
+}
+
+.progress-dark-blue{
+    background-color: rgb(0, 94, 155) !important;
+    background-image: linear-gradient(rgb(0, 94, 155), rgb(0, 94, 155));
+}
+
+.progress-blue{
+    background-color: rgb(0, 152, 192) !important;
+    background-image: linear-gradient(rgb(0, 152, 192), rgb(0, 152, 192));
+}
+
+.progress-yellow{
+    background-color: rgb(241, 189, 0) !important;
+    background-image: linear-gradient(rgb(241, 189, 0), rgb(241, 189, 0));
+}
+
+.progress-red{
+    background-color: rgb(204, 33, 0) !important;
+    background-image: linear-gradient(rgb(204, 33, 0), rgb(204, 33, 0));
+}
+
 .fa-star-button{
     color: gray;
 }

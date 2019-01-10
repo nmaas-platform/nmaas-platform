@@ -26,22 +26,22 @@
 					</a>
 				</div>
 			</div>
+			<div class="row">
+				<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
+					<button class="btn btn-primary" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
+				</div>
+				<div *ngIf="subscribed" class="btn-group pull-right">
+					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
+					<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">{{'APPLICATIONS.UNSUBSCRIBE_BUTTON' | translate}}</button>
+				</div>
+
+			</div>
 		</div>
 	</div>
 			<div *ngIf="appId" class="row">
 				<hr>
 				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 block-light-gray block-border">
 					<rating-extended name="appRateUpdate" [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + appId + '/rate/my'"></rating-extended>
-				</div>
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
-						<button class="btn btn-primary" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
-					</div>
-					<div *ngIf="subscribed" class="btn-group pull-right">
-						<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
-						<button *ngIf="isSubscriptionAllowed()" class="btn btn-danger" (click)="unsubscribe()">{{'APPLICATIONS.UNSUBSCRIBE_BUTTON' | translate}}</button>
-					</div>
-					
 				</div>
 			</div>
 
