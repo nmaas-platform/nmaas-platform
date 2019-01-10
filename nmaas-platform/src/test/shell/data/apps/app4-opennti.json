@@ -2,6 +2,7 @@
 	"name":"OpenNTI",
 	"version":"0.1",
 	"license":"Apache 2.0",
+	"licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
 	"briefDescription":"Open Network Telemetry Collector built with open source tools",
 	"tags": [ "management", "monitoring", "telemetry"],
 	"fullDescription" : "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it",

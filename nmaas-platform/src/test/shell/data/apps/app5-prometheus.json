@@ -1,7 +1,8 @@
 {
     "name": "Prometheus",
     "version": "2.4.0",
-    "license": "Apache 2 License",
+    "license": "Apache 2.0",
+    "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
     "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
     "tags": [
         "monitoring",
