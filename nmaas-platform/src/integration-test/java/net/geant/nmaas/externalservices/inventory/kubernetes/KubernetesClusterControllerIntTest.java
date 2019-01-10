@@ -3,7 +3,6 @@ package net.geant.nmaas.externalservices.inventory.kubernetes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
@@ -14,6 +13,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterEx
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -23,7 +23,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -38,12 +37,14 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-k8s.properties")
 public class KubernetesClusterControllerIntTest {
 
     private final static String URL_PREFIX = "/api/management/kubernetes";

@@ -1,12 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.RawValue;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppLifecycleState;
@@ -194,50 +192,6 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @PostMapping({"/apps/instances/{appInstanceId}/configure", "/domains/{domainId}/apps/instances/{appInstanceId}/configure"})
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    @Transactional
-    public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                   @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
-        net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
-
-        boolean valid = validJSON(configuration.getJsonInput());
-        if (!valid)
-            throw new ProcessingException("Configuration is not in valid JSON format");
-
-		if(configuration.getStorageSpace() != null && configuration.getStorageSpace() <= 0)
-			throw new ProcessingException("Storage space cannot be less or equal 0");
-
-		appInstance.setConfiguration(configuration.getJsonInput());
-		instances.update(appInstance);
-
-		try {
-			appLifecycleManager.applyConfiguration(appInstance.getInternalId(), configuration);
-		} catch (Throwable e) {
-			throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
-		}
-	}
-
-    @PostMapping({"/apps/instances/{appInstanceId}/configure/update", "/domains/{domainId}/apps/instances/{appInstanceId}/configure/update"})
-    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
-    @Transactional
-    public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
-                                   @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
-        net.geant.nmaas.portal.persistent.entity.AppInstance appInstance = getAppInstance(appInstanceId);
-
-        if (!validJSON(configuration.getJsonInput()))
-            throw new ProcessingException("Configuration is not in valid JSON format");
-
-        appInstance.setConfiguration(configuration.getJsonInput());
-        instances.update(appInstance);
-
-        try {
-            appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration);
-        } catch (Throwable e) {
-            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
-        }
-    }
-
     @GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
@@ -289,17 +243,6 @@ public class AppInstanceController extends AppBaseController {
         return prepareAppInstanceStatus(appInstance.getId(), state, previousState);
     }
 
-    private boolean validJSON(String json) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.readTree(json);
-            return true;
-        } catch (JsonProcessingException e) {
-            return false;
-        } catch (IOException e) {
-            return false;
-        }
-    }
 
     private AppInstanceStatus prepareAppInstanceStatus(Long appInstanceId, AppLifecycleState state, AppLifecycleState previousState) {
         AppInstanceStatus appInstanceStatus = new AppInstanceStatus();
@@ -398,17 +341,6 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
-        if(appInstance.getConfiguration() != null && !appInstance.getConfiguration().isEmpty()){
-            try{
-                ObjectNode jsonNode = (ObjectNode) objectMapper.readTree(appInstance.getApplication().getConfigTemplate().getTemplate());
-                jsonNode.putRawValue("value", new RawValue(appInstance.getConfiguration()));
-                ai.setWizard(new ConfigTemplate(objectMapper.writeValueAsString(jsonNode)));
-            } catch(IOException e){
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        } else{
-            ai.setWizard(modelMapper.map(appInstance.getApplication().getConfigTemplate(),ConfigTemplate.class));
-        }
         return ai;
     }
 

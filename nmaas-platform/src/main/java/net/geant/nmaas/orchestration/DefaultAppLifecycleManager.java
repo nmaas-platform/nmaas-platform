@@ -104,16 +104,16 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
         if(configuration.getAdditionalParameters() != null && !configuration.getAdditionalParameters().isEmpty()){
             if(serviceInfo.getAdditionalParameters() == null){
-                serviceInfo.setAdditionalParameters(this.getMapFromJson(configuration.getAdditionalParameters()));
+                serviceInfo.setAdditionalParameters(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getAdditionalParameters())));
             } else {
-                serviceInfo.getAdditionalParameters().putAll(this.getMapFromJson(configuration.getAdditionalParameters()));
+                serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getAdditionalParameters())));
             }
         }
         if(configuration.getMandatoryParameters() != null && !configuration.getMandatoryParameters().isEmpty()){
             if(serviceInfo.getAdditionalParameters() == null){
-                serviceInfo.setAdditionalParameters(replaceUnderscoreToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
+                serviceInfo.setAdditionalParameters(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
             } else {
-                serviceInfo.getAdditionalParameters().putAll(replaceUnderscoreToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
+                serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
             }
         }
         repositoryManager.update(appDeployment);
@@ -131,10 +131,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private Map<String, String> replaceUnderscoreToDotsInMapKeys(Map<String, String> map){
+    private Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
-            newMap.put(entry.getKey().replace("_","."), entry.getValue());
+            if(entry.getValue() != null && !entry.getValue().isEmpty()){
+                newMap.put(entry.getKey().replace("#","."), entry.getValue());
+            }
         }
         return newMap;
     }

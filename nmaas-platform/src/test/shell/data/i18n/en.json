@@ -38,8 +38,8 @@
     "EDUGAIN_SUPPORT_TEXT": "You don't need to create a new account. Login using an existing account from you identity provider federated under eduGAIN.",
     "FAST_DEPLOYMENT_HEADER": "Fast & easy deployment",
     "FAST_DEPLOYMENT_TEXT": "Upon your request applications are deployed within minutes with custom configuration provided through a simple wizard.",
-    "WEB_PORTAL_HEADER": "Modern web portal",
-    "WEB_PORTAL_TEXT": "NMaaS provides a web-based user portal that follows reactive design principle.",
+    "WEB_PORTAL_HEADER": "Modern user interface",
+    "WEB_PORTAL_TEXT": "NMaaS provides a modern web-based user portal that follows reactive design principle.",
     "KUBERNETES_HEADER": "Kubernetes deployment",
     "KUBERNETES_TEXT": "User application instances are deployed in Kubernetes cluster run on top of dedicated hardware infrastructure assuring high performance and reliability.",
     "TECHNOLOGIES_USED_HEADER": "Technologies used"
@@ -399,7 +399,7 @@
     "MODAL": {
       "HEADER": "Registration completed",
       "BODY": "Your data has been registered in the system. Please login again.",
-      "RETURN_BUTTON": "Return to login page"
+      "RETURN_BUTTON": "Return to the login page"
     }
   },
   "TERMS_ACCEPTANCE": {
@@ -412,11 +412,11 @@
   },
   "RESET_PASSWORD": {
     "FORGOT_PASSWORD_BUTTON": "Forgot password",
-    "TEXT": "To reset your password, enter the email address you use to sign in to nmaas.",
+    "TEXT": "To reset your password, enter the email address you used to sign in to NMaaS.",
     "SUBMIT_BUTTON": "Submit",
     "EMAIL": "Email",
     "INVALID_TOKEN": "Your link has already expired. Please fill out forget password form again.",
-    "GO_BACK": "Go back NmaaS page",
+    "GO_BACK": "Go back to the NMaaS page",
     "MODAL": {
       "HEADER": "Please check your email",
       "BODY": "If you have provided valid email we will send to you link for resetting password.",
@@ -437,7 +437,7 @@
     "COMMENTS_NOT_EMPTY_MESSAGE": "Comment cannot be empty"
   },
   "GENERIC_MESSAGE": {
-    "UNAVAILABLE_MESSAGE": "Service is unavailable. Please try again later",
+    "UNAVAILABLE_MESSAGE": "Service is unavailable. Please try again later.",
     "INVALID_INPUT_MESSAGE": "Invalid input data",
     "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
     "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"

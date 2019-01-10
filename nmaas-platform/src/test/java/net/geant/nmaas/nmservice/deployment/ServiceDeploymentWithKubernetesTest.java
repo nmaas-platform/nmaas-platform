@@ -13,10 +13,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -25,7 +24,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-k8s.properties")
 public class ServiceDeploymentWithKubernetesTest {
 
 	@Autowired
@@ -45,7 +43,7 @@ public class ServiceDeploymentWithKubernetesTest {
 	public void shouldConfirmSupportForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		AppDeployment appDeployment = appDeployment();
-		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES, AppDeploymentEnv.DOCKER_COMPOSE));
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.singletonList(AppDeploymentEnv.KUBERNETES));
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(Identifier.newInstance("1"), appDeployment, appDeploymentSpec);
 	}
@@ -54,7 +52,7 @@ public class ServiceDeploymentWithKubernetesTest {
 	public void shouldNotifyIncompatibilityForDeploymentOnKubernetes() throws NmServiceRequestVerificationException {
 		AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
 		AppDeployment appDeployment = appDeployment();
-		appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.DOCKER_COMPOSE));
+		appDeploymentSpec.setSupportedDeploymentEnvironments(Collections.emptyList());
 		appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplate());
 		orchestrator.verifyDeploymentEnvironmentSupportAndBuildNmServiceInfo(null, appDeployment, appDeploymentSpec);
 	}

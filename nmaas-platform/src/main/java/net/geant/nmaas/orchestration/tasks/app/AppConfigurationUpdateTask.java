@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 public class AppConfigurationUpdateTask {
 
     private NmServiceConfigurationProvider configurationProvider;
-
     private AppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
-    public AppConfigurationUpdateTask(NmServiceConfigurationProvider configurationProvider, AppDeploymentRepositoryManager repositoryManager){
+    public AppConfigurationUpdateTask(NmServiceConfigurationProvider configurationProvider,
+                                      AppDeploymentRepositoryManager repositoryManager){
         this.configurationProvider = configurationProvider;
         this.repositoryManager = repositoryManager;
     }
@@ -38,6 +38,7 @@ public class AppConfigurationUpdateTask {
             configurationProvider.updateNmService(deploymentId,
                     appDeployment.getApplicationId(),
                     appDeployment.getConfiguration(),
+                    appDeployment.getDomain(),
                     appDeployment.isConfigFileRepositoryRequired());
         } catch (Exception e){
             long timestamp = System.currentTimeMillis();

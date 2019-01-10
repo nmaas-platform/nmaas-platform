@@ -3,15 +3,14 @@ package net.geant.nmaas.dcn.deployment;
 import com.spotify.docker.client.messages.ContainerConfig;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
-import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.entities.DockerHostAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -22,7 +21,6 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-compose.properties")
 public class AnsiblePlaybookContainerBuilderTest {
 
     @Autowired
@@ -135,7 +133,7 @@ public class AnsiblePlaybookContainerBuilderTest {
     }
 
     public static CloudAttachPoint cloudAttachPoint() {
-        DockerHostAttachPoint cloudAttachPoint = new DockerHostAttachPoint();
+        KClusterAttachPoint cloudAttachPoint = new KClusterAttachPoint();
         cloudAttachPoint.setRouterName("R3");
         cloudAttachPoint.setRouterId("172.16.3.3");
         cloudAttachPoint.setRouterInterfaceName("ge-0/0/4");

@@ -14,7 +14,6 @@ export class Application {
   public fullDescription: string = undefined;
   public tags: string[] = [];
   public configTemplate: ConfigTemplate = undefined;
-  public additionalParametersTemplate: ConfigTemplate = undefined;
-  public additionalMandatoryTemplate: ConfigTemplate = undefined;
+  public configurationUpdateTemplate: ConfigTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = undefined;
 }

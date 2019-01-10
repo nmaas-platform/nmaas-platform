@@ -10,62 +10,209 @@
 	"issuesUrl": "https://github.com/Juniper/open-nti/issues",
 	"appDeploymentSpec": {
 		"supportedDeploymentEnvironments": [
-			"DOCKER_COMPOSE"
+			"KUBERNETES"
 		],
-		"dockerComposeFileTemplate": {
-			"dcnAttachedContainers": [
-				{"name": "snmp", "description": "snmp"},
-				{"name": "opennti", "description": "opennti"}
-			],
-			"composeFileTemplateContent": "version: '2'\nservices:\n  jti:\n    image: llopat/geant-nmaas-opennti-input-jti:1.0\n    environment:\n      - \"INFLUXDB_ADDR=opennti\"\n      - \"OUTPUT_INFLUXDB=true\"\n      - \"OUTPUT_STDOUT=false\"\n    volumes:\n      - /etc/localtime:/etc/localtime:ro\n    networks:\n      nmaas-inter-container:\n    privileged: true\n\n  syslog:\n    image: llopat/geant-nmaas-opennti-input-syslog:1.0\n    environment:\n      - \"INFLUXDB_ADDR=opennti\"\n      - \"OUTPUT_INFLUXDB=true\"\n      - \"OUTPUT_STDOUT=false\"\n    volumes:\n      - /etc/localtime:/etc/localtime\n    networks:\n      nmaas-inter-container:\n    privileged: true\n\n  ${snmp.container_name}:\n    image: llopat/geant-nmaas-opennti-input-snmp:1.0\n    volumes:\n      - /etc/localtime:/etc/localtime:ro\n    networks:\n      nmaas-dcn:\n        ipv4_address: ${snmp.container_ip_address}\n      nmaas-inter-container:\n    privileged: true\n\n  input-internal:\n    image: llopat/geant-nmaas-opennti-input-internal:1.0\n    environment:\n      - \"HOST_PROC=/rootfs/proc\"\n      - \"HOST_SYS=/rootfs/sys\"\n      - \"HOST_ETC=/rootfs/etc\"\n    volumes:\n      - /etc/localtime:/etc/localtime:ro\n      - /var/run/docker.sock:/var/run/docker.sock:ro\n      - /sys:/rootfs/sys:ro\n      - /proc:/rootfs/proc:ro\n      - /etc:/rootfs/etc:ro\n    networks:\n      nmaas-inter-container:\n\n  ${opennti.container_name}:\n    image: llopat/geant-nmaas-opennti:1.0\n    volumes:\n      - ${volume}:/opt/open-nti/data\n      - /etc/localtime:/etc/localtime:ro\n    ports:\n      - ${port}:80\n    networks:\n      nmaas-ext-access:\n      nmaas-dcn:\n          ipv4_address: ${opennti.container_ip_address}\n      nmaas-inter-container:\n    privileged: true\n\nnetworks:\n  nmaas-ext-access:\n    external:\n      name: ${nmaas_ext_access_network}\n  nmaas-dcn:\n    external:\n      name: ${nmaas_dcn_network}\n  nmaas-inter-container:\n"
+		"kubernetesTemplate": {
+			"chart": {
+				"name": "nmaas-opennti",
+				"version": "0.0.1-alfa"
+			}
 		},
 		"defaultStorageSpace":20,
 		"configFileRepositoryRequired":true
 	},
 	"configTemplate": {
 		"template": {
-			"schema": {
-				"type": "object",
-				"properties": {
-					"openntiUsername": {
-						"type": "string",
-						"title": "Username"
-					},
-					"openntiPassword": {
-						"type": "string",
-						"title": "Password"
-					},
-					"targets": {
-						"title": "Routers",
-						"type": "array",
-						"minItems": 1,
-						"items": {
-							"type": "object",
-							"properties": {
-								"ipAddress": {
-									"title": "IP address",
-									"type": "string",
-									"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+			"components": [
+				{
+					"label": "Tabs",
+					"components": [
+						{
+							"label": "Base",
+							"key": "configTab",
+							"components": [
+								{
+									"label": "Configuration",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "configuration",
+									"components": [
+										{
+											"label": "Username",
+											"type": "textfield",
+											"input": true,
+											"key": "openntiUsername",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Password",
+											"type": "password",
+											"input": true,
+											"key": "openntiPassword",
+											"tab": 0,
+											"validate": {
+												"required": true
+											}
+										},
+										{
+											"label": "Targets",
+											"hideLabel": true,
+											"disableAddingRemovingRows": false,
+											"defaultOpen": false,
+											"addAnother": "Add routers",
+											"addAnotherPosition": "bottom",
+											"multiple": true,
+											"mask": false,
+											"tableView": true,
+											"alwaysEnabled": false,
+											"type": "datagrid",
+											"input": true,
+											"key": "targets",
+											"tab": 0,
+											"defaultValue": [
+												{
+													"ipAddress": ""
+												}
+											],
+											"validate": {
+												"required": true
+											},
+											"components": [
+												{
+													"label": "Router",
+													"hideLabel": true,
+													"showWordCount": false,
+													"showCharCount": false,
+													"tableView": true,
+													"alwaysEnabled": false,
+													"type": "textfield",
+													"input": true,
+													"key": "ipAddress",
+													"defaultValue": "",
+													"validate": {
+														"required": true,
+														"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+													},
+													"inputFormat": "plain",
+													"row": "0-0"
+												}
+											]
+										}
+									]
 								}
-							}
-						}
+							]
+						},
+                      {
+                        "label": "Advanced",
+                        "key": "advancedTab",
+                        "components": [
+                          {
+                            "label": "Advanced",
+                            "hideLabel": true,
+                            "tableView": true,
+                            "type": "container",
+                            "input": true,
+                            "tab": 1,
+                            "key": "advanced",
+                            "components": [
+                              {
+                                "label": "Storage space (GB):",
+                                "type": "number",
+                                "input": true,
+                                "key": "storageSpace",
+                                "placeholder": "Default value: 20GB",
+                                "tab": 1
+                              }
+                            ]
+                          }
+                        ]
+                      }
+					],
+					"type": "tabs",
+					"input": false,
+					"key": "tabs"
+				},
+				{
+					"type": "button",
+					"label": "Apply configuration",
+					"disableOnInvalid": true,
+					"theme": "primary",
+					"input": false,
+					"tableView": true
+				}
+			]
+		}
+	},
+	"configurationUpdateTemplate": {
+		"template": {
+			"components": [
+				{
+					"label": "Username",
+					"type": "textfield",
+					"input": true,
+					"key": "openntiUsername",
+					"validate": {
+						"required": true
+					},
+					"inputFormat": "plain"
+				},
+				{
+					"label": "Password",
+					"type": "password",
+					"input": true,
+					"key": "openntiPassword",
+					"validate": {
+						"required": true
 					}
 				},
-				"required": [
-					"openntiUsername", "openntiPassword", "targets"
-				]
-			},
-			"form": [
-				"openntiUsername",
 				{
-					"key":"openntiPassword",
-					"type":"password"
-				},
-				{
-					"key":"targets",
-					"items":[
-						"targets[]",
-						"targets[].ipAddress"
+					"label": "Targets",
+					"hideLabel": true,
+					"disableAddingRemovingRows": false,
+					"defaultOpen": false,
+					"addAnother": "Add routers",
+					"addAnotherPosition": "bottom",
+					"multiple": true,
+					"mask": false,
+					"tableView": true,
+					"alwaysEnabled": false,
+					"type": "datagrid",
+					"input": true,
+					"key": "targets",
+					"defaultValue": [
+						{
+							"ipAddress": ""
+						}
+					],
+					"validate": {
+						"required": true
+					},
+					"components": [
+						{
+							"label": "Router",
+							"hideLabel": true,
+							"showWordCount": false,
+							"showCharCount": false,
+							"tableView": true,
+							"alwaysEnabled": false,
+							"type": "textfield",
+							"input": true,
+							"key": "ipAddress",
+							"defaultValue": "",
+							"validate": {
+								"required": true,
+								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+							},
+							"inputFormat": "plain",
+							"row": "0-0"
+						}
 					]
 				}
 			]

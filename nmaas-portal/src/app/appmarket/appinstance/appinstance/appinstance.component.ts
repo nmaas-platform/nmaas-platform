@@ -19,7 +19,6 @@ import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ModalComponent} from "../../../shared/modal";
 
 @Component({
@@ -55,27 +54,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public appInstance: AppInstance;
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
-  public additionalParametersTemplate: any;
-  public additionalMandatoryTemplate: any;
+  public configurationUpdateTemplate:any;
+  public submission: any = {};
   public appConfiguration: AppConfiguration;
-  public requiredFields: any[];
-  public mandatoryFields: any[];
-
 
   public intervalCheckerSubscribtion;
-
-  public configAdvancedTab: FormGroup;
-
-  jsonFormOptions: any = {
-    addSubmit: false, // Add a submit button if layout does not have one
-    debug: false, // Don't show inline debugging information
-    loadExternalAssets: false, // Load external css and JavaScript for frameworks
-    returnEmptyFields: false, // Don't return values for empty input fields
-    setSchemaDefaults: true, // Always use schema defaults for empty fields
-    defaultWidgetOptions: { feedback: false }, // Show inline feedback icons
-    options: {},
-    widgetOptions: {}
-  };
 
   constructor(private appsService: AppsService,
     public appImagesService: AppImagesService,
@@ -83,12 +66,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    @Inject(LOCAL_STORAGE) public storage: StorageService,
-              private fb: FormBuilder) {
-      this.configAdvancedTab = fb.group({
-      storageSpace: ['', [Validators.min(1), Validators.pattern('^[0-9]*$')]]
-    });
-  }
+    @Inject(LOCAL_STORAGE) public storage: StorageService) {}
 
   ngOnInit() {
     this.appConfiguration = new AppConfiguration();
@@ -97,17 +75,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
       this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
         this.appInstance = appInstance;
+        this.submission.data = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
-          if(!isNullOrUndefined(this.app.additionalParametersTemplate)){
-              this.additionalParametersTemplate = this.getTemplate(this.app.additionalParametersTemplate.template);
+          if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
+              this.configurationUpdateTemplate = this.getTemplate(this.app.configurationUpdateTemplate.template);
           }
-          if(!isNullOrUndefined(this.app.additionalMandatoryTemplate) && !isNullOrUndefined(this.app.additionalMandatoryTemplate.template)){
-            this.additionalMandatoryTemplate = this.getTemplate(this.app.additionalMandatoryTemplate.template);
-            this.mandatoryFields = this.additionalMandatoryTemplate.schema.required;
-          }
-          this.requiredFields = this.configurationTemplate.schema.required;
         });
       });
 
@@ -154,6 +128,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
+      this.submission.data = JSON.parse(appInstance.configuration);
     });
   }
 
@@ -167,35 +142,45 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log("Redeployed"));
   }
 
-  public changeConfiguration(configuration: string): void{
-    this.appConfiguration.jsonInput = configuration;
-  }
-
-  public changeAdditionalParameters(additionalParameters: string): void{
-    this.appConfiguration.additionalParameters = additionalParameters;
-  }
-
-  public changeMandatoryParameters(mandatoryParameters: string): void{
-    this.appConfiguration.mandatoryParameters = mandatoryParameters;
-  }
-
-  public applyConfiguration(): void {
-    if(this.isValid()){
-      this.appConfiguration.storageSpace = this.configAdvancedTab.controls['storageSpace'].value;
-        this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
-          console.log('Configuration applied');
-          this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
-        });
+  public changeAdditionalParameters(additionalParameters: any): void{
+    if(!isNullOrUndefined(additionalParameters)){
+      this.appConfiguration.additionalParameters = additionalParameters;
     }
   }
 
+  public changeMandatoryParameters(mandatoryParameters: any): void{
+    if(!isNullOrUndefined(mandatoryParameters)){
+      this.appConfiguration.mandatoryParameters = mandatoryParameters;
+    }
+  }
+
+  public changeConfiguration(configuration: any): void{
+    if(!isNullOrUndefined(configuration)){
+      this.appConfiguration.jsonInput = configuration;
+    } else{
+      this.appConfiguration.jsonInput = {};
+    }
+  }
+
+  public applyConfiguration(input:any): void {
+    if(!isNullOrUndefined(input['advanced'])){
+      this.appConfiguration.storageSpace = input['advanced'].storageSpace;
+    }
+    this.changeMandatoryParameters(input['mandatoryParameters']);
+    this.changeAdditionalParameters(input['additionalParameters']);
+    this.changeConfiguration(input['configuration']);
+    this.submission.data = this.appConfiguration.jsonInput;
+    this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
+      console.log('Configuration applied');
+      this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
+    });
+  }
+
   public updateConfiguration(): void {
-    if(this.isValid()){
       this.appInstanceService.updateConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
         console.log("Configuration updated");
         this.updateConfigModal.hide();
       });
-    }
   }
 
   public undeploy(): void {
@@ -214,41 +199,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   public onRateChanged(): void {
         this.appRate.refresh();
-  }
-
-  public isValid(): boolean {
-    if(isNullOrUndefined(this.requiredFields) && isNullOrUndefined(this.mandatoryFields)){
-      return true;
-    }
-    for(let value of this.requiredFields){
-      if(!this.appConfiguration.jsonInput.hasOwnProperty(value)){
-        return false;
-      }
-      if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items)){
-        for(let val of this.appConfiguration.jsonInput[value]) {
-            if (!isNullOrUndefined(val.ipAddress) && !val.ipAddress.match(this.configurationTemplate.schema.properties[value].items.properties.ipAddress["pattern"])) {
-                return false;
-            }
-        }
-        if(!isNullOrUndefined(this.configurationTemplate.schema.properties[value].items.required)){
-            for(let valReq of this.configurationTemplate.schema.properties[value].items.required){
-                for(let val of this.appConfiguration.jsonInput[value]){
-                    if(!val.hasOwnProperty(valReq)){
-                        return false;
-                    }
-                }
-            }
-        }
-      }
-    }
-    if(!isNullOrUndefined(this.mandatoryFields)){
-      for(let value of this.mandatoryFields){
-          if(!this.appConfiguration.mandatoryParameters.hasOwnProperty(value)){
-              return false;
-          }
-      }
-    }
-    return true;
   }
 
 }

@@ -1,8 +1,10 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,30 +13,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name="tag")
+@Table(name = "tag")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class Tag implements Serializable {
 	
 	@Id
-	@Column(name="tag_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "tag_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
-	@Column(unique=true)
+	@Column(unique = true)
 	String name;
-	
 
-	@ManyToMany(fetch=FetchType.LAZY, mappedBy="tags")
-//	@ManyToMany(fetch=FetchType.LAZY)
-//	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "tag_id"), inverseJoinColumns=@JoinColumn(name="application_id"))
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
 	Set<Application> applications = new HashSet<>();
 	
 	public Tag(Long id, String name) {
@@ -51,5 +49,4 @@ public class Tag implements Serializable {
 		return name;
 	}
 
-	
 }

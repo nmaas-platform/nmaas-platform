@@ -31,17 +31,17 @@ export class GitlabDetailsComponent extends BaseComponent implements OnInit {
       const newMode: ComponentMode = (this.mode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
       if (this.isModeAllowed(newMode)) {
           this.mode = newMode;
-          if(this.mode === ComponentMode.VIEW){
+          if (this.mode === ComponentMode.VIEW) {
             this.router.navigate(['admin/gitlab'])
           }
       }
   }
 
-  public submit(){
+  public submit() {
     this.onSave.emit(this.gitLabConfig);
   }
 
-  public remove(){
+  public remove() {
     this.onDelete.emit(this.gitLabConfig.id);
   }
 

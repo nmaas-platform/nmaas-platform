@@ -11,7 +11,6 @@ import org.gitlab4j.api.models.Project;
 import org.junit.Before;
 import org.junit.Test;
 
-import static net.geant.nmaas.nmservice.configuration.GitLabConfigUploader.GITLAB_SSH_USER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.anyInt;
@@ -31,17 +30,7 @@ public class GitlabConfigUploaderTest {
         uploader = new GitLabConfigUploader(
                 repositoryManager,
                 null,
-                gitLabManager,
-                kClusterDeployment);
-    }
-
-    @Test
-    public void shouldGenerateProperRepoCloneUrlForInClusterGitLab() throws InvalidDeploymentIdException {
-        when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(true);
-        when(gitLabManager.getGitLabRepositoryAccessUsername()).thenReturn("test-user");
-        when(gitLabManager.getGitlabSshServer()).thenReturn("nmaas-conf-gitlab-shell");
-        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/groups-project/test.git");
-        assertThat(result, is(GITLAB_SSH_USER +  "@" + gitLabManager.getGitlabSshServer() + ":groups-project/test.git"));
+                gitLabManager);
     }
 
     @Test

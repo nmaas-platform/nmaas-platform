@@ -14,14 +14,10 @@ import {AppInstanceService} from '../../service/appinstance.service';
 import {TagService} from '../../service/tag.service';
 import {AppInstanceListComponent} from './appinstancelist/appinstancelist.component';
 import {AppRestartModalComponent} from "../modals/apprestart";
-import {
-    JsonSchemaFormModule,
-    Bootstrap3FrameworkModule,
-    Bootstrap3Framework,
-    Framework, WidgetLibraryService, FrameworkLibraryService, JsonSchemaFormService
-} from "angular2-json-schema-form";
 import {TranslateModule} from '@ngx-translate/core';
 import {NgxPaginationModule} from "ngx-pagination";
+import {FormioAppConfig, FormioModule} from "angular-formio";
+import {AppConfig} from "../../../formio-config";
 
 @NgModule({
   declarations: [
@@ -30,6 +26,7 @@ import {NgxPaginationModule} from "ngx-pagination";
       AppRestartModalComponent
   ],
   imports: [
+    FormioModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -38,18 +35,8 @@ import {NgxPaginationModule} from "ngx-pagination";
     AuthModule,
     AppInstanceProgressModule,
     PipesModule,
-      NgxPaginationModule,
-    Bootstrap3FrameworkModule,
-    TranslateModule.forChild(),
-    {
-      ngModule: JsonSchemaFormModule,
-      providers: [
-        JsonSchemaFormService,
-        FrameworkLibraryService,
-        WidgetLibraryService,
-        {provide: Framework, useClass: Bootstrap3Framework, multi: true}
-      ]
-    }
+    NgxPaginationModule,
+    TranslateModule.forChild()
   ],
   exports: [
     AppInstanceComponent,
@@ -58,7 +45,8 @@ import {NgxPaginationModule} from "ngx-pagination";
   providers: [
     AppsService,
     AppInstanceService,
-    TagService
+    TagService,
+    {provide: FormioAppConfig, useValue: AppConfig}
   ]
 
 })

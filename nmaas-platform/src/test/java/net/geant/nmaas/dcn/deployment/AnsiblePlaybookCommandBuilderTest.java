@@ -2,10 +2,10 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.DcnCloudEndpointDetails;
-import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
-import net.geant.nmaas.externalservices.inventory.network.entities.DockerHostAttachPoint;
+import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -149,7 +149,7 @@ public class AnsiblePlaybookCommandBuilderTest {
     }
 
     private static CloudAttachPoint cloudAttachPoint() {
-        DockerHostAttachPoint cloudAttachPoint = new DockerHostAttachPoint();
+        KClusterAttachPoint cloudAttachPoint = new KClusterAttachPoint();
         cloudAttachPoint.setRouterName("R3");
         cloudAttachPoint.setRouterId("172.16.3.3");
         cloudAttachPoint.setRouterInterfaceName("ge-0/0/4");

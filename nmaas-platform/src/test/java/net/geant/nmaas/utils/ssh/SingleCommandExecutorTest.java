@@ -1,34 +1,29 @@
 package net.geant.nmaas.utils.ssh;
 
-import net.geant.nmaas.nmservice.configuration.ConfigDownloadCommand;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmListCommand;
 import org.junit.Before;
 import org.junit.Test;
 
 public class SingleCommandExecutorTest {
 
-    private ConfigDownloadCommand command;
+    private HelmListCommand command;
 
     private SingleCommandExecutor executor;
 
     @Before
     public void setup() {
-        command = ConfigDownloadCommand.command("", "", "", "", "");
+        command = HelmListCommand.command(false);
         executor = SingleCommandExecutor.getExecutor("", "");
     }
 
     @Test
     public void shouldProperlyValidateCommandExecutionOutput() throws CommandExecutionException {
-        executor.validateOutput("aslksjakld connected. klsjdlkasn ... 200", command.isOutputCorrect());
+        executor.validateOutput("No error string at the beginning ...", command.isOutputCorrect());
     }
 
     @Test(expected = CommandExecutionException.class)
-    public void shouldProperlyValidateCommandExecutionOutputAndThrowExceptionOnWrongHttpStatus() throws CommandExecutionException {
-        executor.validateOutput("aslksjakld connected. klsjdlkasn ... 401", command.isOutputCorrect());
-    }
-
-    @Test(expected = CommandExecutionException.class)
-    public void shouldProperlyInterpretCommandExecutionOutputAndThrowExceptionOnMissingConnectedStatement() throws CommandExecutionException {
-        executor.validateOutput("aslksjakld failure", command.isOutputCorrect());
+    public void shouldProperlyValidateCommandExecutionOutputAndThrowExceptionOnError() throws CommandExecutionException {
+        executor.validateOutput("Error ...", command.isOutputCorrect());
     }
 
 }
