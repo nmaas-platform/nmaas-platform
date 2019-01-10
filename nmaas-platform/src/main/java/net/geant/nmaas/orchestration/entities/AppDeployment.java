@@ -90,4 +90,12 @@ public class AppDeployment {
 
     private String appInstanceName;
 
+    @Override
+    public String toString() {
+        return "AppDeployment{" +
+                "deploymentId=" + deploymentId +
+                ", domain='" + domain + '\'' +
+                ", appInstanceName='" + appInstanceName + '\'' +
+                '}';
+    }
 }

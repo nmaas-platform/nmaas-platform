@@ -15,14 +15,11 @@ import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotDeployDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.CouldNotRemoveDcnException;
 import net.geant.nmaas.dcn.deployment.exceptions.DcnRequestVerificationException;
-import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
+import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterAttachPointManager;
+import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.exceptions.AttachPointNotFoundException;
-import net.geant.nmaas.externalservices.inventory.network.repositories.DockerHostAttachPointRepository;
 import net.geant.nmaas.externalservices.inventory.network.repositories.DomainNetworkAttachPointRepository;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.DockerApiClient;
-import net.geant.nmaas.nmservice.deployment.entities.DockerHostNetwork;
-import net.geant.nmaas.nmservice.deployment.repository.DockerHostNetworkRepository;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -57,25 +54,22 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
 
     private DcnRepositoryManager dcnRepositoryManager;
     private ApplicationEventPublisher applicationEventPublisher;
-    private DockerHostAttachPointRepository dockerHostAttachPointRepository;
     private DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository;
-    private DockerHostNetworkRepository dockerHostNetworkRepository;
+    private KClusterAttachPointManager kClusterAttachPointManager;
     private DockerApiClient dockerApiClient;
 
     private String ansibleDockerApiUrl;
 
     @Autowired
     public AnsibleDcnDeploymentExecutor(DcnRepositoryManager dcnRepositoryManager,
-                                        DockerHostAttachPointRepository dockerHostAttachPointRepository,
-                                        DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
                                         ApplicationEventPublisher applicationEventPublisher,
-                                        DockerHostNetworkRepository dockerHostNetworkRepository,
+                                        DomainNetworkAttachPointRepository basicCustomerNetworkAttachPointRepository,
+                                        KClusterAttachPointManager kClusterAttachPointManager,
                                         DockerApiClient dockerApiClient) {
         this.dcnRepositoryManager = dcnRepositoryManager;
-        this.dockerHostAttachPointRepository = dockerHostAttachPointRepository;
-        this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.dockerHostNetworkRepository = dockerHostNetworkRepository;
+        this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
+        this.kClusterAttachPointManager = kClusterAttachPointManager;
         this.dockerApiClient = dockerApiClient;
     }
 
@@ -95,10 +89,12 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
         try {
             storeDcnInfoIfNotExists(domain, dcnSpec);
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUESTED);
-            final DockerHostNetwork dockerHostNetwork = dockerHostNetworkRepository
-                    .findByDomain(domain)
-                    .orElseThrow(() -> new InvalidDomainException("No Docker network found for domain " + domain));
-            final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(dockerHostNetwork);
+            final KClusterAttachPoint kClusterAttachPoint = kClusterAttachPointManager.getAttachPoint();
+            final DcnCloudEndpointDetails dcnCloudEndpointDetails = new DcnCloudEndpointDetails(
+                    kClusterAttachPoint.getVlanNumber(),
+                    kClusterAttachPoint.getSubnet(),
+                    kClusterAttachPoint.getGateway()
+            );
             dcnRepositoryManager.updateDcnCloudEndpointDetails(domain, dcnCloudEndpointDetails);
             NetworkAttachPoint customerNetworkAttachPoint = basicCustomerNetworkAttachPointRepository
                    .findByDomain(domain)
@@ -108,11 +104,8 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
             dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(
                     domain,
                     customerSideRouterVpnConfig);
-            CloudAttachPoint cloudAttachPoint = dockerHostAttachPointRepository
-                    .findByDockerHostName(dockerHostNetwork.getHost().getName())
-                    .orElseThrow(() -> new AttachPointNotFoundException(dockerHostNetwork.getHost().getName()));
             AnsiblePlaybookVpnConfig cloudSideRouterVpnConfig =
-                    AnsiblePlaybookVpnConfigBuilder.fromCloudAttachPoint(customerSideRouterVpnConfig, cloudAttachPoint);
+                    AnsiblePlaybookVpnConfigBuilder.fromCloudAttachPoint(customerSideRouterVpnConfig, kClusterAttachPoint);
             cloudSideRouterVpnConfig.merge(dcnCloudEndpointDetails);
             dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(domain, cloudSideRouterVpnConfig);
             notifyStateChangeListeners(domain, DcnDeploymentState.REQUEST_VERIFIED);

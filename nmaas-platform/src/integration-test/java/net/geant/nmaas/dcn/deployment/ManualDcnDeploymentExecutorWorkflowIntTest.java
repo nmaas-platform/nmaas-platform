@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"env_docker-compose", "dcn_manual"})
+@ActiveProfiles({"env_kubernetes", "dcn_manual"})
 public class ManualDcnDeploymentExecutorWorkflowIntTest {
 
     @Autowired

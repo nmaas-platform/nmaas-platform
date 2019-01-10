@@ -2,7 +2,6 @@ package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.junit.After;
@@ -13,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@TestPropertySource("classpath:application-test-k8s.properties")
 public class GitLabControllerIntTest {
 
     @Autowired
@@ -139,7 +136,7 @@ public class GitLabControllerIntTest {
 
     @Test
     public void shouldNotReturnGitLabConfigByNotExistingId() throws Exception{
-        mvc.perform(get(URL_PREFIX+"{id}",1L))
+        mvc.perform(get(URL_PREFIX+"/{id}",1L))
                 .andExpect(status().isNotFound());
     }
 

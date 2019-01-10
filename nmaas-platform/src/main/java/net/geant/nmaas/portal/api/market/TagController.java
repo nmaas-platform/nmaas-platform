@@ -1,19 +1,19 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import net.geant.nmaas.portal.api.domain.ApplicationBrief;
+import net.geant.nmaas.portal.persistent.entity.Tag;
+import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.domain.ApplicationBrief;
-import net.geant.nmaas.portal.persistent.entity.Tag;
-import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tags")
@@ -35,6 +35,7 @@ public class TagController {
 	}
 	
 	@GetMapping(value="/{tagName}")
+	@Transactional
 	public Set<ApplicationBrief> getByTag(@PathVariable("tagName") String tagName) {
 		Tag tag = tagRepo.findByName(tagName);
 		if(tag != null)

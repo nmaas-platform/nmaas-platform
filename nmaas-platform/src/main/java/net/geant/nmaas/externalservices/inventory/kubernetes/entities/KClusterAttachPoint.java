@@ -3,7 +3,12 @@ package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 import lombok.Setter;
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Setter
 @Entity
@@ -24,6 +29,12 @@ public class KClusterAttachPoint implements CloudAttachPoint {
     @Column(nullable = false)
     private String routerInterfaceName;
 
+    private int vlanNumber;
+
+    private String subnet;
+
+    private String gateway;
+
     public Long getId() {
         return id;
     }
@@ -43,4 +54,15 @@ public class KClusterAttachPoint implements CloudAttachPoint {
         return routerInterfaceName;
     }
 
+    public int getVlanNumber() {
+        return vlanNumber;
+    }
+
+    public String getSubnet() {
+        return subnet;
+    }
+
+    public String getGateway() {
+        return gateway;
+    }
 }

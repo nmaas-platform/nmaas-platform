@@ -2,7 +2,6 @@ package net.geant.nmaas.portal.service.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,13 +27,12 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import net.geant.nmaas.configuration.SecurityConfig;
+import net.geant.nmaas.SecurityConfig;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.PortalConfig;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.StorageException;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
-import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

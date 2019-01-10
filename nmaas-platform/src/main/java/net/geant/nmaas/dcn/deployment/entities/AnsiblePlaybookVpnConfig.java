@@ -3,7 +3,6 @@ package net.geant.nmaas.dcn.deployment.entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.dockercompose.entities.DockerNetworkIpam;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,9 +23,12 @@ public class AnsiblePlaybookVpnConfig {
 
     public static final int MAX_PROPERTY_LENGTH = 50;
 
+    private static final String DEFAULT_CONTAINER_IP_ADDRESS_LAST_OCTET = "1";
+    private static final String ADDRESS_POOL_DEFAULT_MASK_LENGTH = "24";
+
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     private Type type;
@@ -155,7 +157,7 @@ public class AnsiblePlaybookVpnConfig {
         this.interfaceUnit = String.valueOf(dcnCloudEndpointDetails.getVlanNumber());
         this.interfaceVlan = String.valueOf(dcnCloudEndpointDetails.getVlanNumber());
         this.bgpLocalIp = dcnCloudEndpointDetails.getGateway();
-        this.bgpNeighborIp = DockerNetworkIpam.obtainFirstIpAddressFromNetwork(dcnCloudEndpointDetails.getSubnet());
+        this.bgpNeighborIp = obtainFirstIpAddressFromNetwork(dcnCloudEndpointDetails.getSubnet());
         this.logicalInterface = this.physicalInterface + "." + this.interfaceUnit;
     }
 
@@ -184,6 +186,24 @@ public class AnsiblePlaybookVpnConfig {
             ipAddress = ipAddress.substring(0, ipAddress.indexOf(":"));
         }
         return ipAddress.matches(pattern);
+    }
+
+    public static String obtainFirstIpAddressFromNetwork(String ipRangeWithMask) {
+        if (notValidIpNetworkAddress(ipRangeWithMask))
+            return null;
+        String[] ipAddressParts = ipRangeWithMask.split("\\.");
+        return ipRangeWithMask.replace(ipAddressParts[ipAddressParts.length - 1], DEFAULT_CONTAINER_IP_ADDRESS_LAST_OCTET);
+    }
+
+    public static String obtainNextIpAddressFromNetwork(String ipAddress) {
+        String[] ipAddressParts = ipAddress.split("\\.");
+        int lastOctet = Integer.valueOf(ipAddressParts[ipAddressParts.length - 1]) + 1;
+        ipAddressParts[ipAddressParts.length - 1] = "" + lastOctet;
+        return new StringBuilder(ipAddressParts[0]).append(".").append(ipAddressParts[1]).append(".").append(ipAddressParts[2]).append(".").append(ipAddressParts[3]).toString();
+    }
+
+    public static boolean notValidIpNetworkAddress(String ipRangeWithMask) {
+        return !ipRangeWithMask.endsWith(".0/" + ADDRESS_POOL_DEFAULT_MASK_LENGTH);
     }
 
     public enum Type {

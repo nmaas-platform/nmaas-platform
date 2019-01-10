@@ -6,7 +6,6 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotDeployNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotPrepareEnvironmentException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRemoveNmServiceException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRestartNmServiceException;
-import net.geant.nmaas.nmservice.deployment.exceptions.DockerNetworkCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
@@ -70,7 +69,6 @@ public interface ContainerOrchestrator {
      *
      * @param deploymentId unique identifier of service deployment
      * @throws ContainerCheckFailedException if service containers were not deployed successfully
-     * @throws DockerNetworkCheckFailedException if service network was not configured successfully
      * @throws ContainerOrchestratorInternalErrorException if some internal problem occurred during execution
      */
     void checkService(Identifier deploymentId);
