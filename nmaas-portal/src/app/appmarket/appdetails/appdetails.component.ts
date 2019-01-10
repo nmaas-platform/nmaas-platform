@@ -100,7 +100,7 @@ export class AppDetailsComponent implements OnInit {
     }
   }
 
-  protected isSubscriptionAllowed(): boolean {
+  public isSubscriptionAllowed(): boolean {
     if (isUndefined(this.domainId) || this.domainId === this.appConfig.getNmaasGlobalDomainId()) {
       return false;
     }

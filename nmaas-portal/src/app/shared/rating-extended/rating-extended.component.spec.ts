@@ -5,6 +5,7 @@ import {AppsService} from "../../service";
 import {Observable} from "rxjs";
 import {Rate} from "../../model";
 import {HttpResponse} from "selenium-webdriver/http";
+import {TooltipModule} from "ng2-tooltip-directive";
 
 class MockAppService{
   public getAppRateByUrl(urlPath: string): Observable<Rate> {
@@ -23,7 +24,8 @@ describe('RatingExtendedComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ RatingExtendedComponent ],
-      providers: [ {provide: AppsService, useClass: MockAppService} ]
+      imports: [TooltipModule],
+      providers: [ {provide: AppsService, useClass: MockAppService}]
     })
     .compileComponents();
 
