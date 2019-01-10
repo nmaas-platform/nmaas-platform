@@ -334,7 +334,10 @@
     "APPLICATION": "Anwendung",
     "DESCRIPTION": "Beschreibung",
     "CATEGORY": "Kategorie",
-    "RATING": "Bewertung"
+    "RATING": "Bewertung",
+    "RATING_AVERAGE": "Durchschnittliche Benutzerbewertung",
+    "RATING_INFO": "Klicken Sie auf Stern, um eine Anwendung zu bewerten",
+    "RATING_BREAKDOWN": "Rating-Aufschlüsselung"
   },
   "RESTART_MODAL": {
     "HEADER": "Bestätigung für Neustart",

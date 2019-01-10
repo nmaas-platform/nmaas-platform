@@ -333,7 +333,10 @@
     "APPLICATION": "Application",
     "DESCRIPTION": "Description",
     "CATEGORY": "Category",
-    "RATING": "Rating"
+    "RATING": "Rating",
+    "RATING_AVERAGE": "Average user rating",
+    "RATING_INFO": "Click star to rate an application",
+    "RATING_BREAKDOWN": "Rating breakdown"
   },
   "RESTART_MODAL": {
     "HEADER": "Restart confirmation",

@@ -332,7 +332,10 @@
     "APPLICATION": "Aplikacja",
     "DESCRIPTION": "Opis",
     "CATEGORY": "Kategoria",
-    "RATING": "Oceny"
+    "RATING": "Oceny",
+    "RATING_AVERAGE": "Srednia ocena użytkowników",
+    "RATING_INFO": "Wybierz libczę gwiazdek aby zagłosować",
+    "RATING_BREAKDOWN": "Rozkład ocen"
   },
   "RESTART_MODAL": {
     "HEADER": "Potwierdzenie restartu instancji",

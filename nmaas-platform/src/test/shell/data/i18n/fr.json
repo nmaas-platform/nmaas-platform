@@ -332,7 +332,10 @@
     "APPLICATION": "Application",
     "DESCRIPTION": "Description",
     "CATEGORY": "Categores",
-    "RATING": "Évaluation"
+    "RATING": "Évaluation",
+    "RATING_AVERAGE": "Note moyenne des utilisateurs",
+    "RATING_INFO": "Cliquez sur l'étoile pour évaluer une application",
+    "RATING_BREAKDOWN": "Répartition par note"
   },
   "RESTART_MODAL": {
     "HEADER": "Confirmation de redémarrage",
