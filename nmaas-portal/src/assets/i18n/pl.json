@@ -387,7 +387,9 @@
     },
     "REQUIRED_FIELDS": "pola wymagane",
     "APPLY_CONFIG_BUTTON": "Prześlij konfigurację",
-    "DEFAULT_VALUE": "Wartość domyślna"
+    "DEFAULT_VALUE": "Wartość domyślna",
+    "DEPLOYED": "Uruchomione instancje",
+    "UNDEPLOYED": "Zatrzymane instancje"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",

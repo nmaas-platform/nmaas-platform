@@ -387,7 +387,9 @@
     },
     "REQUIRED_FIELDS": "Champs obligatoire",
     "APPLY_CONFIG_BUTTON": "Appliquer la configuration",
-    "DEFAULT_VALUE": "Valeur par défaut"
+    "DEFAULT_VALUE": "Valeur par défaut",
+    "DEPLOYED": "Instances déployées",
+    "UNDEPLOYED": "Instances non déployées"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",

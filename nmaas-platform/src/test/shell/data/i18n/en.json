@@ -388,7 +388,9 @@
     },
     "REQUIRED_FIELDS": "required fields",
     "APPLY_CONFIG_BUTTON": "Apply configuration",
-    "DEFAULT_VALUE": "Default value"
+    "DEFAULT_VALUE": "Default value",
+    "DEPLOYED": "Deployed instances",
+    "UNDEPLOYED": "Undeployed instances"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Undeploy confirmation",

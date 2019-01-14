@@ -28,7 +28,7 @@
 						</div>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12">
-						<h4 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">Deployed instances</h4>
+						<h4 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">{{ 'APP_INSTANCES.DEPLOYED' | translate }}</h4>
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 						   <thead>
 							  <tr>
@@ -63,7 +63,7 @@
 						<pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ p_first }}"></pagination-controls>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
-						<h4>Undeployed instances</h4>
+						<h4>{{ 'APP_INSTANCES.UNDEPLOYED' | translate }}</h4>
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 							<thead>
 							<tr>

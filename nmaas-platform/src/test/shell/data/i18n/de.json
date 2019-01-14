@@ -389,7 +389,9 @@
     },
     "REQUIRED_FIELDS": "benötigte Felder",
     "APPLY_CONFIG_BUTTON": "Konfiguration anwenden",
-    "DEFAULT_VALUE": "Standardwert"
+    "DEFAULT_VALUE": "Standardwert",
+    "DEPLOYED": "Gestartete Instanzen",
+    "UNDEPLOYED": "Gestoppte Instanzen"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
