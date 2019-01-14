@@ -23,25 +23,30 @@ public class LoggingAspect {
 	
 	private static String beforeWithParamsString = "ENTERING {0} PARAMS {1}";
 
-	private static String afterThrowing = "EXCEPTION IN {0} WITH MESSAGE {1} PARAMS {2}";
-
 	private static String afterReturning = "LEAVING {0} AND RETURNING {1}";
 
 	private static String afterReturningVoid = "LEAVING {0}";
 	
 	public Level loggableToLevel(Loggable loggable){
-		if (loggable != null)
-		switch (loggable.value()){
-			case DEBUG:
-				return Level.DEBUG;
-			case ERROR:
-				return Level.ERROR;
-			case INFO:
-				return Level.INFO;	
-			case TRACE:
-				return Level.TRACE;
-			case WARN:
-				return Level.WARN;
+		if (loggable != null) {
+			switch (loggable.value()) {
+				case DEBUG:
+					return Level.DEBUG;
+				case ERROR:
+					return Level.ERROR;
+				case INFO:
+					return Level.INFO;
+				case TRACE:
+					return Level.TRACE;
+				case WARN:
+					return Level.WARN;
+				case OFF:
+					return Level.OFF;
+				case ALL:
+					return Level.ALL;
+				case FATAL:
+					return Level.FATAL;
+			}
 		}
 		return Level.INFO;
 	}

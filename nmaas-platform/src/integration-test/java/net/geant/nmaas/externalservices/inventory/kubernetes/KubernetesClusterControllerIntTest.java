@@ -6,14 +6,13 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCer
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterApi;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAttachPoint;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterDeployment;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterExtNetwork;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterIngress;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -52,16 +51,6 @@ public class KubernetesClusterControllerIntTest {
     private final static String KUBERNETES_CLUSTER_JSON =
             "{" +
                     "\"name\":\"K8S-NAME-1\"," +
-                    "\"helm\":{" +
-                        "\"helmHostAddress\":\"192.168.0.1\"," +
-                        "\"helmHostSshUsername\":\"testuser\"," +
-                        "\"useLocalChartArchives\":\"true\"," +
-                        "\"helmHostChartsDirectory\":\"/home/testuser/charts\"" +
-                    "}," +
-                    "\"api\":{" +
-                        "\"restApiHostAddress\":\"192.168.0.8\"," +
-                        "\"restApiPort\":9999" +
-                    "}," +
                     "\"ingress\": {" +
                         "\"controllerConfigOption\":\"USE_EXISTING\"," +
                         "\"supportedIngressClass\":\"ingress-class\"," +
@@ -181,7 +170,7 @@ public class KubernetesClusterControllerIntTest {
         Long clusterId = Long.parseLong(createResult.getResponse().getContentAsString());
 
         KCluster updated = initNewKubernetesCluster();
-        updated.getApi().setRestApiPort(350);
+        updated.getIngress().setControllerChartName("updated-chart-name");
         mvc.perform(put(URL_PREFIX + "/{id}", clusterId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(updated))
@@ -190,7 +179,7 @@ public class KubernetesClusterControllerIntTest {
         MvcResult result = mvc.perform(get(URL_PREFIX + "/{id}", clusterId))
                 .andExpect(status().isOk())
                 .andReturn();
-        assertThat(result.getResponse().getContentAsString(), containsString("350"));
+        assertThat(result.getResponse().getContentAsString(), containsString("updated-chart-name"));
     }
 
     @Test
@@ -239,17 +228,12 @@ public class KubernetesClusterControllerIntTest {
     @Test
     public void shouldMapKubernetesClusterToKubernetesClusterView() throws UnknownHostException {
         KCluster source = initNewKubernetesCluster();
-        KubernetesClusterView output = modelMapper.map(source, KubernetesClusterView.class);
-        assertThat(output.getRestApiHostAddress().getHostAddress(), equalTo(source.getApi().getRestApiHostAddress().getHostAddress()));
-        assertThat(output.getRestApiPort(), equalTo(source.getApi().getRestApiPort()));
+        KClusterView output = modelMapper.map(source, KClusterView.class);
+        assertThat(output.getId(), equalTo(source.getId()));
     }
 
     private KCluster initNewKubernetesCluster() throws UnknownHostException {
         KCluster cluster = new KCluster();
-        KClusterApi api = new KClusterApi();
-        api.setRestApiHostAddress(InetAddress.getByName("192.168.0.8"));
-        api.setRestApiPort(9999);
-        cluster.setApi(api);
         KClusterIngress ingress = new KClusterIngress();
         ingress.setControllerConfigOption(IngressControllerConfigOption.USE_EXISTING);
         ingress.setSupportedIngressClass("ingress-class");

@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -24,7 +25,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Domain {
+public class Domain implements Serializable {
 
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY )
