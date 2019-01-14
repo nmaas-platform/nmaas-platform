@@ -1,9 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
@@ -16,7 +12,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
@@ -36,7 +32,7 @@ import java.util.stream.Collectors;
  * At this point it is assumed that exactly one cluster should exist.
  */
 @Component
-public class KubernetesClusterManager implements KClusterAttachPointManager, KClusterApiManager, KClusterIngressManager,
+public class KubernetesClusterManager implements KClusterAttachPointManager, KClusterIngressManager,
         KClusterDeploymentManager, KNamespaceService {
 
     private static final String NMAAS_NAMESPACE_PREFIX = "nmaas-ns-";
@@ -54,21 +50,15 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         this.modelMapper = modelMapper;
     }
 
-    private KubernetesClient client;
+    public List<KClusterView> getAllClusters() {
+        return repository.findAll().stream()
+                .map(cluster -> modelMapper.map(cluster, KClusterView.class))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public KClusterAttachPoint getAttachPoint() {
         return loadSingleCluster().getAttachPoint();
-    }
-
-    @Override
-    public KubernetesClient getApiClient() {
-        return client;
-    }
-
-    @Override
-    public boolean getUseClusterApi(){
-        return this.loadSingleCluster().getApi().isUseKClusterApi();
     }
 
     @Override
@@ -218,12 +208,6 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         return repository.findAll().get(0);
     }
 
-    public List<KubernetesClusterView> getAllClusters() {
-        return repository.findAll().stream()
-                .map(cluster -> modelMapper.map(cluster, KubernetesClusterView.class))
-                .collect(Collectors.toList());
-    }
-
     public KCluster getClusterById(Long id) {
         return modelMapper.map(repository.findById(id).orElseThrow(() -> new KubernetesClusterNotFoundException(clusterNotFoundMessage(id)))
                 , KCluster.class);
@@ -236,31 +220,6 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         if(repository.count() > 0)
             throw new OnlyOneKubernetesClusterSupportedException("A Kubernetes cluster object already exists. It can be either removed or updated");
         repository.save(newKubernetesCluster);
-        initApiClient();
-    }
-
-    /**
-     * Initializes Kubernetes REST API client based on cluster information read from database.
-     */
-    private void initApiClient() {
-        if (client == null && this.getUseClusterApi()) {
-            String kubernetesApiUrl = getKubernetesApiUrl();
-            Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
-            client = new DefaultKubernetesClient(config);
-        } else if(client != null && this.getUseClusterApi()){
-            String kubernetesApiUrl = getKubernetesApiUrl();
-            if(!this.client.getMasterUrl().toString().contains(kubernetesApiUrl)){
-                Config config = new ConfigBuilder().withMasterUrl(kubernetesApiUrl).build();
-                client = new DefaultKubernetesClient(config);
-            }
-        } else{
-            client = null;
-        }
-    }
-
-    private String getKubernetesApiUrl() {
-        KCluster cluster = loadSingleCluster();
-        return "http://" + cluster.getApi().getRestApiHostAddress().getHostAddress() + ":" + cluster.getApi().getRestApiPort();
     }
 
     public void updateCluster(Long id, KCluster updatedKubernetesCluster) {
@@ -274,7 +233,6 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
             updatedKubernetesCluster.setId(id);
             updatedKubernetesCluster.validate();
             repository.save(updatedKubernetesCluster);
-            initApiClient();
         }
     }
 

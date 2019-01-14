@@ -1,8 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.util.RawValue;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
@@ -16,7 +13,6 @@ import net.geant.nmaas.portal.api.domain.AppInstance;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
-import net.geant.nmaas.portal.api.domain.ConfigTemplate;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -38,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,25 +50,24 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
-    private ObjectMapper objectMapper;
-
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
     @Autowired
-    public AppInstanceController(AppLifecycleManager appLifecycleManager, AppDeploymentMonitor appDeploymentMonitor,
-                                 ApplicationInstanceService applicationInstanceService, DomainService domains) {
+    public AppInstanceController(AppLifecycleManager appLifecycleManager,
+                                 AppDeploymentMonitor appDeploymentMonitor,
+                                 ApplicationInstanceService applicationInstanceService,
+                                 DomainService domains) {
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instances = applicationInstanceService;
         this.domains = domains;
-        this.objectMapper = new ObjectMapper();
     }
 
     @GetMapping("/apps/instances")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public List<AppInstance> getAllInstances(Pageable pageable) {
-        return instances.findAll(pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAll(pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping("/apps/instances/my")
@@ -81,7 +75,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstance> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
         User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("User not found"));
 
-        return instances.findAllByOwner(user, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAllByOwner(user, pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping("/domains/{domainId}/apps/instances")
@@ -90,7 +84,7 @@ public class AppInstanceController extends AppBaseController {
     public List<AppInstance> getAllInstances(@PathVariable Long domainId, Pageable pageable) {
         net.geant.nmaas.portal.persistent.entity.Domain domain = domains.findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
 
-        return instances.findAllByDomain(domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAllByDomain(domain, pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping(value = "/domains/{domainId}/apps/instances/my")
@@ -115,7 +109,7 @@ public class AppInstanceController extends AppBaseController {
         User user = users.findByUsername(username)
                 .orElseThrow(() -> new MissingElementException("User not found"));
 
-        return instances.findAllByOwner(user, domain, pageable).getContent().stream().map(appInstance -> mapAppInstance(appInstance)).collect(Collectors.toList());
+        return instances.findAllByOwner(user, domain, pageable).getContent().stream().map(this::mapAppInstance).collect(Collectors.toList());
     }
 
     @GetMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})

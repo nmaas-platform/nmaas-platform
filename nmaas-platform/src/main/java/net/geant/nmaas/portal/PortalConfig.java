@@ -10,8 +10,6 @@ import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.FileStorageService;
-import net.geant.nmaas.portal.service.impl.LocalFileStorageService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-import javax.servlet.Filter;
 import java.io.IOException;
 import java.util.Optional;
 

@@ -1,6 +1,5 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress.IngressResourceManipulationException;
 import net.geant.nmaas.orchestration.entities.Identifier;
 
 /**
@@ -25,7 +24,6 @@ public interface IngressResourceManager {
      * @param deploymentId unique identifier of service deployment
      * @param domain name of the client domain for this deployment
      * @param serviceExternalUrl service external URL
-     * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
     void createOrUpdateIngressResource(Identifier deploymentId, String domain, String serviceExternalUrl);
 
@@ -34,7 +32,6 @@ public interface IngressResourceManager {
      *
      * @param serviceExternalUrl external URL assigned for the deployment
      * @param domain name of the client domain for this deployment
-     * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
     void deleteIngressRule(String serviceExternalUrl, String domain);
 
@@ -42,7 +39,6 @@ public interface IngressResourceManager {
      * Deletes the entire ingress resource for given domain.
      *
      * @param domain name of the client domain for this deployment
-     * @throws IngressResourceManipulationException if any exception is thrown during ingress processing
      */
     void deleteIngressResource(String domain);
 
