@@ -142,7 +142,11 @@
     "IP_VALIDATION_MESSAGE": "IP darf nur Ziffern und Punkte enthalten",
     "NETWORK_REQUIRED_MESSAGE": "Netzwerk wird benötigt",
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Netzwerk Addresse darf nur Ziffern und Punkte enthalten",
-    "MASK_VALIDATION_MESSAGE": "Maske muss zwischen 0 und 32 sein"
+    "MASK_VALIDATION_MESSAGE": "Maske muss zwischen 0 und 32 sein",
+    "SMTP_SERVER_HOSTNAME": "Hostname des SMTP-Servers",
+    "SMTP_SERVER_PORT": "SMTP-Serverport",
+    "SMTP_SERVER_USERNAME": "SMTP-Server-Benutzername",
+    "SMTP_SERVER_PASSWORD": "SMTP-Server-Passwort"
   },
   "GITLAB": {
     "TITLE": "GitLab Konfiguration",
@@ -194,7 +198,9 @@
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Gehe zu App",
     "ITEMS_PER_PAGE": "Instanzen pro Seite",
-    "ACTIONS": "Aktionen"
+    "ACTIONS": "Aktionen",
+    "DEPLOYED": "Gestartete Instanzen",
+    "UNDEPLOYED": "Gestoppte Instanzen"
   },
   "MONITOR": {
     "TITLE": "Überwachungs Service",
@@ -389,9 +395,7 @@
     },
     "REQUIRED_FIELDS": "benötigte Felder",
     "APPLY_CONFIG_BUTTON": "Konfiguration anwenden",
-    "DEFAULT_VALUE": "Standardwert",
-    "DEPLOYED": "Gestartete Instanzen",
-    "UNDEPLOYED": "Gestoppte Instanzen"
+    "DEFAULT_VALUE": "Standardwert"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
