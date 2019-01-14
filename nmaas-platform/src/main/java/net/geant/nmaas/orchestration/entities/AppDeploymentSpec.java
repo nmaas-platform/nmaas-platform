@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.ParameterType;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;

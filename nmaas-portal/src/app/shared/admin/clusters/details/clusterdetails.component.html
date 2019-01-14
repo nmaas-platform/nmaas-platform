@@ -2,38 +2,6 @@
     <div class="panel-heading">{{ 'CLUSTERS.TITLE' | translate }}</div>
     <div class="panel-body">
         <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #clusterForm="ngForm">
-            <div class="panel-default panel-heading">{{ 'CLUSTERS.REST_API' | translate }}</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="useKClusterApi" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_REST_API' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="checkbox" id="useKClusterApi" name="useKClusterApi"
-                               [(ngModel)]="cluster.api.useKClusterApi" [checked]="cluster.api.useKClusterApi == true" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
-                <div class="form-group" *ngIf="cluster.api.useKClusterApi">
-                    <label for="apihostaddress" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_ADDRESS' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="apihostaddress" name="apihostaddress"
-                               [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #restaddress="ngModel">
-                        <div class="alert alert-danger" *ngIf="restaddress.invalid && (restaddress.dirty || restaddress.touched)">
-                            <div *ngIf="restaddress.errors.required">{{ 'CLUSTERS.REST_API_HOST_ADDRESS_REQUIRED_MESSAGE' | translate }}</div>
-                            <div *ngIf="restaddress.errors.pattern">{{ 'CLUSTERS.REST_API_HOST_ADDRESS_VALIDATION_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group" *ngIf="cluster.api.useKClusterApi">
-                    <label for="apihostport" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_PORT' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="number" class="form-control no-spin" id="apihostport" name="apihostport"
-                               [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)" required #apiport="ngModel">
-                        <div class="alert alert-danger" *ngIf="apiport.invalid && (apiport.dirty || apiport.touched)">
-                            <div *ngIf="apiport.errors.required">{{ 'CLUSTERS.REST_API_PORT_REQUIRED_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="panel-default panel-heading">{{ 'CLUSTERS.INGRESS' | translate }}</div>
             <div class="panel-body">
                 <div class="form-group">

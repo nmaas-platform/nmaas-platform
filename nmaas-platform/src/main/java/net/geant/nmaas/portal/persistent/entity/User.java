@@ -18,6 +18,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ import org.hibernate.envers.Audited;
 @Audited
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ValidUser
-public class User {
+public class User implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +60,7 @@ public class User {
 	private boolean termsOfUseAccepted;
 	private boolean privacyPolicyAccepted;
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, orphanRemoval=true, mappedBy="id.user")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
 	private List<UserRole> roles = new ArrayList<>();
 	
 	public User(String username) {

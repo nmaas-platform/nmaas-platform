@@ -78,15 +78,13 @@ dependencies {
 	
 	runtime('com.h2database:h2')
 	runtime('org.postgresql:postgresql')
+
 	compile('org.hibernate:hibernate-envers')
-
-
 	compile('io.jsonwebtoken:jjwt:0.7.0')
 	compile('com.spotify:docker-client:8.8.0')
 	compile('org.freemarker:freemarker:2.3.28')
 	compile('com.hierynomus:sshj:0.21.1')
 	compile('org.gitlab4j:gitlab4j-api:4.8.30')
-	compile('io.fabric8:kubernetes-client:3.1.8')
 	compile('com.google.guava:guava:23.0')
 
 	compile('io.springfox:springfox-swagger2:2.8.0')
