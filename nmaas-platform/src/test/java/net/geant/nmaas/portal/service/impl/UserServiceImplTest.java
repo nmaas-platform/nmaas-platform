@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import java.util.Collections;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.exception.SignupException;
@@ -30,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,7 +48,7 @@ public class UserServiceImplTest {
 
     @Before
     public void setup(){
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder());
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), new ModelMapper());
     }
 
     @Test
@@ -342,7 +344,8 @@ public class UserServiceImplTest {
         user.setRoles(userRoles);
         users.add(user);
         when(userRepository.findAll()).thenReturn(users);
-        assertEquals("test1@email.com,", userService.findAllUsersEmailWithAdminRole());
+        assertEquals(1, userService.findAllUsersEmailWithAdminRole().size());
+        assertEquals(userService.findAllUsersEmailWithAdminRole().get(0).getEmail(), user.getEmail());
     }
 
 }

@@ -47,5 +47,5 @@ public interface DomainService {
 	
 	Set<Domain> getUserDomains(Long userId);
 
-	List<User> findUsersWithDomainAdminRole(Long domainId);
+	List<net.geant.nmaas.portal.api.domain.User> findUsersWithDomainAdminRole(String domain);
 }

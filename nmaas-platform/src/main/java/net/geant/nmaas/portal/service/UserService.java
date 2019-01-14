@@ -36,6 +36,6 @@ public interface UserService {
     void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag);
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
-    String findAllUsersEmailWithAdminRole();
-	List<User> findUsersWithRoleSystemAdminAndOperator();
+    List<net.geant.nmaas.portal.api.domain.User> findAllUsersEmailWithAdminRole();
+	List<net.geant.nmaas.portal.api.domain.User> findUsersWithRoleSystemAdminAndOperator();
 }

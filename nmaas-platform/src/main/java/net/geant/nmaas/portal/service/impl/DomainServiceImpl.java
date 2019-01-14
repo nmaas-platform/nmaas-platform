@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -53,14 +53,24 @@ public class DomainServiceImpl implements DomainService {
 
 	DcnRepositoryManager dcnRepositoryManager;
 
+	ModelMapper modelMapper;
+
 	@Autowired
-	public DomainServiceImpl(CodenameValidator validator, @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator, DomainRepository domainRepo, UserService users, UserRoleRepository userRoleRepo, DcnRepositoryManager dcnRepositoryManager){
+	public DomainServiceImpl(CodenameValidator validator,
+							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
+							 DomainRepository domainRepo,
+							 UserService users,
+							 UserRoleRepository userRoleRepo,
+							 DcnRepositoryManager dcnRepositoryManager,
+							 ModelMapper modelMapper
+	){
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
 		this.domainRepo = domainRepo;
 		this.users = users;
 		this.userRoleRepo = userRoleRepo;
 		this.dcnRepositoryManager = dcnRepositoryManager;
+		this.modelMapper = modelMapper;
 	}
 
 	@Override
@@ -291,16 +301,11 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public List<User> findUsersWithDomainAdminRole(Long domainId){
-		List<User> users = new ArrayList<>();
-		for(User user : getMembers(domainId)) {
-			for (UserRole userRole : user.getRoles()) {
-				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name())) {
-					users.add(user);
-				}
-			}
-		}
-		return users;
+	public List<net.geant.nmaas.portal.api.domain.User> findUsersWithDomainAdminRole(String domain){
+		return this.userRoleRepo.findDomainMembers(domain).stream()
+				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
+				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.collect(Collectors.toList());
 	}
 
 	protected void checkParam(String name) {
