@@ -339,13 +339,13 @@
     "DESCRIPTION": "Opis",
     "CATEGORY": "Kategoria",
     "RATING": "Oceny",
-    "RATING_AVERAGE": "Srednia ocena użytkowników",
-    "RATING_INFO": "Wybierz libczę gwiazdek aby zagłosować",
+    "RATING_AVERAGE": "Średnia ocena użytkowników",
+    "RATING_INFO": "Wybierz liczbę gwiazdek aby zagłosować",
     "RATING_BREAKDOWN": "Rozkład ocen"
   },
   "RESTART_MODAL": {
     "HEADER": "Potwierdzenie restartu instancji",
-    "BODY": "Czy chcesz zrestartować tą instancje?",
+    "BODY": "Czy chcesz zrestartować tą instancję?",
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },
