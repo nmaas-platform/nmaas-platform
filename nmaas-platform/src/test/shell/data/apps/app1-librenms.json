@@ -1,6 +1,6 @@
 {
 	"name":"LibreNMS",
-	"version":"1.45",
+	"version":"1.47",
 	"license":"GPLv3",
 	"licenseUrl": "https://opensource.org/licenses/GPL-3.0",
 	"briefDescription":"LibreNMS is an autodiscovering SNMP based network monitoring tool",
