@@ -1,6 +1,8 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
@@ -56,6 +58,8 @@ public class UsersControllerTest {
 	private Principal principal = mock(Principal.class);
 
 	private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
+
+	private HttpServletRequest request = mock(HttpServletRequest.class);
 
 	@Before
 	public void setup(){
@@ -321,7 +325,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldSetEnabledFlag(){
-		usersController.setEnabledFlag(userList.get(0).getId(), true, principal);
+		usersController.setEnabledFlag(request, userList.get(0).getId(), true, principal);
 		verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), true);
 	}
 

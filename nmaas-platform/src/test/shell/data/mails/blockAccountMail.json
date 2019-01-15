@@ -1,5 +1,5 @@
 {
-  "mailType": "BLOCK_ACCOUNT",
+  "mailType": "ACCOUNT_BLOCKED",
   "templates": [
     {
       "language": "en",

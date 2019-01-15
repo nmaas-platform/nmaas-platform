@@ -60,7 +60,7 @@ public class NotificationManager {
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
         if(mailAttributes.getMailType().equals(MailType.REGISTRATION)){
-            mailAttributes.setAddressees(userService.findAllUsersEmailWithAdminRole());
+            mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
         if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)){
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getAppDeploymentView().getDomain()));
@@ -70,13 +70,13 @@ public class NotificationManager {
     }
 
     private String getFilledTemplate(String template, User user, AppDeploymentView appDeployment, String other){
-        return template.replace("#username", user.getUsername() == null ? "User" : user.getUsername())
+        return template.replace("#username", user.getFirstname() == null ? user.getUsername() : user.getFirstname())
                 .replace("#appName", appDeployment == null ? "" : appDeployment.getAppName())
                 .replace("#appInstanceName", appDeployment  == null ? "" : appDeployment.getDeploymentName())
                 .replace("#domainName", appDeployment  == null ? "" : appDeployment.getDomain())
                 .replace("#serviceName", other == null ? "" : other)
                 .replace("#newUser", other == null ? "" : other)
-                .replace("#resetURL", other  == null ? "" : other);
+                .replace("#accessURL", other  == null ? "" : other);
     }
 
 }

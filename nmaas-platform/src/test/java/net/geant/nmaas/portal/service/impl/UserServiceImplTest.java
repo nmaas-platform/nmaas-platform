@@ -344,8 +344,8 @@ public class UserServiceImplTest {
         user.setRoles(userRoles);
         users.add(user);
         when(userRepository.findAll()).thenReturn(users);
-        assertEquals(1, userService.findAllUsersEmailWithAdminRole().size());
-        assertEquals(userService.findAllUsersEmailWithAdminRole().get(0).getEmail(), user.getEmail());
+        assertEquals(1, userService.findAllUsersWithAdminRole().size());
+        assertEquals(userService.findAllUsersWithAdminRole().get(0).getEmail(), user.getEmail());
     }
 
 }

@@ -1,25 +1,25 @@
 {
-  "mailType": "ACTIVATE_ACCOUNT",
+  "mailType": "ACCOUNT_ACTIVATED",
   "templates": [
     {
       "language": "en",
       "subject": "NMaaS: Account activated",
-      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>Your NMaaS account is now active.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>Your NMaaS account is now active. You can now login at <a href=\"#accessURL\">NMaaS portal</a>.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
     },
     {
       "language": "fr",
       "subject": "NMaaS: Account activated",
-      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>Your NMaaS account is now active.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>Your NMaaS account is now active. You can now login at <a href=\"#accessURL\">NMaaS portal</a>.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
     },
     {
       "language": "de",
       "subject": "NMaaS: Account activated",
-      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>Your NMaaS account is now active.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>Your NMaaS account is now active. You can now login at <a href=\"#accessURL\">NMaaS portal</a>.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
     },
     {
       "language": "pl",
       "subject": "NMaaS: Twoje konto jest już aktywne",
-      "template": "<html>\n<body>\n    <p>Drogi #username,</p>\n    <p>Twoje konto w portalu NMaaS jest już aktywne.</p>\n\n    <p>Z pozdrowieniami,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (wiadomość została wygenerowana automatycznie)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Drogi #username,</p>\n    <p>Twoje konto w portalu NMaaS jest już aktywne. Możesz się zalogować w <a href=\"#accessURL\">portalu NMaaS</a>.</p>\n\n    <p>Z pozdrowieniami,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (wiadomość została wygenerowana automatycznie)\n    </p>\n</body>\n</html>"
     }
   ]
 }

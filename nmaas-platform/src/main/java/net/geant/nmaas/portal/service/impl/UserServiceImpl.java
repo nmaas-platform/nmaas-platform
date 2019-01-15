@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findAllUsersEmailWithAdminRole(){
+	public List<net.geant.nmaas.portal.api.domain.User> findAllUsersWithAdminRole(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
 				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))

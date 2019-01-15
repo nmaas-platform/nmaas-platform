@@ -279,8 +279,12 @@ public class UsersController {
 		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)));
 	}
 
+	private String getPortalUrl(HttpServletRequest request){
+		return request.getHeader("referer");
+	}
+
 	private String generateResetPasswordUrl(HttpServletRequest request, String token){
-		String url = request.getHeader("referer").replace("/welcome/login", "");
+		String url = getPortalUrl(request).replace("/welcome/login", "");
 		if(!url.endsWith("/")){
 			url += "/";
 		}
@@ -479,7 +483,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
-    public void setEnabledFlag(@PathVariable Long userId,
+    public void setEnabledFlag(HttpServletRequest request, @PathVariable Long userId,
 							   @RequestParam("enabled") final boolean isEnabledFlag,
 							   final Principal principal) {
 		try {
@@ -496,9 +500,9 @@ public class UsersController {
 					isEnabledFlag ? "activated" : "deactivated",
 					getUser(userId).getUsername());
 			if (isEnabledFlag) {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACTIVATE_ACCOUNT, null);
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, getPortalUrl(request));
 			} else {
-				this.sendMail(modelMapper.map(user, User.class), MailType.BLOCK_ACCOUNT, null);
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, getPortalUrl(request));
 			}
 			log.info(message);
 		}catch(ObjectNotFoundException err){
@@ -584,10 +588,8 @@ public class UsersController {
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(mailType)
 				.addressees(Collections.singletonList(modelMapper.map(user, User.class)))
+				.otherAttribute(other)
 				.build();
-		if(mailType.equals(MailType.PASSWORD_RESET)){
-			mailAttributes.setOtherAttribute(other);
-		}
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 

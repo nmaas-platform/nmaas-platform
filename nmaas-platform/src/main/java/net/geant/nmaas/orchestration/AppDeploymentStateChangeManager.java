@@ -127,6 +127,7 @@ public class AppDeploymentStateChangeManager {
     private MailAttributes getMailAttributes(AppDeployment appDeployment){
         return MailAttributes.builder()
                 .appDeploymentView(modelMapper.map(appDeployment, AppDeploymentView.class))
+                .otherAttribute(appDeployment.getAccessURL())
                 .mailType(MailType.APP_DEPLOYED)
                 .build();
     }
