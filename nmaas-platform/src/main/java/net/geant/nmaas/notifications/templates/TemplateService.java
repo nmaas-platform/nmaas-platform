@@ -10,6 +10,7 @@ import net.geant.nmaas.notifications.templates.repository.MailTemplateRepository
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TemplateService {
@@ -24,6 +25,7 @@ public class TemplateService {
         this.repository = repository;
     }
 
+    @Transactional
     public MailTemplateView getMailTemplate(MailType mailType){
         MailTemplate mailTemplate = repository.findByMailType(mailType).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         return modelMapper.map(mailTemplate, MailTemplateView.class);
