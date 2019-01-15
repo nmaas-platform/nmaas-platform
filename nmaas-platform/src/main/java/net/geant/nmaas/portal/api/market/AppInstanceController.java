@@ -145,7 +145,7 @@ public class AppInstanceController extends AppBaseController {
                 .deploymentName(appInstance.getName())
                 .configFileRepositoryRequired(appDeploymentSpec.isConfigFileRepositoryRequired())
                 .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
-                .loggedInUsersName(principal.getName())
+                .owner(principal.getName())
                 .domainId(domainId)
                 .appName(app.getName())
                 .appInstanceId(appInstance.getId())

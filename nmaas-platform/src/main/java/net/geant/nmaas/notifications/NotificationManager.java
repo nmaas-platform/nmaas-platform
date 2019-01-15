@@ -1,5 +1,6 @@
 package net.geant.nmaas.notifications;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
@@ -13,7 +14,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
+@Log4j2
 public class NotificationManager {
 
     private TemplateService templateService;
@@ -53,6 +58,7 @@ public class NotificationManager {
         for(User user : mailAttributes.getAddressees()){
             this.notificationService.sendMail(user.getEmail(), langTemplate.getSubject(), getFilledTemplate(langTemplate.getTemplate(), user, mailAttributes.getAppDeploymentView(), mailAttributes.getOtherAttribute()));
         }
+        log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
     }
 
     private void prepareMail(MailAttributes mailAttributes){
@@ -64,8 +70,10 @@ public class NotificationManager {
         }
         if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)){
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getAppDeploymentView().getDomain()));
-            userService.findByUsername(mailAttributes.getAppDeploymentView().getLoggedInUsersName())
-                    .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, User.class)));
+            if(mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getAppDeploymentView().getOwner()))){
+                userService.findByUsername(mailAttributes.getAppDeploymentView().getOwner())
+                        .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, User.class)));
+            }
         }
     }
 
@@ -77,6 +85,12 @@ public class NotificationManager {
                 .replace("#serviceName", other == null ? "" : other)
                 .replace("#newUser", other == null ? "" : other)
                 .replace("#accessURL", other  == null ? "" : other);
+    }
+
+    private List<String> getListOfMails(List<User> users){
+        return users.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
     }
 
 }
