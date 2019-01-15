@@ -17,6 +17,8 @@ create table mail_template_templates (
      templates_id bigint not null
 );
 
+alter table app_deployment rename column logged_in_users_name to owner;
+
 alter table mail_template_templates add constraint FKt5w8klf00id4niddnb9cqw11h foreign key (templates_id) references language_mail_content;
 
 alter table mail_template_templates add constraint FK85vhhf0wihqruuexdjfor1clu foreign key (mail_template_id) references mail_template;
