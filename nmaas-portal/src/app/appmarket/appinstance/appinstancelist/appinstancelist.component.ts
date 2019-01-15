@@ -13,6 +13,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import {CustomerSearchCriteria} from "../../../service/index";
 import "rxjs/add/observable/of";
 import {element} from "protractor";
+import {TranslateModule, TranslateService} from "@ngx-translate/core";
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -55,12 +56,46 @@ export class AppInstanceListComponent implements OnInit {
               private domainService: DomainService,
               private userDataService: UserDataService,
               private authService: AuthService,
-              private appConfig: AppConfigService) {
+              private appConfig: AppConfigService,
+              private translateService: TranslateService) {
   }
 
   ngOnInit() {
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
 
+  }
+
+  public translateEnum(value: AppInstanceListSelection): string{
+    switch (this.translateService.currentLang) {
+      case 'en':
+        return value.toString();
+      case 'de':
+        if(value.toString() == 'ALL'){
+          return 'Alles';
+        }
+        if(value.toString() == 'MY'){
+          return 'Meine';
+        }
+        break;
+      case 'fr':
+        if(value.toString() == 'ALL'){
+          return 'Tout';
+        }
+        if(value.toString() == 'MY'){
+          return 'Mon';
+        }
+        break;
+      case 'pl':
+        if(value.toString() == 'ALL'){
+          return 'Wszystkie';
+        }
+        if(value.toString() == 'MY'){
+          return 'Moje';
+        }
+        break;
+      default:
+        return value.toString();
+    }
   }
 
   public update(domainId: number): void {

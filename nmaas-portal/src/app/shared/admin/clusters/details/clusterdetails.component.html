@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerHostname" class="col-sm-2 control-label">SMTP server hostname: </label>
+                    <label for="smtpServerHostname" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_HOSTNAME' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="smtpServerHostname" name="smtpServerHostname"
                                [(ngModel)]="cluster.deployment.smtpServerHostname" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerHostname="ngModel">
@@ -136,7 +136,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerPort" class="col-sm-2 control-label">SMTP server port: </label>
+                    <label for="smtpServerPort" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_PORT' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="number" class="form-control no-spin" id="smtpServerPort" name="smtpServerPort"
                                [(ngModel)]="cluster.deployment.smtpServerPort" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerPort="ngModel">
@@ -146,14 +146,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerUsername" class="col-sm-2 control-label">SMTP server username: </label>
+                    <label for="smtpServerUsername" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_USERNAME' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="smtpServerUsername" name="smtpServerUsername"
                                [(ngModel)]="cluster.deployment.smtpServerUsername" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerPass" class="col-sm-2 control-label">SMTP server password: </label>
+                    <label for="smtpServerPass" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_PASSWORD' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="smtpServerPass" name="smtpServerPass"
                                [(ngModel)]="cluster.deployment.smtpServerPassword" [disabled]="isInMode(ComponentMode.VIEW)">

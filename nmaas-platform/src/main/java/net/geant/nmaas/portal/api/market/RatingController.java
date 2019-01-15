@@ -1,8 +1,11 @@
 package net.geant.nmaas.portal.api.market;
 
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,27 +23,23 @@ import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.RatingRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api/apps/{appId}/rate")
 public class RatingController extends AppBaseController {
 	
-	RatingRepository ratingRepo;
-	
-	UserRepository userRepo;
+	private RatingRepository ratingRepo;
 
 	@Autowired
-	public RatingController(RatingRepository ratingRepo, UserRepository userRepo){
+	public RatingController(RatingRepository ratingRepo){
 		this.ratingRepo = ratingRepo;
-		this.userRepo = userRepo;
 	}
 	
 	@GetMapping
 	public AppRate getAppRating(@PathVariable("appId") Long appId) {
 		Application app = getApp(appId);
-		Double rate = ratingRepo.getApplicationRating(app.getId());
-		return (rate != null ? new AppRate(rate) : new AppRate());
+		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
+		return new AppRate(getAverageRate(rateList), getRatingMap(rateList));
 	}
 	
 	@GetMapping(value="/my")
@@ -58,7 +57,8 @@ public class RatingController extends AppBaseController {
 		
 		net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId appRateId = new net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId(app.getId(), user.getId());
 		Optional<net.geant.nmaas.portal.persistent.entity.AppRate> appRate = ratingRepo.findById(appRateId);
-		return appRate.isPresent() ? new AppRate(appRate.get().getRate()) : new AppRate();
+		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
+		return appRate.map(appRate1 -> new AppRate(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(() -> new AppRate(getAverageRate(rateList), getRatingMap(rateList)));
 	}
 
 	@PostMapping(value="/my/{rate}")
@@ -78,10 +78,19 @@ public class RatingController extends AppBaseController {
 		
 		return new ApiResponse(true);
 	}
+
+	private double getAverageRate(Integer[] rateList){
+		return Arrays.stream(rateList)
+				.mapToInt(Integer::intValue)
+				.average().orElse(0.0);
+	}
+
+	private Map<Integer, Long> getRatingMap(Integer[] rateList){
+		return Arrays.stream(rateList)
+				.collect(Collectors.groupingBy(s -> s, Collectors.counting()));
+	}
 	
-	
-	
-	protected Integer normalizeRate(Integer rate) {
+	private Integer normalizeRate(Integer rate) {
 		if(rate == null)
 			throw new MissingElementException("Missing rate value.");
 		

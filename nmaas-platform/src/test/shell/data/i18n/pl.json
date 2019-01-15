@@ -140,7 +140,11 @@
     "IP_VALIDATION_MESSAGE": "Adres IP może zawierać tylko cyfry i kropki",
     "NETWORK_REQUIRED_MESSAGE": "Network jest wymagany",
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Network address może zawierać tylko cyfry i kropki",
-    "MASK_VALIDATION_MESSAGE": "Mask musi zawierać się w przedziale od 0 do 32"
+    "MASK_VALIDATION_MESSAGE": "Mask musi zawierać się w przedziale od 0 do 32",
+    "SMTP_SERVER_HOSTNAME": "Nazwa serwera SMTP",
+    "SMTP_SERVER_PORT": "Port serwera SMTP",
+    "SMTP_SERVER_USERNAME": "Nazwa użytkownika serwera SMTP",
+    "SMTP_SERVER_PASSWORD": "Hasło użytkownika serwera SMTP"
   },
   "GITLAB": {
     "TITLE": "Konfiguracja GitLab",
@@ -192,7 +196,9 @@
     "DETAILS_BUTTON": "Szczegóły",
     "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
     "ITEMS_PER_PAGE": "Liczba instancji na stronę",
-    "ACTIONS": "Operacje"
+    "ACTIONS": "Operacje",
+    "DEPLOYED": "Uruchomione instancje",
+    "UNDEPLOYED": "Zatrzymane instancje"
   },
   "MONITOR": {
     "TITLE": "Monitorowanie",
@@ -332,11 +338,14 @@
     "APPLICATION": "Aplikacja",
     "DESCRIPTION": "Opis",
     "CATEGORY": "Kategoria",
-    "RATING": "Oceny"
+    "RATING": "Oceny",
+    "RATING_AVERAGE": "Średnia ocena użytkowników",
+    "RATING_INFO": "Wybierz liczbę gwiazdek aby zagłosować",
+    "RATING_BREAKDOWN": "Rozkład ocen"
   },
   "RESTART_MODAL": {
     "HEADER": "Potwierdzenie restartu instancji",
-    "BODY": "Czy chcesz zrestartować tą instancje?",
+    "BODY": "Czy chcesz zrestartować tą instancję?",
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },

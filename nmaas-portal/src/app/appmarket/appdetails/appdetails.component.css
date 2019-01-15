@@ -1,1 +1,32 @@
+.tag-button{
+    background-color: white;
+    border: solid lightgray 1px;
+    color: gray;
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 8px 2px;
+    border-radius: 12px;
+}
 
+.tag-button:hover{
+    background-color: rgb(51, 122, 183);
+    color: white;
+}
+
+.block-light-gray{
+    background-image: linear-gradient(rgba(211, 211, 211, 0.1),rgba(211, 211, 211, 0.1));
+    color: black;
+    margin-left: 10px;
+}
+
+.block-border{
+    border-radius: 8px;
+}
+
+hr{
+    margin-bottom: 8px;
+    margin-top: 8px;
+}

@@ -6,7 +6,7 @@
 								<form class = "form-inline" role = "form">
 									<label for="selectionType">{{ 'APP_INSTANCES.SHOW' | translate }}: </label>
 									<select id="selectionType" class="form-control" [(ngModel)]="listSelection" (change)="onSelectionChange($event)" [selectedIndex]="listSelection" [ngModelOptions]="{standalone: true}">
-										<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{sl.value.charAt(0) + sl.value.toLowerCase().substring(1,sl.value.length)}}</option>
+										<option *ngFor="let sl of AppInstanceListSelection | keys" [value]="sl.key">{{ translateEnum(sl.value) | titlecase }}</option>
 									</select>
 								</form>
 							</div>
@@ -28,7 +28,7 @@
 						</div>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12">
-						<h4 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">Deployed instances</h4>
+						<h4 *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">{{ 'APP_INSTANCES.DEPLOYED' | translate }}</h4>
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 						   <thead>
 							  <tr>
@@ -63,7 +63,7 @@
 						<pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ p_first }}"></pagination-controls>
 					</div>
 					<div class = "col-sm-12 col-sm-12 col-md-12" *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']">
-						<h4>Undeployed instances</h4>
+						<h4>{{ 'APP_INSTANCES.UNDEPLOYED' | translate }}</h4>
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 							<thead>
 							<tr>
