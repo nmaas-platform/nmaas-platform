@@ -133,14 +133,33 @@
 												},
 												{
 													"label": "SNMP version",
-													"type": "textfield",
+													"placeholder": "Select SNMP version",
+													"tableView": true,
+													"type": "select",
 													"input": true,
 													"key": "snmpVersion",
-													"tab": 0,
+													"defaultValue": "",
 													"validate": {
 														"required": true
 													},
-													"inputFormat": "plain"
+													"data": {
+														"values": [
+															{
+																"label": "v1",
+																"value": "v1"
+															},
+															{
+																"label": "v2c",
+																"value": "v2c"
+															},
+															{
+																"label": "v3",
+																"value": "v3"
+															}
+														]
+													},
+													"valueProperty": "value",
+													"tab": 0
 												}
 											]
 										}
