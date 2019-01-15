@@ -4,22 +4,22 @@
     {
       "language": "en",
       "subject": "NMaaS: New account registration request",
-      "template": "<html>\n<title>NMaaS: New account registration request</title>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
     },
     {
       "language": "fr",
       "subject": "NMaaS: New account registration request",
-      "template": "<html>\n<title>NMaaS: New account registration request</title>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
     },
     {
       "language": "de",
       "subject": "NMaaS: New account registration request",
-      "template": "<html>\n<title>NMaaS: New account registration request</title>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
     },
     {
       "language": "pl",
-      "subject": "NMaaS: New account registration request",
-      "template": "<html>\n<title>NMaaS: New account registration request</title>\n<body>\n    <p>Dear #username,</p>\n    <p>The person #newUser has submitted the registration form and is waiting for your approval.</p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "subject": "NMaaS: Rejestracja nowego użytkownika",
+      "template": "<html>\n<body>\n    <p>Drogi #username,</p>\n    <p>Użytkownik #newUser wypełnił formularz rejestracyjny i czeka na aktywacje jego konta.</p>\n\n    <p>Z pozdrowieniami,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (wiadomość została wygenerowana automatycznie)\n    </p>\n</body>\n</html>"
     }
   ]
 }
