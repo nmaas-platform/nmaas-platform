@@ -2,38 +2,6 @@
     <div class="panel-heading">{{ 'CLUSTERS.TITLE' | translate }}</div>
     <div class="panel-body">
         <form *ngIf="cluster" (submit)="submit()" class="form-horizontal" #clusterForm="ngForm">
-            <div class="panel-default panel-heading">{{ 'CLUSTERS.REST_API' | translate }}</div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label for="useKClusterApi" class="col-sm-2 control-label">{{ 'CLUSTERS.USER_REST_API' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="checkbox" id="useKClusterApi" name="useKClusterApi"
-                               [(ngModel)]="cluster.api.useKClusterApi" [checked]="cluster.api.useKClusterApi == true" [disabled]="isInMode(ComponentMode.VIEW)">
-                    </div>
-                </div>
-                <div class="form-group" *ngIf="cluster.api.useKClusterApi">
-                    <label for="apihostaddress" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_ADDRESS' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="apihostaddress" name="apihostaddress"
-                               [(ngModel)]="cluster.api.restApiHostAddress" [disabled]="isInMode(ComponentMode.VIEW)" pattern="[0-9.]*" required #restaddress="ngModel">
-                        <div class="alert alert-danger" *ngIf="restaddress.invalid && (restaddress.dirty || restaddress.touched)">
-                            <div *ngIf="restaddress.errors.required">{{ 'CLUSTERS.REST_API_HOST_ADDRESS_REQUIRED_MESSAGE' | translate }}</div>
-                            <div *ngIf="restaddress.errors.pattern">{{ 'CLUSTERS.REST_API_HOST_ADDRESS_VALIDATION_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group" *ngIf="cluster.api.useKClusterApi">
-                    <label for="apihostport" class="col-sm-2 control-label">{{ 'CLUSTERS.HOST_PORT' | translate }}</label>
-                    <div class="col-sm-10">
-                        <input type="number" class="form-control no-spin" id="apihostport" name="apihostport"
-                               [(ngModel)]="cluster.api.restApiPort" [disabled]="isInMode(ComponentMode.VIEW)" required #apiport="ngModel">
-                        <div class="alert alert-danger" *ngIf="apiport.invalid && (apiport.dirty || apiport.touched)">
-                            <div *ngIf="apiport.errors.required">{{ 'CLUSTERS.REST_API_PORT_REQUIRED_MESSAGE' | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="panel-default panel-heading">{{ 'CLUSTERS.INGRESS' | translate }}</div>
             <div class="panel-body">
                 <div class="form-group">
@@ -158,7 +126,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerHostname" class="col-sm-2 control-label">SMTP server hostname: </label>
+                    <label for="smtpServerHostname" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_HOSTNAME' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="smtpServerHostname" name="smtpServerHostname"
                                [(ngModel)]="cluster.deployment.smtpServerHostname" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerHostname="ngModel">
@@ -168,7 +136,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerPort" class="col-sm-2 control-label">SMTP server port: </label>
+                    <label for="smtpServerPort" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_PORT' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="number" class="form-control no-spin" id="smtpServerPort" name="smtpServerPort"
                                [(ngModel)]="cluster.deployment.smtpServerPort" [disabled]="isInMode(ComponentMode.VIEW)" required #smtpServerPort="ngModel">
@@ -178,14 +146,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerUsername" class="col-sm-2 control-label">SMTP server username: </label>
+                    <label for="smtpServerUsername" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_USERNAME' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="smtpServerUsername" name="smtpServerUsername"
                                [(ngModel)]="cluster.deployment.smtpServerUsername" [disabled]="isInMode(ComponentMode.VIEW)">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="smtpServerPass" class="col-sm-2 control-label">SMTP server password: </label>
+                    <label for="smtpServerPass" class="col-sm-2 control-label">{{ 'CLUSTERS.SMTP_SERVER_PASSWORD' | translate }}: </label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="smtpServerPass" name="smtpServerPass"
                                [(ngModel)]="cluster.deployment.smtpServerPassword" [disabled]="isInMode(ComponentMode.VIEW)">

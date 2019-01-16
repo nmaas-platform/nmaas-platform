@@ -142,7 +142,11 @@
     "IP_VALIDATION_MESSAGE": "IP must contain only digits and dots",
     "NETWORK_REQUIRED_MESSAGE": "Network is required",
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "Network address must contain only digits and dots",
-    "MASK_VALIDATION_MESSAGE": "Mask must be between 0 and 32"
+    "MASK_VALIDATION_MESSAGE": "Mask must be between 0 and 32",
+    "SMTP_SERVER_HOSTNAME": "SMTP server hostname",
+    "SMTP_SERVER_PORT": "SMTP server port",
+    "SMTP_SERVER_USERNAME": "SMTP server username",
+    "SMTP_SERVER_PASSWORD": "SMTP server password"
   },
   "GITLAB": {
     "TITLE": "GitLab configuration",
@@ -194,7 +198,9 @@
     "DETAILS_BUTTON": "Details",
     "GO_TO_APP_BUTTON": "Go to app",
     "ITEMS_PER_PAGE": "Instances per page",
-    "ACTIONS": "Actions"
+    "ACTIONS": "Actions",
+    "DEPLOYED": "Deployed instances",
+    "UNDEPLOYED": "Undeployed instances"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -333,7 +339,10 @@
     "APPLICATION": "Application",
     "DESCRIPTION": "Description",
     "CATEGORY": "Category",
-    "RATING": "Rating"
+    "RATING": "Rating",
+    "RATING_AVERAGE": "Average user rating",
+    "RATING_INFO": "Click star to rate an application",
+    "RATING_BREAKDOWN": "Rating breakdown"
   },
   "RESTART_MODAL": {
     "HEADER": "Restart confirmation",

@@ -1,26 +1,26 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
-import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.NotificationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.Principal;
@@ -30,8 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,7 +45,7 @@ public class UsersControllerTest {
 
 	private DomainService domainService = mock(DomainService.class);
 
-	private NotificationService notificationService = mock(NotificationService.class);
+	private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
 	private ModelMapper modelMapper = new ModelMapper();
 
@@ -61,9 +59,11 @@ public class UsersControllerTest {
 
 	private JWTTokenService jwtTokenService = mock(JWTTokenService.class);
 
+	private HttpServletRequest request = mock(HttpServletRequest.class);
+
 	@Before
 	public void setup(){
-		usersController = new UsersController(userService, domainService, notificationService, modelMapper, passwordEncoder, jwtTokenService);
+		usersController = new UsersController(userService, domainService, modelMapper, passwordEncoder, jwtTokenService, eventPublisher);
 		User tester = new User("tester", true, "test123", DOMAIN, Role.ROLE_USER);
 		tester.setId(1L);
 		User admin = new User("testadmin", true, "testadmin123", DOMAIN, Role.ROLE_SYSTEM_ADMIN);
@@ -73,7 +73,6 @@ public class UsersControllerTest {
 		when(principal.getName()).thenReturn(admin.getUsername());
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
 		when(userService.findByUsername(userList.get(1).getUsername())).thenReturn(Optional.of(userList.get(1)));
-        doNothing().when(notificationService).sendEmail(any(ConfirmationEmail.class));
         when(domainService.getGlobalDomain()).thenReturn(Optional.of(GLOBAL_DOMAIN));
 		when(domainService.findDomain(DOMAIN.getId())).thenReturn(Optional.of(DOMAIN));
 	}
@@ -326,7 +325,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldSetEnabledFlag(){
-		usersController.setEnabledFlag(userList.get(0).getId(), true, principal);
+		usersController.setEnabledFlag(request, userList.get(0).getId(), true, principal);
 		verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), true);
 	}
 

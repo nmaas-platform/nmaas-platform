@@ -4,8 +4,12 @@ import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.monitor.repositories.MonitorRepository;
+import net.geant.nmaas.notifications.MailAttributes;
+import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +25,13 @@ public class MonitorManager {
 
     private ModelMapper modelMapper;
 
+    private ApplicationEventPublisher eventPublisher;
+
     @Autowired
-    public MonitorManager(MonitorRepository repository, ModelMapper modelMapper){
+    public MonitorManager(MonitorRepository repository, ModelMapper modelMapper, ApplicationEventPublisher eventPublisher){
         this.repository = repository;
         this.modelMapper = modelMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     public void createMonitorEntry(MonitorEntryView monitorEntryView){
@@ -48,6 +55,9 @@ public class MonitorManager {
         monitorEntry.setLastCheck(lastCheck);
         if(status.equals(MonitorStatus.SUCCESS))
             monitorEntry.setLastSuccess(lastCheck);
+        else if(status.equals(MonitorStatus.FAILURE)){
+            eventPublisher.publishEvent(new NotificationEvent(this, getMailAttributes(serviceType.getName())));
+        }
         this.repository.save(monitorEntry);
     }
 
@@ -96,5 +106,12 @@ public class MonitorManager {
 
     private String monitorEntryNotFoundMessage(String service) {
         return String.format("Monitor entry for %s cannot be found", service);
+    }
+
+    private MailAttributes getMailAttributes(String service){
+        return MailAttributes.builder()
+                .mailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)
+                .otherAttribute(service)
+                .build();
     }
 }

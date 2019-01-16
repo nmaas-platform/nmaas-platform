@@ -141,7 +141,11 @@
     "IP_VALIDATION_MESSAGE": "L'adresse IP ne doit contenir que des chiffres et des points",
     "NETWORK_REQUIRED_MESSAGE": "Le réseau est requis",
     "NETWORK_ADDRESS_VALIDATION_MESSAGE": "L'adresse réseau doit contenir uniquement des chiffres et des points",
-    "MASK_VALIDATION_MESSAGE": "Le masque de sous-réseau doit être compris entre 0 et 32"
+    "MASK_VALIDATION_MESSAGE": "Le masque de sous-réseau doit être compris entre 0 et 32",
+    "SMTP_SERVER_HOSTNAME": "Nom d'hôte du serveur SMTP",
+    "SMTP_SERVER_PORT": "Port du serveur SMTP",
+    "SMTP_SERVER_USERNAME": "Nom d'utilisateur du serveur SMTP",
+    "SMTP_SERVER_PASSWORD": "Mot de passe du serveur SMTP"
   },
   "GITLAB": {
     "TITLE": "Configuration de GitLab",
@@ -187,13 +191,15 @@
     "NAME": "Nom",
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
-    "DEPLOYED_AT": "Deployed at",
+    "DEPLOYED_AT": "Déployé à",
     "APPLICATION": "Application",
-    "STATE": "State",
+    "STATE": "Etat",
     "DETAILS_BUTTON": "Détails",
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "ITEMS_PER_PAGE": "Instances par page",
-    "ACTIONS": "Action"
+    "ACTIONS": "Actes",
+    "DEPLOYED": "Instances déployées",
+    "UNDEPLOYED": "Instances non déployées"
   },
   "MONITOR": {
     "TITLE": "Monitor service",
@@ -332,7 +338,10 @@
     "APPLICATION": "Application",
     "DESCRIPTION": "Description",
     "CATEGORY": "Categores",
-    "RATING": "Évaluation"
+    "RATING": "Évaluation",
+    "RATING_AVERAGE": "Note moyenne des utilisateurs",
+    "RATING_INFO": "Cliquez sur l'étoile pour évaluer une application",
+    "RATING_BREAKDOWN": "Répartition par note"
   },
   "RESTART_MODAL": {
     "HEADER": "Confirmation de redémarrage",

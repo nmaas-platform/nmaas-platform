@@ -1,12 +1,12 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KubernetesClusterView;
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
+import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterViewComplete;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,25 +29,20 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/api/management/kubernetes")
+@AllArgsConstructor
 public class KubernetesClusterController {
 
     private KubernetesClusterManager clusterManager;
 
     private ModelMapper modelMapper;
 
-    @Autowired
-    public KubernetesClusterController(KubernetesClusterManager clusterManager, ModelMapper modelMapper) {
-        this.clusterManager = clusterManager;
-        this.modelMapper = modelMapper;
-    }
-
     /**
      * List all {@link KCluster} stored in repository
-     * @return list of {@link KubernetesClusterView} objects
+     * @return list of {@link KClusterView} objects
      */
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping
-    public List<KubernetesClusterView> listAllKubernetesClusters() {
+    public List<KClusterView> listAllKubernetesClusters() {
         return clusterManager.getAllClusters();
     }
 
@@ -60,8 +55,8 @@ public class KubernetesClusterController {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @GetMapping("/{id}")
-    public KClusterView getKubernetesCluster(@PathVariable("id") Long id) {
-        return modelMapper.map(clusterManager.getClusterById(id), KClusterView.class);
+    public KClusterViewComplete getKubernetesCluster(@PathVariable("id") Long id) {
+        return modelMapper.map(clusterManager.getClusterById(id), KClusterViewComplete.class);
     }
 
     /**
@@ -74,7 +69,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PostMapping(consumes = "application/json")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Long addKubernetesCluster(@RequestBody KClusterView clusterView) {
+    public Long addKubernetesCluster(@RequestBody KClusterViewComplete clusterView) {
         KCluster cluster = modelMapper.map(clusterView, KCluster.class);
         cluster.validate();
         clusterManager.addNewCluster(cluster);
@@ -91,7 +86,7 @@ public class KubernetesClusterController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     @PutMapping(value = "/{id}", consumes = "application/json")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KClusterView clusterView) {
+    public void updateKubernetesCluster(@PathVariable("id") Long id, @RequestBody KClusterViewComplete clusterView) {
         KCluster cluster = modelMapper.map(clusterView, KCluster.class);
         cluster.validate();
         clusterManager.updateCluster(id, cluster);

@@ -1,10 +1,11 @@
 {
 	"name":"LibreNMS",
-	"version":"1.45",
-	"license":"Apache",
+	"version":"1.47",
+	"license":"GPLv3",
+	"licenseUrl": "https://opensource.org/licenses/GPL-3.0",
 	"briefDescription":"LibreNMS is an autodiscovering SNMP based network monitoring tool",
 	"tags": [ "management", "monitoring"],
-	"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring<br>which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users, and</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>",
+	"fullDescription": "<p>LibreNMS is an autodiscovering PHP/MySQL/SNMP based network monitoring which includes support for a wide range of network hardware and operating systems including Cisco, Linux, FreeBSD, Juniper, Brocade, Foundry, HP and many more.<br>LibreNMS is a community-based fork of Observium.<br><br>We intend LibreNMS to be a viable project and community that:<ul><li>encourages contribution,</li><li>focuses on the needs of its users,</li><li>offers a welcoming, friendly environment for everyone.</li></ul><br>The Debian Social Contract will be the basis of our priority system, and mutual respect is the basis of our behaviour towards others.<br>For more about the culture we're trying to build, please read the Freenode philosophy,including guidelines for running an IRC channel and being a community catalyst.</p>",
 	"wwwUrl": "http://www.librenms.org/",
 	"sourceUrl": "https://github.com/librenms/librenms",
 	"issuesUrl": "https://github.com/librenms/librenms/issues",
@@ -132,14 +133,33 @@
 												},
 												{
 													"label": "SNMP version",
-													"type": "textfield",
+													"placeholder": "Select SNMP version",
+													"tableView": true,
+													"type": "select",
 													"input": true,
 													"key": "snmpVersion",
-													"tab": 0,
+													"defaultValue": "",
 													"validate": {
 														"required": true
 													},
-													"inputFormat": "plain"
+													"data": {
+														"values": [
+															{
+																"label": "v1",
+																"value": "v1"
+															},
+															{
+																"label": "v2c",
+																"value": "v2c"
+															},
+															{
+																"label": "v3",
+																"value": "v3"
+															}
+														]
+													},
+													"valueProperty": "value",
+													"tab": 0
 												}
 											]
 										}

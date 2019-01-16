@@ -34,6 +34,8 @@ import {TranslateModule} from '@ngx-translate/core';
 import { SortableColumnComponent } from './sortable-column/sortable-column.component';
 import { SortableTableDirective } from './sortable-column/sortable-table.directive';
 import {AppInstallModalComponent} from "./modal/appinstall";
+import { RatingExtendedComponent } from './rating-extended/rating-extended.component';
+import {TooltipModule} from "ng2-tooltip-directive";
 
 @NgModule({
   imports: [
@@ -43,7 +45,8 @@ import {AppInstallModalComponent} from "./modal/appinstall";
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    TooltipModule
   ],
   declarations: [
     RateComponent,
@@ -73,7 +76,8 @@ import {AppInstallModalComponent} from "./modal/appinstall";
     ModalInfoPolicyComponent,
     ModalChangelogComponent,
     SortableColumnComponent,
-    SortableTableDirective
+    SortableTableDirective,
+    RatingExtendedComponent,
   ],
   providers: [
     PasswordValidator,
@@ -103,6 +107,7 @@ import {AppInstallModalComponent} from "./modal/appinstall";
     ModalInfoPolicyComponent,
     SortableColumnComponent,
     SortableTableDirective,
+    RatingExtendedComponent
   ]
 })
 export class SharedModule {}

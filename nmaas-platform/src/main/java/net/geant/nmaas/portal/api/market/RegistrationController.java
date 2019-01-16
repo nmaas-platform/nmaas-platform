@@ -1,19 +1,21 @@
 package net.geant.nmaas.portal.api.market;
 
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.notifications.MailAttributes;
+import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.Domain;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.exceptions.ObjectAlreadyExistsException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.NotificationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -39,17 +41,17 @@ public class RegistrationController {
 
 	private ModelMapper modelMapper;
 
-	private NotificationService notificationService;
+	private ApplicationEventPublisher eventPublisher;
 
 	@Autowired
 	public RegistrationController(UserService usersService,
 								  DomainService domains,
 								  ModelMapper modelMapper,
-								  NotificationService notificationService){
+								  ApplicationEventPublisher eventPublisher){
 		this.usersService = usersService;
 		this.domains = domains;
 		this.modelMapper = modelMapper;
-		this.notificationService = notificationService;
+		this.eventPublisher = eventPublisher;
 	}
 	
 	@PostMapping
@@ -81,16 +83,7 @@ public class RegistrationController {
 					registration.getLastname(),
 					registration.getEmail(),
 					registration.getDomainId()));
-			ConfirmationEmail confirmationEmail = ConfirmationEmail
-					.builder()
-					.firstName(newUser.getFirstname())
-					.lastName(newUser.getLastname())
-					.toEmail(usersService.findAllUsersEmailWithAdminRole())
-					.userName(newUser.getUsername())
-					.subject("NMaaS: New account registration request")
-					.templateName("admin-notification")
-					.build();
-			notificationService.sendEmail(confirmationEmail);
+			this.sendMail(newUser);
 			if(registration.getDomainId() != null) {
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 			}
@@ -114,5 +107,14 @@ public class RegistrationController {
 						.filter(domain -> !domain.getId().equals(globalDomainId))
 						.collect(Collectors.toList());
 		
+	}
+
+	private void sendMail(User user){
+		MailAttributes mailAttributes = MailAttributes
+				.builder()
+				.otherAttribute(user.getUsername())
+				.mailType(MailType.REGISTRATION)
+				.build();
+		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 }

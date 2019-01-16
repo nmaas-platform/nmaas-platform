@@ -1,8 +1,8 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,25 +13,24 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Set of properties describing a Kubernetes cluster deployed in the system
  */
 @Entity
-@Table(name="k_cluster")
+@Table(name = "k_cluster")
 @Getter
 @Setter
 public class KCluster {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
-    private KClusterApi api;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
     private KClusterIngress ingress;
@@ -55,10 +54,6 @@ public class KCluster {
         ingress.getResourceConfigOption().validate(ingress);
         ingress.getCertificateConfigOption().validate(ingress);
         deployment.getNamespaceConfigOption().validate(deployment);
-        if(api.isUseKClusterApi()){
-            checkArgument(api.getRestApiPort() != null, "When using KCluster Api the rest api port can't be empty");
-            checkArgument(api.getRestApiHostAddress() != null, "When using KCluster Api the rest api host address can't be empty");
-        }
         checkArgument(deployment.getSmtpServerHostname() != null && !deployment.getSmtpServerHostname().isEmpty(), "SMTP server hostname can't be empty");
         checkArgument(deployment.getSmtpServerPort() != null && deployment.getSmtpServerPort() > 0, "SMTP server port must be greater than 0");
     }

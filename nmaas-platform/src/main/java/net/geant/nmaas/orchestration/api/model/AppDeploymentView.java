@@ -15,4 +15,6 @@ public class AppDeploymentView {
     private String deploymentName;
     private String domain;
     private String state;
+    private String owner;
+    private String appName;
 }

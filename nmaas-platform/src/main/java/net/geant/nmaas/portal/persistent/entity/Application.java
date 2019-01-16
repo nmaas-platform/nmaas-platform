@@ -48,6 +48,7 @@ public class Application implements Serializable {
 	private String name;
 	private String version;
 	private String license;
+	private String licenseUrl;
 
 	private String wwwUrl;
 	private String sourceUrl;

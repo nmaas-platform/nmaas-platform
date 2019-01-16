@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,19 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AppRate {
-	Double rate;
+	Integer rate;
+
+	Double averageRate;
+
+	Map<Integer, Long> rating;
 	
 	public AppRate(Integer rate) {
-		this.rate = (rate != null ? rate.doubleValue() : null);
+		this.rate = rate;
+	}
+
+	public AppRate(Double averageRate, Map<Integer,Long> rating){
+		this.averageRate = averageRate;
+		this.rating = rating;
 	}
 
 }

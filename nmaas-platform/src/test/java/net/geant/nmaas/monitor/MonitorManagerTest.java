@@ -17,12 +17,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 
 public class MonitorManagerTest {
 
     private ModelMapper modelMapper = new ModelMapper();
 
     private MonitorRepository repository = mock(MonitorRepository.class);
+
+    private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
 
     private MonitorManager monitorManager;
 
@@ -32,7 +35,7 @@ public class MonitorManagerTest {
 
     @Before
     public void setup(){
-        this.monitorManager = new MonitorManager(repository, modelMapper);
+        this.monitorManager = new MonitorManager(repository, modelMapper, eventPublisher);
         this.monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN);
         this.monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN);
         when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(false);
