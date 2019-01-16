@@ -345,7 +345,7 @@
   },
   "RESTART_MODAL": {
     "HEADER": "Potwierdzenie restartu instancji",
-    "BODY": "Czy chcesz zrestartować tą instancję?",
+    "BODY": "Czy chcesz zrestartować tę instancję?",
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },
@@ -397,7 +397,7 @@
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
-    "BODY": "Czy chcesz zatrzymać tą instancje?",
+    "BODY": "Czy chcesz zatrzymać tę instancję?",
     "YES_BUTTON": "Tak",
     "CANCEL_BUTTON": "Anuluj"
   },

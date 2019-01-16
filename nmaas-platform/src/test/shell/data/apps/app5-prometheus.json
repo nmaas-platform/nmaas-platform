@@ -19,7 +19,7 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-prometheus",
-                "version": "1.0.1-alfa"
+                "version": "1.0.2-alfa"
             }
         },
         "defaultStorageSpace": 20,

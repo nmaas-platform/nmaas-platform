@@ -1,9 +1,4 @@
 {
-  "api": {
-    "restApiHostAddress":"10.134.241.6",
-    "restApiPort":8080,
-    "useKClusterApi":false
-  },
   "ingress": {
     "controllerConfigOption":"USE_EXISTING",
     "supportedIngressClass":"nginx",

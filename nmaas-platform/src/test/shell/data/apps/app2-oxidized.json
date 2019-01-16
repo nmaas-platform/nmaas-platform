@@ -16,7 +16,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-oxidized",
-				"version": "1.0.1-alfa"
+				"version": "1.0.2-alfa"
 			},
 			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 		},
