@@ -33,6 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import org.modelmapper.ModelMapper;
 
 public class DomainServiceTest {
 
@@ -54,7 +55,7 @@ public class DomainServiceTest {
     public void setup(){
         validator = new DefaultCodenameValidator("[a-z-]{2,8}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, userService, userRoleRepo, dcnRepositoryManager);
+        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, userService, userRoleRepo, dcnRepositoryManager, new ModelMapper());
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -308,10 +309,9 @@ public class DomainServiceTest {
                 new UserRole(User.builder().id(3L).build(), domain, Role.ROLE_DOMAIN_ADMIN))).build();
 
         List<User> users = ImmutableList.of(user1, user2);
-        when(userRoleRepo.findDomainMembers(anyLong())).thenReturn(users);
-        List<User> filteredUsers = domainService.findUsersWithDomainAdminRole(1L);
+        when(userRoleRepo.findDomainMembers(anyString())).thenReturn(users);
+        List<net.geant.nmaas.portal.api.domain.User> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
         assertThat("Result mismatch", filteredUsers.size() == 2);
-        assertThat(filteredUsers, Matchers.containsInAnyOrder(user1, user2));
     }
 
 }

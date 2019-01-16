@@ -55,16 +55,32 @@ curl -X POST %API_URL%/domains --header "Authorization: Bearer %token%" --header
 echo.
 
 echo
+echo ---------------------
+echo Create mail templates
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/activateAccountMail.json
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeployedMail.json
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/blockAccountMail.json
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/externalServiceHealthCheckMail.json
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/passwordReset.json
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/registrationMail.json
+echo.
+
+echo
 echo Register User First with username user1
 curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
 echo.
 echo
 echo Enable User First
-curl -X PUT %API_URL%/users/status/3?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+curl -X PUT %API_URL%/users/status/2?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
 echo.
 echo
 echo Set User First an ADMIN role on Domain One
-curl -X POST %API_URL%/domains/2/users/3/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
+curl -X POST %API_URL%/domains/2/users/2/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1-admin-role.json
 echo.
 
 echo
@@ -73,11 +89,11 @@ curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: applicati
 echo.
 echo
 echo Enable User Second
-curl -X PUT %API_URL%/users/status/4?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+curl -X PUT %API_URL%/users/status/3?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
 echo.
 echo
 echo Set User Second an USER role on Domain One
-curl -X POST %API_URL%/domains/2/users/4/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
+curl -X POST %API_URL%/domains/2/users/3/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user2-user-role.json
 echo.
 
 echo
@@ -86,11 +102,11 @@ curl -X POST %API_URL%/auth/basic/registration --header "Content-Type: applicati
 echo.
 echo
 echo Enable Operator
-curl -X PUT %API_URL%/users/status/5?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
+curl -X PUT %API_URL%/users/status/4?enabled=true --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json"
 echo.
 echo
 echo Set Operator an OPERATOR role on Global Domain
-curl -X POST %API_URL%/domains/1/users/5/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
+curl -X POST %API_URL%/domains/1/users/4/roles --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user3-operator-role.json
 echo.
 
 echo.

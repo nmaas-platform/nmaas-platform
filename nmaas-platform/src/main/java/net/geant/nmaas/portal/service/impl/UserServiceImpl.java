@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import com.google.common.collect.ImmutableSet;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
@@ -15,6 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,11 +38,14 @@ public class UserServiceImpl implements UserService {
 
 	PasswordEncoder passwordEncoder;
 
+	ModelMapper modelMapper;
+
 	@Autowired
-	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder){
+	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder, ModelMapper modelMapper){
 		this.userRepo = userRepo;
 		this.userRoleRepo = userRoleRepo;
 		this.passwordEncoder = passwordEncoder;
+		this.modelMapper = modelMapper;
 	}
 	
 	@Override
@@ -203,29 +207,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String findAllUsersEmailWithAdminRole(){
-        String emails = "";
-        for(User user: findAll()){
-            for(UserRole userRole: user.getRoles()){
-                if(userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())){
-                    emails = emails + userRole.getUser().getEmail() + ",";
-                }
-            }
-        }
-        return emails;
+	public List<net.geant.nmaas.portal.api.domain.User> findAllUsersWithAdminRole(){
+		return findAll().stream()
+				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
+				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<User> findUsersWithRoleSystemAdminAndOperator(){
-		List<User> users = new ArrayList<>();
-		for(User user : findAll()) {
-			for (UserRole userRole : user.getRoles()) {
-				if (userRole.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) ||
-						userRole.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name())) {
-					users.add(user);
-				}
-			}
-		}
-		return users;
+	public List<net.geant.nmaas.portal.api.domain.User> findUsersWithRoleSystemAdminAndOperator(){
+		return findAll().stream()
+				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))
+				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.collect(Collectors.toList());
 	}
 }

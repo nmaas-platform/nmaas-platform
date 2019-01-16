@@ -78,7 +78,7 @@ public class AppDeployment {
     /** Required storage space to be allocated for this particular instance in GB */
     private Integer storageSpace;
 
-    private String loggedInUsersName;
+    private String owner;
 
     private Long domainId;
 

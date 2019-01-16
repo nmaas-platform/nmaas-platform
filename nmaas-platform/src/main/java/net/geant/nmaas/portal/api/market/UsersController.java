@@ -2,7 +2,11 @@ package net.geant.nmaas.portal.api.market;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import java.util.Collections;
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.notifications.MailAttributes;
+import net.geant.nmaas.notifications.NotificationEvent;
+import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.User;
@@ -10,16 +14,15 @@ import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.model.ConfirmationEmail;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.NotificationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,27 +69,27 @@ public class UsersController {
 
     private DomainService domainService;
 
-    private NotificationService notificationService;
-
     private ModelMapper modelMapper;
 
     private PasswordEncoder passwordEncoder;
 
     private JWTTokenService jwtTokenService;
 
+    private ApplicationEventPublisher eventPublisher;
+
 	@Autowired
 	public UsersController(UserService userService,
 						   DomainService domainService,
-						   NotificationService notificationService,
 						   ModelMapper modelMapper,
 						   PasswordEncoder passwordEncoder,
-						   JWTTokenService jwtTokenService) {
+						   JWTTokenService jwtTokenService,
+						   ApplicationEventPublisher eventPublisher) {
 		this.userService = userService;
 		this.domainService = domainService;
-		this.notificationService = notificationService;
 		this.modelMapper = modelMapper;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtTokenService = jwtTokenService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@GetMapping("/users")
@@ -274,19 +276,15 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void sendResetPasswordNotification(HttpServletRequest request, @RequestBody String email){
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
-		ConfirmationEmail emailTemplate = ConfirmationEmail.builder()
-				.toEmail(user.getEmail())
-				.subject("NMaaS: Password reset request")
-				.templateName("user-reset-password-notification")
-				.firstName(user.getFirstname())
-				.userName(user.getUsername())
-				.accessURL(generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)))
-				.build();
-		this.notificationService.sendEmail(emailTemplate);
+		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)));
+	}
+
+	private String getPortalUrl(HttpServletRequest request){
+		return request.getHeader("referer");
 	}
 
 	private String generateResetPasswordUrl(HttpServletRequest request, String token){
-		String url = request.getHeader("referer").replace("/welcome/login", "");
+		String url = getPortalUrl(request).replace("/welcome/login", "");
 		if(!url.endsWith("/")){
 			url += "/";
 		}
@@ -485,7 +483,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
-    public void setEnabledFlag(@PathVariable Long userId,
+    public void setEnabledFlag(HttpServletRequest request, @PathVariable Long userId,
 							   @RequestParam("enabled") final boolean isEnabledFlag,
 							   final Principal principal) {
 		try {
@@ -501,35 +499,16 @@ public class UsersController {
 					roleAsString,
 					isEnabledFlag ? "activated" : "deactivated",
 					getUser(userId).getUsername());
-			ConfirmationEmail confirmationEmail = ConfirmationEmail
-					.builder()
-					.firstName(user.getFirstname())
-					.lastName(user.getLastname())
-					.toEmail(user.getEmail())
-					.userName(user.getUsername())
-					.build();
 			if (isEnabledFlag) {
-				confirmationEmail.setSubject("NMaaS: Account created");
-				confirmationEmail.setTemplateName("user-activate-notification");
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, getPortalUrl(request));
 			} else {
-				confirmationEmail.setSubject("NMaaS: Account blocked");
-				confirmationEmail.setTemplateName("user-deactivate-notification");
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, getPortalUrl(request));
 			}
-
-			notificationService.sendEmail(confirmationEmail);
 			log.info(message);
 		}catch(ObjectNotFoundException err){
 			throw new MissingElementException(err.getMessage());
 		}
     }
-
-    @GetMapping("/users/isSystemComponent")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_COMPONENT')")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void isSystemComponent(final Principal principal){
-        log.debug(String.format("Validated system component role for user [%s].", principal.getName()));
-    }
-
 
 	private Role convertRole(String userRole) {
 		Role role = null;
@@ -603,6 +582,15 @@ public class UsersController {
 
 	private boolean isSame(List<String> requestRoleList, List<String> userRoleList) {
 		return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
+	}
+
+	private void sendMail(User user, MailType mailType, String other){
+		MailAttributes mailAttributes = MailAttributes.builder()
+				.mailType(mailType)
+				.addressees(Collections.singletonList(modelMapper.map(user, User.class)))
+				.otherAttribute(other)
+				.build();
+		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 
 }
