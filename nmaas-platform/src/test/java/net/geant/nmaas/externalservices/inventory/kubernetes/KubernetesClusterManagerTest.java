@@ -87,7 +87,6 @@ public class KubernetesClusterManagerTest {
         deploymentWithoutStorageClass.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deploymentWithoutStorageClass.setDefaultNamespace("testNamespace");
         deploymentWithoutStorageClass.setDefaultStorageClass(null);
-        deploymentWithoutStorageClass.setUseInClusterGitLabInstance(false);
         clusterWithoutStorageClass.setDeployment(deploymentWithoutStorageClass);
         when(repository.findAll()).thenReturn(Arrays.asList(clusterWithoutStorageClass));
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
@@ -128,7 +127,6 @@ public class KubernetesClusterManagerTest {
         deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("testNamespace");
         deployment.setDefaultStorageClass("storageClass");
-        deployment.setUseInClusterGitLabInstance(false);
         deployment.setSmtpServerHostname("test-postfix");
         deployment.setSmtpServerPort(543);
         cluster.setDeployment(deployment);

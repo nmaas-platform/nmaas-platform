@@ -46,16 +46,10 @@ public class GitLabProject {
     private String accessPassword;
 
     /**
-     * Http URL of the git repository to be cloned
+     * Http URL of the git repository
      */
     @Column(nullable = false)
     private String accessUrl;
-
-    /**
-     * Http URL that can be directly used in "git clone" command (includes user access credentials)
-     */
-    @Column(nullable = false)
-    private String cloneUrl;
 
     /**
      * Internal GitLab project id
@@ -63,12 +57,11 @@ public class GitLabProject {
     @Column(nullable = false)
     private Integer projectId;
 
-    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, String cloneUrl, Integer projectId) {
+    public GitLabProject(Identifier deploymentId, String accessUser, String accessPassword, String accessUrl, Integer projectId) {
         this.deploymentId = deploymentId;
         this.accessUser = accessUser;
         this.accessPassword = accessPassword;
         this.accessUrl = accessUrl;
-        this.cloneUrl = cloneUrl;
         this.projectId = projectId;
     }
 

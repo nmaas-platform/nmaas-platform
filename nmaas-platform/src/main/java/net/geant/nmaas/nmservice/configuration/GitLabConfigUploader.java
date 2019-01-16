@@ -57,7 +57,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     /**
      * Uploads a set of configuration files to a new GitLab repository dedicated for the client requesting the deployment.
      * If an account for this client does not yet exists it is created.
-     * Information on how to access the repository (e.g. perform "git clone") is stored in {@link GitLabProject} object.
+     * Information on how to access the repository is stored in {@link GitLabProject} object.
      *
      * @param deploymentId unique identifier of service deployment
      * @param configIds list of identifiers of configuration files that should be loaded from database and uploaded to the git repository
@@ -187,15 +187,10 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         try {
             String gitLabUser = getUser(gitLabUserId);
             String gitLabRepoUrl = getHttpUrlToRepo(gitLabProjectId);
-            String gitCloneUrl = getGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
-            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitCloneUrl, gitLabProjectId);
+            return new GitLabProject(deploymentId, gitLabUser, gitLabPassword, gitLabRepoUrl, gitLabProjectId);
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
-    }
-
-    String getGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
-        return generateCompleteGitCloneUrl(gitLabUser, gitLabPassword, gitLabRepoUrl);
     }
 
     private String defaultRepositoryAccessUsername(){
@@ -215,11 +210,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         String[] urlParts = urlFromGitlabApiParts[1].split("/");
         urlParts[0] = gitLabManager.getGitlabServer() + ":" + gitLabManager.getGitlabPort();
         return urlFromGitlabApiParts[0] + "//" + String.join("/", urlParts);
-    }
-
-    private String generateCompleteGitCloneUrl(String gitLabUser, String gitLabPassword, String gitLabRepoUrl) {
-        String[] urlParts = gitLabRepoUrl.split("//");
-        return urlParts[0] + "//" + gitLabUser + ":" + gitLabPassword + "@" + urlParts[1];
     }
 
     private void uploadConfigFilesToProject(Integer gitLabProjectId, List<String> configIds) {

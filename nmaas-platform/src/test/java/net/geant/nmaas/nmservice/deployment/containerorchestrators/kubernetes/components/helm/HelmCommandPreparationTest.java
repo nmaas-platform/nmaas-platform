@@ -90,14 +90,10 @@ public class HelmCommandPreparationTest {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, "clone");
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "repoUrl");
         assertThat(HelmInstallCommand.commandWithArchive(NAMESPACE, DEPLOYMENT_ID.value(), arguments, CHART_ARCHIVE_NAME, false).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("persistenceName"),
-                        containsString("storageClass"),
-                        containsString("clone"),
-                        containsString("repoUrl")));
+                        containsString("storageClass")));
     }
 
     @Test
@@ -105,14 +101,10 @@ public class HelmCommandPreparationTest {
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_NAME, "persistenceName");
         arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, "storageClass");
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, "clone");
-        arguments.put(HelmKServiceManager.HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, "repoUrl");
         assertThat(HelmInstallCommand.commandWithArchive(NAMESPACE, DEPLOYMENT_ID.value(), arguments, CHART_ARCHIVE_NAME, true).asString(),
                 allOf(containsString(CORRECT_HELM_INSTALL_COMMAND_FIRST_PART),
                         containsString("persistenceName"),
                         containsString("storageClass"),
-                        containsString("clone"),
-                        containsString("repoUrl"),
                         containsString(TLS)));
     }
 
@@ -157,6 +149,5 @@ public class HelmCommandPreparationTest {
     public void shouldConstructVersionCommandWithEnabledTls(){
         assertThat(HelmVersionCommand.command(true).asString(), equalTo(CORRECT_HELM_VERSION_COMMAND + TLS));
     }
-
 
 }

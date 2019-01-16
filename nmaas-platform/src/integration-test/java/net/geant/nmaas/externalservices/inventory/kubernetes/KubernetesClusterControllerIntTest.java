@@ -65,7 +65,6 @@ public class KubernetesClusterControllerIntTest {
                         "\"namespaceConfigOption\":\"USE_DEFAULT_NAMESPACE\"," +
                         "\"defaultNamespace\":\"test-namespace\"," +
                         "\"defaultStorageClass\":\"storageClass\"," +
-                        "\"useInClusterGitLabInstance\":\"false\"," +
                         "\"forceDedicatedWorkers\":\"false\"," +
                         "\"smtpServerHostname\": \"test-postfix\"," +
                         "\"smtpServerPort\": 587" +
@@ -93,8 +92,10 @@ public class KubernetesClusterControllerIntTest {
 
     @Autowired
     private KubernetesClusterManager clusterManager;
+
     @Autowired
     private ModelMapper modelMapper;
+
     @Autowired
     private KubernetesClusterRepository clusterRepository;
 
@@ -248,7 +249,6 @@ public class KubernetesClusterControllerIntTest {
         deployment.setNamespaceConfigOption(NamespaceConfigOption.USE_DEFAULT_NAMESPACE);
         deployment.setDefaultNamespace("test-namespace");
         deployment.setDefaultStorageClass("storageClass");
-        deployment.setUseInClusterGitLabInstance(false);
         deployment.setForceDedicatedWorkers(false);
         deployment.setSmtpServerHostname("test-postfix");
         deployment.setSmtpServerPort(543);
