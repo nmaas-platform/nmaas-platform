@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
                 private translate: TranslateService) {
         this.resetPasswordForm = fb.group({
             email: ['', [Validators.required, Validators.email]]
-        })
+        });
     }
 
     ngOnInit() {

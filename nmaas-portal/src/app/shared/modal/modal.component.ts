@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
     selector: 'nmaas-modal',
@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./modal.component.css']
 })
 export class ModalComponent implements OnInit {
+
+    @Input() styleModal: string;
 
     public visible = false;
     public isInfo = false;
@@ -19,6 +21,26 @@ export class ModalComponent implements OnInit {
     }
 
     ngOnInit() {
+        switch(this.styleModal){
+            case 'info':
+                this.isInfo = true;
+                break;
+            case 'error':
+                this.isError = true;
+                break;
+            case 'warning':
+                this.isWarning = true;
+                break;
+            case 'success':
+                this.isSuccess = true;
+                break;
+            case 'default':
+                this.isDefault = true;
+                break;
+            default:
+                console.log("Invalid choice of modal type");
+                break;
+        }
     }
 
 
