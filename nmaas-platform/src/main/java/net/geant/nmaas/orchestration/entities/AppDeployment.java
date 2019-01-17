@@ -80,22 +80,14 @@ public class AppDeployment {
 
     private String owner;
 
-    private Long domainId;
-
     private String appName;
-
-    private Long appInstanceId;
-
-    private String accessURL;
-
-    private String appInstanceName;
 
     @Override
     public String toString() {
         return "AppDeployment{" +
                 "deploymentId=" + deploymentId +
                 ", domain='" + domain + '\'' +
-                ", appInstanceName='" + appInstanceName + '\'' +
+                ", appInstanceName='" + deploymentName + '\'' +
                 '}';
     }
 }
