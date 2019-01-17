@@ -157,8 +157,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public changeConfiguration(configuration: any): void{
     if(!isNullOrUndefined(configuration)){
       this.appConfiguration.jsonInput = configuration;
-    } else{
-      this.appConfiguration.jsonInput = {};
     }
   }
 
@@ -169,10 +167,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.changeMandatoryParameters(input['mandatoryParameters']);
     this.changeAdditionalParameters(input['additionalParameters']);
     this.changeConfiguration(input['configuration']);
-    this.submission.data = this.appConfiguration.jsonInput;
+    if(isNullOrUndefined(this.appConfiguration.jsonInput)){
+        this.appConfiguration.jsonInput = {};
+    }
     this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
       console.log('Configuration applied');
-      this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
+        this.submission.data = this.appConfiguration.jsonInput;
+        this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
     });
   }
 
