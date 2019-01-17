@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 @Profile("env_kubernetes")
 public class HelmKServiceManager implements KServiceLifecycleManager {
 
