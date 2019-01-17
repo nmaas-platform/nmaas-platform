@@ -92,7 +92,7 @@
 							[form]="configurationUpdateTemplate"
 							[submission]="submission"
                            [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-                           (submit)="changeConfiguration($event.data)">
+                           (change)="changeConfiguration($event.data)">
 					</formio>
 				</div>
 				<div class="nmaas-modal-footer">

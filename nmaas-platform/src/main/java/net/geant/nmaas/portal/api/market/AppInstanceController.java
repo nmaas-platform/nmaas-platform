@@ -146,10 +146,7 @@ public class AppInstanceController extends AppBaseController {
                 .configFileRepositoryRequired(appDeploymentSpec.isConfigFileRepositoryRequired())
                 .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
                 .owner(principal.getName())
-                .domainId(domainId)
                 .appName(app.getName())
-                .appInstanceId(appInstance.getId())
-                .appInstanceName(appInstance.getName())
                 .build();
 
         Identifier internalId = appLifecycleManager.deployApplication(appDeployment);

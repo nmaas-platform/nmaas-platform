@@ -36,15 +36,19 @@ public class AppDeploymentStateChangeManager {
 
     private AppDeploymentRepositoryManager deploymentRepositoryManager;
 
+    private AppDeploymentMonitor deploymentMonitor;
+
     private ApplicationEventPublisher eventPublisher;
 
     private ModelMapper modelMapper;
 
     @Autowired
     public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager,
+                                           AppDeploymentMonitor deploymentMonitor,
                                            ApplicationEventPublisher eventPublisher,
                                            ModelMapper modelMapper){
         this.deploymentRepositoryManager = deploymentRepositoryManager;
+        this.deploymentMonitor = deploymentMonitor;
         this.eventPublisher = eventPublisher;
         this.modelMapper = modelMapper;
     }
@@ -127,7 +131,7 @@ public class AppDeploymentStateChangeManager {
     private MailAttributes getMailAttributes(AppDeployment appDeployment){
         return MailAttributes.builder()
                 .appDeploymentView(modelMapper.map(appDeployment, AppDeploymentView.class))
-                .otherAttribute(appDeployment.getAccessURL())
+                .otherAttribute(deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId()).getUrl())
                 .mailType(MailType.APP_DEPLOYED)
                 .build();
     }
