@@ -1,10 +1,13 @@
 Placeholders tags:
+#TITLE# - mail subject
+#PREVIEW# - mail short description, some mail clients will see it as preview
 #LOGO_LINK# - link to image, default value: https://www.geant.org/Style%20Library/Geant/Images/logo.png
 #LOGO_ALT# -alternative text, default value: Geant Logo
 #HEADER# - header content, default value: Dear $username,
 #CONTENT# - mail content
-#SENDER# - NMaaS managment team name, deafult: NMaaS Team
-#SENDER_INFO# - information about sending organziation, 
+#SENDER# - regards & NMaaS instance management team name , default: Best regards,<br />NMaaS Team
+#NOREPLY# - noreply message, default: This is an automatically generated message, please do not reply.
+#SENDER_INFO# - information about sending organization,
 default value: &#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands
-#SENDER_POLICY# - information about sending mail policy/privacy policy, additionaly this is a place for unsubscribe link, 
+#SENDER_POLICY# - information about sending mail policy/privacy policy, additional this is a place for unsubscribe link,
 default value: You're receiving this email because you opted-in to receive communication from NMaaS.
