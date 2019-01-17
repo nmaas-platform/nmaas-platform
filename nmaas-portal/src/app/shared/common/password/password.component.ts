@@ -3,6 +3,7 @@ import {AbstractControl, Validator, Validators, FormBuilder, FormGroup} from '@a
 import {UserService} from "../../../service";
 import {Password} from "../../../model";
 import {ModalComponent} from "../../modal";
+import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
 
 export class PasswordValidator implements Validator {
 
@@ -33,6 +34,9 @@ export class PasswordComponent implements OnInit {
   @ViewChild(ModalComponent)
   public readonly modal:ModalComponent;
 
+  @ViewChild(PasswordStrengthMeterComponent)
+  passwordMeter: PasswordStrengthMeterComponent;
+
   public passwordForm: FormGroup;
 
   public errormsg:string;
@@ -41,7 +45,7 @@ export class PasswordComponent implements OnInit {
     this.passwordForm = fb.group(
       {
         password: ['', Validators.required],
-        newPassword:['', Validators.required],
+        newPassword:['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required]
       },
       {
