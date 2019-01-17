@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabSupportedException;
 import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -27,7 +26,9 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * Set of integration tests verifying correct communication with real standalone GitLab repository instance.
@@ -104,7 +105,6 @@ public class GitLabConfigUploaderIntTest {
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUser(), containsString(domain));
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessPassword(), is(notNullValue()));
         assertThat(serviceWithGitLabProject.getGitLabProject().getAccessUrl(), containsString(deploymentId.value()));
-        assertThat(serviceWithGitLabProject.getGitLabProject().getCloneUrl(), containsString(deploymentId.value()));
         repositoryManager.removeAllServices();
     }
 }

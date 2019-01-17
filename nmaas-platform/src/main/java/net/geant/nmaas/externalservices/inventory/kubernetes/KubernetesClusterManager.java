@@ -176,11 +176,6 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
     }
 
     @Override
-    public Boolean getUseInClusterGitLabInstance() {
-        return loadSingleCluster().getDeployment().getUseInClusterGitLabInstance();
-    }
-
-    @Override
     public String getSMTPServerHostname(){
         return loadSingleCluster().getDeployment().getSmtpServerHostname();
     }
@@ -208,12 +203,12 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         return repository.findAll().get(0);
     }
 
-    public KCluster getClusterById(Long id) {
+    KCluster getClusterById(Long id) {
         return modelMapper.map(repository.findById(id).orElseThrow(() -> new KubernetesClusterNotFoundException(clusterNotFoundMessage(id)))
                 , KCluster.class);
     }
 
-    public void addNewCluster(KCluster newKubernetesCluster) {
+    void addNewCluster(KCluster newKubernetesCluster) {
         if(!namespaceValidator.valid(newKubernetesCluster.getDeployment().getDefaultNamespace())){
             throw new IllegalArgumentException("Default namespace is invalid.");
         }
@@ -222,7 +217,7 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         repository.save(newKubernetesCluster);
     }
 
-    public void updateCluster(Long id, KCluster updatedKubernetesCluster) {
+    void updateCluster(Long id, KCluster updatedKubernetesCluster) {
         if(!namespaceValidator.valid(updatedKubernetesCluster.getDeployment().getDefaultNamespace())){
             throw new IllegalArgumentException("Default namespace is invalid.");
         }
@@ -236,7 +231,7 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         }
     }
 
-    public void removeCluster(Long id) {
+    void removeCluster(Long id) {
         KCluster cluster = repository.findById(id).orElseThrow(() -> new KubernetesClusterNotFoundException(clusterNotFoundMessage(id)));
         repository.delete(cluster);
     }

@@ -1,7 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
-import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.gitlab4j.api.GitLabApi;
@@ -13,7 +12,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,23 +20,12 @@ public class GitlabConfigUploaderTest {
 
     private NmServiceRepositoryManager repositoryManager = mock(NmServiceRepositoryManager.class);
     private GitLabManager gitLabManager = mock(GitLabManager.class);
-    private KClusterDeploymentManager kClusterDeployment = mock(KClusterDeploymentManager.class);
 
     private GitLabConfigUploader uploader;
 
     @Before
     public void setup() {
-        uploader = new GitLabConfigUploader(
-                repositoryManager,
-                null,
-                gitLabManager);
-    }
-
-    @Test
-    public void shouldGenerateProperRepoCloneUrlForExternalGitLab() throws InvalidDeploymentIdException {
-        when(kClusterDeployment.getUseInClusterGitLabInstance()).thenReturn(false);
-        String result = uploader.getGitCloneUrl("user", "password", "http://gitlab.test.pl/groups-project/test.git");
-        assertThat(result, is("http://user:password@gitlab.test.pl/groups-project/test.git"));
+        uploader = new GitLabConfigUploader(repositoryManager, null, gitLabManager);
     }
 
     @Test
@@ -47,8 +35,7 @@ public class GitlabConfigUploaderTest {
         Project project = mock(Project.class);
         when(gitLabApi.getProjectApi()).thenReturn(projectApi);
         when(projectApi.getProject(anyInt())).thenReturn(project);
-        when(project.getHttpUrlToRepo())
-                .thenReturn("http://example.gitlab.com/group/project.git");
+        when(project.getHttpUrlToRepo()).thenReturn("http://example.gitlab.com/group/project.git");
         when(gitLabManager.getGitlabServer()).thenReturn("test-server");
         when(gitLabManager.getGitlabPort()).thenReturn(80);
         uploader.setGitlab(gitLabApi);

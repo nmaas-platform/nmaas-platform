@@ -18,7 +18,6 @@ class ClusterDeployment {
     public defaultStorageClass: string="";
     public id: number;
     public namespaceConfigOption: string;
-    public useInClusterGitLabInstance: boolean = false;
     public forceDedicatedWorkers: boolean = false;
 }
 

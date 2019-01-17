@@ -1,13 +1,14 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Set of properties describing details of service deployment in Kubernetes cluster
@@ -32,10 +33,6 @@ public class KClusterDeployment {
 
     /** Kubernetes default storage class to be used by PVCs */
     private String defaultStorageClass;
-
-    /** Flag indicating if a GitLab instance deployed within the cluster should be used for configuration storage */
-    @Column(nullable = false)
-    private Boolean useInClusterGitLabInstance;
 
     /** The IP address / hostname of the SMTP server */
     @Column(nullable = false)

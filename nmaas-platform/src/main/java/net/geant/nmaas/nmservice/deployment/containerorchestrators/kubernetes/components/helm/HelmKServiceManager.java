@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
@@ -14,7 +15,6 @@ import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -23,15 +23,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 @Profile("env_kubernetes")
 public class HelmKServiceManager implements KServiceLifecycleManager {
 
     static final String HELM_INSTALL_OPTION_PERSISTENCE_NAME = "persistence.name";
     static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS = "persistence.storageClass";
     static final String HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE = "persistence.size";
-    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION = "nmaas.config.action";
-    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE = "clone_or_pull";
-    static final String HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL = "nmaas.config.repourl";
     static final String HELM_INSTALL_OPTION_INGRESS_ENABLED = "ingress.enabled";
     static final String HELM_INSTALL_OPTION_DEDICATED_WORKERS = "domain";
     static final String HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE = "Helm command execution failed -> ";
@@ -41,19 +39,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private KClusterDeploymentManager deploymentManager;
     private KClusterIngressManager ingressManager;
     private HelmCommandExecutor helmCommandExecutor;
-
-    @Autowired
-    public HelmKServiceManager(KubernetesRepositoryManager repositoryManager,
-                               KNamespaceService namespaceService,
-                               KClusterDeploymentManager deploymentManager,
-                               KClusterIngressManager ingressManager,
-                               HelmCommandExecutor helmCommandExecutor) {
-        this.repositoryManager = repositoryManager;
-        this.namespaceService = namespaceService;
-        this.deploymentManager = deploymentManager;
-        this.ingressManager = ingressManager;
-        this.helmCommandExecutor = helmCommandExecutor;
-    }
 
     @Override
     @Loggable(LogLevel.DEBUG)
@@ -77,9 +62,6 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
             arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, domain);
         }
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
-        arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION, HELM_INSTALL_OPTION_NMAAS_CONFIG_ACTION_VALUE);
-        if(serviceInfo.getGitLabProject() != null)
-            arguments.put(HELM_INSTALL_OPTION_NMAAS_CONFIG_REPOURL, serviceInfo.getGitLabProject().getCloneUrl());
         arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED,
                 String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
         if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
