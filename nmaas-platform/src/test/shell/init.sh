@@ -25,6 +25,9 @@ curl -X POST $API_URL/domains --header "Authorization: Bearer $TOKEN" --header "
 echo
 curl -X GET $API_URL/domains --header "Authorization: Bearer $TOKEN" | python -m json.tool
 echo
+echo Default mail template
+curl -X POST --header "Authorization: Bearer $TOKEN" -F "file=@data/mails/html-template/template.html;type=text/html" $API_URL/mail/templates/html
+echo
 echo Create mail templates
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/activateAccountMail.json
 echo

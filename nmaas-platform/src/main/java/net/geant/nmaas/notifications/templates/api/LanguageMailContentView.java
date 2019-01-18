@@ -1,5 +1,6 @@
 package net.geant.nmaas.notifications.templates.api;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +16,5 @@ public class LanguageMailContentView {
 
     private String subject;
 
-    private String template;
+    private Map<String, String> template;
 }

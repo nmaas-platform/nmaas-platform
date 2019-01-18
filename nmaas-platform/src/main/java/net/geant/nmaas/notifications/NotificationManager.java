@@ -1,5 +1,11 @@
 package net.geant.nmaas.notifications;
 
+import com.google.common.collect.ImmutableMap;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import java.io.IOException;
+import java.io.StringReader;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
@@ -16,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 @Service
 @Log4j2
@@ -48,20 +55,21 @@ public class NotificationManager {
         this.modelMapper = modelMapper;
     }
 
-    void prepareAndSendMail(MailAttributes mailAttributes){
+    void prepareAndSendMail(MailAttributes mailAttributes) throws IOException, TemplateException {
         MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
+        Template template = templateService.getHTMLTemplate();
         LanguageMailContentView langTemplate = mailTemplate.getTemplates().stream()
                 .filter(temp -> temp.getLanguage().equals(configurationManager.getConfiguration().getDefaultLanguage()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
-        this.prepareMail(mailAttributes);
+        this.getAllAddressees(mailAttributes);
         for(User user : mailAttributes.getAddressees()){
-            this.notificationService.sendMail(user.getEmail(), langTemplate.getSubject(), getFilledTemplate(langTemplate.getTemplate(), user, mailAttributes.getAppDeploymentView(), mailAttributes.getOtherAttribute()));
+            this.notificationService.sendMail(user.getEmail(), langTemplate.getSubject(), getFilledTemplate(template, langTemplate, user, mailAttributes, mailTemplate));
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
     }
 
-    private void prepareMail(MailAttributes mailAttributes){
+    private void getAllAddressees(MailAttributes mailAttributes){
         if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
@@ -77,14 +85,32 @@ public class NotificationManager {
         }
     }
 
-    private String getFilledTemplate(String template, User user, AppDeploymentView appDeployment, String other){
-        return template.replace("#username", user.getFirstname() == null ? user.getUsername() : user.getFirstname())
-                .replace("#appName", appDeployment == null ? "" : appDeployment.getAppName())
-                .replace("#appInstanceName", appDeployment  == null ? "" : appDeployment.getDeploymentName())
-                .replace("#domainName", appDeployment  == null ? "" : appDeployment.getDomain())
-                .replace("#serviceName", other == null ? "" : other)
-                .replace("#newUser", other == null ? "" : other)
-                .replace("#accessURL", other  == null ? "" : other);
+    private String getFilledTemplate(Template template, LanguageMailContentView langContent, User user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
+                .putAll(mailTemplate.getGlobalInformation())
+                .put("HEADER", getHeader(langContent.getTemplate().get("HEADER"), user))
+                .put("CONTENT", getContent(langContent.getTemplate().get("CONTENT"), mailAttributes.getAppDeploymentView(), mailAttributes.getOtherAttribute()))
+                .put("SENDER", langContent.getTemplate().get("SENDER"))
+                .put("NOREPLY", langContent.getTemplate().get("NOREPLY"))
+                .put("SENDER_POLICY", langContent.getTemplate().get("SENDER_POLICY"))
+                .put("TITLE", langContent.getSubject())
+                .build());
+    }
+
+    private String getHeader(String header, User user) throws IOException, TemplateException {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("HEADER", new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null ? user.getUsername() : user.getFirstname()));
+    }
+
+    private String getContent(String content, AppDeploymentView appDeployment, String other) throws IOException, TemplateException {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("CONTENT", new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)),
+                ImmutableMap.builder()
+                        .put("appName", appDeployment == null ? "" : appDeployment.getAppName())
+                        .put("appInstanceName", appDeployment  == null ? "" : appDeployment.getDeploymentName())
+                        .put("domainName", appDeployment  == null ? "" : appDeployment.getDomain())
+                        .put("serviceName", other == null ? "" : other)
+                        .put("newUser", other == null ? "" : other)
+                        .put("accessURL", other  == null ? "" : other)
+                        .build());
     }
 
     private List<String> getListOfMails(List<User> users){

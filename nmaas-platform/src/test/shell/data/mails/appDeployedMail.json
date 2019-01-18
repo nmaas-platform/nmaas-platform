@@ -1,25 +1,54 @@
 {
   "mailType": "APP_DEPLOYED",
+  "globalInformation": {
+    "LOGO_LINK": "https://www.geant.org/Style%20Library/Geant/Images/logo.png",
+    "LOGO_ALT": "Geant logo",
+    "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
+  },
   "templates": [
     {
       "language": "en",
       "subject": "NMaaS: App instance ready",
-      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>The #appName instance #appInstanceName in domain #domainName is now ready. You can access your instance by clicking on this <a href=\"#accessURL\">link.</a></p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+      }
     },
     {
       "language": "fr",
       "subject": "NMaaS: App instance ready",
-      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>The #appName instance #appInstanceName in domain #domainName is now ready. You can access your instance by clicking on this <a href=\"#accessURL\">link.</a></p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+      }
     },
     {
       "language": "de",
       "subject": "NMaaS: App instance ready",
-      "template": "<html>\n<body>\n    <p>Dear #username,</p>\n    <p>The #appName instance #appInstanceName in domain #domainName is now ready. You can access your instance by clicking on this <a href=\"#accessURL\">link.</a></p>\n\n    <p>Best regards,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (message generated automatically)\n    </p>\n</body>\n</html>"
+      "template": {
+        "HEADER": "Dear ${username},",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.",
+        "SENDER": "Best regards,<br />NMaaS Team",
+        "NOREPLY": "This is an automatically generated message, please do not reply.",
+        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+      }
     },
     {
       "language": "pl",
       "subject": "NMaaS: Instancja aplikacji jest już gotowa",
-      "template": "<html>\n<body>\n    <p>Drogi #username,</p>\n    <p>Instancja aplikacji #appName o nazwie #appInstanceName w domenie #domainName jest już gotowa. <a href=\"#accessURL\">Kliknij tutaj aby przejść do instancji.</a></p>\n\n    <p>Z pozdrowieniami,<br />\n    NMaaS Administrator\n    </p>\n    <img src=\"https://www.geant.org/Style%20Library/Geant/Images/logo.png\" alt=\"Geant Logo\"/>\n    <p>\n    (wiadomość została wygenerowana automatycznie)\n    </p>\n</body>\n</html>"
+      "template": {
+        "HEADER": "Drogi ${username},",
+        "CONTENT": "Instancja aplikacji ${appName} o nazwie ${appInstanceName} w domenie ${domainName} jest już gotowa. <a href=\"${accessURL}\">Kliknij tutaj aby przejść do instancji.</a>",
+        "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
+        "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
+        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+      }
     }
   ]
 }

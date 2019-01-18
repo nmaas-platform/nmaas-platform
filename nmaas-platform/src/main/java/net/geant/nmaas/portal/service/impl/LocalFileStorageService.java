@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ public class LocalFileStorageService implements FileStorageService {
             fileInfo = fileRepo.save(fileInfo);
 
             path = Paths.get(uploadDir + File.separator + fileInfo.getId());
-            Files.copy(file.getInputStream(), getPath(fileInfo.getId()));
+            Files.copy(file.getInputStream(), getPath(fileInfo.getId()), StandardCopyOption.REPLACE_EXISTING);
             
             return fileInfo;
         } catch (IOException e) {
@@ -55,6 +57,11 @@ public class LocalFileStorageService implements FileStorageService {
 	@Override
 	public FileInfo getFileInfo(Long id) {
 		return fileRepo.getOne(id);
+	}
+
+	@Override
+	public List<FileInfo> getFileInfoByContentType(String contentType){
+		return fileRepo.getByContentType(contentType);
 	}
 
 	@Override
