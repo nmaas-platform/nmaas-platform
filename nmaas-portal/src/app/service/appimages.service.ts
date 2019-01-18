@@ -1,14 +1,14 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import {FileInfo} from "../model";
 import { AppConfigService } from '../service/appconfig.service';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
+
+
+
 
 @Injectable()
 export class AppImagesService {
@@ -29,7 +29,7 @@ export class AppImagesService {
             .map(res=> {
                 return res.id
             })
-            .catch((error: any) => Observable.throw(error.message || 'Server error'));
+            .catch((error: any) => observableThrowError(error.message || 'Server error'));
     }
 
 }

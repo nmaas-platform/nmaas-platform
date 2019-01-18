@@ -5,7 +5,7 @@ import {AppConfigService} from '../../service/appconfig.service';
 import {PasswordValidator} from '../../shared/common/password/password.component';
 import {AfterContentInit, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
 import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/modal-info-policy.component";
 import {ModalComponent} from "../../shared/modal";

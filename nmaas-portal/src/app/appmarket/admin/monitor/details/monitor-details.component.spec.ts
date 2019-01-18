@@ -7,7 +7,7 @@ import {HttpClient, HttpHandler} from "@angular/common/http";
 import {AppConfigService} from "../../../../service";
 import {MonitorService} from "../../../../service/monitor.service";
 import {MonitorEntry, ServiceType} from "../../../../model/monitorentry";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 
 class MockMonitorService{
     private readonly url: string;
@@ -17,35 +17,35 @@ class MockMonitorService{
     }
 
     public createMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-        return Observable.of<MonitorEntry>();
+        return of<MonitorEntry>();
     }
 
     public updateMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-        return Observable.of<MonitorEntry>();
+        return of<MonitorEntry>();
     }
 
     public deleteMonitorEntryAndJob(serviceName: string):Observable<any>{
-        return Observable.of<MonitorEntry>();
+        return of<MonitorEntry>();
     }
 
     public getAllMonitorEntries():Observable<MonitorEntry[]>{
-        return Observable.of<MonitorEntry[]>();
+        return of<MonitorEntry[]>();
     }
 
     public getOneMonitorEntry(serviceName: string):Observable<MonitorEntry>{
-        return Observable.of<MonitorEntry>();
+        return of<MonitorEntry>();
     }
 
     public executeJob(serviceName: string):Observable<any>{
-        return Observable.of<MonitorEntry>();
+        return of<MonitorEntry>();
     }
 
     public resumeJob(serviceName: string): Observable<any>{
-        return Observable.of<any>();
+        return of<any>();
     }
 
     public pauseJob(serviceName: string): Observable<any> {
-        return Observable.of<any>();
+        return of<any>();
     }
 }
 

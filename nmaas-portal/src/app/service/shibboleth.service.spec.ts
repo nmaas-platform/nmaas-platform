@@ -1,7 +1,7 @@
 import { TestBed, inject } from '@angular/core/testing';
 
 import { ShibbolethService } from './shibboleth.service';
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {HttpClient, HttpHandler} from "@angular/common/http";
 import {AppConfigService} from "./appconfig.service";
@@ -18,11 +18,11 @@ class MockConfigurationService{
     }
 
     public getConfiguration():Observable<Configuration>{
-        return Observable.of<Configuration>();
+        return of<Configuration>();
     }
 
     public updateConfiguration(configuration:Configuration):Observable<any>{
-        return Observable.of<Configuration>();
+        return of<Configuration>();
     }
 }
 

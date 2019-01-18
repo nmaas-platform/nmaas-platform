@@ -4,9 +4,8 @@ import { AppConfigService } from '../../../service/appconfig.service';
 import {DomainService} from '../../../service/domain.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Component, OnInit, Input, OnDestroy} from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
+import { Subscription ,  Observable } from 'rxjs';
+
 import { isUndefined, isNullOrUndefined } from 'util';
 
 @Component({

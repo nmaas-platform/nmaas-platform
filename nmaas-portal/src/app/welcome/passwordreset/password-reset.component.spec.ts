@@ -12,7 +12,7 @@ import {ModalChangelogComponent} from "../../shared/footer/modal-changelog/modal
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from "angular-password-strength-meter";
 
 describe('Password reset component', () =>{
@@ -45,7 +45,7 @@ describe('Password reset component', () =>{
        fixture = TestBed.createComponent(PasswordResetComponent);
        component = fixture.componentInstance;
        contentService = fixture.debugElement.injector.get(ContentDisplayService);
-       spyOn(contentService, 'getLanguages').and.returnValue(Observable.of(['en', 'fr', 'pl']));
+       spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
        fixture.debugElement.injector.get(TranslateService).use("en");
        fixture.detectChanges();
    });

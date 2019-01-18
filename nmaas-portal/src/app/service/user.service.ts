@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {isUndefined} from 'util';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {GenericDataService} from './genericdata.service';
 
 import {HttpClient} from '@angular/common/http';
@@ -11,6 +11,7 @@ import {User} from '../model/user';
 import {UserRole, Role} from '../model/userrole';
 import {DomainService} from "./domain.service";
 import {PasswordReset} from "../model/passwordreset";
+import {catchError, debounceTime} from 'rxjs/operators';
 
 @Injectable()
 export class UserService extends GenericDataService {
@@ -40,9 +41,8 @@ export class UserService extends GenericDataService {
   }
 
   public completeRegistration(user: User): Observable<any> {
-    return this.http.post<User>(this.getUsersUrl()+'complete', user)
-        .timeout(this.appConfig.getHttpTimeout())
-        .catch(this.handleError);
+    return this.http.post<User>(this.getUsersUrl()+'complete', user).pipe(
+        debounceTime(this.appConfig.getHttpTimeout()), catchError(this.handleError));
   }
 
   public changeUserStatus(userId: number, enabled: boolean): Observable<any> {

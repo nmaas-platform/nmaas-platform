@@ -3,7 +3,7 @@ import {Domain} from '../../../model/domain';
 import {Role} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {Component, OnInit} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-domains-list', templateUrl: './domainslist.component.html', styleUrls: ['./domainslist.component.css']

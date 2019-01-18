@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild, Input} from '@angular/core';
 import {ProfileService} from "../../service/profile.service";
 import {User} from "../../model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {Domain} from "../../model/domain";
 import {RegistrationService} from "../../auth/registration.service";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";

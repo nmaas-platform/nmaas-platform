@@ -6,9 +6,9 @@ import {UserService} from '../../../service/user.service';
 import {BaseComponent} from '../../common/basecomponent/base.component';
 import {Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/shareReplay';
-import 'rxjs/add/operator/take';
+import {Observable, of} from 'rxjs';
+
+
 import { isUndefined } from 'util';
 import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
@@ -53,7 +53,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
     //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
       //console.debug('getDomainName(' + domainId + ') from cache');
-      return Observable.of(this.domainCache.getData(domainId).name);
+      return of(this.domainCache.getData(domainId).name);
     } else {
       //console.debug('getDomainName(' + domainId + ') from network');
       return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})

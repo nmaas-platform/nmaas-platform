@@ -1,17 +1,13 @@
+
+import {throwError as observableThrowError, Subscription, Subscriber, Observable, BehaviorSubject} from 'rxjs';
 import {Pipe, PipeTransform, OnDestroy, WrappedValue, ChangeDetectorRef, Injectable} from '@angular/core';
 
 import {HttpClient, HttpParams} from '@angular/common/http';
 
-import {Subscription} from 'rxjs/Subscription';
-import {Subscriber} from 'rxjs/Subscriber';
 
-import {Observable} from 'rxjs/Observable';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
+
+
+
 
 
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
@@ -27,7 +23,7 @@ export class AuthHttpWrapper {
   public get(url: string): Observable<any> {
     console.debug('Get secured url ' + url);
     if (!url) {
-      return Observable.throw('Empty url');
+      return observableThrowError('Empty url');
     }
 
     return new Observable<Blob>((observer: Subscriber<any>) => {
@@ -38,7 +34,7 @@ export class AuthHttpWrapper {
         .catch((error: Response | any) => {
           var errMsg: string = 'Unable to get ' + url;
           console.debug(errMsg);
-          return Observable.throw(errMsg);
+          return observableThrowError(errMsg);
         })
         .subscribe(m => {
           objectUrl = URL.createObjectURL(m);

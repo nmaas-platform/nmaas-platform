@@ -10,14 +10,15 @@ import {AppInstance, AppInstanceRequest} from '../model/appinstance';
 import {AppInstanceProgressStage} from '../model/appinstanceprogressstage';
 import {GenericDataService} from './genericdata.service';
 
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
+import {Observable} from 'rxjs';
+
+
+
+
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 import {AppConfiguration} from "../model/appconfiguration";
 import {a, b} from "@angular/core/src/render3";
+import {map} from 'rxjs/operators';
 
 @Injectable()
 export class AppInstanceService extends GenericDataService {
@@ -31,7 +32,8 @@ export class AppInstanceService extends GenericDataService {
   }
 
   public getSortedAllAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
-    return this.get<AppInstance[]>(this.getUrl(domainId)).map(
+    return this.get<AppInstance[]>(this.getUrl(domainId)).pipe(
+        map(
       (data) => {
         data.sort((a, b) => {
           if(criteria.sortDirection === 'desc'){
@@ -42,7 +44,7 @@ export class AppInstanceService extends GenericDataService {
           }
         });
         return data;
-      }
+      })
     )
   }
 
@@ -51,7 +53,8 @@ export class AppInstanceService extends GenericDataService {
   }
 
   public getSortedMyAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my').map(
+    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my').pipe(
+        map(
       (data) => {
         data.sort((a, b) => {
           if(criteria.sortDirection === 'desc'){
@@ -62,7 +65,7 @@ export class AppInstanceService extends GenericDataService {
           }
         });
         return data;
-      }
+      })
     )
   }
 
