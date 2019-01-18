@@ -11,7 +11,7 @@
       "subject": "NMaaS: App instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -22,7 +22,7 @@
       "subject": "NMaaS: App instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -33,7 +33,7 @@
       "subject": "NMaaS: App instance ready",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.",
+        "CONTENT": "The ${appName} instance ${appInstanceName} in domain ${domainName} is now ready. You can access your instance by clicking on this <a href=\"${accessURL}\">link.</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
