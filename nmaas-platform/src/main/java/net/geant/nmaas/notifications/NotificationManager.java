@@ -18,6 +18,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,9 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 @Service
 @Log4j2
 public class NotificationManager {
+
+    @Value("${portal.address}")
+    private String portalAddress;
 
     private TemplateService templateService;
 
@@ -88,6 +92,7 @@ public class NotificationManager {
     private String getFilledTemplate(Template template, LanguageMailContentView langContent, User user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
+                .put("PORTAL_LINK", this.portalAddress == null ? "" : this.portalAddress)
                 .put("HEADER", getHeader(langContent.getTemplate().get("HEADER"), user))
                 .put("CONTENT", getContent(langContent.getTemplate().get("CONTENT"), mailAttributes.getAppDeploymentView(), mailAttributes.getOtherAttribute()))
                 .put("SENDER", langContent.getTemplate().get("SENDER"))
@@ -109,6 +114,7 @@ public class NotificationManager {
                         .put("domainName", appDeployment  == null ? "" : appDeployment.getDomain())
                         .put("serviceName", other == null ? "" : other)
                         .put("newUser", other == null ? "" : other)
+                        .put("portalURL", this.portalAddress == null ? "" : this.portalAddress)
                         .put("accessURL", other  == null ? "" : other)
                         .build());
     }
