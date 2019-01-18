@@ -7,6 +7,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../../shared";
 import {ReCaptchaComponent} from "angular5-recaptcha";
 import {TranslateService} from '@ngx-translate/core';
+import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
 
 @Component({
   selector: 'app-passwordreset',
@@ -25,6 +26,9 @@ export class PasswordResetComponent implements OnInit {
   @ViewChild(ReCaptchaComponent)
   public captcha: ReCaptchaComponent;
 
+  @ViewChild(PasswordStrengthMeterComponent)
+  passwordMeter: PasswordStrengthMeterComponent;
+
   public form: FormGroup;
 
   public errorMessage: string;
@@ -36,7 +40,7 @@ export class PasswordResetComponent implements OnInit {
               private translate: TranslateService) {
       this.form = fb.group(
           {
-              newPassword: ['', Validators.required],
+              newPassword: ['', [Validators.required, Validators.minLength(6)]],
               confirmPassword: ['', Validators.required]
           },
           {

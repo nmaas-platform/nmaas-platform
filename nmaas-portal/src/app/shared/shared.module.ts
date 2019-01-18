@@ -36,6 +36,7 @@ import { SortableTableDirective } from './sortable-column/sortable-table.directi
 import {AppInstallModalComponent} from "./modal/appinstall";
 import { RatingExtendedComponent } from './rating-extended/rating-extended.component';
 import {TooltipModule} from "ng2-tooltip-directive";
+import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 
 @NgModule({
   imports: [
@@ -45,6 +46,7 @@ import {TooltipModule} from "ng2-tooltip-directive";
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
+    PasswordStrengthMeterModule,
     TranslateModule.forChild(),
     TooltipModule
   ],
