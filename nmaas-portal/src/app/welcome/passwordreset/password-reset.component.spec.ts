@@ -13,6 +13,7 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Observable} from "rxjs";
+import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from "angular-password-strength-meter";
 
 describe('Password reset component', () =>{
    let component: PasswordResetComponent;
@@ -33,7 +34,8 @@ describe('Password reset component', () =>{
                        provide: TranslateLoader,
                        useClass: TranslateFakeLoader
                    }
-               })
+               }),
+             PasswordStrengthMeterModule
            ],
            providers: [UserService, AppConfigService, DomainService, ContentDisplayService, ChangelogService]
        }).compileComponents();
