@@ -102,12 +102,16 @@
                 <table class="main"
                        style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
                     <tr style="text-align: center;">
-                        <a href="https://www.geant.org/" target="_blank"><img style="max-height: 50px; display: block; margin-left: auto;margin-right: auto; padding-bottom: 10px;" src="https://www.geant.org/Style%20Library/Geant/Images/logo.png" alt="Geant Logo"/></a>
+                        <a href="${INSTANCE_URL}" target="_blank">
+                            <img style="max-height: 50px; display: block; margin-left: auto;margin-right: auto; padding-bottom: 12px;"
+                                 src="http://localhost:4200/assets/images/logo-small.png/"
+                                 alt="${LOGO_ALT}"/>
+                        </a>
                     </tr>
                     <tr>
                         <td class="wrapper"
                             style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 15px 15px 5px 15px;">
-                            <h3>Dear $username,</h3>
+                            <h3 style="font-size: 14px;">Dear $username,</h3>
                             <table border="0" cellpadding="0" cellspacing="0"
                                    style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                                 <tr>
@@ -117,9 +121,6 @@
                                             NMaaS Team
                                         </p>
                                         <p style="text-align: center; color: lightgray; font-size: 11px;">
-                                            <br><a href="#instanceURL"><img
-                                                    style="max-height: 16px;"
-                                                    src="https://www.geant.org/Services/Connectivity_and_network/NMaaS/PublishingImages/Pages/Home/logo.png"></a>
                                             <br>This is an automatically generated message, please do not reply.
                                         </p>
                                     </td>
@@ -139,6 +140,11 @@
                                     <p>
                                         You're receiving this email because you opted-in to receive communication from NMaaS.
                                     </p>
+                                    <a href="https://www.geant.org/" target="_blank" rel="nofollow">
+                                        <img src="https://www.geant.org/Style%20Library/Geant/Images/logo.png"
+                                             alt="Geant logo"
+                                             style="max-height: 24px;">
+                                    </a>
                                 </span>
                             </td>
                         </tr>
