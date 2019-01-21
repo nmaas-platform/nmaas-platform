@@ -103,7 +103,7 @@ public class NotificationManager {
     }
 
     private String getHeader(String header, User user) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("HEADER", new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null ? user.getUsername() : user.getFirstname()));
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("HEADER", new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
     private String getContent(String content, AppDeploymentView appDeployment, String other) throws IOException, TemplateException {

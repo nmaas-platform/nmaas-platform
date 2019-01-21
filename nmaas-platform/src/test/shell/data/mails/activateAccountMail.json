@@ -3,6 +3,7 @@
   "globalInformation": {
     "LOGO_LINK": "https://www.geant.org/Style%20Library/Geant/Images/logo.png",
     "LOGO_ALT": "Geant logo",
+    "PORTAL_LOGO_ALT": "NMaaS logo",
     "SENDER_INFO": "&#9400; GÉANT Association Hoekenrode 3 1102 BR - Amsterdam – Zuidoost- The Netherlands"
   },
   "templates": [
