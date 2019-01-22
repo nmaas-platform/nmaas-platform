@@ -36,6 +36,37 @@
                             "key": "configTab",
                             "components": [
                                 {
+                                    "label": "Mandatory parameters",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 0,
+                                    "key": "mandatoryParameters",
+                                    "components": [
+                                        {
+                                            "label": "Default admin username",
+                                            "type": "textfield",
+                                            "key": "adminUser",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "validate": {
+                                                "required": true
+                                            }
+                                        },
+                                        {
+                                            "label": "Default admin password",
+                                            "type": "password",
+                                            "key": "adminPassword",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "validate": {
+                                                "required": true
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
                                     "label": "Configuration",
                                     "hideLabel": true,
                                     "tableView": true,
@@ -89,6 +120,45 @@
                             ]
                         },
                         {
+                            "label": "Additional",
+                            "key": "additionalParametersTab",
+                            "components": [
+                                {
+                                    "label": "additionalParameters",
+                                    "hideLabel": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 1,
+                                    "key": "additionalParameters",
+                                    "components": [
+                                        {
+                                            "label": "SMTP host",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "smtp#host",
+                                            "inputFormat": "plain"
+                                        },
+                                        {
+                                            "label": "SMTP username",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "smtp#user",
+                                            "inputFormat": "plain",
+                                            "tab": 1
+                                        },
+                                        {
+                                            "label": "SMTP user password",
+                                            "type": "password",
+                                            "input": true,
+                                            "key": "smtp#password",
+                                            "inputFormat": "plain",
+                                            "tab": 1
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
                             "label": "Advanced",
                             "key": "advancedTab",
                             "components": [
@@ -98,7 +168,7 @@
                                     "tableView": true,
                                     "type": "container",
                                     "input": true,
-                                    "tab": 1,
+                                    "tab": 2,
                                     "key": "advanced",
                                     "components": [
                                         {
@@ -107,7 +177,7 @@
                                             "input": true,
                                             "key": "storageSpace",
                                             "placeholder": "Default value: 1GB",
-                                            "tab": 1
+                                            "tab": 2
                                         }
                                     ]
                                 }

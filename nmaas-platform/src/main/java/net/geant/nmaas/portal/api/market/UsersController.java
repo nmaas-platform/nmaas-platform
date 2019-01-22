@@ -22,6 +22,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -64,6 +64,9 @@ public class UsersController {
 	private static final String USER_NOT_FOUND_ERROR_MESSAGE = "User not found.";
 	private static final String DOMAIN_NOT_FOUND_ERROR_MESSAGE = "Domain not found.";
 	private static final String ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE = "Role cannot be assigned.";
+
+	@Value("${portal.address}")
+	private String portalAddress;
 
 	private UserService userService;
 
@@ -274,22 +277,17 @@ public class UsersController {
 
 	@PostMapping("/users/reset/notification")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void sendResetPasswordNotification(HttpServletRequest request, @RequestBody String email){
+	public void sendResetPasswordNotification(@RequestBody String email){
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
-		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, generateResetPasswordUrl(request, this.jwtTokenService.getResetToken(email)));
+		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, generateResetPasswordUrl(this.jwtTokenService.getResetToken(email)));
 	}
 
-	private String getPortalUrl(HttpServletRequest request){
-		return request.getHeader("referer");
-	}
-
-	private String generateResetPasswordUrl(HttpServletRequest request, String token){
-		String url = getPortalUrl(request).replace("/welcome/login", "");
+	private String generateResetPasswordUrl(String token){
+		String url = this.portalAddress;
 		if(!url.endsWith("/")){
 			url += "/";
 		}
-		url += "reset/" + token;
-		return url;
+		return url + "reset/" + token;
 	}
 
 	@PostMapping("/users/reset/validate")
@@ -483,7 +481,7 @@ public class UsersController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
-    public void setEnabledFlag(HttpServletRequest request, @PathVariable Long userId,
+    public void setEnabledFlag(@PathVariable Long userId,
 							   @RequestParam("enabled") final boolean isEnabledFlag,
 							   final Principal principal) {
 		try {
@@ -500,9 +498,9 @@ public class UsersController {
 					isEnabledFlag ? "activated" : "deactivated",
 					getUser(userId).getUsername());
 			if (isEnabledFlag) {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, getPortalUrl(request));
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, null);
 			} else {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, getPortalUrl(request));
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, null);
 			}
 			log.info(message);
 		}catch(ObjectNotFoundException err){
@@ -588,8 +586,10 @@ public class UsersController {
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(mailType)
 				.addressees(Collections.singletonList(modelMapper.map(user, User.class)))
-				.otherAttribute(other)
 				.build();
+		if(mailAttributes.getMailType() == MailType.PASSWORD_RESET){
+			mailAttributes.setOtherAttribute(other);
+		}
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 

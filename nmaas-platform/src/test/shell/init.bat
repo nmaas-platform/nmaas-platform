@@ -56,16 +56,26 @@ echo.
 
 echo
 echo ---------------------
+echo
+echo Default mail template
+curl -X POST --header "Authorization: Bearer %token%" -F "file=@data\mails\html-template\template.html;type=text/html" %API_URL%/mail/templates/html
+echo.
+echo
 echo Create mail templates
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/activateAccountMail.json
+echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeployedMail.json
+echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/blockAccountMail.json
+echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/externalServiceHealthCheckMail.json
+echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/passwordReset.json
+echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/registrationMail.json
 echo.
