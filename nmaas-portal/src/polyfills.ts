@@ -83,3 +83,5 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+//Fixes Angular 6 compatibility with libraries using global variables
+(window as any).global = window;

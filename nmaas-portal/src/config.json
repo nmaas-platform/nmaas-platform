@@ -1,5 +1,5 @@
 {
-	"apiUrl": "http://localhost:9000/api",
+	"apiUrl": "https://portal.nmaas.qalab.geant.net/api",
 	"tokenName": "token",
 	"nmaas": {
 		"globalDomainId": 1
