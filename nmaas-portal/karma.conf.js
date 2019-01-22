@@ -31,10 +31,7 @@ module.exports = function (config) {
         files: [
             
         ],
-        preprocessors: {
-            '**/*.spec.ts': ['@angular-devkit/build-angular'],
-            
-        },
+        preprocessors: {},
         mime: {
             'text/x-typescript': ['ts','tsx']
         },
