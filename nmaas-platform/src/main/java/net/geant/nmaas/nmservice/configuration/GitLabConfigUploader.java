@@ -68,17 +68,31 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     @Override
     public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         if(configFileRepositoryRequired){
-            String domain = serviceRepositoryManager.loadDomain(deploymentId);
-            gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
-            String gitLabPassword = generateRandomPassword();
-            Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
-            Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
-            Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
-            addRepositoryAccessUserToProject(gitLabProjectId);
-            GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
-            serviceRepositoryManager.updateGitLabProject(deploymentId, project);
-            uploadConfigFilesToProject(gitLabProjectId, configIds);
+            GitLabProject gitLabProject = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
+            if(gitLabProject == null){
+                createProjectAndUploadFiles(deploymentId, configIds);
+            } else{
+                updateConfigFiles(gitLabProject, configIds);
+            }
         }
+    }
+
+    private void createProjectAndUploadFiles(Identifier deploymentId, List<String> configIds){
+        String domain = serviceRepositoryManager.loadDomain(deploymentId);
+        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+        String gitLabPassword = generateRandomPassword();
+        Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
+        Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
+        Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
+        addRepositoryAccessUserToProject(gitLabProjectId);
+        GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
+        serviceRepositoryManager.updateGitLabProject(deploymentId, project);
+        uploadConfigFilesToProject(gitLabProjectId, configIds);
+    }
+
+    private void updateConfigFiles(GitLabProject project, List<String> configIds){
+        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+        uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
     }
 
     @Override
