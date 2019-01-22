@@ -1,17 +1,19 @@
 package net.geant.nmaas.notifications.templates.entities;
 
-import javax.persistence.Basic;
+import java.util.Map;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Getter
 @Setter
@@ -30,8 +32,7 @@ public class LanguageMailContent {
     @Column(nullable = false)
     private String subject;
 
-    @Basic(fetch= FetchType.EAGER)
-    @Lob
-    @Column(nullable = false)
-    private String template;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SELECT)
+    private Map<String, String> template;
 }

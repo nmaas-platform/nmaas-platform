@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/mail/templates")
@@ -37,5 +38,21 @@ public class TemplateController {
     @Transactional
     public void updateTemplate(@RequestBody MailTemplateView mailTemplate){
         this.templateService.updateMailTemplate(mailTemplate);
+    }
+
+    @PostMapping("/html")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Transactional
+    public void storeHtmlTemplate(@RequestBody MultipartFile file){
+        templateService.storeHTMLTemplate(file);
+    }
+
+    @PatchMapping("/html")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Transactional
+    public void updateHtmlTemplate(@RequestBody MultipartFile file){
+        this.templateService.updateHTMLTemplate(file);
     }
 }
