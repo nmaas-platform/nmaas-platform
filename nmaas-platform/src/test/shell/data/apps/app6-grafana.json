@@ -1,6 +1,6 @@
 {
     "name": "Grafana",
-    "version": "5.3.1",
+    "version": "5.4.3",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
     "briefDescription": "The tool for beautiful monitoring and metric analytics.",
@@ -19,7 +19,7 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-grafana",
-                "version": "1.0.1-alfa"
+                "version": "1.0.2-alfa"
             }
         },
         "defaultStorageSpace": 1,
@@ -195,54 +195,6 @@
                     "theme": "primary",
                     "input": false,
                     "tableView": true
-                }
-            ]
-        }
-    },
-    "configurationUpdateTemplate": {
-        "template": {
-            "components": [
-                {
-                    "label": "Connect to existing Prometheus instance",
-                    "type": "checkbox",
-                    "defaultValue": false,
-                    "key": "use_name",
-                    "input": true,
-                    "inputFormat": "plain"
-                },
-                {
-                    "label": "Data Source name",
-                    "type": "textfield",
-                    "defaultValue": "",
-                    "input": true,
-                    "key": "source_name",
-                    "validate": {
-                        "required": true
-                    },
-                    "inputFormat": "plain",
-                    "conditional": {
-                        "show": true,
-                        "when": "use_name",
-                        "eq": true,
-                        "json": ""
-                    }
-                },
-                {
-                    "label": "Prometheus instance address",
-                    "type": "textfield",
-                    "defaultValue": "",
-                    "input": true,
-                    "key": "source_addr",
-                    "validate": {
-                        "required": true
-                    },
-                    "inputFormat": "plain",
-                    "conditional": {
-                        "show": true,
-                        "when": "use_name",
-                        "eq": true,
-                        "json": ""
-                    }
                 }
             ]
         }
