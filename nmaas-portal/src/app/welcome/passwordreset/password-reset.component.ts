@@ -7,6 +7,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../../shared";
 import {TranslateService} from '@ngx-translate/core';
 import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
+import {RecaptchaComponent} from 'ng-recaptcha';
 
 @Component({
   selector: 'app-passwordreset',

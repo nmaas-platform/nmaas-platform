@@ -50,8 +50,8 @@ describe('Password reset component', () =>{
        fixture.detectChanges();
    });
 
-   //it('should create component', () => {
-   //   let app = fixture.debugElement.componentInstance;
+   // it('should create component', () => {
+   //  let app = fixture.debugElement.componentInstance;
    //   expect(app).toBeTruthy();
-   //});
+   // });
 });
