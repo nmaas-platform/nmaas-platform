@@ -181,9 +181,9 @@ export class AuthService {
   public login(username: string, password: string): Observable<boolean> {
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/basic/login',
-      JSON.stringify({'username': username, 'password': password}), {headers: headers})
-      .timeout(10000)
-      .map((response: Response) => {
+      JSON.stringify({'username': username, 'password': password}), {headers: headers}).pipe(
+      debounceTime(10000),
+      map((response: Response) => {
         console.debug('Login response: ' + response.statusText);
         // login successful if there's a jwt token in the response
         const token = response && response['token'];
@@ -201,8 +201,8 @@ export class AuthService {
           // return false to indicate failed login
           return false;
         }
-      })
-      .catch((error) => {
+      }),
+      catchError((error) => {
         let message : string;
         if(error.error['message'])
           message = error.error['message'];
@@ -211,7 +211,7 @@ export class AuthService {
 
         console.debug(error['status']+' - '+message);
         return observableThrowError(message);
-      });
+      }));
   }
 
   public propagateSSOLogin(userid: string): Observable<boolean> {

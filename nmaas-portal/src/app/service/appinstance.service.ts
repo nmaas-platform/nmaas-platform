@@ -12,12 +12,8 @@ import {GenericDataService} from './genericdata.service';
 
 import {Observable} from 'rxjs';
 
-
-
-
 import {AppInstanceStateHistory} from "../model/appinstancestatehistory";
 import {AppConfiguration} from "../model/appconfiguration";
-import {a, b} from "@angular/core/src/render3";
 import {map} from 'rxjs/operators';
 
 @Injectable()
@@ -86,7 +82,7 @@ export class AppInstanceService extends GenericDataService {
   }
 
   public removeAppInstance(appInstanceId: number, domainId?: number): Observable<any> {
-    return this.delete<any>(this.getUrl(domainId) + appInstanceId);      
+    return this.delete<any>(this.getUrl(domainId) + appInstanceId);
   }
 
   public getAppInstance(appInstanceId: number, domainId?: number): Observable<AppInstance> {

@@ -4,9 +4,9 @@ import { RatingExtendedComponent } from './rating-extended.component';
 import {AppsService} from "../../service";
 import {Observable, of} from "rxjs";
 import {Rate} from "../../model";
-import {HttpResponse} from "selenium-webdriver/http";
 import {TooltipModule} from "ng2-tooltip-directive";
 import {Pipe, PipeTransform} from "@angular/core";
+import {HttpResponse} from '@angular/common/http';
 
 class MockAppService{
   public getAppRateByUrl(urlPath: string): Observable<Rate> {

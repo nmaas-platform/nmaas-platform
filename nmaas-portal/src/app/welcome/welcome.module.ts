@@ -17,7 +17,7 @@ import {UserService} from '../service';
 import {CompleteComponent} from './complete/complete.component';
 import {ContentDisplayService} from '../service/content-display.service';
 import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
-import {ReCaptchaModule} from 'angular5-recaptcha';
+import {RecaptchaModule} from 'ng-recaptcha';
 import {TranslateModule} from '@ngx-translate/core';
 import {ShibbolethService} from '../service/shibboleth.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
@@ -45,7 +45,7 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     SharedModule,
     PipesModule,
     AppMarketModule,
-    ReCaptchaModule,
+    RecaptchaModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild()
   ],

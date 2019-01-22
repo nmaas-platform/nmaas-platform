@@ -13,6 +13,7 @@ import { isUndefined } from 'util';
 import {Role, UserRole} from '../../../model/userrole';
 import {UserDataService} from "../../../service/userdata.service";
 import {AuthService} from "../../../auth/auth.service";
+import {map, shareReplay, take} from 'rxjs/operators';
 
 @Component({
   selector: 'nmaas-userslist',
@@ -56,8 +57,10 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
       return of(this.domainCache.getData(domainId).name);
     } else {
       //console.debug('getDomainName(' + domainId + ') from network');
-      return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
-              .shareReplay(1).take(1);
+      return this.domainService.getOne(domainId).pipe(
+          map((domain) => {this.domainCache.setData(domainId, domain); return domain.name}),
+          shareReplay(1),
+          take(1));
     }
   }
 

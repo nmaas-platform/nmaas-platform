@@ -11,6 +11,7 @@ import {HttpClient, HttpParams} from '@angular/common/http';
 
 
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {catchError} from 'rxjs/operators';
 
 
 @Injectable()
@@ -30,16 +31,16 @@ export class AuthHttpWrapper {
       let objectUrl: string = null;
 
       this.http
-        .get(url, {responseType: 'blob'})
-        .catch((error: Response | any) => {
-          var errMsg: string = 'Unable to get ' + url;
-          console.debug(errMsg);
-          return observableThrowError(errMsg);
-        })
-        .subscribe(m => {
-          objectUrl = URL.createObjectURL(m);
-          observer.next(objectUrl);
-        });
+        .get(url, {responseType: 'blob'}).pipe(
+            catchError((error: Response | any) => {
+              var errMsg: string = 'Unable to get ' + url;
+              console.debug(errMsg);
+              return observableThrowError(errMsg);
+            }))
+          .subscribe(m => {
+            objectUrl = URL.createObjectURL(m);
+            observer.next(objectUrl);
+          });
 
       return () => {
         if (objectUrl) {

@@ -4,6 +4,7 @@ import {Role} from '../../../model/userrole';
 import {DomainService} from '../../../service/domain.service';
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-domains-list', templateUrl: './domainslist.component.html', styleUrls: ['./domainslist.component.css']
@@ -21,9 +22,11 @@ export class DomainsListComponent implements OnInit {
 
   protected update(): void {
     if (this.authService.hasRole(Role[Role.ROLE_SYSTEM_ADMIN]) || this.authService.hasRole(Role[Role.ROLE_OPERATOR])) {
-      this.domains = this.domainService.getAll().map((domains) => domains.filter((domain) => domain.id !== this.domainService.getGlobalDomainId()));
+      this.domains = this.domainService.getAll().pipe(
+          map((domains) => domains.filter((domain) => domain.id !== this.domainService.getGlobalDomainId())));
     } else {
-      this.domains = this.domainService.getAll().map((domains) => domains.filter((domain) => this.authService.hasDomainRole(domain.id, Role[Role.ROLE_DOMAIN_ADMIN])));
+      this.domains = this.domainService.getAll().pipe(
+          map((domains) => domains.filter((domain) => this.authService.hasDomainRole(domain.id, Role[Role.ROLE_DOMAIN_ADMIN]))));
     }
   }
 

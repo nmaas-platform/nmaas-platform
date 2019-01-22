@@ -11,8 +11,8 @@ import {ModalInfoPolicyComponent} from "../../shared/modal/modal-info-policy/mod
 import {ModalComponent} from "../../shared/modal";
 
 import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from 'angular-password-strength-meter';
-import {ReCaptchaComponent, ReCaptchaModule} from "angular5-recaptcha";
 import {TranslateService} from '@ngx-translate/core';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'nmaas-registration',
@@ -27,9 +27,7 @@ export class RegistrationComponent implements OnInit {
   public submitted: boolean = false;
   public success: boolean = false;
   public errorMessage: string = '';
-
-  @ViewChild(ReCaptchaComponent)
-  captcha: ReCaptchaComponent;
+  public captchaToken: string;
 
   @ViewChild(PasswordStrengthMeterComponent)
   passwordMeter: PasswordStrengthMeterComponent;
@@ -71,13 +69,16 @@ export class RegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.domains = this.registrationService.getDomains()
-      .map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
+    this.domains = this.registrationService.getDomains().pipe(
+        map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
+  }
+
+  public resolved(captchaResponse: string) {
+      this.captchaToken = captchaResponse;
   }
 
   public onSubmit(): void {
-      let token = this.captcha.getResponse();
-      if(token.length < 1){
+      if(this.captchaToken.length < 1){
           this.sending = false;
           this.sending = false;
           this.submitted = true;

@@ -7,6 +7,8 @@ import {Component, OnInit, Input, OnDestroy} from '@angular/core';
 import { Subscription ,  Observable } from 'rxjs';
 
 import { isUndefined, isNullOrUndefined } from 'util';
+import {map} from 'rxjs/operators';
+import {interval} from 'rxjs/internal/observable/interval';
 
 @Component({
   selector: 'nmaas-domain-filter',
@@ -26,7 +28,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
       if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
-        this.refresh = Observable.interval(10000).subscribe(next => {
+        this.refresh = interval(10000).subscribe(next => {
             if(this.domainService.shouldUpdate()) {
                 this.updateDomains();
                 this.domainService.setUpdateRequiredFlag(false);
@@ -44,7 +46,8 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
     } else {
       this.domains = this.domainService.getMyDomains();
       if(!isUndefined(this.domains) && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(),'ROLE_TOOL_MANAGER') && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(), 'ROLE_OPERATOR')) {
-           this.domains = this.domains.map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId()));
+           this.domains = this.domains.pipe(
+               map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
       }
     }
   }

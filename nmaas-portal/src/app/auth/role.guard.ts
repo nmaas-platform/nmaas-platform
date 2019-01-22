@@ -47,7 +47,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
         roles.push(Role[Role[route.data.roles[i]]]);
       }
     } else if (isString(route.data.roles)) {
-      roles.push(Role[Role[route.data.roles]])
+      roles.push(Role[route.data.roles]);
     }
 
     console.debug('ROLEGUARD: return roles' + roles);

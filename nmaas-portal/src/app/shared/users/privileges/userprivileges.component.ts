@@ -11,6 +11,7 @@ import {Observable, of} from "rxjs";
 import {CacheService} from "../../../service/cache.service";
 import {UserDataService} from "../../../service/userdata.service";
 import {isNullOrUndefined} from "util";
+import {map, shareReplay, take} from 'rxjs/operators';
 
 @Component({
   selector: 'nmaas-userprivileges',
@@ -101,8 +102,10 @@ export class UserPrivilegesComponent extends BaseComponent implements OnInit {
         if (this.domainCache.hasData(domainId)) {
             return of(this.domainCache.getData(domainId).name);
         } else {
-            return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.name})
-                .shareReplay(1).take(1);
+            return this.domainService.getOne(domainId).pipe(
+                map((domain) => {this.domainCache.setData(domainId, domain); return domain.name}),
+                shareReplay(1),
+                take(1));
         }
   }
 }

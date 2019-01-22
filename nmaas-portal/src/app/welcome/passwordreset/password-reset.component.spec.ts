@@ -2,7 +2,6 @@ import {PasswordResetComponent} from "./password-reset.component";
 import {async, ComponentFixture, TestBed} from "@angular/core/testing";
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
 import {AppConfigService, ChangelogService, DomainService, UserService} from "../../service";
-import {ReCaptchaModule} from "angular5-recaptcha";
 import {NavbarComponent} from "../../shared/navbar";
 import {FooterComponent} from "../../shared/footer";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -25,7 +24,6 @@ describe('Password reset component', () =>{
            declarations: [PasswordResetComponent, NavbarComponent, FooterComponent, ModalComponent, ModalChangelogComponent],
            imports: [
                RouterTestingModule,
-               ReCaptchaModule,
                HttpClientTestingModule,
                FormsModule,
                ReactiveFormsModule,
