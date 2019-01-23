@@ -1,7 +1,7 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
-import net.geant.nmaas.portal.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;

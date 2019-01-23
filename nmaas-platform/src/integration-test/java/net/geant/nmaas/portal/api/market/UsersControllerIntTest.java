@@ -1,17 +1,15 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,7 +35,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.geant.nmaas.portal.persistent.entity.Role.*;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_NOT_ACCEPTED;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -60,12 +63,6 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
     private UsersController userController;
-
-    @Autowired
-    private DomainService domains;
-
-    @Autowired
-    private JWTTokenService jwtTokenService;
 
     private String token;
     private String tokenForUserWithNotAcceptedTermsAndPolicy;
@@ -101,10 +98,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         user3.setEmail("user3@testemail.com");
         userRepo.save(user3);
 
-        UserToken userToken = new UserToken(jwtTokenService.getToken(admin), jwtTokenService.getRefreshToken(admin));
+        UserToken userToken = new UserToken(tokenService.getToken(admin), tokenService.getRefreshToken(admin));
         token = userToken.getToken();
 
-        UserToken userNotAcceptedTermsAndPolicyToken = new UserToken(jwtTokenService.getToken(user3), jwtTokenService.getRefreshToken(user3));
+        UserToken userNotAcceptedTermsAndPolicyToken = new UserToken(tokenService.getToken(user3), tokenService.getRefreshToken(user3));
         tokenForUserWithNotAcceptedTermsAndPolicy = userNotAcceptedTermsAndPolicyToken.getToken();
 
         prepareSecurity();

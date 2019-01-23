@@ -1,6 +1,6 @@
-package net.geant.nmaas.portal.auth.basic;
+package net.geant.nmaas.portal.api.auth;
 
-import net.geant.nmaas.portal.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.Before;
 import org.junit.Test;

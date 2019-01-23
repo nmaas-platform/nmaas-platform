@@ -3,7 +3,7 @@ package net.geant.nmaas.dcn.deployment.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter;
 import net.geant.nmaas.dcn.deployment.api.model.AnsiblePlaybookStatus;
-import net.geant.nmaas.portal.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

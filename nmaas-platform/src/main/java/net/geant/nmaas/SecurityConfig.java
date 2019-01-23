@@ -4,7 +4,7 @@ import net.geant.nmaas.portal.api.security.JWTSettings;
 import net.geant.nmaas.portal.api.security.RestAuthenticationEntryPoint;
 import net.geant.nmaas.portal.api.security.SkipPathRequestMatcher;
 import net.geant.nmaas.portal.api.security.StatelessAuthenticationFilter;
-import net.geant.nmaas.portal.auth.basic.TokenAuthenticationService;
+import net.geant.nmaas.portal.service.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

@@ -1,4 +1,4 @@
-package net.geant.nmaas.portal.auth.sso;
+package net.geant.nmaas.portal.api.auth;
 
 import java.io.IOException;
 import java.util.Optional;
