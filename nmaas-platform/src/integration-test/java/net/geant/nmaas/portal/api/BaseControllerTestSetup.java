@@ -1,5 +1,8 @@
-package net.geant.nmaas.portal;
+package net.geant.nmaas.portal.api;
 
+import net.geant.nmaas.portal.ApiSecurityConfig;
+import net.geant.nmaas.portal.ConvertersConfig;
+import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;

@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Ignore;

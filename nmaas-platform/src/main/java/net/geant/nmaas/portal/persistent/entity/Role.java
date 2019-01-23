@@ -8,8 +8,7 @@ public enum Role {
 	ROLE_USER,
 	ROLE_GUEST,
 	ROLE_INCOMPLETE,
-	ROLE_NOT_ACCEPTED,
-	ROLE_SYSTEM_COMPONENT;
+	ROLE_NOT_ACCEPTED;
 
 	public String authority() {
         return this.name();

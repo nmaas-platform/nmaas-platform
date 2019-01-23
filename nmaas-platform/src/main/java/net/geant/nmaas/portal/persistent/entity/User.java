@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import javax.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,12 +19,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import net.geant.nmaas.portal.persistent.entity.validators.ValidUser;
-import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name = "users")
@@ -121,8 +121,6 @@ public class User implements Serializable {
 	}
 
 	public void setNewRoles(Set<UserRole> roles) {
-		if(roles.stream().anyMatch(role-> role.getRole() == Role.ROLE_SYSTEM_COMPONENT))
-			throw new IllegalStateException("This role cannot be assigned");
 		this.roles.addAll(roles);
 	}
 
