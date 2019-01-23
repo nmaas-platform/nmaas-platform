@@ -82,6 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/configuration/security",
 			"/swagger-ui.html",
 			"/api/info/**",
+			"/actuator/health",
 			"/webjars/**",
 			"/api/content/**",
 			"/api/users/reset/**"
@@ -138,6 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/swagger-resources/**"),
 										new AntPathRequestMatcher("/configuration/ui"),
 										new AntPathRequestMatcher("/configuration/security"),
+										new AntPathRequestMatcher("/actuator/health"),
 										new AntPathRequestMatcher("/swagger-ui.html"),
 										new AntPathRequestMatcher("/webjars/**"),
 										new AntPathRequestMatcher("/favicon.ico"),
