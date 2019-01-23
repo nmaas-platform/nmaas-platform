@@ -25,15 +25,15 @@ email notification about general events in the system, e.g. planned downtime, ma
 <h4><strong>What Personal Data We Process</strong></h4>
 <p>NMaaS user data is stored in a central relational database and application log files.</br>
 The database contains the following user personal data:<ul>
-<li>username, </li>
-<li>user identifier – unique identifier assigned internally by NMaaS, </li>
-<li>user IdP identifier – unique identifier assigned by the Identity Provided used by the user to log in to the
+<li><strong>username</strong>, </li>
+<li><strong>user identifier</strong> – unique identifier assigned internally by NMaaS, </li>
+<li><strong>user IdP identifier</strong> – unique identifier assigned by the Identity Provided used by the user to log in to the
 NMaaS Portal (applicable if eduGAIN log in option is used), </li>
-<li>password – user password used to log in to the NMaaS Portal (applicable if user account is being registered
+<li><strong>password</strong> – user password used to log in to the NMaaS Portal (applicable if user account is being registered
 directly in NMaaS), </li>
-<li>first name (optional), </li>
-<li>last name (optional), </li>
-<li>email address. </li></ul></p>
+<li><strong>first name</strong> (optional), </li>
+<li><strong>last name</strong> (optional), </li>
+<li><strong>email address</strong>. </li></ul></p>
 <p>The service log files contain the following user personal data: username, user identifier, first name, last
 name and email address. </p>
 <p>The purpose of NMaaS is to facilitate automated deployment of network management and monitoring applications.
@@ -57,7 +57,7 @@ Since the moment of reception of user account removal request the data is still 
 <p>Log files are retained for a period of 6 months. </p>
 <br>
 <h4><strong>Security</strong></h4>
-<p>We support the following processes to ensure the security of your data:
+<p>We support the following processes to ensure the security of your personal data:
 <ul>
 <li>Minimisation of personal data we collect;</li>
 <li>Managing, limiting and controlling access to personal data;</li>
