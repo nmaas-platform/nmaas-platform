@@ -23,7 +23,7 @@ import {ShibbolethService} from '../service/shibboleth.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
 import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-policy-subpage.component';
 import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
-import {RecaptchaModule} from 'ng-recaptcha';
+import {RecaptchaModule, RECAPTCHA_SETTINGS, RECAPTCHA_LANGUAGE, RecaptchaSettings} from 'ng-recaptcha';
 
 @NgModule({
   declarations: [
@@ -59,7 +59,15 @@ import {RecaptchaModule} from 'ng-recaptcha';
     UserService,
     ChangelogService,
     ContentDisplayService,
-    ShibbolethService
+    ShibbolethService,
+    {
+      provide: RECAPTCHA_SETTINGS,
+      useValue: { siteKey: '6Lc794MUAAAAAHe2M5PjGMN6KjtIAL76ZDmcudK8' } as RecaptchaSettings
+    },
+    {
+      provide: RECAPTCHA_LANGUAGE,
+      useValue: 'en'
+    }
   ]
 })
 export class WelcomeModule {}
