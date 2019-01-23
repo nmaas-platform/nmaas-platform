@@ -3,6 +3,8 @@ package net.geant.nmaas.portal.api.market;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import java.util.Collections;
+
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -57,6 +59,7 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 @Log4j2
 public class UsersController {
@@ -80,26 +83,10 @@ public class UsersController {
 
     private ApplicationEventPublisher eventPublisher;
 
-	@Autowired
-	public UsersController(UserService userService,
-						   DomainService domainService,
-						   ModelMapper modelMapper,
-						   PasswordEncoder passwordEncoder,
-						   JWTTokenService jwtTokenService,
-						   ApplicationEventPublisher eventPublisher) {
-		this.userService = userService;
-		this.domainService = domainService;
-		this.modelMapper = modelMapper;
-		this.passwordEncoder = passwordEncoder;
-		this.jwtTokenService = jwtTokenService;
-		this.eventPublisher = eventPublisher;
-	}
-
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
 	public List<User> getUsers(Pageable pageable) {
 		return userService.findAll(pageable).getContent().stream()
-				.filter(user->user.getRoles().stream().noneMatch(role -> role.getRole() == Role.ROLE_SYSTEM_COMPONENT))
 				.map(user -> modelMapper.map(user, User.class))
 				.collect(Collectors.toList());
 	}
@@ -107,7 +94,6 @@ public class UsersController {
 	@GetMapping(value="/users/roles")	
 	public List<Role> getRoles() {
 		return Arrays.stream(Role.values())
-				.filter(role -> !role.equals(Role.ROLE_SYSTEM_COMPONENT))
 				.collect(Collectors.toList());
 	}
 		
@@ -185,9 +171,6 @@ public class UsersController {
 
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
-
-		if(userRole.getRole() == Role.ROLE_SYSTEM_COMPONENT)
-			throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
 
 		Domain domain = null;
 		if (userRole.getDomainId() == null) 
@@ -397,10 +380,8 @@ public class UsersController {
 
 		if(userRole.getRole() == null)
 			throw new MissingElementException("Missing role");
-		Role role = userRole.getRole();
 
-		if(role == Role.ROLE_SYSTEM_COMPONENT)
-			throw new ProcessingException(ROLE_CANNOT_BE_ASSIGNED_ERROR_MESSAGE);
+		Role role = userRole.getRole();
 
 		if(!domainId.equals(userRole.getDomainId()))
 			throw new ProcessingException("Invalid request domain");
@@ -451,10 +432,6 @@ public class UsersController {
 
 		final Domain domain = getDomain(domainId);
 		final net.geant.nmaas.portal.persistent.entity.User user = getUser(userId);
-
-		if(role == Role.ROLE_SYSTEM_COMPONENT) {
-			throw new ProcessingException("Role cannot be removed.");
-		}
 
 		try {
 			domainService.removeMemberRole(domain.getId(), user.getId(), role);

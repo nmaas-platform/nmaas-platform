@@ -1,7 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.portal.BaseControllerTestSetup;
+import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Domain;

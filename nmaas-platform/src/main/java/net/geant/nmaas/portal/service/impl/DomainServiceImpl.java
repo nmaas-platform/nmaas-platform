@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
@@ -9,7 +8,6 @@ import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
-import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
@@ -30,6 +28,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 
 @Service
 public class DomainServiceImpl implements DomainService {
@@ -310,12 +311,12 @@ public class DomainServiceImpl implements DomainService {
 
 	protected void checkParam(String name) {
 		if(name == null)
-			throw new IllegalArgumentException("name is null");
+			throw new IllegalArgumentException("Name is null");
 	}
 	
 	protected void checkParam(Domain domain) {
 		if(domain == null)
-			throw new IllegalArgumentException("domain is null");
+			throw new IllegalArgumentException("Domain is null");
 	}
 	
 	protected void checkParams(Long id) {
@@ -324,10 +325,9 @@ public class DomainServiceImpl implements DomainService {
 	}
 	
 	protected void checkParams(Role role) {
-		if(role == null)
+		if(role == null) {
 			throw new IllegalArgumentException("role is null");
-		if(role == Role.ROLE_SYSTEM_COMPONENT)
-			throw new IllegalArgumentException("Role cannot be assigned.");
+		};
 	}
 	
 	protected void checkParams(Long domainId, Long userId) {

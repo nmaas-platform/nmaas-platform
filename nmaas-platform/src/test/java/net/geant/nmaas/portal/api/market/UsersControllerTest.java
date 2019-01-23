@@ -14,13 +14,12 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -134,12 +134,6 @@ public class UsersControllerTest {
 		userRequest.setFirstname("test");
 		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
 		verify(userService, times(2)).update(userList.get(0));
-	}
-
-	@Test
-	@Ignore
-	public void shouldDeleteUser(){
-		//Update test when user delete is supported
 	}
 
 	@Test
@@ -295,14 +289,6 @@ public class UsersControllerTest {
 		UserRole userRole = new UserRole();
 		userRole.setDomainId(DOMAIN.getId());
 		userRole.setRole(Role.ROLE_SYSTEM_ADMIN);
-		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
-	}
-
-	@Test(expected = ProcessingException.class)
-	public void shouldNotAddSystemComponentRoleToUser(){
-		UserRole userRole = new UserRole();
-		userRole.setDomainId(GLOBAL_DOMAIN.getId());
-		userRole.setRole(Role.ROLE_SYSTEM_COMPONENT);
 		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 	}
 
