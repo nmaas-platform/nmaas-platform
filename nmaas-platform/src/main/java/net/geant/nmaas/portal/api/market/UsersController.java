@@ -2,9 +2,6 @@ package net.geant.nmaas.portal.api.market;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import java.util.Collections;
-
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
@@ -46,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,7 +57,6 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api")
 @Log4j2
 public class UsersController {
@@ -82,6 +79,21 @@ public class UsersController {
     private JWTTokenService jwtTokenService;
 
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+	public UsersController(UserService userService,
+						   DomainService domainService,
+						   ModelMapper modelMapper,
+						   PasswordEncoder passwordEncoder,
+						   JWTTokenService jwtTokenService,
+						   ApplicationEventPublisher eventPublisher) {
+		this.userService = userService;
+		this.domainService = domainService;
+		this.modelMapper = modelMapper;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtTokenService = jwtTokenService;
+		this.eventPublisher = eventPublisher;
+	}
 
 	@GetMapping("/users")
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') or hasRole('ROLE_DOMAIN_ADMIN')")
