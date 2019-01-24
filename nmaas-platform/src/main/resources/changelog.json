@@ -20,6 +20,37 @@
         "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
       }
     ]
+  },
+  {
+    "verNo" : "1.1.0",
+    "date" : "(2019/01/24)",
+    "topic" : [
+      {
+        "title" : "* New nmaas-janitor component added",
+        "tags" : "[New Feature]",
+        "description" : "New component added in order to improve the application instance configuration process to use ConfigMaps."
+      },
+      {
+        "title" : "* Added support for configuration updates",
+        "tags" : "[New Feature]",
+        "description" : "It is now possible to update configuration of already running application instances."
+      },
+      {
+        "title" : "* New library used for configuration wizard forms generation",
+        "tags" : "[New Feature]",
+        "description" : "New library offers many interesting features and is actively developed."
+      },
+      {
+        "title" : "* Removed support for Docker Compose deployment",
+        "tags" : "[New Feature]",
+        "description" : "In the current version only container deployment in Kubernetes it supported. Application source code has been cleaned and optimized."
+      },
+      {
+        "title" : "* Implemented new version of the NMaaS notification service",
+        "tags" : "[Enhancement]",
+        "description" : "The nmaas-notification component is no longer used. Email templates have been improved."
+      }
+    ]
   }
 
 ]}
