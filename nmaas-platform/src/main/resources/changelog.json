@@ -1,27 +1,6 @@
 {"versions" : [
 
   {
-    "verNo" : "1.0.0",
-    "date" : "(2018/12/31)",
-    "topic" : [
-      {
-        "title" : "* Support for Docker Compose and Kubernetes deployment environments",
-        "tags" : "[New Feature]",
-        "description" : "NMaaS supports deployment of NM service applications in two environments."
-      },
-      {
-        "title" : "* Support for 6 network management applications",
-        "tags" : "[New Feature]",
-        "description" : "Six NM applications were integrated and added to NMaaS portfolio."
-      },
-      {
-        "title" : "* Support for GitLab repository",
-        "tags" : "[New Feature]",
-        "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
-      }
-    ]
-  },
-  {
     "verNo" : "1.1.0",
     "date" : "(2019/01/24)",
     "topic" : [
@@ -49,6 +28,27 @@
         "title" : "* Implemented new version of the NMaaS notification service",
         "tags" : "[Enhancement]",
         "description" : "The nmaas-notification component is no longer used. Email templates have been improved."
+      }
+    ]
+  },
+  {
+    "verNo" : "1.0.0",
+    "date" : "(2018/12/31)",
+    "topic" : [
+      {
+        "title" : "* Support for Docker Compose and Kubernetes deployment environments",
+        "tags" : "[New Feature]",
+        "description" : "NMaaS supports deployment of NM service applications in two environments."
+      },
+      {
+        "title" : "* Support for 6 network management applications",
+        "tags" : "[New Feature]",
+        "description" : "Six NM applications were integrated and added to NMaaS portfolio."
+      },
+      {
+        "title" : "* Support for GitLab repository",
+        "tags" : "[New Feature]",
+        "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
       }
     ]
   }
