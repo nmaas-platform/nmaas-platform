@@ -11,7 +11,8 @@
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
-    "LANGUAGE": "Język"
+    "LANGUAGE": "Język",
+    "ABOUT": "O nas"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -449,5 +450,8 @@
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
     "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
+  },
+  "ABOUT": {
+    "CONTACT_FORM": "Formularz kontaktowy"
   }
 }

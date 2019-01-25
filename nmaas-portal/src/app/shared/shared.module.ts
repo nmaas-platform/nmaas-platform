@@ -29,7 +29,6 @@ import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails
 import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
-import { ModalChangelogComponent } from './footer/modal-changelog/modal-changelog.component';
 import {TranslateModule} from '@ngx-translate/core';
 import { SortableColumnComponent } from './sortable-column/sortable-column.component';
 import { SortableTableDirective } from './sortable-column/sortable-table.directive';
@@ -37,6 +36,8 @@ import {AppInstallModalComponent} from "./modal/appinstall";
 import { RatingExtendedComponent } from './rating-extended/rating-extended.component';
 import {TooltipModule} from "ng2-tooltip-directive";
 import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
+import { AboutComponent } from './about/about.component';
+import {ChangelogComponent} from "./changelog/changelog.component";
 
 @NgModule({
   imports: [
@@ -76,10 +77,11 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     GitlabDetailsComponent,
     ModalInfoTermsComponent,
     ModalInfoPolicyComponent,
-    ModalChangelogComponent,
     SortableColumnComponent,
     SortableTableDirective,
     RatingExtendedComponent,
+    AboutComponent,
+    ChangelogComponent
   ],
   providers: [
     PasswordValidator,
@@ -109,7 +111,8 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     ModalInfoPolicyComponent,
     SortableColumnComponent,
     SortableTableDirective,
-    RatingExtendedComponent
+    RatingExtendedComponent,
+    AboutComponent
   ]
 })
 export class SharedModule {}

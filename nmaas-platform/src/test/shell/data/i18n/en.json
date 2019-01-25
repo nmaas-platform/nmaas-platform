@@ -11,7 +11,8 @@
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
     "LOGIN_REGISTER": "Login | Register",
-    "LANGUAGE": "Language"
+    "LANGUAGE": "Language",
+    "ABOUT": "About"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -450,5 +451,8 @@
     "INVALID_INPUT_MESSAGE": "Invalid input data",
     "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
     "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"
+  },
+  "ABOUT": {
+    "CONTACT_FORM": "Contact form"
   }
 }

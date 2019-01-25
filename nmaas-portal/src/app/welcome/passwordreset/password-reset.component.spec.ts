@@ -7,8 +7,6 @@ import {NavbarComponent} from "../../shared/navbar";
 import {FooterComponent} from "../../shared/footer";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ModalComponent} from "../../shared/modal";
-import {ChangelogComponent} from "../changelog/changelog.component";
-import {ModalChangelogComponent} from "../../shared/footer/modal-changelog/modal-changelog.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
@@ -22,7 +20,7 @@ describe('Password reset component', () =>{
 
    beforeEach(async (() =>{
        TestBed.configureTestingModule({
-           declarations: [PasswordResetComponent, NavbarComponent, FooterComponent, ModalComponent, ModalChangelogComponent],
+           declarations: [PasswordResetComponent, NavbarComponent, FooterComponent, ModalComponent],
            imports: [
                RouterTestingModule,
                ReCaptchaModule,

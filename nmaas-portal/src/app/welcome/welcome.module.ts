@@ -1,7 +1,6 @@
 import {RegistrationService} from '../auth/registration.service';
 import {LoginComponent} from './login';
 import {LogoutComponent} from './logout/logout.component';
-import {ChangelogComponent} from './changelog/changelog.component';
 import {PipesModule} from '../pipe/pipes.module';
 import {SharedModule} from '../shared/shared.module';
 import {RegistrationComponent} from './registration/registration.component';
@@ -29,7 +28,6 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     WelcomeComponent,
     LoginComponent,
     LogoutComponent,
-    ChangelogComponent,
     RegistrationComponent,
     ProfileComponent,
     CompleteComponent,

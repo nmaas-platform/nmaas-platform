@@ -1,0 +1,48 @@
+    <app-navbar></app-navbar>
+    <div class="center-block center text-center">
+        <a routerLink="/" data-toggle="tooltip" data-placement="right" title="Network Management as a Service homepage">
+            <img src="assets/images/logo.png" alt="logo" style="margin-top: 4%; margin-bottom: 2%;" /></a>
+    </div>
+    <div class="center-block center">
+        <div class="col-md-6">
+            <div class="panel panel-default" *ngIf="gitInfo">
+                <div class="panel-heading">
+                    <div class="panel-title text-center">{{'GIT_INFO.HEADER' | translate}}</div>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-sm-2">{{'GIT_INFO.VERSION' | translate}}:</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{gitInfo?.buildVersion}}</p>
+                            </div>
+                            <label class="control-label col-sm-2">{{'GIT_INFO.BUILD_TIME' | translate}}:</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{gitInfo?.buildTime}}</p>
+                            </div>
+                            <label class="control-label col-sm-2">{{'GIT_INFO.LAST_COMMIT' | translate}}:</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{gitInfo?.commitName}}</p>
+                            </div>
+                            <label class="control-label col-sm-2">{{'GIT_INFO.BRANCH_NAME' | translate}}:</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">{{gitInfo?.branchName}}</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <app-changelog></app-changelog>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title text-center">{{'ABOUT.CONTACT_FORM' | translate}}</div>
+                </div>
+                <div class="panel-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <nmaas-footer></nmaas-footer>
