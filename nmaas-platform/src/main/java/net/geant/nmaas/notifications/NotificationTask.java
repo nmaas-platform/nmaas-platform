@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Component
 public class NotificationTask {
 
@@ -18,6 +20,7 @@ public class NotificationTask {
 
     @EventListener
     public void trigger(NotificationEvent event) throws IOException, TemplateException {
+        checkArgument(event.getMailAttributes() != null, "Mail attributes cannot be null");
         notificationManager.prepareAndSendMail(event.getMailAttributes());
     }
 }

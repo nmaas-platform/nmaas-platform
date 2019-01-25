@@ -1,12 +1,13 @@
 package net.geant.nmaas.notifications;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.portal.api.domain.User;
 
 @Builder
@@ -19,7 +20,6 @@ public class MailAttributes {
     @NotNull
     private MailType mailType;
 
-    private String otherAttribute;
-
-    private AppDeploymentView appDeploymentView;
+    @Builder.Default
+    private Map<String, String> otherAttributes = new HashMap<>();
 }

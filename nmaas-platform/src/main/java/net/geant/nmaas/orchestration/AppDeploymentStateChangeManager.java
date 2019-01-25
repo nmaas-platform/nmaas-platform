@@ -1,12 +1,12 @@
 package net.geant.nmaas.orchestration;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
@@ -21,7 +21,6 @@ import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,17 +39,14 @@ public class AppDeploymentStateChangeManager {
 
     private ApplicationEventPublisher eventPublisher;
 
-    private ModelMapper modelMapper;
 
     @Autowired
     public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager,
                                            AppDeploymentMonitor deploymentMonitor,
-                                           ApplicationEventPublisher eventPublisher,
-                                           ModelMapper modelMapper){
+                                           ApplicationEventPublisher eventPublisher){
         this.deploymentRepositoryManager = deploymentRepositoryManager;
         this.deploymentMonitor = deploymentMonitor;
         this.eventPublisher = eventPublisher;
-        this.modelMapper = modelMapper;
     }
 
     @EventListener
@@ -130,8 +126,13 @@ public class AppDeploymentStateChangeManager {
 
     private MailAttributes getMailAttributes(AppDeployment appDeployment){
         return MailAttributes.builder()
-                .appDeploymentView(modelMapper.map(appDeployment, AppDeploymentView.class))
-                .otherAttribute(deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId()).getUrl())
+                .otherAttributes(ImmutableMap.of(
+                        "accessURL" ,deploymentMonitor.userAccessDetails(appDeployment.getDeploymentId()).getUrl(),
+                        "domainName", appDeployment.getDomain(),
+                        "owner", appDeployment.getOwner(),
+                        "appInstanceName",appDeployment.getDeploymentName(),
+                        "appName",appDeployment.getAppName()
+                ))
                 .mailType(MailType.APP_DEPLOYED)
                 .build();
     }
