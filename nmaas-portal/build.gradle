@@ -5,8 +5,6 @@ plugins {
 	id "org.sonarqube" version "2.6.2"
 }
 
-apply from: '../reactor/build.gradle'
-
 task buildGUI(type: Exec) {
 	println 'Building using Angular CLI'
 
@@ -29,7 +27,7 @@ task buildGUIprod(type: Exec) {
 	dependsOn(npm_install)
 }
 
-task dist(type: Zip) {
+task build(type: Zip) {
 	from 'build/app'
 	baseName project.name
 	version project.version
@@ -63,5 +61,4 @@ sonarqube {
 		}
 }
 
-build.dependsOn(dist)
 build.dependsOn(testCoverage)
