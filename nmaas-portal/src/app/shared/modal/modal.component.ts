@@ -17,8 +17,7 @@ export class ModalComponent implements OnInit {
     public visibleAnimate = false;
     public isDefault = true;
     public isIconsEnabled = true;
-    constructor() { 
-    }
+    constructor() {}
 
     ngOnInit() {
         switch(this.styleModal){
@@ -35,10 +34,8 @@ export class ModalComponent implements OnInit {
                 this.isSuccess = true;
                 break;
             case 'default':
-                this.isDefault = true;
-                break;
             default:
-                console.log("Invalid choice of modal type");
+                this.isDefault = true;
                 break;
         }
     }

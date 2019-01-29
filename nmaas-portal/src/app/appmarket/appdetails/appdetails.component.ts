@@ -14,12 +14,10 @@ import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstallmodal.component';
-import { Subject } from 'rxjs';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/isEmpty';
-import {empty} from 'rxjs/observable/empty';
+import { Subject , Observable, EMPTY as empty} from 'rxjs';
 import {isUndefined} from 'util';
 import {AppSubscription} from "../../model";
+import {isEmpty} from 'rxjs/operators';
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -79,7 +77,7 @@ export class AppDetailsComponent implements OnInit {
     let result: Observable<any> = null;
     if (isUndefined(domainId) || domainId === 0) {
       result = this.appSubsService.getAllByApplication(this.appId);
-      result.isEmpty().subscribe(res => this.subscribed = !res, error => this.subscribed = false);
+      result.pipe(isEmpty()).subscribe(res => this.subscribed = !res, error => this.subscribed = false);
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
       result.subscribe((appSub:AppSubscription)=>this.subscribed=appSub.active, error=>this.subscribed = false);

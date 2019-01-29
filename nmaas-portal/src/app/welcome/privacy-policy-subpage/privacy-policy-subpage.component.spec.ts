@@ -7,7 +7,7 @@ import {SharedModule} from "../../shared";
 import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {RouterTestingModule} from "@angular/router/testing";
 import {JwtModule} from "@auth0/angular-jwt";
-import {Observable} from "rxjs";
+import {EMPTY, of} from "rxjs";
 import {ChangelogService} from "../../service";
 
 describe('PrivacyPolicySubpageComponent', () => {
@@ -50,11 +50,11 @@ describe('PrivacyPolicySubpageComponent', () => {
     contentService = fixture.debugElement.injector.get(ContentDisplayService);
     changelogService = fixture.debugElement.injector.get(ChangelogService);
     navbar = fixture.debugElement.injector.get(NavbarComponent);
-    spyOn(contentService, 'getContent').and.returnValue(Observable.empty());
-    spyOn(contentService, 'getLanguages').and.returnValue(Observable.of(['en', 'fr', 'pl']));
+    spyOn(contentService, 'getContent').and.returnValue(EMPTY);
+    spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     navbar.useLanguage("en");
-    spyOn(changelogService, 'getGitInfo').and.returnValue(Observable.empty());
-    spyOn(changelogService, 'getChangelog').and.returnValue(Observable.empty());
+    spyOn(changelogService, 'getGitInfo').and.returnValue(EMPTY);
+    spyOn(changelogService, 'getChangelog').and.returnValue(EMPTY);
     fixture.detectChanges();
   });
 

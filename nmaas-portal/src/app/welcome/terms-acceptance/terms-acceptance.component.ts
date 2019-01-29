@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {User} from "../../model";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {Observable} from "../../../../node_modules/rxjs/Observable";
 import {Domain} from "../../model/domain";
 import {ModalComponent} from "../../shared/modal";
 import {ModalInfoTermsComponent} from "../../shared/modal/modal-info-terms/modal-info-terms.component";
@@ -11,6 +10,7 @@ import {AuthService} from "../../auth/auth.service";
 import {Router} from "@angular/router";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {TranslateService} from '@ngx-translate/core';
+import {Observable} from 'rxjs/internal/Observable';
 
 @Component({
   selector: 'app-terms-acceptance',

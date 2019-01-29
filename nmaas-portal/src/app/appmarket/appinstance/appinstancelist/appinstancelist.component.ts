@@ -8,12 +8,12 @@ import {AppInstanceService, AppsService} from '../../../service/index';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
-import {Observable} from 'rxjs/Observable';
+import {Observable, of} from 'rxjs';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {CustomerSearchCriteria} from "../../../service/index";
-import "rxjs/add/observable/of";
 import {element} from "protractor";
 import {TranslateModule, TranslateService} from "@ngx-translate/core";
+import {map} from 'rxjs/operators';
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -134,13 +134,15 @@ export class AppInstanceListComponent implements OnInit {
         this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
         break;
       default:
-        this.appInstances = Observable.of<AppInstance[]>([]);
+        this.appInstances = of<AppInstance[]>([]);
         break;
     }
-    this.appDeployedInstances = this.appInstances.map(AppInstances => AppInstances.filter(
-      app => app.userFriendlyState != 'Undeployed'));
-    this.appUndeployedInstances = this.appInstances.map(AppInstances => AppInstances.filter(
-      app => app.userFriendlyState == 'Undeployed'));
+    this.appDeployedInstances = this.appInstances.pipe(
+        map(AppInstances => AppInstances.filter(
+      app => app.userFriendlyState != 'Undeployed')));
+    this.appUndeployedInstances = this.appInstances.pipe(
+        map(AppInstances => AppInstances.filter(
+      app => app.userFriendlyState == 'Undeployed')));
   }
 
 

@@ -14,7 +14,7 @@ import {RateComponent} from "../rate";
 import {RouterTestingModule} from "@angular/router/testing";
 import {SecurePipe} from "../../pipe";
 import {TagFilterComponent} from "../common/tagfilter/tagfilter.component";
-import {Observable} from "rxjs";
+import {of} from "rxjs";
 import {SimpleChange, SimpleChanges} from "@angular/core";
 import {AppViewType} from "../common/viewtype";
 import {SharedModule} from "../shared.module";
@@ -56,7 +56,7 @@ describe('ApplicationsComponent', () => {
     appSubscriptionsService = fixture.debugElement.injector.get(AppSubscriptionsService);
     userDataService = fixture.debugElement.injector.get(UserDataService);
     tagService = fixture.debugElement.injector.get(TagService);
-    spyOn(tagService, 'getTags').and.returnValue(Observable.of([]));
+    spyOn(tagService, 'getTags').and.returnValue(of([]));
     fixture.detectChanges();
   });
 

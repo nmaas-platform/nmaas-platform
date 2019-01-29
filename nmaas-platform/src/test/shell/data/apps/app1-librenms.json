@@ -15,8 +15,8 @@
 		],
 		"kubernetesTemplate": {
 			"chart": {
-				"name": "nmaas-librenms-v2",
-				"version": "1.0.1-alfa"
+				"name": "nmaas-librenms",
+				"version": "1.0.0-alfa"
 			}
 		},
 		"defaultStorageSpace":20,

@@ -11,7 +11,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {JwtHelperService} from "@auth0/angular-jwt";
 import {Authority} from "../../model";
 import {isUndefined} from "util";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 
 class MockAuthService{
 
@@ -64,11 +64,11 @@ class MockAuthService{
     }
 
     public login(username: string, password: string): Observable<boolean> {
-      return Observable.of<boolean>();
+      return of<boolean>();
     }
 
     public propagateSSOLogin(userid: string): Observable<boolean> {
-        return Observable.of<boolean>();
+        return of<boolean>();
     }
 
     public logout(): void {

@@ -6,7 +6,7 @@
 
 #### Technologies
 ---
- * Angular 5 (5.2.x)
+ * Angular 7 (7.2.x)
  * Bootstrap 3
  * JWT authentication
  * Spring 5 with REST API for GUI backend
