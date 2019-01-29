@@ -5,12 +5,12 @@ import {TranslateModule} from "@ngx-translate/core";
 import {TranslateFakeLoader} from "@ngx-translate/core";
 import {TranslateLoader} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 
 class MockContentDisplayService{
 
     public getLanguages(): Observable<string[]>{
-        return Observable.of([]);
+        return of([]);
     }
 }
 
@@ -42,7 +42,7 @@ describe('NavbarComponent_Shared', () => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
     contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    spy = spyOn(contentService, 'getLanguages').and.returnValue(Observable.of(['en', 'fr', 'pl']));
+    spy = spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     component.useLanguage('en');
     fixture.detectChanges();
   });

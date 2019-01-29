@@ -5,9 +5,9 @@ import {User} from "../../model";
 import {PasswordReset} from "../../model/passwordreset";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {PasswordValidator} from "../../shared";
-import {ReCaptchaComponent} from "angular5-recaptcha";
 import {TranslateService} from '@ngx-translate/core';
 import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
+import {RecaptchaComponent} from 'ng-recaptcha';
 
 @Component({
   selector: 'app-passwordreset',
@@ -17,14 +17,13 @@ import {PasswordStrengthMeterComponent} from "angular-password-strength-meter";
 })
 export class PasswordResetComponent implements OnInit {
 
-  public token:string;
+  public captchaToken:string;
 
   public user:User;
 
   public passwordReset:PasswordReset = new PasswordReset();
 
-  @ViewChild(ReCaptchaComponent)
-  public captcha: ReCaptchaComponent;
+  public token:string;
 
   @ViewChild(PasswordStrengthMeterComponent)
   passwordMeter: PasswordStrengthMeterComponent;
@@ -56,9 +55,12 @@ export class PasswordResetComponent implements OnInit {
     });
   }
 
+  public resolved(captchaResponse: string) {
+      this.captchaToken = captchaResponse;
+  }
+
   public resetPassword(){
-      let token = this.captcha.getResponse();
-      if(token.length < 1){
+      if(this.captchaToken.length < 1){
           this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
       } else {
           if(this.form.valid){

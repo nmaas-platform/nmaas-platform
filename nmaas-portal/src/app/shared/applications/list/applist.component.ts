@@ -6,7 +6,7 @@ import {UserDataService} from '../../../service/userdata.service';
 import {ListType} from '../../common/listtype';
 import {AppViewType} from '../../common/viewtype';
 import {Component, OnInit, Input, ViewEncapsulation, OnDestroy} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {isUndefined} from 'util';
 
 @Component({

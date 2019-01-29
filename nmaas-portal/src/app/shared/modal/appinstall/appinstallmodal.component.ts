@@ -9,7 +9,7 @@ import {AppInstanceService} from '../../../service/appinstance.service';
 import {DomainService} from '../../../service/domain.service';
 import { UserDataService } from '../../../service/userdata.service';
 import { isUndefined } from 'util';
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'nmaas-modal-app-install',

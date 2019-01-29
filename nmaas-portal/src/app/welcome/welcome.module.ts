@@ -17,12 +17,13 @@ import {UserService} from '../service';
 import {CompleteComponent} from './complete/complete.component';
 import {ContentDisplayService} from '../service/content-display.service';
 import {TermsAcceptanceComponent} from './terms-acceptance/terms-acceptance.component';
-import {ReCaptchaModule} from 'angular5-recaptcha';
+import {RecaptchaFormsModule} from 'ng-recaptcha/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {ShibbolethService} from '../service/shibboleth.service';
 import { PasswordResetComponent } from './passwordreset/password-reset.component';
 import { PrivacyPolicySubpageComponent } from './privacy-policy-subpage/privacy-policy-subpage.component';
 import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
+import {RecaptchaModule, RECAPTCHA_SETTINGS, RECAPTCHA_LANGUAGE, RecaptchaSettings} from 'ng-recaptcha';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     SharedModule,
     PipesModule,
     AppMarketModule,
-    ReCaptchaModule,
+    RecaptchaModule,
+    RecaptchaFormsModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild()
   ],
@@ -57,7 +59,15 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     UserService,
     ChangelogService,
     ContentDisplayService,
-    ShibbolethService
+    ShibbolethService,
+    {
+      provide: RECAPTCHA_SETTINGS,
+      useValue: { siteKey: '6Lc794MUAAAAAHe2M5PjGMN6KjtIAL76ZDmcudK8' } as RecaptchaSettings
+    },
+    {
+      provide: RECAPTCHA_LANGUAGE,
+      useValue: 'en'
+    }
   ]
 })
 export class WelcomeModule {}

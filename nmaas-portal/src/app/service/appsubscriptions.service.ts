@@ -4,7 +4,7 @@ import { AppConfigService } from './appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { isUndefined } from 'util';
 
 @Injectable()

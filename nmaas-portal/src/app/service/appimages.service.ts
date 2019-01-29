@@ -1,14 +1,15 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import {FileInfo} from "../model";
 import { AppConfigService } from '../service/appconfig.service';
+import {catchError, debounceTime, map} from 'rxjs/operators';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
+
+
+
 
 @Injectable()
 export class AppImagesService {
@@ -23,13 +24,13 @@ export class AppImagesService {
         return this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + screenshotId;
     }
     
-    public getAppScreenshotsUrls(id: number): Observable<string[]> {
-        return this.http.get<FileInfo>(this.appConfig.getApiUrl() + '/apps' + id + '/screenshots')
-            .timeout(10000)
-            .map(res=> {
+    public getAppScreenshotsUrls(id: number): Observable<number> {
+        return this.http.get<FileInfo>(this.appConfig.getApiUrl() + '/apps' + id + '/screenshots').pipe(
+            debounceTime(10000),
+            map(res=> {
                 return res.id
-            })
-            .catch((error: any) => Observable.throw(error.message || 'Server error'));
+            }),
+            catchError((error: any) => observableThrowError(error.message || 'Server error')));
     }
 
 }

@@ -1,7 +1,6 @@
 import {AfterViewChecked, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 import {
@@ -14,12 +13,12 @@ import {
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-// import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
+import {interval} from 'rxjs/internal/observable/interval';
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -86,7 +85,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       });
 
       this.updateAppInstanceState();
-      this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+      this.intervalCheckerSubscribtion = interval(5000).subscribe(() => this.updateAppInstanceState());
       this.undeployModal.setModalType("warning");
       this.undeployModal.setStatusOfIcons(true);
     });

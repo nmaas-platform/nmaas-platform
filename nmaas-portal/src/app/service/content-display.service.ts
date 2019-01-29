@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import {GenericDataService} from "./genericdata.service";
 import {HttpClient} from "../../../node_modules/@angular/common/http";
 import {AppConfigService} from "./appconfig.service";
-import {Observable} from "../../../node_modules/rxjs/Observable";
 import {Content} from "../model/content";
+import {Observable} from 'rxjs/internal/Observable';
 
 @Injectable()
 export class ContentDisplayService extends GenericDataService {

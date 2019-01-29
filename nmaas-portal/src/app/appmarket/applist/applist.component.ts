@@ -6,7 +6,7 @@ import { UserDataService } from '../../service/userdata.service';
 import { AppViewType } from '../../shared/common/viewtype';
 import { Router, ActivatedRoute } from '@angular/router';
 import {Location} from '@angular/common';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { isUndefined } from 'util';
 import {SortService} from "../../service/sort.service";
 import {SortableColumnComponent} from "../../shared/sortable-column/sortable-column.component";

@@ -6,6 +6,7 @@ import {DomainService} from "../../service";
 import {TranslateService} from '@ngx-translate/core';
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Observable, Subscription} from "rxjs";
+import {interval} from 'rxjs/internal/observable/interval';
 
 @Component({
   selector: 'nmaas-navbar',
@@ -35,7 +36,7 @@ export class NavbarComponent implements OnInit {
 
       ngOnInit() {
           if(this.authService.hasRole('ROLE_SYSTEM_ADMIN')){
-              this.refresh = Observable.interval(5000).subscribe(next => {
+              this.refresh = interval(5000).subscribe(next => {
                   if(this.contentService.shouldUpdate()) {
                       this.getSupportedLanguages();
                       this.contentService.setUpdateRequiredFlag(false);
