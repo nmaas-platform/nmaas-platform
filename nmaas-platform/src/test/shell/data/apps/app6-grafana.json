@@ -84,6 +84,30 @@
                                             "inputFormat": "plain"
                                         },
                                         {
+                                            "label": "Existing Prometheus instance",
+                                            "optionsLabelPosition": "right",
+                                            "values": [
+                                                {
+                                                    "label": "In-cluster Prometheus instance",
+                                                    "value": "inCluster"
+                                                },
+                                                {
+                                                    "label": "Different Prometheus instance",
+                                                    "value": "different"
+                                                }
+                                            ],
+                                            "inline": true,
+                                            "type": "radio",
+                                            "key": "prometheus",
+                                            "persistent": false,
+                                            "defaultValue": "different",
+                                            "conditional": {
+                                                "show": true,
+                                                "when": "use_name",
+                                                "eq": true
+                                            }
+                                        },
+                                        {
                                             "label": "Data Source name",
                                             "type": "textfield",
                                             "input": true,
@@ -92,12 +116,7 @@
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "conditional": {
-                                                "show": true,
-                                                "when": "use_name",
-                                                "eq": true,
-                                                "json": ""
-                                            }
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'different')"
                                         },
                                         {
                                             "label": "Prometheus instance address",
@@ -108,12 +127,19 @@
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "conditional": {
-                                                "show": true,
-                                                "when": "use_name",
-                                                "eq": true,
-                                                "json": ""
-                                            }
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'different')"
+                                        },
+                                        {
+                                            "label": "Select Prometheus instance",
+                                            "type": "select",
+                                            "key": "inClusterInstance",
+                                            "data": {
+                                                "values": []
+                                            },
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'inCluster')"
                                         }
                                     ]
                                 }
