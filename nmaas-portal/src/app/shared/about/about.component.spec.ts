@@ -9,11 +9,11 @@ import {AppConfigService, ChangelogService} from "../../service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {RouterTestingModule} from "@angular/router/testing";
-import {Observable} from "rxjs";
+import {of} from "rxjs";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ReCaptchaModule} from "angular5-recaptcha";
 import {ModalComponent} from "../modal";
 import {NotificationService} from "../../service/notification.service";
+import {RecaptchaModule} from "ng-recaptcha";
 
 describe('AboutComponent', () => {
   let component: AboutComponent;
@@ -34,7 +34,7 @@ describe('AboutComponent', () => {
           RouterTestingModule,
           FormsModule,
           ReactiveFormsModule,
-          ReCaptchaModule
+          RecaptchaModule
       ],
       providers: [ChangelogService, AppConfigService, ContentDisplayService, NotificationService]
     })
@@ -45,7 +45,7 @@ describe('AboutComponent', () => {
     fixture = TestBed.createComponent(AboutComponent);
     component = fixture.componentInstance;
     contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    spyOn(contentService, 'getLanguages').and.returnValue(Observable.of(['en', 'fr', 'pl']));
+    spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     fixture.debugElement.injector.get(TranslateService).use("en");
     fixture.detectChanges();
   });

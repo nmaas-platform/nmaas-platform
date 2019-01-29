@@ -39,7 +39,7 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 import { AboutComponent } from './about/about.component';
 import {ChangelogComponent} from "./changelog/changelog.component";
 import {NotificationService} from "../service/notification.service";
-import {ReCaptchaModule} from "angular5-recaptcha";
+import {RecaptchaModule} from "ng-recaptcha";
 
 @NgModule({
   imports: [
@@ -49,7 +49,7 @@ import {ReCaptchaModule} from "angular5-recaptcha";
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
-    ReCaptchaModule,
+    RecaptchaModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild(),
     TooltipModule

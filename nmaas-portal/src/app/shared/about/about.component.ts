@@ -4,9 +4,9 @@ import {GitInfo} from "../../model/gitinfo";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NotificationService} from "../../service/notification.service";
 import {Mail} from "../../model/mail";
-import {ReCaptchaComponent} from "angular5-recaptcha";
 import {TranslateService} from "@ngx-translate/core";
 import {ModalComponent} from "../modal";
+import {RecaptchaComponent} from "ng-recaptcha";
 
 @Component({
   selector: 'app-about',
@@ -23,8 +23,10 @@ export class AboutComponent implements OnInit {
 
   public errorMessage: any;
 
-  @ViewChild(ReCaptchaComponent)
-  public captcha: ReCaptchaComponent;
+  @ViewChild(RecaptchaComponent)
+  public captcha: RecaptchaComponent;
+
+  public captchaToken:string = "";
 
   @ViewChild(ModalComponent)
   public readonly modal: ModalComponent;
@@ -45,9 +47,12 @@ export class AboutComponent implements OnInit {
     }
   }
 
+  public resolved(captchaResponse: string) {
+    this.captchaToken = captchaResponse;
+  }
+
   public sendMail(){
-    let token = this.captcha.getResponse();
-    if(token.length < 1){
+    if(this.captchaToken.length < 1){
       this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
     } else{
       if(this.mailForm.valid){
