@@ -453,7 +453,17 @@
     "NOT_ROBOT_ERROR_MESSAGE": "Sie müssen beweisen, dass Sie kein Roboter sind!",
     "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!"
   },
-  "ABOUT": {
-    "CONTACT_FORM": "Contact form"
+  "CONTACT_FORM": {
+    "TITLE": "Contact form",
+    "EMAIL": "Your email",
+    "NAME": "Your name",
+    "MESSAGE": "Your message",
+    "MESSAGE_PLACEHOLDER": "Please type your message here",
+    "SUBMIT_BUTTON": "Submit",
+    "MODAL": {
+      "TITLE": "Mail has been sent",
+      "MESSAGE": "NMaaS Team will send reply soon.",
+      "CLOSE_BUTTON": "Close"
+    }
   }
 }

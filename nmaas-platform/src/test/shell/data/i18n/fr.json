@@ -451,7 +451,17 @@
       "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
     }
   },
-  "ABOUT": {
-    "CONTACT_FORM": "Contact form"
+  "CONTACT_FORM": {
+    "TITLE": "Contact form",
+    "EMAIL": "Your email",
+    "NAME": "Your name",
+    "MESSAGE": "Your message",
+    "MESSAGE_PLACEHOLDER": "Please type your message here",
+    "SUBMIT_BUTTON": "Submit",
+    "MODAL": {
+      "TITLE": "Mail has been sent",
+      "MESSAGE": "NMaaS Team will send reply soon.",
+      "CLOSE_BUTTON": "Close"
+    }
   }
 }

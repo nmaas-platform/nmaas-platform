@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AppConfigService, ChangelogService} from "../../service";
 import {GitInfo} from "../../model/gitinfo";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {NotificationService} from "../../service/notification.service";
+import {Mail} from "../../model/mail";
+import {ReCaptchaComponent} from "angular5-recaptcha";
+import {TranslateService} from "@ngx-translate/core";
+import {ModalComponent} from "../modal";
 
 @Component({
   selector: 'app-about',
@@ -11,13 +17,52 @@ export class AboutComponent implements OnInit {
 
   public gitInfo: GitInfo;
 
-  constructor(private changelogService:ChangelogService, private appConfigService:AppConfigService) {
+  public mail:Mail;
+
+  public mailForm: FormGroup;
+
+  public errorMessage: any;
+
+  @ViewChild(ReCaptchaComponent)
+  public captcha: ReCaptchaComponent;
+
+  @ViewChild(ModalComponent)
+  public readonly modal: ModalComponent;
+
+  constructor(private changelogService:ChangelogService, private appConfigService:AppConfigService,
+              private notificationService: NotificationService, private fb: FormBuilder, private translate: TranslateService) {
+    this.mail = new Mail();
+    this.mailForm = this.fb.group({
+      email: ['',[Validators.required, Validators.email]],
+      name: ['', [Validators.required]],
+      message: ['', [Validators.required, Validators.maxLength(600)]]
+    });
+  }
+
+  ngOnInit() {
     if(this.appConfigService.getShowGitInfo()){
       this.changelogService.getGitInfo().subscribe(info => this.gitInfo = info);
     }
   }
 
-  ngOnInit() {
+  public sendMail(){
+    let token = this.captcha.getResponse();
+    if(token.length < 1){
+      this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
+    } else{
+      if(this.mailForm.valid){
+        this.mail.otherAttributes = this.mailForm.getRawValue();
+        this.mail.mailType = "CONTACT_FORM";
+        this.notificationService.sendMail(this.mail).subscribe(()=> {
+          this.errorMessage=undefined;
+          this.mailForm.reset();
+          this.captcha.reset();
+          this.modal.show();
+        }, error=>{
+          this.errorMessage = error.message;
+          this.captcha.reset();
+        });
+      }
+    }
   }
-
 }

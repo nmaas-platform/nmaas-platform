@@ -37,12 +37,49 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="panel-title text-center">{{'ABOUT.CONTACT_FORM' | translate}}</div>
+                    <div class="panel-title text-center">{{'CONTACT_FORM.TITLE' | translate}}</div>
                 </div>
                 <div class="panel-body">
-
+                    <form (ngSubmit)="sendMail()" [formGroup]="mailForm">
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  mailForm.controls.email.invalid && mailForm.controls.email.dirty,
+ 					 	    'has-success': mailForm.controls.email.valid && mailForm.controls.email.dirty}">
+                            <label for="email" class="control-label">{{'CONTACT_FORM.EMAIL' | translate}}:</label>
+                            <input id="email" class="form-control" placeholder="{{'CONTACT_FORM.EMAIL' | translate}}" formControlName="email">
+                        </div>
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  mailForm.controls.name.invalid && mailForm.controls.name.dirty,
+ 					 	     'has-success': mailForm.controls.name.valid && mailForm.controls.name.dirty}">
+                                <label for="name" class="control-label">{{'CONTACT_FORM.NAME' | translate}}:</label>
+                                <input id="name" class="form-control" placeholder="{{'CONTACT_FORM.NAME' | translate}}" formControlName="name">
+                        </div>
+                        <div class="form-group form-group-lg" [ngClass]="{'has-error':  mailForm.controls.message.invalid && mailForm.controls.message.dirty,
+ 					 	     'has-success': mailForm.controls.message.valid && mailForm.controls.message.dirty}">
+                            <label for="message" class="control-label">{{'CONTACT_FORM.MESSAGE' | translate}}:</label>
+                            <textarea id="message" class="form-control" placeholder="{{'CONTACT_FORM.MESSAGE_PLACEHOLDER' | translate}}" formControlName="message"></textarea>
+                        </div>
+                        <div class="form-group-sm form-group">
+                            <jhi-re-captcha language="en" site_key="6Lf7BGwUAAAAACDGrAQDDqI7RQ-2hJu60esAXnMb"></jhi-re-captcha>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <button class="btn btn-primary btn-block" [disabled]="!mailForm.valid" type="submit" validate>
+                                {{'CONTACT_FORM.SUBMIT_BUTTON' | translate}}
+                            </button>
+                            <div *ngIf="errorMessage" class="alert alert-danger text-center">
+                                {{errorMessage}}
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
     <nmaas-footer></nmaas-footer>
+
+    <nmaas-modal (click)="modal.hide()">
+        <div class="nmaas-modal-header">{{'CONTACT_FORM.MODAL.TITLE' | translate}}</div>
+        <div class="nmaas-modal-body">
+            {{'CONTACT_FORM.MODAL.MESSAGE' | translate }}
+        </div>
+        <div class="nmaas-modal-footer">
+            <button type="button" class="btn btn-default" (click)="modal.hide()">{{'CONTACT_FORM.MODAL.CLOSE_BUTTON' | translate}}</button>
+        </div>
+    </nmaas-modal>

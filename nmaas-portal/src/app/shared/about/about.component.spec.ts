@@ -10,6 +10,10 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {RouterTestingModule} from "@angular/router/testing";
 import {Observable} from "rxjs";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {ReCaptchaModule} from "angular5-recaptcha";
+import {ModalComponent} from "../modal";
+import {NotificationService} from "../../service/notification.service";
 
 describe('AboutComponent', () => {
   let component: AboutComponent;
@@ -18,7 +22,7 @@ describe('AboutComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AboutComponent, NavbarComponent, ChangelogComponent, FooterComponent ],
+      declarations: [ AboutComponent, NavbarComponent, ChangelogComponent, FooterComponent, ModalComponent ],
       imports:[
           TranslateModule.forRoot({
             loader: {
@@ -27,9 +31,12 @@ describe('AboutComponent', () => {
             }
           }),
           HttpClientTestingModule,
-          RouterTestingModule
+          RouterTestingModule,
+          FormsModule,
+          ReactiveFormsModule,
+          ReCaptchaModule
       ],
-      providers: [ChangelogService, AppConfigService, ContentDisplayService]
+      providers: [ChangelogService, AppConfigService, ContentDisplayService, NotificationService]
     })
     .compileComponents();
   }));

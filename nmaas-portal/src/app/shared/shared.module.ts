@@ -38,6 +38,8 @@ import {TooltipModule} from "ng2-tooltip-directive";
 import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 import { AboutComponent } from './about/about.component';
 import {ChangelogComponent} from "./changelog/changelog.component";
+import {NotificationService} from "../service/notification.service";
+import {ReCaptchaModule} from "angular5-recaptcha";
 
 @NgModule({
   imports: [
@@ -47,6 +49,7 @@ import {ChangelogComponent} from "./changelog/changelog.component";
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
+    ReCaptchaModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild(),
     TooltipModule
@@ -85,7 +88,8 @@ import {ChangelogComponent} from "./changelog/changelog.component";
   ],
   providers: [
     PasswordValidator,
-    UserDataService
+    UserDataService,
+    NotificationService
   ],
   exports: [
     RateComponent,

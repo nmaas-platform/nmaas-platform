@@ -451,7 +451,17 @@
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
     "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
   },
-  "ABOUT": {
-    "CONTACT_FORM": "Formularz kontaktowy"
+  "CONTACT_FORM": {
+    "TITLE": "Formularz kontaktowy",
+    "EMAIL": "Twój adres email",
+    "NAME": "Twoje imie",
+    "MESSAGE": "Treść maila",
+    "MESSAGE_PLACEHOLDER": "Tutaj wpisz treść maila",
+    "SUBMIT_BUTTON": "Wyślij",
+    "MODAL": {
+      "TITLE": "Mail został wysłany",
+      "MESSAGE": "NMaaS Team wyśle odpowiedź niedługo.",
+      "CLOSE_BUTTON": "Zamknij"
+    }
   }
 }
