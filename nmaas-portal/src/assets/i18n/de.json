@@ -462,7 +462,7 @@
     "SUBMIT_BUTTON": "Submit",
     "MODAL": {
       "TITLE": "Mail has been sent",
-      "MESSAGE": "NMaaS Team will send reply soon.",
+      "MESSAGE": "NMaaS Team will reply soon.",
       "CLOSE_BUTTON": "Close"
     }
   }
