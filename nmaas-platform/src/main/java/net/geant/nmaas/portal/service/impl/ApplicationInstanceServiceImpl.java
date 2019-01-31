@@ -125,10 +125,10 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	}
 
 	@Override
-	public Map<Long, String> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain){
+	public List<AppInstance> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain){
 		return this.findAllByOwner(owner, domain).stream()
 				.filter(app -> app.getApplication().getName().equalsIgnoreCase(appName))
-				.collect(Collectors.toMap(AppInstance::getId, AppInstance::getName));
+				.collect(Collectors.toList());
 	}
 
 	@Override

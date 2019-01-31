@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.portal.persistent.entity.ApplicationAccessCredentials;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -79,6 +80,9 @@ public abstract class NmServiceInfo {
     @ElementCollection(fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
     private Map<String, String> additionalParameters;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private ApplicationAccessCredentials accessCredentials;
 
     public NmServiceInfo(Identifier deploymentId, String deploymentName, String domain, Integer storageSpace) {
         this.name = deploymentId.value();

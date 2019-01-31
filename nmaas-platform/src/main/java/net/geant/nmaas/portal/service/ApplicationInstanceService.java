@@ -31,7 +31,7 @@ public interface ApplicationInstanceService {
 	List<AppInstance> findAllByOwner(Long userId, Long domainId);
 	List<AppInstance> findAllByOwner(User owner, Domain domain);
 
-	Map<Long, String> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain);
+	List<AppInstance> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain);
 
 	Page<AppInstance> findAllByOwner(Long userId, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);

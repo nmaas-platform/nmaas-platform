@@ -153,6 +153,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
   }
 
+  public changeAccessCredentials(accessCredentials: any): void{
+      if(!isNullOrUndefined(accessCredentials)){
+          this.appConfiguration.accessCredentials = accessCredentials;
+      }
+  }
+
   public changeConfiguration(configuration: any): void{
     if(!isNullOrUndefined(configuration)){
       this.appConfiguration.jsonInput = configuration;
@@ -166,6 +172,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.changeMandatoryParameters(input['mandatoryParameters']);
     this.changeAdditionalParameters(input['additionalParameters']);
     this.changeConfiguration(input['configuration']);
+    this.changeAccessCredentials(input['accessCredentials']);
     if(isNullOrUndefined(this.appConfiguration.jsonInput)){
         this.appConfiguration.jsonInput = {};
     }

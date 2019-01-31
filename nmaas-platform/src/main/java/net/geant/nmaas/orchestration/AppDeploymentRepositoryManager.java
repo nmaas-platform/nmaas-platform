@@ -83,6 +83,10 @@ public class AppDeploymentRepositoryManager {
                 .orElseThrow(() -> new InvalidDeploymentIdException(deploymentNotFoundMessage(deploymentId)));
     }
 
+    public Optional<AppDeployment> loadByDeploymentNameAndDomain(String deploymentName, String domain){
+        return repository.findByDeploymentNameAndDomain(deploymentName, domain);
+    }
+
     public void removeAll() {
         repository.deleteAll();
     }
