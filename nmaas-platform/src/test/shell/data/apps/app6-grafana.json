@@ -99,7 +99,6 @@
                                             "inline": true,
                                             "type": "radio",
                                             "key": "prometheus",
-                                            "persistent": false,
                                             "defaultValue": "different",
                                             "conditional": {
                                                 "show": true,

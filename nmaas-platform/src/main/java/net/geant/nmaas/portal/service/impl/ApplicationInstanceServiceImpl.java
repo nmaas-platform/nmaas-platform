@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.geant.nmaas.portal.exceptions.ApplicationSubscriptionNotActiveException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
@@ -120,6 +122,13 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 		checkParam(owner);
 		checkParam(domain);
 		return appInstanceRepo.findAllByOwnerAndDomain(owner, domain);
+	}
+
+	@Override
+	public Map<Long, String> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain){
+		return this.findAllByOwner(owner, domain).stream()
+				.filter(app -> app.getApplication().getName().equalsIgnoreCase(appName))
+				.collect(Collectors.toMap(AppInstance::getId, AppInstance::getName));
 	}
 
 	@Override
