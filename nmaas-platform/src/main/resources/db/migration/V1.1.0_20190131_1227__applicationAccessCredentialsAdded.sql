@@ -5,5 +5,5 @@ create table application_access_credentials (
   primary key (id)
 );
 
-alter table NMAAS.PUBLIC.NM_SERVICE_INFO add column access_credentials_id bigint;
+alter table nm_service_info add column access_credentials_id bigint;
 alter table nm_service_info add constraint FKfyoxqpt5rd8ubfu76a6wwuhy2 foreign key (access_credentials_id) references application_access_credentials;
