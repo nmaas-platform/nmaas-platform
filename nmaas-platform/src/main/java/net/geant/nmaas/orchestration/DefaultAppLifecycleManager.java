@@ -3,7 +3,6 @@ package net.geant.nmaas.orchestration;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import java.util.Base64;
 import java.util.HashMap;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -121,7 +120,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
         if(configuration.getAccessCredentials() != null && !configuration.getAccessCredentials().isEmpty()){
             Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
-            serviceInfo.setAccessCredentials(new ApplicationAccessCredentials(accessCredentialsMap.get("accessUsername"), Base64.getEncoder().encodeToString(accessCredentialsMap.get("accessPassword").getBytes())));
+            serviceInfo.setAccessCredentials(new ApplicationAccessCredentials(accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword")));
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
