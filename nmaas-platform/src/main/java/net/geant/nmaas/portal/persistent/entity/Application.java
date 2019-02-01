@@ -60,11 +60,8 @@ public class Application implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<FileInfo> screenshots = new ArrayList<>();
 
-	private String briefDescription;
-	
-	@Basic(fetch = FetchType.LAZY)
-	@Lob
-	private String fullDescription;
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	List<AppDescription> descriptions;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private ConfigTemplate configTemplate;

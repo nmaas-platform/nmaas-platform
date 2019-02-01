@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.domain;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +21,8 @@ public class ApplicationBrief {
 	String sourceUrl;
 	String issuesUrl;
 	
-	String briefDescription;
-	
+	List<AppDescription> descriptions;
+
 	Set<String> tags = new HashSet<>();
 
 }

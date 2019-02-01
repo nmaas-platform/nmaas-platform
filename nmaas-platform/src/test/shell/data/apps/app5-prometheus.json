@@ -3,12 +3,33 @@
     "version": "2.4.0",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-    "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+    "briefDescription": "",
     "tags": [
         "monitoring",
         "alerting"
     ],
-    "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support",
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "de",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "fr",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        }
+    ],
     "wwwUrl": "https://prometheus.io/",
     "sourceUrl": "https://github.com/prometheus/prometheus",
     "issuesUrl": "https://github.com/prometheus/prometheus/issues",

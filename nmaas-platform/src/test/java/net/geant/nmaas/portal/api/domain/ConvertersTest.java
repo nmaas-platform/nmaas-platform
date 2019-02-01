@@ -56,7 +56,6 @@ public class ConvertersTest {
 
         appDto = new ApplicationBrief();
         appDto.setId(new Long(1));
-        appDto.setBriefDescription("brief");
         appDto.setName("myApp");
         appDto.setVersion("version");
         appDto.setLicense("GNL");
@@ -66,7 +65,6 @@ public class ConvertersTest {
         appEntity = modelMapper.map(appDto, net.geant.nmaas.portal.persistent.entity.Application.class);
 
         assertEquals(appDto.getId(), appEntity.getId());
-        assertEquals(appDto.getBriefDescription(), appEntity.getBriefDescription());
         assertEquals(appDto.getName(), appEntity.getName());
         assertEquals(appDto.getVersion(), appEntity.getVersion());
         assertEquals(appDto.getLicense(), appEntity.getLicense());

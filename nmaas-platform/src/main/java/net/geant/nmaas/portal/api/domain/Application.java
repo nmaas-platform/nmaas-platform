@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Application extends ApplicationBrief {
 
-	String fullDescription;
 	ConfigTemplate configTemplate;
 	ConfigTemplate configurationUpdateTemplate;
 	AppDeploymentSpec appDeploymentSpec;
