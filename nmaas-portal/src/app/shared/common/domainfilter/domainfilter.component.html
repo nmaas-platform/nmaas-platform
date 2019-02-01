@@ -8,3 +8,17 @@
 	</select>
 	</div>
 </form>
+
+<span class="dropdown dropdown-header nav navbar-nav"
+		style="list-style-type: none; padding-top: 12px; vertical-align: middle;">
+		<a class="dropdown-toggle" data-close-others="true" data-toggle="dropdown" href="#">
+			<span style="color: ">{{ getCurrent() | titlecase }}</span>
+		</a>
+		<ul class="dropdown-menu pull-right">
+			<li *ngFor="let domain of domains | async" [ngClass]="{'active': getCurrent() == domain?.name}">
+				<a (click)="changeDomain(domain?.id, domain?.name)">
+					<span>{{domain?.name}}</span>
+				</a>
+			</li>
+		</ul>
+</span>

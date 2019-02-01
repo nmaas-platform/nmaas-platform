@@ -215,10 +215,10 @@ export class AuthService {
   }
 
   public propagateSSOLogin(userid: string): Observable<boolean> {
-    console.log('propagateSSOLogin');
-    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl);
-    console.log('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
-    console.log('propagateSSOLogin ' + userid);
+    console.debug('propagateSSOLogin');
+    console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl);
+    console.debug('propagateSSOLogin ' + this.appConfig.config.apiUrl + '/auth/sso/login');
+    console.debug('propagateSSOLogin ' + userid);
     const headers = new HttpHeaders({'Content-Type': 'application/json', 'Accept': 'application/json'});
     return this.http.post(this.appConfig.config.apiUrl + '/auth/sso/login',
       JSON.stringify({'userid': userid}), {headers: headers}).pipe(
@@ -242,7 +242,7 @@ export class AuthService {
         }
       }),
       catchError((error) => {
-        console.debug('SSO login error: ' + error.error['message']);
+          console.debug('SSO login error: ' + error.error['message']);
           let message : string;
           if(error.error['message'])
               message = error.error['message'];
@@ -259,6 +259,10 @@ export class AuthService {
 
   public isLogged(): boolean {
     const token = this.getToken();
+    if(token == null){
+      console.debug('Null token');
+      return false;
+    }
     return (token ? !this.jwtHelper.isTokenExpired(token) : false);
   }
 }

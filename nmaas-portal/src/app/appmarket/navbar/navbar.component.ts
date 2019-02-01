@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import {DomainService} from "../../service";
-
 import {TranslateService} from '@ngx-translate/core';
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Observable, Subscription} from "rxjs";
 import {interval} from 'rxjs/internal/observable/interval';
+
 
 @Component({
   selector: 'nmaas-navbar',

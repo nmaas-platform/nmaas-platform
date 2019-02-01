@@ -1,20 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {Observable, Subscription} from "rxjs";
+import {interval, Observable, Subscription} from "rxjs";
 import {ContentDisplayService} from "../../service/content-display.service";
+import {AuthService} from "../../auth/auth.service";
+import {DomainService} from "../../service";
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnChanges {
 
     public languages: string[];
     public refresh: Subscription;
 
-    constructor(private translate: TranslateService, private contentService:ContentDisplayService) {
+    constructor(private router: Router, private authService: AuthService, private translate: TranslateService,
+                private contentService:ContentDisplayService, private domainService: DomainService) {
     }
 
     useLanguage(language: string) {
@@ -30,7 +33,20 @@ export class NavbarComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.getSupportedLanguages()
+        this.getSupportedLanguages();
+        if(this.authService.isLogged()) {
+            if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
+                this.refresh = interval(5000).subscribe(next => {
+                    if (this.contentService.shouldUpdate()) {
+                        this.getSupportedLanguages();
+                        this.contentService.setUpdateRequiredFlag(false);
+                    }
+                });
+            }
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
     }
 
     public getSupportedLanguages(){
@@ -39,4 +55,12 @@ export class NavbarComponent implements OnInit {
             this.languages = langs;
         });
     }
+
+    public checkUserRole(): boolean {
+        return this.authService.getDomains().filter(value => value != this.domainService.getGlobalDomainId()).length > 0
+          || this.authService.getRoles().filter(value => value != 'ROLE_INCOMPLETE')
+            .filter(value => value != 'ROLE_GUEST')
+            .length > 0;
+    }
+
 }
