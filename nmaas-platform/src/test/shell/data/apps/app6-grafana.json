@@ -25,7 +25,7 @@
         },
         {
             "language": "pl",
-            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "briefDescription": "Grafana to rozwiązanie open source do analizowania i wizualizacji danych.",
             "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
         }
     ],
