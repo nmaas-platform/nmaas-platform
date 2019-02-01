@@ -47,6 +47,7 @@ public class User implements Serializable {
 	
 	private String password;
 
+	/* Unique string identifying the user received from the IdP during first SAML login */
 	private String samlToken;
 
 	@Email
@@ -61,6 +62,7 @@ public class User implements Serializable {
 	private boolean privacyPolicyAccepted;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
+	@Builder.Default
 	private List<UserRole> roles = new ArrayList<>();
 	
 	public User(String username) {

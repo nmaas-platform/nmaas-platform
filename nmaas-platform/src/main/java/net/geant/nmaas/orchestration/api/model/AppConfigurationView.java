@@ -11,11 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppConfigurationView {
+
     @JsonProperty("jsonInput")
     private String jsonInput;
+
     private Integer storageSpace;
+
     @JsonProperty("additionalParameters")
     private String additionalParameters;
+
     @JsonProperty("mandatoryParameters")
     private String mandatoryParameters;
 

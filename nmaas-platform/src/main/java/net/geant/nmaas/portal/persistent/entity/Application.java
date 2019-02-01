@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.persistent.entity;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +32,7 @@ import java.util.Set;
 @Table(uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"name", "version"})
 })
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

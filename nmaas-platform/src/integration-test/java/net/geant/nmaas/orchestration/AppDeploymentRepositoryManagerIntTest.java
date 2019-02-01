@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class AppDeploymentRepositoryManagerTest {
+public class AppDeploymentRepositoryManagerIntTest {
 
     @Autowired
     private AppDeploymentRepositoryManager repositoryManager;

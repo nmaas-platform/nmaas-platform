@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmServiceAccessDetailsException;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
@@ -12,7 +13,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,17 +26,12 @@ import java.util.stream.Collectors;
  * Default {@link AppDeploymentMonitor} implementation.
  */
 @Component
+@AllArgsConstructor
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private NmServiceDeploymentProvider serviceDeployment;
-
-    @Autowired
-    public DefaultAppDeploymentMonitor(AppDeploymentRepositoryManager appDeploymentRepositoryManager, NmServiceDeploymentProvider serviceDeployment){
-        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
-        this.serviceDeployment = serviceDeployment;
-    }
 
     @Override
     public AppLifecycleState state(Identifier deploymentId) {
@@ -45,7 +40,12 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Override
     public AppLifecycleState previousState(Identifier deploymentId) {
-        return retrievePreviousState(deploymentId);
+        Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
+                .max(Comparator.comparing(AppDeploymentHistory::getTimestamp));
+        if(history.isPresent() && history.get().getPreviousState() != null){
+            return history.get().getPreviousState().lifecycleState();
+        }
+        return AppLifecycleState.UNKNOWN;
     }
 
     @Override
@@ -68,15 +68,6 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
         return appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
                 .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousStateString(), value.getCurrentStateString()))
                 .collect(Collectors.toList());
-    }
-
-    private AppLifecycleState retrievePreviousState(Identifier deploymentId) {
-        Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
-                .max(Comparator.comparing(AppDeploymentHistory::getTimestamp));
-        if(history.isPresent() && history.get().getPreviousState() != null){
-            return history.get().getPreviousState().lifecycleState();
-        }
-        return AppLifecycleState.UNKNOWN;
     }
 
     private AppLifecycleState retrieveCurrentState(Identifier deploymentId) {

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -11,26 +12,18 @@ import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
+@AllArgsConstructor
 public class AppDcnRequestOrVerificationTask {
 
     private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private DcnDeploymentProvider dcnDeployment;
-
-    @Autowired
-    public AppDcnRequestOrVerificationTask(
-            AppDeploymentRepositoryManager appDeploymentRepositoryManager,
-            DcnDeploymentProvider dcnDeployment) {
-        this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
-        this.dcnDeployment = dcnDeployment;
-    }
 
     /**
      * Checks current state of DCN for given client and depending on the result requests new DCN deployment

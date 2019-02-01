@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
@@ -23,7 +23,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -32,8 +31,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
@@ -41,6 +43,7 @@ import java.util.UUID;
 @Service
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Log4j2
+@AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private AppDeploymentRepositoryManager repositoryManager;
@@ -48,14 +51,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private ApplicationEventPublisher eventPublisher;
 
     private NmServiceInfoRepository nmServiceInfoRepository;
-
-    @Autowired
-    public DefaultAppLifecycleManager(AppDeploymentRepositoryManager repositoryManager,
-                                      ApplicationEventPublisher eventPublisher, NmServiceInfoRepository nmServiceInfoRepository) {
-        this.repositoryManager = repositoryManager;
-        this.eventPublisher = eventPublisher;
-        this.nmServiceInfoRepository = nmServiceInfoRepository;
-    }
 
     @Override
     @Loggable(LogLevel.INFO)
@@ -102,19 +97,11 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             appDeployment.setStorageSpace(configuration.getStorageSpace());
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
         }
-        if(configuration.getAdditionalParameters() != null && !configuration.getAdditionalParameters().isEmpty()){
-            if(serviceInfo.getAdditionalParameters() == null){
-                serviceInfo.setAdditionalParameters(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getAdditionalParameters())));
-            } else {
-                serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getAdditionalParameters())));
-            }
+        if(isNotEmpty(configuration.getAdditionalParameters())){
+            serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getAdditionalParameters())));
         }
-        if(configuration.getMandatoryParameters() != null && !configuration.getMandatoryParameters().isEmpty()){
-            if(serviceInfo.getAdditionalParameters() == null){
-                serviceInfo.setAdditionalParameters(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
-            } else {
-                serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
-            }
+        if(isNotEmpty(configuration.getMandatoryParameters())){
+            serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
@@ -123,7 +110,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private Map<String, String> getMapFromJson(String inputJson){
+    Map<String, String> getMapFromJson(String inputJson){
         try {
             return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
         } catch (IOException e) {
@@ -131,7 +118,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
