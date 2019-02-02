@@ -38,7 +38,6 @@ public class AppDeploymentHistory {
     @Column(nullable = false)
     private Date timestamp;
 
-    @Column(nullable = true)
     private AppDeploymentState previousState;
 
     @Column(nullable = false)

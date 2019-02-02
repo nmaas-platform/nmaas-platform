@@ -21,6 +21,7 @@ public enum NmServiceDeploymentState {
     VERIFICATION_INITIATED(true),
     VERIFIED(true),
     VERIFICATION_FAILED(false),
+    REMOVAL_INITIATED(false),
     REMOVED(false),
     REMOVAL_FAILED(false),
     RESTART_INITIATED(true),

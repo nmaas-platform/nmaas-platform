@@ -29,6 +29,7 @@ import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentS
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARATION_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.ENVIRONMENT_PREPARED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_FAILED;
+import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVAL_INITIATED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REMOVED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFICATION_FAILED;
 import static net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState.REQUEST_VERIFIED;
@@ -143,6 +144,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
         try {
+            notifyStateChangeListeners(deploymentId, REMOVAL_INITIATED);
             orchestrator.removeNmService(deploymentId);
             notifyStateChangeListeners(deploymentId, REMOVED);
         } catch (CouldNotRemoveNmServiceException

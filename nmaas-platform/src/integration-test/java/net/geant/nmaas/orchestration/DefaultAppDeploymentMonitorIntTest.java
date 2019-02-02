@@ -135,9 +135,9 @@ public class DefaultAppDeploymentMonitorIntTest {
         publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.CONFIGURATION_FAILED, ""));
         Thread.sleep(DELAY);
         // app removal
-        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVED, ""));
+        publisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.REMOVAL_INITIATED, ""));
         Thread.sleep(DELAY);
-        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVED));
+        assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
     }
 
     @Test(expected = InvalidAppStateException.class)

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -22,7 +23,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
@@ -32,6 +32,7 @@ import java.util.Optional;
 
 @Service
 @Log4j2
+@AllArgsConstructor
 public class AppDeploymentStateChangeManager {
 
     private AppDeploymentRepositoryManager deploymentRepositoryManager;
@@ -42,34 +43,14 @@ public class AppDeploymentStateChangeManager {
 
     private ModelMapper modelMapper;
 
-    @Autowired
-    public AppDeploymentStateChangeManager(AppDeploymentRepositoryManager deploymentRepositoryManager,
-                                           AppDeploymentMonitor deploymentMonitor,
-                                           ApplicationEventPublisher eventPublisher,
-                                           ModelMapper modelMapper){
-        this.deploymentRepositoryManager = deploymentRepositoryManager;
-        this.deploymentMonitor = deploymentMonitor;
-        this.eventPublisher = eventPublisher;
-        this.modelMapper = modelMapper;
-    }
-
     @EventListener
     @Loggable(LogLevel.INFO)
     public synchronized ApplicationEvent notifyStateChange(NmServiceDeploymentStateChangeEvent event) {
         try {
             AppDeploymentState newDeploymentState = deploymentRepositoryManager.loadState(event.getDeploymentId()).nextState(event.getState());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
-            if(newDeploymentState == AppDeploymentState.REQUEST_VALIDATION_FAILED ||
-                    newDeploymentState == AppDeploymentState.APPLICATION_REMOVAL_FAILED ||
-                    newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_FAILED ||
-                    newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_FAILED ||
-                    newDeploymentState == AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED ||
-                    newDeploymentState == AppDeploymentState.APPLICATION_RESTART_FAILED ||
-                    newDeploymentState == AppDeploymentState.APPLICATION_CONFIGURATION_FAILED ||
-                    newDeploymentState == AppDeploymentState.INTERNAL_ERROR ||
-                    newDeploymentState == AppDeploymentState.REQUEST_VALIDATED){
-                log.warn("Application deployment failed state detected. Saving error message: " +
-                        event.getErrorMessage());
+            if(newDeploymentState.isInFailedState()){
+                log.warn("Application deployment failed state detected. Saving error message: " + event.getErrorMessage());
                 deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(), event.getErrorMessage());
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {
@@ -85,7 +66,7 @@ public class AppDeploymentStateChangeManager {
         }
     }
 
-    private Optional<ApplicationEvent> triggerActionEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
+    Optional<ApplicationEvent> triggerActionEventIfRequired(Identifier deploymentId, AppDeploymentState currentState) {
         switch (currentState) {
             case REQUEST_VALIDATED:
                 return Optional.of(new AppPrepareEnvironmentActionEvent(this, deploymentId));
