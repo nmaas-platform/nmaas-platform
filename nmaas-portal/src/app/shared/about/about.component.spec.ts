@@ -14,6 +14,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ModalComponent} from "../modal";
 import {NotificationService} from "../../service/notification.service";
 import {RecaptchaModule} from "ng-recaptcha";
+import {TooltipModule} from "ng2-tooltip-directive";
 
 describe('AboutComponent', () => {
   let component: AboutComponent;
@@ -34,7 +35,8 @@ describe('AboutComponent', () => {
           RouterTestingModule,
           FormsModule,
           ReactiveFormsModule,
-          RecaptchaModule
+          RecaptchaModule,
+          TooltipModule
       ],
       providers: [ChangelogService, AppConfigService, ContentDisplayService, NotificationService]
     })

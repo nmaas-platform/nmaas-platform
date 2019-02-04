@@ -451,6 +451,19 @@
       "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
     }
   },
+  "ABOUT": {
+    "CONTACT_TITLE": "Contactez-nous",
+    "CHANGELOG_TITLE": "Version actuelle et journal des modifications",
+    "CONTACT_DESC": "Vous avez une question? Un problème de fonction? Un problème technique? Envoyez-nous un message et nous nous en occuperons dans les meilleurs délais.",
+    "CHANGELOG_DESC": "Comme vous le savez peut-être, NMaaS continue d'évoluer et nous développons de nouvelles fonctionnalités. Vous trouverez ci-dessous des informations sur les principales modifications apportées aux versions spécifiées."
+  },
+  "CHANGELOG": {
+    "CHANGELOG_LAST": "Dernière version",
+    "NEW": "Nouveau",
+    "REMOVED": "Supprimé",
+    "IMPROVED": "Amélioré",
+    "FIXED": "Fixe"
+  },
   "CONTACT_FORM": {
     "TITLE": "Contact form",
     "EMAIL": "Your email",

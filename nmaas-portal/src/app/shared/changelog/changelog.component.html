@@ -1,23 +1,29 @@
-<div class="panel panel-default" id="accordion" *ngIf="changelog">
-	<div class="panel-heading">
-		<div class="panel-title text-center">Changelog</div>
+<div *ngFor="let version of changelog?.versions; let i = index">
+	<div class="card panel panel-default">
+		<h3 class="panel-title text-center">
+			<button class="btn btn-link" data-toggle="collapse" [attr.data-target]="'#collapse'+i.toString()">
+				<span *ngIf="i ==0"><strong>{{ 'CHANGELOG.CHANGELOG_LAST' | translate }}</strong>: </span>{{version?.verNo}} {{version?.date}}
+			</button>
+		</h3>
 	</div>
-	<div class="panel-body">
-		<div *ngFor="let version of changelog?.versions; let i = index">
-			<div class="card panel panel-default">
-				<h3 class="panel-title text-center">
-					<button class="btn btn-link" data-toggle="collapse" [attr.data-target]="'#collapse'+i.toString()">
-						{{version?.verNo}} {{version?.date}}
-					</button>
-				</h3>
-			</div>
-			<div [attr.id]="'collapse'+i.toString()" class="collapse" data-parent="#accordion">
-				<div class="card-body" *ngFor="let t of version?.topic">
-					<span>{{t?.title}}</span><br>
-					{{t?.tags}}<br>
-					{{t?.description}} <br>
-				</div>
-			</div>
+	<div *ngIf="i != 0" [attr.id]="'collapse'+i.toString()" class="collapse panel-padding" data-parent="#accordion">
+		<div class="card-body item-padding" *ngFor="let t of version?.topic">
+			<span *ngIf="t?.tags == '[New Feature]'" class="tag-extended tag-extended-feature">{{ 'CHANGELOG.NEW' | translate }}</span>
+			<span *ngIf="t?.tags == '[Enhancement]'" class="tag-extended tag-extended-enhancement">{{ 'CHANGELOG.IMPROVED' | translate }}</span>
+			<span *ngIf="t?.tags == '[Bugfix]'" class="tag-extended tag-extended-bugfix">{{ 'CHANGELOG.FIXED' | translate }}</span>
+			<span *ngIf="t?.tags == '[Removed]'" class="tag-extended tag-extended-removed">{{ 'CHANGELOG.REMOVED' | translate }}</span>
+			<span>{{t?.title}}</span><br>
+			{{t?.description}}<br>
+		</div>
+	</div>
+	<div *ngIf="i == 0" [attr.id]="'collapse'+i.toString()" class="collapse in panel-padding" data-parent="#accordion">
+		<div class="card-body item-padding" *ngFor="let t of version?.topic">
+			<span *ngIf="t?.tags == '[New Feature]'" class="tag-extended tag-extended-feature">{{ 'CHANGELOG.NEW' | translate }}</span>
+			<span *ngIf="t?.tags == '[Enhancement]'" class="tag-extended tag-extended-enhancement">{{ 'CHANGELOG.IMPROVED' | translate }}</span>
+			<span *ngIf="t?.tags == '[Bugfix]'" class="tag-extended tag-extended-bugfix">{{ 'CHANGELOG.FIXED' | translate }}</span>
+			<span *ngIf="t?.tags == '[Removed]'" class="tag-extended tag-extended-removed">{{ 'CHANGELOG.REMOVED' | translate }}</span>
+			<span>{{t?.title}}</span><br>
+			{{t?.description}}<br>
 		</div>
 	</div>
 </div>

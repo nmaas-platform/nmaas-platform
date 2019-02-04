@@ -452,8 +452,20 @@
     "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
     "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"
   },
+  "ABOUT": {
+    "CONTACT_TITLE": "Contact us",
+    "CHANGELOG_TITLE": "Actual version and changelog",
+    "CONTACT_DESC": "Got a question? Problem with one of functions? Technical issue? Send us a message and we'll reposed as soon as possible.",
+    "CHANGELOG_DESC": "As you may know, NMaaS is still evolving and we're still developing new features. Below you can find information about major changes in specified releases."
+  },
+  "CHANGELOG": {
+    "CHANGELOG_LAST": "Last release",
+    "NEW": "New",
+    "REMOVED": "Removed",
+    "IMPROVED": "Improved",
+    "FIXED": "Fixed"
+  },
   "CONTACT_FORM": {
-    "TITLE": "Contact form",
     "EMAIL": "Your email",
     "NAME": "Your name",
     "MESSAGE": "Your message",

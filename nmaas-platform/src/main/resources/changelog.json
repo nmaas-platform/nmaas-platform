@@ -5,29 +5,39 @@
     "date" : "(2019/01/24)",
     "topic" : [
       {
-        "title" : "* New nmaas-janitor component added",
+        "title" : "New nmaas-janitor component added",
         "tags" : "[New Feature]",
         "description" : "New component added in order to improve the application instance configuration process to use ConfigMaps."
       },
       {
-        "title" : "* Added support for configuration updates",
+        "title" : "Added support for configuration updates",
         "tags" : "[New Feature]",
         "description" : "It is now possible to update configuration of already running application instances."
       },
       {
-        "title" : "* New library used for configuration wizard forms generation",
+        "title" : "New library used for configuration wizard forms generation",
         "tags" : "[New Feature]",
         "description" : "New library offers many interesting features and is actively developed."
       },
       {
-        "title" : "* Removed support for Docker Compose deployment",
-        "tags" : "[New Feature]",
+        "title" : "Removed support for Docker Compose deployment",
+        "tags" : "[Removed]",
         "description" : "In the current version only container deployment in Kubernetes it supported. Application source code has been cleaned and optimized."
       },
       {
-        "title" : "* Implemented new version of the NMaaS notification service",
+        "title" : "Implemented new version of the NMaaS notification service",
         "tags" : "[Enhancement]",
         "description" : "The nmaas-notification component is no longer used. Email templates have been improved."
+      },
+      {
+        "title" : "Implemented new application view",
+        "tags" : "[Enhancement]",
+        "description" : "New version of application view and rating system added to NMaaS."
+      },
+      {
+        "title": "During deployment of Prometheus application, user cannot remove added target.",
+        "tags": "[Bugfix]",
+        "description": "There were some problems with old wizard form generation library, and these are one of them. Solution for these problem was adding new library to control that."
       }
     ]
   },
@@ -36,17 +46,17 @@
     "date" : "(2018/12/31)",
     "topic" : [
       {
-        "title" : "* Support for Docker Compose and Kubernetes deployment environments",
+        "title" : "Support for Docker Compose and Kubernetes deployment environments",
         "tags" : "[New Feature]",
         "description" : "NMaaS supports deployment of NM service applications in two environments."
       },
       {
-        "title" : "* Support for 6 network management applications",
+        "title" : "Support for 6 network management applications",
         "tags" : "[New Feature]",
         "description" : "Six NM applications were integrated and added to NMaaS portfolio."
       },
       {
-        "title" : "* Support for GitLab repository",
+        "title" : "Support for GitLab repository",
         "tags" : "[New Feature]",
         "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
       }

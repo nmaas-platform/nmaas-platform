@@ -453,6 +453,19 @@
     "NOT_ROBOT_ERROR_MESSAGE": "Sie müssen beweisen, dass Sie kein Roboter sind!",
     "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!"
   },
+  "ABOUT": {
+    "CONTACT_TITLE": "Kontaktieren Sie uns",
+    "CHANGELOG_TITLE": "Aktuelle Version und Änderungsprotokoll",
+    "CONTACT_DESC": "Haben Sie eine Frage? Problem mit einer der Funktionen? Technisches Problem? Senden Sie uns eine Nachricht und wir werden es so schnell wie möglich beheben.",
+    "CHANGELOG_DESC": "Wie Sie vielleicht wissen, entwickelt sich NMaaS immer noch und wir entwickeln immer noch neue Funktionen. Nachfolgend finden Sie Informationen zu wichtigen Änderungen in den angegebenen Releases."
+  },
+  "CHANGELOG": {
+    "CHANGELOG_LAST": "Letzte Veröffentlichung",
+    "NEW": "Neu",
+    "REMOVED": "Entfernt",
+    "IMPROVED": "Verbessert",
+    "FIXED": "Fixed"
+  },
   "CONTACT_FORM": {
     "TITLE": "Contact form",
     "EMAIL": "Your email",
