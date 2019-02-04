@@ -21,10 +21,10 @@ import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.portal.persistent.entity.ApplicationAccessCredentials;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
@@ -118,9 +118,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
             }
         }
-        if(configuration.getAccessCredentials() != null && !configuration.getAccessCredentials().isEmpty()){
+        if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
             Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
-            serviceInfo.setAccessCredentials(new ApplicationAccessCredentials(accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword")));
+            //TODO: Send access credentials to NMaaS Janitor. Keys: accessUsername, accessPassword
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
