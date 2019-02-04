@@ -3,7 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,15 +12,11 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 
+@AllArgsConstructor
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
 
 	private ApplicationRepository appRepo;
-
-	@Autowired
-	public ApplicationServiceImpl(ApplicationRepository applicationRepository){
-		this.appRepo = applicationRepository;
-	}
 
 	@Override
 	public Application create(String name) {

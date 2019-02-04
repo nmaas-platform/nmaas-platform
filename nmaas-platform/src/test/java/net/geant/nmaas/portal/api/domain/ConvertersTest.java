@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
+import net.geant.nmaas.portal.persistent.entity.Application;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,11 +51,11 @@ public class ConvertersTest {
 	public void testConvertApp() {
         tagRepo.save(new Tag("network"));
 		
-		ApplicationBrief appDto = null;
-	    net.geant.nmaas.portal.persistent.entity.Application appEntity = null;
+		ApplicationBriefView appDto = null;
+	    Application appEntity = null;
 		
 
-        appDto = new ApplicationBrief();
+        appDto = new ApplicationBriefView();
         appDto.setId(new Long(1));
         appDto.setName("myApp");
         appDto.setVersion("version");
@@ -62,7 +63,7 @@ public class ConvertersTest {
         appDto.getTags().add("monitoring");
         appDto.getTags().add("network");
 
-        appEntity = modelMapper.map(appDto, net.geant.nmaas.portal.persistent.entity.Application.class);
+        appEntity = modelMapper.map(appDto, Application.class);
 
         assertEquals(appDto.getId(), appEntity.getId());
         assertEquals(appDto.getName(), appEntity.getName());
@@ -77,7 +78,7 @@ public class ConvertersTest {
         assertNull( (((Tag)tags[0]).getName() == "monitoring" ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
         assertNotNull((((Tag)tags[1]).getName() == "network" ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
 
-        appDto = modelMapper.map(appEntity, ApplicationBrief.class);
+        appDto = modelMapper.map(appEntity, ApplicationBriefView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
         assertTrue(appDto.getTags().contains("network"));

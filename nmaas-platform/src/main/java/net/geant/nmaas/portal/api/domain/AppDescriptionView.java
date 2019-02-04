@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class AppDescription {
+public class AppDescriptionView {
 
     private String language;
 

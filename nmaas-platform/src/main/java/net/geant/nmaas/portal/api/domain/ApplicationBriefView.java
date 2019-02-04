@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApplicationBrief {
+public class ApplicationBriefView {
 	Long id;
 	
 	String name;
@@ -21,7 +21,7 @@ public class ApplicationBrief {
 	String sourceUrl;
 	String issuesUrl;
 	
-	List<AppDescription> descriptions;
+	List<AppDescriptionView> descriptions;
 
 	Set<String> tags = new HashSet<>();
 
