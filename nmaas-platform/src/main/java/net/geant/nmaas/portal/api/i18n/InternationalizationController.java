@@ -2,31 +2,26 @@ package net.geant.nmaas.portal.api.i18n;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.i18n.api.LanguageView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping(value = "/api/i18n")
 public class InternationalizationController {
+
     private InternationalizationRepository internationalizationRepository;
 
     private ConfigurationManager configurationManager;
 
     private ModelMapper modelMapper;
-
-    @Autowired
-    public InternationalizationController(InternationalizationRepository internationalizationRepository, ConfigurationManager configurationManager, ModelMapper modelMapper){
-        this.internationalizationRepository = internationalizationRepository;
-        this.configurationManager = configurationManager;
-        this.modelMapper = modelMapper;
-    }
 
     @PostMapping("/{language}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")

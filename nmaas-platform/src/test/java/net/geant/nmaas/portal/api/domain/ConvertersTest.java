@@ -56,7 +56,7 @@ public class ConvertersTest {
 		
 
         appDto = new ApplicationBriefView();
-        appDto.setId(new Long(1));
+        appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setVersion("version");
         appDto.setLicense("GNL");
@@ -75,8 +75,8 @@ public class ConvertersTest {
 
         Object[] tags = appEntity.getTags().toArray();
 
-        assertNull( (((Tag)tags[0]).getName() == "monitoring" ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
-        assertNotNull((((Tag)tags[1]).getName() == "network" ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
+        assertNull( (((Tag) tags[0]).getName().equals("monitoring") ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
+        assertNotNull((((Tag) tags[1]).getName().equals("network") ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
 
         appDto = modelMapper.map(appEntity, ApplicationBriefView.class);
         assertEquals(2, appDto.getTags().size());
