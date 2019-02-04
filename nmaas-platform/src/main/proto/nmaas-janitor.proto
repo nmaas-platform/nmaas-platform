@@ -32,8 +32,9 @@ message ServiceResponse{
 }
 
 message InstanceCredentialsRequest{
-    Instance instance = 1;
-    Credentials credentials = 2;
+    string api = 1;
+    Instance instance = 2;
+    Credentials credentials = 3;
 }
 
 service ConfigService {
