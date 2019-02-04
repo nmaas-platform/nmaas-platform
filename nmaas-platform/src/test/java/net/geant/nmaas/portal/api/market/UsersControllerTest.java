@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -137,6 +138,15 @@ public class UsersControllerTest {
 	}
 
 	@Test
+	public void shouldUpdateUserWithNullEmail(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setEmail(null);
+		userRequest.setFirstname("test");
+		usersController.updateUser(userList.get(0).getId(), userRequest, principal);
+		verify(userService, times(1)).update(userList.get(0));
+	}
+
+	@Test
 	public void shouldGetUserRoles(){
 		Set<UserRole> result = usersController.getUserRoles(userList.get(0).getId());
 		UserRole userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRole.class);
@@ -166,6 +176,11 @@ public class UsersControllerTest {
 		userRole.setDomainId(DOMAIN.getId());
 		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).removeMemberRole(DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_OPERATOR);
+	}
+
+	@Test(expected = MissingElementException.class)
+	public void shouldNotRemoveUserRoleWithNullRequest(){
+		usersController.removeUserRole(userList.get(0).getId(), null, principal);
 	}
 
 	@Test(expected = MissingElementException.class)
@@ -275,6 +290,27 @@ public class UsersControllerTest {
 		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole.getRole());
 	}
 
+	@Test(expected = MissingElementException.class)
+	public void shouldNotAddUserRoleWithNullRole(){
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), null, principal);
+	}
+
+	@Test(expected = MissingElementException.class)
+	public void shouldNotAddUserRoleWithNullUserRole(){
+		UserRole userRole = new UserRole();
+		userRole.setRole(null);
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+	}
+
+	@Test(expected = ProcessingException.class)
+	public void shouldNotAddGlobalUserRoleInNotGlobalDomain(){
+		UserRole userRole = new UserRole();
+		userRole.setDomainId(DOMAIN.getId());
+		userRole.setRole(Role.ROLE_OPERATOR);
+		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
+		usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
+	}
+
 	@Test(expected = ProcessingException.class)
 	public void shouldNotAddNonGlobalRoleToGlobalDomain(){
 		UserRole userRole = new UserRole();
@@ -309,6 +345,14 @@ public class UsersControllerTest {
 	public void shouldSetEnabledFlag(){
 		usersController.setEnabledFlag(userList.get(0).getId(), true, principal);
 		verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), true);
+		verify(eventPublisher, times(1)).publishEvent(any());
+	}
+
+	@Test
+	public void shouldSetDisabledFlag(){
+		usersController.setEnabledFlag(userList.get(0).getId(), false, principal);
+		verify(userService, times(1)).setEnabledFlag(userList.get(0).getId(), false);
+		verify(eventPublisher, times(1)).publishEvent(any());
 	}
 
 	@Test
@@ -317,6 +361,23 @@ public class UsersControllerTest {
 		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
 		usersController.completeRegistration(principal, userRequest);
 		verify(userService, times(1)).update(userList.get(0));
+	}
+
+	@Test
+	public void shouldCompleteRegistrationWithFullData(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		userRequest.setFirstname("First");
+		userRequest.setLastname("Last");
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(false);
+		usersController.completeRegistration(principal, userRequest);
+		verify(userService, times(1)).update(userList.get(0));
+	}
+
+	@Test(expected = ProcessingException.class)
+	public void shouldNotCompleteRegistrationWithNonUniqueUsername(){
+		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
+		when(userService.existsByUsername(userRequest.getUsername())).thenReturn(true);
+		usersController.completeRegistration(principal, userRequest);
 	}
 
 	@Test(expected = ProcessingException.class)
@@ -340,5 +401,7 @@ public class UsersControllerTest {
 		verify(domainService, times(1)).addMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_GUEST);
 		verify(userService, times(1)).update(userList.get(0));
 	}
+
+
 
 }

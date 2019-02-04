@@ -291,7 +291,7 @@ public class UsersController {
 		try {
 			Claims claims = jwtTokenService.getResetClaims(token);
 			return modelMapper.map(userService.findByEmail(claims.getSubject()), User.class);
-		} catch(JwtException e){
+		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Validation of reset request failed -> "+ e.getMessage());
 		}
 	}
@@ -303,7 +303,7 @@ public class UsersController {
 			Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
 			net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(claims.getSubject());
 			changePassword(user, passwordReset.getPassword());
-		} catch(JwtException e){
+		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Unable to reset password -> " + e.getMessage());
 		}
 	}
@@ -522,10 +522,6 @@ public class UsersController {
 	List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
         return rolesList.stream().map(Role::authority).collect(Collectors.toList());
-    }
-
-    String getRequestedRoleAsString(Set<UserRole> userRoles){
-        return String.join(",", getRequestedRoleAsList(userRoles));
     }
     
     List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
