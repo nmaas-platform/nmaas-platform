@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.api.i18n;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.LanguageView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
@@ -12,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,7 +41,7 @@ public class InternationalizationControllerTest {
     @Test
     public void shouldSaveLanguageContent(){
         internationalizationController.saveLanguageContent("pl", "Test content");
-        verify(internationalizationController, times(1)).saveLanguageContent("pl", "Test content");
+        verify(repository, times(1)).save(any());
     }
 
     @Test
@@ -60,7 +62,7 @@ public class InternationalizationControllerTest {
 
     @Test
     public void shouldChangeLanguageState(){
-        when(configurationManager.getConfiguration().getDefaultLanguage()).thenReturn("fr");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "fr"));
         Internationalization internationalization = new Internationalization(1L, "pl", false, "Test content");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization));
         internationalizationController.changeSupportedLanguageState(language);
@@ -77,7 +79,7 @@ public class InternationalizationControllerTest {
     public void shouldThrowAnExceptionWhenDisablingDefaultLanguage(){
         Internationalization internationalization = new Internationalization(1L, "pl", false, "Test content");
         when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization));
-        when(configurationManager.getConfiguration().getDefaultLanguage()).thenReturn("pl");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "pl"));
         internationalizationController.changeSupportedLanguageState(language);
     }
 }

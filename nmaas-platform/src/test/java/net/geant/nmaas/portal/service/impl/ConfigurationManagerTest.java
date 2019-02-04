@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service.impl;
 import java.util.Collections;
 import java.util.Optional;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
 import net.geant.nmaas.portal.persistent.entity.Configuration;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
@@ -45,6 +46,7 @@ public class ConfigurationManagerTest {
 
     @Test
     public void shouldGetConfiguration(){
+        when(repository.count()).thenReturn(1L);
         when(repository.findAll()).thenReturn(Collections.singletonList(config));
         ConfigurationView configView = this.configurationManager.getConfiguration();
         assertEquals(config.isMaintenance(), configView.isMaintenance());
@@ -81,13 +83,13 @@ public class ConfigurationManagerTest {
         verify(repository, times(1)).save(any());
     }
 
-    @Test
+    @Test(expected = ConfigurationNotFoundException.class)
     public void shouldNotUpdateNotExistingConfig(){
         when(repository.findById(config.getId())).thenReturn(Optional.empty());
         configurationManager.updateConfiguration(1L, configView);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void shouldNotSetNotExistingLanguageAsDefault(){
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
         when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
@@ -95,7 +97,7 @@ public class ConfigurationManagerTest {
         configurationManager.updateConfiguration(1L, configView);
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldNotSetDisabledLanguageAsDefault(){
         this.internationalization.setEnabled(false);
         when(repository.findById(config.getId())).thenReturn(Optional.of(config));
