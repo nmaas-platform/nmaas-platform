@@ -58,7 +58,7 @@
                     </li>
                 </ul>
                 <ul *ngIf="checkUserRole()" class="nav navbar-form navbar-right">
-                    <nmaas-domain-filter></nmaas-domain-filter>
+                    <li><nmaas-domain-filter></nmaas-domain-filter></li>
                 </ul>
             </div>
             <ul *ngIf="!authService.isLogged()" class="nav navbar-nav pull-right">

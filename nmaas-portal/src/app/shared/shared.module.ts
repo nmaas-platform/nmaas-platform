@@ -48,7 +48,8 @@ import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
     ReactiveFormsModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild(),
-    TooltipModule
+    TooltipModule,
+    DomainFilterComponent
   ],
   declarations: [
     RateComponent,
