@@ -1,7 +1,7 @@
 syntax = "proto3";
 package v1;
 
-option java_package = "net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor";
+option java_package = "net.geant.nmaas.externalservices.inventory.janitor";
 option java_outer_classname = "JanitorManager";
 
 enum Status {
@@ -15,19 +15,39 @@ message Instance {
     string domain = 3;
 }
 
-message ConfigUpdateRequest{
+message Credentials {
+    string user = 1;
+    string password = 2;
+}
+
+message InstanceRequest{
     string api = 1;
     Instance deployment = 2;
 }
 
-message ConfigUpdateResponse{
+message ServiceResponse{
     string api = 1;
     Status status = 2;
     string message = 3;
 }
 
+message InstanceCredentialsRequest{
+    Instance instance = 1;
+    Credentials credentials = 2;
+}
+
 service ConfigService {
-    rpc Create(ConfigUpdateRequest) returns (ConfigUpdateResponse);
-    rpc Update(ConfigUpdateRequest) returns (ConfigUpdateResponse);
-    rpc Delete(ConfigUpdateRequest) returns (ConfigUpdateResponse);
+    rpc Create(InstanceRequest) returns (ServiceResponse);
+    rpc Update(InstanceRequest) returns (ServiceResponse);
+    rpc Delete(InstanceRequest) returns (ServiceResponse);
+}
+
+service BasicAuthService {
+    rpc Create(InstanceCredentialsRequest) returns (ServiceResponse);
+    rpc Update(InstanceCredentialsRequest) returns (ServiceResponse);
+    rpc Delete(InstanceRequest) returns (ServiceResponse);
+}
+
+service CertManagerService {
+    rpc Delete(InstanceRequest) returns (ServiceResponse);
 }
