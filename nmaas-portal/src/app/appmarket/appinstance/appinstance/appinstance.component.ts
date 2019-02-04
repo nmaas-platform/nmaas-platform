@@ -74,10 +74,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
       this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
         this.appInstance = appInstance;
+        this.configurationTemplate = this.getTemplate(appInstance.configTemplate.template);
         this.submission.data = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
-          this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
           if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
               this.configurationUpdateTemplate = this.getTemplate(this.app.configurationUpdateTemplate.template);
           }
@@ -153,6 +153,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
   }
 
+  public changeAccessCredentials(accessCredentials: any): void{
+      if(!isNullOrUndefined(accessCredentials)){
+          this.appConfiguration.accessCredentials = accessCredentials;
+      }
+  }
+
   public changeConfiguration(configuration: any): void{
     if(!isNullOrUndefined(configuration)){
       this.appConfiguration.jsonInput = configuration;
@@ -166,6 +172,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.changeMandatoryParameters(input['mandatoryParameters']);
     this.changeAdditionalParameters(input['additionalParameters']);
     this.changeConfiguration(input['configuration']);
+    this.changeAccessCredentials(input['accessCredentials']);
     if(isNullOrUndefined(this.appConfiguration.jsonInput)){
         this.appConfiguration.jsonInput = {};
     }

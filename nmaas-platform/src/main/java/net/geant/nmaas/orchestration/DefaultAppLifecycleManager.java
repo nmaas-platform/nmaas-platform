@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import java.util.HashMap;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -23,6 +24,7 @@ import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
@@ -97,7 +99,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
         NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
-        appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
+        appDeployment.setConfiguration(prepareAppConfiguration(serviceInfo.getDomain(), configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
             appDeployment.setStorageSpace(configuration.getStorageSpace());
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
@@ -116,11 +118,30 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
                 serviceInfo.getAdditionalParameters().putAll(replaceHashToDotsInMapKeys(this.getMapFromJson(configuration.getMandatoryParameters())));
             }
         }
+        if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
+            Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
+            //TODO: Send access credentials to NMaaS Janitor. Keys: accessUsername, accessPassword
+        }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
+    }
+
+    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
+        if(configuration.contains("inCluster")){
+            Map<String, String> config = this.getMapFromJson(configuration);
+            AppDeployment app = repositoryManager.loadByDeploymentNameAndDomain(config.get("inClusterInstance"), domain)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
+            config.replace("source_addr", getInClusterAddress(app.getAppName(), app.getDeploymentId().value()));
+            return new AppConfiguration(new Gson().toJson(config));
+        }
+        return new AppConfiguration(configuration);
+    }
+
+    private String getInClusterAddress(String appName, String deploymentId){
+        return deploymentId + "-nmaas-" + appName.toLowerCase();
     }
 
     private Map<String, String> getMapFromJson(String inputJson){
