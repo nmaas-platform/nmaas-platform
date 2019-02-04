@@ -12,7 +12,7 @@
       "subject": "NMaaS: Contact form",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "${name} sent this message by contact form. ${message} Please reply to ${email} as soon as possible.",
+        "CONTENT": "${name} sent message by contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -23,7 +23,7 @@
       "subject": "NMaaS: Contact form",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "${name} sent this message by contact form. ${message} Please reply to ${email} as soon as possible.",
+        "CONTENT": "${name} sent message by contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -34,7 +34,7 @@
       "subject": "NMaaS: Contact form",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "${name} sent this message by contact form. ${message} Please reply to ${email} as soon as possible.",
+        "CONTENT": "${name} sent message by contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -45,7 +45,7 @@
       "subject": "NMaaS: Formularz kontaktowy",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "${username} wysłał wiadomość przez formularz kontaktowy. ${message} Prosimy o jak najszybszą odpowiedź na adres ${email}",
+        "CONTENT": "${username} wysłał wiadomość przez formularz kontaktowy. Treść możesz znaleźć poniżej: <br><p class='message-text'>${message}<p>Prosimy o jak najszybszą odpowiedź na adres ${email}",
         "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
