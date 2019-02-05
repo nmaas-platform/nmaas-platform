@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.portal.api.domain.ApplicationBrief;
+import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.ModelMapper;
@@ -36,10 +36,10 @@ public class TagController {
 	
 	@GetMapping(value="/{tagName}")
 	@Transactional
-	public Set<ApplicationBrief> getByTag(@PathVariable("tagName") String tagName) {
+	public Set<ApplicationBriefView> getByTag(@PathVariable("tagName") String tagName) {
 		Tag tag = tagRepo.findByName(tagName);
 		if(tag != null)
-			return tag.getApplications().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toSet());
+			return tag.getApplications().stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toSet());
 		else
 			return Collections.emptySet();			
 	}
