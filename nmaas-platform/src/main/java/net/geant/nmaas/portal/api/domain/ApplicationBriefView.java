@@ -23,6 +23,8 @@ public class ApplicationBriefView {
 	
 	List<AppDescriptionView> descriptions;
 
+	boolean deleted;
+
 	Set<String> tags = new HashSet<>();
 
 }

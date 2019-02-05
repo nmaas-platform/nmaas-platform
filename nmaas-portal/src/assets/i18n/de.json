@@ -3,6 +3,7 @@
     "MARKET": "Anwendungen",
     "SUBSCRIPTIONS": "Abonnements",
     "INSTANCES": "Instanzen",
+    "MANAGEMENT": "Management",
     "DOMAINS": "Domains",
     "USERS": "Benutzer",
     "INVENTORY": "Externe Komponenten",
@@ -451,5 +452,11 @@
     "INVALID_INPUT_MESSAGE": "Ungültige Eingabedaten",
     "NOT_ROBOT_ERROR_MESSAGE": "Sie müssen beweisen, dass Sie kein Roboter sind!",
     "TERMS_OF_USER_MESSAGE": "Sie müssen die Nutzungsbedingungen und Datenschutzbestimmungen akzeptieren!"
+  },
+  "APPS_MANAGEMENT": {
+    "TITLE": "Applications management",
+    "NAME": "Name",
+    "ACTIVE": "Active",
+    "REMOVE_BUTTON": "Remove"
   }
 }

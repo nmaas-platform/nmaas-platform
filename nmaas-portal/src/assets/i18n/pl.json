@@ -3,6 +3,7 @@
     "MARKET": "Aplikacje",
     "SUBSCRIPTIONS": "Subskrypcje",
     "INSTANCES": "Instancje",
+    "MANAGEMENT": "Zarządzanie",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
     "INVENTORY": "Zewnętrzne komponenty",
@@ -449,5 +450,11 @@
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
     "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
+  },
+  "APPS_MANAGEMENT": {
+    "TITLE": "Zarządzanie aplikacjami",
+    "NAME": "Nazwa",
+    "ACTIVE": "Aktywna",
+    "REMOVE_BUTTON": "Usuń"
   }
 }
