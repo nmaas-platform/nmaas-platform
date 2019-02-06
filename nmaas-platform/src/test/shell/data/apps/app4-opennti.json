@@ -16,7 +16,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-opennti",
-				"version": "0.0.1-alfa"
+				"version": "0.0.2-alfa"
 			}
 		},
 		"defaultStorageSpace":20,
