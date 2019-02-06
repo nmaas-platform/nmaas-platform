@@ -10,24 +10,20 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JanitorService {
-    @Value("${janitor.address}")
-    private String janitorHost;
-
-    @Value("${janitor.port}")
-    private String janitorPort;
 
     private KNamespaceService namespaceService;
 
     private ManagedChannel channel;
 
     @Autowired
-    public JanitorService(KNamespaceService namespaceService) {
+    public JanitorService(KNamespaceService namespaceService, Environment env) {
         this.namespaceService = namespaceService;
-        this.channel = ManagedChannelBuilder.forAddress(janitorHost, Integer.parseInt(janitorPort)).usePlaintext().build();
+        this.channel = ManagedChannelBuilder.forAddress(env.getProperty("janitor.address"), env.getProperty("janitor.port", Integer.class)).usePlaintext().build();
     }
 
     private JanitorManager.InstanceRequest buildInstanceRequest(Identifier deploymentId, String domain) {
