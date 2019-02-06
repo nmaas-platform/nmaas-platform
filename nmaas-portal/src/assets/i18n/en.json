@@ -12,7 +12,8 @@
     "LOGOUT": "Logout",
     "LOGIN_REGISTER": "Login | Register",
     "LANGUAGE": "Language",
-    "ABOUT": "About"
+    "ABOUT": "About",
+    "BACK": "Back to Home Page"
   },
   "WELCOME": {
     "LOGIN": "Login",

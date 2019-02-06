@@ -12,7 +12,8 @@
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
     "LANGUAGE": "Język",
-    "ABOUT": "O nas"
+    "ABOUT": "O nas",
+    "BACK": "Wróć do strony głównej"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",

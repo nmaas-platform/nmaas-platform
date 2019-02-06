@@ -12,7 +12,8 @@
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
     "LANGUAGE": "Language",
-    "ABOUT": "About"
+    "ABOUT": "A propos",
+    "BACK": "Retour à la page d'accueil"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
