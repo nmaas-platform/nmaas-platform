@@ -190,6 +190,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             serviceLifecycleManager.deleteService(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             janitorService.deleteConfigMapIfExists(deploymentId, service.getDomain());
+            janitorService.deleteBasicAuthIfExists(deploymentId, service.getDomain());
             janitorService.deleteTlsIfExists(deploymentId, service.getDomain());
             if (IngressResourceConfigOption.DEPLOY_USING_API.equals(clusterIngressManager.getResourceConfigOption())) {
                 ingressResourceManager.deleteIngressRule(service.getServiceExternalUrl(), service.getDomain());
