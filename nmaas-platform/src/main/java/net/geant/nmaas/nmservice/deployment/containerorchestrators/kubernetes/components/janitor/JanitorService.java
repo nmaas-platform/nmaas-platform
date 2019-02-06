@@ -3,6 +3,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
+import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
 import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
@@ -60,53 +61,44 @@ public class JanitorService {
                 build();
     }
 
-    public void createConfigMap(Identifier deploymentId, String domain) {
+    public void createOrReplaceConfigMap(Identifier deploymentId, String domain) {
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
 
-        JanitorManager.ServiceResponse response = stub.create(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(deploymentId, domain));
 
         if (response.getStatus() != JanitorManager.Status.OK)
             throw new ConfigMapCreationException(response.getMessage());
     }
 
-    public void updateConfigMap(Identifier deploymentId, String domain) {
+    public void deleteConfigMapIfExists(Identifier deploymentId, String domain) {
         ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
 
-        JanitorManager.ServiceResponse response = stub.update(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
 
         if (response.getStatus() != JanitorManager.Status.OK)
             throw new ConfigMapCreationException(response.getMessage());
     }
 
-    public void deleteConfigMap(Identifier deploymentId, String domain) {
-        ConfigServiceGrpc.ConfigServiceBlockingStub stub = ConfigServiceGrpc.newBlockingStub(channel);
-
-        JanitorManager.ServiceResponse response = stub.delete(buildInstanceRequest(deploymentId, domain));
-
-        if (response.getStatus() != JanitorManager.Status.OK)
-            throw new ConfigMapCreationException(response.getMessage());
-    }
-
-    public void createBasicAuth(Identifier deploymentId, String domain, String user, String password) {
+    public void createOrReplaceBasicAuth(Identifier deploymentId, String domain, String user, String password) {
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
 
-        JanitorManager.ServiceResponse response = stub.create(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
+        JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
         if (response.getStatus() != JanitorManager.Status.OK)
             throw new ConfigMapCreationException(response.getMessage());
     }
 
-    public void updateBasicAuth(Identifier deploymentId, String domain, String user, String password) {
+    public void deleteBasicAuthIfExists(Identifier deploymentId, String domain) {
         BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
 
-        JanitorManager.ServiceResponse response = stub.update(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         if (response.getStatus() != JanitorManager.Status.OK)
             throw new ConfigMapCreationException(response.getMessage());
     }
 
-    public void deleteBasicAuth(Identifier deploymentId, String domain) {
-        BasicAuthServiceGrpc.BasicAuthServiceBlockingStub stub = BasicAuthServiceGrpc.newBlockingStub(channel);
+    public void deleteTlsIfExists(Identifier deploymentId, String domain) {
+        CertManagerServiceGrpc.CertManagerServiceBlockingStub stub = CertManagerServiceGrpc.newBlockingStub(channel);
 
-        JanitorManager.ServiceResponse response = stub.delete(buildInstanceRequest(deploymentId, domain));
+        JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         if (response.getStatus() != JanitorManager.Status.OK)
             throw new ConfigMapCreationException(response.getMessage());
     }

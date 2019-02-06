@@ -38,17 +38,15 @@ message InstanceCredentialsRequest{
 }
 
 service ConfigService {
-    rpc Create(InstanceRequest) returns (ServiceResponse);
-    rpc Update(InstanceRequest) returns (ServiceResponse);
-    rpc Delete(InstanceRequest) returns (ServiceResponse);
+    rpc CreateOrReplace(InstanceRequest) returns (ServiceResponse);
+    rpc DeleteIfExists(InstanceRequest) returns (ServiceResponse);
 }
 
 service BasicAuthService {
-    rpc Create(InstanceCredentialsRequest) returns (ServiceResponse);
-    rpc Update(InstanceCredentialsRequest) returns (ServiceResponse);
-    rpc Delete(InstanceRequest) returns (ServiceResponse);
+    rpc CreateOrReplace(InstanceCredentialsRequest) returns (ServiceResponse);
+    rpc DeleteIfExists(InstanceRequest) returns (ServiceResponse);
 }
 
 service CertManagerService {
-    rpc Delete(InstanceRequest) returns (ServiceResponse);
+    rpc DeleteIfExists(InstanceRequest) returns (ServiceResponse);
 }

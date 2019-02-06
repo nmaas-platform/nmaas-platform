@@ -7,6 +7,7 @@ import java.util.HashMap;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
@@ -51,12 +52,17 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
     private NmServiceInfoRepository nmServiceInfoRepository;
 
+    private JanitorService janitorService;
+
     @Autowired
     public DefaultAppLifecycleManager(AppDeploymentRepositoryManager repositoryManager,
-                                      ApplicationEventPublisher eventPublisher, NmServiceInfoRepository nmServiceInfoRepository) {
+                                      ApplicationEventPublisher eventPublisher,
+                                      NmServiceInfoRepository nmServiceInfoRepository,
+                                      JanitorService janitorService) {
         this.repositoryManager = repositoryManager;
         this.eventPublisher = eventPublisher;
         this.nmServiceInfoRepository = nmServiceInfoRepository;
+        this.janitorService = janitorService;
     }
 
     @Override
@@ -120,7 +126,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
         if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
             Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
-            //TODO: Send access credentials to NMaaS Janitor. Keys: accessUsername, accessPassword
+            janitorService.createOrReplaceBasicAuth(deploymentId, serviceInfo.getDomain(), accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
