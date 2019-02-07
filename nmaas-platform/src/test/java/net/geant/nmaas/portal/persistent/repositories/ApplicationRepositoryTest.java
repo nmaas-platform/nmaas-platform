@@ -6,14 +6,11 @@ import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Tag;
-import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.service.DomainService;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,9 +25,6 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
-
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -133,44 +127,6 @@ public class ApplicationRepositoryTest {
 		assertNull(tagRepo.findByName("noexist"));
 		assertEquals(2, tagRepo.findByName("monitoring").getApplications().size());
 		assertEquals(1, tagRepo.findByName("management").getApplications().size());
-	}
-
-	@Test
-	public void testFindAllBrief() {
-		Tag monitoringTag = new Tag("monitoring");
-		monitoringTag.setApplications(new HashSet<Application>());
-		monitoringTag = tagRepo.save(monitoringTag);
-		monitoringTag = tagRepo.findByName("monitoring");
-
-		Tag networkTag = new Tag("network");
-		networkTag.setApplications(new HashSet<Application>());
-		networkTag = tagRepo.save(networkTag);
-		networkTag = tagRepo.findByName("network");
-		
-		Tag managementTag = tagRepo.save(new Tag("management"));
-		managementTag.setApplications(new HashSet<Application>());
-		managementTag = tagRepo.save(managementTag);
-		managementTag = tagRepo.findByName("management");
-		
-		Application app1 = new Application("zabbix");
-		app1.setTags(new HashSet<Tag>());
-		app1.getTags().add(monitoringTag);
-		monitoringTag.getApplications().add(app1);
-		app1.getTags().add(networkTag);
-		networkTag.getApplications().add(app1);
-		app1 = appRepo.saveAndFlush(app1);
-		
-		Application app2 = new Application("librenms");
-		app2 = appRepo.saveAndFlush(app2);
-		
-		Optional<ApplicationBriefProjection> foundApp = appRepo.findApplicationBriefById(app1.getId());
-		assertTrue(foundApp.isPresent());
-		assertTrue(foundApp.get() instanceof ApplicationBriefProjection);
-		assertEquals("zabbix", foundApp.get().getName());
-		assertEquals(2, foundApp.get().getTags().size());
-		assertArrayEquals(new String[] {"monitoring", "network"}, foundApp.get().getTags().stream().map(tag -> tag.getName()).sorted().toArray());
-		
-		
 	}
 	
 }

@@ -3,12 +3,32 @@
     "version": "5.4.3",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-    "briefDescription": "The tool for beautiful monitoring and metric analytics.",
     "tags": [
         "monitoring",
         "visualization"
     ],
-    "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "de",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "fr",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Grafana to rozwiązanie open source do analizowania i wizualizacji danych.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        }
+    ],
     "wwwUrl": "https://grafana.com/",
     "sourceUrl": "https://github.com/grafana/grafana",
     "issuesUrl": "https://github.com/grafana/grafana/issues",
