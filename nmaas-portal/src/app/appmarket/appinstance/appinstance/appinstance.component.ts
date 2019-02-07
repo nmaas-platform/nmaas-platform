@@ -54,7 +54,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
   public configurationUpdateTemplate:any;
-  public submission: any = {};
+  public submission: any = { data:{} };
   public appConfiguration: AppConfiguration;
 
   public intervalCheckerSubscribtion;
@@ -75,7 +75,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
         this.appInstance = appInstance;
         this.configurationTemplate = this.getTemplate(appInstance.configTemplate.template);
-        this.submission.data = JSON.parse(appInstance.configuration);
+        this.submission.data.configuration = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
           if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
@@ -127,7 +127,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
-      this.submission.data = JSON.parse(appInstance.configuration);
+      this.submission.data.configuration = JSON.parse(appInstance.configuration);
     });
   }
 
@@ -177,8 +177,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appConfiguration.jsonInput = {};
     }
     this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
-      console.log('Configuration applied');
-        this.submission.data = this.appConfiguration.jsonInput;
+        console.log('Configuration applied');
         this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
     });
   }
@@ -188,6 +187,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         console.log("Configuration updated");
         this.updateConfigModal.hide();
       });
+  }
+
+  public changeConfigUpdate(input): void {
+    if(!isNullOrUndefined(input)){
+      this.changeConfiguration(input['configuration']);
+      this.changeAccessCredentials(input['accessCredentials']);
+    }
   }
 
   public undeploy(): void {

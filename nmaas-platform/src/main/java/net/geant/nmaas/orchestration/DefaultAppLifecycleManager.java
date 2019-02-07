@@ -125,8 +125,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             }
         }
         if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
-            Map<String, String> accessCredentialsMap = this.getMapFromJson(configuration.getAccessCredentials());
-            janitorService.createOrReplaceBasicAuth(deploymentId, serviceInfo.getDomain(), accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
+            changeBasicAuth(deploymentId, serviceInfo.getDomain(), configuration.getAccessCredentials());
         }
         repositoryManager.update(appDeployment);
         nmServiceInfoRepository.save(serviceInfo);
@@ -168,6 +167,11 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         return newMap;
     }
 
+    private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
+        Map<String, String> accessCredentialsMap = this.getMapFromJson(accessCredentials);
+        janitorService.createOrReplaceBasicAuth(deploymentId, domain, accessCredentialsMap.get("accessUsername"), accessCredentialsMap.get("accessPassword"));
+    }
+
     @Override
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
@@ -184,15 +188,15 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
-        if(configuration.getJsonInput() != null && !configuration.getJsonInput().isEmpty()){
-            AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        if(StringUtils.isNotEmpty(configuration.getJsonInput())){
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
             repositoryManager.update(appDeployment);
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
-        } else {
-            log.warn("Configuration update failed -> configuration is null or empty");
         }
-
+        if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
+            changeBasicAuth(deploymentId, appDeployment.getDomain(), configuration.getAccessCredentials());
+        }
     }
 
     @Override
