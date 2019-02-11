@@ -76,7 +76,7 @@
 									"key": "configuration",
 									"components": [
 										{
-											"label": "Username",
+											"label": "Device access username",
 											"type": "textfield",
 											"input": true,
 											"key": "oxidizedUsername",
@@ -87,7 +87,7 @@
 											"inputFormat": "plain"
 										},
 										{
-											"label": "Password",
+											"label": "Device access password",
 											"type": "password",
 											"input": true,
 											"key": "oxidizedPassword",
