@@ -1,9 +1,9 @@
 <span [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']" class="dropdown"
-		style="list-style-type: none; padding-top: 12px; vertical-align: middle;">
+		style="list-style-type: none; padding-top: 12px; vertical-align: middle; padding-left: 15px;">
 		<a class="dropdown-toggle" data-close-others="true" data-toggle="dropdown" href="#">
 			<span style="color: gray;">Domain: {{ getCurrent() | titlecase }}<span class="caret"></span></span>
 		</a>
-		<ul class="dropdown-menu pull-right">
+		<ul class="dropdown-menu">
 			<li *ngFor="let domain of domains | async" [ngClass]="{'active': getCurrent() == domain?.name}">
 				<a (click)="changeDomain(domain?.id, domain?.name)">
 					<span>{{domain?.name | titlecase }}</span>

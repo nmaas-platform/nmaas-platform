@@ -260,7 +260,6 @@ export class AuthService {
   public isLogged(): boolean {
     const token = this.getToken();
     if(token == null){
-      console.debug('Null token');
       return false;
     }
     return (token ? !this.jwtHelper.isTokenExpired(token) : false);

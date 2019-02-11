@@ -5,7 +5,7 @@
 }
 
 .lang-circle-icon{
-  height: 28px;
+  height: 26px;
 }
 
 .navbar .divider-vertical {
@@ -28,4 +28,63 @@
 
 .btn{
   margin-left: 5px;
+}
+
+.navbar-list, .navbar-list:link {
+  color: rgb(51, 51, 51);
+  line-height: 1.5;
+  margin: 10px 5px 10px 5px;
+  padding: .5rem 1rem;
+  font-size: 14px;
+}
+
+.navbar-list:active{
+  background-color: rgb(235, 235, 235);
+  transition-duration: .45s;
+  transition-delay: 0s;
+  transition-property: all;
+  transition-timing-function: ease;
+  -webkit-transition: .45s;
+  -o-transition: .45s;
+}
+
+.navbar-list:hover{
+  background-color: #f5f5f5;
+  color: #606060;
+  transition: .35s;
+  -webkit-transition: .35s;
+  -o-transition: .35s;
+}
+
+.navbar-list-active{
+  background-color: rgb(237, 237, 237);
+}
+
+.navbar-list-active:hover{
+  background-color: rgb(237, 237, 237);
+}
+
+.navbar-collapse in{
+  overflow-x: hidden;
+  padding-left: 15px;
+
+}
+
+@media (min-width: 768px) {
+  .pull-right-lg {
+    float: right;
+  }
+  .pull-left-lg {
+    float: right;
+  }
+  .pull-right-drop{
+    float: right !important;
+    right: 0;
+    left: auto;
+  }
+}
+
+.dropdown-lang{
+  padding: 0 0 0 0;
+  margin-top: 12px;
 }
