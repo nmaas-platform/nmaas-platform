@@ -1,0 +1,34 @@
+.ui-steps .ui-steps-item {
+    width: 16%;
+}
+
+.ui-state-disabled .ui-steps-title{
+    display: none !important;
+}
+
+.ui-steps.steps-custom {
+    margin-bottom: 30px;
+}
+
+.ui-steps.steps-custom .ui-steps-item .ui-menuitem-link {
+    height: 10px;
+    padding: 0 1em;
+}
+
+.ui-steps.steps-custom .ui-steps-item .ui-steps-number {
+    background-color: rgb(51,122,183);
+    color: #FFFFFF;
+    display: inline-block;
+    width: 36px;
+    border-radius: 50%;
+    margin-top: -14px;
+    margin-bottom: 10px;
+}
+
+.ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number {
+    color: rgb(51,122,183);
+}
+
+.form-group{
+    padding-bottom: 10px;
+}

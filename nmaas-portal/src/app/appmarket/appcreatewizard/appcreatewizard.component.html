@@ -1,0 +1,79 @@
+<p-steps [model]="steps" [(activeIndex)]="activeStepIndex"></p-steps>
+<hr/>
+
+    <div *ngIf="activeStepIndex === 0">
+        <div class="panel">
+            <p class="text-center">Lorem ipsum</p>
+        </div>
+        <input type="checkbox" [checked]="rulesAccepted" (click)="changeRulesAcceptedFlag()"> I have accepted the rules
+        <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="!rulesAccepted">Next</button>
+    </div>
+
+    <div *ngIf="activeStepIndex === 1">
+        <div class="panel">
+        <form (ngSubmit)="nextStep()" [formGroup]="basicAppInformationForm">
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.appName.invalid && basicAppInformationForm.controls.appName.dirty,
+ 				    	 	'has-success': basicAppInformationForm.controls.appName.valid && basicAppInformationForm.controls.appName.dirty}">
+                <label for="appName" class="control-label">Name *</label>
+                <input type="text" id="appName" class="form-control" formControlName="appName">
+            </div>
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.appVersion.invalid && basicAppInformationForm.controls.appVersion.dirty,
+ 			    		 	'has-success': basicAppInformationForm.controls.appVersion.valid && basicAppInformationForm.controls.appVersion.dirty}">
+                <label for="appVersion" class="control-label">Version *</label>
+                <input type="text" id="appVersion" class="form-control" formControlName="appVersion">
+            </div>
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.appLicense.invalid && basicAppInformationForm.controls.appLicense.dirty,
+ 			    		 	'has-success': basicAppInformationForm.controls.appLicense.valid && basicAppInformationForm.controls.appLicense.dirty}">
+                 <label for="appLicense" class="control-label">License *</label>
+                 <input type="text" id="appLicense" class="form-control" formControlName="appLicense">
+            </div>
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.appLicenseUrl.invalid && basicAppInformationForm.controls.appLicenseUrl.dirty,
+ 				    	 	'has-success': basicAppInformationForm.controls.appLicenseUrl.valid && basicAppInformationForm.controls.appLicenseUrl.dirty}">
+                 <label for="appLicenseUrl" class="control-label">License url *</label>
+                 <input type="url" id="appLicenseUrl" class="form-control" formControlName="appLicenseUrl">
+            </div>
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.wwwUrl.invalid && basicAppInformationForm.controls.wwwUrl.dirty,
+ 				    	 	'has-success': basicAppInformationForm.controls.wwwUrl.valid && basicAppInformationForm.controls.wwwUrl.dirty}">
+                 <label for="wwwUrl" class="control-label">Project website *</label>
+                 <input type="url" id="wwwUrl" class="form-control" formControlName="wwwUrl">
+            </div>
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.sourceUrl.invalid && basicAppInformationForm.controls.sourceUrl.dirty,
+ 				    	 	'has-success': basicAppInformationForm.controls.sourceUrl.valid && basicAppInformationForm.controls.sourceUrl.dirty}">
+                 <label for="sourceUrl" class="control-label">Link to source code *</label>
+                 <input type="url" id="sourceUrl" class="form-control" formControlName="sourceUrl">
+            </div>
+            <div class="form-group form-group-sm"
+                 [ngClass]="{'has-error':  basicAppInformationForm.controls.issuesUrl.invalid && basicAppInformationForm.controls.issuesUrl.dirty,
+ 				    	 	'has-success': basicAppInformationForm.controls.issuesUrl.valid && basicAppInformationForm.controls.issuesUrl.dirty}">
+                 <label for="issuesUrl" class="control-label">Link to project issues *</label>
+                 <input type="url" id="issuesUrl" class="form-control" formControlName="issuesUrl">
+            </div>
+            <div class="form-group form-group-sm">
+                <label for="tags" class="control-label">Select tags for application * </label><br>
+                <p-multiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" formControlName="tags" defaultLabel="Choose | Wybierz"></p-multiSelect>
+            </div>
+        </form>
+        </div>
+        <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="basicAppInformationForm.invalid">Next</button>
+    </div>
+
+    <div *ngIf="activeStepIndex === 2">
+
+    </div>
+    <div *ngIf="activeStepIndex === 3">
+
+    </div>
+    <div *ngIf="activeStepIndex === 4">
+
+    </div>
+    <div *ngIf="activeStepIndex === 5">
+
+    </div>
+<button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">Previous</button>
+<button class="btn btn-success pull-right" (click)="submit()" *ngIf="activeStepIndex == 5 && isValid()">Submit</button>

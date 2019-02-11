@@ -12,6 +12,7 @@ import {ClustersRoutes} from "./admin/clusters/clusters.routes";
 import {GitlabRoutes} from "./admin/gitlab/gitlab.routes";
 import {ConfigurationRoutes} from "./admin/configuration/configuration.routes";
 import {MonitorRoutes} from "./admin/monitor/monitor.routes";
+import {AppCreateWizardComponent} from "./appcreatewizard/appcreatewizard.component";
 
 export const AppMarketRoutes: Route[] = [
     {
@@ -28,6 +29,7 @@ export const AppMarketRoutes: Route[] = [
           ...ConfigurationRoutes,
           ...GitlabRoutes,
           ...MonitorRoutes,
+          {path: 'apps/create', component: AppCreateWizardComponent},
           { path: 'apps/:id', component: AppDetailsComponent },
 
       ]

@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {AuthModule} from '../auth/auth.module';
 
@@ -32,15 +32,21 @@ import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {SortService} from "../service/sort.service";
+import { AppCreateWizardComponent } from './appcreatewizard/appcreatewizard.component';
+import {StepsModule} from "primeng/steps";
+import {MultiSelectModule} from "primeng/primeng";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
-    NavbarComponent
+    NavbarComponent,
+    AppCreateWizardComponent
   ],
   imports: [
     FormsModule,
+    ReactiveFormsModule,
     StorageServiceModule,
     CommonModule,
     RouterModule,
@@ -57,6 +63,9 @@ import {SortService} from "../service/sort.service";
     ConfigurationModule,
     BrowserModule,
     HttpClientModule,
+    StepsModule,
+    MultiSelectModule,
+    BrowserAnimationsModule,
     TranslateModule.forChild(),
   ],
   exports: [

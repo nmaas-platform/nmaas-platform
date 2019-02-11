@@ -39,6 +39,8 @@
     "ng2-tooltip-directive": "^2.1.6",
     "ngx-pagination": "^3.2.1",
     "ngx-webstorage-service": "^3.1.3",
+    "primeicons": "^1.0.0",
+    "primeng": "^7.0.5",
     "rxjs": "^6.3.3",
     "ts-helpers": "^1.1.2",
     "tslib": "^1.9.3",
