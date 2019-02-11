@@ -16,4 +16,5 @@ export class Application {
   public configTemplate: ConfigTemplate = undefined;
   public configurationUpdateTemplate: ConfigTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = undefined;
+  public deleted: boolean = false;
 }

@@ -3,6 +3,7 @@
     "MARKET": "Aplikacje",
     "SUBSCRIPTIONS": "Subskrypcje",
     "INSTANCES": "Instancje",
+    "MANAGEMENT": "Zarządzanie",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
     "INVENTORY": "Zewnętrzne komponenty",
@@ -477,5 +478,11 @@
       "MESSAGE": "NMaaS Team wyśle odpowiedź niedługo.",
       "CLOSE_BUTTON": "Zamknij"
     }
+  },
+  "APPS_MANAGEMENT": {
+    "TITLE": "Zarządzanie aplikacjami",
+    "NAME": "Nazwa",
+    "ACTIVE": "Aktywna",
+    "REMOVE_BUTTON": "Usuń"
   }
 }
