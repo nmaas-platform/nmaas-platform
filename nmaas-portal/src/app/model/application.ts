@@ -13,7 +13,6 @@ export class Application {
   public issuesUrl: string = undefined;
   public descriptions: AppDescription[] = [];
   public tags: string[] = [];
-  public configTemplate: ConfigTemplate = undefined;
   public configurationUpdateTemplate: ConfigTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = undefined;
   public deleted: boolean = false;

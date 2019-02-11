@@ -29,4 +29,5 @@ public class AppInstance extends DomainAware {
 	
 	private String url;
 
+	private ConfigTemplate configTemplate;
 }

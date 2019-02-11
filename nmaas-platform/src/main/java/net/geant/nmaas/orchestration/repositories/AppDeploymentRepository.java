@@ -18,6 +18,8 @@ public interface AppDeploymentRepository extends JpaRepository<AppDeployment, Lo
 
     List<AppDeployment> findByDomainAndState(String domain, AppDeploymentState state);
 
+    Optional<AppDeployment> findByDeploymentNameAndDomain(String deploymentName, String domain);
+
     @Query("SELECT a.state FROM AppDeployment a WHERE a.deploymentId = :deploymentId")
     Optional<AppDeploymentState> getStateByDeploymentId(@Param("deploymentId") Identifier deploymentId);
 
