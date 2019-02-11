@@ -85,7 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			"/actuator/health",
 			"/webjars/**",
 			"/api/content/**",
-			"/api/users/reset/**"
+			"/api/users/reset/**",
+			"/api/mail"
 	};
 	
 	@Override
@@ -119,6 +120,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/mail").permitAll()
 				.antMatchers("/api/users/reset/**").permitAll()
 				.antMatchers("/api/**").authenticated()
 				.antMatchers("/api/orchestration/deployments/**").authenticated()
@@ -147,7 +149,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/api/info/**"),
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/content/**"),
-										new AntPathRequestMatcher("/api/users/reset/**")
+										new AntPathRequestMatcher("/api/users/reset/**"),
+										new AntPathRequestMatcher("/api/mail")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),

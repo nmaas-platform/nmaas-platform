@@ -12,7 +12,9 @@
     "PROFILE": "Profil",
     "LOGOUT": "Ausloggen",
     "LOGIN_REGISTER": "Einloggen | Registrieren",
-    "LANGUAGE": "Sprache"
+    "LANGUAGE": "Sprache",
+    "ABOUT": "Über",
+    "BACK": "Zurück zur Startseite"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -458,5 +460,31 @@
     "NAME": "Name",
     "ACTIVE": "Active",
     "REMOVE_BUTTON": "Remove"
+  },
+  "ABOUT": {
+    "CONTACT_TITLE": "Kontaktieren Sie uns",
+    "CHANGELOG_TITLE": "Aktuelle Version und Änderungsprotokoll",
+    "CONTACT_DESC": "Haben Sie eine Frage? Problem mit einer der Funktionen? Technisches Problem? Senden Sie uns eine Nachricht und wir werden es so schnell wie möglich beheben.",
+    "CHANGELOG_DESC": "Wie Sie vielleicht wissen, entwickelt sich NMaaS immer noch und wir entwickeln immer noch neue Funktionen. Nachfolgend finden Sie Informationen zu wichtigen Änderungen in den angegebenen Releases."
+  },
+  "CHANGELOG": {
+    "CHANGELOG_LAST": "Letzte Veröffentlichung",
+    "NEW": "Neu",
+    "REMOVED": "Entfernt",
+    "IMPROVED": "Verbessert",
+    "FIXED": "Fixed"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Contact form",
+    "EMAIL": "Your email",
+    "NAME": "Your name",
+    "MESSAGE": "Your message",
+    "MESSAGE_PLACEHOLDER": "Please type your message here",
+    "SUBMIT_BUTTON": "Submit",
+    "MODAL": {
+      "TITLE": "Mail has been sent",
+      "MESSAGE": "NMaaS Team will reply soon.",
+      "CLOSE_BUTTON": "Close"
+    }
   }
 }

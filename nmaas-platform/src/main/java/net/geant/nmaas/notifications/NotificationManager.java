@@ -11,7 +11,6 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.portal.api.domain.User;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
@@ -77,13 +77,13 @@ public class NotificationManager {
         if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
-        if(mailAttributes.getMailType().equals(MailType.REGISTRATION)){
+        if(mailAttributes.getMailType().equals(MailType.REGISTRATION) || mailAttributes.getMailType().equals(MailType.CONTACT_FORM)){
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
         if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)){
-            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getAppDeploymentView().getDomain()));
-            if(mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getAppDeploymentView().getOwner()))){
-                userService.findByUsername(mailAttributes.getAppDeploymentView().getOwner())
+            mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getOtherAttributes().get("domainName")));
+            if(mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))){
+                userService.findByUsername(mailAttributes.getOtherAttributes().get("owner"))
                         .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, User.class)));
             }
         }
@@ -94,7 +94,7 @@ public class NotificationManager {
                 .putAll(mailTemplate.getGlobalInformation())
                 .put("PORTAL_LINK", this.portalAddress == null ? "" : this.portalAddress)
                 .put("HEADER", getHeader(langContent.getTemplate().get("HEADER"), user))
-                .put("CONTENT", getContent(langContent.getTemplate().get("CONTENT"), mailAttributes.getAppDeploymentView(), mailAttributes.getOtherAttribute()))
+                .put("CONTENT", getContent(langContent.getTemplate().get("CONTENT"), mailAttributes.getOtherAttributes()))
                 .put("SENDER", langContent.getTemplate().get("SENDER"))
                 .put("NOREPLY", langContent.getTemplate().get("NOREPLY"))
                 .put("SENDER_POLICY", langContent.getTemplate().get("SENDER_POLICY"))
@@ -106,17 +106,8 @@ public class NotificationManager {
         return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("HEADER", new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
-    private String getContent(String content, AppDeploymentView appDeployment, String other) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("CONTENT", new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)),
-                ImmutableMap.builder()
-                        .put("appName", appDeployment == null ? "" : appDeployment.getAppName())
-                        .put("appInstanceName", appDeployment  == null ? "" : appDeployment.getDeploymentName())
-                        .put("domainName", appDeployment  == null ? "" : appDeployment.getDomain())
-                        .put("serviceName", other == null ? "" : other)
-                        .put("newUser", other == null ? "" : other)
-                        .put("portalURL", this.portalAddress == null ? "" : this.portalAddress)
-                        .put("accessURL", other  == null ? "" : other)
-                        .build());
+    private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("CONTENT", new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
     }
 
     private List<String> getListOfMails(List<User> users){

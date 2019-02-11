@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.notifications.MailAttributes;
@@ -101,7 +102,7 @@ public class RegistrationController {
 	private void sendMail(User user){
 		MailAttributes mailAttributes = MailAttributes
 				.builder()
-				.otherAttribute(user.getUsername())
+				.otherAttributes(ImmutableMap.of("newUser", user.getUsername()))
 				.mailType(MailType.REGISTRATION)
 				.build();
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
