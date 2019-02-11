@@ -2,6 +2,7 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -35,6 +36,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
  * Default {@link AppLifecycleManager} implementation.
@@ -104,7 +107,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         if(isNotEmpty(configuration.getMandatoryParameters())){
             serviceInfo.addAdditionalParameters(replaceHashToDotsInMapKeys(getMapFromJson(configuration.getMandatoryParameters())));
         }
-        if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
+        if(isNotEmpty(configuration.getAccessCredentials())){
             changeBasicAuth(deploymentId, serviceInfo.getDomain(), configuration.getAccessCredentials());
         }
         repositoryManager.update(appDeployment);
@@ -115,22 +118,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     Map<String, String> getMapFromJson(String inputJson){
-    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
-        if(configuration.contains("inCluster")){
-            Map<String, String> config = this.getMapFromJson(configuration);
-            AppDeployment app = repositoryManager.loadByDeploymentNameAndDomain(config.get("inClusterInstance"), domain)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
-            config.replace("source_addr", getInClusterAddress(app.getAppName(), app.getDeploymentId().value()));
-            return new AppConfiguration(new Gson().toJson(config));
-        }
-        return new AppConfiguration(configuration);
-    }
-
-    private String getInClusterAddress(String appName, String deploymentId){
-        return deploymentId + "-nmaas-" + appName.toLowerCase();
-    }
-
-    private Map<String, String> getMapFromJson(String inputJson){
         try {
             return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
         } catch (IOException e) {
@@ -146,6 +133,21 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             }
         }
         return newMap;
+    }
+
+    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
+        if(configuration.contains("inCluster")){
+            Map<String, String> config = this.getMapFromJson(configuration);
+            AppDeployment app = repositoryManager.loadByDeploymentNameAndDomain(config.get("inClusterInstance"), domain)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
+            config.replace("source_addr", getInClusterAddress(app.getAppName(), app.getDeploymentId().value()));
+            return new AppConfiguration(new Gson().toJson(config));
+        }
+        return new AppConfiguration(configuration);
+    }
+
+    private String getInClusterAddress(String appName, String deploymentId){
+        return deploymentId + "-nmaas-" + appName.toLowerCase();
     }
 
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
@@ -170,12 +172,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
-        if(StringUtils.isNotEmpty(configuration.getJsonInput())){
+        if(isNotEmpty(configuration.getJsonInput())){
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
             repositoryManager.update(appDeployment);
             eventPublisher.publishEvent(new AppUpdateConfigurationEvent(this, deploymentId));
         }
-        if(StringUtils.isNotEmpty(configuration.getAccessCredentials())){
+        if(isNotEmpty(configuration.getAccessCredentials())){
             changeBasicAuth(deploymentId, appDeployment.getDomain(), configuration.getAccessCredentials());
         }
     }
