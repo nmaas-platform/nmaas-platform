@@ -272,10 +272,10 @@ public enum AppDeploymentState {
                     return APPLICATION_DEPLOYED;
                 case RESTART_FAILED:
                     return APPLICATION_RESTART_FAILED;
-                case REMOVED:
-                    return APPLICATION_REMOVED;
-                case REMOVAL_FAILED:
-                    return APPLICATION_REMOVAL_FAILED;
+                case REMOVAL_INITIATED:
+                    return APPLICATION_REMOVAL_IN_PROGRESS;
+                case CONFIGURATION_UPDATE_INITIATED:
+                    return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
                 default:
                     return nextStateForNotMatchingNmServiceDeploymentState(this, state);
             }
@@ -296,16 +296,36 @@ public enum AppDeploymentState {
     APPLICATION_RESTART_IN_PROGRESS {
         @Override
         public AppLifecycleState lifecycleState() {
-            return AppLifecycleState.APPLICATION_DEPLOYMENT_IN_PROGRESS;
+            return AppLifecycleState.APPLICATION_RESTART_IN_PROGRESS;
         }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
             switch (state) {
                 case RESTARTED:
-                    return APPLICATION_DEPLOYED;
+                    return APPLICATION_RESTARTED;
                 case RESTART_FAILED:
                     return APPLICATION_RESTART_FAILED;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
+        }
+    },
+    APPLICATION_RESTARTED {
+        @Override
+        public AppLifecycleState lifecycleState() {
+            return AppLifecycleState.APPLICATION_RESTARTED;
+        }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            switch (state) {
+                case RESTART_INITIATED:
+                    return APPLICATION_RESTART_IN_PROGRESS;
+                case REMOVAL_INITIATED:
+                    return APPLICATION_REMOVAL_IN_PROGRESS;
+                case CONFIGURATION_UPDATE_INITIATED:
+                    return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
                 default:
                     return nextStateForNotMatchingNmServiceDeploymentState(this, state);
             }
@@ -314,7 +334,7 @@ public enum AppDeploymentState {
     APPLICATION_RESTART_FAILED {
         @Override
         public AppLifecycleState lifecycleState() {
-            return AppLifecycleState.APPLICATION_DEPLOYMENT_FAILED;
+            return AppLifecycleState.APPLICATION_RESTART_FAILED;
         }
 
         @Override
@@ -356,6 +376,59 @@ public enum AppDeploymentState {
 
         @Override
         public boolean isInFailedState() { return true; }
+    },
+    APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            switch (state) {
+                case CONFIGURATION_UPDATED:
+                    return APPLICATION_CONFIGURATION_UPDATED;
+                case CONFIGURATION_UPDATE_FAILED:
+                    return APPLICATION_CONFIGURATION_UPDATE_FAILED;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
+        }
+    },
+    APPLICATION_CONFIGURATION_UPDATED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_UPDATED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            switch (state) {
+                case RESTART_INITIATED:
+                    return APPLICATION_RESTART_IN_PROGRESS;
+                case REMOVAL_INITIATED:
+                    return APPLICATION_REMOVAL_IN_PROGRESS;
+                case CONFIGURATION_UPDATE_INITIATED:
+                    return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
+        }
+    },
+    APPLICATION_CONFIGURATION_UPDATE_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_UPDATED_FAILED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            switch (state) {
+                case RESTART_INITIATED:
+                    return APPLICATION_RESTART_IN_PROGRESS;
+                case REMOVAL_INITIATED:
+                    return APPLICATION_REMOVAL_IN_PROGRESS;
+                case CONFIGURATION_UPDATE_INITIATED:
+                    return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
+        }
+
     },
     UNKNOWN {
         @Override
