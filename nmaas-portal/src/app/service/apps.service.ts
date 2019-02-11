@@ -66,6 +66,14 @@ export class AppsService extends GenericDataService {
         return this.appConfig.getApiUrl() + urlPath;
     }
 
+    public uploadAppLogo(id: number, file: string): Observable<FileInfo> {
+        return this.post(this.appConfig.getApiUrl() + "apps/" + id + "/?file=" + file, null);
+    }
+
+    public uploadScreenshot(id: number, file: string): Observable<FileInfo> {
+        return this.post(this.appConfig.getApiUrl() + "apps/" + id + "/?screenshots=" + file, null);
+    }
+
     private getByUrl(urlPath: string): Observable<any>{
         return this.http.get(this.appConfig.getApiUrl() + urlPath).pipe(
             debounceTime(10000),

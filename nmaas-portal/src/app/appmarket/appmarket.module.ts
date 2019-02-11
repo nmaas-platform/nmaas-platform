@@ -34,7 +34,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {SortService} from "../service/sort.service";
 import { AppCreateWizardComponent } from './appcreatewizard/appcreatewizard.component';
 import {StepsModule} from "primeng/steps";
-import {MultiSelectModule} from "primeng/primeng";
+import {FileUploadModule, MultiSelectModule} from "primeng/primeng";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
@@ -65,6 +65,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     HttpClientModule,
     StepsModule,
     MultiSelectModule,
+    FileUploadModule,
     BrowserAnimationsModule,
     TranslateModule.forChild(),
   ],
