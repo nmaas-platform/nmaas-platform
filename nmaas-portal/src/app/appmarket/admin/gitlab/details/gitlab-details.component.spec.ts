@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {of} from 'rxjs';
 
 class MockGitlabService{
     protected url:string;
@@ -8,23 +9,23 @@ class MockGitlabService{
     }
 
     public getAll():Observable<GitLabConfig[]>{
-        return Observable.of<GitLabConfig[]>();
+        return of<GitLabConfig[]>();
     }
 
     public getOne(config_id:number):Observable<GitLabConfig>{
-        return Observable.of<GitLabConfig>();
+        return of<GitLabConfig>();
     }
 
     public add(gitLabConfig:GitLabConfig):Observable<any>{
-        return Observable.of<GitLabConfig>();
+        return of<GitLabConfig>();
     }
 
     public update(gitLabConfig:GitLabConfig):Observable<any>{
-        return Observable.of<GitLabConfig>();
+        return of<GitLabConfig>();
     }
 
     public remove(config_id:number):Observable<any>{
-        return Observable.of<GitLabConfig>();
+        return of<GitLabConfig>();
     }
 }
 

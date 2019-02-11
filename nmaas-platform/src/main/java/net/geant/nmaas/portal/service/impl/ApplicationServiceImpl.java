@@ -3,25 +3,20 @@ package net.geant.nmaas.portal.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 
+@AllArgsConstructor
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
 
-	ApplicationRepository appRepo;
-
-	@Autowired
-	public ApplicationServiceImpl(ApplicationRepository applicationRepository){
-		this.appRepo = applicationRepository;
-	}
+	private ApplicationRepository appRepo;
 
 	@Override
 	public Application create(String name) {
@@ -49,29 +44,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throw new IllegalArgumentException("applicationId is null");
 	}
 
-	
-	@Override
-	public Optional<ApplicationBriefProjection> findApplicationBrief(Long applicationId) {
-		checkParam(applicationId);
-		return appRepo.findApplicationBriefById(applicationId);
-	}
-
-	@Override
-	public List<ApplicationBriefProjection> findAllBrief() {		
-		return appRepo.findApplicationBriefAll();
-	}
-
-	@Override
-	public List<ApplicationBriefProjection> findAllBrief(List<Long> appIds) {
-		checkParam(appIds);
-		return appRepo.findApplicationBriefAllByIdIn(appIds);
-	}
-
-	@Override
-	public Page<ApplicationBriefProjection> findAllBrief(Pageable pageable) {		
-		return appRepo.findApplicationBriefAll(pageable);
-	}
-
 	@Override
 	public Page<Application> findAll(Pageable pageable) {
 		return appRepo.findAll(pageable);
@@ -95,10 +67,5 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void checkParam(Application app) {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
-	}
-	
-	private void checkParam(List<Long> ids) {
-		if(ids == null)
-			throw new IllegalArgumentException("ids list is null");		
 	}
 }

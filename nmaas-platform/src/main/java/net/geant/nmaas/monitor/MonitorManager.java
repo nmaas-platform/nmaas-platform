@@ -1,5 +1,6 @@
 package net.geant.nmaas.monitor;
 
+import com.google.common.collect.ImmutableMap;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -111,7 +112,7 @@ public class MonitorManager {
     private MailAttributes getMailAttributes(String service){
         return MailAttributes.builder()
                 .mailType(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)
-                .otherAttribute(service)
+                .otherAttributes(ImmutableMap.of("serviceName" ,service))
                 .build();
     }
 }

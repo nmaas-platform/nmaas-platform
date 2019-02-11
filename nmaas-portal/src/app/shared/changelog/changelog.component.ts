@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 
 import { Router } from '@angular/router';
-import { ChangelogService } from '../../service/index';
+import { ChangelogService } from '../../service';
 
 @Component({
 	selector: 'app-changelog',

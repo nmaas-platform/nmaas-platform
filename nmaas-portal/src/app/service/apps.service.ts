@@ -1,3 +1,5 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -8,12 +10,11 @@ import { Comment } from '../model/comment';
 import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
 import { GenericDataService } from './genericdata.service';
+import {catchError, debounceTime} from 'rxjs/operators';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/timeout';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/observable/throw';
+
+
+
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -27,6 +28,10 @@ export class AppsService extends GenericDataService {
         return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps');
     }
 
+    public getAllApps(): Observable<Application[]> {
+        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps/all');
+    }
+
     public getApp(id: number): Observable<Application> {
         return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
@@ -36,9 +41,9 @@ export class AppsService extends GenericDataService {
     }
 
     public setMyAppRateByUrl(urlPath: string): Observable<any> {
-        return this.http.post(this.appConfig.getApiUrl() + urlPath, null)
-            .timeout(10000)
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.http.post(this.appConfig.getApiUrl() + urlPath, null).pipe(
+            debounceTime(10000),
+            catchError((error: any) => observableThrowError((typeof error.json === 'function' ? error.json().message : 'Server error'))));
     }
 
     public getAppCommentsByUrl(urlPath: string): Observable<Comment[]> {
@@ -46,17 +51,17 @@ export class AppsService extends GenericDataService {
     }
 
     public addAppCommentByUrl(urlPath: string, comment: Comment): Observable<Id> {
-        return this.http.post(this.appConfig.getApiUrl() + urlPath, comment)
-            .timeout(10000)
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.http.post<Id>(this.appConfig.getApiUrl() + urlPath, comment).pipe(
+            debounceTime(10000),
+            catchError((error: any) => observableThrowError((typeof error.json === 'function' ? error.json().message : 'Server error'))));
     }
 
     public deleteAppCommentByUrl(urlPath: string, id: Id): Observable<any> {
-        return this.http.delete(this.appConfig.getApiUrl() + urlPath + '/' + id.id)
-            .timeout(10000)            
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.http.delete(this.appConfig.getApiUrl() + urlPath + '/' + id.id).pipe(
+            debounceTime(10000),
+            catchError((error: any) => observableThrowError((typeof error.json === 'function' ? error.json().message : 'Server error'))));
     }
-    
+
     public getAppScreenshotsByUrl(urlPath: string): Observable<FileInfo[]> {
         return this.getByUrl(urlPath);
     }
@@ -65,9 +70,13 @@ export class AppsService extends GenericDataService {
         return this.appConfig.getApiUrl() + urlPath;
     }
 
+    public deleteApp(appId: number): Observable<any> {
+        return this.delete(this.appConfig.getApiUrl() + '/apps/' + appId);
+    }
+
     private getByUrl(urlPath: string): Observable<any>{
-        return this.http.get(this.appConfig.getApiUrl() + urlPath)
-            .timeout(10000)
-            .catch((error: any) => Observable.throw((typeof error.json === 'function' ? error.json().message : 'Server error')));
+        return this.http.get(this.appConfig.getApiUrl() + urlPath).pipe(
+            debounceTime(10000),
+            catchError((error: any) => observableThrowError((typeof error.json === 'function' ? error.json().message : 'Server error'))));
     }
 }

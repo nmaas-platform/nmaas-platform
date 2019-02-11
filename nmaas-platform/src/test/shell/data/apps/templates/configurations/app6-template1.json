@@ -1,5 +1,5 @@
 {
     "applicationId":6,
-    "configFileName":"grafana-datasource.yaml",
-    "configFileTemplateContent":"apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: sample-grafana-datasource\n  labels:\n     grafana_datasource: 1\ndata:\n  datasource.yaml: |-\n    apiVersion: 1\n    deleteDatasources:\n      - name: ${source_name}\n        orgId: 1\n    datasources:\n    - name: ${source_name}\n      type: prometheus\n      access: proxy\n      orgId: 1\n      url: ${source_addr}\n      basicAuth: false\n      isDefault: true\n      version: 1\n      editable: false"
+    "configFileName":"datasource.yaml",
+    "configFileTemplateContent":"<#if source_name?has_content>apiVersion: 1\ndeleteDatasources:\n  - name: ${source_name}\n    orgId: 1\ndatasources:\n- name: ${source_name}\n  type: prometheus\n  access: proxy\n  orgId: 1\n  url: ${source_addr}\n  basicAuth: false\n  isDefault: true\n  version: 1\n  editable: true</#if>"
 }

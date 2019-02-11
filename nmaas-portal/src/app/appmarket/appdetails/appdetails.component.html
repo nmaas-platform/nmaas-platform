@@ -34,7 +34,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
+				<div *ngIf="!subscribed && isSubscriptionAllowed() && !app?.deleted" class="btn-group pull-right">
 					<button class="btn btn-primary" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 				<div *ngIf="subscribed" class="btn-group pull-right">
@@ -55,7 +55,7 @@
 	<div class="row">
 		<h3>{{'APPLICATIONS.DESCRIPTION' | translate}}</h3>
 		<hr>
-		<div [innerHTML]="app?.fullDescription">
+		<div [innerHTML]="getDescription()?.fullDescription">
 
 		</div>
 	</div>

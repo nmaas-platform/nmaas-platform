@@ -1,6 +1,6 @@
 import { TagService } from '../../../service/tag.service';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'nmaas-tag-filter',

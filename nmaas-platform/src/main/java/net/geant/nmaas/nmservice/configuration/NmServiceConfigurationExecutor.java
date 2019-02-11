@@ -44,7 +44,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileTransferor.transferConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired)
-                janitorService.createConfigMap(deploymentId, domain);
+                janitorService.createOrReplaceConfigMap(deploymentId, domain);
 
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURED);
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
             List<String> configFileIdentifiers = filePreparer.generateAndStoreConfigFiles(deploymentId, applicationId, appConfiguration);
             fileTransferor.updateConfigFiles(deploymentId, configFileIdentifiers, configFileRepositoryRequired);
             if(configFileRepositoryRequired) {
-                janitorService.updateConfigMap(deploymentId, domain);
+                janitorService.createOrReplaceConfigMap(deploymentId, domain);
             }
             notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_UPDATED);
         } catch(Exception e){

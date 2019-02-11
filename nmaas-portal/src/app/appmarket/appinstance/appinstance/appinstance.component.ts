@@ -1,7 +1,6 @@
 import {AfterViewChecked, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-import {IntervalObservable} from 'rxjs/observable/IntervalObservable';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 import {
@@ -14,12 +13,12 @@ import {
 import {SecurePipe} from '../../../pipe/index';
 import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
-// import 'rxjs/add/operator/switchMap';
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
 import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
+import {interval} from 'rxjs/internal/observable/interval';
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -55,7 +54,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public appInstanceStateHistory: AppInstanceStateHistory[];
   public configurationTemplate: any;
   public configurationUpdateTemplate:any;
-  public submission: any = {};
+  public submission: any = { data:{} };
   public appConfiguration: AppConfiguration;
 
   public intervalCheckerSubscribtion;
@@ -75,10 +74,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
       this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
         this.appInstance = appInstance;
-        this.submission.data = JSON.parse(appInstance.configuration);
+        this.configurationTemplate = this.getTemplate(appInstance.configTemplate.template);
+        this.submission.data.configuration = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
-          this.configurationTemplate = this.getTemplate(this.app.configTemplate.template);
           if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
               this.configurationUpdateTemplate = this.getTemplate(this.app.configurationUpdateTemplate.template);
           }
@@ -86,7 +85,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       });
 
       this.updateAppInstanceState();
-      this.intervalCheckerSubscribtion = IntervalObservable.create(5000).subscribe(() => this.updateAppInstanceState());
+      this.intervalCheckerSubscribtion = interval(5000).subscribe(() => this.updateAppInstanceState());
       this.undeployModal.setModalType("warning");
       this.undeployModal.setStatusOfIcons(true);
     });
@@ -128,7 +127,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
-      this.submission.data = JSON.parse(appInstance.configuration);
+      this.submission.data.configuration = JSON.parse(appInstance.configuration);
     });
   }
 
@@ -154,6 +153,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     }
   }
 
+  public changeAccessCredentials(accessCredentials: any): void{
+      if(!isNullOrUndefined(accessCredentials)){
+          this.appConfiguration.accessCredentials = accessCredentials;
+      }
+  }
+
   public changeConfiguration(configuration: any): void{
     if(!isNullOrUndefined(configuration)){
       this.appConfiguration.jsonInput = configuration;
@@ -167,12 +172,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.changeMandatoryParameters(input['mandatoryParameters']);
     this.changeAdditionalParameters(input['additionalParameters']);
     this.changeConfiguration(input['configuration']);
+    this.changeAccessCredentials(input['accessCredentials']);
     if(isNullOrUndefined(this.appConfiguration.jsonInput)){
         this.appConfiguration.jsonInput = {};
     }
     this.appInstanceService.applyConfiguration(this.appInstanceId, this.appConfiguration).subscribe(() => {
-      console.log('Configuration applied');
-        this.submission.data = this.appConfiguration.jsonInput;
+        console.log('Configuration applied');
         this.storage.set("appConfig_"+this.appInstanceId.toString(), this.appConfiguration);
     });
   }
@@ -182,6 +187,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         console.log("Configuration updated");
         this.updateConfigModal.hide();
       });
+  }
+
+  public changeConfigUpdate(input): void {
+    if(!isNullOrUndefined(input)){
+      this.changeConfiguration(input['configuration']);
+      this.changeAccessCredentials(input['accessCredentials']);
+    }
   }
 
   public undeploy(): void {

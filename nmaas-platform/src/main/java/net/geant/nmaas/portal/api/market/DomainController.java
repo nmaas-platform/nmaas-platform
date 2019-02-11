@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import net.geant.nmaas.portal.api.domain.DomainView;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +28,6 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnRemoveActionEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import net.geant.nmaas.portal.api.domain.Domain;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -58,17 +59,17 @@ public class DomainController extends AppBaseController {
 
 	@GetMapping
 	@Transactional(readOnly = true)
-	public List<Domain> getDomains() {
-		return domainService.getDomains().stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+	public List<DomainView> getDomains() {
+		return domainService.getDomains().stream().map(d -> modelMapper.map(d, DomainView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/my")
 	@Transactional(readOnly = true)
-	public List<Domain> getMyDomains(@NotNull Principal principal) {
+	public List<DomainView> getMyDomains(@NotNull Principal principal) {
 		User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("User not found."));
 					
 		try {
-			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, Domain.class)).collect(Collectors.toList());
+			return domainService.getUserDomains(user.getId()).stream().map(d -> modelMapper.map(d, DomainView.class)).collect(Collectors.toList());
 		} catch (ObjectNotFoundException e) {
 			throw new MissingElementException(e.getMessage());
 		}
@@ -81,7 +82,7 @@ public class DomainController extends AppBaseController {
 		if(domainService.existsDomain(domainRequest.getName())) 
 			throw new ProcessingException("Domain already exists.");
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain;
+		Domain domain;
 		try {
 			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(),
 					domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain());
@@ -101,11 +102,11 @@ public class DomainController extends AppBaseController {
 	@PutMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) Domain domainUpdate) {
+	public Id updateDomain(@PathVariable Long domainId, @RequestBody(required=true) DomainView domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId()))
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
@@ -129,11 +130,11 @@ public class DomainController extends AppBaseController {
 	@PatchMapping("/{domainId}")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR')")
-	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody Domain domainUpdate) {
+	public Id updateDomainTechDetails(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId())){
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
 		try {
@@ -148,11 +149,11 @@ public class DomainController extends AppBaseController {
 	@PatchMapping("/{domainId}/dcn")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody Domain domainUpdate) {
+	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
 		if(!domainId.equals(domainUpdate.getId())){
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
 		try{
 			domainService.updateDomain(domain);
@@ -180,9 +181,9 @@ public class DomainController extends AppBaseController {
 	@GetMapping("/{domainId}")
 	@Transactional(readOnly = true)	
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public Domain getDomain(@PathVariable Long domainId) {	
-		net.geant.nmaas.portal.persistent.entity.Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		return modelMapper.map(domain, Domain.class);
+	public DomainView getDomain(@PathVariable Long domainId) {
+		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
+		return modelMapper.map(domain, DomainView.class);
 	}
 	
 	

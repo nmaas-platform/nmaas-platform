@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
@@ -46,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -274,7 +276,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void sendResetPasswordNotification(@RequestBody String email){
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
-		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, generateResetPasswordUrl(this.jwtTokenService.getResetToken(email)));
+		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, ImmutableMap.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
 	}
 
 	private String generateResetPasswordUrl(String token){
@@ -291,7 +293,7 @@ public class UsersController {
 		try {
 			Claims claims = jwtTokenService.getResetClaims(token);
 			return modelMapper.map(userService.findByEmail(claims.getSubject()), User.class);
-		} catch(JwtException e){
+		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Validation of reset request failed -> "+ e.getMessage());
 		}
 	}
@@ -303,7 +305,7 @@ public class UsersController {
 			Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
 			net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(claims.getSubject());
 			changePassword(user, passwordReset.getPassword());
-		} catch(JwtException e){
+		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Unable to reset password -> " + e.getMessage());
 		}
 	}
@@ -487,9 +489,9 @@ public class UsersController {
 					isEnabledFlag ? "activated" : "deactivated",
 					getUser(userId).getUsername());
 			if (isEnabledFlag) {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, null);
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_ACTIVATED, ImmutableMap.of("portalURL", portalAddress != null ? portalAddress : ""));
 			} else {
-				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, null);
+				this.sendMail(modelMapper.map(user, User.class), MailType.ACCOUNT_BLOCKED, Collections.emptyMap());
 			}
 			log.info(message);
 		}catch(ObjectNotFoundException err){
@@ -522,10 +524,6 @@ public class UsersController {
 	List<String> getRoleAsList(List<net.geant.nmaas.portal.persistent.entity.UserRole> userRoles){
         final List<Role> rolesList = userRoles.stream().map(net.geant.nmaas.portal.persistent.entity.UserRole::getRole).collect(Collectors.toList());
         return rolesList.stream().map(Role::authority).collect(Collectors.toList());
-    }
-
-    String getRequestedRoleAsString(Set<UserRole> userRoles){
-        return String.join(",", getRequestedRoleAsList(userRoles));
     }
     
     List<String> getRequestedRoleAsList(Set<UserRole> userRoles){
@@ -571,14 +569,12 @@ public class UsersController {
 		return requestRoleList.containsAll(userRoleList) && userRoleList.containsAll(requestRoleList);
 	}
 
-	private void sendMail(User user, MailType mailType, String other){
+	private void sendMail(User user, MailType mailType, Map<String, String> other){
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(mailType)
+				.otherAttributes(other)
 				.addressees(Collections.singletonList(modelMapper.map(user, User.class)))
 				.build();
-		if(mailAttributes.getMailType() == MailType.PASSWORD_RESET){
-			mailAttributes.setOtherAttribute(other);
-		}
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));
 	}
 

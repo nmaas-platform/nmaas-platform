@@ -68,7 +68,7 @@
 				</div>
 			</div>
 
-			<nmaas-modal>
+			<nmaas-modal styleModal="warning">
 				<div class="nmaas-modal-header">
 					<h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
 				</div>
@@ -92,7 +92,7 @@
 							[form]="configurationUpdateTemplate"
 							[submission]="submission"
                            [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-                           (change)="changeConfiguration($event.data)">
+                           (change)="changeConfigUpdate($event.data)">
 					</formio>
 				</div>
 				<div class="nmaas-modal-footer">

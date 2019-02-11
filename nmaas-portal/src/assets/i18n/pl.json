@@ -3,6 +3,7 @@
     "MARKET": "Aplikacje",
     "SUBSCRIPTIONS": "Subskrypcje",
     "INSTANCES": "Instancje",
+    "MANAGEMENT": "Zarządzanie",
     "DOMAINS": "Domeny",
     "USERS": "Użytkownicy",
     "INVENTORY": "Zewnętrzne komponenty",
@@ -11,7 +12,9 @@
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
-    "LANGUAGE": "Język"
+    "LANGUAGE": "Język",
+    "ABOUT": "O nas",
+    "BACK": "Wróć do strony głównej"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -449,5 +452,37 @@
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
     "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
+  },
+  "ABOUT": {
+    "CONTACT_TITLE": "Skontaktuj się z nami",
+    "CHANGELOG_TITLE": "Aktualna wersja oraz lista zmian",
+    "CONTACT_DESC": "Masz pytanie? Problem z funkcjonalnością? Problem techniczny? Wyślij nam wiadomość a my odpowiemy najszybciej jak tylko się da.",
+    "CHANGELOG_DESC": "Jak zapewne wiesz, NMaaS nadal ewoluuje a my tworzymy dla niego nowe funkcjonalności. Poniżej znajdziesz informacje na temat największych zmian w poszczególnych wersjach."
+  },
+  "CHANGELOG": {
+    "CHANGELOG_LAST": "Ostatnia wersja",
+    "NEW": "Nowość",
+    "REMOVED": "Usunięte",
+    "IMPROVED": "Ulepszenie",
+    "FIXED": "Naprawiono"
+  },
+  "CONTACT_FORM": {
+    "TITLE": "Formularz kontaktowy",
+    "EMAIL": "Twój adres email",
+    "NAME": "Twoje imie",
+    "MESSAGE": "Treść maila",
+    "MESSAGE_PLACEHOLDER": "Tutaj wpisz treść maila",
+    "SUBMIT_BUTTON": "Wyślij",
+    "MODAL": {
+      "TITLE": "Mail został wysłany",
+      "MESSAGE": "NMaaS Team wyśle odpowiedź niedługo.",
+      "CLOSE_BUTTON": "Zamknij"
+    }
+  },
+  "APPS_MANAGEMENT": {
+    "TITLE": "Zarządzanie aplikacjami",
+    "NAME": "Nazwa",
+    "ACTIVE": "Aktywna",
+    "REMOVE_BUTTON": "Usuń"
   }
 }

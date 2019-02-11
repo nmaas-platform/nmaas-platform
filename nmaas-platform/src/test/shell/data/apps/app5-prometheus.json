@@ -3,12 +3,33 @@
     "version": "2.4.0",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-    "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+    "briefDescription": "",
     "tags": [
         "monitoring",
         "alerting"
     ],
-    "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support",
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "de",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "fr",
+            "briefDescription": "Power your metrics and alerting with a leading open-source monitoring solution.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Ulepsz swoje metryki i powiadomienia z przodującym rozwiązaniem do monitorowania danych.",
+            "fullDescription": "Prometheus collects metrics from monitored targets by scraping metrics HTTP endpoints on these targets. Since Prometheus also exposes data in the same manner about itself, it can also scrape and monitor its own health.<br>Prometheus's main features are:<ul><li>a multi-dimensional data model with time series data identified by metric name and key/value pairs</li><li>a flexible query language to leverage this dimensionality</li><li>no reliance on distributed storage; single server nodes are autonomous</li><li>time series collection happens via a pull model over HTTP</li><li>pushing time series is supported via an intermediary gateway</li><li>targets are discovered via service discovery or static configuration</li><li>multiple modes of graphing and dashboarding support"
+        }
+    ],
     "wwwUrl": "https://prometheus.io/",
     "sourceUrl": "https://github.com/prometheus/prometheus",
     "issuesUrl": "https://github.com/prometheus/prometheus/issues",
@@ -19,7 +40,7 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-prometheus",
-                "version": "1.0.2-alfa"
+                "version": "1.0.3-alfa"
             }
         },
         "defaultStorageSpace": 20,
@@ -35,6 +56,39 @@
                             "label": "Base",
                             "key": "configTab",
                             "components": [
+                                {
+                                    "label": "Access credentials",
+                                    "hideLabel": true,
+                                    "tableView": true,
+                                    "type": "container",
+                                    "input": true,
+                                    "tab": 0,
+                                    "key": "accessCredentials",
+                                    "components": [
+                                        {
+                                            "label": "Prometheus access username",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "accessUsername",
+                                            "tab": 0,
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain"
+                                        },
+                                        {
+                                            "label": "Prometheus access password",
+                                            "type": "password",
+                                            "input": true,
+                                            "key": "accessPassword",
+                                            "tab": 0,
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "inputFormat": "plain"
+                                        }
+                                    ]
+                                },
                                 {
                                     "label": "Configuration",
                                     "hideLabel": true,
@@ -237,153 +291,186 @@
         "template": {
             "components": [
                 {
-                    "label": "Global configuration",
+                    "label": "Access credentials",
                     "hideLabel": true,
+                    "tableView": true,
                     "type": "container",
-                    "persistent": true,
-                    "key": "global_config",
+                    "input": true,
+                    "key": "accessCredentials",
                     "components": [
                         {
-                            "label": "Global scrape",
+                            "label": "Prometheus access username",
                             "type": "textfield",
                             "input": true,
-                            "inputFormat": "plain",
-                            "defaultValue": "15s",
-                            "key": "global_scrape",
+                            "key": "accessUsername",
                             "validate": {
                                 "required": true
-                            }
+                            },
+                            "inputFormat": "plain"
                         },
                         {
-                            "label": "Global evaluation",
-                            "type": "textfield",
+                            "label": "Prometheus access password",
+                            "type": "password",
                             "input": true,
-                            "inputFormat": "plain",
-                            "defaultValue": "30s",
-                            "key": "global_evaluation",
+                            "key": "accessPassword",
                             "validate": {
                                 "required": true
-                            }
+                            },
+                            "inputFormat": "plain"
                         }
                     ]
                 },
                 {
-                    "label": "Jobs",
+                    "label": "Configuration",
                     "hideLabel": true,
-                    "disableAddingRemovingRows": false,
-                    "addAnother": "Add jobs",
-                    "addAnotherPosition": "bottom",
-                    "multiple": true,
                     "tableView": true,
-                    "type": "datagrid",
+                    "type": "container",
                     "input": true,
-                    "key": "targets",
-                    "validate": {
-                        "required": true
-                    },
+                    "key": "configuration",
                     "components": [
                         {
-                            "label": "Job name",
-                            "type": "textfield",
-                            "input": true,
-                            "inputFormat": "plain",
-                            "key": "jobName",
-                            "validate": {
-                                "required": true,
-                                "minLength": 1
-                            },
-                            "row": "0-0"
-                        },
-                        {
-                            "label": "Scrape interval",
-                            "type": "textfield",
-                            "input": true,
-                            "defaultValue": "15s",
-                            "inputFormat": "plain",
-                            "key": "scrape_interval",
-                            "validate": {
-                                "required": true
-                            },
-                            "row": "0-1"
-                        },
-                        {
-                            "label": "Metrics path",
-                            "type": "textfield",
-                            "input": true,
-                            "defaultValue": "/metrics",
-                            "inputFormat": "plain",
-                            "key": "metrics_path",
-                            "validate": {
-                                "required": true
-                            },
-                            "row": "0-2"
-                        },
-                        {
-                            "label": "IP address and port",
-                            "hideLabel": false,
-                            "disableAddingRemovingRows": false,
-                            "placeholder": "127.0.0.1:9001",
-                            "addAnother": "Add address",
-                            "addAnotherPosition": "bottom",
-                            "multiple": true,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "type": "datagrid",
-                            "input": true,
-                            "key": "Addresses",
-                            "validate": {
-                                "required": true
-                            },
+                            "label": "Global configuration",
+                            "hideLabel": true,
+                            "type": "container",
+                            "persistent": true,
+                            "key": "global_config",
                             "components": [
                                 {
-                                    "label": "IP address and port",
-                                    "hideLabel": false,
-                                    "tableView": true,
-                                    "type": "textfield",
-                                    "input": true,
-                                    "key": "ipAddress",
-                                    "validate": {
-                                        "required": true,
-                                        "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
-                                    },
-                                    "inputFormat": "plain",
-                                    "row": "0-0"
-                                }
-                            ],
-                            "row": "0-3"
-                        },
-                        {
-                            "label": "Labels",
-                            "hideLabel": false,
-                            "disableAddingRemovingRows": false,
-                            "addAnother": "Add label",
-                            "addAnotherPosition": "bottom",
-                            "multiple": true,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "type": "datagrid",
-                            "input": true,
-                            "key": "Labels",
-                            "defaultValue": [],
-                            "components": [
-                                {
-                                    "label": "Label name",
+                                    "label": "Global scrape",
                                     "type": "textfield",
                                     "input": true,
                                     "inputFormat": "plain",
-                                    "key": "label_name",
-                                    "row": "0-4"
+                                    "defaultValue": "15s",
+                                    "key": "global_scrape"
                                 },
                                 {
-                                    "label": "Label value",
+                                    "label": "Global evaluation",
                                     "type": "textfield",
                                     "input": true,
                                     "inputFormat": "plain",
-                                    "key": "label_value",
-                                    "row": "0-0"
+                                    "defaultValue": "30s",
+                                    "key": "global_evaluation"
                                 }
-                            ],
-                            "row": "0-5"
+                            ]
+                        },
+                        {
+                            "label": "Jobs",
+                            "disableAddingRemovingRows": false,
+                            "addAnother": "Add jobs",
+                            "addAnotherPosition": "bottom",
+                            "multiple": true,
+                            "tableView": true,
+                            "type": "datagrid",
+                            "input": true,
+                            "key": "targets",
+                            "validate": {
+                                "required": true
+                            },
+                            "components": [
+                                {
+                                    "label": "Job name",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "inputFormat": "plain",
+                                    "key": "jobName",
+                                    "validate": {
+                                        "required": true,
+                                        "minLength": 1
+                                    },
+                                    "row": "0-0"
+                                },
+                                {
+                                    "label": "Scrape interval",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "defaultValue": "15s",
+                                    "inputFormat": "plain",
+                                    "key": "scrape_interval",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "row": "0-1"
+                                },
+                                {
+                                    "label": "Metrics path",
+                                    "type": "textfield",
+                                    "input": true,
+                                    "defaultValue": "/metrics",
+                                    "inputFormat": "plain",
+                                    "key": "metrics_path",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "row": "0-2"
+                                },
+                                {
+                                    "label": "Targets",
+                                    "hideLabel": false,
+                                    "disableAddingRemovingRows": false,
+                                    "addAnother": "Add address",
+                                    "addAnotherPosition": "bottom",
+                                    "multiple": true,
+                                    "tableView": true,
+                                    "alwaysEnabled": false,
+                                    "type": "datagrid",
+                                    "input": true,
+                                    "key": "Addresses",
+                                    "validate": {
+                                        "required": true
+                                    },
+                                    "components": [
+                                        {
+                                            "label": "IP address and port",
+                                            "hideLabel": false,
+                                            "tableView": true,
+                                            "type": "textfield",
+                                            "input": true,
+                                            "key": "ipAddress",
+                                            "placeholder": "127.0.0.1:9001",
+                                            "validate": {
+                                                "required": true,
+                                                "pattern": "[\\s\\S]+\\:[0-9]{1,6}$"
+                                            },
+                                            "inputFormat": "plain",
+                                            "row": "0-0"
+                                        }
+                                    ],
+                                    "row": "0-3"
+                                },
+                                {
+                                    "label": "Labels",
+                                    "hideLabel": false,
+                                    "disableAddingRemovingRows": false,
+                                    "addAnother": "Add label",
+                                    "addAnotherPosition": "bottom",
+                                    "multiple": true,
+                                    "tableView": true,
+                                    "alwaysEnabled": false,
+                                    "type": "datagrid",
+                                    "input": true,
+                                    "key": "Labels",
+                                    "defaultValue": [],
+                                    "components": [
+                                        {
+                                            "label": "Label name",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "key": "label_name",
+                                            "row": "0-4"
+                                        },
+                                        {
+                                            "label": "Label value",
+                                            "type": "textfield",
+                                            "input": true,
+                                            "inputFormat": "plain",
+                                            "key": "label_value",
+                                            "row": "0-0"
+                                        }
+                                    ],
+                                    "row": "0-5"
+                                }
+                            ]
                         }
                     ]
                 }

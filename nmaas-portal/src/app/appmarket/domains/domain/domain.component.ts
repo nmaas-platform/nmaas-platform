@@ -8,11 +8,12 @@ import {isUndefined} from 'util';
 import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
 import {User} from "../../../model";
 import {AppConfigService, UserService} from '../../../service';
-import {Observable} from "rxjs/Observable";
+import {Observable, of} from "rxjs";
 import {Role, UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
 import {AuthService} from "../../../auth/auth.service";
 import {ModalComponent} from '../../../shared/modal';
+  import {map, shareReplay, take} from 'rxjs/operators';
 
 
 @Component({
@@ -84,10 +85,12 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
     protected getDomainName(domainId: number): Observable<string> {
         if (this.domainCache.hasData(domainId)) {
-            return Observable.of(this.domainCache.getData(domainId).codename);
+            return of(this.domainCache.getData(domainId).codename);
         } else {
-            return this.domainService.getOne(domainId).map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename})
-                .shareReplay(1).take(1);
+            return this.domainService.getOne(domainId).pipe(
+                map((domain) => {this.domainCache.setData(domainId, domain); return domain.codename}),
+                shareReplay(1),
+                take(1));
         }
     }
 

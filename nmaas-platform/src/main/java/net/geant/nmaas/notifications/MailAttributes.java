@@ -4,12 +4,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import net.geant.nmaas.notifications.templates.MailType;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
 import net.geant.nmaas.portal.api.domain.User;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Builder
 @Getter
@@ -18,10 +19,15 @@ public class MailAttributes implements Serializable {
 
     private List<User> addressees;
 
-    @NotNull
     private MailType mailType;
 
-    private String otherAttribute;
+    private Map<String, String> otherAttributes = new HashMap<>();
 
-    private AppDeploymentView appDeploymentView;
+    @Builder
+    @SuppressWarnings("unused")
+    private MailAttributes(List<User> addressees, MailType mailType, Map<String, String> otherAttributes){
+        this.addressees = addressees;
+        this.mailType = mailType;
+        this.otherAttributes = Optional.ofNullable(otherAttributes).orElse(this.otherAttributes);
+    }
 }

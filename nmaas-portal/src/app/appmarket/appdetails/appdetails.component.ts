@@ -14,12 +14,12 @@ import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstallmodal.component';
-import { Subject } from 'rxjs';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/isEmpty';
-import {empty} from 'rxjs/observable/empty';
-import {isUndefined} from 'util';
+import { Subject , Observable, EMPTY as empty} from 'rxjs';
+import {isNullOrUndefined, isUndefined} from 'util';
 import {AppSubscription} from "../../model";
+import {isEmpty} from 'rxjs/operators';
+import {AppDescription} from "../../model/appdescription";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -52,6 +52,7 @@ export class AppDetailsComponent implements OnInit {
     private userDataService: UserDataService,
     private appConfig: AppConfigService,
     private authService: AuthService,
+    private translate:TranslateService,
     private router: Router, private route: ActivatedRoute, private location: Location) {
   }
 
@@ -79,7 +80,7 @@ export class AppDetailsComponent implements OnInit {
     let result: Observable<any> = null;
     if (isUndefined(domainId) || domainId === 0) {
       result = this.appSubsService.getAllByApplication(this.appId);
-      result.isEmpty().subscribe(res => this.subscribed = !res, error => this.subscribed = false);
+      result.pipe(isEmpty()).subscribe(res => this.subscribed = !res, error => this.subscribed = false);
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
       result.subscribe((appSub:AppSubscription)=>this.subscribed=appSub.active, error=>this.subscribed = false);
@@ -129,6 +130,13 @@ export class AppDetailsComponent implements OnInit {
 
   protected refresh(): void {
     this.state += Math.random() * 123456;
+  }
+
+  public getDescription(): AppDescription {
+    if(isNullOrUndefined(this.app)){
+      return;
+    }
+    return this.app.descriptions.find(val => val.language == this.translate.currentLang);
   }
   
 }

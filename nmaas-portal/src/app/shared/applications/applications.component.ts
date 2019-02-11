@@ -7,7 +7,7 @@ import {UserDataService} from '../../service/userdata.service';
 import {ListType} from '../common/listtype';
 import {AppViewType} from '../common/viewtype';
 import {Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable, of} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 
 @Component({
@@ -67,7 +67,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
       applications = this.appSubsService.getSubscribedApplications(domainId);
       break;
       default:
-      applications = Observable.of<Application[]>([]);
+      applications = of<Application[]>([]);
       break;
     }
 
@@ -91,7 +91,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
                   selected.add(appSubs[i].applicationId);
               }
 
-              this.selected = Observable.of<Set<number>>(selected);
+              this.selected = of<Set<number>>(selected);
           });
       } else{
         this.selected = undefined;
@@ -117,7 +117,7 @@ export class ApplicationsViewComponent implements OnInit, OnChanges, OnDestroy {
         filteredAppsOne = apps.filter(app => app.tags.map(entry => entry.toLocaleLowerCase()).findIndex(function (element) {return element.indexOf(tag) > -1;}) > -1);
       }
       filteredAppsTwo = filteredAppsOne.filter(app => app.name.toLocaleLowerCase().indexOf(typed) > -1);
-      this.applications = Observable.of(filteredAppsTwo);
+      this.applications = of(filteredAppsTwo);
     });
   }
 
