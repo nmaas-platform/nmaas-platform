@@ -457,8 +457,7 @@
       "NAME": "Name",
       "ACTIVE": "Active",
       "REMOVE_BUTTON": "Remove"
-    }
-  },
+    },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle et journal des modifications",

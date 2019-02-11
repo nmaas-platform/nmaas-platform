@@ -437,7 +437,8 @@
       "HEADER": "Nouveau mot de passe",
       "PASSWORD": "Mote de passe",
       "CONFIRM_PASSWORD": "Resaisir le mot de passe"
-    }},
+    }
+  },
     "UPDATE_CONFIG_MODAL": {
       "HEADER": "Update configuration",
       "SUBMIT_BUTTON": "Submit",
@@ -457,8 +458,7 @@
       "NAME": "Name",
       "ACTIVE": "Active",
       "REMOVE_BUTTON": "Remove"
-    }
-  },
+    },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle et journal des modifications",
