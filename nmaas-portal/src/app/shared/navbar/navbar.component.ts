@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {Observable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
 import {ContentDisplayService} from "../../service/content-display.service";
 
 @Component({
@@ -14,7 +14,7 @@ export class NavbarComponent implements OnInit {
     public languages: string[];
     public refresh: Subscription;
 
-    constructor(private translate: TranslateService, private contentService:ContentDisplayService) {
+    constructor(private translate: TranslateService, private contentService:ContentDisplayService, public router:Router) {
     }
 
     useLanguage(language: string) {
