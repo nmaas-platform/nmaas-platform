@@ -139,6 +139,6 @@
     </div>
     <div *ngIf="activeStepIndex === 5">
 
-        <button class="btn btn-success pull-right" (click)="submit()" *ngIf="activeStepIndex == 5" [disabled]="isValid() || checkDescriptions()">Submit</button>
+        <button class="btn btn-success pull-right" (click)="submit()" *ngIf="activeStepIndex == 5" [disabled]="!isValid() || isInvalidDescriptions()">Submit</button>
     </div>
 <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">Previous</button>

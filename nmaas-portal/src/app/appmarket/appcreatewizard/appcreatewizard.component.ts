@@ -111,7 +111,7 @@ export class AppCreateWizardComponent implements OnInit {
     }
   }
 
-  public checkDescriptions(): boolean {
+  public isInvalidDescriptions(): boolean {
     let enAppDescription  = this.appDescriptions.filter(lang => lang.language === "en")[0];
     return isNullOrUndefined(enAppDescription.fullDescription) || enAppDescription.fullDescription === "" || isNullOrUndefined(enAppDescription.briefDescription) || enAppDescription.briefDescription === "";
   }
