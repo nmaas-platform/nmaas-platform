@@ -74,12 +74,20 @@ export class AppsService extends GenericDataService {
         return this.delete(this.appConfig.getApiUrl() + '/apps/' + appId);
     }
 
-    public uploadAppLogo(id: number, file: string): Observable<FileInfo> {
-        return this.post(this.appConfig.getApiUrl() + "apps/" + id + "/?file=" + file, null);
+    public addApp(app:Application): Observable<any> {
+        return this.post(this.appConfig.getApiUrl() + '/apps', app);
     }
 
-    public uploadScreenshot(id: number, file: string): Observable<FileInfo> {
-        return this.post(this.appConfig.getApiUrl() + "apps/" + id + "/?screenshots=" + file, null);
+    public uploadAppLogo(id: number, file: any): Observable<FileInfo> {
+        let fd: FormData = new FormData();
+        fd.append("file", file);
+        return this.post(this.appConfig.getApiUrl() + "/apps/" + id + '/logo', fd);
+    }
+
+    public uploadScreenshot(id: number, file: any): Observable<FileInfo> {
+        let fd: FormData = new FormData();
+        fd.append("file", file);
+        return this.post(this.appConfig.getApiUrl() + "/apps/" + id + '/screenshots', fd);
     }
 
     private getByUrl(urlPath: string): Observable<any>{

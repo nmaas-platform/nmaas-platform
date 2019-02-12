@@ -35,10 +35,10 @@ export class AppCreateWizardComponent implements OnInit {
   constructor(public fb:FormBuilder, public tagService: TagService, public appsService: AppsService,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService) {
     this.basicAppInformationForm = this.fb.group({
-      appName: ['', Validators.required],
-      appVersion: ['', Validators.required],
-      appLicense: ['', Validators.required],
-      appLicenseUrl: ['', Validators.required],
+      name: ['', Validators.required],
+      version: ['', Validators.required],
+      license: ['', Validators.required],
+      licenseUrl: ['', Validators.required],
       wwwUrl: ['', Validators.required],
       sourceUrl: ['', Validators.required],
       issuesUrl: ['', Validators.required],
@@ -77,7 +77,26 @@ export class AppCreateWizardComponent implements OnInit {
   }
 
   public submit(): void{
+    this.setAppValues();
+    this.appsService.addApp(this.app).subscribe(result => {
+      this.appsService.uploadAppLogo(result.id, this.logo).subscribe(() => console.log("Logo uploaded"));
+      for(let screenshot of this.screenshots){
+        this.appsService.uploadScreenshot(result.id, screenshot).subscribe(() => console.log("Screenshot uploaded"));
+      }
+    });
+  }
 
+  public setAppValues(): void {
+    this.app = this.basicAppInformationForm.value;
+    this.app.appDeploymentSpec = this.appDeploymentSpec;
+    this.app.descriptions = this.appDescriptions;
+    this.app.configTemplate = this.configTemplate;
+    if(isNullOrUndefined(this.app.configTemplate.template) || this.app.configTemplate.template === ""){
+      this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
+    }
+    if (!isNullOrUndefined(this.configUpdateTemplate.template) && this.configUpdateTemplate.template != "") {
+      this.app.configurationUpdateTemplate = this.configUpdateTemplate;
+    }
   }
 
   public isValid(): boolean{
