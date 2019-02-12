@@ -79,6 +79,9 @@ echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/registrationMail.json
 echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/contactFormMail.json
+echo.
 
 echo
 echo Register User First with username user1

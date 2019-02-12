@@ -4,8 +4,12 @@
 					<a routerLink="/" data-toggle="tooltip" data-placement="right" title="Network Management as a Service homepage"><img src="assets/images/logo-small.png" style="margin: 5px"
 									 alt="Network Management as a Service"></a>
 				</div>
-				<div style="display: inline-block" class="pull-right">
+				<div style="display: inline-block" class="pull-right" *ngIf="router.url !== '/about'">
+					<button class="btn navbar-btn" (click)="router.navigate(['/about'])">{{ 'NAVBAR.ABOUT' | translate }}</button>
 					<button class="btn navbar-btn" data-toggle="collapse" data-target="#login-register-panel">{{ 'NAVBAR.LOGIN_REGISTER' | translate }}</button>
+				</div>
+				<div style="display: inline-block" class="pull-right" *ngIf="router.url == '/about'">
+					<button class="btn navbar-btn" (click)="router.navigate(['/welcome'])">{{ 'NAVBAR.BACK' | translate }}</button>
 				</div>
 				<div class="pull-right navbar-btn" style="display: inline-block">
 					<ul>

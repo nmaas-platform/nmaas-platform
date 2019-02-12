@@ -63,6 +63,7 @@ public class AppLifecycleManagerRestController {
                 .domain(domain)
                 .applicationId(Identifier.newInstance(applicationId))
                 .deploymentName(deploymentName)
+                .appName(app.getName())
                 .storageSpace(modelMapper.map(app.getAppDeploymentSpec(), AppDeploymentSpec.class).getDefaultStorageSpace())
                 .build();
         return lifecycleManager.deployApplication(appDeployment);

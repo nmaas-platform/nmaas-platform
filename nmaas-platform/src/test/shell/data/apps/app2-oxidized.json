@@ -36,7 +36,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-oxidized",
-				"version": "1.0.2-alfa"
+				"version": "1.0.3-alfa"
 			},
 			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 		},
@@ -54,6 +54,39 @@
 							"key": "configTab",
 							"components": [
 								{
+									"label": "Access credentials",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "container",
+									"input": true,
+									"tab": 0,
+									"key": "accessCredentials",
+									"components": [
+										{
+											"label": "Oxidized access username",
+											"type": "textfield",
+											"input": true,
+											"key": "accessUsername",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										},
+										{
+											"label": "Oxidized access password",
+											"type": "password",
+											"input": true,
+											"key": "accessPassword",
+											"tab": 0,
+											"validate": {
+												"required": true
+											},
+											"inputFormat": "plain"
+										}
+									]
+								},
+								{
 									"label": "Configuration",
 									"hideLabel": true,
 									"tableView": true,
@@ -63,7 +96,7 @@
 									"key": "configuration",
 									"components": [
 										{
-											"label": "Username",
+											"label": "Device access username",
 											"type": "textfield",
 											"input": true,
 											"key": "oxidizedUsername",
@@ -74,7 +107,7 @@
 											"inputFormat": "plain"
 										},
 										{
-											"label": "Password",
+											"label": "Device access password",
 											"type": "password",
 											"input": true,
 											"key": "oxidizedPassword",
@@ -173,60 +206,100 @@
 		"template": {
 			"components": [
 				{
-					"label": "Username",
-					"type": "textfield",
-					"input": true,
-					"key": "oxidizedUsername",
-					"validate": {
-						"required": true
-					},
-					"inputFormat": "plain"
-				},
-				{
-					"label": "Password",
-					"type": "password",
-					"input": true,
-					"key": "oxidizedPassword",
-					"validate": {
-						"required": true
-					}
-				},
-				{
-					"label": "Targets",
+					"label": "Access credentials",
 					"hideLabel": true,
-					"disableAddingRemovingRows": false,
-					"addAnother": "Add device",
-					"addAnotherPosition": "bottom",
-					"multiple": true,
 					"tableView": true,
-					"alwaysEnabled": false,
-					"type": "datagrid",
+					"type": "container",
 					"input": true,
-					"key": "targets",
-					"defaultValue": [
-						{
-							"ipAddress": ""
-						}
-					],
-					"validate": {
-						"required": true
-					},
+					"key": "accessCredentials",
 					"components": [
 						{
-							"label": "Device (IP address)",
-							"hideLabel": true,
-							"placeholder": "127.0.0.1",
-							"tableView": true,
+							"label": "Oxidized access username",
 							"type": "textfield",
 							"input": true,
-							"key": "ipAddress",
-							"defaultValue": "",
+							"key": "accessUsername",
 							"validate": {
-								"required": true,
-								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+								"required": true
 							},
-							"inputFormat": "plain",
-							"row": "0-0"
+							"inputFormat": "plain"
+						},
+						{
+							"label": "Oxidized access password",
+							"type": "password",
+							"input": true,
+							"key": "accessPassword",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						}
+					]
+				},
+				{
+					"label": "Configuration",
+					"hideLabel": true,
+					"tableView": true,
+					"type": "container",
+					"input": true,
+					"key": "configuration",
+					"components": [
+						{
+							"label": "Username",
+							"type": "textfield",
+							"input": true,
+							"key": "oxidizedUsername",
+							"validate": {
+								"required": true
+							},
+							"inputFormat": "plain"
+						},
+						{
+							"label": "Password",
+							"type": "password",
+							"input": true,
+							"key": "oxidizedPassword",
+							"validate": {
+								"required": true
+							}
+						},
+						{
+							"label": "Targets",
+							"hideLabel": true,
+							"disableAddingRemovingRows": false,
+							"addAnother": "Add device",
+							"addAnotherPosition": "bottom",
+							"multiple": true,
+							"tableView": true,
+							"alwaysEnabled": false,
+							"type": "datagrid",
+							"input": true,
+							"key": "targets",
+							"defaultValue": [
+								{
+									"ipAddress": ""
+								}
+							],
+							"validate": {
+								"required": true
+							},
+							"components": [
+								{
+									"label": "Device (IP address)",
+									"hideLabel": true,
+									"tableView": true,
+									"type": "textfield",
+									"input": true,
+									"key": "ipAddress",
+									"placeholder": "127.0.0.1",
+									"defaultValue": "",
+									"validate": {
+										"required": true,
+										"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+									},
+									"inputFormat": "plain",
+									"row": "0-0"
+								}
+							]
 						}
 					]
 				}

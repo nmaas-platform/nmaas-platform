@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule} from '@angular/forms';
 
 import {AuthModule} from '../auth/auth.module';
 
@@ -32,27 +32,23 @@ import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {SortService} from "../service/sort.service";
-import { AppCreateWizardComponent } from './appcreatewizard/appcreatewizard.component';
-import {StepsModule} from "primeng/steps";
-import {FileUploadModule, MultiSelectModule} from "primeng/primeng";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {AppManagementModule} from "./appmanagement/appmanagement.module";
 
 @NgModule({
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
-    NavbarComponent,
-    AppCreateWizardComponent
+    NavbarComponent
   ],
   imports: [
     FormsModule,
-    ReactiveFormsModule,
     StorageServiceModule,
     CommonModule,
     RouterModule,
     SharedModule,
     AppListModule,
     AppInstanceModule,
+    AppManagementModule,
     DomainsModule,
     UsersModule,
     AuthModule,
@@ -63,10 +59,6 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     ConfigurationModule,
     BrowserModule,
     HttpClientModule,
-    StepsModule,
-    MultiSelectModule,
-    FileUploadModule,
-    BrowserAnimationsModule,
     TranslateModule.forChild(),
   ],
   exports: [
