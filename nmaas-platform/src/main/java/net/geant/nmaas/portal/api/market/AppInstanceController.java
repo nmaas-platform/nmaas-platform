@@ -359,7 +359,7 @@ public class AppInstanceController extends AppBaseController {
 
     private Map<Long, String> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain){
         return this.instances.getAllInstanceNamesByApplicationNameOwnerAndDomain(appName, owner, domain).stream()
-                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYED))
+                .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
                 .collect(Collectors.toMap(net.geant.nmaas.portal.persistent.entity.AppInstance::getId, net.geant.nmaas.portal.persistent.entity.AppInstance::getName));
     }
 }
