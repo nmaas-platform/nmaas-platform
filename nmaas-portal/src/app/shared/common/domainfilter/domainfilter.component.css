@@ -1,0 +1,24 @@
+@media (max-width: 1199px) {
+        .dropdown-domains{
+                padding-top: inherit;
+                padding-left: inherit;
+        }
+        .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        width: auto !important;
+        margin-top: 0;
+        background-color: transparent;
+        border: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+}
+
+@media (min-width: 1199px) {
+        .dropdown-domains {
+                padding-top: 12px;
+                vertical-align: middle;
+                padding-left: 15px;
+        }
+}

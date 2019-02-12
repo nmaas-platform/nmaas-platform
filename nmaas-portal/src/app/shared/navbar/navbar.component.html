@@ -8,7 +8,7 @@
             </button>
         </div>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul *ngIf="authService.isLogged() && !authService.hasRole('ROLE_SYSTEM_ADMIN')"  class="nav navbar-nav navbar-left">
+                <ul *ngIf="authService.isLogged()"  class="nav navbar-nav navbar-left">
                     <li [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                             [routerLink]="['/']">{{ 'NAVBAR.MARKET' | translate }}</a></li>
                     <li *ngIf="checkUserRole()" [routerLinkActiveOptions]="{exact:true}"
@@ -24,31 +24,6 @@
                     <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']" [routerLinkActiveOptions]="{exact:true}"
                         [routerLinkActive]="['active']">
                         <a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
-                    </li>
-                </ul>
-                <ul *ngIf="authService.isLogged() && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="nav navbar-nav">
-                    <li *roles="['ROLE_SYSTEM_ADMIN']" class="dropdown">
-                        <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle"
-                           data-toggle="dropdown" href="#" role="button">
-                        Market <i class="fas fa-caret-down"></i></a>
-                            <ul class="dropdown-menu">
-                                <li [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
-                                        [routerLink]="['/']">{{ 'NAVBAR.MARKET' | translate }}</a></li>
-                                <li *ngIf="checkUserRole()" [routerLinkActiveOptions]="{exact:true}"
-                                    [routerLinkActive]="['active']"><a
-                                        [routerLink]="['/subscriptions']">{{ 'NAVBAR.SUBSCRIPTIONS' | translate }}</a></li>
-                                <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_USER']"
-                                    [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
-                                        [routerLink]="['/instances']">{{ 'NAVBAR.INSTANCES' | translate }}</a></li>
-                                <li class="divider"></li>
-                                <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"
-                                    [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
-                                        [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a></li>
-                                <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']" [routerLinkActiveOptions]="{exact:true}"
-                                    [routerLinkActive]="['active']">
-                                    <a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
-                                </li>
-                            </ul>
                     </li>
                 </ul>
                 <ul *ngIf="authService.isLogged()" class="nav navbar-nav navbar-right">
