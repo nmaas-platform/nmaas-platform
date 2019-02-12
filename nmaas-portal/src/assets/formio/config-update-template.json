@@ -1,0 +1,12 @@
+{
+  "components": [
+    {
+      "label": "Configuration",
+      "tableView": true,
+      "type": "container",
+      "input": true,
+      "key": "configuration",
+      "components": []
+    }
+  ]
+}

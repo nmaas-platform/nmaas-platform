@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {RouterModule} from "@angular/router";
@@ -13,6 +13,13 @@ import {FileUploadModule, MultiSelectModule} from "primeng/primeng";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AppCreateWizardComponent} from "./appcreatewizard/appcreatewizard.component";
 import {InternationalizationService} from "../../service/internationalization.service";
+import {FormioModule} from "angular-formio";
+import {ConfigTemplateService} from "../../service/configtemplate.service";
+
+export function getJsonTemplates(config: ConfigTemplateService) {
+  return () => config.loadConfigTemplate();
+}
+
 
 @NgModule({
   declarations: [ AppManagementListComponent, AppCreateWizardComponent ],
@@ -24,6 +31,7 @@ import {InternationalizationService} from "../../service/internationalization.se
     AuthModule,
     PipesModule,
     TranslateModule.forChild(),
+    FormioModule,
     RouterModule,
     ReactiveFormsModule,
     StepsModule,
@@ -32,6 +40,17 @@ import {InternationalizationService} from "../../service/internationalization.se
     BrowserAnimationsModule
   ],
   exports: [],
-  providers: [AppsService, TagService, InternationalizationService ]
+  providers: [
+      AppsService,
+      TagService,
+      InternationalizationService,
+      ConfigTemplateService,
+      {
+        provide: APP_INITIALIZER,
+        useFactory: getJsonTemplates,
+        deps: [ConfigTemplateService],
+        multi:true
+      }
+  ]
 })
 export class AppManagementModule { }

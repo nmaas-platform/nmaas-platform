@@ -1,0 +1,59 @@
+{
+  "components": [
+    {
+      "label": "Tabs",
+      "components": [
+        {
+          "label": "Base",
+          "key": "configTab",
+          "components": [
+            {
+              "label": "Configuration",
+              "tableView": true,
+              "type": "container",
+              "input": true,
+              "tab": 0,
+              "key": "configuration",
+              "components": []
+            }
+          ]
+        },
+        {
+          "label": "Advanced",
+          "key": "advancedTab",
+          "components": [
+            {
+              "label": "Advanced",
+              "hideLabel": true,
+              "tableView": true,
+              "type": "container",
+              "input": true,
+              "tab": 1,
+              "key": "advanced",
+              "components": [
+                {
+                  "label": "Storage space (GB):",
+                  "type": "number",
+                  "input": true,
+                  "key": "storageSpace",
+                  "tab": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "type": "tabs",
+      "input": false,
+      "key": "tabs"
+    },
+    {
+      "type": "button",
+      "label": "Apply configuration",
+      "disableOnInvalid": true,
+      "theme": "primary",
+      "input": false,
+      "tableView": true
+    }
+  ]
+}

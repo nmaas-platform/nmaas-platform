@@ -1,11 +1,14 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {Application} from "../../../model";
+import {Application, ConfigTemplate} from "../../../model";
 import {MenuItem, SelectItem} from "primeng/api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AppsService, TagService} from "../../../service";
 import {AppDescription} from "../../../model/appdescription";
 import {InternationalizationService} from "../../../service/internationalization.service";
 import {isNullOrUndefined} from "util";
+import {ConfigTemplateService} from "../../../service/configtemplate.service";
+import {AppDeploymentSpec} from "../../../model/appdeploymentspec";
+import {ParameterType} from "../../../model/parametertype";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -25,8 +28,12 @@ export class AppCreateWizardComponent implements OnInit {
   public logo: any ;
   public screenshots: any[] = [];
   public appDescriptions: AppDescription[] = [];
+  public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
+  public configUpdateTemplate: ConfigTemplate = new ConfigTemplate();
+  public configTemplate: ConfigTemplate = new ConfigTemplate();
 
-  constructor(public fb:FormBuilder, public tagService: TagService, public appsService: AppsService, public internationalization:InternationalizationService) {
+  constructor(public fb:FormBuilder, public tagService: TagService, public appsService: AppsService,
+              public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService) {
     this.basicAppInformationForm = this.fb.group({
       appName: ['', Validators.required],
       appVersion: ['', Validators.required],
@@ -37,7 +44,6 @@ export class AppCreateWizardComponent implements OnInit {
       issuesUrl: ['', Validators.required],
       tags: ['', Validators.required]
     });
-
   }
 
   ngOnInit() {
@@ -64,15 +70,10 @@ export class AppCreateWizardComponent implements OnInit {
 
   public nextStep(): void{
     this.activeStepIndex += 1;
-    this.app = this.basicAppInformationForm.value;
   }
 
   public previousStep(): void{
     this.activeStepIndex -= 1;
-  }
-
-  public cancelButton(): void{
-
   }
 
   public submit(): void{
@@ -114,6 +115,26 @@ export class AppCreateWizardComponent implements OnInit {
   public isInvalidDescriptions(): boolean {
     let enAppDescription  = this.appDescriptions.filter(lang => lang.language === "en")[0];
     return isNullOrUndefined(enAppDescription.fullDescription) || enAppDescription.fullDescription === "" || isNullOrUndefined(enAppDescription.briefDescription) || enAppDescription.briefDescription === "";
+  }
+
+  public setConfigTemplate(event): void {
+    this.configTemplate.template = event.form;
+  }
+
+  public setUpdateConfigTemplate(event): void {
+    this.configUpdateTemplate.template = event.form;
+  }
+
+  public getParametersTypes(): string[] {
+    return Object.keys(ParameterType).map(key => ParameterType[key]).filter(value => typeof value === 'string') as string[];
+  }
+
+  public addToDeployParametersMap(key:string, event){
+    this.appDeploymentSpec.deployParameters.set(ParameterType[key], event.target.value);
+  }
+
+  public getDeployParameterValue(key:string) {
+    return this.appDeploymentSpec.deployParameters.get(ParameterType[key]) || '';
   }
 
 }

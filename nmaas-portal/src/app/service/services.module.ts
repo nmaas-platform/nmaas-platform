@@ -10,6 +10,7 @@ import {DomainService} from './domain.service';
 import {TagService} from './tag.service';
 import {UserService} from './user.service';
 import {ConfigurationService} from './configuration.service';
+import {ConfigTemplateService} from "./configtemplate.service";
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import {ConfigurationService} from './configuration.service';
     DomainService,
     TagService,
     UserService,
-      ConfigurationService,
+    ConfigurationService,
+    ConfigTemplateService
   ]
 })
 export class ServicesModule {}
