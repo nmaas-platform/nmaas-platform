@@ -135,7 +135,8 @@
                                             "validate": {
                                                 "required": true
                                             },
-                                            "inputFormat": "plain"
+                                            "inputFormat": "plain",
+                                            "customConditional": "show = (row.use_name === true)"
                                         },
                                         {
                                             "label": "Prometheus instance address",
