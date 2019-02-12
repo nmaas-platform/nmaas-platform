@@ -18,6 +18,8 @@ public class AppConfigurationView {
     private String additionalParameters;
     @JsonProperty("mandatoryParameters")
     private String mandatoryParameters;
+    @JsonProperty("accessCredentials")
+    private String accessCredentials;
 
     @JsonSetter("additionalParameters")
     public void setAdditionalParameters(JsonNode data){
@@ -34,5 +36,10 @@ public class AppConfigurationView {
     @JsonSetter("jsonInput")
     public void setJsonInput(JsonNode data){
         this.jsonInput = data.toString();
+    }
+
+    @JsonSetter("accessCredentials")
+    public void setAccessCredentials(JsonNode data){
+        this.accessCredentials = data.toString();
     }
 }

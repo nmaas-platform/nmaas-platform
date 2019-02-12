@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -29,6 +30,8 @@ public interface ApplicationInstanceService {
 	List<AppInstance> findAllByOwner(User owner);
 	List<AppInstance> findAllByOwner(Long userId, Long domainId);
 	List<AppInstance> findAllByOwner(User owner, Domain domain);
+
+	List<AppInstance> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain);
 
 	Page<AppInstance> findAllByOwner(Long userId, Pageable pageable);
 	Page<AppInstance> findAllByOwner(User owner, Pageable pageable);
