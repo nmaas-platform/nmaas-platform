@@ -134,7 +134,24 @@
         <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="descriptionForm.invalid">Next</button>
     </div>
     <div *ngIf="activeStepIndex === 4">
+        <div class="panel">
+            <div class="panel-heading">Application deployment specification</div>
+            <div class="panel-body">
 
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-heading">Application configuration wizard template</div>
+            <div class="panel-body">
+
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-heading">Application update configuration wizard template</div>
+            <div class="panel-body">
+
+            </div>
+        </div>
         <button class="btn btn-success pull-right" (click)="nextStep()">Next</button>
     </div>
     <div *ngIf="activeStepIndex === 5">
