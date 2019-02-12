@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit, OnChanges {
     public languages: string[];
     public refresh: Subscription;
 
-    constructor(private router: Router, private authService: AuthService, private translate: TranslateService,
+    constructor(private router: Router, public authService: AuthService, private translate: TranslateService,
                 private contentService:ContentDisplayService, private domainService: DomainService) {
     }
 
