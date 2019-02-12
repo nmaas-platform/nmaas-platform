@@ -42,6 +42,10 @@ public class AppConfigurationView {
         this.jsonInput = data.toString();
     }
 
+    public void setJsonInput(String data) {
+        this.jsonInput = data;
+    }
+
     @JsonSetter("accessCredentials")
     public void setAccessCredentials(JsonNode data){
         this.accessCredentials = data.toString();

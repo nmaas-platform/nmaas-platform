@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor.JanitorService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.repository.NmServiceInfoRepository;
@@ -44,12 +45,13 @@ public class DefaultAppLifecycleManagerTest {
     private AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private NmServiceInfoRepository infoRepository = mock(NmServiceInfoRepository.class);
+    private JanitorService janitorService = mock(JanitorService.class);
 
     private DefaultAppLifecycleManager appLifecycleManager;
 
     @Before
     public void setup() {
-        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, infoRepository);
+        appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, infoRepository, janitorService);
     }
 
     @Test
@@ -74,7 +76,8 @@ public class DefaultAppLifecycleManagerTest {
     public void shouldNotTriggerAppInstanceConfiguration() throws Throwable {
         when(repositoryManager.load(any())).thenReturn(Optional.of(new AppDeployment()));
         when(infoRepository.findByDeploymentId(any())).thenReturn(Optional.of(new KubernetesNmServiceInfo()));
-        AppConfigurationView configurationView = new AppConfigurationView();
+        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        when(configurationView.getJsonInput()).thenReturn("");
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView);
         verify(repositoryManager, times(1)).update(any());
         ArgumentCaptor<NmServiceInfo> arg = ArgumentCaptor.forClass(NmServiceInfo.class);
@@ -90,6 +93,7 @@ public class DefaultAppLifecycleManagerTest {
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getAdditionalParameters()).thenReturn("{\"keyadd1\": \"valadd1\"}");
         when(configurationView.getMandatoryParameters()).thenReturn("{\"keyman1\": \"valman1\", \"keyman2\": \"valman2\"}");
+        when(configurationView.getJsonInput()).thenReturn("");
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView);
         ArgumentCaptor<NmServiceInfo> arg = ArgumentCaptor.forClass(NmServiceInfo.class);
         verify(infoRepository, times(1)).save(arg.capture());
@@ -100,7 +104,8 @@ public class DefaultAppLifecycleManagerTest {
     public void shouldTriggerAppInstanceConfigurationInCorrectState() throws Throwable {
         when(repositoryManager.load(any())).thenReturn(Optional.of(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build()));
         when(infoRepository.findByDeploymentId(any())).thenReturn(Optional.of(new KubernetesNmServiceInfo()));
-        AppConfigurationView configurationView = new AppConfigurationView();
+        AppConfigurationView configurationView = mock(AppConfigurationView.class);
+        when(configurationView.getJsonInput()).thenReturn("");
         appLifecycleManager.applyConfiguration(new Identifier(), configurationView);
         verify(eventPublisher, times(1)).publishEvent(any(AppApplyConfigurationActionEvent.class));
     }

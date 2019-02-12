@@ -14,7 +14,6 @@ import net.geant.nmaas.orchestration.events.app.AppVerifyConfigurationActionEven
 import net.geant.nmaas.orchestration.events.app.AppVerifyServiceActionEvent;
 import org.junit.Before;
 import org.junit.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -43,7 +42,6 @@ public class AppDeploymentStateChangeManagerTest {
     private AppDeploymentRepositoryManager deployments = mock(AppDeploymentRepositoryManager.class);
     private AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
-    private ModelMapper mapper = mock(ModelMapper.class);
 
     private AppDeploymentStateChangeManager manager;
 
@@ -53,7 +51,7 @@ public class AppDeploymentStateChangeManagerTest {
     @Before
     public void setup() {
         when(event.getDeploymentId()).thenReturn(deploymentId);
-        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher, mapper);
+        manager = new AppDeploymentStateChangeManager(deployments, monitor, publisher);
     }
 
     @Test
@@ -78,12 +76,21 @@ public class AppDeploymentStateChangeManagerTest {
     @Test
     public void shouldTriggerNotificationEvent() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS);
-        when(deployments.load(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().deploymentId(deploymentId).build()));
+        when(deployments.load(deploymentId)).thenReturn(stubAppDeployment());
         when(monitor.userAccessDetails(deploymentId)).thenReturn(new AppUiAccessDetails("url"));
         when(event.getState()).thenReturn(NmServiceDeploymentState.VERIFIED);
         ApplicationEvent newEvent = manager.notifyStateChange(event);
         assertThat(newEvent, is(nullValue()));
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
+    }
+
+    private Optional<AppDeployment> stubAppDeployment() {
+        return Optional.of(AppDeployment.builder()
+                .deploymentId(deploymentId)
+                .domain("domain")
+                .owner("owner")
+                .deploymentName("instance")
+                .appName("app").build());
     }
 
     @Test
