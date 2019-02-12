@@ -105,21 +105,22 @@
                                         },
                                         {
                                             "label": "Existing Prometheus instance",
+                                            "hideLabel": true,
                                             "optionsLabelPosition": "right",
                                             "values": [
                                                 {
-                                                    "label": "In-cluster Prometheus instance",
+                                                    "label": "NMaaS Prometheus instance",
                                                     "value": "inCluster"
                                                 },
                                                 {
-                                                    "label": "Different Prometheus instance",
-                                                    "value": "different"
+                                                    "label": "External Prometheus instance",
+                                                    "value": "external"
                                                 }
                                             ],
                                             "inline": true,
                                             "type": "radio",
                                             "key": "prometheus",
-                                            "defaultValue": "different",
+                                            "defaultValue": "external",
                                             "conditional": {
                                                 "show": true,
                                                 "when": "use_name",
@@ -134,8 +135,7 @@
                                             "validate": {
                                                 "required": true
                                             },
-                                            "inputFormat": "plain",
-                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'different')"
+                                            "inputFormat": "plain"
                                         },
                                         {
                                             "label": "Prometheus instance address",
@@ -146,7 +146,7 @@
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'different')"
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'external')"
                                         },
                                         {
                                             "label": "Select Prometheus instance",
