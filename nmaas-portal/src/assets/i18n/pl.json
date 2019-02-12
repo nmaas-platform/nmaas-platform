@@ -483,6 +483,7 @@
     "TITLE": "Zarządzanie aplikacjami",
     "NAME": "Nazwa",
     "ACTIVE": "Aktywna",
+    "ADD_BUTTON": "Dodaj",
     "REMOVE_BUTTON": "Usuń"
   }
 }

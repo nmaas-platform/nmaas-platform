@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {Application} from "../../model";
+import {Application} from "../../../model";
 import {MenuItem, SelectItem} from "primeng/api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AppsService, TagService} from "../../service";
-import {AppDescription} from "../../model/appdescription";
-import {InternationalizationService} from "../../service/internationalization.service";
+import {AppsService, TagService} from "../../../service";
+import {AppDescription} from "../../../model/appdescription";
+import {InternationalizationService} from "../../../service/internationalization.service";
 import {isNullOrUndefined} from "util";
 
 @Component({

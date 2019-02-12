@@ -459,6 +459,7 @@
     "TITLE": "Applications management",
     "NAME": "Name",
     "ACTIVE": "Active",
+    "ADD_BUTTON": "Add",
     "REMOVE_BUTTON": "Remove"
   },
   "ABOUT": {

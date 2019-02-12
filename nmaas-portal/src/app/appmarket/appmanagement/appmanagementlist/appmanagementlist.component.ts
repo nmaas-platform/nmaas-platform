@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {AppsService} from "../../../service";
 import {Application} from "../../../model";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'nmaas-appmanagementlist',
@@ -11,7 +12,7 @@ export class AppManagementListComponent implements OnInit {
 
   public apps:Application[] = [];
 
-  constructor(public appsService:AppsService) { }
+  constructor(public appsService:AppsService, public router:Router) { }
 
   ngOnInit() {
     this.appsService.getAllApps().subscribe(val => this.apps = val);
