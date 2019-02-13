@@ -70,6 +70,7 @@ public class AppDeploymentStateChangeManagerTest {
     public void shouldNotTriggerAnyNewEventInFailedState() {
         when(deployments.loadState(deploymentId)).thenReturn(APPLICATION_CONFIGURATION_IN_PROGRESS);
         when(event.getState()).thenReturn(NmServiceDeploymentState.CONFIGURATION_FAILED);
+        when(event.getErrorMessage()).thenReturn("example error message");
         ApplicationEvent newEvent = manager.notifyStateChange(event);
         assertThat(newEvent, is(nullValue()));
         verify(deployments, times(1)).reportErrorStatusAndSaveInEntity(any(Identifier.class), any(String.class));
