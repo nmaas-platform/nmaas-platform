@@ -169,7 +169,7 @@ public enum AppLifecycleState {
             return "Application configuration updated successfully.";
         }
     },
-    APPLICATION_CONFIGURATION_UPDATED_FAILED {
+    APPLICATION_CONFIGURATION_UPDATE_FAILED {
         @Override
         public String getUserFriendlyState() {
             return "Application configuration update failed.";
@@ -185,12 +185,6 @@ public enum AppLifecycleState {
         @Override
         public String getUserFriendlyState(){
             return "Internal error";
-        }
-    },
-    GENERIC_ERROR{
-        @Override
-        public String getUserFriendlyState(){
-            return "Generic error";
         }
     };
 

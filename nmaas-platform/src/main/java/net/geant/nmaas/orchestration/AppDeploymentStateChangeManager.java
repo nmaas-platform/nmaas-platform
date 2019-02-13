@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration;
 
-import lombok.AllArgsConstructor;
 import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
@@ -12,7 +12,6 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppDeploymentErrorEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
@@ -74,22 +73,13 @@ public class AppDeploymentStateChangeManager {
             case APPLICATION_CONFIGURED:
                 return Optional.of(new AppDeployServiceActionEvent(this, deploymentId));
             case APPLICATION_DEPLOYED:
+            case APPLICATION_RESTARTED:
+            case APPLICATION_CONFIGURATION_UPDATED:
                 return Optional.of(new AppVerifyServiceActionEvent(this, deploymentId));
             case APPLICATION_REMOVED:
                 return Optional.of(new AppRemoveDcnIfRequiredEvent(this, deploymentId));
             default:
                 return Optional.empty();
-        }
-    }
-
-    @EventListener
-    @Loggable(LogLevel.INFO)
-    public synchronized void notifyGenericError(AppDeploymentErrorEvent event) {
-        try{
-            deploymentRepositoryManager.updateState(event.getRelatedTo(), AppDeploymentState.GENERIC_ERROR);
-        }catch(Exception ex){
-            long timestamp = System.currentTimeMillis();
-            log.error("Error reported at " + timestamp, ex);
         }
     }
 

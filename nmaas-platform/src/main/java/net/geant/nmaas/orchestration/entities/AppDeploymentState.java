@@ -413,7 +413,7 @@ public enum AppDeploymentState {
     },
     APPLICATION_CONFIGURATION_UPDATE_FAILED {
         @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_UPDATED_FAILED; }
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_UPDATE_FAILED; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
@@ -428,7 +428,6 @@ public enum AppDeploymentState {
                     return nextStateForNotMatchingNmServiceDeploymentState(this, state);
             }
         }
-
     },
     UNKNOWN {
         @Override
@@ -444,18 +443,6 @@ public enum AppDeploymentState {
     INTERNAL_ERROR {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.INTERNAL_ERROR; }
-
-        @Override
-        public AppDeploymentState nextState(NmServiceDeploymentState state) {
-            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
-        }
-
-        @Override
-        public boolean isInFailedState() { return true; }
-
-    }, GENERIC_ERROR {
-        @Override
-        public AppLifecycleState lifecycleState() { return AppLifecycleState.GENERIC_ERROR; }
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {

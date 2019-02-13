@@ -20,10 +20,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.util.Optional;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_UPDATED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_REMOVED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_RESTARTED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.MANAGEMENT_VPN_CONFIGURED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.REQUEST_VALIDATED;
@@ -110,6 +112,12 @@ public class AppDeploymentStateChangeManagerTest {
         assertThat(newEvent.isPresent(), is(true));
         assertThat(newEvent.get(), instanceOf(AppDeployServiceActionEvent.class));
         newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_DEPLOYED);
+        assertThat(newEvent.isPresent(), is(true));
+        assertThat(newEvent.get(), instanceOf(AppVerifyServiceActionEvent.class));
+        newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_RESTARTED);
+        assertThat(newEvent.isPresent(), is(true));
+        assertThat(newEvent.get(), instanceOf(AppVerifyServiceActionEvent.class));
+        newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_CONFIGURATION_UPDATED);
         assertThat(newEvent.isPresent(), is(true));
         assertThat(newEvent.get(), instanceOf(AppVerifyServiceActionEvent.class));
         newEvent = manager.triggerActionEventIfRequired(deploymentId, APPLICATION_REMOVED);
