@@ -145,8 +145,8 @@ public enum AppDeploymentState {
             switch (state) {
                 case CONFIGURED:
                     return APPLICATION_CONFIGURED;
-                case DEPLOYMENT_FAILED:
-                    return APPLICATION_DEPLOYMENT_FAILED;
+                case CONFIGURATION_FAILED:
+                    return APPLICATION_CONFIGURATION_FAILED;
                 default:
                     return nextStateForNotMatchingNmServiceDeploymentState(this, state);
             }
