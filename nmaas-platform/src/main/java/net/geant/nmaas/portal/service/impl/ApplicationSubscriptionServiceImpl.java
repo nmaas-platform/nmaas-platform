@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -172,9 +173,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 				appSub = appSubOptional.get();
 			}
 		}
-		if(appSub.getApplication().isDeleted()){
-			throw new IllegalStateException("Cannot create subscription of deleted application");
-		}
+		checkParam(appSub.getApplication());
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);
 			
@@ -314,6 +313,13 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		if(domain == null)
 			throw new IllegalArgumentException("domain is null");
 		checkParam(application.getId(), domain.getId());
+	}
+
+	protected void checkParam(Application application){
+		if(application == null)
+			throw new IllegalArgumentException("application is null");
+		if(!application.getState().equals(ApplicationState.ACTIVE))
+			throw new IllegalStateException("Cannot subscribe application which is in state " + application.getState());
 	}
 	
 }

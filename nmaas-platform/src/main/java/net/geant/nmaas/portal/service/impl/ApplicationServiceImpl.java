@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public void delete(Long id) {
 		checkParam(id);
-		appRepo.findById(id).ifPresent((app) -> { app.setDeleted(true); appRepo.save(app); });
+		appRepo.findById(id).ifPresent((app) -> { app.setState(ApplicationState.DELETED); appRepo.save(app); });
 	}
 
 	@Override

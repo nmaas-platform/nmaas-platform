@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,12 +16,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -78,11 +78,14 @@ public class Application implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private AppDeploymentSpec appDeploymentSpec;
-	
-	private boolean deleted;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ApplicationState state;
 
 	public Application(String name) {
 		this.name = name;
+		this.state = ApplicationState.NEW;
 	}
 
 	public Application(Long id, String name) {

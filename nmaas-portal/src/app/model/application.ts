@@ -1,6 +1,7 @@
 import {ConfigTemplate} from './configtemplate';
 import {AppDeploymentSpec} from "./appdeploymentspec";
 import {AppDescription} from "./appdescription";
+import {ApplicationState} from "./applicationstate";
 
 export class Application {
   public id: number = undefined;
@@ -16,5 +17,5 @@ export class Application {
   public configTemplate: ConfigTemplate = undefined;
   public configurationUpdateTemplate: ConfigTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
-  public deleted: boolean = false;
+  public state: ApplicationState = ApplicationState.NEW;
 }

@@ -1,25 +1,25 @@
 import {AuthService} from '../../auth/auth.service';
-import {Component, OnInit, Input, ViewChild} from '@angular/core';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
-//import 'rxjs/add/operator/switchMap';
-
 import {SecurePipe} from '../../pipe/index';
 import {RateComponent} from '../../shared/rate/rate.component';
 import {CommentsComponent} from '../../shared/comments/comments.component';
-import {ScreenshotsComponent} from '../../shared/screenshots/screenshots.component';
-import {AppsService, AppImagesService, AppInstanceService, AppConfigService} from '../../service/index';
+import {AppConfigService, AppImagesService, AppInstanceService, AppsService} from '../../service/index';
 import {Application} from '../../model/application';
 import {Role} from '../../model/userrole';
 import {AppSubscriptionsService} from '../../service/appsubscriptions.service';
 import {UserDataService} from '../../service/userdata.service';
 import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstallmodal.component';
-import { Subject , Observable, EMPTY as empty} from 'rxjs';
+import {Observable} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {AppSubscription} from "../../model";
 import {isEmpty} from 'rxjs/operators';
 import {AppDescription} from "../../model/appdescription";
 import {TranslateService} from "@ngx-translate/core";
+import {ApplicationState} from "../../model/applicationstate";
+
+//import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'nmaas-appdetails',
@@ -137,6 +137,10 @@ export class AppDetailsComponent implements OnInit {
       return;
     }
     return this.app.descriptions.find(val => val.language == this.translate.currentLang);
+  }
+
+  public isActive(state: any): boolean {
+    return state === ApplicationState[ApplicationState.ACTIVE];
   }
   
 }

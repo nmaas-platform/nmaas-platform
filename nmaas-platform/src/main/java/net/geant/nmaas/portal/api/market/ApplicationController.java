@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +27,7 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public List<ApplicationBriefView> getApplications() {
 		return applications.findAll().stream()
-				.filter(app -> !app.isDeleted())
+				.filter(app -> app.getState().equals(ApplicationState.ACTIVE) || app.getState().equals(ApplicationState.NOT_ACTIVE))
 				.map(app -> modelMapper.map(app, ApplicationBriefView.class))
 				.collect(Collectors.toList());
 	}

@@ -48,6 +48,7 @@
 		},
 		"configFileRepositoryRequired":false
 	},
+	"state": "ACTIVE",
 	"configTemplate": {
 		"template": {
 			"components": [

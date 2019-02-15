@@ -14,7 +14,7 @@
       <ng-template ngFor let-app [ngForOf]="apps">
         <tr>
           <td>{{app?.name}}</td>
-          <td><span class="glyphicon glyphicon-ok" *ngIf="!app?.deleted"></span><span class="glyphicon glyphicon-remove" *ngIf="app?.deleted"></span></td>
+          <td>{{getStateAsString(app?.state)}}</td>
           <td class="text-right">
             <button (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
           </td>
