@@ -30,9 +30,9 @@ public class UsersHelper {
 	public final static List<Domain> DOMAINS = Arrays.asList(new Domain[] { GLOBAL, DOMAIN1, DOMAIN2});
 		
 	
-	public final static Application APP1 = new Application(1l, "App1");
-	public final static Application APP2 = new Application(2l, "App2");
-	public final static Application APP3 = new Application(3l, "App3");
+	public final static Application APP1 = new Application(1l, "App1","testversion");
+	public final static Application APP2 = new Application(2l, "App2","testversion");
+	public final static Application APP3 = new Application(3l, "App3","testversion");
 	
 	
 	public final static AppInstance DOMAIN1_APP1 = new AppInstance(1l, APP1, "domain1_app1", DOMAIN1, DOMAIN1_USER1);

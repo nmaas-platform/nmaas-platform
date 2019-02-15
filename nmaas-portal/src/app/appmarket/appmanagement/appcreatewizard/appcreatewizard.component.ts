@@ -30,12 +30,13 @@ export class AppCreateWizardComponent implements OnInit {
   public basicAppInformationForm: FormGroup;
   public rulesAccepted: boolean = false;
   public tags: SelectItem[] = [];
-  public logo: any ;
+  public logo: any;
   public screenshots: any[] = [];
   public appDescriptions: AppDescription[] = [];
   public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
   public configUpdateTemplate: ConfigTemplate = new ConfigTemplate();
   public configTemplate: ConfigTemplate = new ConfigTemplate();
+  public errorMessage:string = undefined;
 
   constructor(public fb:FormBuilder, public tagService: TagService, public appsService: AppsService,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService) {
@@ -88,8 +89,9 @@ export class AppCreateWizardComponent implements OnInit {
       for(let screenshot of this.screenshots){
         this.appsService.uploadScreenshot(result.id, screenshot).subscribe(() => console.log("Screenshot uploaded"));
       }
+      this.errorMessage = undefined;
       this.modal.show();
-    });
+    }, error => this.errorMessage = error.message);
   }
 
   public setAppValues(): void {
@@ -103,7 +105,6 @@ export class AppCreateWizardComponent implements OnInit {
     if (!isNullOrUndefined(this.configUpdateTemplate.template) && this.configUpdateTemplate.template != "") {
       this.app.configurationUpdateTemplate = this.configUpdateTemplate;
     }
-    this.app.state = ApplicationState.NEW;
   }
 
   public isValid(): boolean{
@@ -118,23 +119,10 @@ export class AppCreateWizardComponent implements OnInit {
     this.logo = undefined;
   }
 
-  public clearScreenshots(event): void {
-    this.screenshots = this.screenshots.filter(val => val.name != event.file.name);
-  }
-
   public getLogoUrl(event): void {
     let files = event.files;
     if(files[0].type.match(/image\/*/) != null){
       this.logo = files[0];
-    }
-  }
-
-  public getScreenshotsUrl(event): void {
-    let files = event.files;
-    for(let file of files) {
-      if(file.type.match(/image\/*/) != null){
-        this.screenshots.push(file);
-      }
     }
   }
 

@@ -46,7 +46,7 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
 
     @Before
     public void setup() {
-        Application app = new Application("oxidizedAppName");
+        Application app = new Application("oxidizedAppName", "testversion");
         app.setVersion("oxidizedAppVersion");
         oxidizedAppId = applicationRepository.save(app).getId();
         NmServiceConfigurationTemplate oxidizedConfigTemplate1 = new NmServiceConfigurationTemplate();

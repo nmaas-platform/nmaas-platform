@@ -40,14 +40,14 @@ public class ApplicationServiceImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void createMethodShouldThrowExceptionDueToIncorrectName(){
-        applicationService.create(null);
+        applicationService.create(null, null);
     }
 
     @Test
     public void createMethodShouldReturnApplicationObject(){
-        Application application = new Application("test");
+        Application application = new Application("test","testversion");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        Application result = applicationService.create("test");
+        Application result = applicationService.create("test","testversion");
         assertNotNull(result);
         assertEquals("test", result.getName());
     }
@@ -59,12 +59,14 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void updateMethodShouldReturnApplicationObject(){
-        Application application = new Application("test");
+        Application application = new Application("test", "testversion");
+        application.setLicense("MIT");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        application.setName("test2");
+        when(applicationRepository.existsByNameAndVersion(application.getName(), application.getVersion())).thenReturn(true);
+        application.setLicense("Apache-2.0");
         Application result = applicationService.update(application);
         assertNotNull(result);
-        assertNotEquals("test", result.getName());
+        assertNotEquals("MIT", result.getLicense());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -74,7 +76,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void deleteMethodShouldSetApplicationAsDeleted(){
-        Application application = new Application("test");
+        Application application = new Application("test", "testversion");
         application.setId((long) 0);
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
@@ -90,7 +92,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void findApplicationShouldReturnApplicationObject(){
-        Application application = new Application("test");
+        Application application = new Application("test", "testversion");
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         Optional<Application> result = applicationService.findApplication((long) 0);
         assertTrue(result.isPresent());
@@ -99,7 +101,7 @@ public class ApplicationServiceImplTest {
     @Test
     public void findAllShouldReturnList(){
         List<Application> testList = new ArrayList<>();
-        Application test = new Application("test");
+        Application test = new Application("test", "testversion");
         testList.add(test);
         when(applicationRepository.findAll()).thenReturn(testList);
         List<Application> result = applicationService.findAll();

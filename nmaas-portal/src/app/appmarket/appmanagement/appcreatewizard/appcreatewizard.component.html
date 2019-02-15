@@ -81,7 +81,7 @@
                 Upload screenshots
             </div>
             <div class="panel-body">
-                <p-fileUpload name="screenshots" customUpload="true" [multiple]="true" (onSelect)="getScreenshotsUrl($event)" (onRemove)="clearScreenshots($event)" (onClear)="clearScreenshots($event)" accept="image/*" maxFileSize="2000000" [showUploadButton]="false" [showCancelButton]="false">
+                <p-fileUpload name="screenshots" customUpload="true" [multiple]="true" [files]="screenshots" accept="image/*" maxFileSize="2000000" [showUploadButton]="false" [showCancelButton]="false">
                 </p-fileUpload>
                 <div class="carousel slide media-carousel col-md-12" id="media" *ngIf="screenshots && screenshots.length > 0">
                     <div class="carousel-inner">
@@ -207,7 +207,9 @@
         <button class="btn btn-success pull-right" [disabled]="appDeploymentForm.invalid" (click)="nextStep()">Next</button>
     </div>
     <div *ngIf="activeStepIndex === 5">
-
+        <div class="alert alert-danger" *ngIf="errorMessage">
+            {{errorMessage}}
+        </div>
         <button class="btn btn-success pull-right" (click)="submit()" *ngIf="activeStepIndex == 5" [disabled]="!isValid() || isInvalidDescriptions()">Submit</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">Previous</button>

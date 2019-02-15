@@ -43,7 +43,7 @@ public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     public void shouldRestartApplication() throws Exception{
         Domain domain = UsersHelper.DOMAIN1;
         User user = UsersHelper.ADMIN;
-        AppInstance appInstance = new AppInstance(new Application("test"),"test",domain,user);
+        AppInstance appInstance = new AppInstance(new Application("test","testVersion"),"test",domain,user);
         when(appInstanceRepository.findById(1L)).thenReturn(Optional.of(appInstance));
         mvc.perform(post("/api/apps/instances/{appInstanceId}/restart", 1L)
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))

@@ -8,7 +8,7 @@ public class ApplicationTest {
 
     @Test
     public void shouldBeEqual() {
-        assertEquals(new Application(1L, "name1"), new Application(1L, "name2"));
+        assertEquals(new Application(1L, "name1","testversion"), new Application(1L, "name2","testversion"));
     }
 
 }

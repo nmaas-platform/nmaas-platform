@@ -48,9 +48,9 @@ public class ApplicationSubscriptionRepositoryTest {
 	@Before
 	public void setUp() {
 
-		app1 = appRepo.save(new Application("APP1"));
-		app2 = appRepo.save(new Application("APP2"));
-		app3 = appRepo.save(new Application("APP3"));
+		app1 = appRepo.save(new Application("APP1","testversion"));
+		app2 = appRepo.save(new Application("APP2","testversion"));
+		app3 = appRepo.save(new Application("APP3","testversion"));
 		appRepo.flush();
 
 		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false,"testnamespace","teststorageclass"));

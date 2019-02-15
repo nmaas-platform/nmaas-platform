@@ -23,9 +23,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private ApplicationRepository appRepo;
 
 	@Override
-	public Application create(String name) {
-		checkParam(name);
-		return appRepo.save(new Application(name));
+	public Application create(String name, String version) {
+		checkParam(name, version);
+		return appRepo.save(new Application(name, version));
 	}
 
 	@Override
@@ -63,9 +63,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 		setMissingDescriptions(app);
 	}
 
-	private void checkParam(String name) {
+	private void checkParam(String name, String version) {
 		if(name == null)
 			throw new IllegalArgumentException("name is null");
+		if(version == null)
+		    throw new IllegalArgumentException("version is null");
+		if(appRepo.existsByNameAndVersion(name, version))
+		    throw new IllegalStateException("Application " + name + " in version " + version + " already exists.");
 	}
 	
 	private void checkParam(Long id) {
@@ -76,6 +80,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void checkParam(Application app) {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
+		if(!appRepo.existsByNameAndVersion(app.getName(), app.getVersion()))
+		    throw new IllegalStateException("Application doesn't exist");
 	}
 
 	private void setMissingDescriptions(ApplicationView app){

@@ -11,7 +11,7 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 
 public interface ApplicationService {
 	
-	Application create(String name);
+	Application create(String name, String version);
 	Application update(Application app);
 	void delete(Long id);
 	

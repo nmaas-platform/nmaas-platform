@@ -58,7 +58,7 @@ public class AppDcnRequestOrVerificationTaskTest {
         AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
         appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES));
         appDeploymentSpec.setDefaultStorageSpace(20);
-        Application application = new Application("testOxidized");
+        Application application = new Application("testOxidized", "testVersion");
         application.setAppDeploymentSpec(appDeploymentSpec);
         application = applications.save(application);
         AppDeployment appDeployment = new AppDeployment();
