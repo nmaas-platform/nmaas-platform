@@ -7,6 +7,7 @@ option java_outer_classname = "JanitorManager";
 enum Status {
     FAILED = 0;
     OK = 1;
+    PENDING = 2;
 }
 
 message Instance {
@@ -49,4 +50,8 @@ service BasicAuthService {
 
 service CertManagerService {
     rpc DeleteIfExists(InstanceRequest) returns (ServiceResponse);
+}
+
+service ReadinessService {
+    rpc CheckIfReady(InstanceRequest) returns (ServiceResponse);
 }
