@@ -46,6 +46,7 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) ApplicationView appRequest) {
 		Application app = applications.create(appRequest.getName());
+		applications.setMissingProperties(appRequest);
 		modelMapper.map(appRequest, app);
 		applications.update(app);
 		return new Id(app.getId());

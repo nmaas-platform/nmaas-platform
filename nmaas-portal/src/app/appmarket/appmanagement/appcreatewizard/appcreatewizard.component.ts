@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {Application, ConfigTemplate} from "../../../model";
 import {MenuItem, SelectItem} from "primeng/api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -9,6 +9,8 @@ import {isNullOrUndefined} from "util";
 import {ConfigTemplateService} from "../../../service/configtemplate.service";
 import {AppDeploymentSpec} from "../../../model/appdeploymentspec";
 import {ParameterType} from "../../../model/parametertype";
+import {ModalComponent} from "../../../shared/modal";
+import {ApplicationState} from "../../../model/applicationstate";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -18,6 +20,9 @@ import {ParameterType} from "../../../model/parametertype";
 })
 
 export class AppCreateWizardComponent implements OnInit {
+
+  @ViewChild(ModalComponent)
+  public modal:ModalComponent;
 
   public app:Application;
   public steps: MenuItem[];
@@ -83,6 +88,7 @@ export class AppCreateWizardComponent implements OnInit {
       for(let screenshot of this.screenshots){
         this.appsService.uploadScreenshot(result.id, screenshot).subscribe(() => console.log("Screenshot uploaded"));
       }
+      this.modal.show();
     });
   }
 
@@ -97,6 +103,7 @@ export class AppCreateWizardComponent implements OnInit {
     if (!isNullOrUndefined(this.configUpdateTemplate.template) && this.configUpdateTemplate.template != "") {
       this.app.configurationUpdateTemplate = this.configUpdateTemplate;
     }
+    this.app.state = ApplicationState.NEW;
   }
 
   public isValid(): boolean{

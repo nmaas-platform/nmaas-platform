@@ -34,7 +34,7 @@
                  [ngClass]="{'has-error':  basicAppInformationForm.controls.licenseUrl.invalid && basicAppInformationForm.controls.licenseUrl.dirty,
  				    	 	'has-success': basicAppInformationForm.controls.licenseUrl.valid && basicAppInformationForm.controls.licenseUrl.dirty}">
                  <label for="appLicenseUrl" class="control-label">License url *</label>
-                 <input type="url" id="appLicenseUrl" class="form-control" formControlName="licenseUrl">
+                 <input type="url" id="appLicenseUrl" class="form-control" formControlName="licenseUrl" placeholder="e.g. https://opensource.org/licenses/MIT">
             </div>
             <div class="form-group form-group-sm"
                  [ngClass]="{'has-error':  basicAppInformationForm.controls.wwwUrl.invalid && basicAppInformationForm.controls.wwwUrl.dirty,
@@ -211,3 +211,17 @@
         <button class="btn btn-success pull-right" (click)="submit()" *ngIf="activeStepIndex == 5" [disabled]="!isValid() || isInvalidDescriptions()">Submit</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">Previous</button>
+
+<nmaas-modal>
+    <div class="nmaas-modal-header">
+        <h4 style="text-align: center">New application submitted correctly</h4>
+    </div>
+    <div class="nmaas-modal-body">
+        <div class="form-group text-center">
+            <p>Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.</p>
+        </div>
+    </div>
+    <div class="nmaas-modal-footer">
+        <button class="btn btn-danger center-block" [routerLink]="['/management/apps']">Back to app management</button>
+    </div>
+</nmaas-modal>

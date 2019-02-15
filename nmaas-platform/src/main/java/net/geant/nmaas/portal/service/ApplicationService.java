@@ -3,6 +3,7 @@ package net.geant.nmaas.portal.service;
 import java.util.List;
 import java.util.Optional;
 
+import net.geant.nmaas.portal.api.domain.ApplicationView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +20,6 @@ public interface ApplicationService {
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();
 
+	void setMissingProperties(ApplicationView app);
 	
 }

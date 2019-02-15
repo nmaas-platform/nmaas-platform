@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -55,6 +58,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 		return appRepo.findAll();
 	}
 
+	@Override
+	public void setMissingProperties(ApplicationView app){
+		setMissingDescriptions(app);
+	}
+
 	private void checkParam(String name) {
 		if(name == null)
 			throw new IllegalArgumentException("name is null");
@@ -68,5 +76,20 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void checkParam(Application app) {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
+	}
+
+	private void setMissingDescriptions(ApplicationView app){
+		AppDescriptionView appDescription = app.getDescriptions().stream()
+				.filter(description -> description.getLanguage().equals("en"))
+				.findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
+		app.getDescriptions()
+				.forEach(description ->{
+					if(StringUtils.isEmpty(description.getBriefDescription())){
+						description.setBriefDescription(appDescription.getBriefDescription());
+					}
+					if(StringUtils.isEmpty(description.getFullDescription())){
+						description.setFullDescription(appDescription.getFullDescription());
+					}
+				});
 	}
 }
