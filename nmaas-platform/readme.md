@@ -23,14 +23,19 @@
 ### Prerequisites
 ---
   + Install java 8 jdk ([http://www.oracle.com](http://www.oracle.com/technetwork/java/javase/downloads))
+
+### Deploying docker image
+---
+  + alter build_and_publish.sh with custom ARTIFACTORY, PACKAGE and TAG variables
+  + run build_and_publish.sh to automatically build and publish nmaas-platform image to selected artifactory
   
 ### Running Platform in local environment
 ---
-  + Build and run the Platform with *gradlew bootRun* in the reactor directory.
+  + Build and run the Platform with *./gradlew bootRun* in this directory.
 
 ### Running Platform on dedicated machine
 ---
-  + Build the Platform with *gradlew clean build* in reactor directory.
+  + Build the Platform with *./gradlew clean build* in this directory.
   + The output executable *nmaas-platform-x.x.x.jar* file is created in *nmaas-platform/build/libs* directory.
   + Run the Platform with *java -jar nmaas-platform-x.x.x.jar*.
   + Optionally run the Platform with additional argument *--Dlog4j.configurationFile* specifying the name of logger (Log4j2) configuration file (located in the same directory as the jar file) to be loaded instead of the built in one. Please be advised that you have to add that parameter before the *-jar* parameter.

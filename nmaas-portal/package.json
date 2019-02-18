@@ -42,9 +42,9 @@
     "primeicons": "^1.0.0",
     "primeng": "^7.0.5",
     "rxjs": "^6.3.3",
-    "ts-helpers": "^1.1.2",
     "tslib": "^1.9.3",
-    "zxcvbn": "^4.4.2"
+    "zxcvbn": "^4.4.2",
+    "zone.js": "^0.8.28"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.12.2",
@@ -54,7 +54,6 @@
     "@babel/preset-env": "^7.3.1",
     "@types/jasmine": "^2.8.15",
     "@types/node": "^9.6.41",
-    "angular-ide": "^0.9.55",
     "babel-preset-env": "^1.7.0",
     "codelyzer": "~4.5.0",
     "intl": "^1.2.5",
@@ -69,13 +68,11 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-remap-istanbul": "^0.6.0",
     "karma-webpack": "^4.0.0-rc.5",
-    "npm": "^6.6.0",
     "protractor": "^5.4.2",
     "puppeteer": "^1.11.0",
     "ts-node": "4.1.0",
     "tslint": "^5.12.1",
     "typescript": "3.2.4",
-    "webpack": "^4.29.0",
-    "zone.js": "^0.8.28"
+    "webpack": "^4.6.0"
   }
 }
