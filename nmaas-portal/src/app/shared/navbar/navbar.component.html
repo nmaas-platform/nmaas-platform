@@ -27,8 +27,8 @@
                     </li>
                 </ul>
                 <ul *ngIf="authService.isLogged()" class="nav navbar-nav navbar-right">
-                    <li *ngIf="checkUserRole()" class="navbar-form">
-                        <nmaas-domain-filter></nmaas-domain-filter>
+                    <li *ngIf="checkUserRole()" class="drop-domain">
+                        <nmaas-domain-filter class="drop-domain"></nmaas-domain-filter>
                     </li>
                     <li class="divider-vertical"></li>
                     <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"

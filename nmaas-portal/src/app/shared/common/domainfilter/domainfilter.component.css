@@ -17,8 +17,8 @@
 
 @media (min-width: 1199px) {
         .dropdown-domains {
-                padding-top: 12px;
-                vertical-align: middle;
-                padding-left: 15px;
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
+                line-height: 20px !important;
         }
 }

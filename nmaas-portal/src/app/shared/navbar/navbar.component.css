@@ -132,10 +132,13 @@
 
 }
 
-
-
 .dropdown-lang{
   padding-top: 10px;
   padding-bottom: 10px;
   line-height: 20px;
+}
+
+.drop-domain{
+  padding: 15px;
+  line-height: 20px !important;
 }

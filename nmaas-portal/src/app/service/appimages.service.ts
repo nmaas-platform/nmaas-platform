@@ -17,6 +17,9 @@ export class AppImagesService {
     constructor(private http: HttpClient, private appConfig: AppConfigService) { }
 
     public getAppLogoUrl(id: number):string {
+        if(id == null){
+            return "";
+        }
         return this.appConfig.getApiUrl() + '/apps/' + id + '/logo';
     }
     
