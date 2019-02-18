@@ -18,12 +18,13 @@
                         [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                             [routerLink]="['/instances']">{{ 'NAVBAR.INSTANCES' | translate }}</a></li>
                     <li class="divider-vertical"></li>
-                    <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"
-                        [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
-                            [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a></li>
-                    <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']" [routerLinkActiveOptions]="{exact:true}"
-                        [routerLinkActive]="['active']">
-                        <a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
+                    <li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_DOMAIN_ADMIN', 'ROLE_TOOL_MANAGER', 'ROLE_OPERATOR']" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{'NAVBAR.MANAGEMENT' | translate }}<strong class="caret"></strong></a>
+                        <ul class="dropdown-menu">
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a></li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a></li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']"><a [routerLink]="['/management/apps']">{{ 'NAVBAR.MARKET' | translate }}</a></li>
+                        </ul>
                     </li>
                 </ul>
                 <ul *ngIf="authService.isLogged()" class="nav navbar-nav navbar-right">
