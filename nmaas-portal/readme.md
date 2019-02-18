@@ -9,17 +9,21 @@
  * Angular 7 (7.2.x)
  * Bootstrap 3
  * JWT authentication
- * Spring 5 with REST API for GUI backend
 
 #### Prerequisites
 ---
- + Install npm (>=5.0) and NodeJS (>=8.0)
+ + Install npm (>=6.0) and NodeJS (>=8.0)
  + Install git
  + (running on server) Install http server with *npm install -g angular-http-server*
  + (running tests) Install all required libraries as listed in *https://docs.browserless.io/blog/2018/04/25/chrome-linux.html*
 
 #### Build and run
 ---
+##### Deploying docker image
+---
+  + alter build_and_publish.sh with custom ARTIFACTORY, PACKAGE and TAG variables
+  + run build_and_publish.sh to automatically build and publish nmaas-portal image to selected artifactory
+
 ##### Local environment
 ---
   + Go to *nmaas-portal* directory in terminal or command line
@@ -37,7 +41,7 @@
 
 #### Tests
 ---
-  + Run *gradlew run testCoverage* in the reactor directory.
+  + Run *./gradlew run testCoverage* in this directory.
   + Results of tests are displayed on screen. 
   + More information about code quality (including code coverage, test status) are available in *nmaas-portal/coverage/index.html*
 
