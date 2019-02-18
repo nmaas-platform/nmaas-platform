@@ -12,10 +12,10 @@ MAINTAINER Michał Bień
 VOLUME /tmp
 
 COPY --from=builder /build/nmaas-platform/build/libs/*.jar /nmaas/platform/
-COPY docker/platform/run_platform.sh /nmaas/scripts/run_platform.sh
-COPY docker/platform/nmaas-platform.properties.template /nmaas/platform/config/nmaas-platform.properties.template
-COPY docker/platform/do-ntp.sh /etc/periodic/hourly/do-ntp.sh
-COPY docker/platform/ssh-config /root/.ssh/config
+COPY nmaas-platform/docker/run_platform.sh /nmaas/scripts/run_platform.sh
+COPY nmaas-platform/docker/nmaas-platform.properties.template /nmaas/platform/config/nmaas-platform.properties.template
+COPY nmaas-platform/docker/do-ntp.sh /etc/periodic/hourly/do-ntp.sh
+COPY nmaas-platform/docker/ssh-config /root/.ssh/config
 
 RUN apk add gettext
 

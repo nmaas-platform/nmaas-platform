@@ -18,8 +18,8 @@ RUN mkdir -p ${webdir}/config
 RUN apk add gettext
 
 COPY --from=builder /build/nmaas-portal/build/app/ ${webdir}
-COPY docker/portal/nginx.conf /etc/nginx/nginx.conf
-COPY docker/portal/config.template.json ${webdir}/config/config.template.json
-COPY docker/portal/run_portal.sh /scripts/run_portal.sh
+COPY nmaas-portal/docker/nginx.conf /etc/nginx/nginx.conf
+COPY nmaas-portal/docker/config.template.json ${webdir}/config/config.template.json
+COPY nmaas-portal/docker/run_portal.sh /scripts/run_portal.sh
 
 CMD /scripts/run_portal.sh && tail -f /dev/null
