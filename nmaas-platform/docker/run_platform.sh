@@ -15,7 +15,7 @@ chmod 600 /root/.ssh/id_rsa
 mkdir -p /nmaas/files/upload
 mkdir -p /nmaas/files/log
 
-until psql -h "${POSTGRESQL_HOST}" -U "${POSTGRESQL_USER}" -c '\l'; do
+until PGPASSWORD=${POSTGRESQL_PASSWORD} psql -h "${POSTGRESQL_HOST}" -U "${POSTGRESQL_USERNAME}" -c '\l'; do
   sleep 1s
 done
 
