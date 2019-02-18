@@ -41,7 +41,9 @@
                         <ul class="dropdown-menu">
                             <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">Portal</a>
                             </li>
+                            <li class="divider"></li>
                             <li><a [routerLink]="['/admin/clusters']">Kubernetes</a></li>
+                            <li class="divider"></li>
                             <li><a [routerLink]="['/admin/gitlab']">GitLab</a></li>
                         </ul>
                     </li>

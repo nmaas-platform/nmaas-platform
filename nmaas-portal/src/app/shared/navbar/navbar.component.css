@@ -88,8 +88,6 @@
   border-left-color: #111111;
 }
 
-
-
 .btn{
   margin-left: 5px;
 }
@@ -137,6 +135,7 @@
 
 
 .dropdown-lang{
-  padding: 0 0 0 0;
-  margin-top: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 20px;
 }
