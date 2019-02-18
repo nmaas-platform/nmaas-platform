@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.geant.nmaas.portal.api.domain.ApplicationBrief;
+import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -99,14 +99,14 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@GetMapping("/domains/{domainId}/apps")
 	@Transactional(readOnly=true)
 	@PreAuthorize("hasPermission(#domainId, 'domain', 'READ')")
-	public List<ApplicationBrief> getDomainSubscribedApplications(@PathVariable Long domainId) {
-		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());
+	public List<ApplicationBriefView> getDomainSubscribedApplications(@PathVariable Long domainId) {
+		return appSubscriptions.getSubscribedApplications(domainId).stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps")
 	@Transactional(readOnly=true)
-	public List<ApplicationBrief> getSubscribedApplications() {
-		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBrief.class)).collect(Collectors.toList());		
+	public List<ApplicationBriefView> getSubscribedApplications() {
+		return appSubscriptions.getSubscribedApplications().stream().map(app -> modelMapper.map(app, ApplicationBriefView.class)).collect(Collectors.toList());
 	}
 	
 	@GetMapping("/apps/{appId}")

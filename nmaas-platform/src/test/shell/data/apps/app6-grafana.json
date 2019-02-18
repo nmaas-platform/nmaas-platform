@@ -3,12 +3,32 @@
     "version": "5.4.3",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-    "briefDescription": "The tool for beautiful monitoring and metric analytics.",
     "tags": [
         "monitoring",
         "visualization"
     ],
-    "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB.",
+    "descriptions": [
+        {
+            "language": "en",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "de",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "fr",
+            "briefDescription": "The tool for beautiful monitoring and metric analytics.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        },
+        {
+            "language": "pl",
+            "briefDescription": "Grafana to rozwiązanie open source do analizowania i wizualizacji danych.",
+            "fullDescription": "Grafana is an open source, feature rich metrics dashboard and graph editor for Graphite, Elasticsearch, OpenTSDB, Prometheus and InfluxDB."
+        }
+    ],
     "wwwUrl": "https://grafana.com/",
     "sourceUrl": "https://github.com/grafana/grafana",
     "issuesUrl": "https://github.com/grafana/grafana/issues",
@@ -19,7 +39,7 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-grafana",
-                "version": "1.0.2-alfa"
+                "version": "1.0.3-alfa"
             }
         },
         "defaultStorageSpace": 1,
@@ -84,6 +104,30 @@
                                             "inputFormat": "plain"
                                         },
                                         {
+                                            "label": "Existing Prometheus instance",
+                                            "hideLabel": true,
+                                            "optionsLabelPosition": "right",
+                                            "values": [
+                                                {
+                                                    "label": "NMaaS Prometheus instance",
+                                                    "value": "inCluster"
+                                                },
+                                                {
+                                                    "label": "External Prometheus instance",
+                                                    "value": "external"
+                                                }
+                                            ],
+                                            "inline": true,
+                                            "type": "radio",
+                                            "key": "prometheus",
+                                            "defaultValue": "external",
+                                            "conditional": {
+                                                "show": true,
+                                                "when": "use_name",
+                                                "eq": true
+                                            }
+                                        },
+                                        {
                                             "label": "Data Source name",
                                             "type": "textfield",
                                             "input": true,
@@ -92,12 +136,7 @@
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "conditional": {
-                                                "show": true,
-                                                "when": "use_name",
-                                                "eq": true,
-                                                "json": ""
-                                            }
+                                            "customConditional": "show = (row.use_name === true)"
                                         },
                                         {
                                             "label": "Prometheus instance address",
@@ -108,12 +147,19 @@
                                                 "required": true
                                             },
                                             "inputFormat": "plain",
-                                            "conditional": {
-                                                "show": true,
-                                                "when": "use_name",
-                                                "eq": true,
-                                                "json": ""
-                                            }
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'external')"
+                                        },
+                                        {
+                                            "label": "Select Prometheus instance",
+                                            "type": "select",
+                                            "key": "inClusterInstance",
+                                            "data": {
+                                                "values": []
+                                            },
+                                            "validate": {
+                                                "required": true
+                                            },
+                                            "customConditional": "show = (row.use_name === true && row.prometheus === 'inCluster')"
                                         }
                                     ]
                                 }

@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
-import net.geant.nmaas.portal.persistent.entity.projections.ApplicationBriefProjection;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -95,53 +94,6 @@ public class ApplicationServiceImplTest {
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         Optional<Application> result = applicationService.findApplication((long) 0);
         assertTrue(result.isPresent());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void findApplicationBriefShouldThrowExceptionDueToNullId(){
-        Optional<ApplicationBriefProjection> applicationBriefProjection = applicationService.findApplicationBrief(null);
-    }
-
-    @Test
-    public void findApplicationBriefShouldReturnApplicationBriefProjectionObject(){
-        ApplicationBriefProjection applicationBriefProjection = mock(ApplicationBriefProjection.class);
-        when(applicationRepository.findApplicationBriefById(anyLong())).thenReturn(Optional.of(applicationBriefProjection));
-        Optional<ApplicationBriefProjection> result = applicationService.findApplicationBrief((long) 0);
-        assertTrue(result.isPresent());
-    }
-
-    @Test
-    public void findAllBriefShouldReturnListOfApplicationBriefProjections(){
-        ApplicationBriefProjection applicationBriefProjection1 = mock(ApplicationBriefProjection.class);
-        ApplicationBriefProjection applicationBriefProjection2 = mock(ApplicationBriefProjection.class);
-        ApplicationBriefProjection applicationBriefProjection3 = mock(ApplicationBriefProjection.class);
-        List<ApplicationBriefProjection> testList = new ArrayList<>();
-        testList.add(applicationBriefProjection1);
-        testList.add(applicationBriefProjection2);
-        testList.add(applicationBriefProjection3);
-        when(applicationRepository.findApplicationBriefAll()).thenReturn(testList);
-        List<ApplicationBriefProjection> resultList = applicationService.findAllBrief();
-        assertEquals(3, resultList.size());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void findAllBriefWithParameterThrowExceptionDueToInvalidIds(){
-        applicationService.findAllBrief((List<Long>) null);
-    }
-
-    @Test
-    public void findAllBriefWithParameterShouldReturnListOfApplicationBriefProjections(){
-        List<Long> testIdsList = new ArrayList<>();
-        testIdsList.add((long) 0);
-        testIdsList.add((long) 1);
-        ApplicationBriefProjection applicationBriefProjection1 = mock(ApplicationBriefProjection.class);
-        ApplicationBriefProjection applicationBriefProjection2 = mock(ApplicationBriefProjection.class);
-        List<ApplicationBriefProjection> testList = new ArrayList<>();
-        testList.add(applicationBriefProjection1);
-        testList.add(applicationBriefProjection2);
-        when(applicationRepository.findApplicationBriefAllByIdIn(anyList())).thenReturn(testList);
-        List<ApplicationBriefProjection> result = applicationService.findAllBrief(testIdsList);
-        assertEquals(testIdsList.size(), result.size());
     }
 
     @Test

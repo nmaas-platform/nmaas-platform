@@ -32,6 +32,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {SortService} from "../service/sort.service";
+import {AppManagementModule} from "./appmanagement/appmanagement.module";
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import {SortService} from "../service/sort.service";
     SharedModule,
     AppListModule,
     AppInstanceModule,
+    AppManagementModule,
     DomainsModule,
     UsersModule,
     AuthModule,

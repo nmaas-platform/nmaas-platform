@@ -28,6 +28,10 @@ export class AppsService extends GenericDataService {
         return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps');
     }
 
+    public getAllApps(): Observable<Application[]> {
+        return this.get<Application[]>(this.appConfig.getApiUrl() + '/apps/all');
+    }
+
     public getApp(id: number): Observable<Application> {
         return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
@@ -64,6 +68,10 @@ export class AppsService extends GenericDataService {
 
     public getAppScreenshotUrl(urlPath: string): string {
         return this.appConfig.getApiUrl() + urlPath;
+    }
+
+    public deleteApp(appId: number): Observable<any> {
+        return this.delete(this.appConfig.getApiUrl() + '/apps/' + appId);
     }
 
     private getByUrl(urlPath: string): Observable<any>{

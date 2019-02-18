@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,7 +110,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public List<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId) {
 		if(domainId != null && applicationId != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
-			return Arrays.asList(res.orElse(null));
+			return Collections.singletonList(res.orElse(null));
 		}
 		else if(domainId != null)
 			return appSubRepo.findAllByDomain(domainId);
@@ -124,7 +124,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public Page<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId, Pageable pageable) {
 		if(domainId != null && applicationId != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplicationId(domainId, applicationId);
-			return new PageImpl<>(Arrays.asList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
+			return new PageImpl<>(Collections.singletonList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
 		}
 		else if(domainId != null)
 			return appSubRepo.findAllByDomain(domainId, pageable);
@@ -138,7 +138,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application) {
 		if(domain != null && application != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
-			return Arrays.asList(res.orElse(null));
+			return Collections.singletonList(res.orElse(null));
 		}
 		else if(domain != null)
 			return appSubRepo.findAllByDomain(domain);
@@ -152,7 +152,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public Page<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application, Pageable pageable) {
 		if(domain != null && application != null) {
 			Optional<ApplicationSubscription> res = appSubRepo.findByDomainAndApplication(domain, application);
-			return new PageImpl<>(Arrays.asList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
+			return new PageImpl<>(Collections.singletonList(res.orElse(null)), pageable, res.isPresent() ? 1 : 0);
 		}
 		else if(domain != null)
 			return appSubRepo.findAllByDomain(domain, pageable);
@@ -171,6 +171,9 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 			if(appSubOptional.isPresent()) {
 				appSub = appSubOptional.get();
 			}
+		}
+		if(appSub.getApplication().isDeleted()){
+			throw new IllegalStateException("Cannot create subscription of deleted application");
 		}
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);

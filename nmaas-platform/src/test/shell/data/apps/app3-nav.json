@@ -3,9 +3,29 @@
 	"version":"4.8.2",
 	"license":"GPLv2",
 	"licenseUrl": "https://opensource.org/licenses/GPL-2.0",
-	"briefDescription":"Network Administration Visualized, a free network management system",
 	"tags": [ "management", "monitoring"],
-	"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles.",
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Network Administration Visualized, a free network management system",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		},
+		{
+			"language": "de",
+			"briefDescription": "Network Administration Visualized, a free network management system",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Network Administration Visualized, a free network management system",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Network Administration Visualized, darmowy system do zarządzania siecią",
+			"fullDescription": "Network Administration Visualized is an advanced software suite to monitor large computer networks. It automatically discovers network topology, monitors network load and outages, and can send alerts on network events by e-mail and SMS, allowing for flexible configuration of alert profiles."
+		}
+	],
 	"wwwUrl": "https://nav.uninett.no/",
 	"sourceUrl": "https://github.com/UNINETT/nav",
 	"issuesUrl": "https://github.com/UNINETT/nav/issues",
@@ -16,7 +36,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nav",
-				"version": "0.1.2"
+				"version": "0.1.3"
 			}
 		},
 		"defaultStorageSpace":20,

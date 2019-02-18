@@ -3,9 +3,29 @@
 	"version":"0.1",
 	"license":"Apache 2.0",
 	"licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-	"briefDescription":"Open Network Telemetry Collector built with open source tools",
 	"tags": [ "management", "monitoring", "telemetry"],
-	"fullDescription" : "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it",
+	"descriptions": [
+		{
+			"language": "en",
+			"briefDescription": "Open Network Telemetry Collector built with open source tools.",
+			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+		},
+		{
+			"language": "de",
+			"briefDescription": "Open Network Telemetry Collector built with open source tools.",
+			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+		},
+		{
+			"language": "fr",
+			"briefDescription": "Open Network Telemetry Collector built with open source tools.",
+			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+		},
+		{
+			"language": "pl",
+			"briefDescription": "Open Network Telemetry Collector napisany za pomocą narzędzi open source.",
+			"fullDescription": "OpenNTI is a container packaged with all tools needed to collect and visualize time series data from network devices. Data can be collected from different sources: Data Collection Agent - Collect data on devices using CLI/Shell or Netconf, Data Streaming Collector - Take all data streamed by Juniper devices as Input (JTI, Analyticsd, soon Openconfig with gRPC) or Statsd interface - Accept any Statsd packets. It's pre-configured with all tools and with a default dashboard .. Send it data, it will graph it"
+		}
+	],
 	"wwwUrl" : "http://open-nti.readthedocs.io/en/latest",
 	"sourceUrl" : "https://github.com/Juniper/open-nti",
 	"issuesUrl": "https://github.com/Juniper/open-nti/issues",
@@ -16,7 +36,7 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-opennti",
-				"version": "0.0.1-alfa"
+				"version": "0.0.2-alfa"
 			}
 		},
 		"defaultStorageSpace":20,
@@ -155,64 +175,74 @@
 		"template": {
 			"components": [
 				{
-					"label": "Username",
-					"type": "textfield",
-					"input": true,
-					"key": "openntiUsername",
-					"validate": {
-						"required": true
-					},
-					"inputFormat": "plain"
-				},
-				{
-					"label": "Password",
-					"type": "password",
-					"input": true,
-					"key": "openntiPassword",
-					"validate": {
-						"required": true
-					}
-				},
-				{
-					"label": "Targets",
+					"label": "Configuration",
 					"hideLabel": true,
-					"disableAddingRemovingRows": false,
-					"defaultOpen": false,
-					"addAnother": "Add routers",
-					"addAnotherPosition": "bottom",
-					"multiple": true,
-					"mask": false,
 					"tableView": true,
-					"alwaysEnabled": false,
-					"type": "datagrid",
+					"type": "container",
 					"input": true,
-					"key": "targets",
-					"defaultValue": [
-						{
-							"ipAddress": ""
-						}
-					],
-					"validate": {
-						"required": true
-					},
+					"key": "configuration",
 					"components": [
 						{
-							"label": "Router",
-							"hideLabel": true,
-							"showWordCount": false,
-							"showCharCount": false,
-							"tableView": true,
-							"alwaysEnabled": false,
+							"label": "Username",
 							"type": "textfield",
 							"input": true,
-							"key": "ipAddress",
-							"defaultValue": "",
+							"key": "openntiUsername",
 							"validate": {
-								"required": true,
-								"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+								"required": true
 							},
-							"inputFormat": "plain",
-							"row": "0-0"
+							"inputFormat": "plain"
+						},
+						{
+							"label": "Password",
+							"type": "password",
+							"input": true,
+							"key": "openntiPassword",
+							"validate": {
+								"required": true
+							}
+						},
+						{
+							"label": "Targets",
+							"hideLabel": true,
+							"disableAddingRemovingRows": false,
+							"defaultOpen": false,
+							"addAnother": "Add routers",
+							"addAnotherPosition": "bottom",
+							"multiple": true,
+							"mask": false,
+							"tableView": true,
+							"alwaysEnabled": false,
+							"type": "datagrid",
+							"input": true,
+							"key": "targets",
+							"defaultValue": [
+								{
+									"ipAddress": ""
+								}
+							],
+							"validate": {
+								"required": true
+							},
+							"components": [
+								{
+									"label": "Router",
+									"hideLabel": true,
+									"showWordCount": false,
+									"showCharCount": false,
+									"tableView": true,
+									"alwaysEnabled": false,
+									"type": "textfield",
+									"input": true,
+									"key": "ipAddress",
+									"defaultValue": "",
+									"validate": {
+										"required": true,
+										"pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+									},
+									"inputFormat": "plain",
+									"row": "0-0"
+								}
+							]
 						}
 					]
 				}

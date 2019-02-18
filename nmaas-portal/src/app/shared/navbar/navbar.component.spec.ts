@@ -6,6 +6,7 @@ import {TranslateFakeLoader} from "@ngx-translate/core";
 import {TranslateLoader} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Observable, of} from "rxjs";
+import {RouterTestingModule} from "@angular/router/testing";
 
 class MockContentDisplayService{
 
@@ -29,7 +30,8 @@ describe('NavbarComponent_Shared', () => {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                 }
-            })
+            }),
+            RouterTestingModule
         ],
         providers: [
             {provide: ContentDisplayService, useClass: MockContentDisplayService}

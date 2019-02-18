@@ -1,24 +1,40 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
+import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.api.security.JWTTokenService;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Captor;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
@@ -63,6 +79,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Autowired
     private UsersController userController;
+
+    @Autowired
+    private JWTTokenService jwtTokenService;
 
     private String token;
     private String tokenForUserWithNotAcceptedTermsAndPolicy;
@@ -304,5 +323,47 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     }
 
+    @Test
+    public void shouldValidateResetRequest() throws Exception {
+        MvcResult result = mvc.perform(post("/api/users/reset/validate")
+                .content(jwtTokenService.getResetToken(user3.getEmail()))
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains(user3.getEmail()));
+    }
 
+    @Test
+    public void shouldNotValidateResetRequest() throws Exception {
+        mvc.perform(post("/api/users/reset/validate")
+                .content(jwtTokenService.getResetToken("notexisting@email.co.uk"))
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    public void shouldResetPassword() throws Exception {
+        PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken(user3.getEmail()), "test");
+        mvc.perform(post("/api/users/reset")
+                .content(new ObjectMapper().writeValueAsString(passwordReset))
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
+    public void shouldNotResetPassword() throws Exception {
+        PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
+        mvc.perform(post("/api/users/reset")
+                .content(new ObjectMapper().writeValueAsString(passwordReset))
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable());
+    }
 }

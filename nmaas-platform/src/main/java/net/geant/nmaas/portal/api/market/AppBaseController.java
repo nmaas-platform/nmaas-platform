@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.api.market;
 
 import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -19,7 +20,7 @@ public class AppBaseController {
 	@Autowired
 	protected UserService users;
 
-    protected net.geant.nmaas.portal.persistent.entity.Application getApp(Long appId) {
+    protected Application getApp(Long appId) {
 		if(appId == null)
 			throw new MissingElementException("Missing application id.");
 		

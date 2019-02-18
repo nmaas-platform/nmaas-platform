@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
+import net.geant.nmaas.portal.persistent.entity.Application;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,23 +51,21 @@ public class ConvertersTest {
 	public void testConvertApp() {
         tagRepo.save(new Tag("network"));
 		
-		ApplicationBrief appDto = null;
-	    net.geant.nmaas.portal.persistent.entity.Application appEntity = null;
+		ApplicationBriefView appDto = null;
+	    Application appEntity = null;
 		
 
-        appDto = new ApplicationBrief();
-        appDto.setId(new Long(1));
-        appDto.setBriefDescription("brief");
+        appDto = new ApplicationBriefView();
+        appDto.setId(1L);
         appDto.setName("myApp");
         appDto.setVersion("version");
         appDto.setLicense("GNL");
         appDto.getTags().add("monitoring");
         appDto.getTags().add("network");
 
-        appEntity = modelMapper.map(appDto, net.geant.nmaas.portal.persistent.entity.Application.class);
+        appEntity = modelMapper.map(appDto, Application.class);
 
         assertEquals(appDto.getId(), appEntity.getId());
-        assertEquals(appDto.getBriefDescription(), appEntity.getBriefDescription());
         assertEquals(appDto.getName(), appEntity.getName());
         assertEquals(appDto.getVersion(), appEntity.getVersion());
         assertEquals(appDto.getLicense(), appEntity.getLicense());
@@ -76,10 +75,10 @@ public class ConvertersTest {
 
         Object[] tags = appEntity.getTags().toArray();
 
-        assertNull( (((Tag)tags[0]).getName() == "monitoring" ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
-        assertNotNull((((Tag)tags[1]).getName() == "network" ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
+        assertNull( (((Tag) tags[0]).getName().equals("monitoring") ? ((Tag)tags[0]).getId() : ((Tag)tags[1]).getId()));
+        assertNotNull((((Tag) tags[1]).getName().equals("network") ? ((Tag)tags[1]).getId() : ((Tag)tags[0]).getId()));
 
-        appDto = modelMapper.map(appEntity, ApplicationBrief.class);
+        appDto = modelMapper.map(appEntity, ApplicationBriefView.class);
         assertEquals(2, appDto.getTags().size());
         assertEquals(appEntity.getTags().size(), appDto.getTags().size());
         assertTrue(appDto.getTags().contains("network"));
