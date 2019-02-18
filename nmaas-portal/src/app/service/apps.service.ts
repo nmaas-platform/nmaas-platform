@@ -78,6 +78,10 @@ export class AppsService extends GenericDataService {
         return this.post(this.appConfig.getApiUrl() + '/apps', app);
     }
 
+    public updateApp(app:Application) : Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps', app);
+    }
+
     public uploadAppLogo(id: number, file: any): Observable<FileInfo> {
         let fd: FormData = new FormData();
         fd.append("file", file);
@@ -88,6 +92,12 @@ export class AppsService extends GenericDataService {
         let fd: FormData = new FormData();
         fd.append("file", file);
         return this.post(this.appConfig.getApiUrl() + "/apps/" + id + '/screenshots', fd);
+    }
+
+    public changeApplicationState(id: number, state: string): Observable<any> {
+        let fd: FormData = new FormData();
+        fd.append("state", state);
+        return this.patch(this.appConfig.getApiUrl() + "/apps/state/" + id, fd);
     }
 
     private getByUrl(urlPath: string): Observable<any>{

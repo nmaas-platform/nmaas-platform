@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -60,9 +61,10 @@ public class ApplicationServiceImplTest {
     @Test
     public void updateMethodShouldReturnApplicationObject(){
         Application application = new Application("test", "testversion");
+        application.setId(1L);
+        when(applicationRepository.getOne(anyLong())).thenReturn(application);
         application.setLicense("MIT");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
-        when(applicationRepository.existsByNameAndVersion(application.getName(), application.getVersion())).thenReturn(true);
         application.setLicense("Apache-2.0");
         Application result = applicationService.update(application);
         assertNotNull(result);
@@ -78,6 +80,7 @@ public class ApplicationServiceImplTest {
     public void deleteMethodShouldSetApplicationAsDeleted(){
         Application application = new Application("test", "testversion");
         application.setId((long) 0);
+        application.setState(ApplicationState.ACTIVE);
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         applicationService.delete((long) 0);

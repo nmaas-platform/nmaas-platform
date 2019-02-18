@@ -1,6 +1,6 @@
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule} from "@angular/forms";
 import {RouterModule} from "@angular/router";
 import {SharedModule} from "../../shared";
 import {AuthModule} from "../../auth/auth.module";
@@ -33,7 +33,6 @@ export function getJsonTemplates(config: ConfigTemplateService) {
     TranslateModule.forChild(),
     FormioModule,
     RouterModule,
-    ReactiveFormsModule,
     StepsModule,
     MultiSelectModule,
     FileUploadModule,

@@ -9,10 +9,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.portal.api.domain.ApplicationView;
@@ -52,6 +54,14 @@ public class ApplicationController extends AppBaseController {
 		return new Id(app.getId());
 	}
 
+	@PatchMapping
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void updateApplication(@RequestBody ApplicationView appRequest){
+		applications.setMissingProperties(appRequest);
+		applications.update(modelMapper.map(appRequest, Application.class));
+	}
+
 	@DeleteMapping(value="/{appId}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @Transactional
@@ -65,6 +75,14 @@ public class ApplicationController extends AppBaseController {
 	public ApplicationView getApplication(@PathVariable(value = "appId", required=true) Long id) {
 		Application app = getApp(id);
 		return modelMapper.map(app, ApplicationView.class);
+	}
+
+	@PatchMapping(value = "/state/{appId}")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+	@Transactional
+	public void changeApplicationState(@PathVariable(value = "appId") long appId, @RequestParam(value="state") ApplicationState state){
+		Application app = getApp(appId);
+		applications.changeApplicationState(app, state);
 	}
 
 }

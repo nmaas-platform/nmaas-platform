@@ -5,6 +5,8 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-transl
 import {AppConfigService, AppsService} from "../../../service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
+import {AuthService} from "../../../auth/auth.service";
+import {MockAuthService} from "../../navbar/navbar.component.spec";
 
 describe('AppManagementListComponent', () => {
   let component: AppManagementListComponent;
@@ -13,7 +15,7 @@ describe('AppManagementListComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ AppManagementListComponent ],
-      providers:[AppsService, AppConfigService],
+      providers:[AppsService, AppConfigService, {provide: AuthService, useClass: MockAuthService}],
       imports:[
         HttpClientTestingModule,
         RouterTestingModule,

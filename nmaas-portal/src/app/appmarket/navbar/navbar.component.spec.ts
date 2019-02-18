@@ -13,7 +13,7 @@ import {Authority} from "../../model";
 import {isUndefined} from "util";
 import {Observable, of} from "rxjs";
 
-class MockAuthService{
+export class MockAuthService{
 
     public loginUsingSsoService:boolean;
 

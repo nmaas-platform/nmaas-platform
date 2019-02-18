@@ -1,16 +1,15 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
-import {Application, ConfigTemplate} from "../../../model";
+import {Application} from "../../../model";
 import {MenuItem, SelectItem} from "primeng/api";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AppsService, TagService} from "../../../service";
+import {AppImagesService, AppsService, TagService} from "../../../service";
 import {AppDescription} from "../../../model/appdescription";
 import {InternationalizationService} from "../../../service/internationalization.service";
 import {isNullOrUndefined} from "util";
 import {ConfigTemplateService} from "../../../service/configtemplate.service";
-import {AppDeploymentSpec} from "../../../model/appdeploymentspec";
 import {ParameterType} from "../../../model/parametertype";
 import {ModalComponent} from "../../../shared/modal";
-import {ApplicationState} from "../../../model/applicationstate";
+import {BaseComponent} from "../../../shared/common/basecomponent/base.component";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -19,7 +18,7 @@ import {ApplicationState} from "../../../model/applicationstate";
   styleUrls: ['./appcreatewizard.component.css']
 })
 
-export class AppCreateWizardComponent implements OnInit {
+export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
@@ -27,39 +26,20 @@ export class AppCreateWizardComponent implements OnInit {
   public app:Application;
   public steps: MenuItem[];
   public activeStepIndex:number = 0;
-  public basicAppInformationForm: FormGroup;
   public rulesAccepted: boolean = false;
   public tags: SelectItem[] = [];
   public logo: any;
   public screenshots: any[] = [];
-  public appDescriptions: AppDescription[] = [];
-  public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
-  public configUpdateTemplate: ConfigTemplate = new ConfigTemplate();
-  public configTemplate: ConfigTemplate = new ConfigTemplate();
   public errorMessage:string = undefined;
 
-  constructor(public fb:FormBuilder, public tagService: TagService, public appsService: AppsService,
-              public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService) {
-    this.basicAppInformationForm = this.fb.group({
-      name: ['', Validators.required],
-      version: ['', Validators.required],
-      license: ['', Validators.required],
-      licenseUrl: ['', Validators.required],
-      wwwUrl: ['', Validators.required],
-      sourceUrl: ['', Validators.required],
-      issuesUrl: ['', Validators.required],
-      tags: ['', Validators.required]
-    });
+  constructor(public tagService: TagService, public appsService: AppsService, public route: ActivatedRoute,
+              public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService,
+              public appImagesService: AppImagesService, public router:Router) {
+    super();
   }
 
   ngOnInit() {
-    this.internationalization.getAllSupportedLanguages().subscribe(val => {
-      val.forEach(lang => {
-        let appDescription:AppDescription = new AppDescription();
-        appDescription.language = lang.language;
-        this.appDescriptions.push(appDescription);
-      });
-    });
+    this.mode = this.getMode(this.route);
     this.tagService.getTags().subscribe(tag => tag.forEach(val => {
       this.tags.push({label: val, value: val});
     }));
@@ -71,7 +51,37 @@ export class AppCreateWizardComponent implements OnInit {
       {label: 'Configuration templates'},
       {label: 'Short review'}
     ];
+    this.route.params.subscribe(params => {
+      if(isNullOrUndefined(params['id'])){
+        this.createNewWizard();
+      } else {
+        this.appsService.getApp(params['id']).subscribe(result =>{
+            this.app = result;
+            this.fillWizardWithData(result);
+        });
+        this.rulesAccepted = true;
+        this.activeStepIndex = 1;
+      }
+    });
+  }
+
+  public fillWizardWithData(appToEdit: Application): void {
+    let temp:Map<ParameterType, string> = new Map();
+    Object.keys(appToEdit.appDeploymentSpec.deployParameters).forEach(key =>{
+      temp.set(ParameterType[key], appToEdit.appDeploymentSpec.deployParameters[key]);
+    });
+    this.app.appDeploymentSpec.deployParameters = temp;
+  }
+
+  public createNewWizard() : void {
     this.app = new Application();
+    this.internationalization.getAllSupportedLanguages().subscribe(val => {
+      val.forEach(lang => {
+        let appDescription:AppDescription = new AppDescription();
+        appDescription.language = lang.language;
+        this.app.descriptions.push(appDescription);
+      });
+    });
   }
 
   public nextStep(): void{
@@ -82,8 +92,7 @@ export class AppCreateWizardComponent implements OnInit {
     this.activeStepIndex -= 1;
   }
 
-  public submit(): void{
-    this.setAppValues();
+  public addApplication(): void{
     this.appsService.addApp(this.app).subscribe(result => {
       this.appsService.uploadAppLogo(result.id, this.logo).subscribe(() => console.log("Logo uploaded"));
       for(let screenshot of this.screenshots){
@@ -94,21 +103,11 @@ export class AppCreateWizardComponent implements OnInit {
     }, error => this.errorMessage = error.message);
   }
 
-  public setAppValues(): void {
-    this.app = this.basicAppInformationForm.value;
-    this.app.appDeploymentSpec = this.appDeploymentSpec;
-    this.app.descriptions = this.appDescriptions;
-    this.app.configTemplate = this.configTemplate;
-    if(isNullOrUndefined(this.app.configTemplate.template) || this.app.configTemplate.template === ""){
-      this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
-    }
-    if (!isNullOrUndefined(this.configUpdateTemplate.template) && this.configUpdateTemplate.template != "") {
-      this.app.configurationUpdateTemplate = this.configUpdateTemplate;
-    }
-  }
-
-  public isValid(): boolean{
-    return this.basicAppInformationForm.valid;
+  public updateApplication(): void {
+    this.appsService.updateApp(this.app).subscribe(result => {
+      this.errorMessage = undefined;
+      this.router.navigate(['management/apps']);
+    }, error => this.errorMessage = error.message);
   }
 
   public changeRulesAcceptedFlag(): void {
@@ -127,16 +126,16 @@ export class AppCreateWizardComponent implements OnInit {
   }
 
   public isInvalidDescriptions(): boolean {
-    let enAppDescription  = this.appDescriptions.filter(lang => lang.language === "en")[0];
+    let enAppDescription  = this.app.descriptions.filter(lang => lang.language === "en")[0];
     return isNullOrUndefined(enAppDescription.fullDescription) || enAppDescription.fullDescription === "" || isNullOrUndefined(enAppDescription.briefDescription) || enAppDescription.briefDescription === "";
   }
 
   public setConfigTemplate(event): void {
-    this.configTemplate.template = event.form;
+    this.app.configTemplate.template = event.form;
   }
 
   public setUpdateConfigTemplate(event): void {
-    this.configUpdateTemplate.template = event.form;
+    this.app.configurationUpdateTemplate.template = event.form;
   }
 
   public getParametersTypes(): string[] {
@@ -144,11 +143,14 @@ export class AppCreateWizardComponent implements OnInit {
   }
 
   public addToDeployParametersMap(key:string, event){
-    this.appDeploymentSpec.deployParameters.set(ParameterType[key], event.target.value);
+    this.app.appDeploymentSpec.deployParameters.set(ParameterType[key], event.target.value);
   }
 
   public getDeployParameterValue(key:string) {
-    return this.appDeploymentSpec.deployParameters.get(ParameterType[key]) || '';
+    if(this.app.appDeploymentSpec.deployParameters instanceof Map){
+      return this.app.appDeploymentSpec.deployParameters.get(ParameterType[key]) || '';
+    }
+    return '';
   }
 
 }

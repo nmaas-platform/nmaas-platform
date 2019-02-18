@@ -2,8 +2,8 @@ package net.geant.nmaas.portal.api.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 
 import java.util.List;
@@ -13,11 +13,9 @@ import java.util.Map;
 @Setter
 public class AppDeploymentSpec {
 
-    private Long id;
-
     private List<AppDeploymentEnv> supportedDeploymentEnvironments;
 
-    private KubernetesTemplate kubernetesTemplate;
+    private KubernetesTemplateView kubernetesTemplate;
 
     private Integer defaultStorageSpace;
 

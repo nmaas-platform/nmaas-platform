@@ -31,13 +31,19 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public Application update(Application app) {
 		checkParam(app);
+		setMissingFiles(app);
 		return appRepo.save(app);
 	}
 
 	@Override
 	public void delete(Long id) {
 		checkParam(id);
-		appRepo.findById(id).ifPresent((app) -> { app.setState(ApplicationState.DELETED); appRepo.save(app); });
+		appRepo.findById(id).ifPresent((app) -> {
+			if(app.getState().isChangeAllowed(ApplicationState.DELETED)){
+				app.setState(ApplicationState.DELETED);
+				appRepo.save(app);
+			}
+		});
 	}
 
 	@Override
@@ -56,6 +62,14 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public List<Application> findAll() {
 		return appRepo.findAll();
+	}
+
+	@Override
+	public void changeApplicationState(Application app, ApplicationState state){
+		if(app.getState().isChangeAllowed(state)){
+			app.setState(state);
+			appRepo.save(app);
+		}
 	}
 
 	@Override
@@ -80,8 +94,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void checkParam(Application app) {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
-		if(!appRepo.existsByNameAndVersion(app.getName(), app.getVersion()))
-		    throw new IllegalStateException("Application doesn't exist");
 	}
 
 	private void setMissingDescriptions(ApplicationView app){
@@ -97,5 +109,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 						description.setFullDescription(appDescription.getFullDescription());
 					}
 				});
+	}
+
+	private void setMissingFiles(Application app){
+		Application application = appRepo.getOne(app.getId());
+		if(application.getLogo() != null){
+			app.setLogo(application.getLogo());
+		}
+		if(application.getScreenshots() != null && !application.getScreenshots().isEmpty()){
+			app.setScreenshots(application.getScreenshots());
+		}
 	}
 }

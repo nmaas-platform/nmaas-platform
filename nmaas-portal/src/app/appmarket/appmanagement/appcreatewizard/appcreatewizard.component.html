@@ -10,57 +10,67 @@
     </div>
 
     <div *ngIf="activeStepIndex === 1">
-        <div class="panel">
-        <form [formGroup]="basicAppInformationForm">
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.name.invalid && basicAppInformationForm.controls.name.dirty,
- 				    	 	'has-success': basicAppInformationForm.controls.name.valid && basicAppInformationForm.controls.name.dirty}">
-                <label for="appName" class="control-label">Name *</label>
-                <input type="text" id="appName" class="form-control" formControlName="name">
+        <div *ngIf="app">
+            <div class="panel">
+                <form class="form-horizontal" #basicInfoForm="ngForm">
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  appName.invalid && (appName.dirty || appName.touched),
+ 			    		 	'has-success': appName.valid && (appName.dirty || appName.touched)}">
+                        <label for="appName" class="control-label">Name *</label>
+                        <br>
+                        <input type="text" id="appName" class="form-control" required [(ngModel)]="app.name" name="appName" #appName="ngModel">
+                    </div>
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  version.invalid && (version.dirty || version.touched),
+ 			    		 	'has-success': version.valid && (version.dirty || version.touched)}">
+                        <label for="appVersion" class="control-label">Version *</label>
+                        <br>
+                        <input type="text" id="appVersion" class="form-control" required [(ngModel)]="app.version" name="version" #version="ngModel">
+                    </div>
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  license.invalid && (license.dirty || license.touched),
+ 			    		 	'has-success': license.valid && (license.dirty || license.touched)}">
+                        <label for="appLicense" class="control-label">License *</label>
+                        <br>
+                        <input type="text" id="appLicense" class="form-control" required [(ngModel)]="app.license" name="license" #license="ngModel">
+                    </div>
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  licenseUrl.invalid && (licenseUrl.dirty || licenseUrl.touched),
+ 				    	 	'has-success': licenseUrl.valid && (licenseUrl.dirty || licenseUrl.touched)}">
+                        <label for="appLicenseUrl" class="control-label">License url *</label>
+                        <br>
+                        <input type="url" id="appLicenseUrl" class="form-control" required [(ngModel)]="app.licenseUrl" name="licenseUrl" #licenseUrl="ngModel" placeholder="e.g. https://opensource.org/licenses/MIT">
+                    </div>
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  wwwUrl.invalid && (wwwUrl.dirty || wwwUrl.touched),
+ 				    	 	'has-success': wwwUrl.valid && (wwwUrl.dirty || wwwUrl.touched)}">
+                        <label for="wwwUrl" class="control-label">Project website *</label>
+                        <br>
+                        <input type="url" id="wwwUrl" class="form-control" required name="wwwUrl" #wwwUrl="ngModel" [(ngModel)]="app.wwwUrl">
+                    </div>
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  sourceUrl.invalid && (sourceUrl.dirty || sourceUrl.touched),
+ 				    	 	'has-success': sourceUrl.valid && (sourceUrl.dirty || sourceUrl.touched)}">
+                        <label for="sourceUrl" class="control-label">Link to source code *</label>
+                        <br>
+                        <input type="url" id="sourceUrl" class="form-control" required name="sourceUrl" #sourceUrl="ngModel" [(ngModel)]="app.sourceUrl">
+                    </div>
+                    <div class="form-group form-group-sm"
+                         [ngClass]="{'has-error':  issuesUrl.invalid && (issuesUrl.dirty || issuesUrl.touched),
+ 				    	 	'has-success': issuesUrl.valid && (issuesUrl.dirty || issuesUrl.touched)}">
+                        <label for="issuesUrl" class="control-label">Link to project issues *</label>
+                        <br>
+                        <input type="url" id="issuesUrl" class="form-control" required name="issuesUrl" #issuesUrl="ngModel" [(ngModel)]="app.issuesUrl">
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <label for="tags" class="control-label">Select tags for application * </label>
+                        <br>
+                        <p-multiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" required [(ngModel)]="app.tags" name="tags" defaultLabel="Choose | Wybierz"></p-multiSelect>
+                    </div>
+                </form>
             </div>
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.version.invalid && basicAppInformationForm.controls.version.dirty,
- 			    		 	'has-success': basicAppInformationForm.controls.version.valid && basicAppInformationForm.controls.version.dirty}">
-                <label for="appVersion" class="control-label">Version *</label>
-                <input type="text" id="appVersion" class="form-control" formControlName="version">
-            </div>
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.license.invalid && basicAppInformationForm.controls.license.dirty,
- 			    		 	'has-success': basicAppInformationForm.controls.license.valid && basicAppInformationForm.controls.license.dirty}">
-                 <label for="appLicense" class="control-label">License *</label>
-                 <input type="text" id="appLicense" class="form-control" formControlName="license">
-            </div>
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.licenseUrl.invalid && basicAppInformationForm.controls.licenseUrl.dirty,
- 				    	 	'has-success': basicAppInformationForm.controls.licenseUrl.valid && basicAppInformationForm.controls.licenseUrl.dirty}">
-                 <label for="appLicenseUrl" class="control-label">License url *</label>
-                 <input type="url" id="appLicenseUrl" class="form-control" formControlName="licenseUrl" placeholder="e.g. https://opensource.org/licenses/MIT">
-            </div>
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.wwwUrl.invalid && basicAppInformationForm.controls.wwwUrl.dirty,
- 				    	 	'has-success': basicAppInformationForm.controls.wwwUrl.valid && basicAppInformationForm.controls.wwwUrl.dirty}">
-                 <label for="wwwUrl" class="control-label">Project website *</label>
-                 <input type="url" id="wwwUrl" class="form-control" formControlName="wwwUrl">
-            </div>
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.sourceUrl.invalid && basicAppInformationForm.controls.sourceUrl.dirty,
- 				    	 	'has-success': basicAppInformationForm.controls.sourceUrl.valid && basicAppInformationForm.controls.sourceUrl.dirty}">
-                 <label for="sourceUrl" class="control-label">Link to source code *</label>
-                 <input type="url" id="sourceUrl" class="form-control" formControlName="sourceUrl">
-            </div>
-            <div class="form-group form-group-sm"
-                 [ngClass]="{'has-error':  basicAppInformationForm.controls.issuesUrl.invalid && basicAppInformationForm.controls.issuesUrl.dirty,
- 				    	 	'has-success': basicAppInformationForm.controls.issuesUrl.valid && basicAppInformationForm.controls.issuesUrl.dirty}">
-                 <label for="issuesUrl" class="control-label">Link to project issues *</label>
-                 <input type="url" id="issuesUrl" class="form-control" formControlName="issuesUrl">
-            </div>
-            <div class="form-group form-group-sm">
-                <label for="tags" class="control-label">Select tags for application * </label><br>
-                <p-multiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" formControlName="tags" defaultLabel="Choose | Wybierz"></p-multiSelect>
-            </div>
-        </form>
+            <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="basicInfoForm.invalid">Next</button>
         </div>
-        <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="basicAppInformationForm.invalid">Next</button>
     </div>
 
     <div *ngIf="activeStepIndex === 2">
@@ -103,114 +113,121 @@
         <button class="btn btn-success pull-right" (click)="nextStep()">Next</button>
     </div>
     <div *ngIf="activeStepIndex === 3">
-        <form class="form-horizontal" #descriptionForm="ngForm">
-            <div class="panel" *ngFor="let appDescription of appDescriptions">
-                <div class="panel-heading">
-                    <div *ngIf="appDescription.language === 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}} *</div>
-                    <div *ngIf="appDescription.language != 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}}</div>
-                </div>
-                <div class="panel-body">
-                    <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
-                        <label for="briefDescription" class="col-sm-2 control-label">Brief description</label>
-                        <div class="col-sm-10">
+        <div *ngIf="app">
+            <form class="form-horizontal" #descriptionForm="ngForm">
+                <div class="panel" *ngFor="let appDescription of app.descriptions">
+                    <div class="panel-heading">
+                        <div *ngIf="appDescription.language === 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}} *</div>
+                        <div *ngIf="appDescription.language != 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}}</div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
+                            <label for="briefDescription" class="col-sm-2 control-label">Brief description</label>
+                            <div class="col-sm-10">
                             <textarea class="form-control" id="briefDescription" name="briefDescription" [maxLength]="200"
-                                  [(ngModel)]="appDescription.briefDescription" *ngIf="appDescription.language != 'en'"></textarea>
+                                      [(ngModel)]="appDescription.briefDescription" *ngIf="appDescription.language != 'en'"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.briefDescription || appDescription.briefDescription === '',
+                        <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.briefDescription || appDescription.briefDescription === '',
  			    		 	'has-success': appDescription.briefDescription && appDescription.briefDescription != ''}">
-                        <label for="enBriefDescription" class="col-sm-2 control-label">Brief description</label>
-                        <div class="col-sm-10">
+                            <label for="enBriefDescription" class="col-sm-2 control-label">Brief description</label>
+                            <div class="col-sm-10">
                             <textarea class="form-control" id="enBriefDescription" name="enBriefDescription" [maxLength]="200"
-                                  [(ngModel)]="appDescription.briefDescription" required></textarea>
+                                      [(ngModel)]="appDescription.briefDescription" required></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
-                        <label for="fullDescription" class="col-sm-2 control-label">Full description</label>
-                        <div class="col-sm-10">
+                        <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
+                            <label for="fullDescription" class="col-sm-2 control-label">Full description</label>
+                            <div class="col-sm-10">
                             <textarea class="form-control" id="fullDescription" name="fullDescription"
-                                  [(ngModel)]="appDescription.fullDescription"></textarea>
+                                      [(ngModel)]="appDescription.fullDescription"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.fullDescription || appDescription.fullDescription === '',
+                        <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.fullDescription || appDescription.fullDescription === '',
  			    		 	'has-success': appDescription.fullDescription && appDescription.fullDescription != ''}">
-                        <label for="enFullDescription" class="col-sm-2 control-label">Full description</label>
-                        <div class="col-sm-10">
+                            <label for="enFullDescription" class="col-sm-2 control-label">Full description</label>
+                            <div class="col-sm-10">
                             <textarea class="form-control" id="enFullDescription" name="enFullDescription"
-                                  [(ngModel)]="appDescription.fullDescription" required></textarea>
+                                      [(ngModel)]="appDescription.fullDescription" required></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
-        <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="descriptionForm.invalid">Next</button>
+            </form>
+            <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="descriptionForm.invalid">Next</button>
+        </div>
     </div>
     <div *ngIf="activeStepIndex === 4">
-        <div class="panel">
-            <div class="panel-heading">Application deployment specification</div>
-            <form #appDeploymentForm="ngForm">
-            <div class="panel-body">
-                    <div class="form-group form-group-sm" [ngClass]="{'has-error':  !appDeploymentSpec.kubernetesTemplate.chart.name || appDeploymentSpec.kubernetesTemplate.chart.name === '',
- 			    		 	'has-success': appDeploymentSpec.kubernetesTemplate.chart.name && appDeploymentSpec.kubernetesTemplate.chart.name != ''}">
-                        <label for="kubernetesTemplateChartName" class="control-label">Chart name *</label>
-                        <br>
-                        <input type="text" class="form-control" id="kubernetesTemplateChartName" required name="kubernetesTemplateChartName"
-                               [(ngModel)]="appDeploymentSpec.kubernetesTemplate.chart.name">
-                    </div>
-                    <div class="form-group form-group-sm">
-                        <label for="kubernetesTemplateChartVersion" class="control-label">Chart version</label>
-                        <br>
-                        <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
-                               [(ngModel)]="appDeploymentSpec.kubernetesTemplate.chart.version">
-                    </div>
-                    <div class="form-group form-group-sm">
-                        <label for="kubernetesTemplateChartArchive" class="control-label">Archive</label>
-                        <br>
-                        <input type="text" class="form-control" id="kubernetesTemplateChartArchive" name="kubernetesTemplateChartArchive"
-                               [(ngModel)]="appDeploymentSpec.kubernetesTemplate.archive">
-                    </div>
-                    <div class="form-group form-group-sm" [ngClass]="{'has-error':  !appDeploymentSpec.defaultStorageSpace || appDeploymentSpec.defaultStorageSpace <= 0,
- 			    		 	'has-success': appDeploymentSpec.defaultStorageSpace && appDeploymentSpec.defaultStorageSpace > 0}">
-                        <label for="defaultStorageSpace" class="control-label">Default storage space *</label>
-                        <br>
-                        <input type="number" class="form-control no-spin" id="defaultStorageSpace" name="defaultStorageSpace" [min]="1" required
-                              [(ngModel)]="appDeploymentSpec.defaultStorageSpace">
-                    </div>
-                    <div class="form-group form-group-sm" *ngFor="let val of getParametersTypes()">
-                        <label for="val" class="control-label">Deploy parameter: {{val}}</label>
-                        <br>
-                        <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
-                    </div>
-                    <div class="form-group form-group-sm">
-                        <label for="configFileRepositoryRequired" class="col-sm-2 control-label">Repository required</label>
-                        <div class="col-sm-10">
-                            <input type="checkbox" id="configFileRepositoryRequired" name="configFileRepositoryRequired"
-                                   [defaultChecked]="false" [(ngModel)]="appDeploymentSpec.configFileRepositoryRequired">
+        <div *ngIf="app">
+            <div class="panel">
+                <div class="panel-heading">Application deployment specification</div>
+                <form class="form-horizontal" #appDeploymentForm="ngForm">
+                    <div class="panel-body">
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  kubernetesTemplateChartName.invalid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched),
+ 			    		 	'has-success': kubernetesTemplateChartName.valid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched)}">
+                            <label for="kubernetesTemplateChartName" class="control-label">Chart name *</label>
+                            <br>
+                            <input type="text" class="form-control" id="kubernetesTemplateChartName" required name="kubernetesTemplateChartName"
+                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" #kubernetesTemplateChartName="ngModel">
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <label for="kubernetesTemplateChartVersion" class="control-label">Chart version</label>
+                            <br>
+                            <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
+                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version">
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <label for="kubernetesTemplateChartArchive" class="control-label">Archive</label>
+                            <br>
+                            <input type="text" class="form-control" id="kubernetesTemplateChartArchive" name="kubernetesTemplateChartArchive"
+                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.archive">
+                        </div>
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  storageSpace.invalid && (storageSpace.dirty || storageSpace.touched),
+ 			    		 	'has-success': storageSpace.valid && (storageSpace.dirty || storageSpace.touched)}">
+                            <label for="defaultStorageSpace" class="control-label">Default storage space *</label>
+                            <br>
+                            <input type="number" class="form-control no-spin" id="defaultStorageSpace" name="defaultStorageSpace" [min]="1" required
+                                   [(ngModel)]="app.appDeploymentSpec.defaultStorageSpace" #storageSpace="ngModel">
+                        </div>
+                        <div class="form-group form-group-sm" *ngFor="let val of getParametersTypes()">
+                            <label for="val" class="control-label">Deploy parameter: {{val}}</label>
+                            <br>
+                            <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <label for="configFileRepositoryRequired" class="col-sm-2 control-label">Repository required</label>
+                            <div class="col-sm-10">
+                                <input type="checkbox" id="configFileRepositoryRequired" name="configFileRepositoryRequired"
+                                       [defaultChecked]="false" [(ngModel)]="app.appDeploymentSpec.configFileRepositoryRequired">
+                            </div>
                         </div>
                     </div>
-            </div>
-            </form>
-            <hr>
-            <div class="panel">
-                <div class="panel-heading">Application configuration wizard template</div>
-                <div class="panel-body">
-                    <form-builder [form]="configTemplateService.getConfigTemplate()" (change)="setConfigTemplate($event)"></form-builder>
+                </form>
+                <hr>
+                <div class="panel">
+                    <div class="panel-heading">Application configuration wizard template</div>
+                    <div class="panel-body">
+                        <form-builder *ngIf="isInMode(ComponentMode.CREATE)" [form]="configTemplateService.getConfigTemplate()" (change)="setConfigTemplate($event)"></form-builder>
+                        <form-builder *ngIf="isInMode(ComponentMode.EDIT)" [form]="app.configTemplate.template" (change)="setConfigTemplate($event)"></form-builder>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-heading">Application update configuration wizard template</div>
+                    <div class="panel-body">
+                        <form-builder *ngIf="isInMode(ComponentMode.CREATE) || !app.configurationUpdateTemplate" [form]="configTemplateService.getConfigUpdateTemplate()" (change)="setUpdateConfigTemplate($event)"></form-builder>
+                        <form-builder *ngIf="isInMode(ComponentMode.EDIT) && app.configurationUpdateTemplate" [form]="app.configurationUpdateTemplate.template" (change)="setUpdateConfigTemplate($event)"></form-builder>
+                    </div>
                 </div>
             </div>
-            <div class="panel">
-                <div class="panel-heading">Application update configuration wizard template</div>
-                <div class="panel-body">
-                    <form-builder [form]="configTemplateService.getConfigUpdateTemplate()" (change)="setUpdateConfigTemplate($event)"></form-builder>
-                </div>
-            </div>
+            <button class="btn btn-success pull-right" [disabled]="appDeploymentForm.invalid" (click)="nextStep()">Next</button>
         </div>
-        <button class="btn btn-success pull-right" [disabled]="appDeploymentForm.invalid" (click)="nextStep()">Next</button>
     </div>
     <div *ngIf="activeStepIndex === 5">
         <div class="alert alert-danger" *ngIf="errorMessage">
             {{errorMessage}}
         </div>
-        <button class="btn btn-success pull-right" (click)="submit()" *ngIf="activeStepIndex == 5" [disabled]="!isValid() || isInvalidDescriptions()">Submit</button>
+        <button class="btn btn-success pull-right" (click)="addApplication()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">Submit</button>
+        <button class="btn btn-success pull-right" (click)="updateApplication()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">Submit</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">Previous</button>
 

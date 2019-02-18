@@ -1,25 +1,98 @@
 <div class="col-sm-12 col-sm-offset-1 col-sm 10 col-md-offset-1 col-md-10">
   <h3>{{'APPS_MANAGEMENT.TITLE'| translate}}</h3>
   <button [routerLink]="['/management/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
-  <table class="table table-hover table-condensed">
-    <thead>
-      <tr>
-        <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-        <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
-        <th>&nbsp;</th>
-      </tr>
-    </thead>
+  <hr>
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#approved">Approved</a></li>
+    <li><a data-toggle="tab" href="#rejected">Rejected</a></li>
+    <li *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')"><a data-toggle="tab" href="#new">New</a></li>
+  </ul>
 
-    <tbody>
-      <ng-template ngFor let-app [ngForOf]="apps">
+  <div class="tab-content">
+    <div id="approved" class="tab-pane fade in active">
+      <table class="table table-hover table-condensed">
+        <thead>
         <tr>
-          <td>{{app?.name}}</td>
-          <td>{{getStateAsString(app?.state)}}</td>
-          <td class="text-right">
-            <button (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
-          </td>
+          <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+          <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
+          <th>&nbsp;</th>
         </tr>
-      </ng-template>
-    </tbody>
-  </table>
+        </thead>
+
+        <tbody>
+        <ng-template ngFor let-app [ngForOf]="apps">
+          <tr>
+            <td>{{app?.name}}</td>
+            <td>{{getStateAsString(app?.state)}}</td>
+            <td class="text-right">
+              <button class="btn btn-sm btn-primary">View</button>
+              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
+              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
+            </td>
+          </tr>
+        </ng-template>
+        </tbody>
+      </table>
+    </div>
+    <div id="rejected" class="tab-pane fade">
+      <div *ngIf="rejectedApps.length > 0">
+        <table class="table table-hover table-condensed">
+          <thead>
+          <tr>
+            <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+            <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
+            <th>&nbsp;</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <ng-template ngFor let-app [ngForOf]="rejectedApps">
+            <tr>
+              <td>{{app?.name}}</td>
+              <td>{{getStateAsString(app?.state)}}</td>
+              <td class="text-right">
+                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
+                <button (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
+              </td>
+            </tr>
+          </ng-template>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="rejectedApps.length == 0">
+        <h4 class="text-center">There is no rejected applications</h4>
+      </div>
+    </div>
+
+    <div id="new" class="tab-pane fade">
+      <div *ngIf="newApps.length > 0">
+        <table class="table table-hover table-condensed">
+          <thead>
+          <tr>
+            <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+            <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
+            <th>&nbsp;</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <ng-template ngFor let-app [ngForOf]="newApps">
+            <tr>
+              <td>{{app?.name}}</td>
+              <td>{{getStateAsString(app?.state)}}</td>
+              <td class="text-right">
+                <button class="btn btn-sm btn-primary">View</button>
+                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
+              </td>
+            </tr>
+          </ng-template>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="newApps.length == 0">
+        <h4 class="text-center">There is no applications waiting for approval.</h4>
+      </div>
+    </div>
+  </div>
+
 </div>
