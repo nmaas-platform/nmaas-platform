@@ -23,6 +23,11 @@
 ### Prerequisites
 ---
   + Install java 8 jdk ([http://www.oracle.com](http://www.oracle.com/technetwork/java/javase/downloads))
+
+### Deploying docker image
+---
+  + alter build_and_publish.sh with custom ARTIFACTORY, PACKAGE and TAG variables
+  + run build_and_publish.sh to automatically build and publish nmaas-platform image to selected artifactory
   
 ### Running Platform in local environment
 ---

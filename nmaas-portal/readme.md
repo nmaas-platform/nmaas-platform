@@ -19,6 +19,11 @@
 
 #### Build and run
 ---
+##### Deploying docker image
+---
+  + alter build_and_publish.sh with custom ARTIFACTORY, PACKAGE and TAG variables
+  + run build_and_publish.sh to automatically build and publish nmaas-portal image to selected artifactory
+
 ##### Local environment
 ---
   + Go to *nmaas-portal* directory in terminal or command line
