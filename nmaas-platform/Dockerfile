@@ -17,7 +17,7 @@ COPY nmaas-platform/docker/nmaas-platform.properties.template /nmaas/platform/co
 COPY nmaas-platform/docker/do-ntp.sh /etc/periodic/hourly/do-ntp.sh
 COPY nmaas-platform/docker/ssh-config /root/.ssh/config
 
-RUN apk add gettext
+RUN apk add gettext postgresql-client
 
 RUN mkdir /nmaas/files
 
