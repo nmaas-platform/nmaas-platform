@@ -139,14 +139,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             Map<String, String> config = this.getMapFromJson(configuration);
             AppDeployment app = repositoryManager.loadByDeploymentNameAndDomain(config.get("inClusterInstance"), domain)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
-            config.replace("source_addr", getInClusterAddress(app.getAppName(), app.getDeploymentId().value()));
+            config.replace("source_addr", app.getDeploymentId().value());
             return new AppConfiguration(new Gson().toJson(config));
         }
         return new AppConfiguration(configuration);
-    }
-
-    private String getInClusterAddress(String appName, String deploymentId){
-        return deploymentId + "-nmaas-" + appName.toLowerCase();
     }
 
     private Map<String, String> getMapFromJson(String inputJson){
