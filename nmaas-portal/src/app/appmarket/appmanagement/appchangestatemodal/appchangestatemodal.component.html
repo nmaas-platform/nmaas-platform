@@ -1,0 +1,25 @@
+<nmaas-modal>
+  <div class="nmaas-modal-header">Change state of {{app?.name}}</div>
+  <div class="nmaas-modal-body">
+    <div class="form-group">
+      <div style="padding-top: 15px" class="row">
+        <p class="col-sm-12"><strong>Current state: </strong></p>
+        <p class="col-sm-12">{{getStateAsString(app?.state)}}</p>
+      </div>
+      <div class="row">
+        <label for="changeState" class="col-sm-12 control-label">New state:</label>
+        <br>
+        <span class="col-md-12">
+          <select class="form-control" id="changeState" name="changeState" #changeState="ngModel" [(ngModel)]="selectedState" required>
+            <option *ngFor="let state of stateList" [value]="state">{{getStateAsString(state)}}</option>
+          </select>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="nmaas-modal-footer">
+    <button type="button" class="btn btn-default" (click)="modal.hide()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="changeState.invalid">Change state</button>
+  </div>
+</nmaas-modal>
+

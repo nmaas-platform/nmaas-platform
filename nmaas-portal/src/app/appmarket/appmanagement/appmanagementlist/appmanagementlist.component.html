@@ -20,14 +20,14 @@
         </thead>
 
         <tbody>
-        <ng-template ngFor let-app [ngForOf]="apps">
+        <ng-template ngFor let-app [ngForOf]="apps" let-i="index">
           <tr>
             <td>{{app?.name}}</td>
             <td>{{getStateAsString(app?.state)}}</td>
             <td class="text-right">
               <button class="btn btn-sm btn-primary">View</button>
               <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
-              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
+              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
             </td>
           </tr>
         </ng-template>
@@ -52,7 +52,7 @@
               <td>{{getStateAsString(app?.state)}}</td>
               <td class="text-right">
                 <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
-                <button (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
+                <button (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
               </td>
             </tr>
           </ng-template>
@@ -83,6 +83,7 @@
               <td class="text-right">
                 <button class="btn btn-sm btn-primary">View</button>
                 <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
+                <button (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
               </td>
             </tr>
           </ng-template>
@@ -96,3 +97,4 @@
   </div>
 
 </div>
+<app-appchangestatemodal [app]="selectedApp"></app-appchangestatemodal>

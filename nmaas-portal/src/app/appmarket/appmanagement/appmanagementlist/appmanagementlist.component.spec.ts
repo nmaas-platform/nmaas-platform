@@ -7,6 +7,10 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {AuthService} from "../../../auth/auth.service";
 import {MockAuthService} from "../../navbar/navbar.component.spec";
+import {AppChangeStateModalComponent} from "../appchangestatemodal/appchangestatemodal.component";
+import {ModalComponent} from "../../../shared/modal";
+import {FormsModule} from "@angular/forms";
+import {BrowserModule} from "@angular/platform-browser";
 
 describe('AppManagementListComponent', () => {
   let component: AppManagementListComponent;
@@ -14,9 +18,11 @@ describe('AppManagementListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppManagementListComponent ],
+      declarations: [ AppManagementListComponent, AppChangeStateModalComponent, ModalComponent ],
       providers:[AppsService, AppConfigService, {provide: AuthService, useClass: MockAuthService}],
       imports:[
+        BrowserModule,
+        FormsModule,
         HttpClientTestingModule,
         RouterTestingModule,
         TranslateModule.forRoot({
