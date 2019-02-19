@@ -29,7 +29,7 @@
 
 .modal-dialog{
     position: relative;
-    display: table; //This is important 
+    display: table;
     overflow-y: auto;    
     overflow-x: auto;
     width: auto;

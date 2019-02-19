@@ -10,8 +10,6 @@ import {AppListModule} from './applist/applist.module';
 import {AppDetailsComponent} from './appdetails/index';
 import {AppInstanceModule} from './appinstance/appinstance.module';
 
-import {NavbarComponent} from './navbar/index';
-
 import {SharedModule} from '../shared/shared.module';
 
 import {AppsService} from '../service/apps.service';
@@ -38,7 +36,6 @@ import {AppManagementModule} from "./appmanagement/appmanagement.module";
   declarations: [
     AppMarketComponent,
     AppDetailsComponent,
-    NavbarComponent
   ],
   imports: [
     FormsModule,
@@ -63,7 +60,6 @@ import {AppManagementModule} from "./appmanagement/appmanagement.module";
   ],
   exports: [
     AppMarketComponent,
-      NavbarComponent
   ],
   providers: [
     AppsService,
