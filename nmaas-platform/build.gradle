@@ -1,9 +1,22 @@
-apply from: '../reactor/build.gradle'
+repositories {
+	mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'org.sonarqube'
 apply plugin: 'com.google.protobuf'
+
+version = '1.2.0-SNAPSHOT'
+group = 'net.geant.nmaas'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 
 buildscript {
 	repositories {
@@ -16,7 +29,7 @@ buildscript {
 		classpath('org.springframework.boot:spring-boot-gradle-plugin:2.1.1.RELEASE')
 		classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:1.5.1"
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
-		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.7'
+		classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
 	}
 }
 

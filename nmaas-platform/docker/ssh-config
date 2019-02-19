@@ -1,0 +1,4 @@
+Host nmaas-helm
+Hostname nmaas-helm
+IdentityFile ~/.ssh/id_rsa
+User helm

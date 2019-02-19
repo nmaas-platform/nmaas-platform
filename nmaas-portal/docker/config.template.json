@@ -1,0 +1,12 @@
+{
+	"apiUrl": "${API_URL}",
+	"tokenName": "${TOKEN_NAME}",
+	"nmaas": {
+		"globalDomainId": 1
+	},
+	"http": {
+		"timeout": 10000
+	},
+    "showGitInfo": true,
+    "showChangelog": true
+}
