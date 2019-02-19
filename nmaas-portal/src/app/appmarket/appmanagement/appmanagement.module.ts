@@ -16,6 +16,7 @@ import {InternationalizationService} from "../../service/internationalization.se
 import {FormioModule} from "angular-formio";
 import {ConfigTemplateService} from "../../service/configtemplate.service";
 import { AppChangeStateModalComponent } from './appchangestatemodal/appchangestatemodal.component';
+import { AppPreviewComponent } from './apppreview/apppreview.component';
 
 export function getJsonTemplates(config: ConfigTemplateService) {
   return () => config.loadConfigTemplate();
@@ -23,7 +24,7 @@ export function getJsonTemplates(config: ConfigTemplateService) {
 
 
 @NgModule({
-  declarations: [ AppManagementListComponent, AppCreateWizardComponent, AppChangeStateModalComponent ],
+  declarations: [ AppManagementListComponent, AppCreateWizardComponent, AppChangeStateModalComponent, AppPreviewComponent ],
   imports: [
     CommonModule,
     FormsModule,

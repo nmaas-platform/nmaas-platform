@@ -1,0 +1,124 @@
+<div class="row">
+  <p class="alert alert-success">
+    This page is only a preview of submitted application
+  </p>
+  <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+    <div class="thumbnail" *ngIf="app && logo">
+      <img alt="App logo" [src]="this.logo.objectURL || 'assets/images/app-logo-example.png'"/>
+    </div>
+    <div class="thumbnail" *ngIf="app && !logo">
+      <img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+    </div>
+    <div class="thumbnail" *ngIf="!app">
+      <img alt="App logo" src="assets/images/app-logo-example.png"/>
+    </div>
+  </div>
+
+  <div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
+        <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
+        <rate *ngIf="!app?.id" [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + 1 + '/rate'"></rate>
+        <div class="text-muted" style="font-size: small;">
+          v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
+          | <a href="{{app?.wwwUrl}}">WWW</a>
+          | <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+          | <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <div class="text-right">
+
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
+        <a type="button" *ngFor="let tag of app.tags" class="btn tag-button">
+          {{tag | titlecase}}
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="btn-group pull-right">
+        <button class="btn btn-primary">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
+        <button class="btn btn-danger">{{'APPLICATIONS.UNSUBSCRIBE_BUTTON' | translate}}</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class='row' *ngIf="app?.id">
+  <h3>{{'SCREENSHOTS.HEADER' | translate}}</h3>
+  <hr>
+  <screenshots [pathUrl]="'/apps/' + app?.id + '/screenshots'"></screenshots>
+</div>
+
+<div class='row' *ngIf="!app?.id && screenshots">
+  <h3>{{'SCREENSHOTS.HEADER' | translate}}</h3>
+  <hr>
+  <div class="carousel slide media-carousel col-md-12" id="app-preview-carousel" *ngIf="screenshots">
+        <div class="carousel-inner">
+            <div class="item" *ngFor="let row of screenshots | group:3; let firstRow = last" [ngClass]="{'active': firstRow}">
+                <div class="row">
+                    <div class="col-md-4" *ngFor="let screenshot of row">
+                        <a class="thumbnail">
+                            <img alt="Screenshot" [src]="screenshot.objectURL || 'assets/images/app-screenshot-example.png'">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a data-slide="prev" href="#app-preview-carousel" class="left carousel-control" *ngIf="screenshots.length > 3">&lt;</a>
+        <a data-slide="next" href="#app-preview-carousel" class="right carousel-control" *ngIf="screenshots.length > 3">&gt;</a>
+  </div>
+</div>
+
+<div class="row">
+  <h3>{{'APPLICATIONS.DESCRIPTION' | translate}}</h3>
+  <hr>
+  <div [innerHTML]="getDescription()?.fullDescription">
+
+  </div>
+</div>
+
+<hr>
+
+<div *ngIf="app?.id" class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 block-border">
+    <rating-extended name="appRateUpdate" [editable]="false" [pathUrl]="'/apps/' + app?.id + '/rate/my'"></rating-extended>
+  </div>
+</div>
+<div *ngIf="!app?.id" class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 block-border">
+    <rating-extended name="appRateUpdate" [editable]="false" [pathUrl]="'/apps/' + 1 + '/rate/my'"></rating-extended>
+  </div>
+</div>
+<hr>
+
+<div class="row" *ngIf="app?.configTemplate">
+  <div class="col-xs-12">
+    <h3>Configuration wizard preview</h3>
+    <hr>
+    <formio *ngIf="app !== undefined && app.configTemplate.template !== undefined"
+            [form]="app.configTemplate.template"
+            [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'>
+    </formio>
+  </div>
+</div>
+
+<div class="row" *ngIf="app?.configurationUpdateTemplate">
+    <hr>
+    <div class="col-xs-12">
+      <h3>Update configuration wizard preview</h3>
+      <hr>
+      <formio *ngIf="app !== undefined && app.configurationUpdateTemplate.template !== undefined"
+              [form]="app.configurationUpdateTemplate.template"
+              [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'>
+      </formio>
+    </div>
+
+</div>

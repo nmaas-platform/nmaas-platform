@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
-import {Application} from "../../../model";
+import {Application, ConfigTemplate} from "../../../model";
 import {MenuItem, SelectItem} from "primeng/api";
 import {AppImagesService, AppsService, TagService} from "../../../service";
 import {AppDescription} from "../../../model/appdescription";
@@ -71,6 +71,14 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       temp.set(ParameterType[key], appToEdit.appDeploymentSpec.deployParameters[key]);
     });
     this.app.appDeploymentSpec.deployParameters = temp;
+    if(isNullOrUndefined(this.app.configTemplate)){
+      this.app.configTemplate = new ConfigTemplate();
+      this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
+    }
+    if(isNullOrUndefined(this.app.configurationUpdateTemplate)){
+      this.app.configurationUpdateTemplate = new ConfigTemplate();
+      this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+    }
   }
 
   public createNewWizard() : void {

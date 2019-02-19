@@ -25,7 +25,7 @@
             <td>{{app?.name}}</td>
             <td>{{getStateAsString(app?.state)}}</td>
             <td class="text-right">
-              <button class="btn btn-sm btn-primary">View</button>
+              <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">View</button>
               <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
               <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
             </td>
@@ -51,6 +51,7 @@
               <td>{{app?.name}}</td>
               <td>{{getStateAsString(app?.state)}}</td>
               <td class="text-right">
+                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">View</button>
                 <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
                 <button (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
               </td>
@@ -81,7 +82,7 @@
               <td>{{app?.name}}</td>
               <td>{{getStateAsString(app?.state)}}</td>
               <td class="text-right">
-                <button class="btn btn-sm btn-primary">View</button>
+                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">View</button>
                 <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
                 <button (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
               </td>
