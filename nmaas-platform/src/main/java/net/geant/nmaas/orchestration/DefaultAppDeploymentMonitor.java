@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private NmServiceDeploymentProvider serviceDeployment;
 
@@ -40,7 +40,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Override
     public AppLifecycleState previousState(Identifier deploymentId) {
-        Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
+        Optional<AppDeploymentHistory> history = appDeploymentRepositoryManager.loadStateHistory(deploymentId).stream()
                 .max(Comparator.comparing(AppDeploymentHistory::getTimestamp));
         if(history.isPresent() && history.get().getPreviousState() != null){
             return history.get().getPreviousState().lifecycleState();
@@ -65,7 +65,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
 
     @Override
     public List<AppDeploymentHistoryView> appDeploymentHistory(Identifier deploymentId) {
-        return appDeploymentRepositoryManager.getAppStateHistoryByDeploymentId(deploymentId).stream()
+        return appDeploymentRepositoryManager.loadStateHistory(deploymentId).stream()
                 .map(value -> new AppDeploymentHistoryView(value.getTimestamp(), value.getPreviousStateString(), value.getCurrentStateString()))
                 .collect(Collectors.toList());
     }

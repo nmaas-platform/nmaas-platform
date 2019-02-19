@@ -51,7 +51,7 @@ public class DefaultAppDeploymentMonitorIntTest {
     private AppRemovalTask appRemovalTask;
 
     @Autowired
-    private AppDeploymentRepositoryManager repository;
+    private DefaultAppDeploymentRepositoryManager repository;
     @Autowired
     private AppDeploymentMonitor monitor;
     @Autowired

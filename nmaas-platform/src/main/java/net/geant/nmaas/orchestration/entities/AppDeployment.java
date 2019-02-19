@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -85,6 +86,10 @@ public class AppDeployment {
     private String owner;
 
     private String appName;
+
+    public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState){
+        history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
+    }
 
     @Override
     public String toString() {

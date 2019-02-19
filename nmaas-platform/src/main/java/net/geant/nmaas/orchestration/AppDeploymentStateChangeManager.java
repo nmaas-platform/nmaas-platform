@@ -33,7 +33,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AppDeploymentStateChangeManager {
 
-    private AppDeploymentRepositoryManager deploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager deploymentRepositoryManager;
 
     private AppDeploymentMonitor deploymentMonitor;
 
@@ -47,16 +47,16 @@ public class AppDeploymentStateChangeManager {
             deploymentRepositoryManager.updateState(event.getDeploymentId(), newDeploymentState);
             if(newDeploymentState.isInFailedState()){
                 log.warn("Application deployment failed state detected. Saving error message: " + event.getErrorMessage());
-                deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(), event.getErrorMessage());
+                deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), event.getErrorMessage());
             }
             if(newDeploymentState == AppDeploymentState.APPLICATION_DEPLOYMENT_VERIFIED) {
-                deploymentRepositoryManager.load(event.getDeploymentId())
-                        .ifPresent(appDeployment -> eventPublisher.publishEvent(new NotificationEvent(this, getMailAttributes(appDeployment))));
+                eventPublisher.publishEvent(
+                        new NotificationEvent(this, getMailAttributes(deploymentRepositoryManager.load(event.getDeploymentId()))));
             }
             return triggerActionEventIfRequired(event.getDeploymentId(), newDeploymentState).orElse(null);
         } catch (InvalidAppStateException e) {
             log.warn("State notification failure -> " + e.getMessage());
-            deploymentRepositoryManager.reportErrorStatusAndSaveInEntity(event.getDeploymentId(), e.getMessage());
+            deploymentRepositoryManager.updateErrorMessage(event.getDeploymentId(), e.getMessage());
             deploymentRepositoryManager.updateState(event.getDeploymentId(), AppDeploymentState.INTERNAL_ERROR);
             return null;
         }

@@ -35,7 +35,7 @@ public class DefaultAppDeploymentMonitorTest {
 
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
 
-    private AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
     private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
 
     private DefaultAppDeploymentMonitor monitor;
@@ -73,7 +73,7 @@ public class DefaultAppDeploymentMonitorTest {
                         .timestamp(Date.from(Instant.now()))
                         .build()
                 );
-        when(repositoryManager.getAppStateHistoryByDeploymentId(deploymentId)).thenReturn(stubHistory);
+        when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
         AppLifecycleState state = monitor.previousState(deploymentId);
         assertThat(state, is(AppLifecycleState.APPLICATION_DEPLOYED));
     }
@@ -86,7 +86,7 @@ public class DefaultAppDeploymentMonitorTest {
                         .timestamp(Date.from(Instant.now().minusSeconds(60)))
                         .build()
         );
-        when(repositoryManager.getAppStateHistoryByDeploymentId(deploymentId)).thenReturn(stubHistory);
+        when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
         AppLifecycleState state = monitor.previousState(deploymentId);
         assertThat(state, is(AppLifecycleState.UNKNOWN));
     }
@@ -127,7 +127,7 @@ public class DefaultAppDeploymentMonitorTest {
                         .timestamp(Date.from(Instant.now()))
                         .build()
         );
-        when(repositoryManager.getAppStateHistoryByDeploymentId(deploymentId)).thenReturn(stubHistory);
+        when(repositoryManager.loadStateHistory(deploymentId)).thenReturn(stubHistory);
         List<AppDeploymentHistoryView> history = monitor.appDeploymentHistory(deploymentId);
         assertThat(history.size(), is(2));
         assertThat(history.stream().map(AppDeploymentHistoryView::getCurrentState).collect(Collectors.toList()),

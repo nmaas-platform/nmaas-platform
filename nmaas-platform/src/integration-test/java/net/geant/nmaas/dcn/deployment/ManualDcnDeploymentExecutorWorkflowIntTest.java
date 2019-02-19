@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.portal.service.DomainService;
@@ -26,7 +26,7 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
     @MockBean
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
     @Autowired
     private DcnRepositoryManager dcnRepositoryManager;
     @Autowired
@@ -37,7 +37,7 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
 
     @Test
     public void shouldProceedDcnWorkflowToWaitingForOperatorState() throws Exception {
-        when(appDeploymentRepositoryManager.loadDomainByDeploymentId(DEPLOYMENT_ID)).thenReturn(DOMAIN);
+        when(appDeploymentRepositoryManager.loadDomain(DEPLOYMENT_ID)).thenReturn(DOMAIN);
         domainService.storeDcnInfo(DOMAIN);
         eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));
         Thread.sleep(500);

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class DefaultAppLifecycleManagerTest {
 
-    private AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
+    private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private NmServiceInfoRepository infoRepository = mock(NmServiceInfoRepository.class);
     private JanitorService janitorService = mock(JanitorService.class);
@@ -56,7 +56,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldGenerateProperIdentifier() {
-        when(repositoryManager.load(any())).thenReturn(Optional.empty());
+        when(repositoryManager.load(any())).thenReturn(null);
         Identifier id = appLifecycleManager.generateDeploymentId();
         assertThat(id.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?"), is(true));
     }
@@ -74,7 +74,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldNotTriggerAppInstanceConfiguration() throws Throwable {
-        when(repositoryManager.load(any())).thenReturn(Optional.of(new AppDeployment()));
+        when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(infoRepository.findByDeploymentId(any())).thenReturn(Optional.of(new KubernetesNmServiceInfo()));
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("");
@@ -88,7 +88,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldNotTriggerAppInstanceConfigurationButPopulateAdditionalParameters() throws Throwable {
-        when(repositoryManager.load(any())).thenReturn(Optional.of(new AppDeployment()));
+        when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         when(infoRepository.findByDeploymentId(any())).thenReturn(Optional.of(new KubernetesNmServiceInfo()));
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getAdditionalParameters()).thenReturn("{\"keyadd1\": \"valadd1\"}");
@@ -102,7 +102,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldTriggerAppInstanceConfigurationInCorrectState() throws Throwable {
-        when(repositoryManager.load(any())).thenReturn(Optional.of(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build()));
+        when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().state(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED).build());
         when(infoRepository.findByDeploymentId(any())).thenReturn(Optional.of(new KubernetesNmServiceInfo()));
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("");
@@ -112,7 +112,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldTriggerAppInstanceConfigurationUpdate() {
-        when(repositoryManager.load(any())).thenReturn(Optional.of(AppDeployment.builder().configuration(new AppConfiguration()).build()));
+        when(repositoryManager.load(any())).thenReturn(AppDeployment.builder().configuration(new AppConfiguration()).build());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("{config}");
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
@@ -122,7 +122,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldNotTriggerAppInstanceConfigurationUpdateIfConfigIsNull() {
-        when(repositoryManager.load(any())).thenReturn(Optional.of(new AppDeployment()));
+        when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         AppConfigurationView configurationView = new AppConfigurationView();
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);
         verifyNoMoreInteractions(eventPublisher);
@@ -130,7 +130,7 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldNotTriggerAppInstanceConfigurationUpdateIfConfigIsEmpty() {
-        when(repositoryManager.load(any())).thenReturn(Optional.of(new AppDeployment()));
+        when(repositoryManager.load(any())).thenReturn(new AppDeployment());
         AppConfigurationView configurationView = mock(AppConfigurationView.class);
         when(configurationView.getJsonInput()).thenReturn("");
         appLifecycleManager.updateConfiguration(new Identifier(), configurationView);

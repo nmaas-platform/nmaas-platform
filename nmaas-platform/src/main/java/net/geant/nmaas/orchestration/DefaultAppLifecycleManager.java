@@ -26,8 +26,6 @@ import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +41,12 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
  * Default {@link AppLifecycleManager} implementation.
  */
 @Service
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Log4j2
 @AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
-    private AppDeploymentRepositoryManager repositoryManager;
+    private DefaultAppDeploymentRepositoryManager repositoryManager;
 
     private ApplicationEventPublisher eventPublisher;
 
@@ -80,7 +78,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     private boolean deploymentIdAlreadyInUse(Identifier generatedId) {
-        return repositoryManager.load(generatedId).isPresent();
+        try {
+            repositoryManager.load(generatedId);
+        } catch(InvalidDeploymentIdException e) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -94,7 +97,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        AppDeployment appDeployment = repositoryManager.load(deploymentId);
         NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
         appDeployment.setConfiguration(prepareAppConfiguration(serviceInfo.getDomain(), configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
@@ -138,7 +141,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
         if(configuration.contains("inCluster")){
             Map<String, String> config = this.getMapFromJson(configuration);
-            AppDeployment app = repositoryManager.loadByDeploymentNameAndDomain(config.get("inClusterInstance"), domain)
+            AppDeployment app = repositoryManager.load(config.get("inClusterInstance"), domain)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
             config.replace("source_addr", getInClusterAddress(app.getAppName(), app.getDeploymentId().value()));
             return new AppConfiguration(new Gson().toJson(config));
@@ -171,7 +174,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateConfiguration(Identifier deploymentId, AppConfigurationView configuration) {
-        AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
+        AppDeployment appDeployment = repositoryManager.load(deploymentId);
         if(isNotEmpty(configuration.getJsonInput())){
             appDeployment.getConfiguration().setJsonInput(configuration.getJsonInput());
             repositoryManager.update(appDeployment);

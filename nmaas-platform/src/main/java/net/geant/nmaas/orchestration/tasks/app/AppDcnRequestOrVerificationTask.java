@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class AppDcnRequestOrVerificationTask {
 
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     private DcnDeploymentProvider dcnDeployment;
 
@@ -38,7 +38,7 @@ public class AppDcnRequestOrVerificationTask {
     public ApplicationEvent trigger(AppRequestNewOrVerifyExistingDcnEvent event) {
         try{
             final Identifier deploymentId = event.getRelatedTo();
-            final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+            final String domain = appDeploymentRepositoryManager.loadDomain(deploymentId);
             switch(dcnDeployment.checkState(domain)) {
                 case NONE:
                 case REMOVED:

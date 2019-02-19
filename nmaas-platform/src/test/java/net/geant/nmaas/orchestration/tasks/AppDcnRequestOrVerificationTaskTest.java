@@ -3,12 +3,10 @@ package net.geant.nmaas.orchestration.tasks;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.tasks.app.AppDcnRequestOrVerificationTask;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class AppDcnRequestOrVerificationTaskTest {
 
-    private AppDeploymentRepositoryManager deployments = mock(AppDeploymentRepositoryManager.class);
+    private DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private DcnDeploymentProvider deploy = mock(DcnDeploymentProvider.class);
 
     private AppDcnRequestOrVerificationTask task;
@@ -34,7 +32,7 @@ public class AppDcnRequestOrVerificationTaskTest {
 
     @Before
     public void setup() {
-        when(deployments.loadDomainByDeploymentId(deploymentId)).thenReturn("domain");
+        when(deployments.loadDomain(deploymentId)).thenReturn("domain");
         task = new AppDcnRequestOrVerificationTask(deployments, deploy);
     }
 

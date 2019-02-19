@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 public class AppDeploymentStateChangeManagerTest {
 
-    private AppDeploymentRepositoryManager deployments = mock(AppDeploymentRepositoryManager.class);
+    private DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
     private AppDeploymentMonitor monitor = mock(AppDeploymentMonitor.class);
     private ApplicationEventPublisher publisher = mock(ApplicationEventPublisher.class);
 
@@ -73,7 +73,7 @@ public class AppDeploymentStateChangeManagerTest {
         when(event.getErrorMessage()).thenReturn("example error message");
         ApplicationEvent newEvent = manager.notifyStateChange(event);
         assertThat(newEvent, is(nullValue()));
-        verify(deployments, times(1)).reportErrorStatusAndSaveInEntity(any(Identifier.class), any(String.class));
+        verify(deployments, times(1)).updateErrorMessage(any(Identifier.class), any(String.class));
     }
 
     @Test
@@ -87,13 +87,13 @@ public class AppDeploymentStateChangeManagerTest {
         verify(publisher, times(1)).publishEvent(any(NotificationEvent.class));
     }
 
-    private Optional<AppDeployment> stubAppDeployment() {
-        return Optional.of(AppDeployment.builder()
+    private AppDeployment stubAppDeployment() {
+        return AppDeployment.builder()
                 .deploymentId(deploymentId)
                 .domain("domain")
                 .owner("owner")
                 .deploymentName("instance")
-                .appName("app").build());
+                .appName("app").build();
     }
 
     @Test
