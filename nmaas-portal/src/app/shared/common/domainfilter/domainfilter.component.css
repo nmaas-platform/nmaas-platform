@@ -1,7 +1,8 @@
 @media (max-width: 1199px) {
         .dropdown-domains{
-                padding-top: inherit;
-                padding-left: inherit;
+                position: relative;
+                display: block;
+                padding: 10px 15px;
         }
         .dropdown-menu {
         position: static !important;

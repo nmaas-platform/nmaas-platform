@@ -1,4 +1,9 @@
 @media (min-width: 1199px) {
+  .drop-domain{
+    padding: 15px;
+    line-height: 20px !important;
+  }
+
   ul.nav li.dropdown:hover > ul.dropdown-menu {
     display: block !important;
   }
@@ -23,6 +28,10 @@
 }
 
 @media (max-width: 1199px) {
+  .drop-domain{
+
+  }
+
   .navbar-collapse .nav > .divider-vertical {
     display: none !important;
   }
@@ -52,7 +61,6 @@
   }
   .navbar-nav {
     float: none!important;
-    margin-top: 7.5px;
   }
   .navbar-nav>li {
     float: none;
@@ -136,9 +144,4 @@
   padding-top: 10px;
   padding-bottom: 10px;
   line-height: 20px;
-}
-
-.drop-domain{
-  padding: 15px;
-  line-height: 20px !important;
 }
