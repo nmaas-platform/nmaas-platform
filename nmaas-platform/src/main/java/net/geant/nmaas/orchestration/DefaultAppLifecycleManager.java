@@ -131,7 +131,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         return new AppConfiguration(configuration);
     }
 
-    private Map<String, String> getMapFromJson(String inputJson){
+    Map<String, String> getMapFromJson(String inputJson){
         try {
             return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
         } catch (IOException e) {
@@ -139,7 +139,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
