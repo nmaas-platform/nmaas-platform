@@ -2,10 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import net.geant.nmaas.externalservices.inventory.janitor.BasicAuthServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.CertManagerServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.ConfigServiceGrpc;
-import net.geant.nmaas.externalservices.inventory.janitor.JanitorManager;
+import net.geant.nmaas.externalservices.inventory.janitor.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +59,7 @@ public class JanitorService {
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceRequest(deploymentId, domain));
 
         if (response.getStatus() != JanitorManager.Status.OK)
-            throw new ConfigMapCreationException(response.getMessage());
+            throw new JanitorResponseException(response.getMessage());
     }
 
     public void deleteConfigMapIfExists(Identifier deploymentId, String domain) {
@@ -71,7 +68,7 @@ public class JanitorService {
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
 
         if (response.getStatus() != JanitorManager.Status.OK)
-            throw new ConfigMapCreationException(response.getMessage());
+            throw new JanitorResponseException(response.getMessage());
     }
 
     public void createOrReplaceBasicAuth(Identifier deploymentId, String domain, String user, String password) {
@@ -79,7 +76,7 @@ public class JanitorService {
 
         JanitorManager.ServiceResponse response = stub.createOrReplace(buildInstanceCredentialsRequest(deploymentId, domain, user, password));
         if (response.getStatus() != JanitorManager.Status.OK)
-            throw new ConfigMapCreationException(response.getMessage());
+            throw new JanitorResponseException(response.getMessage());
     }
 
     public void deleteBasicAuthIfExists(Identifier deploymentId, String domain) {
@@ -87,7 +84,7 @@ public class JanitorService {
 
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         if (response.getStatus() != JanitorManager.Status.OK)
-            throw new ConfigMapCreationException(response.getMessage());
+            throw new JanitorResponseException(response.getMessage());
     }
 
     public void deleteTlsIfExists(Identifier deploymentId, String domain) {
@@ -95,6 +92,22 @@ public class JanitorService {
 
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         if (response.getStatus() != JanitorManager.Status.OK)
-            throw new ConfigMapCreationException(response.getMessage());
+            throw new JanitorResponseException(response.getMessage());
+    }
+
+    public boolean checkIfReady(Identifier deploymentId, String domain) {
+        ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
+
+        JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
+        switch (response.getStatus()) {
+            case FAILED:
+            case UNRECOGNIZED:
+            default:
+                throw new JanitorResponseException(response.getMessage());
+            case OK:
+                return true;
+            case PENDING:
+                return false;
+        }
     }
 }

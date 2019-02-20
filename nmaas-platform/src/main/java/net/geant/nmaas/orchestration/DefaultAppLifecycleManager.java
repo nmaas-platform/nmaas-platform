@@ -120,7 +120,18 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    Map<String, String> getMapFromJson(String inputJson){
+    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
+        if(configuration.contains("inCluster")){
+            Map<String, String> config = this.getMapFromJson(configuration);
+            AppDeployment app = repositoryManager.load(config.get("inClusterInstance"), domain)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
+            config.replace("source_addr", app.getDeploymentId().value());
+            return new AppConfiguration(new Gson().toJson(config));
+        }
+        return new AppConfiguration(configuration);
+    }
+
+    private Map<String, String> getMapFromJson(String inputJson){
         try {
             return new ObjectMapper().readValue(inputJson, new TypeReference<Map<String, String>>() {});
         } catch (IOException e) {
@@ -128,7 +139,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
+    private Map<String, String> replaceHashToDotsInMapKeys(Map<String, String> map){
         Map<String, String> newMap = new HashMap<>();
         for(Map.Entry<String, String> entry: map.entrySet()){
             if(entry.getValue() != null && !entry.getValue().isEmpty()){
@@ -136,21 +147,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
             }
         }
         return newMap;
-    }
-
-    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
-        if(configuration.contains("inCluster")){
-            Map<String, String> config = this.getMapFromJson(configuration);
-            AppDeployment app = repositoryManager.load(config.get("inClusterInstance"), domain)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
-            config.replace("source_addr", getInClusterAddress(app.getAppName(), app.getDeploymentId().value()));
-            return new AppConfiguration(new Gson().toJson(config));
-        }
-        return new AppConfiguration(configuration);
-    }
-
-    private String getInClusterAddress(String appName, String deploymentId){
-        return deploymentId + "-nmaas-" + appName.toLowerCase();
     }
 
     private void changeBasicAuth(Identifier deploymentId, String domain, String accessCredentials){
