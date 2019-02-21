@@ -1,10 +1,13 @@
-
-<form class="form-inline" role="form">
-	<div class="form-group">
-		<label for="domains">Domain</label> <select class="form-control" id="domains"
-			[(ngModel)]="domainId" [ngModelOptions]="{standalone: true}"
-			(ngModelChange)="onChange($event)" style="min-width: 170px">
-			<option *ngFor="let domain of domains | async" [value]="domain?.id">{{domain?.name}}</option>
-	</select>
-	</div>
-</form>
+<span [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']" class="dropdown dropdown-domains"
+		>
+		<a class="dropdown-toggle" data-close-others="true" data-toggle="dropdown" href="#">
+			<span style="color: gray;">Domain: {{ getCurrent() | titlecase }}<span class="caret"></span></span>
+		</a>
+		<ul class="dropdown-menu">
+			<li *ngFor="let domain of domains | async" [ngClass]="{'active': getCurrent() == domain?.name}">
+				<a (click)="changeDomain(domain?.id, domain?.name)">
+					<span>{{domain?.name | titlecase }}</span>
+				</a>
+			</li>
+		</ul>
+</span>

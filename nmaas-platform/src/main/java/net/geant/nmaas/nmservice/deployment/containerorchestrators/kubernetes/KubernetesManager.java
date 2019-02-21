@@ -178,6 +178,9 @@ public class KubernetesManager implements ContainerOrchestrator {
         try {
             if (!serviceLifecycleManager.checkServiceDeployed(deploymentId))
                 throw new ContainerCheckFailedException("Service not deployed.");
+            if (!janitorService.checkIfReady(deploymentId, repositoryManager.loadService(deploymentId).getDomain())) {
+                throw new ContainerCheckFailedException("Service is not ready yet.");
+            }
         } catch (KServiceManipulationException e) {
             throw new ContainerCheckFailedException(e.getMessage());
         }

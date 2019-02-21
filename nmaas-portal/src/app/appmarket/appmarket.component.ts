@@ -27,7 +27,7 @@ export class AppMarketComponent implements OnInit, AfterViewChecked, AfterConten
 
     onResize() {
         this.height = document.getElementById("global-footer").offsetHeight;
-        this.navHeight = document.getElementById("navbar-appmarket").offsetHeight;
+        this.navHeight = document.getElementById("navbar").offsetHeight;
         document.getElementById("appmarket-container").style.marginBottom = `${this.height}px`;
         if(this.height > 90){
             document.getElementById("global-footer").style.textAlign = "center";

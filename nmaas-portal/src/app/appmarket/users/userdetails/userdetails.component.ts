@@ -6,6 +6,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {isUndefined} from 'util';
 import {AuthService} from "../../../auth/auth.service";
+import {TranslateService} from "@ngx-translate/core";
+import {ContentDisplayService} from "../../../service/content-display.service";
 
 @Component({
   selector: 'app-userdetails',
@@ -17,6 +19,7 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   private userId: number;
   public user: User;
   public errorMessage: string;
+
 
   constructor(private userService: UserService, private router: Router,
     private route: ActivatedRoute, private location: Location, public authService:AuthService) {

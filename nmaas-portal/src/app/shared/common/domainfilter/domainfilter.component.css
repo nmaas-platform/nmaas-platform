@@ -1,0 +1,25 @@
+@media (max-width: 1199px) {
+        .dropdown-domains{
+                position: relative;
+                display: block;
+                padding: 10px 15px;
+        }
+        .dropdown-menu {
+        position: static !important;
+        float: none !important;
+        width: auto !important;
+        margin-top: 0;
+        background-color: transparent;
+        border: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+}
+
+@media (min-width: 1199px) {
+        .dropdown-domains {
+                padding-top: 10px !important;
+                padding-bottom: 10px !important;
+                line-height: 20px !important;
+        }
+}

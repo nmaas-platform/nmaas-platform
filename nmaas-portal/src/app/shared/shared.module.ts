@@ -52,7 +52,7 @@ import {RecaptchaModule} from "ng-recaptcha";
     RecaptchaModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild(),
-    TooltipModule
+    TooltipModule,
   ],
   declarations: [
     RateComponent,
