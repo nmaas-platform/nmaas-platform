@@ -105,7 +105,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
         AppDeployment appDeployment = repositoryManager.load(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No application deployment with provided identifier found."));
         NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
-        appDeployment.setConfiguration(prepareAppConfiguration(serviceInfo.getDomain(), configuration.getJsonInput()));
+        appDeployment.setConfiguration(prepareAppConfiguration(configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
             appDeployment.setStorageSpace(configuration.getStorageSpace());
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
@@ -134,12 +134,10 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         }
     }
 
-    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
+    private AppConfiguration prepareAppConfiguration(String configuration) {
         if(configuration.contains("inCluster")){
             Map<String, String> config = this.getMapFromJson(configuration);
-            AppDeployment app = repositoryManager.loadByDeploymentNameAndDomain(config.get("inClusterInstance"), domain)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
-            config.replace("source_addr", app.getDeploymentId().value());
+            config.replace("source_addr", config.get("inClusterInstance"));
             return new AppConfiguration(new Gson().toJson(config));
         }
         return new AppConfiguration(configuration);

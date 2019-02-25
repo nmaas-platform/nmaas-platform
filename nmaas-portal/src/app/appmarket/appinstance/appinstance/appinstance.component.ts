@@ -118,9 +118,9 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   private getRunningAppsMap(apps: AppInstance[]) : any {
-    let appMap = {};
+    let appMap = [];
     apps = this.filterRunningApps(apps);
-    apps.forEach(app => appMap[app.internalId] = app.name);
+    apps.forEach(app => appMap.push({value: app.internalId, label: app.name}));
     return appMap;
   }
 
