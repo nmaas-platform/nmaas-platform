@@ -407,27 +407,27 @@ public class ApplicationInstanceServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void findAllByOwnerAtDomainCalledWithObjectShouldShouldThrowIllegalArgumentExceptionDueToNullAsUser(){
-        applicationInstanceService.findAllByOwner((User) null, mock(Domain.class));
+        applicationInstanceService.findAllByOwnerAndDomain((User) null, mock(Domain.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void findAllByOwnerAtDomainCalledWithObjectShouldShouldThrowIllegalArgumentExceptionDueToMissingUserId(){
         User user = new User("test", true);
-        applicationInstanceService.findAllByOwner(user, mock(Domain.class));
+        applicationInstanceService.findAllByOwnerAndDomain(user, mock(Domain.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void findAllByOwnerAtDomainCalledWithObjectShouldShouldThrowIllegalArgumentExceptionDueToNullAsDomain(){
         User user = new User("test", true);
         user.setId((long) 0);
-        applicationInstanceService.findAllByOwner(user, (Domain) null);
+        applicationInstanceService.findAllByOwnerAndDomain(user, (Domain) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void findAllByOwnerAtDomainCalledWithObjectShouldShouldThrowIllegalArgumentExceptionDueToMissingDomainId(){
         User user = new User("test", true);
         Domain domain = new Domain("test", "test");
-        applicationInstanceService.findAllByOwner(user, domain);
+        applicationInstanceService.findAllByOwnerAndDomain(user, domain);
     }
 
     @Test
@@ -436,7 +436,7 @@ public class ApplicationInstanceServiceTest {
         user.setId((long) 0);
         Domain domain = new Domain("test", "test");
         domain.setId((long) 0);
-        applicationInstanceService.findAllByOwner(user, domain);
+        applicationInstanceService.findAllByOwnerAndDomain(user, domain);
         verify(appInstanceRepo).findAllByOwnerAndDomain(isA(User.class), isA(Domain.class));
     }
 
@@ -451,7 +451,7 @@ public class ApplicationInstanceServiceTest {
         List<AppInstance> testList = new ArrayList<>();
         testList.add(test1);
         when(appInstanceRepo.findAllByOwnerAndDomain(isA(User.class), isA(Domain.class))).thenReturn(testList);
-        List<AppInstance> resultList = applicationInstanceService.findAllByOwner(user, domain);
+        List<AppInstance> resultList = applicationInstanceService.findAllByOwnerAndDomain(user, domain);
         assertNotNull(resultList);
         assertEquals(1, resultList.size());
     }

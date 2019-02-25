@@ -154,8 +154,10 @@
                                             "type": "select",
                                             "key": "inClusterInstance",
                                             "data": {
-                                                "values": []
+                                                "values": [],
+                                                "json": "insert-app-instances-here"
                                             },
+                                            "dataSrc": "json",
                                             "validate": {
                                                 "required": true
                                             },

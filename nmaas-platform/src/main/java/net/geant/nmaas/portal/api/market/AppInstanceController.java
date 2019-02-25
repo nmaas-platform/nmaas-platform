@@ -1,9 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.io.IOException;
-import java.util.Map;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
@@ -12,8 +10,10 @@ import net.geant.nmaas.orchestration.entities.AppLifecycleState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppInstance;
+import net.geant.nmaas.portal.api.domain.AppInstanceBase;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
@@ -30,6 +30,7 @@ import net.geant.nmaas.portal.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -227,6 +228,14 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
+    @GetMapping("/domains/{domainId}/apps/instances/running")
+    @Transactional
+    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) throws JsonProcessingException {
+        Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
+        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return this.getAllRunningInstancesByOwnerAndDomain(owner, domain);
+    }
+
     private AppInstanceStatus getAppInstanceState(net.geant.nmaas.portal.persistent.entity.AppInstance appInstance) {
         if (appInstance == null)
             throw new MissingElementException("App instance is null");
@@ -341,25 +350,15 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
-        if(appInstance.getApplication().getName().equalsIgnoreCase("Grafana")){
-            try{
-                ObjectNode jsonNode = (ObjectNode) objectMapper.readTree(appInstance.getApplication().getConfigTemplate().getTemplate());
-                ObjectNode updatedNode = objectMapper.createObjectNode().put("values", objectMapper.writeValueAsString(this.getAllInstanceNamesByApplicationNameOwnerAndDomain("Prometheus", appInstance.getOwner(), appInstance.getDomain())));
-                jsonNode.findParent("data").replace("data", updatedNode);
-                ai.setConfigTemplate(new ConfigTemplate(objectMapper.writeValueAsString(jsonNode)));
-            } catch(IOException e){
-                throw new IllegalArgumentException(e.getMessage());
-            }
-        } else{
-            ai.setConfigTemplate(new ConfigTemplate(appInstance.getApplication().getConfigTemplate().getTemplate()));
-        }
+        ai.setConfigTemplate(new ConfigTemplate(appInstance.getApplication().getConfigTemplate().getTemplate()));
 
         return ai;
     }
 
-    private Map<Long, String> getAllInstanceNamesByApplicationNameOwnerAndDomain(String appName, User owner, Domain domain){
-        return this.instances.getAllInstanceNamesByApplicationNameOwnerAndDomain(appName, owner, domain).stream()
+    private List<AppInstanceBase> getAllRunningInstancesByOwnerAndDomain(User owner, Domain domain){
+        return this.instances.findAllByOwnerAndDomain(owner, domain).stream()
                 .filter(app -> appDeploymentMonitor.state(app.getInternalId()).equals(AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED))
-                .collect(Collectors.toMap(net.geant.nmaas.portal.persistent.entity.AppInstance::getId, net.geant.nmaas.portal.persistent.entity.AppInstance::getName));
+                .map(app -> modelMapper.map(app, AppInstanceBase.class))
+                .collect(Collectors.toList());
     }
 }
