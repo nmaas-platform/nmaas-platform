@@ -57,20 +57,17 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
-    private ObjectMapper objectMapper;
-
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
     @Autowired
     public AppInstanceController(AppLifecycleManager appLifecycleManager,
                                  AppDeploymentMonitor appDeploymentMonitor,
                                  ApplicationInstanceService applicationInstanceService,
-                                 DomainService domains, ObjectMapper objectMapper) {
+                                 DomainService domains) {
         this.appLifecycleManager = appLifecycleManager;
         this.appDeploymentMonitor = appDeploymentMonitor;
         this.instances = applicationInstanceService;
         this.domains = domains;
-        this.objectMapper = objectMapper;
     }
 
     @GetMapping("/apps/instances")
