@@ -47,6 +47,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   app: Application;
 
+  public p_first: string = "p_first";
+
+  public maxItemsOnPage: number = 6;
+  public pageNumber: number = 1;
+
   public appInstanceStatus: AppInstanceStatus;
 
   public appInstanceId: number;
