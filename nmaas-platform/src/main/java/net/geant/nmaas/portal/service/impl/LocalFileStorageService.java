@@ -44,12 +44,13 @@ public class LocalFileStorageService implements FileStorageService {
             
             return fileInfo;
         } catch (IOException e) {
-        	if(path != null)
+        	if(path != null) {
 				try {
 					Files.deleteIfExists(path);
 				} catch (IOException e1) {
-					
+
 				}
+			}
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
 	}

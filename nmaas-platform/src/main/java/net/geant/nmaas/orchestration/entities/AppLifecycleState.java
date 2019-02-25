@@ -139,6 +139,42 @@ public enum AppLifecycleState {
             return "Application removal failed";
         }
     },
+    APPLICATION_RESTART_IN_PROGRESS{
+        @Override
+        public String getUserFriendlyState(){
+            return "Application restart in progress";
+        }
+    },
+    APPLICATION_RESTARTED{
+        @Override
+        public String getUserFriendlyState(){
+            return "Application restarted successfully";
+        }
+    },
+    APPLICATION_RESTART_FAILED{
+        @Override
+        public String getUserFriendlyState(){
+            return "Application restart failed";
+        }
+    },
+    APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS{
+        @Override
+        public String getUserFriendlyState() {
+            return "Application configuration update in progress.";
+        }
+    },
+    APPLICATION_CONFIGURATION_UPDATED{
+        @Override
+        public String getUserFriendlyState() {
+            return "Application configuration updated successfully.";
+        }
+    },
+    APPLICATION_CONFIGURATION_UPDATE_FAILED {
+        @Override
+        public String getUserFriendlyState() {
+            return "Application configuration update failed.";
+        }
+    },
     UNKNOWN{
         @Override
         public String getUserFriendlyState(){
@@ -149,12 +185,6 @@ public enum AppLifecycleState {
         @Override
         public String getUserFriendlyState(){
             return "Internal error";
-        }
-    },
-    GENERIC_ERROR{
-        @Override
-        public String getUserFriendlyState(){
-            return "Generic error";
         }
     };
 

@@ -11,11 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppConfigurationView {
+
     @JsonProperty("jsonInput")
     private String jsonInput;
+
     private Integer storageSpace;
+
     @JsonProperty("additionalParameters")
     private String additionalParameters;
+
     @JsonProperty("mandatoryParameters")
     private String mandatoryParameters;
     @JsonProperty("accessCredentials")
@@ -36,6 +40,10 @@ public class AppConfigurationView {
     @JsonSetter("jsonInput")
     public void setJsonInput(JsonNode data){
         this.jsonInput = data.toString();
+    }
+
+    public void setJsonInput(String data) {
+        this.jsonInput = data;
     }
 
     @JsonSetter("accessCredentials")

@@ -1,7 +1,12 @@
 package net.geant.nmaas.orchestration.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,15 +19,15 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import lombok.*;
-import org.hibernate.annotations.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Details of single application deployment in the system.
  */
 @Entity
-@Table(name="app_deployment")
+@Table(name = "app_deployment")
 @Getter
 @Setter
 @Builder
@@ -81,6 +86,10 @@ public class AppDeployment {
     private String owner;
 
     private String appName;
+
+    public void addChangeOfStateToHistory(AppDeploymentState previousState, AppDeploymentState currentState){
+        history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
+    }
 
     @Override
     public String toString() {
