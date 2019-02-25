@@ -12,9 +12,10 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.co
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesNmServiceInfo;
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.orchestration.entities.Identifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,7 +34,7 @@ public class KubernetesManagerCheckServiceTest {
     private GitLabManager gitLabManager = mock(GitLabManager.class);
     private JanitorService janitorService = mock(JanitorService.class);
 
-    @Before
+    @BeforeEach
     public void setup() {
         manager = new KubernetesManager(repositoryManager,
                 clusterValidator,
@@ -52,17 +53,19 @@ public class KubernetesManagerCheckServiceTest {
     }
 
     @Test
-    public void shouldVerifyThatServiceIsDeployed() throws Exception {
+    public void shouldVerifyThatServiceIsDeployed() {
         when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(true);
         when(janitorService.checkIfReady(any(), any())).thenReturn(true);
         manager.checkService(Identifier.newInstance("deploymentId"));
     }
 
-    @Test(expected = ContainerCheckFailedException.class)
-    public void shouldThrowExceptionSinceServiceNotDeployed() throws Exception {
-        when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
-        when(janitorService.checkIfReady(any(), any())).thenReturn(false);
-        manager.checkService(Identifier.newInstance("deploymentId"));
+    @Test
+    public void shouldThrowExceptionSinceServiceNotDeployed() {
+        assertThrows(ContainerCheckFailedException.class, () -> {
+            when(serviceLifecycleManager.checkServiceDeployed(any(Identifier.class))).thenReturn(false);
+            when(janitorService.checkIfReady(any(), any())).thenReturn(false);
+            manager.checkService(Identifier.newInstance("deploymentId"));
+        });
     }
 
 }

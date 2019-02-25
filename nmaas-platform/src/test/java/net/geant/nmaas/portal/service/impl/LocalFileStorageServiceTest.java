@@ -1,5 +1,21 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.portal.api.exception.MissingElementException;
+import net.geant.nmaas.portal.api.exception.StorageException;
+import net.geant.nmaas.portal.persistent.entity.FileInfo;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,37 +23,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.transaction.Transactional;
-
-import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import net.geant.nmaas.SecurityConfig;
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.PortalConfig;
-import net.geant.nmaas.portal.api.exception.MissingElementException;
-import net.geant.nmaas.portal.api.exception.StorageException;
-import net.geant.nmaas.portal.persistent.entity.FileInfo;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ContextConfiguration(classes = {SecurityConfig.class, PortalConfig.class, PersistentConfig.class})
-@EnableAutoConfiguration
 @Transactional
 @Rollback
 public class LocalFileStorageServiceTest {
@@ -52,12 +44,12 @@ public class LocalFileStorageServiceTest {
 	
 	Path path;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		path = null;
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws IOException {
 		if (path != null ) 
 			Files.deleteIfExists(path);
@@ -67,7 +59,7 @@ public class LocalFileStorageServiceTest {
 	 * TODO: update with powermock
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void testStoreGetRemove() throws StorageException, MissingElementException, FileNotFoundException, IOException {
         MockMultipartFile multipartFile =
                 new MockMultipartFile("file", "test.txt", "text/plain", "FAKE SCREENSHOT".getBytes());
@@ -88,6 +80,5 @@ public class LocalFileStorageServiceTest {
         assertTrue(deleted);
         assertFalse(Files.exists(path));        
 	}
-	
-	
+
 }

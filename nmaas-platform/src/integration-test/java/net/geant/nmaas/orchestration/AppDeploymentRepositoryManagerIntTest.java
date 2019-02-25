@@ -5,18 +5,18 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class AppDeploymentRepositoryManagerIntTest {
 
@@ -31,7 +31,7 @@ public class AppDeploymentRepositoryManagerIntTest {
     private Identifier deploymentId1 = Identifier.newInstance("deploymentId1");
     private Identifier applicationId = Identifier.newInstance("applicationId");
 
-    @After
+    @AfterEach
     public void cleanup() {
         repository.deleteAll();
     }

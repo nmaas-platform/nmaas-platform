@@ -1,24 +1,26 @@
 package net.geant.nmaas.portal.api.i18n;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.LanguageView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.modelmapper.ModelMapper;
 
 public class InternationalizationControllerTest {
 
@@ -32,7 +34,7 @@ public class InternationalizationControllerTest {
 
     private LanguageView language;
 
-    @Before
+    @BeforeEach
     public void setup(){
         this.internationalizationController = new InternationalizationController(repository, configurationManager, modelMapper);
         this.language = new LanguageView("pl", true);
@@ -69,17 +71,21 @@ public class InternationalizationControllerTest {
         verify(repository, times(1)).save(any());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowAnExceptionWhenLanguageIsNotFound(){
-        when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.empty());
-        internationalizationController.changeSupportedLanguageState(language);
+        assertThrows(IllegalArgumentException.class, () -> {
+            when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.empty());
+            internationalizationController.changeSupportedLanguageState(language);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowAnExceptionWhenDisablingDefaultLanguage(){
-        Internationalization internationalization = new Internationalization(1L, "pl", false, "Test content");
-        when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization));
-        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "pl"));
-        internationalizationController.changeSupportedLanguageState(language);
+        assertThrows(IllegalStateException.class, () -> {
+            Internationalization internationalization = new Internationalization(1L, "pl", false, "Test content");
+            when(repository.findByLanguageOrderByIdDesc(language.getLanguage())).thenReturn(Optional.of(internationalization));
+            when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(false, false, "pl"));
+            internationalizationController.changeSupportedLanguageState(language);
+        });
     }
 }

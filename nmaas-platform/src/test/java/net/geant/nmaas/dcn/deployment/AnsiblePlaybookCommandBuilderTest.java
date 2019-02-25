@@ -7,7 +7,7 @@ import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;

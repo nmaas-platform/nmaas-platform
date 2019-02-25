@@ -16,8 +16,8 @@ import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import org.apache.commons.lang.NotImplementedException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -42,14 +43,14 @@ import static org.mockito.Mockito.when;
 
 public class DefaultAppLifecycleManagerTest {
 
-    private DefaultAppDeploymentRepositoryManager repositoryManager = mock(DefaultAppDeploymentRepositoryManager.class);
+    private AppDeploymentRepositoryManager repositoryManager = mock(AppDeploymentRepositoryManager.class);
     private ApplicationEventPublisher eventPublisher = mock(ApplicationEventPublisher.class);
     private NmServiceInfoRepository infoRepository = mock(NmServiceInfoRepository.class);
     private JanitorService janitorService = mock(JanitorService.class);
 
     private DefaultAppLifecycleManager appLifecycleManager;
 
-    @Before
+    @BeforeEach
     public void setup() {
         appLifecycleManager = new DefaultAppLifecycleManager(repositoryManager, eventPublisher, infoRepository, janitorService);
     }
@@ -150,9 +151,11 @@ public class DefaultAppLifecycleManagerTest {
         verify(eventPublisher, times(1)).publishEvent(any(AppRemoveActionEvent.class));
     }
 
-    @Test (expected = NotImplementedException.class)
+    @Test
     public void shouldTriggerAppInstanceUpdate() {
-        appLifecycleManager.updateApplication(new Identifier(), new Identifier());
+        assertThrows(NotImplementedException.class, () -> {
+            appLifecycleManager.updateApplication(new Identifier(), new Identifier());
+        });
     }
 
     @Test

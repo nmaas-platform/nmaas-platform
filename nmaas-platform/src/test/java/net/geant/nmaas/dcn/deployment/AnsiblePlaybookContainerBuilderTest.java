@@ -7,11 +7,11 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KClusterAt
 import net.geant.nmaas.externalservices.inventory.network.CloudAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.NetworkAttachPoint;
 import net.geant.nmaas.externalservices.inventory.network.entities.DomainNetworkAttachPoint;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class AnsiblePlaybookContainerBuilderTest {
 

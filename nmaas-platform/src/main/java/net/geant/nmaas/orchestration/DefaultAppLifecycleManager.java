@@ -46,7 +46,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 @AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
-    private DefaultAppDeploymentRepositoryManager repositoryManager;
+    private AppDeploymentRepositoryManager repositoryManager;
 
     private ApplicationEventPublisher eventPublisher;
 

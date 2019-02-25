@@ -13,30 +13,17 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import static org.mockito.ArgumentMatchers.any;
-import org.mockito.Captor;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.transaction.Transactional;
@@ -58,14 +45,16 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_TOOL_MANAGER;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_USER;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @EnableAutoConfiguration
 @Transactional(value=TxType.REQUIRES_NEW)
@@ -91,7 +80,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     private Principal principal = mock(Principal.class);
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         mvc = createMVC();
         when(principal.getName()).thenReturn("admin");
@@ -126,7 +115,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         prepareSecurity();
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testDisableUser() throws Exception {
         MvcResult result = mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
@@ -137,7 +126,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
                 .andReturn();
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testEnableUser() throws Exception {
         MvcResult result =  mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
@@ -200,12 +189,14 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         assertEquals(modUser1.getEmail(), newEmail);
     }
 
-    @Test(expected = ProcessingException.class)
+    @Test
     public void shouldNotUpdateUserWithTakenEmail(){
-        String newEmail = user3.getEmail();
-        UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
-        userRequest.setEmail(newEmail);
-        userController.updateUser(userEntity.getId(), userRequest, principal);
+        assertThrows(ProcessingException.class, () -> {
+            String newEmail = user3.getEmail();
+            UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+            userRequest.setEmail(newEmail);
+            userController.updateUser(userEntity.getId(), userRequest, principal);
+        });
     }
 
     @Test

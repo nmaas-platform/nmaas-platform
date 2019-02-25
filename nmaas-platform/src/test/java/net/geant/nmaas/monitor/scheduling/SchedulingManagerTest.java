@@ -1,7 +1,5 @@
 package net.geant.nmaas.monitor.scheduling;
 
-import java.util.Arrays;
-import java.util.List;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorService;
 import net.geant.nmaas.monitor.MonitorManager;
@@ -9,9 +7,17 @@ import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.monitor.TimeFormat;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.TriggerKey;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -19,9 +25,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.TriggerKey;
 
 public class SchedulingManagerTest {
 
@@ -37,7 +40,7 @@ public class SchedulingManagerTest {
 
     private JobDescriptor jobDescriptor;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception{
         jobDescriptor = new JobDescriptor(ServiceType.GITLAB, 3L, TimeFormat.MIN);
         GitLabMonitorService gitLabMonitorService = new GitLabMonitorService();
@@ -56,10 +59,12 @@ public class SchedulingManagerTest {
         verify(scheduler, times(1)).scheduleJob(any(), anySet(), anyBoolean());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotCreateJobWhenJobExists() throws Exception{
-        when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(true);
-        JobDescriptor result = this.scheduleManager.createJob(jobDescriptor);
+    @Test
+    public void shouldNotCreateJobWhenJobExists(){
+        assertThrows(IllegalStateException.class, () -> {
+            when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(true);
+            this.scheduleManager.createJob(jobDescriptor);
+        });
     }
 
     @Test
@@ -72,9 +77,11 @@ public class SchedulingManagerTest {
         this.scheduleManager.executeJob("GiTLaB");
     }
 
-    @Test(expected = MonitorServiceNotFound.class)
+    @Test
     public void shouldNotExecuteJobWhenServiceCannotBeFound(){
-        this.scheduleManager.executeJob("GITHUB");
+        assertThrows(MonitorServiceNotFound.class, () -> {
+            this.scheduleManager.executeJob("GITHUB");
+        });
     }
 
     @Test

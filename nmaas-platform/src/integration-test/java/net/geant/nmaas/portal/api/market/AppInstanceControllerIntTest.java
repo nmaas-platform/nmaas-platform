@@ -9,12 +9,12 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.AppInstanceRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
 
     @MockBean
@@ -34,7 +34,7 @@ public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
     @MockBean
     private AppLifecycleManager appLifecycleManager;
 
-    @Before
+    @BeforeEach
     public void setup(){
         this.mvc = this.createMVC();
     }

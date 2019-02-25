@@ -10,21 +10,22 @@ import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class DcnRepositoryManagerTest {
 
@@ -39,7 +40,7 @@ public class DcnRepositoryManagerTest {
     private static String DOMAIN = "domain";
     private static String DEPLOYMENT_NAME = "deploymentName";
 
-    @Before
+    @BeforeEach
     public void populateRepositories() {
         AppDeployment appDeployment = AppDeployment.builder().deploymentId(DEPLOYMENT_ID)
                 .domain(DOMAIN)
@@ -51,7 +52,7 @@ public class DcnRepositoryManagerTest {
         appDeploymentRepository.save(appDeployment);
     }
 
-    @After
+    @AfterEach
     public void cleanRepositories() {
         appDeploymentRepository.deleteAll();
         dcnInfoRepository.deleteAll();
@@ -113,45 +114,61 @@ public class DcnRepositoryManagerTest {
         assertThat(dcnRepositoryManager.loadNetwork(DOMAIN).getCloudEndpointDetails().getGateway(), equalTo("gw"));
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionOnMissingDeployment() throws InvalidDomainException {
-        appDeploymentRepository.deleteAll();
-        dcnRepositoryManager.loadNetwork(DOMAIN);
+    @Test
+    public void shouldThrowExceptionOnMissingDeployment(){
+        assertThrows(InvalidDomainException.class, () -> {
+            appDeploymentRepository.deleteAll();
+            dcnRepositoryManager.loadNetwork(DOMAIN);
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.loadNetwork(DOMAIN);
+    @Test
+    public void shouldThrowExceptionOnMissingDcnForGivenClient(){
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.loadNetwork(DOMAIN);
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.removeDcnInfo(DOMAIN);
+    @Test
+    public void shouldThrowExceptionDuringRemovalOnMissingDcnForGivenClient() {
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.removeDcnInfo(DOMAIN);
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionDuringCloudConfigUpdateOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(DOMAIN, null);
+    @Test
+    public void shouldThrowExceptionDuringCloudConfigUpdateOnMissingDcnForGivenClient() {
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.updateAnsiblePlaybookForCloudSideRouter(DOMAIN, null);
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionDuringClientConfigUpdateOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(DOMAIN, null);
+    @Test
+    public void shouldThrowExceptionDuringClientConfigUpdateOnMissingDcnForGivenClient() {
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.updateAnsiblePlaybookForClientSideRouter(DOMAIN, null);
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionDuringCloudEndpointDetailsUpdateOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.updateDcnCloudEndpointDetails(DOMAIN, null);
+    @Test
+    public void shouldThrowExceptionDuringCloudEndpointDetailsUpdateOnMissingDcnForGivenClient() {
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.updateDcnCloudEndpointDetails(DOMAIN, null);
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
+    @Test
+    public void shouldThrowExceptionDuringStateNotificationOnMissingDcnForGivenClient() {
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.notifyStateChange(new DcnDeploymentStateChangeEvent(this, DOMAIN, DcnDeploymentState.DEPLOYMENT_INITIATED));
+        });
     }
 
-    @Test(expected = InvalidDomainException.class)
-    public void shouldThrowExceptionDuringStateRetrievalOnMissingDcnForGivenClient() throws InvalidDomainException {
-        dcnRepositoryManager.loadCurrentState(DOMAIN);
+    @Test
+    public void shouldThrowExceptionDuringStateRetrievalOnMissingDcnForGivenClient() {
+        assertThrows(InvalidDomainException.class, () -> {
+            dcnRepositoryManager.loadCurrentState(DOMAIN);
+        });
     }
 
     private void storeDefaultDcnInfoInRepository() throws InvalidDomainException {

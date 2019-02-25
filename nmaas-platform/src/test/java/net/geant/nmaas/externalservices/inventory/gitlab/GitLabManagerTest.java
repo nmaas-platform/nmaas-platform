@@ -2,18 +2,19 @@ package net.geant.nmaas.externalservices.inventory.gitlab;
 
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class GitLabManagerTest {
 
@@ -25,26 +26,30 @@ public class GitLabManagerTest {
 
     private GitLabManager manager;
 
-    @Before
+    @BeforeEach
     public void setup(){
         manager = new GitLabManager(repository, modelMapper);
     }
 
-    @After
+    @AfterEach
     public void cleanup(){
         repository.deleteAll();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionOnTooManyConfigs(){
-        repository.save(simpleGitlabConfig());
-        repository.save(simpleGitlabConfig());
-        manager.getGitLabApiToken();
+        assertThrows(IllegalStateException.class, () -> {
+            repository.save(simpleGitlabConfig());
+            repository.save(simpleGitlabConfig());
+            manager.getGitLabApiToken();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowAnExceptionOfMissingConfig(){
-        manager.getGitLabApiToken();
+        assertThrows(IllegalStateException.class, () -> {
+            manager.getGitLabApiToken();
+        });
     }
 
     @Test

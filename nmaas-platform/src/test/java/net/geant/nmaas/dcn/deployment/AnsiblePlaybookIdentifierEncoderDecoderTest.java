@@ -1,17 +1,18 @@
 package net.geant.nmaas.dcn.deployment;
 
+import net.geant.nmaas.orchestration.entities.Identifier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.decode;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.encodeForClientSideRouter;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.encodeForCloudSideRouter;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.wasEncodedForClientSideRouter;
 import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.wasEncodedForCloudSideRouter;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import org.junit.Before;
-import org.junit.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AnsiblePlaybookIdentifierEncoderDecoderTest {
 
@@ -19,7 +20,7 @@ public class AnsiblePlaybookIdentifierEncoderDecoderTest {
 
     private String originalDcnName;
 
-    @Before
+    @BeforeEach
     public void setup() {
         appDeploymentId = Identifier.newInstance("appDeploymentId");
         originalDcnName = appDeploymentId.value();
@@ -43,10 +44,12 @@ public class AnsiblePlaybookIdentifierEncoderDecoderTest {
         assertThat(decodedDcnName, equalTo(originalDcnName));
     }
 
-    @Test(expected = AnsiblePlaybookIdentifierConverter.AnsiblePlaybookIdentifierConverterException.class)
+    @Test
     public void shouldThrowExceptionOnMalformedEncodedPlaybookId() throws AnsiblePlaybookIdentifierConverter.AnsiblePlaybookIdentifierConverterException {
-        final String encodedPlaybookId = "YnVn" + encodeForCloudSideRouter(originalDcnName);
-        decode(encodedPlaybookId);
+        assertThrows(AnsiblePlaybookIdentifierConverter.AnsiblePlaybookIdentifierConverterException.class, () -> {
+            final String encodedPlaybookId = "YnVn" + encodeForCloudSideRouter(originalDcnName);
+            decode(encodedPlaybookId);
+        });
     }
 
     @Test

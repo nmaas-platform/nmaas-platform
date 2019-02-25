@@ -18,20 +18,21 @@ import net.geant.nmaas.orchestration.tasks.app.AppRemovalTask;
 import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
 import net.geant.nmaas.orchestration.tasks.app.AppServiceDeploymentTask;
 import net.geant.nmaas.orchestration.tasks.app.AppServiceVerificationTask;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class DefaultAppDeploymentMonitorIntTest {
 
@@ -66,7 +67,7 @@ public class DefaultAppDeploymentMonitorIntTest {
     private static final int DELAY = 200;
     private final Identifier deploymentId = Identifier.newInstance("this-is-example-deployment-id");
 
-    @Before
+    @BeforeEach
     public void setup() throws InvalidDeploymentIdException {
         KubernetesNmServiceInfo nmServiceInfo = new KubernetesNmServiceInfo(deploymentId, DEPLOYMENT_NAME, DOMAIN, 20, null);
         kubernetesRepositoryManager.storeService(nmServiceInfo);
@@ -82,7 +83,7 @@ public class DefaultAppDeploymentMonitorIntTest {
         repository.updateState(deploymentId, AppDeploymentState.REQUESTED);
     }
 
-    @After
+    @AfterEach
     public void cleanRepository() throws InvalidDeploymentIdException {
         appDeploymentRepository.deleteAll();
         kubernetesRepositoryManager.removeService(deploymentId);
@@ -140,10 +141,12 @@ public class DefaultAppDeploymentMonitorIntTest {
         assertThat(monitor.state(deploymentId), equalTo(AppLifecycleState.APPLICATION_REMOVAL_IN_PROGRESS));
     }
 
-    @Test(expected = InvalidAppStateException.class)
+    @Test
     public void shouldThrowExceptionWhenReadingAccessDetailsInWrongAppState() throws InvalidAppStateException, InvalidDeploymentIdException {
-        repository.updateState(deploymentId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
-        monitor.userAccessDetails(deploymentId);
+        assertThrows(InvalidAppStateException.class, () -> {
+            repository.updateState(deploymentId, AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED);
+            monitor.userAccessDetails(deploymentId);
+        });
     }
 
 }

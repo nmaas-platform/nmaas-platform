@@ -14,8 +14,8 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
@@ -25,6 +25,7 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -47,7 +48,7 @@ public class DomainServiceTest {
 
     DomainService domainService;
 
-    @Before
+    @BeforeEach
     public void setup(){
         validator = new DefaultCodenameValidator("[a-z-]{2,8}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
@@ -56,7 +57,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateGlobalDomain() throws ProcessingException{
+    public void shouldCreateGlobalDomain(){
         when(domainRepository.findByName(anyString())).thenReturn(Optional.empty());
         Domain domain = new Domain("GLOBAL", "global");
         when(domainRepository.save(domain)).thenReturn(domain);
@@ -65,7 +66,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetGlobalDomain() throws ProcessingException{
+    public void shouldGetGlobalDomain(){
         Domain domain = new Domain("GLOBAL", "GLOBAL");
         when(domainRepository.findByName(anyString())).thenReturn(Optional.of(domain));
         Domain result = this.domainService.createGlobalDomain();
@@ -73,7 +74,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateDomain() throws ProcessingException{
+    public void shouldCreateDomain(){
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
@@ -83,23 +84,27 @@ public class DomainServiceTest {
         assertThat("Active is false", result.isActive());
     }
 
-    @Test(expected = ProcessingException.class)
-    public void shouldNotCreateDomainWithInvalidCodename() throws ProcessingException{
-        String name = "testdomain";
-        String codename = "test-domain";
-        Domain domain = new Domain(name, codename);
-        when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotCreateDomainWithNullName() throws ProcessingException{
-        String codename = "test-domain";
-        Domain result = this.domainService.createDomain(null, codename);
+    @Test
+    public void shouldNotCreateDomainWithInvalidCodename(){
+        assertThrows(ProcessingException.class, () -> {
+            String name = "testdomain";
+            String codename = "test-domain";
+            Domain domain = new Domain(name, codename);
+            when(domainRepository.save(domain)).thenReturn(domain);
+            this.domainService.createDomain(name, codename);
+        });
     }
 
     @Test
-    public void shouldCreateDomainWithFalseActiveFlag() throws ProcessingException{
+    public void shouldNotCreateDomainWithNullName(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            String codename = "test-domain";
+            this.domainService.createDomain(null, codename);
+        });
+    }
+
+    @Test
+    public void shouldCreateDomainWithFalseActiveFlag(){
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(name, codename, false);
@@ -110,7 +115,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldCreateDomainWithOwnParams() throws ProcessingException{
+    public void shouldCreateDomainWithOwnParams(){
         String name = "testdomain";
         String codename = "testdom";
         String kubernetesNamespace = "default-namespace";
@@ -127,7 +132,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldUpdateDomain() throws ProcessingException{
+    public void shouldUpdateDomain(){
         String name = "testdomain";
         String codename = "testdom";
         Domain domain = new Domain(1L, name, codename, true, "default", "default");
@@ -135,23 +140,29 @@ public class DomainServiceTest {
         verify(domainRepository, times(1)).save(domain);
     }
 
-    @Test (expected = ProcessingException.class)
-    public void shouldNotUpdateNonExistingDomain() throws ProcessingException{
-        String name = "testdomain";
-        String codename = "testdom";
-        this.domainService.updateDomain(new Domain(name, codename));
+    @Test
+    public void shouldNotUpdateNonExistingDomain(){
+        assertThrows(ProcessingException.class, () -> {
+            String name = "testdomain";
+            String codename = "testdom";
+            this.domainService.updateDomain(new Domain(name, codename));
+        });
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void shouldNotUpdateGlobalDomain() throws ProcessingException{
-        String name = "GLOBAL";
-        String codename = "GLOBAL";
-        this.domainService.updateDomain(new Domain(1L, name, codename));
+    @Test
+    public void shouldNotUpdateGlobalDomain(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            String name = "GLOBAL";
+            String codename = "GLOBAL";
+            this.domainService.updateDomain(new Domain(1L, name, codename));
+        });
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void shouldNotUpdateNullDomain() throws ProcessingException{
-        this.domainService.updateDomain(null);
+    @Test
+    public void shouldNotUpdateNullDomain(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.domainService.updateDomain(null);
+        });
     }
 
     @Test
@@ -162,15 +173,17 @@ public class DomainServiceTest {
         verify(domainRepository, times(1)).delete(domain);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotRemoveGlobalDomain(){
-        Domain domain = new Domain(1L, "GLOBAL", "GLOBAL");
-        when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
-        assertFalse(this.domainService.removeDomain(1L));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Domain domain = new Domain(1L, "GLOBAL", "GLOBAL");
+            when(domainRepository.findById(1L)).thenReturn(Optional.of(domain));
+            assertFalse(this.domainService.removeDomain(1L));
+        });
     }
 
     @Test
-    public void shouldAddMemberRole() throws ObjectNotFoundException {
+    public void shouldAddMemberRole(){
         Long domainId = 1L;
         Long userId = 1L;
         Role role = Role.ROLE_OPERATOR;
@@ -182,23 +195,29 @@ public class DomainServiceTest {
         this.domainService.addMemberRole(domainId, userId, role);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAddMemberRoleWithNullDomainId() throws ObjectNotFoundException{
-        this.domainService.addMemberRole(null, 1L, Role.ROLE_OPERATOR);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAddMemberRoleWithNullUserId() throws ObjectNotFoundException{
-        this.domainService.addMemberRole(1L, null, Role.ROLE_OPERATOR);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotAddMemberRoleWithEmptyRole() throws ObjectNotFoundException{
-        this.domainService.addMemberRole(1L, 1L, null);
+    @Test
+    public void shouldNotAddMemberRoleWithNullDomainId(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.domainService.addMemberRole(null, 1L, Role.ROLE_OPERATOR);
+        });
     }
 
     @Test
-    public void shouldRemoveMemberRole() throws ObjectNotFoundException {
+    public void shouldNotAddMemberRoleWithNullUserId(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.domainService.addMemberRole(1L, null, Role.ROLE_OPERATOR);
+        });
+    }
+
+    @Test
+    public void shouldNotAddMemberRoleWithEmptyRole(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            this.domainService.addMemberRole(1L, 1L, null);
+        });
+    }
+
+    @Test
+    public void shouldRemoveMemberRole(){
         Long domainId = 1L;
         Long userId = 1L;
         Role role = Role.ROLE_OPERATOR;
@@ -211,7 +230,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldRemoveMember() throws ObjectNotFoundException{
+    public void shouldRemoveMember(){
         Long domainId = 1L;
         Long userId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom");
@@ -223,7 +242,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetMemberRoles() throws ObjectNotFoundException{
+    public void shouldGetMemberRoles(){
         Long domainId = 1L;
         Long userId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom");
@@ -236,7 +255,7 @@ public class DomainServiceTest {
     }
 
     @Test
-    public void shouldGetMember() throws ProcessingException{
+    public void shouldGetMember(){
         Long domainId = 1L;
         Long userId = 1L;
         Domain domain = new Domain(domainId, "testdom", "testdom");
@@ -247,38 +266,44 @@ public class DomainServiceTest {
         this.domainService.getMember(domainId, userId);
     }
 
-    @Test(expected = ProcessingException.class)
-    public void shouldNotGetMember() throws ProcessingException{
-        Long domainId = 1L;
-        Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
-        User user = new User("user");
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findDomainMember(domain, user)).thenReturn(null);
-        this.domainService.getMember(domainId, userId);
-    }
-
-    @Test(expected = ObjectNotFoundException.class)
-    public void shouldNotGetMemberWithEmptyUser() throws ProcessingException{
-        Long domainId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
-        when(userService.findById(1L)).thenReturn(Optional.empty());
-        when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        this.domainService.getMember(domainId, 1L);
-    }
-
-    @Test(expected = ObjectNotFoundException.class)
-    public void shouldThrowAnExceptionWhenGetMemberWithNullDomain() throws ProcessingException{
-        Long userId = 1L;
-        User user = new User("user");
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
-        when(domainRepository.findById(1L)).thenReturn(Optional.empty());
-        this.domainService.getMember(1L, userId);
+    @Test
+    public void shouldNotGetMember(){
+        assertThrows(ProcessingException.class, () -> {
+            Long domainId = 1L;
+            Long userId = 1L;
+            Domain domain = new Domain(domainId, "testdom", "testdom");
+            User user = new User("user");
+            when(userService.findById(userId)).thenReturn(Optional.of(user));
+            when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
+            when(userRoleRepo.findDomainMember(domain, user)).thenReturn(null);
+            this.domainService.getMember(domainId, userId);
+        });
     }
 
     @Test
-    public void shouldGetUserDomains() throws ObjectNotFoundException{
+    public void shouldNotGetMemberWithEmptyUser(){
+        assertThrows(ObjectNotFoundException.class, () -> {
+            Long domainId = 1L;
+            Domain domain = new Domain(domainId, "testdom", "testdom");
+            when(userService.findById(1L)).thenReturn(Optional.empty());
+            when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
+            this.domainService.getMember(domainId, 1L);
+        });
+    }
+
+    @Test
+    public void shouldThrowAnExceptionWhenGetMemberWithNullDomain(){
+        assertThrows(ObjectNotFoundException.class, () -> {
+            Long userId = 1L;
+            User user = new User("user");
+            when(userService.findById(userId)).thenReturn(Optional.of(user));
+            when(domainRepository.findById(1L)).thenReturn(Optional.empty());
+            this.domainService.getMember(1L, userId);
+        });
+    }
+
+    @Test
+    public void shouldGetUserDomains(){
         Long userId = 1L;
         User user = new User("user");
         Domain domain = new Domain(1L, "testdom", "testdom");

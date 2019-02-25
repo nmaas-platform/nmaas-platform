@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.events;
 
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
