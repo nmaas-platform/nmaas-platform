@@ -464,7 +464,7 @@
     "REJECTED_TAB": "Rejected",
     "NEW_TAB": "New",
     "NO_REJECTED_APPS_MESSAGE": "There is no rejected applications",
-    "NO_UNAPPROVED_APPS_MESSAGE": "There is no unapproved applications"
+    "NO_NEW_APPS_MESSAGE": "There is no unapproved applications"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of submitted application",
@@ -485,7 +485,8 @@
     "SOURCE_CODE_LABEL": "Link to source code",
     "PROJECT_ISSUES_LABEL": "Link to project issues",
     "TAGS_LABEL": "Select tags for application",
-    "CHOOSE_TAG_LABEL": "Choose",
+    "CHOOSE_LABEL": "Choose",
+    "CANCEL_LABEL": "Cancel",
     "UPLOAD_LOGO_LABEL": "Upload application logo",
     "UPLOAD_SCREENSHOTS_LABEL": "Upload application screenshots",
     "BRIEF_DESCRIPTION_LABEL": "Brief description",
@@ -503,7 +504,13 @@
       "HEADER": "New application submitted correctly",
       "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
       "BACK_TO_APP_MANAGEMENT_BUTTON": "Back to app management"
-    }
+    },
+    "GENERAL_INFO_STEP": "General information",
+    "BASIC_APP_INFO_STEP": "Basic application information",
+    "LOGO_AND_SCREENSHOTS_STEP": "Logo and screenshots",
+    "APP_DESCRIPTIONS_STEP": "Application descriptions",
+    "CONFIG_TEMPLATES_STEP": "Configuration templates",
+    "SHORT_REVIEW_STEP": "Short review"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",

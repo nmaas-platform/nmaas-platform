@@ -45,12 +45,12 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       this.tags.push({label: val, value: val});
     }));
     this.steps = [
-      {label: 'General information'},
-      {label: 'Basic application information'},
-      {label: 'Logo and screenshots'},
-      {label: 'Application descriptions'},
-      {label: 'Configuration templates'},
-      {label: 'Short review'}
+      {label: this.translate.instant('APPS_WIZARD.GENERAL_INFO_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.BASIC_APP_INFO_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.LOGO_AND_SCREENSHOTS_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.APP_DESCRIPTIONS_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.CONFIG_TEMPLATES_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.SHORT_REVIEW_STEP')}
     ];
     this.route.params.subscribe(params => {
       if(isNullOrUndefined(params['id'])){
