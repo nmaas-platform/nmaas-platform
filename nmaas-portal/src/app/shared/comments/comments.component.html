@@ -22,6 +22,10 @@
 				<ul class="media-list">
 					<ng-template ngFor let-comment [ngForOf]="comments">
 					<li *ngIf="!comment.parentId" class="media">
+						<app-single-comment [createdAt]=comment.createdAt [commentAuthor]=comment.owner.username
+											[commentId]=comment.id [commentText]=comment.comment
+						(removeEvent)="OnRemove($event)" (addReplyEvent)="onAddReply($event)">
+						</app-single-comment>
 						<div class="media-left">
 						  <a href="#">
 							<span class="glyphicon glyphicon-user"></span>

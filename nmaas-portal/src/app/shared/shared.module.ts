@@ -40,6 +40,7 @@ import { AboutComponent } from './about/about.component';
 import {ChangelogComponent} from "./changelog/changelog.component";
 import {NotificationService} from "../service/notification.service";
 import {RecaptchaModule} from "ng-recaptcha";
+import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
 
 @NgModule({
   imports: [
@@ -84,7 +85,8 @@ import {RecaptchaModule} from "ng-recaptcha";
     SortableTableDirective,
     RatingExtendedComponent,
     AboutComponent,
-    ChangelogComponent
+    ChangelogComponent,
+    SingleCommentComponent
   ],
   providers: [
     PasswordValidator,

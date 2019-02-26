@@ -80,6 +80,14 @@ export class CommentsComponent implements OnInit {
             );
     }
 
+    OnRemove($event){
+        console.debug("OnRemove catches event with id: " + $event);
+    }
+
+    onAddReply($event){
+        console.debug("OnAddReply catches event with id: " + $event['id'] + " and string: " + $event['text']);
+    }
+
     public setCommentNumberOnClick(commentId:number, subComment:boolean){
         this.commentId = commentId;
         this.subComment = subComment;
