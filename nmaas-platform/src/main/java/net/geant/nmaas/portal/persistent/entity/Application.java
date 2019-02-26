@@ -83,14 +83,18 @@ public class Application implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ApplicationState state;
 
-	public Application(String name, String version) {
+	@Column(nullable = false)
+	private String owner;
+
+	public Application(String name, String version, String owner) {
 		this.name = name;
 		this.version = version;
+		this.owner = owner;
 		this.state = ApplicationState.NEW;
 	}
 
-	public Application(Long id, String name, String version) {
-		this(name, version);
+	public Application(Long id, String name, String version, String owner) {
+		this(name, version, owner);
 		this.id = id;
 	}
 

@@ -10,10 +10,17 @@
         <label for="changeState" class="col-sm-12 control-label">New state:</label>
         <br>
         <span class="col-md-12">
-          <select class="form-control" id="changeState" name="changeState" #changeState="ngModel" [(ngModel)]="selectedState" required>
+          <select class="form-control" id="changeState" name="changeState" #changeState="ngModel" [(ngModel)]="stateChange.state" required>
             <option *ngFor="let state of stateList" [value]="state">{{getStateAsString(state)}}</option>
           </select>
         </span>
+        <div *ngIf="getStateAsString(stateChange?.state) != 'ACTIVE' && getStateAsString(stateChange?.state) != 'NEW'">
+          <label for="reason" class="col-sm-12 control-label">Reason:</label>
+          <br>
+          <span class="col-md-12">
+            <textarea class="form-control" id="reason" name="reason" placeholder="Please explain your decision" [(ngModel)]="stateChange.reason"></textarea>
+          </span>
+        </div>
       </div>
     </div>
   </div>

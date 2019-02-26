@@ -23,9 +23,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private ApplicationRepository appRepo;
 
 	@Override
-	public Application create(String name, String version) {
-		checkParam(name, version);
-		return appRepo.save(new Application(name, version));
+	public Application create(String name, String version, String owner) {
+		checkParam(name, version, owner);
+		return appRepo.save(new Application(name, version, owner));
 	}
 
 	@Override
@@ -66,10 +66,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public void changeApplicationState(Application app, ApplicationState state){
-		if(app.getState().isChangeAllowed(state)){
-			app.setState(state);
-			appRepo.save(app);
+		if(!app.getState().isChangeAllowed(state)){
+			throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
 		}
+		app.setState(state);
+		appRepo.save(app);
 	}
 
 	@Override
@@ -77,11 +78,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 		setMissingDescriptions(app);
 	}
 
-	private void checkParam(String name, String version) {
-		if(name == null)
+	private void checkParam(String name, String version, String owner) {
+		if(StringUtils.isEmpty(name))
 			throw new IllegalArgumentException("name is null");
-		if(version == null)
+		if(StringUtils.isEmpty(version))
 		    throw new IllegalArgumentException("version is null");
+		if(StringUtils.isEmpty(owner))
+			throw new IllegalArgumentException("Owner is null");
 		if(appRepo.existsByNameAndVersion(name, version))
 		    throw new IllegalStateException("Application " + name + " in version " + version + " already exists.");
 	}

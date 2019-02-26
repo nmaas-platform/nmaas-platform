@@ -1,4 +1,3 @@
-
 import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -11,10 +10,7 @@ import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
-
-
-
-
+import {AppStateChange} from "../model/appstatechange";
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -94,10 +90,8 @@ export class AppsService extends GenericDataService {
         return this.post(this.appConfig.getApiUrl() + "/apps/" + id + '/screenshots', fd);
     }
 
-    public changeApplicationState(id: number, state: string): Observable<any> {
-        let fd: FormData = new FormData();
-        fd.append("state", state);
-        return this.patch(this.appConfig.getApiUrl() + "/apps/state/" + id, fd);
+    public changeApplicationState(id: number, appStateChange: AppStateChange): Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + "/apps/state/" + id, appStateChange);
     }
 
     private getByUrl(urlPath: string): Observable<any>{

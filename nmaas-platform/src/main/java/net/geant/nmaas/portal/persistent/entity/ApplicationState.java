@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import java.util.Arrays;
+import net.geant.nmaas.notifications.templates.MailType;
 
 public enum ApplicationState {
     NEW{
@@ -8,11 +9,21 @@ public enum ApplicationState {
         public boolean isChangeAllowed(ApplicationState newState){
             return Arrays.asList(ACTIVE, REJECTED).contains(newState);
         }
+
+        @Override
+        public MailType getMailType(){
+            return MailType.APP_NEW;
+        }
     },
     ACTIVE{
         @Override
         public boolean isChangeAllowed(ApplicationState newState){
             return Arrays.asList(NOT_ACTIVE, DELETED).contains(newState);
+        }
+
+        @Override
+        public MailType getMailType(){
+            return MailType.APP_ACTIVE;
         }
     },
     REJECTED{
@@ -20,11 +31,21 @@ public enum ApplicationState {
         public boolean isChangeAllowed(ApplicationState newState){
             return Arrays.asList(NEW, DELETED).contains(newState);
         }
+
+        @Override
+        public MailType getMailType(){
+            return MailType.APP_REJECTED;
+        }
     },
     NOT_ACTIVE{
         @Override
         public boolean isChangeAllowed(ApplicationState newState){
             return Arrays.asList(ACTIVE, DELETED).contains(newState);
+        }
+
+        @Override
+        public MailType getMailType(){
+            return MailType.APP_NOT_ACTIVE;
         }
     },
     DELETED{
@@ -32,7 +53,14 @@ public enum ApplicationState {
         public boolean isChangeAllowed(ApplicationState newState){
             return false;
         }
+
+        @Override
+        public MailType getMailType(){
+            return MailType.APP_DELETED;
+        }
     };
 
     public abstract boolean isChangeAllowed(ApplicationState newState);
+
+    public abstract MailType getMailType();
 }

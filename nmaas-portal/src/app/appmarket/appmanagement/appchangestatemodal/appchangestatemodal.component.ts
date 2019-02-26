@@ -3,6 +3,7 @@ import {ModalComponent} from "../../../shared/modal";
 import {ApplicationState} from "../../../model/applicationstate";
 import {AppsService} from "../../../service";
 import {Application} from "../../../model";
+import {AppStateChange} from "../../../model/appstatechange";
 
 @Component({
   selector: 'app-appchangestatemodal',
@@ -17,7 +18,7 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
   @Input()
   public app: Application;
 
-  public selectedState: ApplicationState = undefined;
+  public stateChange: AppStateChange = new AppStateChange();
 
   public stateList: ApplicationState[] = [];
 
@@ -25,12 +26,12 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.filterStates();
-    this.selectedState = this.stateList[0];
+    this.stateChange.state = this.stateList[0];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.filterStates();
-    this.selectedState = this.stateList[0];
+    this.stateChange.state = this.stateList[0];
   }
 
   private filterStates() : void {
@@ -58,10 +59,11 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
   }
 
   public submit(): void {
-    this.appsService.changeApplicationState(this.app.id, ApplicationState[this.selectedState]).subscribe(()=>{
+    this.appsService.changeApplicationState(this.app.id, this.stateChange).subscribe(()=>{
       console.debug("Application state changed");
-      this.app.state = this.selectedState;
-      this.selectedState = undefined;
+      this.app.state = this.stateChange.state;
+      this.stateChange.state = undefined;
+      this.stateChange.reason = undefined;
       this.filterStates();
       this.modal.hide();
     });
