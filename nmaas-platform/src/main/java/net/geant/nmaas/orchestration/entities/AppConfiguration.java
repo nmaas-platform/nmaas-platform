@@ -1,5 +1,10 @@
 package net.geant.nmaas.orchestration.entities;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,10 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 /**
  * Application configuration in Json format provided by the user.
@@ -21,15 +22,15 @@ import org.hibernate.annotations.Type;
 @Getter
 @Setter
 @Entity
-@Table(name="app_deployment_configuration")
+@Table(name = "app_deployment_configuration")
 public class AppConfiguration {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY )
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Basic(fetch= FetchType.EAGER)
+    @Basic(fetch = FetchType.EAGER)
     @Lob
     @Type(type = "text")
     @Column(nullable = false)

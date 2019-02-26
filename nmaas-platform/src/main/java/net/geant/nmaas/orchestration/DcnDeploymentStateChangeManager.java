@@ -30,7 +30,7 @@ public class DcnDeploymentStateChangeManager {
         }
     }
 
-    private Optional<ApplicationEvent> triggerActionEventIfRequired(String domain, DcnDeploymentState currentState) {
+    Optional<ApplicationEvent> triggerActionEventIfRequired(String domain, DcnDeploymentState currentState) {
         switch (currentState) {
             case REQUEST_VERIFIED:
                 return Optional.of(new DcnDeployActionEvent(this, domain));

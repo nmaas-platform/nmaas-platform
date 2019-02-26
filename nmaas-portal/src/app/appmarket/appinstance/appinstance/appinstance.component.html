@@ -1,5 +1,4 @@
-		
-		<div class="container">
+<div class="container">
 			<link rel='stylesheet' href='https://unpkg.com/formiojs@latest/dist/formio.full.min.css'>
 			<div class="row">
 				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
@@ -13,47 +12,29 @@
 				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<h2>{{appInstance?.name}}</h2>
-							<h3>{{app?.name}}</h3>
+							<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
+							<rate [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
+							<div class="text-muted" style="font-size: small;">
+								v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
+								| <a href="{{app?.wwwUrl}}">WWW</a>
+								| <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+								| <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+							</div>
 						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">				
-							<div class="btn-group pull-right">
-								<a role="button" href="{{app?.wwwUrl}}" class="btn btn-default">WWW</a>
-								<a role="button" href="{{app?.sourceUrl}}" class="btn btn-default">{{'APP_INSTANCE.SOURCE' | translate}}</a>
-								<a role="button" href="{{app?.issuesUrl}}" class="btn btn-default">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							<div class="text-right">
+
 							</div>
 						</div>
 					</div>
-					
 					<hr>
 					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{'APP_INSTANCE.VERSION' | translate}}: {{app?.version}}
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
+							<a type="button" *ngFor="let tag of app.tags" class="btn tag-button">
+								{{tag | titlecase}}
+							</a>
 						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{'APP_INSTANCE.LICENSE' | translate}}: {{app?.license}}
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{'APP_INSTANCE.TAGS' | translate}}: {{app?.tags.join(", ")}}
-						</div>
-					</div>
-					<hr>
-					<div *ngIf="app" class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<p>
-								<span>{{'APP_INSTANCE.RATING' | translate}}:</span>
-								<rate [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
-							</p>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">	
-							<p>
-								<span>{{'APP_INSTANCE.MY_RATING' | translate}}:</span>
-								<rate [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + app?.id + '/rate/my'"></rate>
-							</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 								<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
 								<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
@@ -129,7 +110,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory" let-isLast="last">
+						<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }" let-isLast="last">
 							<tr>
 								<td>{{history.timestamp | date:'medium'}}</td>
                                 <td *ngIf="history.previousState !== null">{{history.previousState}}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState}}</td>
@@ -138,6 +119,7 @@
 						</ng-template>
 					</tbody>
 				</table>
+				<pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ p_first }}"></pagination-controls>
 			</div>
 
 			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >

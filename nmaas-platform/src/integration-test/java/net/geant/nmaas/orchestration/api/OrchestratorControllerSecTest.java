@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.api;
 
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OrchestratorControllerSecTest extends BaseControllerTestSetup {
 
     @MockBean
-    private AppDeploymentRepositoryManager repository;
+    private DefaultAppDeploymentRepositoryManager repository;
 
     @Before
     public void setup() {

@@ -1,81 +1,55 @@
 package net.geant.nmaas.orchestration.tasks;
 
-import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
-import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.AppDeploymentState;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
-import net.geant.nmaas.orchestration.exceptions.InvalidApplicationIdException;
-import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
+import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
+import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class AppRequestVerificationTaskTest {
 
-    @Autowired
-    private ApplicationRepository applications;
-    @Autowired
-    private AppDeploymentRepositoryManager deployments;
-    @Autowired
+    private NmServiceDeploymentProvider deploy = mock(NmServiceDeploymentProvider.class);
+    private AppDeploymentRepository deployments = mock(AppDeploymentRepository.class);
+    private ApplicationRepository applications = mock(ApplicationRepository.class);
+
     private AppRequestVerificationTask task;
 
-    private static final String DOMAIN = "domain1";
-    private static final String DEPLOYMENT_NAME = "deploymentName";
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
+    private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
 
     @Before
     public void setup() {
-        AppDeploymentSpec appDeploymentSpec = new AppDeploymentSpec();
-        appDeploymentSpec.setDefaultStorageSpace(20);
-        appDeploymentSpec.setSupportedDeploymentEnvironments(Arrays.asList(AppDeploymentEnv.KUBERNETES));
-        Application application = new Application("testOxidized");
-        application.setAppDeploymentSpec(appDeploymentSpec);
-        application = applications.save(application);
-        AppDeployment appDeployment = new AppDeployment();
-        appDeployment.setDeploymentId(deploymentId);
-        appDeployment.setApplicationId(Identifier.newInstance(String.valueOf(application.getId())));
-        appDeployment.setDomain(DOMAIN);
-        appDeployment.setDeploymentName(DEPLOYMENT_NAME);
-        deployments.store(appDeployment);
-    }
-
-    @After
-    public void cleanup() {
-        applications.deleteAll();
-        deployments.removeAll();
+        task = new AppRequestVerificationTask(deploy, deployments, applications);
     }
 
     @Test
-    public void shouldNotifyServiceVerificationProblemSinceDeploymentEnvironmentNotSupported() throws InvalidApplicationIdException, InvalidDeploymentIdException, InterruptedException {
-        try {
-            task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
-        } catch (NmServiceRequestVerificationException e) {}
-        Thread.sleep(200);
-        assertThat(deployments.loadState(deploymentId), equalTo(AppDeploymentState.REQUEST_VALIDATION_FAILED));
+    public void shouldTriggerRequestVerify() {
+        when(deployments.findByDeploymentId(deploymentId)).thenReturn(Optional.of(AppDeployment.builder().applicationId(Identifier.newInstance(10L)).build()));
+        when(applications.findById(any(Long.class))).thenReturn(Optional.of(new Application()));
+        task.trigger(new AppVerifyRequestActionEvent(this, deploymentId));
+        verify(deploy, times(1)).verifyRequest(any(Identifier.class), any(AppDeployment.class), isNull());
     }
 
     @Test
-    public void getLongFromIdentifier() {
-        assertTrue(10L == Long.valueOf(Identifier.newInstance("10").getValue()));
+    public void shouldNotTriggerRequestVerifyIfExceptionRaised() {
+        when(deployments.findByDeploymentId(deploymentId2)).thenReturn(Optional.empty());
+        task.trigger(new AppVerifyRequestActionEvent(this, deploymentId2));
+        verifyNoMoreInteractions(deploy);
     }
 
 }
