@@ -81,9 +81,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         try {
             repositoryManager.load(generatedId);
         } catch(InvalidDeploymentIdException e) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override

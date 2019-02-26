@@ -15,6 +15,7 @@ import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,13 +57,14 @@ public class DefaultAppLifecycleManagerTest {
 
     @Test
     public void shouldGenerateProperIdentifier() {
-        when(repositoryManager.load(any())).thenReturn(null);
+        when(repositoryManager.load(any())).thenThrow(new InvalidDeploymentIdException());
         Identifier id = appLifecycleManager.generateDeploymentId();
         assertThat(id.value().matches("[a-z]([-a-z0-9]*[a-z0-9])?"), is(true));
     }
 
     @Test
     public void shouldTriggerAppInstanceDeployment() {
+        when(repositoryManager.load(any())).thenThrow(new InvalidDeploymentIdException());
         AppDeployment appDeployment = new AppDeployment();
         Identifier assignedID = appLifecycleManager.deployApplication(appDeployment);
         assertThat(assignedID, is(notNullValue()));

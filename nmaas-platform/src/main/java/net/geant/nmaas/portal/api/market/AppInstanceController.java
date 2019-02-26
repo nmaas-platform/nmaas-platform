@@ -1,8 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
@@ -14,7 +11,6 @@ import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
-import net.geant.nmaas.portal.api.domain.AppInstance;
 import net.geant.nmaas.portal.api.domain.AppInstanceBase;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
@@ -44,10 +40,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -223,7 +217,7 @@ public class AppInstanceController extends AppBaseController {
 
     @GetMapping("/domains/{domainId}/apps/instances/running")
     @Transactional
-    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) throws JsonProcessingException {
+    public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
         User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return this.getAllRunningInstancesByOwnerAndDomain(owner, domain);
