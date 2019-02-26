@@ -1,12 +1,12 @@
 <div class="row">
   <p class="alert alert-success">
-    This page is only a preview of submitted application
+    {{'APPS_PREVIEW.PREVIEW_MESSAGE' | translate}}
   </p>
   <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
     <div class="thumbnail" *ngIf="app && logo">
       <img alt="App logo" [src]="this.logo.objectURL || 'assets/images/app-logo-example.png'"/>
     </div>
-    <div class="thumbnail" *ngIf="app && !logo">
+    <div class="thumbnail" *ngIf="app?.id && !logo">
       <img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
     </div>
     <div class="thumbnail" *ngIf="!app">
@@ -101,7 +101,7 @@
 
 <div class="row" *ngIf="app?.configTemplate">
   <div class="col-xs-12">
-    <h3>Configuration wizard preview</h3>
+    <h3>{{'APPS_PREVIEW.CONFIG_WIZARD_PREVIEW_HEADER' | translate}}</h3>
     <hr>
     <formio *ngIf="app !== undefined && app.configTemplate.template !== undefined"
             [form]="app.configTemplate.template"
@@ -113,7 +113,7 @@
 <div class="row" *ngIf="app?.configurationUpdateTemplate">
     <hr>
     <div class="col-xs-12">
-      <h3>Update configuration wizard preview</h3>
+      <h3>{{'APPS_PREVIEW.UPDATE_CONFIG_WIZARD_PREVIEW_HEADER' | translate}}</h3>
       <hr>
       <formio *ngIf="app !== undefined && app.configurationUpdateTemplate.template !== undefined"
               [form]="app.configurationUpdateTemplate.template"

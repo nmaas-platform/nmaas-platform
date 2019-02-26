@@ -3,9 +3,9 @@
   <button [routerLink]="['/management/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
   <hr>
   <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#approved">Approved</a></li>
-    <li><a data-toggle="tab" href="#rejected">Rejected</a></li>
-    <li *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')"><a data-toggle="tab" href="#new">New</a></li>
+    <li class="active"><a data-toggle="tab" href="#approved">{{ 'APPS_MANAGEMENT.APPROVED_TAB' | translate }}</a></li>
+    <li><a data-toggle="tab" href="#rejected">{{ 'APPS_MANAGEMENT.REJECTED_TAB' | translate }}</a></li>
+    <li *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')"><a data-toggle="tab" href="#new">{{ 'APPS_MANAGEMENT.NEW_TAB' | translate }}</a></li>
   </ul>
 
   <div class="tab-content">
@@ -14,7 +14,7 @@
         <thead>
         <tr>
           <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-          <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
+          <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
           <th>&nbsp;</th>
         </tr>
         </thead>
@@ -25,9 +25,9 @@
             <td>{{app?.name}}</td>
             <td>{{getStateAsString(app?.state)}}</td>
             <td class="text-right">
-              <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">View</button>
-              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
-              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
+              <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
             </td>
           </tr>
         </ng-template>
@@ -40,7 +40,7 @@
           <thead>
           <tr>
             <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-            <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
+            <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
             <th>&nbsp;</th>
           </tr>
           </thead>
@@ -51,9 +51,9 @@
               <td>{{app?.name}}</td>
               <td>{{getStateAsString(app?.state)}}</td>
               <td class="text-right">
-                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">View</button>
-                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
-                <button (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
+                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>
           </ng-template>
@@ -61,7 +61,7 @@
         </table>
       </div>
       <div *ngIf="rejectedApps.length == 0">
-        <h4 class="text-center">There is no rejected applications</h4>
+        <h4 class="text-center">{{ 'APPS_MANAGEMENT.NO_REJECTED_APPS_MESSAGE' | translate }}</h4>
       </div>
     </div>
 
@@ -71,7 +71,7 @@
           <thead>
           <tr>
             <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-            <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
+            <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
             <th>&nbsp;</th>
           </tr>
           </thead>
@@ -82,9 +82,9 @@
               <td>{{app?.name}}</td>
               <td>{{getStateAsString(app?.state)}}</td>
               <td class="text-right">
-                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">View</button>
-                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">Edit</button>
-                <button (click)="showModal(app)" class="btn btn-sm btn-danger">Change state</button>
+                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>
           </ng-template>
@@ -92,7 +92,7 @@
         </table>
       </div>
       <div *ngIf="newApps.length == 0">
-        <h4 class="text-center">There is no applications waiting for approval.</h4>
+        <h4 class="text-center">{{ 'APPS_MANAGEMENT.NO_UNAPPROVED_APPS_MESSAGE' | translate }}</h4>
       </div>
     </div>
   </div>

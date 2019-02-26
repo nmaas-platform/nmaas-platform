@@ -454,11 +454,57 @@
     "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
   },
   "APPS_MANAGEMENT": {
-    "TITLE": "Zarządzanie aplikacjami",
-    "NAME": "Nazwa",
-    "ACTIVE": "Aktywna",
-    "ADD_BUTTON": "Dodaj",
-    "REMOVE_BUTTON": "Usuń"
+    "TITLE": "Applications management",
+    "NAME": "Name",
+    "STATE": "State",
+    "ADD_BUTTON": "Add",
+    "VIEW_BUTTON": "View",
+    "EDIT_BUTTON": "Edit",
+    "CHANGE_STATE_BUTTON": "Change state",
+    "APPROVED_TAB": "Approved",
+    "REJECTED_TAB": "Rejected",
+    "NEW_TAB": "New",
+    "NO_REJECTED_APPS_MESSAGE": "There is no rejected applications",
+    "NO_UNAPPROVED_APPS_MESSAGE": "There is no unapproved applications"
+  },
+  "APPS_PREVIEW": {
+    "PREVIEW_MESSAGE": "This page is only a preview of submitted application",
+    "CONFIG_WIZARD_PREVIEW_HEADER": "Configuration wizard preview",
+    "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
+  },
+  "APPS_WIZARD": {
+    "FIRST_PAGE_MESSAGE": "Lorem ipsum",
+    "ACCEPT_RULES_CHECKBOX": "I have accepted the rules",
+    "NEXT_BUTTON": "Next",
+    "SUBMIT_BUTTON": "Submit",
+    "PREVIOUS_BUTTON": "Previous",
+    "NAME_LABEL": "Name",
+    "VERSION_LABEL": "Version",
+    "LICENSE_LABEL": "License",
+    "LICENSE_URL_LABEL": "License url",
+    "PROJECT_WEBSITE_LABEL": "Project website",
+    "SOURCE_CODE_LABEL": "Link to source code",
+    "PROJECT_ISSUES_LABEL": "Link to project issues",
+    "TAGS_LABEL": "Select tags for application",
+    "CHOOSE_TAG_LABEL": "Choose",
+    "UPLOAD_LOGO_LABEL": "Upload application logo",
+    "UPLOAD_SCREENSHOTS_LABEL": "Upload application screenshots",
+    "BRIEF_DESCRIPTION_LABEL": "Brief description",
+    "FULL_DESCRIPTION_LABEL": "Full description",
+    "APP_DEPLOYMENT_HEADER": "Application deployment specification",
+    "CHART_NAME_LABEL": "Chart name",
+    "CHART_VERSION_LABEL": "Chart version",
+    "ARCHIVE_LABEL": "Archive",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Default storage space",
+    "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
+    "REPOSITORY_REQUIRED_LABEL": "Repository required",
+    "CONFIG_WIZARD_TEMPLATE_LABEL": "Application configuration wizard template",
+    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
+    "MODAL": {
+      "HEADER": "New application submitted correctly",
+      "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back to app management"
+    }
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",

@@ -10,6 +10,7 @@ import {ParameterType} from "../../../model/parametertype";
 import {ModalComponent} from "../../../shared/modal";
 import {BaseComponent} from "../../../shared/common/basecomponent/base.component";
 import {ActivatedRoute, Router} from "@angular/router";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -28,13 +29,13 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public activeStepIndex:number = 0;
   public rulesAccepted: boolean = false;
   public tags: SelectItem[] = [];
-  public logo: any;
+  public logo: any[] = [];
   public screenshots: any[] = [];
   public errorMessage:string = undefined;
 
   constructor(public tagService: TagService, public appsService: AppsService, public route: ActivatedRoute,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService,
-              public appImagesService: AppImagesService, public router:Router) {
+              public appImagesService: AppImagesService, public router:Router, public translate: TranslateService) {
     super();
   }
 
@@ -123,7 +124,11 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public clearLogo(event): void {
-    this.logo = undefined;
+    this.logo = [];
+  }
+
+  public canAddLogo(): boolean {
+    return this.logo.length > 0;
   }
 
   public getLogoUrl(event): void {
