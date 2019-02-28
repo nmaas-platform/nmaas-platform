@@ -100,17 +100,17 @@
     <div *ngIf="activeStepIndex === 3">
         <div *ngIf="app">
             <form class="form-horizontal" #descriptionForm="ngForm">
-                <div class="panel" *ngFor="let appDescription of app.descriptions">
+                <div class="panel" *ngFor="let appDescription of app.descriptions; let i=index">
                     <div class="panel-heading">
                         <div *ngIf="appDescription.language === 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}} *</div>
                         <div *ngIf="appDescription.language != 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}}</div>
                     </div>
                     <div class="panel-body">
                         <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
-                            <label for="briefDescription" class="col-sm-2 control-label">{{'APPS_WIZARD.BRIEF_DESCRIPTION_LABEL' | translate}}</label>
+                            <label for="briefDescription-{{i}}" class="col-sm-2 control-label">{{'APPS_WIZARD.BRIEF_DESCRIPTION_LABEL' | translate}}</label>
                             <div class="col-sm-10">
-                            <textarea class="form-control" id="briefDescription" name="briefDescription" [maxLength]="200"
-                                      [(ngModel)]="appDescription.briefDescription" *ngIf="appDescription.language != 'en'"></textarea>
+                            <textarea class="form-control" id="briefDescription-{{i}}" name="briefDescription-{{i}}" [maxLength]="200"
+                                      [(ngModel)]="appDescription.briefDescription"></textarea>
                             </div>
                         </div>
                         <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.briefDescription || appDescription.briefDescription === '',
@@ -122,9 +122,9 @@
                             </div>
                         </div>
                         <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
-                            <label for="fullDescription" class="col-sm-2 control-label">{{'APPS_WIZARD.FULL_DESCRIPTION_LABEL' | translate}}</label>
+                            <label for="fullDescription-{{i}}" class="col-sm-2 control-label">{{'APPS_WIZARD.FULL_DESCRIPTION_LABEL' | translate}}</label>
                             <div class="col-sm-10">
-                            <textarea class="form-control" id="fullDescription" name="fullDescription"
+                            <textarea class="form-control" id="fullDescription-{{i}}" name="fullDescription-{{i}}"
                                       [(ngModel)]="appDescription.fullDescription"></textarea>
                             </div>
                         </div>

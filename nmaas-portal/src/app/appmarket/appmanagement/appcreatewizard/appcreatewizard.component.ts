@@ -86,7 +86,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public getLogo(id:number) : void {
     this.appImagesService.getLogoFile(id).subscribe(file => {
       this.logo.push(this.convertToProperImageFile(file));
-    });
+    }, err => console.debug(err.message));
   }
 
   public getScreenshots(id:number): void {
@@ -94,9 +94,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       fileInfo.forEach(val =>{
         this.appImagesService.getAppScreenshotFile(id, val.id).subscribe(img =>{
           this.screenshots.push(this.convertToProperImageFile(img));
-        });
+        }, err => console.debug(err.message));
       });
-    });
+    }, err => console.debug(err.message));
   }
 
   private convertToProperImageFile(file:any){

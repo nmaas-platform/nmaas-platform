@@ -42,7 +42,7 @@ export class AppPreviewComponent implements OnInit {
   public getLogo(id:number) : void {
     this.appImagesService.getLogoFile(id).subscribe(file => {
       this.logo = this.convertToProperImageFile(file);
-    });
+    }, err => console.debug(err.message));
   }
 
   private convertToProperImageFile(file:any) {
