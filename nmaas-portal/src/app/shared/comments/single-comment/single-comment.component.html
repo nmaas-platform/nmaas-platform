@@ -1,7 +1,9 @@
-<div class="col-xs-12">
+<div class="col-xs-12" [ngClass]="{'col-xs-offset-1 col-xs-11': parentId != null}">
   <div class="row">
-    <div class="col-xs-2 col-sm-1">
-
+    <div class="col-xs-2 col-sm-1 text-right profile-container">
+      <div class="profile-container">
+        <i class="fas fa-user fa-user-comment"></i>
+      </div>
     </div>
     <div class="col-xs-6 col-sm-8">
       <p><strong class="comment-text-lg">{{ commentAuthor }}</strong><br>
@@ -17,8 +19,7 @@
   </div>
   <div class="row">
     <div class="col-xs-offset-2 col-sm-offset-1 col-xs-10 col-sm-11">
-      <p class="comment-text-md">
-        {{ commentText }}
+      <p class="comment-text-md" [innerHTML]=commentText>
       </p>
     </div>
   </div>

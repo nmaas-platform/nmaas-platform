@@ -56,8 +56,6 @@ export class CommentsComponent implements OnInit {
                     this.refresh();
                 }, err=> this.commentErrorMsg = err.message);
         }
-
-
     }
 
     public addReply(parentId:number):void{
@@ -74,6 +72,22 @@ export class CommentsComponent implements OnInit {
         }
     }
 
+    private addReplyBasedOnEvent(parentId: number, text: string){
+        if(isNullOrUndefined(text) || text === ''){
+            this.commentErrorMsg = this.translate.instant('SUBSCRIPTION.COMMENTS_NOT_EMPTY_MESSAGE');
+        } else{
+            this.newComment = new Comment();
+            this.newComment.comment = text;
+            this.newComment.parentId = parentId;
+            this.appsService.addAppCommentByUrl(this.pathUrl, this.newComment)
+              .subscribe(id => {
+                  this.newComment = new Comment();
+                  this.commentErrorMsg = undefined;
+                  this.refresh();
+              }, err=> this.commentErrorMsg = err.message);
+        }
+    }
+
     public deleteComment(id: number): void {
         this.appsService.deleteAppCommentByUrl(this.pathUrl, new Id(id)).subscribe(
                 () => { this.refresh() }
@@ -82,10 +96,12 @@ export class CommentsComponent implements OnInit {
 
     OnRemove($event){
         console.debug("OnRemove catches event with id: " + $event);
+        this.deleteComment($event);
     }
 
     onAddReply($event){
         console.debug("OnAddReply catches event with id: " + $event['id'] + " and string: " + $event['text']);
+        this.addReplyBasedOnEvent($event['id'], $event['text']);
     }
 
     public setCommentNumberOnClick(commentId:number, subComment:boolean){

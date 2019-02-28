@@ -26,68 +26,18 @@
 											[commentId]=comment.id [commentText]=comment.comment
 						(removeEvent)="OnRemove($event)" (addReplyEvent)="onAddReply($event)">
 						</app-single-comment>
-						<div class="media-left">
-						  <a href="#">
-							<span class="glyphicon glyphicon-user"></span>
-						  </a>
-						</div>
 						<div class="media-body">
-						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}}
-                              <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(comment.id, false)">{{'COMMENTS.REPLY_BUTTON' | translate}}</button>
-                              <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === comment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span>
-                          </h6>
-						  <p>{{comment.comment}}</p>
-							<div *ngIf="this.commentId === comment.id && !this.subComment && this.active">
-								<form role="form" (ngSubmit)="this.addReply(comment.id)">
-									<div class="form-group">
-										<textarea name="comment" id="comment2" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
-												  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
-										<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
-										<div class="alert alert-danger" *ngIf="replyErrorMsg">
-											{{replyErrorMsg}}
-										</div>
-									</div>
-								</form>
-							</div>
-						  <hr>
-
 							<ul *ngIf="comment.subComments !== null" class="media-list">
 								<ng-template ngFor let-subcomment [ngForOf]="comment.subComments">
-							
 								<li class="media">
-									<div class="media-left">
-									  <a href="#">
-										<span class="glyphicon glyphicon-user"></span>
-									  </a>
-									</div>
-									<div class="media-body">
-                                     <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}}
-                                          <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">{{'COMMENTS.REPLY_BUTTON' | translate}}</button>
-                                          <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === subcomment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span>
-                                     </h6>
-									  <p>{{subcomment.comment}}</p>
-										<div *ngIf="this.commentId === subcomment.id && this.subComment && this.active">
-											<form role="form" (ngSubmit)="this.addReply(comment.id)">
-												<div class="form-group">
-													<textarea name="comment3" id="comment3" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
-															  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
-													<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
-													<div class="alert alert-danger" *ngIf="replyErrorMsg">
-														{{replyErrorMsg}}
-													</div>
-												</div>
-											</form>
-										</div>
-									  <hr>
-									</div>							
+									<app-single-comment [createdAt]=subcomment.createdAt [commentAuthor]=subcomment.owner.username
+														[commentId]=subcomment.id [commentText]=subcomment.comment [parentId]=comment.id
+														(removeEvent)="OnRemove($event)" (addReplyEvent)="onAddReply($event)">
+									</app-single-comment>
 								</li>
 								</ng-template>
 							</ul>
-						
-						
 						</div>
-					
-					
 					</li>
 					</ng-template>
 				</ul>

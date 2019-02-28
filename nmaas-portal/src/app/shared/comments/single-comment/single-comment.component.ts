@@ -4,6 +4,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {formatDate} from "@angular/common";
 import {Comment, Id} from "../../../model";
 import {AppsService} from "../../../service";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-single-comment',
@@ -25,7 +26,7 @@ export class SingleCommentComponent implements OnInit {
   public commentId: number;
 
   @Input()
-  public parentId: string;
+  public parentId: number;
 
   @Input()
   public createdAt: string;
@@ -65,6 +66,11 @@ export class SingleCommentComponent implements OnInit {
   }
 
   public addReplyToComment(id: number, text: string){
+    if(!isNullOrUndefined(this.parentId)){
+      console.debug("Using alternative subcomment");
+      text = "<span class='text-muted'><i>Response to @" + this.commentAuthor + " comment</i></span></br>" + text;
+      id = this.parentId;
+    }
     console.debug("Add reply emits: " + id);
     this.addReplyEvent.emit({'id': id, 'text': text});
   }

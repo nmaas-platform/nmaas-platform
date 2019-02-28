@@ -13,3 +13,16 @@
 .comment-text-sm{
     font-size: 12px;
 }
+
+.fa-user-comment{
+    padding-top: 10px !important;
+    padding-bottom: 8px !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+    color: rgb(51, 122, 183);
+    font-size: 24px;
+}
+
+.profile-container{
+    padding-right: 0 !important;
+}

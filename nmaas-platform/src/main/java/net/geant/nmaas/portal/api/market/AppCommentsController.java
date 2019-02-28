@@ -45,10 +45,10 @@ public class AppCommentsController extends AppBaseController {
 												if(comment.getParent() != null)
 													c.setParentId(comment.getParent().getId());
 												if(comment.isDeleted()) 
-													c.setComment("---"); 
+													c.setComment("<i>This post was removed</i>");
 												for(Comment sub : c.getSubComments()) {
 													if(sub.isDeleted())
-														sub.setComment("---");
+														sub.setComment("<i>This post was removed</i>");
 												}
 													
 												return c;}
