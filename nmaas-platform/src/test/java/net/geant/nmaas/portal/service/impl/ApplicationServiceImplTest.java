@@ -62,7 +62,6 @@ public class ApplicationServiceImplTest {
     public void updateMethodShouldReturnApplicationObject(){
         Application application = new Application("test", "testversion","owner");
         application.setId(1L);
-        when(applicationRepository.getOne(anyLong())).thenReturn(application);
         application.setLicense("MIT");
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         application.setLicense("Apache-2.0");

@@ -5,6 +5,7 @@ import {isNullOrUndefined} from "util";
 import {AppImagesService, AppsService} from "../../../service";
 import {AppDescription} from "../../../model/appdescription";
 import {TranslateService} from "@ngx-translate/core";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-apppreview',
@@ -23,14 +24,31 @@ export class AppPreviewComponent implements OnInit {
   public screenshots:any[];
 
   constructor(public route:ActivatedRoute, public appService: AppsService, public translate:TranslateService,
-              public appImagesService:AppImagesService) { }
+              public appImagesService:AppImagesService, public dom:DomSanitizer) { }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      if(!isNullOrUndefined(params['id'])) {
-        this.appService.getApp(params['id']).subscribe(result => this.app = result);
-      }
+    if(!this.app){
+      this.route.params.subscribe(params => {
+        if(!isNullOrUndefined(params['id'])) {
+          this.appService.getApp(params['id']).subscribe(result => {
+            this.app = result;
+            this.getLogo(result.id);
+          });
+        }
+      });
+    }
+  }
+
+  public getLogo(id:number) : void {
+    this.appImagesService.getLogoFile(id).subscribe(file => {
+      this.logo = this.convertToProperImageFile(file);
     });
+  }
+
+  private convertToProperImageFile(file:any) {
+    let result: any = new File([file], 'uploaded file', {type: file.type});
+    result.objectURL = this.dom.bypassSecurityTrustUrl(URL.createObjectURL(result));
+    return result;
   }
 
   public getDescription(): AppDescription {

@@ -21,6 +21,8 @@ public class ApplicationBriefView {
 	String wwwUrl;
 	String sourceUrl;
 	String issuesUrl;
+
+	String owner;
 	
 	List<AppDescriptionView> descriptions;
 

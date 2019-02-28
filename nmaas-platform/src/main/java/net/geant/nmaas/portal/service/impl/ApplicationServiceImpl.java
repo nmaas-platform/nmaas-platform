@@ -31,7 +31,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public Application update(Application app) {
 		checkParam(app);
-		setMissingFiles(app);
 		return appRepo.save(app);
 	}
 
@@ -112,15 +111,5 @@ public class ApplicationServiceImpl implements ApplicationService {
 						description.setFullDescription(appDescription.getFullDescription());
 					}
 				});
-	}
-
-	private void setMissingFiles(Application app){
-		Application application = appRepo.getOne(app.getId());
-		if(application.getLogo() != null){
-			app.setLogo(application.getLogo());
-		}
-		if(application.getScreenshots() != null && !application.getScreenshots().isEmpty()){
-			app.setScreenshots(application.getScreenshots());
-		}
 	}
 }

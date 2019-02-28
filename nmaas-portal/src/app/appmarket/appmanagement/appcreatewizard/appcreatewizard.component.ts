@@ -11,6 +11,8 @@ import {ModalComponent} from "../../../shared/modal";
 import {BaseComponent} from "../../../shared/common/basecomponent/base.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
+import {DomSanitizer} from "@angular/platform-browser";
+import {ComponentMode} from "../../../shared";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -35,7 +37,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   constructor(public tagService: TagService, public appsService: AppsService, public route: ActivatedRoute,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService,
-              public appImagesService: AppImagesService, public router:Router, public translate: TranslateService) {
+              public appImagesService: AppImagesService, public router:Router, public translate: TranslateService,
+              public dom:DomSanitizer) {
     super();
   }
 
@@ -76,10 +79,30 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       this.app.configTemplate = new ConfigTemplate();
       this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
     }
-    if(isNullOrUndefined(this.app.configurationUpdateTemplate)){
-      this.app.configurationUpdateTemplate = new ConfigTemplate();
-      this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
-    }
+    this.getLogo(appToEdit.id);
+    this.getScreenshots(appToEdit.id);
+  }
+
+  public getLogo(id:number) : void {
+    this.appImagesService.getLogoFile(id).subscribe(file => {
+      this.logo.push(this.convertToProperImageFile(file));
+    });
+  }
+
+  public getScreenshots(id:number): void {
+    this.appImagesService.getAppScreenshotsUrls(id).subscribe(fileInfo => {
+      fileInfo.forEach(val =>{
+        this.appImagesService.getAppScreenshotFile(id, val.id).subscribe(img =>{
+          this.screenshots.push(this.convertToProperImageFile(img));
+        });
+      });
+    });
+  }
+
+  private convertToProperImageFile(file:any){
+    let result: any = new File([file], 'uploaded file', {type: file.type});
+    result.objectURL = this.dom.bypassSecurityTrustUrl(URL.createObjectURL(result));
+    return result;
   }
 
   public createNewWizard() : void {
@@ -103,20 +126,43 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public addApplication(): void{
     this.appsService.addApp(this.app).subscribe(result => {
-      this.appsService.uploadAppLogo(result.id, this.logo).subscribe(() => console.log("Logo uploaded"));
-      for(let screenshot of this.screenshots){
-        this.appsService.uploadScreenshot(result.id, screenshot).subscribe(() => console.log("Screenshot uploaded"));
-      }
+      this.uploadLogo(result.id);
+      this.handleUploadingScreenshots(result.id);
       this.errorMessage = undefined;
       this.modal.show();
     }, error => this.errorMessage = error.message);
   }
 
   public updateApplication(): void {
-    this.appsService.updateApp(this.app).subscribe(result => {
+    this.appsService.updateApp(this.app).subscribe(() => {
+      this.uploadLogo(this.app.id);
+      this.handleUploadingScreenshots(this.app.id);
       this.errorMessage = undefined;
-      this.router.navigate(['management/apps']);
+      this.modal.show();
     }, error => this.errorMessage = error.message);
+  }
+
+  public uploadLogo(id: number){
+    if(this.isInMode(ComponentMode.EDIT) && isNullOrUndefined(this.logo[0])){
+      this.appImagesService.deleteLogo(id).subscribe(() => console.debug("Logo deleted"));
+    }
+    this.appsService.uploadAppLogo(id, this.logo[0]).subscribe(() => console.debug("Logo uploaded"));
+  }
+
+  public handleUploadingScreenshots(id: number){
+    if(this.isInMode(ComponentMode.EDIT)){
+      this.appImagesService.deleteScreenshots(id).subscribe(()=>{
+        this.uploadScreenshots(id);
+      });
+    } else {
+      this.uploadScreenshots(id);
+    }
+  }
+
+  private uploadScreenshots(id: number){
+    for(let screenshot of this.screenshots){
+      this.appsService.uploadScreenshot(id, screenshot).subscribe(() => console.debug("Screenshot uploaded"));
+    }
   }
 
   public changeRulesAcceptedFlag(): void {
@@ -131,23 +177,22 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     return this.logo.length > 0;
   }
 
-  public getLogoUrl(event): void {
-    let files = event.files;
-    if(files[0].type.match(/image\/*/) != null){
-      this.logo = files[0];
-    }
-  }
-
   public isInvalidDescriptions(): boolean {
     let enAppDescription  = this.app.descriptions.filter(lang => lang.language === "en")[0];
     return isNullOrUndefined(enAppDescription.fullDescription) || enAppDescription.fullDescription === "" || isNullOrUndefined(enAppDescription.briefDescription) || enAppDescription.briefDescription === "";
   }
 
   public setConfigTemplate(event): void {
+    if(!this.app.configTemplate){
+      this.app.configTemplate = new ConfigTemplate();
+    }
     this.app.configTemplate.template = event.form;
   }
 
   public setUpdateConfigTemplate(event): void {
+    if(!this.app.configurationUpdateTemplate){
+      this.app.configurationUpdateTemplate = new ConfigTemplate();
+    }
     this.app.configurationUpdateTemplate.template = event.form;
   }
 

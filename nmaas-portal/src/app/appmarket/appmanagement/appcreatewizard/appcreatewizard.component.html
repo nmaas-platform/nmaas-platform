@@ -82,8 +82,7 @@
                 <p-fileUpload name="logo" [disabled]="canAddLogo()" [files]="logo" customUpload="true" [multiple]="true" (onRemove)="clearLogo($event)" (onClear)="clearLogo($event)" accept="image/*" maxFileSize="1000000" [showUploadButton]=false [showCancelButton]="true" [chooseLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')" [cancelLabel]="translate.instant('APPS_WIZARD.CANCEL_LABEL')">
                 </p-fileUpload>
                 <div class="thumbnail">
-                    <img id = "logo" *ngIf="logo[0] || !app?.id" [src]="logo[0]?.objectURL || 'assets/images/app-logo-example.png'" alt="Logo" [width]="200" [height]="200">
-                    <img id = "logo-update" *ngIf="!logo[0] && app?.id" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'" alt="Logo" [width]="200" [height]="200">
+                    <img id = "logo" [src]="logo[0]?.objectURL || 'assets/images/app-logo-example.png'" alt="Logo" [width]="200" [height]="200">
                 </div>
             </div>
         </div>
@@ -193,7 +192,7 @@
                 <div class="panel">
                     <div class="panel-heading">{{'APPS_WIZARD.CONFIG_WIZARD_TEMPLATE_LABEL' | translate}}</div>
                     <div class="panel-body">
-                        <form-builder *ngIf="isInMode(ComponentMode.CREATE)" [form]="configTemplateService.getConfigTemplate()" (change)="setConfigTemplate($event)"></form-builder>
+                        <form-builder *ngIf="isInMode(ComponentMode.CREATE) || !app.configTemplate.template" [form]="configTemplateService.getConfigTemplate()" (change)="setConfigTemplate($event)"></form-builder>
                         <form-builder *ngIf="isInMode(ComponentMode.EDIT)" [form]="app.configTemplate.template" (change)="setConfigTemplate($event)"></form-builder>
                     </div>
                 </div>

@@ -101,7 +101,7 @@ public class ApplicationController extends AppBaseController {
 	private void sendMail(Application app, ApplicationStateChangeRequest stateChangeRequest){
 		MailAttributes mailAttributes = MailAttributes.builder()
 				.mailType(stateChangeRequest.getState().getMailType())
-				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason()))
+				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
 				.build();
 		if(!stateChangeRequest.getState().equals(ApplicationState.NEW)){
 			User owner = modelMapper.map(users.findByUsername(app.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), User.class);

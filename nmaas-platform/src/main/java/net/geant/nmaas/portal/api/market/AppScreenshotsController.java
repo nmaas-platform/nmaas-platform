@@ -114,10 +114,9 @@ public class AppScreenshotsController extends AppBaseController {
 		Application app = getApp(appId);
 		
 		for(net.geant.nmaas.portal.persistent.entity.FileInfo screenshot : app.getScreenshots()) {
-			if(screenshot.getId() == screenshotId) {
-				FileInfo imageFile = screenshot;
-				
-				return getFile(imageFile);
+			if(screenshot.getId().equals(screenshotId)) {
+
+				return getFile(screenshot);
 			}
 		}
 		throw new MissingElementException("Screenshot id= " + screenshotId + " for app id=" + appId + " not found.");
@@ -132,7 +131,18 @@ public class AppScreenshotsController extends AppBaseController {
 		
 		fileStorage.remove(screenshotInfo);
 		app.getScreenshots().remove(screenshotInfo);
-	}	
+		applications.update(app);
+	}
+
+	@DeleteMapping(value="/screenshots/all")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void deleteScreenshots(@PathVariable(value = "appId") Long appId){
+		Application app = getApp(appId);
+		app.getScreenshots().forEach(fileInfo -> fileStorage.remove(fileInfo));
+		app.getScreenshots().clear();
+		applications.update(app);
+	}
 	
 	private ResponseEntity<InputStreamResource> getFile(FileInfo imageFile)
 			throws FileNotFoundException {
@@ -149,7 +159,7 @@ public class AppScreenshotsController extends AppBaseController {
 
 	private FileInfo getScreenshot(Application app, Long screenshotId) {
 		for(FileInfo screenshot : app.getScreenshots()) {
-			if(screenshot.getId() == screenshotId)
+			if(screenshot.getId().equals(screenshotId))
 				return screenshot;
 		}
 		throw new MissingElementException("Screenshot id= " + screenshotId + " for app id=" + app.getId() + " not found.");

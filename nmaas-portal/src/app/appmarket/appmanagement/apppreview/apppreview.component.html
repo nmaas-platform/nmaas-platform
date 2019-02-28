@@ -3,13 +3,10 @@
     {{'APPS_PREVIEW.PREVIEW_MESSAGE' | translate}}
   </p>
   <div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
-    <div class="thumbnail" *ngIf="app && logo">
-      <img alt="App logo" [src]="this.logo.objectURL || 'assets/images/app-logo-example.png'"/>
+    <div class="thumbnail" *ngIf="logo">
+      <img alt="App logo" [src]="logo.objectURL || 'assets/images/app-logo-example.png'"/>
     </div>
-    <div class="thumbnail" *ngIf="app?.id && !logo">
-      <img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
-    </div>
-    <div class="thumbnail" *ngIf="!app">
+    <div class="thumbnail" *ngIf="!logo">
       <img alt="App logo" src="assets/images/app-logo-example.png"/>
     </div>
   </div>
@@ -51,13 +48,13 @@
   </div>
 </div>
 
-<div class='row' *ngIf="app?.id">
+<div class='row' *ngIf="app?.id && !screenshots">
   <h3>{{'SCREENSHOTS.HEADER' | translate}}</h3>
   <hr>
   <screenshots [pathUrl]="'/apps/' + app?.id + '/screenshots'"></screenshots>
 </div>
 
-<div class='row' *ngIf="!app?.id && screenshots">
+<div class='row' *ngIf="!app?.id || screenshots">
   <h3>{{'SCREENSHOTS.HEADER' | translate}}</h3>
   <hr>
   <div class="carousel slide media-carousel col-md-12" id="app-preview-carousel" *ngIf="screenshots">
