@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -18,10 +17,10 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class AppDeploymentRepositoryManagerIntTest {
+public class DefaultAppDeploymentRepositoryManagerIntTest {
 
     @Autowired
-    private AppDeploymentRepositoryManager repositoryManager;
+    private DefaultAppDeploymentRepositoryManager repositoryManager;
 
     @Autowired
     private AppDeploymentRepository repository;
@@ -32,12 +31,12 @@ public class AppDeploymentRepositoryManagerIntTest {
     private Identifier applicationId = Identifier.newInstance("applicationId");
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         repository.deleteAll();
     }
 
     @Test
-    public void shouldStoreAndUpdateAppDeployment() throws InvalidDeploymentIdException {
+    void shouldStoreAndUpdateAppDeployment() throws InvalidDeploymentIdException {
         AppDeployment appDeployment = AppDeployment.builder()
                 .deploymentId(deploymentId1)
                 .applicationId(applicationId)

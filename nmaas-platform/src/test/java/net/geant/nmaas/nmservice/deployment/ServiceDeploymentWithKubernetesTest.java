@@ -7,7 +7,7 @@ import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificat
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

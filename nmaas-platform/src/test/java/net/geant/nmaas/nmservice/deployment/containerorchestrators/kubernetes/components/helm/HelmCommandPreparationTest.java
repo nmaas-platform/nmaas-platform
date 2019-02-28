@@ -1,6 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

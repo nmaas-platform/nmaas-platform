@@ -1,7 +1,7 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
 import net.geant.nmaas.utils.ssh.SingleCommandExecutor;
 import net.geant.nmaas.utils.ssh.SshConnectionException;

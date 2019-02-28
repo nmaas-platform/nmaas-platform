@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.events;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import org.junit.jupiter.api.Test;
 

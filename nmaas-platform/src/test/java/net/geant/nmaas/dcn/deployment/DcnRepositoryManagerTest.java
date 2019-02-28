@@ -7,7 +7,7 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import org.junit.jupiter.api.AfterEach;

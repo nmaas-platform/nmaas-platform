@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.entities;
+package net.geant.nmaas.orchestration;
 
 import org.junit.jupiter.api.Test;
 

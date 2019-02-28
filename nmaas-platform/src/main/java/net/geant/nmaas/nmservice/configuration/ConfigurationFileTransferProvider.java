@@ -2,7 +2,7 @@ package net.geant.nmaas.nmservice.configuration;
 
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigFileNotFoundException;
 import net.geant.nmaas.nmservice.configuration.exceptions.FileTransferException;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 
 import java.util.List;

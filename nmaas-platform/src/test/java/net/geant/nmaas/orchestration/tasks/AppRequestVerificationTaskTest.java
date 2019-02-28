@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;

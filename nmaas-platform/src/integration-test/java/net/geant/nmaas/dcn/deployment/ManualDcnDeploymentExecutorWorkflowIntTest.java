@@ -2,7 +2,7 @@ package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.Test;

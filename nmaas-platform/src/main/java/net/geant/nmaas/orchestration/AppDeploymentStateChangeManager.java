@@ -10,7 +10,6 @@ import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppDeployServiceActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppPrepareEnvironmentActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;

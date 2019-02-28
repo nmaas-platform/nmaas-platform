@@ -1,9 +1,7 @@
-package net.geant.nmaas.orchestration.entities;
-
-import net.geant.nmaas.orchestration.AppLifecycleManager;
+package net.geant.nmaas.orchestration;
 
 /**
- * Application lifecycle states as presented to the {@link AppLifecycleManager} client.
+ * Application lifecycle states as presented to the AppLifecycleManager client.
  */
 public enum AppLifecycleState {
 

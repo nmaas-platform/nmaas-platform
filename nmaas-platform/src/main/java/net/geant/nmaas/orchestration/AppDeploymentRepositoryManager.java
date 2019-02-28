@@ -3,7 +3,6 @@ package net.geant.nmaas.orchestration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
 
 import java.util.List;
 import java.util.Optional;

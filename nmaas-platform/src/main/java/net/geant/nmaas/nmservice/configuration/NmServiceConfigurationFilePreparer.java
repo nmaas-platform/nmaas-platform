@@ -14,7 +14,7 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileR
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

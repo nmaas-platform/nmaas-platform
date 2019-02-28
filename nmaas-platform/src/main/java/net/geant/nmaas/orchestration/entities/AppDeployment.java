@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import net.geant.nmaas.orchestration.Identifier;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;

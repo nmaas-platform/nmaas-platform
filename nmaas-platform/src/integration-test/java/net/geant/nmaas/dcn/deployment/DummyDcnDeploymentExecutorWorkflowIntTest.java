@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import org.junit.jupiter.api.Test;
