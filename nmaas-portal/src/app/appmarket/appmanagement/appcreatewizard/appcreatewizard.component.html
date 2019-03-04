@@ -1,3 +1,6 @@
+<h3 *ngIf="isInMode(ComponentMode.CREATE)">{{ 'APPS_WIZARD.NEW_APP_WIZARD_HEADER' | translate }}</h3>
+<h3 *ngIf="isInMode(ComponentMode.EDIT)">{{ 'APPS_WIZARD.EDIT_APP_WIZARD_HEADER' | translate: {'app_name': appName} }}</h3>
+
 <p-steps [model]="steps" [(activeIndex)]="activeStepIndex"></p-steps>
 <hr/>
 
@@ -39,28 +42,28 @@
  				    	 	'has-success': licenseUrl.valid && (licenseUrl.dirty || licenseUrl.touched)}">
                         <label for="appLicenseUrl" class="control-label">{{'APPS_WIZARD.LICENSE_URL_LABEL' | translate}} *</label>
                         <br>
-                        <input type="url" id="appLicenseUrl" class="form-control" required [(ngModel)]="app.licenseUrl" name="licenseUrl" #licenseUrl="ngModel" placeholder="e.g. https://opensource.org/licenses/MIT">
+                        <input type="url" id="appLicenseUrl" class="form-control" [pattern]="urlPattern" required [(ngModel)]="app.licenseUrl" name="licenseUrl" #licenseUrl="ngModel" placeholder="e.g. https://opensource.org/licenses/MIT">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  wwwUrl.invalid && (wwwUrl.dirty || wwwUrl.touched),
  				    	 	'has-success': wwwUrl.valid && (wwwUrl.dirty || wwwUrl.touched)}">
                         <label for="wwwUrl" class="control-label">{{'APPS_WIZARD.PROJECT_WEBSITE_LABEL' | translate}} *</label>
                         <br>
-                        <input type="url" id="wwwUrl" class="form-control" required name="wwwUrl" #wwwUrl="ngModel" [(ngModel)]="app.wwwUrl">
+                        <input type="url" id="wwwUrl" class="form-control" [pattern]="urlPattern" required name="wwwUrl" #wwwUrl="ngModel" [(ngModel)]="app.wwwUrl">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  sourceUrl.invalid && (sourceUrl.dirty || sourceUrl.touched),
  				    	 	'has-success': sourceUrl.valid && (sourceUrl.dirty || sourceUrl.touched)}">
                         <label for="sourceUrl" class="control-label">{{'APPS_WIZARD.SOURCE_CODE_LABEL' | translate}} *</label>
                         <br>
-                        <input type="url" id="sourceUrl" class="form-control" required name="sourceUrl" #sourceUrl="ngModel" [(ngModel)]="app.sourceUrl">
+                        <input type="url" id="sourceUrl" class="form-control" [pattern]="urlPattern" required name="sourceUrl" #sourceUrl="ngModel" [(ngModel)]="app.sourceUrl">
                     </div>
                     <div class="form-group form-group-sm"
                          [ngClass]="{'has-error':  issuesUrl.invalid && (issuesUrl.dirty || issuesUrl.touched),
  				    	 	'has-success': issuesUrl.valid && (issuesUrl.dirty || issuesUrl.touched)}">
                         <label for="issuesUrl" class="control-label">{{'APPS_WIZARD.PROJECT_ISSUES_LABEL' | translate}} *</label>
                         <br>
-                        <input type="url" id="issuesUrl" class="form-control" required name="issuesUrl" #issuesUrl="ngModel" [(ngModel)]="app.issuesUrl">
+                        <input type="url" id="issuesUrl" class="form-control" [pattern]="urlPattern" required name="issuesUrl" #issuesUrl="ngModel" [(ngModel)]="app.issuesUrl">
                     </div>
                     <div class="form-group form-group-sm">
                         <label for="tags" class="control-label">{{'APPS_WIZARD.TAGS_LABEL' | translate}} * </label>
@@ -161,12 +164,6 @@
                             <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
                                    [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version">
                         </div>
-                        <div class="form-group form-group-sm">
-                            <label for="kubernetesTemplateChartArchive" class="control-label">{{'APPS_WIZARD.ARCHIVE_LABEL' | translate}}</label>
-                            <br>
-                            <input type="text" class="form-control" id="kubernetesTemplateChartArchive" name="kubernetesTemplateChartArchive"
-                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.archive">
-                        </div>
                         <div class="form-group form-group-sm" [ngClass]="{'has-error':  storageSpace.invalid && (storageSpace.dirty || storageSpace.touched),
  			    		 	'has-success': storageSpace.valid && (storageSpace.dirty || storageSpace.touched)}">
                             <label for="defaultStorageSpace" class="control-label">{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_LABEL' | translate}} *</label>
@@ -180,7 +177,7 @@
                             <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
                         </div>
                         <div class="form-group form-group-sm">
-                            <label for="configFileRepositoryRequired" class="col-sm-2 control-label">{{'APPS_WIZARD.REPOSITORY_REQUIRED_LABEL' | translate}}</label>
+                            <label for="configFileRepositoryRequired" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.REPOSITORY_REQUIRED_LABEL' | translate}}</label>
                             <div class="col-sm-10">
                                 <input type="checkbox" id="configFileRepositoryRequired" name="configFileRepositoryRequired"
                                        [defaultChecked]="false" [(ngModel)]="app.appDeploymentSpec.configFileRepositoryRequired">
@@ -219,14 +216,16 @@
 
 <nmaas-modal>
     <div class="nmaas-modal-header">
-        <h4 style="text-align: center">{{'APPS_WIZARD.MODAL.HEADER' | translate}}</h4>
+        <h4 style="text-align: center" *ngIf="isInMode(ComponentMode.CREATE)">{{'APPS_WIZARD.NEW_APP_MODAL.HEADER' | translate}}</h4>
+        <h4 style="text-align: center" *ngIf="isInMode(ComponentMode.EDIT)">{{'APPS_WIZARD.EDIT_APP_MODAL.HEADER' | translate}}</h4>
     </div>
     <div class="nmaas-modal-body">
         <div class="form-group text-center">
-            <p>{{'APPS_WIZARD.MODAL.BODY' | translate}}</p>
+            <p *ngIf="isInMode(ComponentMode.CREATE)">{{'APPS_WIZARD.NEW_APP_MODAL.BODY' | translate}}</p>
+            <p *ngIf="isInMode(ComponentMode.EDIT)">{{'APPS_WIZARD.EDIT_APP_MODAL.BODY' | translate}}</p>
         </div>
     </div>
     <div class="nmaas-modal-footer">
-        <button class="btn btn-danger center-block" [routerLink]="['/management/apps']">{{'APPS_WIZARD.MODAL.BACK_TO_APP_MANAGEMENT_BUTTON' | translate}}</button>
+        <button class="btn btn-danger center-block" [routerLink]="['/management/apps']">{{'APPS_WIZARD.NEW_APP_MODAL.BACK_TO_APP_MANAGEMENT_BUTTON' | translate}}</button>
     </div>
 </nmaas-modal>

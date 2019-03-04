@@ -27,6 +27,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public modal:ModalComponent;
 
   public app:Application;
+  public appName: string;
   public steps: MenuItem[];
   public activeStepIndex:number = 0;
   public rulesAccepted: boolean = false;
@@ -34,6 +35,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public logo: any[] = [];
   public screenshots: any[] = [];
   public errorMessage:string = undefined;
+  public urlPattern: string = '^(http[s]?:\\/\\/){0,1}(www\\.){0,1}[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,5}[\\.]{0,1}$';
 
   constructor(public tagService: TagService, public appsService: AppsService, public route: ActivatedRoute,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService,
@@ -43,6 +45,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.modal.setModalType('success');
+    this.modal.setStatusOfIcons(false);
     this.mode = this.getMode(this.route);
     this.tagService.getTags().subscribe(tag => tag.forEach(val => {
       this.tags.push({label: val, value: val});
@@ -61,6 +65,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       } else {
         this.appsService.getApp(params['id']).subscribe(result =>{
             this.app = result;
+            this.appName = result.name;
             this.fillWizardWithData(result);
         });
         this.rulesAccepted = true;

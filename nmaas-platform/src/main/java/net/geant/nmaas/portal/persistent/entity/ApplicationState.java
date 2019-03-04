@@ -18,7 +18,7 @@ public enum ApplicationState {
     ACTIVE{
         @Override
         public boolean isChangeAllowed(ApplicationState newState){
-            return Arrays.asList(NOT_ACTIVE, DELETED).contains(newState);
+            return Arrays.asList(DISABLED, DELETED).contains(newState);
         }
 
         @Override
@@ -37,7 +37,7 @@ public enum ApplicationState {
             return MailType.APP_REJECTED;
         }
     },
-    NOT_ACTIVE{
+    DISABLED {
         @Override
         public boolean isChangeAllowed(ApplicationState newState){
             return Arrays.asList(ACTIVE, DELETED).contains(newState);

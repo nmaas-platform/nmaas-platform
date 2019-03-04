@@ -2,6 +2,6 @@ export enum ApplicationState{
     NEW,
     ACTIVE,
     REJECTED,
-    NOT_ACTIVE,
+    DISABLED,
     DELETED
 }

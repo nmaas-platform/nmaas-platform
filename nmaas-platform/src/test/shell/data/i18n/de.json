@@ -466,8 +466,8 @@
     "APPROVED_TAB": "Approved",
     "REJECTED_TAB": "Rejected",
     "NEW_TAB": "New",
-    "NO_REJECTED_APPS_MESSAGE": "There is no rejected applications",
-    "NO_NEW_APPS_MESSAGE": "There is no unapproved applications"
+    "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of submitted application",
@@ -497,23 +497,29 @@
     "APP_DEPLOYMENT_HEADER": "Application deployment specification",
     "CHART_NAME_LABEL": "Chart name",
     "CHART_VERSION_LABEL": "Chart version",
-    "ARCHIVE_LABEL": "Archive",
-    "DEFAULT_STORAGE_SPACE_LABEL": "Default storage space",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Default storage space (in GB)",
     "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
     "REPOSITORY_REQUIRED_LABEL": "Repository required",
     "CONFIG_WIZARD_TEMPLATE_LABEL": "Application configuration wizard template",
     "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
-    "MODAL": {
+    "NEW_APP_MODAL": {
       "HEADER": "New application submitted correctly",
       "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
-      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back to app management"
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
+    },
+    "EDIT_APP_MODAL": {
+      "HEADER": "Application edited correctly",
+      "BODY": "Thank you for editing existing application. Your changes should be applied soon",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
     },
     "GENERAL_INFO_STEP": "General information",
     "BASIC_APP_INFO_STEP": "Basic application information",
     "LOGO_AND_SCREENSHOTS_STEP": "Logo and screenshots",
     "APP_DESCRIPTIONS_STEP": "Application descriptions",
     "CONFIG_TEMPLATES_STEP": "Configuration templates",
-    "SHORT_REVIEW_STEP": "Short review"
+    "SHORT_REVIEW_STEP": "Short review",
+    "NEW_APP_WIZARD_HEADER": "Adding new application",
+    "EDIT_APP_WIZARD_HEADER": "Editing {{app_name}} application"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Kontaktieren Sie uns",

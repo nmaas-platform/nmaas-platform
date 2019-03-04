@@ -34,8 +34,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<div *ngIf="!subscribed && isSubscriptionAllowed() && isActive(app?.state)" class="btn-group pull-right">
-					<button class="btn btn-primary" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
+				<div *ngIf="!subscribed && isSubscriptionAllowed() && (isActive(app?.state) || isDisabled(app?.state))" class="btn-group pull-right">
+					<button class="btn btn-primary" [disabled]="isDisabled(app?.state)" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 				<div *ngIf="subscribed" class="btn-group pull-right">
 					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>

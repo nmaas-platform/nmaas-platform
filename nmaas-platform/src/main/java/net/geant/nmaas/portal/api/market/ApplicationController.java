@@ -40,7 +40,7 @@ public class ApplicationController extends AppBaseController {
 	@Transactional
 	public List<ApplicationBriefView> getApplications() {
 		return applications.findAll().stream()
-				.filter(app -> app.getState().equals(ApplicationState.ACTIVE) || app.getState().equals(ApplicationState.NOT_ACTIVE))
+				.filter(app -> app.getState().equals(ApplicationState.ACTIVE) || app.getState().equals(ApplicationState.DISABLED))
 				.map(app -> modelMapper.map(app, ApplicationBriefView.class))
 				.collect(Collectors.toList());
 	}

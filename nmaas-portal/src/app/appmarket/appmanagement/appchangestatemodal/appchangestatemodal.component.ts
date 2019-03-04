@@ -40,12 +40,12 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
         this.stateList = [ApplicationState.ACTIVE, ApplicationState.REJECTED];
         break;
       case this.getStateAsString(ApplicationState.ACTIVE):
-        this.stateList = [ApplicationState.NOT_ACTIVE, ApplicationState.DELETED];
+        this.stateList = [ApplicationState.DISABLED, ApplicationState.DELETED];
         break;
       case this.getStateAsString(ApplicationState.REJECTED):
         this.stateList = [ApplicationState.NEW, ApplicationState.DELETED];
         break;
-      case this.getStateAsString(ApplicationState.NOT_ACTIVE):
+      case this.getStateAsString(ApplicationState.DISABLED):
         this.stateList = [ApplicationState.ACTIVE, ApplicationState.DELETED];
         break;
       default:

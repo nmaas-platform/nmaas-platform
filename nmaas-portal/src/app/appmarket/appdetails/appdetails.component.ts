@@ -140,7 +140,15 @@ export class AppDetailsComponent implements OnInit {
   }
 
   public isActive(state: any): boolean {
-    return state === ApplicationState[ApplicationState.ACTIVE];
+    return this.getStateAsString(state) === ApplicationState[ApplicationState.ACTIVE];
+  }
+
+  public isDisabled(state: any): boolean {
+    return this.getStateAsString(state) === ApplicationState[ApplicationState.DISABLED];
+  }
+
+  public getStateAsString(state: any): string {
+    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
   }
   
 }

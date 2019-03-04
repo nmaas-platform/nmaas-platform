@@ -495,23 +495,29 @@
     "APP_DEPLOYMENT_HEADER": "Specyfikacja aplikacji",
     "CHART_NAME_LABEL": "Nazwa chart",
     "CHART_VERSION_LABEL": "Wersja chart",
-    "ARCHIVE_LABEL": "Archive",
-    "DEFAULT_STORAGE_SPACE_LABEL": "Domyślna przestrzeń dyskowa",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Domyślna przestrzeń dyskowa (w GB)",
     "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
     "REPOSITORY_REQUIRED_LABEL": "Wymagane repozytorium",
     "CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz konfiguracji aplikacji",
     "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz do akutalizacji konfiguracji aplikacji",
-    "MODAL": {
+    "NEW_APP_MODAL": {
       "HEADER": "Nowa aplikacja została wysłana poprawnie",
       "BODY": "Dziękujemy za przesłanie nowej aplikacji. Twoje zgłoszenie musi zostać teraz sprawdzona przez zespół NMaaS. To może chwile zająć.",
-      "BACK_TO_APP_MANAGEMENT_BUTTON": "Powrót do zarządzania aplikacjami"
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Powrót"
+    },
+    "EDIT_APP_MODAL": {
+      "HEADER": "Edycja zakończona sukcesem",
+      "BODY": "Dziękujemy za dokonanie edycji aplikacji. Twoje zmiany zostaną wkrótce zastosowane.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Powrót"
     },
     "GENERAL_INFO_STEP": "Informacje ogólne",
     "BASIC_APP_INFO_STEP": "Podstawowe dane aplikacji",
     "LOGO_AND_SCREENSHOTS_STEP": "Logo i zrzuty ekranu",
     "APP_DESCRIPTIONS_STEP": "Opisy aplikacji",
     "CONFIG_TEMPLATES_STEP": "Formularze konfiguracyjne",
-    "SHORT_REVIEW_STEP": "Podgląd aplikacji"
+    "SHORT_REVIEW_STEP": "Podgląd aplikacji",
+    "NEW_APP_WIZARD_HEADER": "Dodawanie nowej aplikacji",
+    "EDIT_APP_WIZARD_HEADER": "Edytowanie aplikacji o nazwie {{app_name}}"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",
