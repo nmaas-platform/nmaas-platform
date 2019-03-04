@@ -39,7 +39,7 @@ export class SingleCommentComponent implements OnInit {
 
   public replyBoxVisible: boolean = false;
 
-  constructor(private appsService: AppsService, private authService: AuthService, private translate: TranslateService) { }
+  constructor(public appsService: AppsService, public authService: AuthService, public translate: TranslateService) { }
 
   ngOnInit() {
   }
