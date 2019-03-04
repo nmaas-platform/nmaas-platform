@@ -126,6 +126,10 @@ export class AppInstanceService extends GenericDataService {
     return this.post<number,any>((this.getUrl(domainId) +  appInstanceId + '/restart'), appInstanceId);
   }
 
+  public getRunningAppInstances(domainId?: number): Observable<AppInstance[]> {
+    return this.get(this.getUrl(domainId) + "running");
+  }
+
 }
 
 export class CustomerSearchCriteria {

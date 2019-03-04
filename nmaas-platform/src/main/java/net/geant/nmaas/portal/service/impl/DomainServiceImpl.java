@@ -249,7 +249,6 @@ public class DomainServiceImpl implements DomainService {
 		checkParams(role);
 			
 		Domain domain = getDomain(domainId);
-		
 		User user = getUser(userId);
 		
 		userRoleRepo.deleteBy(user, domain, role);
@@ -260,7 +259,6 @@ public class DomainServiceImpl implements DomainService {
 		checkParams(domainId, userId);
 		 
 		Domain domain = getDomain(domainId);
-		
 		User user = getUser(userId);
 		
 		userRoleRepo.deleteBy(user, domain);		
@@ -271,7 +269,6 @@ public class DomainServiceImpl implements DomainService {
 		checkParams(domainId, userId);
 		
 		Domain domain = getDomain(domainId);
-		
 		User user = getUser(userId);
 		
 		return userRoleRepo.findRolesByDomainAndUser(domain, user);
@@ -280,24 +277,21 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public User getMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		
+
 		Domain domain = getDomain(domainId);
-		
 		User user = getUser(userId);
-				
 		User userMember = userRoleRepo.findDomainMember(domain, user);
-		if(userMember == null)
+		if(userMember == null) {
 			throw new ProcessingException("User is not domain member");
-		
+		}
+
 		return userMember;
 	}
 
 	@Override
 	public Set<Domain> getUserDomains(Long userId) {
 		checkParams(userId);
-
 		User user = getUser(userId);
-				
 		return user.getRoles().stream().map(UserRole::getDomain).collect(Collectors.toSet());
 	}
 
@@ -310,36 +304,42 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	protected void checkParam(String name) {
-		if(name == null)
+		if(name == null) {
 			throw new IllegalArgumentException("Name is null");
+		}
 	}
 	
 	protected void checkParam(Domain domain) {
-		if(domain == null)
+		if(domain == null) {
 			throw new IllegalArgumentException("Domain is null");
+		}
 	}
 	
-	protected void checkParams(Long id) {
-		if(id == null)
+	private void checkParams(Long id) {
+		if(id == null) {
 			throw new IllegalArgumentException("id is null");
+		}
 	}
 	
-	protected void checkParams(Role role) {
+	private void checkParams(Role role) {
 		if(role == null) {
 			throw new IllegalArgumentException("role is null");
-		};
+		}
 	}
 	
-	protected void checkParams(Long domainId, Long userId) {
-		if(domainId == null)
+	private void checkParams(Long domainId, Long userId) {
+		if(domainId == null) {
 			throw new IllegalArgumentException("domainId is null");
-		if(userId == null)
-			throw new IllegalArgumentException("userId is null");		
+		}
+		if(userId == null) {
+			throw new IllegalArgumentException("userId is null");
+		}
 	}
 
-	protected void checkGlobal(Domain domain){
-		if(domain.getCodename().equals(globalDomain))
+	private void checkGlobal(Domain domain){
+		if(domain.getCodename().equals(globalDomain)) {
 			throw new IllegalArgumentException("Global domain can't be updated or removed");
+		}
 	}
 	
 }

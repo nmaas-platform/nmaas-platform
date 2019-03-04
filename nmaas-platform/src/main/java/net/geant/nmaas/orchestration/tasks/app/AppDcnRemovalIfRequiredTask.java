@@ -1,7 +1,7 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRemoveDcnIfRequiredEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 @Log4j2
 public class AppDcnRemovalIfRequiredTask {
 
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
     @Autowired
-    public AppDcnRemovalIfRequiredTask(AppDeploymentRepositoryManager appDeploymentRepositoryManager){
+    public AppDcnRemovalIfRequiredTask(DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager){
         this.appDeploymentRepositoryManager = appDeploymentRepositoryManager;
     }
 
@@ -27,7 +27,7 @@ public class AppDcnRemovalIfRequiredTask {
     public ApplicationEvent trigger(AppRemoveDcnIfRequiredEvent event) {
         try {
             final Identifier deploymentId = event.getRelatedTo();
-            final String domain = appDeploymentRepositoryManager.loadDomainByDeploymentId(deploymentId);
+            final String domain = appDeploymentRepositoryManager.loadDomain(deploymentId);
             //TODO: refactor method to check if the DCN can be automatically removed
             return null;
         } catch(Exception ex){

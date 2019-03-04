@@ -129,6 +129,8 @@
 					<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
 							[form]="configurationTemplate"
 							[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+							[refresh]="refreshForm"
+							(formLoad)="changeForm()"
 							(submit)="applyConfiguration($event.data)">
 					</formio>
 				</div>

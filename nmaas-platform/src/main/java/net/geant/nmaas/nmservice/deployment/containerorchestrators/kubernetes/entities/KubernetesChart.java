@@ -1,19 +1,21 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-public class KubernetesChart {
+public class KubernetesChart implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
