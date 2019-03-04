@@ -543,6 +543,23 @@
     "CONFIG_TEMPLATES_STEP": "Formularze konfiguracyjne",
     "SHORT_REVIEW_STEP": "Podgląd aplikacji",
     "NEW_APP_WIZARD_HEADER": "Dodawanie nowej aplikacji",
-    "EDIT_APP_WIZARD_HEADER": "Edytowanie aplikacji o nazwie {{app_name}}"
+    "EDIT_APP_WIZARD_HEADER": "Edytowanie aplikacji o nazwie {{app_name}}",
+    "ACCEPT_RULES_TOOLTIP": "Musisz zaakceptować zasady korzystania!",
+    "NAME_TOOLTIP": "Oficjalna nazwa aplikacji.",
+    "VERSION_TOOLTIP": "Numer bieżącego wydania aplikacji.",
+    "LICENSE_TOOLTIP": "Podaj nazwę licencji, na której aplikacja została wydana. Upewnij się że licencja ta pozwala na wykorzystanie aplikacji w systemie NMaaS.",
+    "LICENSE_URL_TOOLTIP": "Podaj link do opisu licencji, aby użytkownicy mogli uzyskać więcej informacji o niej i prawach do wykorzystania aplikacji.",
+    "PROJECT_WEBSITE_TOOLTIP": "Podaj link do strony projektu, aby użytkownicy mogli uzyskać więcej informacji o całym projekcie.",
+    "SOURCE_CODE_TOOLTIP": "Link do kodu źródłowego na przykład github.com/project.",
+    "PROJECT_ISSUES_TOOLTIP": "Podaj link do issues projektu, aby użytkownicy mogli łatwo znaleźć sposób na zgłoszenie problemu z tym narzędziem.",
+    "TAGS_TOOLTIP": "Wybierz tagi, które najlepiej opisują aplikacje. Pomoże to użytkownikom w bardziej efektywnym wyszukiwaniu aplikacji, których potrzebują.",
+    "BRIEF_DESCRIPTION_TOOLTIP": "Podaj krótki opis aplikacji. Tekst ten będzie widoczny na stronie marketu NMaaS.",
+    "FULL_DESCRIPTION_TOOLTIP": "Podaj pełny opis aplikacji. Tekst ten będzie widoczny w widoku szczegółowym aplikacji.",
+    "CHART_NAME_TOOLTIP": "Podaj nazwę chart, który będzie wykorzystywany w systemie NMaaS.",
+    "CHART_VERSION_TOOLTIP": "Podaj wersję chart, która będzie wykorzystywana w systemie NMaaS.",
+    "DEFAULT_STORAGE_SPACE_TOOLTIP": "Podaj domyślną przestrzeń dyskową (w gigabajtach).",
+    "DEPLOY_PARAMETER_TOOLTIP": "Niektóre aplikacje wykorzystują globalne ustawienia systemu NMaaS. Jeśli chcesz wykorzystać jedną z nich podaj klucz pod którym powinniśmy podać te ustawienia.",
+    "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS może wykorzystać GitLab aby zachować konfiguracje każdej instancji.",
+    "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!"
   }
 }

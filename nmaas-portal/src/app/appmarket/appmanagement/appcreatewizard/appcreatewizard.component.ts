@@ -37,6 +37,12 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public errorMessage:string = undefined;
   public urlPattern: string = '^(http[s]?:\\/\\/){0,1}(www\\.){0,1}[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,5}[\\.]{0,1}$';
 
+  public defaultTooltipOptions = {
+      'placement': 'right',
+      'show-delay': "50",
+      'theme': 'dark'
+  };
+
   constructor(public tagService: TagService, public appsService: AppsService, public route: ActivatedRoute,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService,
               public appImagesService: AppImagesService, public router:Router, public translate: TranslateService,

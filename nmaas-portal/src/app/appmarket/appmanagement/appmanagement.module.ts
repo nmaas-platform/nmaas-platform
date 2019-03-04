@@ -17,6 +17,7 @@ import {FormioModule} from "angular-formio";
 import {ConfigTemplateService} from "../../service/configtemplate.service";
 import { AppChangeStateModalComponent } from './appchangestatemodal/appchangestatemodal.component';
 import { AppPreviewComponent } from './apppreview/apppreview.component';
+import {TooltipModule} from "ng2-tooltip-directive";
 
 export function getJsonTemplates(config: ConfigTemplateService) {
   return () => config.loadConfigTemplate();
@@ -38,7 +39,8 @@ export function getJsonTemplates(config: ConfigTemplateService) {
     StepsModule,
     MultiSelectModule,
     FileUploadModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    TooltipModule
   ],
   exports: [],
   providers: [
