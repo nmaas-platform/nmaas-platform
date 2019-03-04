@@ -331,7 +331,9 @@
     "NO_COMMENTS_MESSAGE": "No comment added yet",
     "COMMENTS_LIST": "Comments",
     "REPLY_BUTTON": "Reply",
-    "PLACEHOLDER": "Add some comment here..."
+    "PLACEHOLDER": "Add some comment here...",
+    "COMMENTS_TODAY": "Today at ",
+    "COMMENTS_YESTERDAY": "Yesterday at "
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",

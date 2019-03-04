@@ -330,7 +330,9 @@
     "NO_COMMENTS_MESSAGE": "Jeszcze nie ma żadnych komentarzy",
     "COMMENTS_LIST": "Komentarze",
     "REPLY_BUTTON": "Odpowiedz",
-    "PLACEHOLDER": "Wpisz tutaj komentarz..."
+    "PLACEHOLDER": "Wpisz tutaj komentarz...",
+    "COMMENTS_TODAY": "Dzisiaj o ",
+    "COMMENTS_YESTERDAY": "Wczoraj o "
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Szczegóły",

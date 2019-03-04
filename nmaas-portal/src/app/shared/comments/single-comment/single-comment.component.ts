@@ -49,11 +49,18 @@ export class SingleCommentComponent implements OnInit {
     let comment_date = new Date(this.createdAt);
     let time = actual_date - comment_date.getTime();
     let days = (time / (60*60*24*1000));
+    let x = "";
     if(days< 1){
-      return "Today at " + formatDate(comment_date, 'h:mm a', 'en-GB');
+      this.translate.get('COMMENTS.COMMENTS_TODAY').subscribe((res: string) => {
+        x = res + formatDate(comment_date, 'h:mm a', 'en-GB');
+      });
+      return x;
     }else{
       if(days < 2){
-        return "Yesterday at " + formatDate(comment_date, 'h:mm a', 'en-GB');
+        this.translate.get('COMMENTS.COMMENTS_YESTERDAY').subscribe((res: string)=> {
+          x = res + formatDate(comment_date, 'h:mm a', 'en-GB');
+        });
+        return x;
       }else{
         return formatDate(comment_date, 'MMMM d, y, h:mm:ss a z', 'en-GB');
       }
@@ -61,23 +68,19 @@ export class SingleCommentComponent implements OnInit {
   }
 
   public deleteComment(id: number): void {
-    console.debug("Delete comment emits: " + id);
     this.removeEvent.emit(id);
   }
 
   public addReplyToComment(id: number, text: string){
     if(!isNullOrUndefined(this.parentId)){
-      console.debug("Using alternative subcomment");
       text = "<span class='text-muted'><i>Response to @" + this.commentAuthor + " comment</i></span></br>" + text;
       id = this.parentId;
     }
-    console.debug("Add reply emits: " + id);
     this.addReplyEvent.emit({'id': id, 'text': text});
   }
 
   public changeReplyBoxVisibility(){
     this.replyBoxVisible = !this.replyBoxVisible;
-    console.debug("Reply visibility changed to: " + this.replyBoxVisible)
   }
 
 }
