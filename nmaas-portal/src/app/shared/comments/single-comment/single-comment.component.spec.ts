@@ -54,4 +54,45 @@ describe('SingleCommentComponent', () => {
     let app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  it('should change visibility of changeReplyBox', () => {
+    let actualState = component.replyBoxVisible;
+    component.changeReplyBoxVisibility();
+    expect(component.replyBoxVisible != actualState).toBeTruthy();
+  });
+
+  it('should emit delete event', () => {
+    spyOn(component.removeEvent, 'emit');
+    // trigger event
+    component.deleteComment(1);
+    fixture.detectChanges();
+    expect(component.removeEvent.emit).toHaveBeenCalledWith(1);
+  });
+
+  it('should emit add reply event', () => {
+    spyOn(component.addReplyEvent, 'emit');
+    // trigger event
+    component.addReplyToComment(1, 'test');
+    fixture.detectChanges();
+    expect(component.addReplyEvent.emit).toHaveBeenCalledWith({ 'id': 1, 'text': 'test'});
+  });
+
+  it('getParsedCommentData should return today', () => {
+    let dte = new Date();
+    dte.setDate(dte.getDate());
+    component.createdAt = dte.toString();
+    fixture.detectChanges();
+    let out = component.getParsedCommentDate();
+    expect(out).toContain("Today");
+  });
+
+  it('getParsedCommentData should return yesterday', () => {
+    let dte = new Date();
+    dte.setDate(dte.getDate() - 1);
+    component.createdAt = dte.toString();
+    fixture.detectChanges();
+    let out = component.getParsedCommentDate();
+    expect(out).toContain("Yesterday");
+  });
+
 });
