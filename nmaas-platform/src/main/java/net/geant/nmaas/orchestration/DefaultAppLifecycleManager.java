@@ -2,7 +2,6 @@ package net.geant.nmaas.orchestration;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
@@ -81,9 +80,9 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         try {
             repositoryManager.load(generatedId);
         } catch(InvalidDeploymentIdException e) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -99,7 +98,7 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     public void applyConfiguration(Identifier deploymentId, AppConfigurationView configuration) throws Throwable {
         AppDeployment appDeployment = repositoryManager.load(deploymentId);
         NmServiceInfo serviceInfo = (NmServiceInfo) nmServiceInfoRepository.findByDeploymentId(deploymentId).orElseThrow(() -> new InvalidDeploymentIdException("No nm service info with provided identifier found."));
-        appDeployment.setConfiguration(prepareAppConfiguration(serviceInfo.getDomain(), configuration.getJsonInput()));
+        appDeployment.setConfiguration(new AppConfiguration(configuration.getJsonInput()));
         if(configuration.getStorageSpace() != null){
             appDeployment.setStorageSpace(configuration.getStorageSpace());
             serviceInfo.setStorageSpace(configuration.getStorageSpace());
@@ -118,17 +117,6 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
         if(appDeployment.getState().equals(AppDeploymentState.MANAGEMENT_VPN_CONFIGURED)){
             eventPublisher.publishEvent(new AppApplyConfigurationActionEvent(this, deploymentId));
         }
-    }
-
-    private AppConfiguration prepareAppConfiguration(String domain, String configuration) {
-        if(configuration.contains("inCluster")){
-            Map<String, String> config = this.getMapFromJson(configuration);
-            AppDeployment app = repositoryManager.load(config.get("inClusterInstance"), domain)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid inCluster instance name"));
-            config.replace("source_addr", app.getDeploymentId().value());
-            return new AppConfiguration(new Gson().toJson(config));
-        }
-        return new AppConfiguration(configuration);
     }
 
     Map<String, String> getMapFromJson(String inputJson){

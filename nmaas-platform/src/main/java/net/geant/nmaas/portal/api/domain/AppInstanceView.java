@@ -7,15 +7,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AppInstanceView extends DomainAware {
+public class AppInstanceView extends AppInstanceBase {
 
 	private Long id;
 	
 	private Long applicationId;
-
-	private String applicationName;
-
-	private String name;
 	
 	private Long createdAt;
 	
