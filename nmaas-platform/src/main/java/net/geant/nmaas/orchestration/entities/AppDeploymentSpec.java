@@ -54,6 +54,6 @@ public class AppDeploymentSpec implements Serializable {
 
     public void validate(){
         checkArgument(kubernetesTemplate != null, "Kubernetes template cannot be null");
-        checkArgument(defaultStorageSpace > 0, "Default storage space cannot be lower than 0GB");
+        checkArgument(defaultStorageSpace != null && defaultStorageSpace > 0, "Default storage space cannot be lower than 0GB");
     }
 }
