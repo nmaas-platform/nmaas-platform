@@ -13,13 +13,14 @@
       <p class="text-right nmaas-blue comment-text-md">
         <a *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === commentAuthor"
            (click)="deleteComment(commentId)">
-          Remove comment</a>
+          {{ 'COMMENTS.REMOVE' | translate }}</a>
       </p>
     </div>
   </div>
   <div class="row">
     <div class="col-xs-offset-2 col-sm-offset-1 col-xs-10 col-sm-11">
-      <p class="comment-text-md" [innerHTML]=commentText>
+      <p class="comment-text-md" [outerHTML]="commentText">
+
       </p>
     </div>
   </div>

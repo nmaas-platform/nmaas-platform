@@ -332,7 +332,10 @@
     "REPLY_BUTTON": "Répondre",
     "PLACEHOLDER": "Ajouter un commentaire ici...",
     "COMMENTS_TODAY": "Aujourd'hui à ",
-    "COMMENTS_YESTERDAY": "Hier à "
+    "COMMENTS_YESTERDAY": "Hier à ",
+    "REMOVE": "Supprimer le commentaire",
+    "RESPONSE_TO": "Réponse à",
+    "REMOVED": "Ce commentaire a été supprimé"
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",

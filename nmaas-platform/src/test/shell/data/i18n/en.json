@@ -333,7 +333,10 @@
     "REPLY_BUTTON": "Reply",
     "PLACEHOLDER": "Add some comment here...",
     "COMMENTS_TODAY": "Today at ",
-    "COMMENTS_YESTERDAY": "Yesterday at "
+    "COMMENTS_YESTERDAY": "Yesterday at ",
+    "REMOVE": "Remove comment",
+    "RESPONSE_TO": "Response to",
+    "REMOVED": "This comment was removed"
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",

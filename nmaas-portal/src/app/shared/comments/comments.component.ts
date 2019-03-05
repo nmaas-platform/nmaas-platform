@@ -72,7 +72,6 @@ export class CommentsComponent implements OnInit, OnChanges {
     public refresh(): void {
         this.appsService.getAppCommentsByUrl(this.pathUrl).subscribe(comments =>{
             this.comments = comments;
-            console.debug("Debug_comments: ", comments.length)
             for(let comm of comments){
                 if(this.show[comm.id] == null || isNullOrUndefined(this.show[comm.id])) {
                     this.show[comm.id] = 3;
@@ -137,12 +136,10 @@ export class CommentsComponent implements OnInit, OnChanges {
     }
 
     OnRemove($event){
-        console.debug("OnRemove catches event with id: " + $event);
         this.deleteComment($event);
     }
 
     onAddReply($event){
-        console.debug("OnAddReply catches event with id: " + $event['id'] + " and string: " + $event['text']);
         this.addReplyBasedOnEvent($event['id'], $event['text']);
     }
 

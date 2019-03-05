@@ -5,6 +5,7 @@ import {formatDate} from "@angular/common";
 import {Comment, Id} from "../../../model";
 import {AppsService} from "../../../service";
 import {isNullOrUndefined} from "util";
+import {findIndex} from "rxjs/operators";
 
 @Component({
   selector: 'app-single-comment',
@@ -42,6 +43,22 @@ export class SingleCommentComponent implements OnInit {
   constructor(public appsService: AppsService, public authService: AuthService, public translate: TranslateService) { }
 
   ngOnInit() {
+    this.translateCommentText();
+  }
+
+  public translateCommentText(){
+    if(!isNullOrUndefined(this.commentText)) {
+      let startPosition = this.commentText.toString().indexOf("@@@\'");
+      if (startPosition > -1) {
+        let endPosition = this.commentText.toString().indexOf("\'", startPosition + 4);
+        let key = this.commentText.slice(startPosition, endPosition).replace('@@@\'', '');
+        let translation = "";
+        this.translate.get(key).subscribe((str: string) => {
+          translation = str;
+        });
+        this.commentText = this.commentText.slice(0, startPosition) + translation + this.commentText.slice(endPosition + 1, this.commentText.length);
+      }
+    }
   }
 
   public getParsedCommentDate(): string{
@@ -73,7 +90,7 @@ export class SingleCommentComponent implements OnInit {
 
   public addReplyToComment(id: number, text: string){
     if(!isNullOrUndefined(this.parentId)){
-      text = "<span class='text-muted'><i>Response to @" + this.commentAuthor + " comment</i></span></br>" + text;
+      text = "<span class='text-muted'><em>@@@\'COMMENTS.RESPONSE_TO\' \@" + this.commentAuthor + " </em></span></br>" + text;
       id = this.parentId;
     }
     this.addReplyEvent.emit({'id': id, 'text': text});
