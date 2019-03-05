@@ -31,12 +31,12 @@
       </a></strong></p>
     </div>
   </div>
-  <div *ngIf="replyBoxVisible">
+  <div class="col-xs-offset-1 col-xs-11" *ngIf="replyBoxVisible">
     <form role="form" (ngSubmit)="this.addReplyToComment(commentId, textAreaComment.value)">
       <div class="form-group">
         <textarea #textAreaComment name="comment" id="comment2" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
                   class="form-control" rows="2"></textarea>
-        <button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
+        <button type="submit" class="btn btn-default pull-right">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
       </div>
     </form>
   </div>
