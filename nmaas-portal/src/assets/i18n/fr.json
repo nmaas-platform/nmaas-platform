@@ -534,7 +534,8 @@
     "DEFAULT_STORAGE_SPACE_TOOLTIP": "Enter default storage space (in gigabytes).",
     "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
     "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
-    "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!"
+    "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
+    "DEPLOY_PARAMETERS_DROPDOWN": "Select global parameters"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",

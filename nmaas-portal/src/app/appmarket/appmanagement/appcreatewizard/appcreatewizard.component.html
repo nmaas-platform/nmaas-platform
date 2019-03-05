@@ -170,10 +170,15 @@
                             <input type="number" class="form-control no-spin" id="defaultStorageSpace" name="defaultStorageSpace" [min]="1" required
                                    [(ngModel)]="app.appDeploymentSpec.defaultStorageSpace" #storageSpace="ngModel" tooltip="{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                         </div>
-                        <div class="form-group form-group-sm" *ngFor="let val of getParametersTypes()">
+                        <div class="form-group form-group-sm">
+                            <label for="deployParameters" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETERS_DROPDOWN' | translate}}</label>
+                            <br>
+                            <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                        </div>
+                        <div class="form-group form-group-sm" *ngFor="let val of selectedDeployParameters">
                             <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
                             <br>
-                            <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                            <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
                         </div>
                         <div class="form-group form-group-sm">
                             <label for="configFileRepositoryRequired" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.REPOSITORY_REQUIRED_LABEL' | translate}}</label>

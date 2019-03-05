@@ -32,6 +32,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public activeStepIndex:number = 0;
   public rulesAccepted: boolean = false;
   public tags: SelectItem[] = [];
+  public deployParameter:SelectItem[] = [];
+  public selectedDeployParameters: string[] = [];
   public logo: any[] = [];
   public screenshots: any[] = [];
   public errorMessage:string = undefined;
@@ -57,6 +59,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     this.tagService.getTags().subscribe(tag => tag.forEach(val => {
       this.tags.push({label: val, value: val});
     }));
+    this.getParametersTypes().forEach(val => this.deployParameter.push({label: val.replace("_", " "), value:val}));
     this.steps = [
       {label: this.translate.instant('APPS_WIZARD.GENERAL_INFO_STEP')},
       {label: this.translate.instant('APPS_WIZARD.BASIC_APP_INFO_STEP')},
@@ -84,6 +87,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     let temp:Map<ParameterType, string> = new Map();
     Object.keys(appToEdit.appDeploymentSpec.deployParameters).forEach(key =>{
       temp.set(ParameterType[key], appToEdit.appDeploymentSpec.deployParameters[key]);
+      this.selectedDeployParameters.push(key);
     });
     this.app.appDeploymentSpec.deployParameters = temp;
     if(isNullOrUndefined(this.app.configTemplate)){
@@ -221,6 +225,12 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       return this.app.appDeploymentSpec.deployParameters.get(ParameterType[key]) || '';
     }
     return '';
+  }
+
+  public removeDeployParameterFromMap(event){
+    if(!event.value.some(val => val === event.itemValue)){
+      this.app.appDeploymentSpec.deployParameters.delete(ParameterType[event.itemValue as string]);
+    }
   }
 
 }
