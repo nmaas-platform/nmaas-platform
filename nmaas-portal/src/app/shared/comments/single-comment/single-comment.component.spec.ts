@@ -77,22 +77,22 @@ describe('SingleCommentComponent', () => {
     expect(component.addReplyEvent.emit).toHaveBeenCalledWith({ 'id': 1, 'text': 'test'});
   });
 
-  it('getParsedCommentData should return today', () => {
+  it('getParsedCommentData should contain today', () => {
     let dte = new Date();
     dte.setDate(dte.getDate());
     component.createdAt = dte.toString();
     fixture.detectChanges();
-    let out = component.getParsedCommentDate();
-    expect(out).toContain("Today");
+    let out = component.getParsedCommentDate().toLowerCase();
+    expect(out).toContain("today");
   });
 
-  it('getParsedCommentData should return yesterday', () => {
+  it('getParsedCommentData should contain yesterday', () => {
     let dte = new Date();
     dte.setDate(dte.getDate() - 1);
     component.createdAt = dte.toString();
     fixture.detectChanges();
-    let out = component.getParsedCommentDate();
-    expect(out).toContain("Yesterday");
+    let out = component.getParsedCommentDate().toLowerCase();
+    expect(out).toContain("yesterday");
   });
 
 });
