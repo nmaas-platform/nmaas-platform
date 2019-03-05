@@ -7,7 +7,7 @@
       ]
     },
     "ThresholdFilter":{
-      "level": "info"
+      "level": "debug"
     },
     "appenders":{
         "Console": {
