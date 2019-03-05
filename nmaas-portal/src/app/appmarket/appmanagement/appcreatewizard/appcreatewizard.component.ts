@@ -35,7 +35,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public logo: any[] = [];
   public screenshots: any[] = [];
   public errorMessage:string = undefined;
-  public urlPattern: string = '^(http[s]?:\\/\\/){0,1}(www\\.){0,1}[a-zA-Z0-9\\.\\-]+\\.[a-zA-Z]{2,5}[\\.]{0,1}$';
+  public urlPattern: string = '(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)';
 
   public defaultTooltipOptions = {
       'placement': 'right',
@@ -132,6 +132,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public previousStep(): void{
+    this.errorMessage = undefined;
     this.activeStepIndex -= 1;
   }
 

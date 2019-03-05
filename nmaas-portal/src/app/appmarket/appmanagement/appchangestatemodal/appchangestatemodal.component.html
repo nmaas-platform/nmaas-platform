@@ -22,6 +22,10 @@
           </span>
         </div>
       </div>
+      <br *ngIf="errorMessage">
+      <div class="alert alert-danger text-left" *ngIf="errorMessage">
+        {{errorMessage}}
+      </div>
     </div>
   </div>
   <div class="nmaas-modal-footer">

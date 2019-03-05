@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -96,6 +98,14 @@ public class Application implements Serializable {
 	public Application(Long id, String name, String version, String owner) {
 		this(name, version, owner);
 		this.id = id;
+	}
+
+	public void validate(){
+		checkArgument(StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(version), "App must have name and version");
+		checkArgument(StringUtils.isNotEmpty(owner), "Owner must be specified");
+		checkArgument(appDeploymentSpec != null, "Application deployment specification cannot be null");
+		checkArgument(configTemplate != null && StringUtils.isNotEmpty(configTemplate.getTemplate()), "Configuration template cannot be null");
+		checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
 	}
 
 }

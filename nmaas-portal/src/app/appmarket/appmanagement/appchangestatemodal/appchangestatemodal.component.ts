@@ -22,6 +22,8 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
 
   public stateList: ApplicationState[] = [];
 
+  public errorMessage: string;
+
   constructor(public appsService: AppsService) {}
 
   ngOnInit() {
@@ -61,12 +63,13 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
   public submit(): void {
     this.appsService.changeApplicationState(this.app.id, this.stateChange).subscribe(()=>{
       console.debug("Application state changed");
+      this.errorMessage = undefined;
       this.app.state = this.stateChange.state;
       this.stateChange.state = undefined;
       this.stateChange.reason = undefined;
       this.filterStates();
       this.modal.hide();
-    });
+    }, error => this.errorMessage = error.message);
   }
 
   public show(): void {

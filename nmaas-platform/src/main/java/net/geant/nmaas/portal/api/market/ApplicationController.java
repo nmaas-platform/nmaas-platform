@@ -58,10 +58,7 @@ public class ApplicationController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public Id addApplication(@RequestBody(required=true) ApplicationView appRequest, Principal principal) {
-		Application app = applications.create(appRequest.getName(), appRequest.getVersion(), principal.getName());
-		applications.setMissingProperties(appRequest);
-		modelMapper.map(appRequest, app);
-		applications.update(app);
+		Application app = applications.create(appRequest, principal.getName());
 		this.sendMail(app, new ApplicationStateChangeRequest(app.getState(), ""));
 		return new Id(app.getId());
 	}

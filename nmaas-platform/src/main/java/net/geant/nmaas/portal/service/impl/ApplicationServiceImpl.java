@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,15 +23,21 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	private ApplicationRepository appRepo;
 
+	private ModelMapper modelMapper;
+
 	@Override
-	public Application create(String name, String version, String owner) {
-		checkParam(name, version, owner);
-		return appRepo.save(new Application(name, version, owner));
+	public Application create(ApplicationView request, String owner) {
+		checkParam(request, owner);
+		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
+		this.setMissingProperties(request);
+		modelMapper.map(request, app);
+		checkParam(app);
+		return appRepo.save(app);
 	}
 
 	@Override
 	public Application update(Application app) {
-		checkParam(app);
+		checkApp(app);
 		return appRepo.save(app);
 	}
 
@@ -68,8 +75,20 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if(!app.getState().isChangeAllowed(state)){
 			throw new IllegalStateException("Application state transition from " + app.getState() + " to " + state + " is not allowed.");
 		}
+		if(state.equals(ApplicationState.ACTIVE)){
+			checkApp(app);
+		}
 		app.setState(state);
 		appRepo.save(app);
+	}
+
+	private void checkApp(Application app){
+		if(app == null){
+			throw new IllegalArgumentException("App cannot be null");
+		}
+		app.validate();
+		app.getAppDeploymentSpec().validate();
+		app.getAppDeploymentSpec().getKubernetesTemplate().validate();
 	}
 
 	@Override
@@ -77,15 +96,17 @@ public class ApplicationServiceImpl implements ApplicationService {
 		setMissingDescriptions(app);
 	}
 
-	private void checkParam(String name, String version, String owner) {
-		if(StringUtils.isEmpty(name))
+	private void checkParam(ApplicationView request, String owner) {
+		if(request == null)
+			throw new IllegalArgumentException("Request cannot be null");
+		if(StringUtils.isEmpty(request.getName()))
 			throw new IllegalArgumentException("name is null");
-		if(StringUtils.isEmpty(version))
+		if(StringUtils.isEmpty(request.getVersion()))
 		    throw new IllegalArgumentException("version is null");
 		if(StringUtils.isEmpty(owner))
 			throw new IllegalArgumentException("Owner is null");
-		if(appRepo.existsByNameAndVersion(name, version))
-		    throw new IllegalStateException("Application " + name + " in version " + version + " already exists.");
+		if(appRepo.existsByNameAndVersion(request.getName(), request.getVersion()))
+		    throw new IllegalStateException("Application " + request.getName() + " in version " + request.getVersion() + " already exists.");
 	}
 	
 	private void checkParam(Long id) {
@@ -96,6 +117,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	private void checkParam(Application app) {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
+		app.validate();
 	}
 
 	private void setMissingDescriptions(ApplicationView app){
