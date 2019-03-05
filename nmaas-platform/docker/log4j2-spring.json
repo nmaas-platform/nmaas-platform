@@ -107,6 +107,45 @@
           ]
         },
         {
+          "name": "org.flyway.core",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef" : [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "com.zaxxer.hikari",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef" : [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
+          "name": "org.quartz",
+          "level": "info",
+          "additivity": "false",
+          "AppenderRef" : [
+            {
+              "ref": "nmaas-file"
+            },
+            {
+              "ref": "nmaas-console"
+            }
+          ]
+        },
+        {
           "name": "springfox.documentation",
           "level": "info",
           "additivity": "false",
@@ -120,7 +159,7 @@
           ]
         },
         {
-          "name": "net.schmizz.sshj",
+          "name": "net.schmizz",
           "level": "error",
           "additivity": "false",
           "AppenderRef": [

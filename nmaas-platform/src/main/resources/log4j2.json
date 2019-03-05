@@ -159,7 +159,7 @@
           ]
         },
         {
-          "name": "net.schmizz.sshj",
+          "name": "net.schmizz",
           "level": "error",
           "additivity": "false",
           "AppenderRef": [
