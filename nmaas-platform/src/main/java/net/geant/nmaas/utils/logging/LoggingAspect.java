@@ -19,13 +19,13 @@ import java.text.MessageFormat;
 @Component
 public class LoggingAspect {
 
-	private static String beforeString = "ENTERING {0}";
+	private static String beforeString = "> {0}";
 	
-	private static String beforeWithParamsString = "ENTERING {0} PARAMS {1}";
+	private static String beforeWithParamsString = "> {0} PARAMS {1}";
 
-	private static String afterReturning = "LEAVING {0} AND RETURNING {1}";
+	private static String afterReturning = "< {0} AND RETURNING {1}";
 
-	private static String afterReturningVoid = "LEAVING {0}";
+	private static String afterReturningVoid = "< {0}";
 	
 	public Level loggableToLevel(Loggable loggable){
 		if (loggable != null) {
