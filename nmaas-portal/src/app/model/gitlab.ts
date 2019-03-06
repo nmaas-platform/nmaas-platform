@@ -3,5 +3,4 @@ export class GitLabConfig {
     public server: string;
     public token: string;
     public port: number;
-    public repositoryAccessUsername = 'nmaas-conf-automation';
 }

@@ -35,7 +35,6 @@ export class MockGitLabConfig{
     public sshServer:string;
     public token:string;
     public port:number;
-    public repositoryAccessUsername:string = "nmaas-conf-automation";
 }
 
 import { GitlabDetailsComponent } from './gitlab-details.component';
