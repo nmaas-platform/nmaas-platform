@@ -160,19 +160,19 @@ public enum AppLifecycleState {
     APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS{
         @Override
         public String getUserFriendlyState() {
-            return "Application configuration update in progress.";
+            return "Application configuration update in progress";
         }
     },
     APPLICATION_CONFIGURATION_UPDATED{
         @Override
         public String getUserFriendlyState() {
-            return "Application configuration updated successfully.";
+            return "Application configuration updated successfully";
         }
     },
     APPLICATION_CONFIGURATION_UPDATE_FAILED {
         @Override
         public String getUserFriendlyState() {
-            return "Application configuration update failed.";
+            return "Application configuration update failed";
         }
     },
     UNKNOWN{

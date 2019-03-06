@@ -400,12 +400,12 @@ public enum AppDeploymentState {
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
             switch (state) {
-                case RESTART_INITIATED:
-                    return APPLICATION_RESTART_IN_PROGRESS;
-                case REMOVAL_INITIATED:
-                    return APPLICATION_REMOVAL_IN_PROGRESS;
-                case CONFIGURATION_UPDATE_INITIATED:
-                    return APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
+                case VERIFICATION_INITIATED:
+                    return APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS;
+                case VERIFIED:
+                    return APPLICATION_DEPLOYMENT_VERIFIED;
+                case VERIFICATION_FAILED:
+                    return APPLICATION_DEPLOYMENT_VERIFICATION_FAILED;
                 default:
                     return nextStateForNotMatchingNmServiceDeploymentState(this, state);
             }
