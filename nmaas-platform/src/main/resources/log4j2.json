@@ -7,7 +7,7 @@
       ]
     },
     "ThresholdFilter":{
-      "level": "info"
+      "level": "debug"
     },
     "appenders":{
         "Console": {
@@ -159,7 +159,7 @@
           ]
         },
         {
-          "name": "net.schmizz.sshj",
+          "name": "net.schmizz",
           "level": "error",
           "additivity": "false",
           "AppenderRef": [
@@ -173,7 +173,7 @@
         }
       ],
       "root": {
-        "level": "info",
+        "level": "debug",
         "AppenderRef": [
           {
             "ref": "nmaas-file"
