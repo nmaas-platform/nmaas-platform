@@ -37,7 +37,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     private static final String DEFAULT_CLIENT_EMAIL_DOMAIN = "nmaas.geant.net";
     private static final String DEFAULT_BRANCH_FOR_COMMIT = "master";
     private static final int PROJECT_MEMBER_MAINTAINER_ACCESS_LEVEL = 40;
-    private static final int PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL = 30;
 
     private NmServiceRepositoryManager serviceRepositoryManager;
     private NmServiceConfigFileRepository configurations;
@@ -84,7 +83,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
         Integer gitLabProjectId = createProjectWithinGroupWithMember(gitLabGroupId, gitLabUserId, deploymentId);
-        addRepositoryAccessUserToProject(gitLabProjectId);
         GitLabProject project = project(deploymentId, gitLabUserId, gitLabPassword, gitLabProjectId);
         serviceRepositoryManager.updateGitLabProject(deploymentId, project);
         uploadConfigFilesToProject(gitLabProjectId, configIds);
@@ -106,7 +104,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private Integer createUser(String domain, Identifier deploymentId, String password) {
         try {
-            return gitlab.getUserApi().createUser(createStandardUser(domain, deploymentId), password, limitOnProjects()).getId();
+            return gitlab.getUserApi().createUser(createStandardUser(domain, deploymentId), password, false).getId();
         } catch (GitLabApiException e) {
             throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
@@ -119,6 +117,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         user.setUsername(userName);
         user.setEmail(userEmail(userName));
         user.setCanCreateGroup(false);
+        user.setProjectsLimit(limitOnProjects());
         return user;
     }
 
@@ -185,14 +184,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
-    private void addRepositoryAccessUserToProject(Integer projectId) {
-        try{
-            gitlab.getProjectApi().addMember(projectId, getUserIdByUsername(defaultRepositoryAccessUsername()), PROJECT_MEMBER_DEVELOPER_ACCESS_LEVEL);
-        } catch(GitLabApiException e){
-            throw new FileTransferException("" + e.getMessage() + e.getReason());
-        }
-    }
-
     private String projectName(Identifier deploymentId) {
         return deploymentId.value();
     }
@@ -207,14 +198,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
         }
     }
 
-    private String defaultRepositoryAccessUsername(){
-        return gitLabManager.getGitLabRepositoryAccessUsername();
-    }
-
-    private Integer getUserIdByUsername(String username) throws GitLabApiException{
-        return gitlab.getUserApi().getUser(username).getId();
-    }
-
     private String getUser(Integer gitLabUserId) throws GitLabApiException {
         return gitlab.getUserApi().getUser(gitLabUserId).getUsername();
     }
@@ -227,27 +210,27 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     private void uploadConfigFilesToProject(Integer gitLabProjectId, List<String> configIds) {
-        for (String configId : configIds) {
+        configIds.forEach(configId -> {
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
             try {
-                gitlab.getRepositoryFileApi().createFile(file, gitLabProjectId, commitBranch(), commitMessage(configuration.getConfigFileName()));
+                gitlab.getRepositoryFileApi().createFile(gitLabProjectId, file, commitBranch(), commitMessage(configuration.getConfigFileName()));
             } catch (GitLabApiException e) {
                 throw new FileTransferException("Could not commit file " + configuration.getConfigFileName() + " due to exception: " + e.getMessage());
             }
-        }
+        });
     }
 
     private void uploadUpdateConfigFilesToProject(Integer gitLabProjectId, List<String> configIds){
-        for (String configId : configIds) {
+        configIds.forEach(configId -> {
             NmServiceConfiguration configuration = loadConfigurationFromDatabase(configId);
             RepositoryFile file = committedFile(configuration);
             try {
-                gitlab.getRepositoryFileApi().updateFile(file, gitLabProjectId, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
+                gitlab.getRepositoryFileApi().updateFile(gitLabProjectId, file, commitBranch(), updateCommitMessage(configuration.getConfigFileName()));
             } catch (GitLabApiException e) {
                 throw new FileTransferException("Could not commit file " + configuration.getConfigFileName() + " due to exception: " + e.getMessage());
             }
-        }
+        });
     }
 
     private NmServiceConfiguration loadConfigurationFromDatabase(String configId) {

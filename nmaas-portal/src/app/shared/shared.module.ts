@@ -26,20 +26,20 @@ import { AppListComponent } from './applications/list/applist.component';
 import { ApplicationsViewComponent } from './applications/applications.component';
 import { AppElementComponent } from './applications/list/element/appelement.component';
 import { ClusterDetailsComponent } from "./admin/clusters/details/clusterdetails.component";
-import {GitlabDetailsComponent} from "./admin/gitlab/details/gitlab-details.component";
+import { GitlabDetailsComponent } from "./admin/gitlab/details/gitlab-details.component";
 import { ModalInfoTermsComponent } from './modal/modal-info-terms/modal-info-terms.component';
 import { ModalInfoPolicyComponent } from './modal/modal-info-policy/modal-info-policy.component';
-import {TranslateModule} from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { SortableColumnComponent } from './sortable-column/sortable-column.component';
 import { SortableTableDirective } from './sortable-column/sortable-table.directive';
-import {AppInstallModalComponent} from "./modal/appinstall";
+import { AppInstallModalComponent } from "./modal/appinstall";
 import { RatingExtendedComponent } from './rating-extended/rating-extended.component';
-import {TooltipModule} from "ng2-tooltip-directive";
-import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
+import { TooltipModule } from "ng2-tooltip-directive";
+import { PasswordStrengthMeterModule } from "angular-password-strength-meter";
 import { AboutComponent } from './about/about.component';
-import {ChangelogComponent} from "./changelog/changelog.component";
-import {NotificationService} from "../service/notification.service";
-import {RecaptchaModule} from "ng-recaptcha";
+import { ChangelogComponent } from "./changelog/changelog.component";
+import { NotificationService } from "../service/notification.service";
+import { RecaptchaModule } from "ng-recaptcha";
 
 @NgModule({
   imports: [

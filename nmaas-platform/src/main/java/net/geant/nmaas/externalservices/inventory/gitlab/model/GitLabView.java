@@ -10,5 +10,4 @@ public class GitLabView {
     private String server;
     private String token;
     private Integer port;
-    private String repositoryAccessUsername;
 }
