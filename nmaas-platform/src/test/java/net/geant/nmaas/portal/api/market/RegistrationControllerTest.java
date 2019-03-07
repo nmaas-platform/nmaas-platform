@@ -1,9 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -12,16 +8,23 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationEventPublisher;
 
 public class RegistrationControllerTest {
 
@@ -41,7 +44,7 @@ public class RegistrationControllerTest {
 
     private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true,  "namespace", "storage");
 
-    @Before
+    @BeforeEach
     public void setup(){
         registration = this.createRegistration();
         registrationController = new RegistrationController(userService, domainService, modelMapper, eventPublisher);
@@ -67,52 +70,68 @@ public class RegistrationControllerTest {
         verify(domainService, times(1)).addMemberRole(any(), any(), any());
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWhenRegistrationIsNull(){
-        registrationController.signup(null);
+        assertThrows(SignupException.class, () -> {
+            registrationController.signup(null);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWhenUserHasEmptyUsername(){
-        registration.setUsername("");
-        registrationController.signup(registration);
+        assertThrows(SignupException.class, () -> {
+            registration.setUsername("");
+            registrationController.signup(registration);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWhenUserHasEmptyPassword(){
-        registration.setPassword(null);
-        registrationController.signup(registration);
+        assertThrows(SignupException.class, () -> {
+            registration.setPassword(null);
+            registrationController.signup(registration);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWhenUserHasEmptyMail(){
-        registration.setEmail(null);
-        registrationController.signup(registration);
+        assertThrows(SignupException.class, () -> {
+            registration.setEmail(null);
+            registrationController.signup(registration);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWhenUserNotAcceptTermsOfUse(){
-        registration.setTermsOfUseAccepted(false);
-        registrationController.signup(registration);
+        assertThrows(SignupException.class, () -> {
+            registration.setTermsOfUseAccepted(false);
+            registrationController.signup(registration);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWhenUserNotAcceptPrivacyPolicy(){
-        registration.setPrivacyPolicyAccepted(false);
-        registrationController.signup(registration);
+        assertThrows(SignupException.class, () -> {
+            registration.setPrivacyPolicyAccepted(false);
+            registrationController.signup(registration);
+        });
     }
 
-    @Test(expected = SignupException.class)
+    @Test
     public void shouldNotSignupWithWrongDomainId(){
-        registration.setDomainId(9L);
-        when(domainService.findDomain(registration.getDomainId())).thenReturn(Optional.empty());
-        registrationController.signup(registration);
+        assertThrows(SignupException.class, () -> {
+            registration.setDomainId(9L);
+            when(domainService.findDomain(registration.getDomainId())).thenReturn(Optional.empty());
+            registrationController.signup(registration);
+        });
     }
 
-    @Test(expected = MissingElementException.class)
+    @Test
     public void shouldNotSignupWithoutGlobalDomain(){
-        when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
-        registrationController.signup(registration);
+        assertThrows(MissingElementException.class, () -> {
+            when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
+            registrationController.signup(registration);
+        });
     }
 
     @Test
@@ -122,11 +141,13 @@ public class RegistrationControllerTest {
         assertEquals(DOMAIN.getCodename(), result.get(0).getCodename());
     }
 
-    @Test(expected = MissingElementException.class)
+    @Test
     public void shouldNotGetDomainsWhenGlobalIsMissing(){
-        when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
-        when(domainService.getDomains()).thenReturn(Collections.singletonList(DOMAIN));
-        registrationController.getDomains();
+        assertThrows(MissingElementException.class, () -> {
+            when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
+            when(domainService.getDomains()).thenReturn(Collections.singletonList(DOMAIN));
+            registrationController.getDomains();
+        });
     }
 
     private Registration createRegistration(){

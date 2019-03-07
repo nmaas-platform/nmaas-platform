@@ -1,35 +1,29 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import java.util.HashSet;
-import java.util.List;
-import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.context.WebApplicationContext;
+
+import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.BeforeTransaction;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.transaction.Transactional;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ContextConfiguration(classes = {PersistentConfig.class})
-@EnableAutoConfiguration
 @Transactional
 @Rollback
 public class ApplicationRepositoryTest {
@@ -51,13 +45,6 @@ public class ApplicationRepositoryTest {
 	
 	@Autowired
 	DomainService domains;
-
-	@Before
-	@BeforeTransaction
-	public void setUp() throws Exception {
-//		domains.createGlobalDomain();
-//		userRepo.save(new User("admin", "admin", domains.getGlobalDomain().get(), Role.ROLE_SYSTEM_ADMIN));
-	}
 
 	@Test
 	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})

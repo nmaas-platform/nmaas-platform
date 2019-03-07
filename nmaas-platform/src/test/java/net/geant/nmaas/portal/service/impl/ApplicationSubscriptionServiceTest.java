@@ -4,19 +4,18 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
-
-import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
-import org.junit.Before;
-import org.junit.Test;
+import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.any;
 
 public class ApplicationSubscriptionServiceTest {
 
@@ -36,7 +35,7 @@ public class ApplicationSubscriptionServiceTest {
     String domainName = "DOMAIN1";
     Domain domain1;
 
-    @Before
+    @BeforeEach
     public void setup() {
         appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications);
         app1 = new Application(applicationId, applicationName);
@@ -120,6 +119,5 @@ public class ApplicationSubscriptionServiceTest {
                         !appSubSrv.getSubscription(applicationId, domainId).isPresent() &&
                         !appSubSrv.getSubscription(app1, domain1).isPresent());
     }
-
 
 }

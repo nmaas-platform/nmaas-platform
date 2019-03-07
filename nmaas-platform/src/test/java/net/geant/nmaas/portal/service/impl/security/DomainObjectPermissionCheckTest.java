@@ -1,5 +1,24 @@
 package net.geant.nmaas.portal.service.impl.security;
 
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
+import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.AclService.Permissions;
+import net.geant.nmaas.portal.service.DomainService;
+import net.geant.nmaas.portal.service.UserService;
+import org.junit.After;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Optional;
+import java.util.Set;
+
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,29 +26,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import net.geant.nmaas.portal.persistent.entity.UsersHelper;
-import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
-import net.geant.nmaas.portal.service.AclService.Permissions;
-import net.geant.nmaas.portal.service.DomainService;
-import net.geant.nmaas.portal.service.UserService;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @EnableAutoConfiguration
-//@ContextConfiguration(classes = {SecurityConfig.class, PortalConfig.class /*, PersistentConfig.class */})
 public class DomainObjectPermissionCheckTest {
 	
 	@Mock
@@ -47,17 +46,12 @@ public class DomainObjectPermissionCheckTest {
 	@InjectMocks
 	DomainObjectPermissionCheck dopch = new DomainObjectPermissionCheck();
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		when(domains.getGlobalDomain()).thenReturn(Optional.of(UsersHelper.GLOBAL));
 		when(domains.findDomain(UsersHelper.GLOBAL.getId())).thenReturn(Optional.of(UsersHelper.GLOBAL));
 		when(domains.findDomain(UsersHelper.DOMAIN1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1));
 		when(domains.findDomain(UsersHelper.DOMAIN2.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN2));
-		
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test
@@ -71,11 +65,9 @@ public class DomainObjectPermissionCheckTest {
 
 	@Test
 	public void testSystemAdminEvaluatePermissions() {
-	
 		Set<Permissions> perms = dopch.evaluatePermissions(UsersHelper.ADMIN, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(5, perms.size());
 		assertThat(perms, hasItems(Permissions.READ, Permissions.WRITE, Permissions.CREATE, Permissions.DELETE, Permissions.OWNER));
-			
 	}
 	
 	@Test
@@ -124,18 +116,12 @@ public class DomainObjectPermissionCheckTest {
 		
 		perms = dopch.evaluatePermissions(UsersHelper.DOMAIN1_GUEST, UsersHelper.DOMAIN2.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(0, perms.size());
-		
-		
+
 		perms = dopch.evaluatePermissions(UsersHelper.GLOBAL_GUEST, UsersHelper.GLOBAL.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(0, perms.size());
-		
-		
+
 		perms = dopch.evaluatePermissions(UsersHelper.GLOBAL_GUEST, UsersHelper.DOMAIN1.getId(), DomainObjectPermissionCheck.DOMAIN);
 		assertEquals(0, perms.size());
-		
-		
-		
 	}
-	
-	
+
 }

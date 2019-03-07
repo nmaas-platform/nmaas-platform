@@ -1,4 +1,4 @@
-package net.geant.nmaas.orchestration.entities;
+package net.geant.nmaas.orchestration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

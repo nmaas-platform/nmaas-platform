@@ -1,8 +1,10 @@
 package net.geant.nmaas.portal.service.impl.security;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.AclService.Permissions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -10,12 +12,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import net.geant.nmaas.portal.persistent.entity.User;
-import net.geant.nmaas.portal.service.AclService.Permissions;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class BasePermissionCheckTest {
 
@@ -26,7 +25,7 @@ public class BasePermissionCheckTest {
 	Set<Permissions> perms = null;
 	Set<Permissions> emptyPerms = null;
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		perms = new HashSet<Permissions>();
 		perms.addAll(Arrays.asList(new Permissions[] { Permissions.CREATE, Permissions.OWNER }));
@@ -47,7 +46,7 @@ public class BasePermissionCheckTest {
 		
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() throws Exception {
 		bpch = null;
 	}
@@ -85,7 +84,6 @@ public class BasePermissionCheckTest {
 		
 		assertTrue(bpch.check(user, 1, "supported", Permissions.ANY));
 		assertFalse(bpch.check(user, 1, "notSupported", Permissions.ANY));
-
 	}
 
 	@Test
@@ -98,7 +96,6 @@ public class BasePermissionCheckTest {
 		
 		assertTrue(bpch.check(user, 1, "supported", new Permissions[] { Permissions.ANY }));
 		assertFalse(bpch.check(user, 1, "notSupported", new Permissions[] {Permissions.ANY}));
-
 	}
 
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import net.geant.nmaas.orchestration.Identifier;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.CascadeType;
@@ -33,6 +35,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class AppDeployment {
 
     @Id
@@ -41,10 +44,12 @@ public class AppDeployment {
     private Long id;
 
     /** Unique identifier of this deployment. */
+    @ToString.Include
     @Column(nullable = false, unique = true)
     private Identifier deploymentId;
 
     /** Name of the client domain for this deployment. */
+    @ToString.Include
     @Column(nullable = false)
     private String domain;
 
@@ -53,6 +58,7 @@ public class AppDeployment {
     private Identifier applicationId;
 
     /** Name of the deployment provided by the user. */
+    @ToString.Include(name = "appInstanceName")
     @Column(nullable = false)
     private String deploymentName;
 
@@ -91,12 +97,4 @@ public class AppDeployment {
         history.add(new AppDeploymentHistory(this, new Date(), previousState, currentState));
     }
 
-    @Override
-    public String toString() {
-        return "AppDeployment{" +
-                "deploymentId=" + deploymentId +
-                ", domain='" + domain + '\'' +
-                ", appInstanceName='" + deploymentName + '\'' +
-                '}';
-    }
 }

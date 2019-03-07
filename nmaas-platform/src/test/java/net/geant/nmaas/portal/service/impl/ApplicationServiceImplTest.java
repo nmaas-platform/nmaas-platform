@@ -2,29 +2,28 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.isA;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ApplicationServiceImplTest {
 
     @Mock
@@ -33,14 +32,16 @@ public class ApplicationServiceImplTest {
     @InjectMocks
     ApplicationServiceImpl applicationService;
 
-    @Before
+    @BeforeEach
     public void setup(){
         applicationService = new ApplicationServiceImpl(applicationRepository);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void createMethodShouldThrowExceptionDueToIncorrectName(){
-        applicationService.create(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            applicationService.create(null);
+        });
     }
 
     @Test
@@ -52,9 +53,11 @@ public class ApplicationServiceImplTest {
         assertEquals("test", result.getName());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullPassedAsParameter(){
-        applicationService.update(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            applicationService.update(null);
+        });
     }
 
     @Test
@@ -67,9 +70,11 @@ public class ApplicationServiceImplTest {
         assertNotEquals("test", result.getName());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteMethodShouldTrowExceptionDueToNullPassedAsId(){
-        applicationService.delete(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            applicationService.delete(null);
+        });
     }
 
     @Test
@@ -83,9 +88,11 @@ public class ApplicationServiceImplTest {
         verify(applicationRepository).save(isA(Application.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void findApplicationShouldThrowExceptionDueToNullId(){
-        Optional<Application> application = applicationService.findApplication(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            applicationService.findApplication(null);
+        });
     }
 
     @Test

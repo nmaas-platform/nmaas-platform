@@ -4,12 +4,12 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.tasks.app.AppDcnRequestOrVerificationTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEvent;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -30,7 +30,7 @@ public class AppDcnRequestOrVerificationTaskTest {
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private AppRequestNewOrVerifyExistingDcnEvent event = new AppRequestNewOrVerifyExistingDcnEvent(this, deploymentId);
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(deployments.loadDomain(deploymentId)).thenReturn("domain");
         task = new AppDcnRequestOrVerificationTask(deployments, deploy);

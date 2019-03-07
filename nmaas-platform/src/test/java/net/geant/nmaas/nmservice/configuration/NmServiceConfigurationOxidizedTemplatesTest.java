@@ -1,30 +1,31 @@
 package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfigurationTemplate;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileTemplatesRepository;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class NmServiceConfigurationOxidizedTemplatesTest {
 
@@ -44,7 +45,7 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
 
     private Long oxidizedAppId;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Application app = new Application("oxidizedAppName");
         app.setVersion("oxidizedAppVersion");
@@ -89,7 +90,7 @@ public class NmServiceConfigurationOxidizedTemplatesTest {
                 Matchers.allOf(containsString("7.7.7.7"), containsString("8.8.8.8")));
     }
 
-    @After
+    @AfterEach
     public void removeTestAppFromDatabase() {
         applicationRepository.deleteAll();
         templatesRepository.deleteAll();

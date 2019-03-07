@@ -1,7 +1,5 @@
 package net.geant.nmaas.portal.service.impl;
 
-import java.util.Collections;
-import java.util.Optional;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ConfigurationNotFoundException;
 import net.geant.nmaas.portal.exceptions.OnlyOneConfigurationSupportedException;
@@ -10,15 +8,20 @@ import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+
+import java.util.Collections;
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.modelmapper.ModelMapper;
 
 public class ConfigurationManagerTest {
 
@@ -36,7 +39,7 @@ public class ConfigurationManagerTest {
 
     private Internationalization internationalization;
 
-    @Before
+    @BeforeEach
     public void setup(){
         this.configurationManager = new ConfigurationManagerImpl(repository, modelMapper, internationalizationRepository);
         this.config = new Configuration(1L, false, false, "en");
@@ -54,10 +57,12 @@ public class ConfigurationManagerTest {
         assertEquals(config.getDefaultLanguage(), configView.getDefaultLanguage());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotGetConfigWhenThereIsNoConfig(){
-        when(repository.findAll()).thenReturn(Collections.emptyList());
-        this.configurationManager.getConfiguration();
+        assertThrows(IllegalStateException.class, () -> {
+            when(repository.findAll()).thenReturn(Collections.emptyList());
+            this.configurationManager.getConfiguration();
+        });
     }
 
     @Test
@@ -68,10 +73,12 @@ public class ConfigurationManagerTest {
         verify(repository, times(1)).save(any());
     }
 
-    @Test(expected = OnlyOneConfigurationSupportedException.class)
+    @Test
     public void shouldNotAddMultipleConfig(){
-        when(repository.count()).thenReturn(1L);
-        configurationManager.addConfiguration(modelMapper.map(config, ConfigurationView.class));
+        assertThrows(OnlyOneConfigurationSupportedException.class, () -> {
+            when(repository.count()).thenReturn(1L);
+            configurationManager.addConfiguration(modelMapper.map(config, ConfigurationView.class));
+        });
     }
 
     @Test
@@ -83,27 +90,33 @@ public class ConfigurationManagerTest {
         verify(repository, times(1)).save(any());
     }
 
-    @Test(expected = ConfigurationNotFoundException.class)
+    @Test
     public void shouldNotUpdateNotExistingConfig(){
-        when(repository.findById(config.getId())).thenReturn(Optional.empty());
-        configurationManager.updateConfiguration(1L, configView);
+        assertThrows(ConfigurationNotFoundException.class, () -> {
+            when(repository.findById(config.getId())).thenReturn(Optional.empty());
+            configurationManager.updateConfiguration(1L, configView);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldNotSetNotExistingLanguageAsDefault(){
-        when(repository.findById(config.getId())).thenReturn(Optional.of(config));
-        when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
-                .thenReturn(Optional.empty());
-        configurationManager.updateConfiguration(1L, configView);
+        assertThrows(IllegalArgumentException.class, () -> {
+            when(repository.findById(config.getId())).thenReturn(Optional.of(config));
+            when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
+                    .thenReturn(Optional.empty());
+            configurationManager.updateConfiguration(1L, configView);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotSetDisabledLanguageAsDefault(){
-        this.internationalization.setEnabled(false);
-        when(repository.findById(config.getId())).thenReturn(Optional.of(config));
-        when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
-                .thenReturn(Optional.of(internationalization));
-        configurationManager.updateConfiguration(1L, configView);
+        assertThrows(IllegalStateException.class, () -> {
+            this.internationalization.setEnabled(false);
+            when(repository.findById(config.getId())).thenReturn(Optional.of(config));
+            when(internationalizationRepository.findByLanguageOrderByIdDesc(configView.getDefaultLanguage()))
+                    .thenReturn(Optional.of(internationalization));
+            configurationManager.updateConfiguration(1L, configView);
+        });
     }
 
     @Test
