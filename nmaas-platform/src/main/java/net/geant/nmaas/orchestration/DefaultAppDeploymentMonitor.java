@@ -54,7 +54,7 @@ public class DefaultAppDeploymentMonitor implements AppDeploymentMonitor {
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.DEBUG)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public AppUiAccessDetails userAccessDetails(Identifier deploymentId) {
         if (AppLifecycleState.APPLICATION_DEPLOYMENT_VERIFIED.equals(retrieveCurrentState(deploymentId)))
