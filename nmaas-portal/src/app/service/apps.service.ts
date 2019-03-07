@@ -11,6 +11,7 @@ import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
+import {isNullOrUndefined} from "util";
 
 
 
@@ -37,7 +38,9 @@ export class AppsService extends GenericDataService {
     }
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
-        return this.getByUrl(urlPath);
+        if(!isNullOrUndefined(urlPath) && urlPath != "") {
+            return this.getByUrl(urlPath);
+        }
     }
 
     public setMyAppRateByUrl(urlPath: string): Observable<any> {
