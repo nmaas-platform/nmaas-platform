@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
@@ -19,6 +19,7 @@ import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
 import {interval} from 'rxjs/internal/observable/interval';
+import {UserDataService} from "../../../service/userdata.service";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -47,6 +48,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   app: Application;
 
+  public p_first: string = "p_first";
+
+  public maxItemsOnPage: number = 6;
+  public pageNumber: number = 1;
+
   public appInstanceStatus: AppInstanceStatus;
 
   public appInstanceId: number;
@@ -59,8 +65,13 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   public intervalCheckerSubscribtion;
 
+  public wasUpdated: boolean = false;
+  public refreshForm: EventEmitter<any>;
+  public readonly REPLACE_TEXT = "\"insert-app-instances-here\"";
+
   constructor(private appsService: AppsService,
     public appImagesService: AppImagesService,
+    public userData: UserDataService,
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
@@ -75,6 +86,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
         this.appInstance = appInstance;
         this.configurationTemplate = this.getTemplate(appInstance.configTemplate.template);
+        this.refreshForm = new EventEmitter();
         this.submission.data.configuration = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
@@ -92,6 +104,38 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngAfterViewChecked(): void {
+  }
+
+  changeForm(){
+    if(!this.wasUpdated){
+      let temp = JSON.stringify(this.configurationTemplate);
+      if(temp.match(this.REPLACE_TEXT)){
+        this.appInstanceService.getRunningAppInstances(this.appInstance.domainId).subscribe(apps => {
+          temp = temp.replace("\"insert-app-instances-here\"", JSON.stringify(this.getRunningAppsMap(apps)));
+          this.refreshForm.emit({
+            property: 'form',
+            value: JSON.parse(temp)
+          });
+        });
+      }
+      this.wasUpdated = true;
+    }
+  }
+
+  private getRunningAppsMap(apps: AppInstance[]) : any {
+    let appMap = [];
+    apps = this.filterRunningApps(apps);
+    apps.forEach(app => appMap.push({value: app.internalId, label: app.name}));
+    return appMap;
+  }
+
+  private filterRunningApps(apps: AppInstance[]): AppInstance[] {
+    switch(this.app.name){
+      case 'Grafana':
+        return apps.filter(app => app.applicationName === 'Prometheus');
+      default:
+        return apps;
+    }
   }
 
   private updateAppInstanceState() {
