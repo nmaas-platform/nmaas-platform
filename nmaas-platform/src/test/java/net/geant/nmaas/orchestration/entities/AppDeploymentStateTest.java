@@ -63,7 +63,6 @@ public class AppDeploymentStateTest {
     @EnumSource(
             value = AppDeploymentState.class,
             names = {"APPLICATION_DEPLOYMENT_VERIFIED",
-                    "APPLICATION_CONFIGURATION_UPDATED",
                     "APPLICATION_RESTARTED"})
     void shouldReturnIsInRunningState(AppDeploymentState state) {
         assertThat(state.isInRunningState(), is(true));
@@ -127,7 +126,9 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.REMOVED, APPLICATION_REMOVED),
                 Arguments.of(APPLICATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.REMOVAL_FAILED, APPLICATION_REMOVAL_FAILED),
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_UPDATED, APPLICATION_CONFIGURATION_UPDATED),
-                Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED, APPLICATION_CONFIGURATION_UPDATE_FAILED)
+                Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED, APPLICATION_CONFIGURATION_UPDATE_FAILED),
+                Arguments.of(APPLICATION_CONFIGURATION_UPDATED, NmServiceDeploymentState.VERIFICATION_INITIATED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS),
+                Arguments.of(APPLICATION_CONFIGURATION_UPDATED, NmServiceDeploymentState.VERIFICATION_FAILED, APPLICATION_DEPLOYMENT_VERIFICATION_FAILED)
         );
     }
 
