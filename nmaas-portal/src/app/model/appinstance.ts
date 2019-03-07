@@ -20,6 +20,7 @@ export class AppInstance {
   public domainId: number = undefined;
   public applicationId: number = undefined;
   public applicationName: string = undefined;
+  public internalId:string = undefined;
   public name: string = undefined;
   public createdAt: Date = undefined;
   public owner: User = undefined;
