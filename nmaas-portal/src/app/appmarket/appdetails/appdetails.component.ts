@@ -78,9 +78,9 @@ export class AppDetailsComponent implements OnInit {
     }
 
     let result: Observable<any> = null;
-    if (isUndefined(domainId) || domainId === 0) {
+    if (isUndefined(domainId) || domainId === 0 || this.appConfig.getNmaasGlobalDomainId() === domainId) {
       result = this.appSubsService.getAllByApplication(this.appId);
-      result.pipe(isEmpty()).subscribe(res => this.subscribed = !res, error => this.subscribed = false);
+      result.subscribe(() => this.subscribed=false);
     } else {
       result = this.appSubsService.getSubscription(this.appId, domainId);
       result.subscribe((appSub:AppSubscription)=>this.subscribed=appSub.active, error=>this.subscribed = false);
