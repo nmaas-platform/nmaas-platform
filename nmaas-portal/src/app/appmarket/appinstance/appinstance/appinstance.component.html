@@ -1,157 +1,141 @@
-		
-		<div class="container">
-			<link rel='stylesheet' href='https://unpkg.com/formiojs@latest/dist/formio.full.min.css'>
+<div class="container">
+	<link rel='stylesheet' href='https://unpkg.com/formiojs@latest/dist/formio.full.min.css'>
+	<div class="row">
+		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+			<div class="thumbnail" *ngIf="app">
+				<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+			</div>
+			<div class="thumbnail" *ngIf="!app">
+				<img alt="App logo" src="assets/images/app-logo-example.png"/>
+			</div>
+		</div>
+		<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
 			<div class="row">
-				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
-					<div class="thumbnail" *ngIf="app">
-						<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
-					</div>
-					<div class="thumbnail" *ngIf="!app">
-						<img alt="App logo" src="assets/images/app-logo-example.png"/>
-					</div>
-				</div>
-				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<h2>{{appInstance?.name}}</h2>
-							<h3>{{app?.name}}</h3>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">				
-							<div class="btn-group pull-right">
-								<a role="button" href="{{app?.wwwUrl}}" class="btn btn-default">WWW</a>
-								<a role="button" href="{{app?.sourceUrl}}" class="btn btn-default">{{'APP_INSTANCE.SOURCE' | translate}}</a>
-								<a role="button" href="{{app?.issuesUrl}}" class="btn btn-default">{{'APP_INSTANCE.ISSUES' | translate}}</a>
-							</div>
-						</div>
-					</div>
-					
-					<hr>
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{'APP_INSTANCE.VERSION' | translate}}: {{app?.version}}
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{'APP_INSTANCE.LICENSE' | translate}}: {{app?.license}}
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							{{'APP_INSTANCE.TAGS' | translate}}: {{app?.tags.join(", ")}}
-						</div>
-					</div>
-					<hr>
-					<div *ngIf="app" class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-							<p>
-								<span>{{'APP_INSTANCE.RATING' | translate}}:</span>
-								<rate [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
-							</p>
-						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">	
-							<p>
-								<span>{{'APP_INSTANCE.MY_RATING' | translate}}:</span>
-								<rate [editable]="true" (onChange)="onRateChanged()" [pathUrl]="'/apps/' + app?.id + '/rate/my'"></rate>
-							</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
-								<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
-								<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
-								<button class="btn btn-primary" style="display: none" (click)="this.modal.show()" disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
-								<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
-							</div>
-							<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
-								<button class="btn btn-primary" (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
-							</div>
-						</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
+					<rate [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
+					<div class="text-muted" style="font-size: small;">
+						v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
+						| <a href="{{app?.wwwUrl}}">WWW</a>
+						| <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+						| <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
 					</div>
 				</div>
-			</div>
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<div class="text-right">
 
-			<nmaas-modal styleModal="warning">
-				<div class="nmaas-modal-header">
-					<h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
-				</div>
-				<div class="nmaas-modal-body">
-					<div class="form-group">
-						<p>{{'UNDEPLOY_MODAL.BODY' | translate}}</p>
 					</div>
-				</div>
-				<div class="nmaas-modal-footer">
-					<button type="button" class="btn btn-danger" (click)="this.undeploy()">{{'UNDEPLOY_MODAL.YES_BUTTON' | translate}}</button>
-					<button type="button" class="btn btn-primary" (click)="this.undeployModal.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
-				</div>
-			</nmaas-modal>
-
-			<nmaas-modal #updateConfig>
-				<div class="nmaas-modal-header">
-					<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
-				</div>
-				<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-					<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined"
-							[form]="configurationUpdateTemplate"
-							[submission]="submission"
-                           [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-                           (change)="changeConfigUpdate($event.data)">
-					</formio>
-				</div>
-				<div class="nmaas-modal-footer">
-					<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
-					<button type="button" class="btn btn-primary" (click)="this.updateConfigModal.hide()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
-				</div>
-			</nmaas-modal>
-		
-			<div class='row'>
-				<h3>{{'APP_INSTANCE.INSTALLATION_PROGRESS.HEADER' | translate}}</h3>
-				<hr>
-				<div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
-					<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
-				</div>
-				<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus?.userFriendlyState : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
-				<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.DETAILS' | translate}}: {{appInstanceStatus?.userFriendlyDetails}}</p>
-			</div>
-			
-			<div class="row" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
-				<div class="alert alert-danger">
-					{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
-				</div>
-			</div>
-
-			<div class="row" *ngIf="this.appInstanceStateHistory">
-                <h3>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.HEADER' | translate}}</h3>
-				<hr>
-				<table class="table table-hover table-condensed">
-					<thead>
-						<tr>
-							<th>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.TIMESTAMP' | translate}}</th>
-                           <th>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.STATE_TRANSITIONS' | translate}}</th>
-							<th>&nbsp;</th>
-						</tr>
-					</thead>
-					<tbody>
-						<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory" let-isLast="last">
-							<tr>
-								<td>{{history.timestamp | date:'medium'}}</td>
-                                <td *ngIf="history.previousState !== null">{{history.previousState}}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState}}</td>
-                                <td *ngIf="history.previousState === null">{{history.currentState}}</td>
-							</tr>
-						</ng-template>
-					</tbody>
-				</table>
-			</div>
-
-			<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
-				<div class="col-xs-12">
-					<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
-					<hr>
-					<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
-							[form]="configurationTemplate"
-							[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-							(submit)="applyConfiguration($event.data)">
-					</formio>
 				</div>
 			</div>
 			<hr>
-			<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
+			<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
+					<a type="button" *ngFor="let tag of app.tags" class="btn tag-button">
+						{{tag | titlecase}}
+					</a>
+				</div>
+				<div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+					<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
+						<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
+						<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+						<button class="btn btn-primary" style="display: none" (click)="this.modal.show()" disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
+						<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
+					</div>
+					<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+						<button class="btn btn-primary" (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
+					</div>
+				</div>
+			</div>
 		</div>
+	</div>
+
+	<nmaas-modal styleModal="warning">
+		<div class="nmaas-modal-header">
+			<h4 style="text-align: center">{{'UNDEPLOY_MODAL.HEADER' | translate}}</h4>
+		</div>
+		<div class="nmaas-modal-body">
+			<div class="form-group">
+				<p>{{'UNDEPLOY_MODAL.BODY' | translate}}</p>
+			</div>
+		</div>
+		<div class="nmaas-modal-footer">
+			<button type="button" class="btn btn-danger" (click)="this.undeploy()">{{'UNDEPLOY_MODAL.YES_BUTTON' | translate}}</button>
+			<button type="button" class="btn btn-primary" (click)="this.undeployModal.hide()">{{'UNDEPLOY_MODAL.CANCEL_BUTTON' | translate}}</button>
+		</div>
+	</nmaas-modal>
+
+	<nmaas-modal #updateConfig>
+		<div class="nmaas-modal-header">
+			<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
+		</div>
+		<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
+			<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined"
+					[form]="configurationUpdateTemplate"
+					[submission]="submission"
+					[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+					(change)="changeConfigUpdate($event.data)">
+			</formio>
+		</div>
+		<div class="nmaas-modal-footer">
+			<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
+			<button type="button" class="btn btn-primary" (click)="this.updateConfigModal.hide()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
+		</div>
+	</nmaas-modal>
+
+	<div class='row'>
+		<h3>{{'APP_INSTANCE.INSTALLATION_PROGRESS.HEADER' | translate}}</h3>
+		<hr>
+		<div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
+			<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
+		</div>
+		<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus?.userFriendlyState : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
+		<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.DETAILS' | translate}}: {{appInstanceStatus?.userFriendlyDetails}}</p>
+	</div>
+
+	<div class="row" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+		<div class="alert alert-danger">
+			{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
+		</div>
+	</div>
+
+	<div class="row" *ngIf="this.appInstanceStateHistory">
+		<h3>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.HEADER' | translate}}</h3>
+		<hr>
+		<table class="table table-hover table-condensed">
+			<thead>
+			<tr>
+				<th>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.TIMESTAMP' | translate}}</th>
+				<th>{{'APP_INSTANCE.DEPLOYMENT_HISTORY.STATE_TRANSITIONS' | translate}}</th>
+				<th>&nbsp;</th>
+			</tr>
+			</thead>
+			<tbody>
+			<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }" let-isLast="last">
+				<tr>
+					<td>{{history.timestamp | date:'medium'}}</td>
+					<td *ngIf="history.previousState !== null">{{history.previousState}}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState}}</td>
+					<td *ngIf="history.previousState === null">{{history.currentState}}</td>
+				</tr>
+			</ng-template>
+			</tbody>
+		</table>
+		<pagination-controls class="text-right" (pageChange)="pageNumber = $event" id="{{ p_first }}"></pagination-controls>
+	</div>
+
+	<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
+		<div class="col-xs-12">
+			<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
+			<hr>
+			<formio *ngIf="appInstance !== undefined && configurationTemplate !== undefined"
+					[form]="configurationTemplate"
+					[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
+					[refresh]="refreshForm"
+					(formLoad)="changeForm()"
+					(submit)="applyConfiguration($event.data)">
+			</formio>
+		</div>
+	</div>
+	<hr>
+	<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
+</div>
 	
