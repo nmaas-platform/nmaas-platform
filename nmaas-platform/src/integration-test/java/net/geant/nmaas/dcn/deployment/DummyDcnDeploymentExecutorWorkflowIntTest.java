@@ -1,6 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
-import net.geant.nmaas.orchestration.AppDeploymentRepositoryManager;
+import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
@@ -26,7 +26,7 @@ public class DummyDcnDeploymentExecutorWorkflowIntTest {
     @Autowired
     private ApplicationEventPublisher eventPublisher;
     @MockBean
-    private AppDeploymentRepositoryManager appDeploymentRepositoryManager;
+    private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
     @MockBean
     private DcnRepositoryManager dcnRepositoryManager;
 
@@ -35,7 +35,7 @@ public class DummyDcnDeploymentExecutorWorkflowIntTest {
 
     @Test
     public void shouldCompleteDcnWorkflowWithDummyExecutor() {
-        when(appDeploymentRepositoryManager.loadDomainByDeploymentId(any())).thenReturn(DOMAIN);
+        when(appDeploymentRepositoryManager.loadDomain(any())).thenReturn(DOMAIN);
         when(dcnRepositoryManager.loadCurrentState(DOMAIN)).thenThrow(new InvalidDomainException());
         eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));
         verify(appDeploymentRepositoryManager, timeout(1000)).loadAllWaitingForDcn(DOMAIN);

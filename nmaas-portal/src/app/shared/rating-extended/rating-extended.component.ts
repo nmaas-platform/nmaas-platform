@@ -21,7 +21,7 @@ export class RatingExtendedComponent implements OnInit, OnChanges {
     'placement': 'bottom',
     'show-delay': "500",
     'theme': 'dark'
-  }
+  };
 
   rate: Rate;
 
@@ -80,18 +80,22 @@ export class RatingExtendedComponent implements OnInit, OnChanges {
   }
 
   public refresh(): void {
-    this.appsService.getAppRateByUrl(this.pathUrl).subscribe(rate => {
-      this.rate = rate;
-      this.updateBreakdownValues();
-    });
+    if(!isNullOrUndefined(this.pathUrl) && this.pathUrl != null) {
+      this.appsService.getAppRateByUrl(this.pathUrl).subscribe(rate => {
+        this.rate = rate;
+        this.updateBreakdownValues();
+      });
+    }
   }
 
   public update(rate: number) {
-    if(this.editable) {
-      this.appsService.setMyAppRateByUrl(this.pathUrl + '/' + rate).subscribe( apiResponse => {
-        this.refresh();
-        this.onChange.emit(true);
-      });
+    if (!isNullOrUndefined(this.pathUrl) && this.pathUrl != null) {
+      if (this.editable) {
+        this.appsService.setMyAppRateByUrl(this.pathUrl + '/' + rate).subscribe(apiResponse => {
+          this.refresh();
+          this.onChange.emit(true);
+        });
+      }
     }
   }
 

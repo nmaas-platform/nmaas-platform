@@ -1,14 +1,7 @@
 package net.geant.nmaas.notifications.templates;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.entities.LanguageMailContent;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
@@ -20,6 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class TemplateService {

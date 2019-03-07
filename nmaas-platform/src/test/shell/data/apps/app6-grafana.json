@@ -143,7 +143,7 @@
                                             "label": "Prometheus instance address",
                                             "type": "textfield",
                                             "input": true,
-                                            "key": "source_addr",
+                                            "key": "prom_ext_addr",
                                             "validate": {
                                                 "required": true
                                             },
@@ -153,9 +153,9 @@
                                         {
                                             "label": "Select Prometheus instance",
                                             "type": "select",
-                                            "key": "inClusterInstance",
+                                            "key": "prom_int_addr",
                                             "data": {
-                                                "values": []
+                                                "values": "insert-app-instances-here"
                                             },
                                             "validate": {
                                                 "required": true

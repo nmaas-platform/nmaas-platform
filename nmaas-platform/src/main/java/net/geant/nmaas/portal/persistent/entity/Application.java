@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
 @Table(uniqueConstraints = {
 		@UniqueConstraint(columnNames = {"name", "version"})
 })
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

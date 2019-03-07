@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TAG=1.2.0-SNAPSHOT
+TAG=LATEST
 PACKAGE=nmaas-platform
 ARTIFACTORY=artifactory.geant.net/nmaas-docker-local
 sudo docker build --rm -t $ARTIFACTORY/$PACKAGE:$TAG -f ./Dockerfile ..

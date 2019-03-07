@@ -16,13 +16,16 @@ export class AppImagesService extends GenericDataService {
     }
 
     public getAppLogoUrl(id: number):string {
+        if(id == null){
+            return "";
+        }
         return this.appConfig.getApiUrl() + '/apps/' + id + '/logo';
     }
 
     public getLogoFile(id: number): any {
         return this.http.get(this.appConfig.getApiUrl() + '/apps/' + id + '/logo', {responseType: "blob"});
     }
-    
+
     public getAppScreenshotUrl(appId: number, screenshotId: number) {
         return this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + screenshotId;
     }
@@ -30,7 +33,7 @@ export class AppImagesService extends GenericDataService {
     public getAppScreenshotFile(appId:number, id: number): any {
         return this.http.get(this.appConfig.getApiUrl() + '/apps/' + appId + '/screenshots/' + id, {responseType: "blob"});
     }
-    
+
     public getAppScreenshotsUrls(id: number): Observable<FileInfo[]> {
         return this.http.get<FileInfo[]>(this.appConfig.getApiUrl() + '/apps/' + id + '/screenshots').pipe(
             debounceTime(10000),

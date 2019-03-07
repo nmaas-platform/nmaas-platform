@@ -3,8 +3,8 @@ package net.geant.nmaas.orchestration.entities;
 import static com.google.common.base.Preconditions.checkArgument;
 import lombok.Getter;
 import lombok.Setter;
-import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.ParameterType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

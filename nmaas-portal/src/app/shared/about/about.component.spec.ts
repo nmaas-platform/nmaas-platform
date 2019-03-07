@@ -15,6 +15,13 @@ import {ModalComponent} from "../modal";
 import {NotificationService} from "../../service/notification.service";
 import {RecaptchaModule} from "ng-recaptcha";
 import {TooltipModule} from "ng2-tooltip-directive";
+import {Component} from "@angular/core";
+
+@Component({
+  selector: 'app-navbar',
+  template: '<p>Mock app-navbar Component</p>'
+})
+class MockAppNavbar{}
 
 describe('AboutComponent', () => {
   let component: AboutComponent;
@@ -23,7 +30,7 @@ describe('AboutComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AboutComponent, NavbarComponent, ChangelogComponent, FooterComponent, ModalComponent ],
+      declarations: [ AboutComponent, ChangelogComponent, FooterComponent, ModalComponent, MockAppNavbar ],
       imports:[
           TranslateModule.forRoot({
             loader: {

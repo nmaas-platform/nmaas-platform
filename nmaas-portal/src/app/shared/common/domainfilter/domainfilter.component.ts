@@ -20,6 +20,8 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   //@Input()
   public domainId: number;
 
+  public domainName: string;
+
   public domains: Observable<Domain[]>;
 
   public refresh: Subscription;
@@ -37,6 +39,9 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
       }
       this.updateDomains();
       this.domains.subscribe(domain => this.userData.selectDomainId(domain[0].id));
+      this.domains.subscribe(domain => {
+        this.domainName = domain[0].name;
+      });
       this.userData.selectedDomainId.subscribe(id => this.domainId = id);
   }
 
@@ -59,6 +64,17 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
   public onChange($event) {
     console.log('onChange(',this.domainId,')');
     this.userData.selectDomainId(Number(this.domainId));
+  }
+
+  public changeDomain(domain: number, dName: string){
+    console.debug('domainChange(', domain,')');
+    this.domainId = domain;
+    this.domainName = dName;
+    this.userData.selectDomainId(Number(domain));
+  }
+
+  public getCurrent(){
+    return this.domainName;
   }
 
 }

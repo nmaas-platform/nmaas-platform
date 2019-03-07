@@ -11,6 +11,7 @@ import { AppConfigService } from '../service/appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
 import {AppStateChange} from "../model/appstatechange";
+import {isNullOrUndefined} from "util";
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -33,7 +34,9 @@ export class AppsService extends GenericDataService {
     }
 
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
-        return this.getByUrl(urlPath);
+        if(!isNullOrUndefined(urlPath) && urlPath != "") {
+            return this.getByUrl(urlPath);
+        }
     }
 
     public setMyAppRateByUrl(urlPath: string): Observable<any> {

@@ -1,5 +1,6 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Log4j2
+@AllArgsConstructor
 public class AppRequestVerificationTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
@@ -27,16 +29,6 @@ public class AppRequestVerificationTask {
     private AppDeploymentRepository repository;
 
     private ApplicationRepository appRepository;
-
-    @Autowired
-    public AppRequestVerificationTask(
-            NmServiceDeploymentProvider serviceDeployment,
-            AppDeploymentRepository repository,
-            ApplicationRepository appRepository) {
-        this.serviceDeployment = serviceDeployment;
-        this.repository = repository;
-        this.appRepository = appRepository;
-    }
 
     @EventListener
     @Loggable(LogLevel.INFO)
@@ -51,7 +43,7 @@ public class AppRequestVerificationTask {
                     deploymentId,
                     appDeployment,
                     application.getAppDeploymentSpec());
-        }catch(Exception ex){
+        } catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }

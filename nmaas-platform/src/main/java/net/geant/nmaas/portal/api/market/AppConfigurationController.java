@@ -70,8 +70,6 @@ public class AppConfigurationController {
         } catch (Throwable e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
-
-
     }
 
     @PostMapping({"/apps/instances/{appInstanceId}/configure/update", "/domains/{domainId}/apps/instances/{appInstanceId}/configure/update"})
@@ -89,7 +87,7 @@ public class AppConfigurationController {
 
         try {
             appLifecycleManager.updateConfiguration(appInstance.getInternalId(), configuration);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
     }

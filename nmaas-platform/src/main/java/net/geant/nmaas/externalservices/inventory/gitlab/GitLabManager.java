@@ -1,12 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.gitlab;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.entities.GitLab;
-import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabInvalidConfigurationException;
+import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.GitLabNotFoundException;
 import net.geant.nmaas.externalservices.inventory.gitlab.exceptions.OnlyOneGitLabSupportedException;
+import net.geant.nmaas.externalservices.inventory.gitlab.model.GitLabView;
 import net.geant.nmaas.externalservices.inventory.gitlab.repositories.GitLabRepository;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Component
 @Log4j2
@@ -34,18 +35,18 @@ public class GitLabManager {
         this.modelMapper = modelMapper;
     }
 
-    public List<GitLabView> getAllGitlabConfig(){
+    List<GitLabView> getAllGitlabConfig(){
         return this.repository.findAll().stream()
                 .map(config -> modelMapper.map(config, GitLabView.class))
                 .collect(Collectors.toList());
     }
 
-    public GitLab getGitlabConfigById(Long id) {
+    GitLab getGitlabConfigById(Long id) {
         return this.repository.findById(id)
                 .orElseThrow(()->new GitLabNotFoundException("GitLab configuration with id " + id + " not found in repository"));
     }
 
-    public Long addGitlabConfig(GitLabView gitLabConfig) {
+    Long addGitlabConfig(GitLabView gitLabConfig) {
         if(repository.count() > 0){
             throw new OnlyOneGitLabSupportedException("GitLab config already exists. It can be either removed or updated.");
         }
@@ -54,7 +55,7 @@ public class GitLabManager {
         return gitLab.getId();
     }
 
-    public void updateGitlabConfig(Long id, GitLabView updatedGitLabConfig) {
+    void updateGitlabConfig(Long id, GitLabView updatedGitLabConfig) {
         Optional<GitLab> gitLabConfig = repository.findById(id);
         if(!gitLabConfig.isPresent()){
             throw new GitLabNotFoundException("GitLab config with id "+id+" not found in repository.");
@@ -76,10 +77,6 @@ public class GitLabManager {
         return loadSingleGitlabConfig().getToken();
     }
 
-    public String getGitLabRepositoryAccessUsername(){
-        return loadSingleGitlabConfig().getRepositoryAccessUsername();
-    }
-
     public String getGitlabServer() {
         return loadSingleGitlabConfig().getServer();
     }
@@ -90,7 +87,6 @@ public class GitLabManager {
 
     public void validateGitLabInstance() {
         GitLab gitLabInstance = this.loadSingleGitlabConfig();
-        checkArgument(gitLabInstance.getToken()!= null && !gitLabInstance.getRepositoryAccessUsername().isEmpty(), "Repository access username is null or empty");
         checkArgument(gitLabInstance.getPort() != null, "GitLab port is null");
         checkArgument(gitLabInstance.getServer() != null && !gitLabInstance.getServer().isEmpty(), "GitLab server is null or empty");
         checkArgument(gitLabInstance.getToken() != null && !gitLabInstance.getToken().isEmpty(), "GitLab token is null or empty");
