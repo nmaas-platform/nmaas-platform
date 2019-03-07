@@ -156,11 +156,13 @@
                 <div class="panel-heading">{{'APPS_WIZARD.APP_DEPLOYMENT_HEADER' | translate}}</div>
                 <form class="form-horizontal" #appDeploymentForm="ngForm">
                     <div class="panel-body">
-                        <div class="form-group form-group-sm">
-                            <label for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}}</label>
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  kubernetesTemplateChartName.invalid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched),
+ 			    		 	'has-success': kubernetesTemplateChartName.valid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched)}">
+                            <label *ngIf="!isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}}</label>
+                            <label *ngIf="isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}} *</label>
                             <br>
-                            <input type="text" class="form-control" id="kubernetesTemplateChartName" name="kubernetesTemplateChartName"
-                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                            <input type="text" class="form-control" id="kubernetesTemplateChartName" name="kubernetesTemplateChartName" #kubernetesTemplateChartName="ngModel"
+                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                         </div>
                         <div class="form-group form-group-sm">
                             <label for="kubernetesTemplateChartVersion" class="control-label">{{'APPS_WIZARD.CHART_VERSION_LABEL' | translate}}</label>
