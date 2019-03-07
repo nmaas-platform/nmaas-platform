@@ -15,8 +15,8 @@
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
         <h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
-        <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
-        <rate *ngIf="!app?.id" [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + 1 + '/rate'"></rate>
+        <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
+        <rate *ngIf="!app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(1)"></rate>
         <div class="text-muted" style="font-size: small;">
           v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
           | <a href="{{app?.wwwUrl}}">WWW</a>
@@ -86,12 +86,12 @@
 
 <div *ngIf="app?.id" class="row">
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 block-border">
-    <rating-extended name="appRateUpdate" [editable]="false" [pathUrl]="'/apps/' + app?.id + '/rate/my'"></rating-extended>
+    <rating-extended name="appRateUpdate" [editable]="false" [pathUrl]="getPathUrl(app?.id)"></rating-extended>
   </div>
 </div>
 <div *ngIf="!app?.id" class="row">
   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 block-border">
-    <rating-extended name="appRateUpdate" [editable]="false" [pathUrl]="'/apps/' + 1 + '/rate/my'"></rating-extended>
+    <rating-extended name="appRateUpdate" [editable]="false" [pathUrl]="getPathUrl(1)"></rating-extended>
   </div>
 </div>
 <hr>

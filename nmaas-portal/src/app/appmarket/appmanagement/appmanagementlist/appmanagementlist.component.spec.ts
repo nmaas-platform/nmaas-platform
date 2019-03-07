@@ -6,11 +6,11 @@ import {AppConfigService, AppsService} from "../../../service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {AuthService} from "../../../auth/auth.service";
-import {MockAuthService} from "../../navbar/navbar.component.spec";
 import {AppChangeStateModalComponent} from "../appchangestatemodal/appchangestatemodal.component";
 import {ModalComponent} from "../../../shared/modal";
 import {FormsModule} from "@angular/forms";
 import {BrowserModule} from "@angular/platform-browser";
+import {MockAuthService} from "../../../shared/navbar/navbar.component.spec";
 
 describe('AppManagementListComponent', () => {
   let component: AppManagementListComponent;

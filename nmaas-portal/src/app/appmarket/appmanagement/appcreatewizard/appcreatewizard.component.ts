@@ -176,7 +176,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     if(this.isInMode(ComponentMode.EDIT) && isNullOrUndefined(this.logo[0])){
       this.appImagesService.deleteLogo(id).subscribe(() => console.debug("Logo deleted"));
     }
-    this.appsService.uploadAppLogo(id, this.logo[0]).subscribe(() => console.debug("Logo uploaded"));
+    if(!isNullOrUndefined(this.logo[0])){
+      this.appsService.uploadAppLogo(id, this.logo[0]).subscribe(() => console.debug("Logo uploaded"));
+    }
   }
 
   public handleUploadingScreenshots(id: number){
