@@ -9,7 +9,7 @@ import {TranslateModule} from "@ngx-translate/core";
 import {AppsService, TagService} from "../../service";
 import { AppManagementListComponent } from './appmanagementlist/appmanagementlist.component';
 import {StepsModule} from "primeng/steps";
-import {FileUploadModule, MultiSelectModule} from "primeng/primeng";
+import {ChipsModule, FileUploadModule, MultiSelectModule} from "primeng/primeng";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AppCreateWizardComponent} from "./appcreatewizard/appcreatewizard.component";
 import {InternationalizationService} from "../../service/internationalization.service";
@@ -40,7 +40,8 @@ export function getJsonTemplates(config: ConfigTemplateService) {
     MultiSelectModule,
     FileUploadModule,
     BrowserAnimationsModule,
-    TooltipModule
+    TooltipModule,
+    ChipsModule
   ],
   exports: [],
   providers: [

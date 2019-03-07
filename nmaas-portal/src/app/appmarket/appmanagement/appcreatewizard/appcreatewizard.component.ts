@@ -13,6 +13,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TranslateService} from "@ngx-translate/core";
 import {DomSanitizer} from "@angular/platform-browser";
 import {ComponentMode} from "../../../shared";
+import {MultiSelect} from "primeng/primeng";
+import {KubernetesTemplate} from "../../../model/kubernetestemplate";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -26,12 +28,16 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
 
+  @ViewChild('tagsMultiSelect')
+  public tagsMultiSelect:MultiSelect;
+
   public app:Application;
   public appName: string;
   public steps: MenuItem[];
   public activeStepIndex:number = 0;
   public rulesAccepted: boolean = false;
   public tags: SelectItem[] = [];
+  public newTags: string[] = [];
   public deployParameter:SelectItem[] = [];
   public selectedDeployParameters: string[] = [];
   public logo: any[] = [];
@@ -96,6 +102,14 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
     this.getLogo(appToEdit.id);
     this.getScreenshots(appToEdit.id);
+    if(isNullOrUndefined(appToEdit.appDeploymentSpec.kubernetesTemplate)){
+      this.app.appDeploymentSpec.kubernetesTemplate = new KubernetesTemplate();
+    }
+    this.app.tags.forEach(appTag =>{
+      if(!this.tags.some(tag => tag.value === appTag)){
+        this.tags.push({label:appTag, value: appTag});
+      }
+    })
   }
 
   public getLogo(id:number) : void {
@@ -231,6 +245,23 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     if(!event.value.some(val => val === event.itemValue)){
       this.app.appDeploymentSpec.deployParameters.delete(ParameterType[event.itemValue as string]);
     }
+  }
+
+  public addNewTag(event){
+    if(!this.app.tags.some(tag => tag.toLowerCase() === event.value.toLowerCase())){
+      this.app.tags.push(event.value.toLowerCase());
+    }
+    if(!this.tags.some(tag => tag.value.toLowerCase() === event.value.toLowerCase())){
+      this.tags.push({label: event.value, value: event.value});
+    } else {
+      this.newTags.pop()
+    }
+    this.tagsMultiSelect.ngOnInit();
+  }
+
+  public removeNewTag(event){
+    this.tags = this.tags.filter(tag => tag.value != event.value);
+    this.app.tags = this.app.tags.filter(tag => tag != event.value);
   }
 
 }

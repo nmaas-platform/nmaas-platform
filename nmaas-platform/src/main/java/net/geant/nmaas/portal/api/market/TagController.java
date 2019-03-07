@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.ModelMapper;
@@ -31,7 +32,10 @@ public class TagController {
 	
 	@GetMapping
 	public Set<String> getAll() {
-		return tagRepo.findAll().stream().map(tag -> modelMapper.map(tag, String.class)).collect(Collectors.toSet());
+		return tagRepo.findAll().stream()
+				.filter(tag -> tag.getApplications().stream().anyMatch(app -> app.getState().equals(ApplicationState.ACTIVE) || app.getState().equals(ApplicationState.DISABLED)))
+				.map(tag -> modelMapper.map(tag, String.class))
+				.collect(Collectors.toSet());
 	}
 	
 	@GetMapping(value="/{tagName}")

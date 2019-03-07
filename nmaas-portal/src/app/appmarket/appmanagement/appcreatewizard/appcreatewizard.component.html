@@ -66,9 +66,14 @@
                         <input type="url" id="issuesUrl" class="form-control" [pattern]="urlPattern" required name="issuesUrl" #issuesUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_ISSUES_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.issuesUrl">
                     </div>
                     <div class="form-group form-group-sm">
+                        <label for="newTags" class="control-label">{{'APPS_WIZARD.NEW_TAGS_LABEL' | translate}}</label>
+                        <br>
+                        <p-chips class="ui-fluid" [(ngModel)]="newTags" [allowDuplicate]="false" (onAdd)="addNewTag($event)" (onRemove)="removeNewTag($event)" name="newTags" id="newTags" tooltip="{{'APPS_WIZARD.NEW_TAGS_TOOLTIP' | translate}}" placement="right" show-delay="50" theme="dark" [display]="true"></p-chips>
+                    </div>
+                    <div class="form-group form-group-sm">
                         <label for="tags" class="control-label">{{'APPS_WIZARD.TAGS_LABEL' | translate}} * </label>
                         <br>
-                        <p-multiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" required [(ngModel)]="app.tags" name="tags" tooltip="{{'APPS_WIZARD.TAGS_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                        <p-multiSelect #tagsMultiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" [(ngModel)]="app.tags" name="tags" tooltip="{{'APPS_WIZARD.TAGS_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
                     </div>
                 </form>
             </div>
@@ -173,7 +178,7 @@
                         <div class="form-group form-group-sm">
                             <label for="deployParameters" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETERS_DROPDOWN' | translate}}</label>
                             <br>
-                            <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                            <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="right" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
                         </div>
                         <div class="form-group form-group-sm" *ngFor="let val of selectedDeployParameters">
                             <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
