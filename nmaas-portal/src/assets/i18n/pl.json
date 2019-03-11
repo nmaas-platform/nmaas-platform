@@ -484,5 +484,8 @@
     "NAME": "Nazwa",
     "ACTIVE": "Aktywna",
     "REMOVE_BUTTON": "Usuń"
+  },
+  "FOOTER": {
+    "NOTICE": "Polityka Prywatności"
   }
 }
