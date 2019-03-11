@@ -37,9 +37,10 @@ import { RatingExtendedComponent } from './rating-extended/rating-extended.compo
 import { TooltipModule } from "ng2-tooltip-directive";
 import { PasswordStrengthMeterModule } from "angular-password-strength-meter";
 import { AboutComponent } from './about/about.component';
-import { ChangelogComponent } from "./changelog/changelog.component";
-import { NotificationService } from "../service/notification.service";
-import { RecaptchaModule } from "ng-recaptcha";
+import {ChangelogComponent} from "./changelog/changelog.component";
+import {NotificationService} from "../service/notification.service";
+import {RecaptchaModule} from "ng-recaptcha";
+import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
 
 @NgModule({
   imports: [
@@ -84,7 +85,8 @@ import { RecaptchaModule } from "ng-recaptcha";
     SortableTableDirective,
     RatingExtendedComponent,
     AboutComponent,
-    ChangelogComponent
+    ChangelogComponent,
+    SingleCommentComponent
   ],
   providers: [
     PasswordValidator,

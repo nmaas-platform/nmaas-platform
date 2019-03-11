@@ -8,6 +8,14 @@ import {Observable, of} from "rxjs";
 import {Id} from "../../model";
 import {AuthService} from "../../auth/auth.service";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
+import {Component} from "@angular/core";
+import {SingleCommentComponent} from "./single-comment/single-comment.component";
+
+@Component({
+  selector: 'app-single-comment',
+  template: '<p> Mock of single comment</p>'
+})
+class MockSingleCommentComponent {}
 
 describe('CommentComponent',()=>{
    let component:CommentsComponent;
@@ -18,7 +26,7 @@ describe('CommentComponent',()=>{
 
    beforeEach(async (()=>{
        TestBed.configureTestingModule({
-          declarations: [CommentsComponent],
+          declarations: [CommentsComponent, SingleCommentComponent],
           imports:[
               FormsModule,
               HttpClientModule,
