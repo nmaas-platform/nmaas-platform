@@ -32,10 +32,10 @@
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 						   <thead>
 							  <tr>
-								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								 <th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								 <th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
 								 <th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								 <th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								 <th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>
@@ -67,10 +67,10 @@
 						<table class = "table table-hover table-condensed" sortable-table (sorted)="onSorted($event)">
 							<thead>
 							<tr>
-								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name" sort-direction="asc">{{ 'APP_INSTANCES.NAME' | translate }}</th>
+								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="name">{{ 'APP_INSTANCES.NAME' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="domainId" *ngIf="domainId === undefined">{{ 'APP_INSTANCES.DOMAIN' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="owner">{{ 'APP_INSTANCES.OWNER' | translate }}</th>
-								<th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
+								<th class="col-lg-2 col-md-2 column-sortable text-center" sortable-column="createdAt" sort-direction="asc">{{ 'APP_INSTANCES.DEPLOYED_AT' | translate }}</th>
 								<th class="col-lg-1 col-md-1 column-sortable text-center" sortable-column="applicationName">{{ 'APP_INSTANCES.APPLICATION' | translate }}</th>
 								<th class="col-lg-3 col-md-3 column-sortable text-center" sortable-column="userFriendlyState">{{ 'APP_INSTANCES.STATE' | translate }}</th>
 								<th class="col-lg-3 col-md-3 column-sortable text-center">{{ 'APP_INSTANCES.ACTIONS' | translate }}</th>

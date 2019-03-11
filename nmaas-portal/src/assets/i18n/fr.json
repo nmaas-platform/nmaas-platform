@@ -489,5 +489,11 @@
       "MESSAGE": "NMaaS Team will reply soon.",
       "CLOSE_BUTTON": "Close"
     }
+  },
+  "FOOTER": {
+    "NOTICE": "Avis de confidentialité"
+  },
+  "TAGFILTER": {
+    "TAGS": "Mots clés"
   }
 }

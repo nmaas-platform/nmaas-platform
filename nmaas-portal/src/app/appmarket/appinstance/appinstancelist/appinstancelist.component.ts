@@ -104,7 +104,7 @@ export class AppInstanceListComponent implements OnInit {
     } else {
       this.domainId = domainId;
     }
-    this.getInstances({sortColumn: 'name', sortDirection:'asc'})
+    this.getInstances({sortColumn: 'createdAt', sortDirection:'asc'})
   }
 
   public checkPrivileges(app) {
@@ -126,6 +126,7 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   getInstances(criteria: CustomerSearchCriteria){
+    console.debug("Crit: ", criteria);
     switch (+this.listSelection) {
       case AppInstanceListSelection.ALL:
         this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
