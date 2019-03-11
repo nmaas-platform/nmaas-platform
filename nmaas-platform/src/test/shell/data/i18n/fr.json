@@ -486,5 +486,8 @@
   },
   "FOOTER": {
     "NOTICE": "Avis de confidentialité"
+  },
+  "TAGFILTER": {
+    "TAGS": "Mots clés"
   }
 }

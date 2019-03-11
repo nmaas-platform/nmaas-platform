@@ -488,5 +488,8 @@
   },
   "FOOTER": {
     "NOTICE": "Privacy Notice"
+  },
+  "TAGFILTER": {
+    "TAGS": "Tags"
   }
 }

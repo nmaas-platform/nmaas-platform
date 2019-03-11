@@ -489,5 +489,8 @@
   },
   "FOOTER": {
     "NOTICE": "Datenschutzerklärung"
+  },
+  "TAGFILTER": {
+    "TAGS": "Stichworte"
   }
 }

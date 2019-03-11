@@ -487,5 +487,8 @@
   },
   "FOOTER": {
     "NOTICE": "Polityka Prywatności"
+  },
+  "TAGFILTER": {
+    "TAGS": "Tagi"
   }
 }
