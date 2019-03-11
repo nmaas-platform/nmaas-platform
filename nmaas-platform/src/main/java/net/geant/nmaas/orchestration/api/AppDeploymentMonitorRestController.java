@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.api.model.AppDeploymentView;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.AppLifecycleState;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 

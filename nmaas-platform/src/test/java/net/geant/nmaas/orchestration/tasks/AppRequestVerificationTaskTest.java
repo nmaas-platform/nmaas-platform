@@ -2,14 +2,14 @@ package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.repositories.AppDeploymentRepository;
 import net.geant.nmaas.orchestration.tasks.app.AppRequestVerificationTask;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public class AppRequestVerificationTaskTest {
     private Identifier deploymentId = Identifier.newInstance("deploymentId");
     private Identifier deploymentId2 = Identifier.newInstance("deploymentId2");
 
-    @Before
+    @BeforeEach
     public void setup() {
         task = new AppRequestVerificationTask(deploy, deployments, applications);
     }

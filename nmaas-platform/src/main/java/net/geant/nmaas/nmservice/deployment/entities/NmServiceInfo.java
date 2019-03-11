@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

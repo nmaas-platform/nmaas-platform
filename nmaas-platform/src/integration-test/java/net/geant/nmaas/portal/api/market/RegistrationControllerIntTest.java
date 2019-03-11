@@ -2,27 +2,27 @@ package net.geant.nmaas.portal.api.market;
 
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import org.apache.commons.lang.RandomStringUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class RegistrationControllerIntTest extends BaseControllerTestSetup {
 
-    @Before
+    @BeforeEach
     public void setup() {
         mvc = createMVC();
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testSuccessfulRegistration() throws Exception {
         String randomUsername = "\"" + RandomStringUtils.random(10, true, false) + "\"";

@@ -5,13 +5,10 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotRetrieveNmService
 import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentHistory;
-import net.geant.nmaas.orchestration.entities.AppLifecycleState;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -28,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +38,7 @@ public class DefaultAppDeploymentMonitorTest {
 
     private DefaultAppDeploymentMonitor monitor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         monitor = new DefaultAppDeploymentMonitor(repositoryManager, deploy);
     }
@@ -99,18 +97,22 @@ public class DefaultAppDeploymentMonitorTest {
         assertThat(accessDetails, is(notNullValue()));
     }
 
-    @Test (expected = InvalidDeploymentIdException.class)
+    @Test
     public void shouldNotReturnUserAccessDetailsIfNotExist() {
-        when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
-        when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveNmServiceAccessDetailsException(""));
-        AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
-        assertThat(accessDetails, is(notNullValue()));
+        assertThrows(InvalidDeploymentIdException.class, () -> {
+            when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYMENT_VERIFIED);
+            when(deploy.serviceAccessDetails(deploymentId)).thenThrow(new CouldNotRetrieveNmServiceAccessDetailsException(""));
+            AppUiAccessDetails accessDetails = monitor.userAccessDetails(deploymentId);
+            assertThat(accessDetails, is(notNullValue()));
+        });
     }
 
-    @Test (expected = InvalidAppStateException.class)
+    @Test
     public void shouldNotReturnUserAccessDetailsIfWrongState() {
-        when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
-        monitor.userAccessDetails(deploymentId);
+        assertThrows(InvalidAppStateException.class, () -> {
+            when(repositoryManager.loadState(deploymentId)).thenReturn(APPLICATION_DEPLOYED);
+            monitor.userAccessDetails(deploymentId);
+        });
     }
 
     @Test

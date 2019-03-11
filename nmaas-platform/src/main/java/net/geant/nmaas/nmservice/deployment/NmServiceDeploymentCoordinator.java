@@ -13,8 +13,8 @@ import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceEx
 import net.geant.nmaas.nmservice.deployment.exceptions.NmServiceRequestVerificationException;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
-import net.geant.nmaas.orchestration.entities.AppUiAccessDetails;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.AppUiAccessDetails;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +131,7 @@ public class NmServiceDeploymentCoordinator implements NmServiceDeploymentProvid
     }
 
     @Override
-    @Loggable(LogLevel.INFO)
+    @Loggable(LogLevel.DEBUG)
     public AppUiAccessDetails serviceAccessDetails(Identifier deploymentId) {
         try {
             return orchestrator.serviceAccessDetails(deploymentId);

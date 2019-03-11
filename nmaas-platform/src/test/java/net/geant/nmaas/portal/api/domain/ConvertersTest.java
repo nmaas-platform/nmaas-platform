@@ -1,30 +1,28 @@
 package net.geant.nmaas.portal.api.domain;
 
+import net.geant.nmaas.portal.ConvertersConfig;
+import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
-import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import net.geant.nmaas.portal.persistent.entity.Tag;
+import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.geant.nmaas.portal.ConvertersConfig;
-import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.persistent.entity.Tag;
-import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ContextConfiguration(classes = {ConvertersConfig.class, PersistentConfig.class})
 @EnableAutoConfiguration
@@ -38,22 +36,12 @@ public class ConvertersTest {
     @Autowired
     TagRepository tagRepo;
 	
-	@Before
-	public void setUp() throws Exception {
-        
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Test
 	public void testConvertApp() {
         tagRepo.save(new Tag("network"));
 		
 		ApplicationBriefView appDto = null;
 	    Application appEntity = null;
-		
 
         appDto = new ApplicationBriefView();
         appDto.setId(1L);

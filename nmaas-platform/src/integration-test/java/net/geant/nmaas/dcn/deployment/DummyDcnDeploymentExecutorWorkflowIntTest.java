@@ -1,32 +1,34 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles({"env_kubernetes", "dcn_none"})
 public class DummyDcnDeploymentExecutorWorkflowIntTest {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
     @MockBean
     private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
+
     @MockBean
     private DcnRepositoryManager dcnRepositoryManager;
 

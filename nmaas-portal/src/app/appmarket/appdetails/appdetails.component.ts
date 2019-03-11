@@ -138,5 +138,13 @@ export class AppDetailsComponent implements OnInit {
     }
     return this.app.descriptions.find(val => val.language == this.translate.currentLang);
   }
-  
+
+  public getPathUrl(id: number): string{
+    if(!isNullOrUndefined(id) && !isNaN(id)){
+      return '/apps/' + id + '/rate/my';
+    }else{
+      return "";
+    }
+  }
+
 }

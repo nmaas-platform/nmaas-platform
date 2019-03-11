@@ -13,8 +13,8 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNe
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,6 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +39,7 @@ public class KubernetesClusterManagerTest {
 
     private KubernetesClusterManager manager;
 
-    @Before
+    @BeforeEach
     public void setup() {
         manager = new KubernetesClusterManager(repository, null, null, domainService);
     }
@@ -54,29 +55,35 @@ public class KubernetesClusterManagerTest {
         assertThat(network10.getExternalIp().getHostAddress(), not(equalTo(network20.getExternalIp().getHostAddress())));
     }
 
-    @Test(expected = ExternalNetworkNotFoundException.class)
-    public void shouldFailToReserveExternalNetworks() throws UnknownHostException, ExternalNetworkNotFoundException {
-        when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
-        manager.reserveExternalNetwork("domain10");
-        manager.reserveExternalNetwork("domain20");
-        manager.reserveExternalNetwork("domain30");
+    @Test
+    public void shouldFailToReserveExternalNetworks() {
+        assertThrows(ExternalNetworkNotFoundException.class, () -> {
+            when(repository.count()).thenReturn(1L);
+            when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
+            manager.reserveExternalNetwork("domain10");
+            manager.reserveExternalNetwork("domain20");
+            manager.reserveExternalNetwork("domain30");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionDuringIngressControllerConfigValidation() throws UnknownHostException {
-        KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
-        ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
-        ingress1.setControllerChartArchive(null);
-        ingress1.getControllerConfigOption().validate(ingress1);
+    @Test
+    public void shouldThrowExceptionDuringIngressControllerConfigValidation() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
+            ingress1.setControllerConfigOption(IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
+            ingress1.setControllerChartArchive(null);
+            ingress1.getControllerConfigOption().validate(ingress1);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionDuringIngressResourceConfigValidation() throws UnknownHostException {
-        KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
-        ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
-        ingress1.setExternalServiceDomain(null);
-        ingress1.getResourceConfigOption().validate(ingress1);
+    @Test
+    public void shouldThrowExceptionDuringIngressResourceConfigValidation() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            KClusterIngress ingress1 = simpleKubernetesCluster().getIngress();
+            ingress1.setResourceConfigOption(IngressResourceConfigOption.DEPLOY_FROM_CHART);
+            ingress1.setExternalServiceDomain(null);
+            ingress1.getResourceConfigOption().validate(ingress1);
+        });
     }
 
     @Test

@@ -1,7 +1,7 @@
 package net.geant.nmaas.dcn.deployment;
 
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.MAX_PROPERTY_LENGTH;
 import static net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.Type;
