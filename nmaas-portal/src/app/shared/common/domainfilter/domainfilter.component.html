@@ -6,7 +6,7 @@
 		<ul class="dropdown-menu">
 			<li *ngFor="let domain of domains | async" [ngClass]="{'active': getCurrent() == domain?.name}">
 				<a (click)="changeDomain(domain?.id, domain?.name)">
-					<span>{{domain?.name | titlecase }}</span>
+					<span>{{domain?.name}}</span>
 				</a>
 			</li>
 		</ul>
