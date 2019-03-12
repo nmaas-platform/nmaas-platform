@@ -33,7 +33,22 @@
     padding-bottom: 10px;
 }
 
-.no-spin, .no-spin:hover, no-spin:focus {
+.ui-widget {
+    font-size: 12px !important;
+    font-family: sans-serif !important;
+}
+
+.ui-chips-input-token input {
+    font-size: 12px !important;
+    font-family: sans-serif !important;
+}
+
+.ui-chips-token {
+    font-size: 12px !important;
+    font-family: sans-serif !important;
+}
+
+.no-spin, .no-spin:hover, .no-spin:focus {
     -webkit-appearance: none;
     margin: 0;
     -moz-appearance:textfield;
