@@ -61,6 +61,14 @@ public class NmServiceConfigurationTemplateServiceImpl implements NmServiceConfi
         repository.save(modelMapper.map(configurationTemplate, NmServiceConfigurationTemplate.class));
     }
 
+    @Override
+    @Transactional
+    public void addTemplates(Long appId, List<NmServiceConfigurationTemplateView> configurationTemplates){
+        validateTemplates(configurationTemplates);
+        repository.deleteAllByApplicationId(appId);
+        configurationTemplates.forEach(template -> repository.save(modelMapper.map(template, NmServiceConfigurationTemplate.class)));
+    }
+
     private void validateTemplate(NmServiceConfigurationTemplateView configTemplate){
         try {
             new Template("test", configTemplate.getConfigFileTemplateContent(), new Configuration(Configuration.VERSION_2_3_28));

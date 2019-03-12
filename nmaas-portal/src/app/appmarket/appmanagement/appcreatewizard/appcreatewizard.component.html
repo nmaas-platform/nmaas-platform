@@ -200,6 +200,7 @@
  			    		 	        'has-success': configFileName.valid && (configFileName.dirty || configFileName.touched)}">
                                     <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}}</label>
                                     <label *ngIf="isInMode(ComponentMode.EDIT)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}} *</label>
+                                    <button class="btn btn-xs btn-danger" style="float: right;" (click)="removeConfig(i)"><span class="glyphicon glyphicon-remove"></span></button>
                                     <br>
                                     <input type="text" class="form-control" id="configFileName-{{i}}" name="configFileName-{{i}}" #configFileName="ngModel"
                                            [(ngModel)]="configTemplate.configFileName" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_FILENAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
@@ -213,6 +214,7 @@
                                               [(ngModel)]="configTemplate.configFileTemplateContent" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_CONTENT_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
                                 </div>
                             </div>
+                            <button class="btn btn-primary" style="margin-left: -15px;" (click)="addConfig()">{{'APPS_WIZARD.ADD_CONFIG_BUTTON' | translate }}</button>
                         </div>
 
                     </div>

@@ -9,4 +9,5 @@ public interface NmServiceConfigurationTemplateService {
     void validateTemplates(List<NmServiceConfigurationTemplateView> templates);
     void validateSubmittedTemplates(Long appId);
     void addTemplate(NmServiceConfigurationTemplateView configurationTemplate);
+    void addTemplates(Long appId, List<NmServiceConfigurationTemplateView> configurationTemplates);
 }

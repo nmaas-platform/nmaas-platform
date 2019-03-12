@@ -57,4 +57,11 @@ public class NmServiceConfigTemplateAdminRestController {
         templateService.addTemplate(configurationTemplate);
     }
 
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+    @PostMapping(value = "/{appId}", consumes = "application/json")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public void addConfigurationTemplates(@PathVariable Long appId, @RequestBody List<NmServiceConfigurationTemplateView> configurationTemplates) {
+        templateService.addTemplates(appId, configurationTemplates);
+    }
+
 }

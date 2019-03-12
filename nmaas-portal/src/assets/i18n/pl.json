@@ -567,6 +567,7 @@
     "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
     "CONFIG_FILENAME_TOOLTIP": "Podaj nazwe pliku konfiguracyjnego",
     "CONFIG_CONTENT_LABEL": "Szablon konfiguracyjny",
-    "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language."
+    "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language.",
+    "ADD_CONFIG_BUTTON": "Dodaj nowy szablon"
   }
 }

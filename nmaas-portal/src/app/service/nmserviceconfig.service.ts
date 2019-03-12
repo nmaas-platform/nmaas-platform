@@ -17,8 +17,8 @@ export class NmServiceConfigService extends GenericDataService {
     this.url = this.appConfig.getApiUrl() + '/management/configurations/templates'
   }
 
-  public addAppTemplate(configTemplate: NmServiceConfigurationTemplate) : Observable<any> {
-    return this.post(this.url, configTemplate);
+  public addAppTemplates(appId: number, configTemplates: NmServiceConfigurationTemplate[]) : Observable<any> {
+    return this.post(this.url + '/' + appId, configTemplates);
   }
 
   public getAllTemplates(appId: number) : Observable<NmServiceConfigurationTemplate[]> {

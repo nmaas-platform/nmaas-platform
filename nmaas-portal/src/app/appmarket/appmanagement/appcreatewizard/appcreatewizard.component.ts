@@ -207,8 +207,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     if(this.templateHasContent()){
       this.serviceConfigTemplate.forEach(template => {
         template.applicationId = appId;
-        this.nmConfigService.addAppTemplate(template).subscribe(() => console.debug('Template sent'), error => throwError(error.message));
       });
+      this.nmConfigService.addAppTemplates(appId, this.serviceConfigTemplate).subscribe(() => console.debug('Template sent'), error => throwError(error.message));
     }
   }
 
@@ -308,6 +308,14 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public removeNewTag(event){
     this.tags = this.tags.filter(tag => tag.value != event.value);
     this.app.tags = this.app.tags.filter(tag => tag != event.value);
+  }
+
+  public addConfig(){
+    this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
+  }
+
+  public removeConfig(id:number){
+    this.serviceConfigTemplate.splice(id, 1);
   }
 
 }
