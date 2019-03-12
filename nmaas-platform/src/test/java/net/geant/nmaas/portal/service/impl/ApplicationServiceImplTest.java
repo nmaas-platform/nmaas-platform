@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import java.util.Arrays;
 import java.util.Collections;
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationTemplateService;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
@@ -47,11 +48,14 @@ public class ApplicationServiceImplTest {
     @InjectMocks
     ApplicationServiceImpl applicationService;
 
+    @Mock
+    NmServiceConfigurationTemplateService templateService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     @Before
     public void setup(){
-        applicationService = new ApplicationServiceImpl(applicationRepository, new ModelMapper());
+        applicationService = new ApplicationServiceImpl(applicationRepository, templateService, new ModelMapper());
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -537,7 +537,11 @@
     "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
     "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
-    "DEPLOY_PARAMETERS_DROPDOWN": "Select global parameters"
+    "DEPLOY_PARAMETERS_DROPDOWN": "Select global parameters",
+    "CONFIG_FILENAME_LABEL": "Configuration filename",
+    "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
+    "CONFIG_CONTENT_LABEL": "Configuration template",
+    "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker template language."
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",

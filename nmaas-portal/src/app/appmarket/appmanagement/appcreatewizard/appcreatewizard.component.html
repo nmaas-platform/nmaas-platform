@@ -68,12 +68,12 @@
                     <div class="form-group form-group-sm">
                         <label for="newTags" class="control-label">{{'APPS_WIZARD.NEW_TAGS_LABEL' | translate}}</label>
                         <br>
-                        <p-chips class="ui-fluid" [(ngModel)]="newTags" [allowDuplicate]="false" (onAdd)="addNewTag($event)" (onRemove)="removeNewTag($event)" name="newTags" id="newTags" tooltip="{{'APPS_WIZARD.NEW_TAGS_TOOLTIP' | translate}}" placement="right" show-delay="50" theme="dark" [display]="true"></p-chips>
+                        <p-chips class="ui-fluid" [(ngModel)]="newTags" [allowDuplicate]="false" (onAdd)="addNewTag($event)" (onRemove)="removeNewTag($event)" name="newTags" id="newTags" tooltip="{{'APPS_WIZARD.NEW_TAGS_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true"></p-chips>
                     </div>
                     <div class="form-group form-group-sm">
                         <label for="tags" class="control-label">{{'APPS_WIZARD.TAGS_LABEL' | translate}} * </label>
                         <br>
-                        <p-multiSelect #tagsMultiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" [(ngModel)]="app.tags" name="tags" tooltip="{{'APPS_WIZARD.TAGS_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                        <p-multiSelect #tagsMultiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" [(ngModel)]="app.tags" name="tags" tooltip="{{'APPS_WIZARD.TAGS_TOOLTIP' | translate}}" placement="bottom" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
                     </div>
                 </form>
             </div>
@@ -194,6 +194,27 @@
                                        [defaultChecked]="false" [(ngModel)]="app.appDeploymentSpec.configFileRepositoryRequired" tooltip="{{'APPS_WIZARD.REPOSITORY_REQUIRED_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                             </div>
                         </div>
+                        <div *ngIf="app.appDeploymentSpec.configFileRepositoryRequired">
+                            <div *ngFor="let configTemplate of serviceConfigTemplate; let i=index">
+                                <div class="form-group form-group-sm" [ngClass]="{'has-error':  configFileName.invalid && (configFileName.dirty || configFileName.touched),
+ 			    		 	        'has-success': configFileName.valid && (configFileName.dirty || configFileName.touched)}">
+                                    <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}}</label>
+                                    <label *ngIf="isInMode(ComponentMode.EDIT)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}} *</label>
+                                    <br>
+                                    <input type="text" class="form-control" id="configFileName-{{i}}" name="configFileName-{{i}}" #configFileName="ngModel"
+                                           [(ngModel)]="configTemplate.configFileName" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_FILENAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                                </div>
+                                <div class="form-group form-group-sm" [ngClass]="{'has-error':  configFileTemplateContent.invalid && (configFileTemplateContent.dirty || configFileTemplateContent.touched),
+ 			    		 	        'has-success': configFileTemplateContent.valid && (configFileTemplateContent.dirty || configFileTemplateContent.touched)}">
+                                    <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileTemplateContent-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_CONTENT_LABEL' | translate}}</label>
+                                    <label *ngIf="isInMode(ComponentMode.EDIT)" for="configFileTemplateContent-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_CONTENT_LABEL' | translate}} *</label>
+                                    <br>
+                                    <textarea class="form-control" id="configFileTemplateContent-{{i}}" name="configFileTemplateContent-{{i}}" #configFileTemplateContent="ngModel"
+                                              [(ngModel)]="configTemplate.configFileTemplateContent" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_CONTENT_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
                 <hr>
@@ -220,8 +241,8 @@
         <div class="alert alert-danger" *ngIf="errorMessage">
             {{errorMessage}}
         </div>
-        <button class="btn btn-success pull-right" (click)="addApplication()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
-        <button class="btn btn-success pull-right" (click)="updateApplication()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="sendCreateRequest()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="sendUpdateRequest()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">{{'APPS_WIZARD.PREVIOUS_BUTTON' | translate}}</button>
 

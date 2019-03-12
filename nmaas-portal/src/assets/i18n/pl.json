@@ -563,6 +563,10 @@
     "DEPLOY_PARAMETER_TOOLTIP": "Niektóre aplikacje wykorzystują globalne ustawienia systemu NMaaS. Jeśli chcesz wykorzystać jedną z nich podaj klucz pod którym powinniśmy podać te ustawienia.",
     "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS może wykorzystać GitLab aby zachować konfiguracje każdej instancji.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!",
-    "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne"
+    "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
+    "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
+    "CONFIG_FILENAME_TOOLTIP": "Podaj nazwe pliku konfiguracyjnego",
+    "CONFIG_CONTENT_LABEL": "Szablon konfiguracyjny",
+    "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language."
   }
 }

@@ -15,6 +15,9 @@ import {DomSanitizer} from "@angular/platform-browser";
 import {ComponentMode} from "../../../shared";
 import {MultiSelect} from "primeng/primeng";
 import {KubernetesTemplate} from "../../../model/kubernetestemplate";
+import {NmServiceConfigurationTemplate} from "../../../model/nmserviceconfigurationtemplate";
+import {NmServiceConfigService} from "../../../service/nmserviceconfig.service";
+import {throwError} from "rxjs";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -44,6 +47,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public screenshots: any[] = [];
   public errorMessage:string = undefined;
   public urlPattern: string = '(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)';
+  public serviceConfigTemplate: NmServiceConfigurationTemplate[] = [];
 
   public defaultTooltipOptions = {
       'placement': 'right',
@@ -54,7 +58,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   constructor(public tagService: TagService, public appsService: AppsService, public route: ActivatedRoute,
               public internationalization:InternationalizationService, public configTemplateService: ConfigTemplateService,
               public appImagesService: AppImagesService, public router:Router, public translate: TranslateService,
-              public dom:DomSanitizer) {
+              public dom:DomSanitizer, public nmConfigService: NmServiceConfigService) {
     super();
   }
 
@@ -109,7 +113,15 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       if(!this.tags.some(tag => tag.value === appTag)){
         this.tags.push({label:appTag, value: appTag});
       }
-    })
+    });
+    this.nmConfigService.getAllTemplates(appToEdit.id).subscribe(templates => {
+      if(templates.length === 0){
+        this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
+      } else {
+        this.serviceConfigTemplate = templates;
+      }
+
+    });
   }
 
   public getLogo(id:number) : void {
@@ -143,6 +155,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         this.app.descriptions.push(appDescription);
       });
     });
+    this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
   }
 
   public nextStep(): void{
@@ -154,8 +167,25 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     this.activeStepIndex -= 1;
   }
 
-  public addApplication(): void{
+  public sendUpdateRequest(): void {
+    if(this.app.appDeploymentSpec.configFileRepositoryRequired){
+      this.nmConfigService.validateTemplates(this.serviceConfigTemplate).subscribe(() => this.updateApplication(), error => this.errorMessage = error.message);
+    } else {
+      this.updateApplication();
+    }
+  }
+
+  public sendCreateRequest(): void {
+    if(this.app.appDeploymentSpec.configFileRepositoryRequired && this.templateHasContent()){
+      this.nmConfigService.validateTemplates(this.serviceConfigTemplate).subscribe(() => this.addApplication(), error => this.errorMessage = error.message);
+    } else {
+      this.addApplication();
+    }
+  }
+
+  public addApplication(): void {
     this.appsService.addApp(this.app).subscribe(result => {
+      this.uploadTemplate(result.id);
       this.uploadLogo(result.id);
       this.handleUploadingScreenshots(result.id);
       this.errorMessage = undefined;
@@ -165,11 +195,25 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public updateApplication(): void {
     this.appsService.updateApp(this.app).subscribe(() => {
+      this.uploadTemplate(this.app.id);
       this.uploadLogo(this.app.id);
       this.handleUploadingScreenshots(this.app.id);
       this.errorMessage = undefined;
       this.modal.show();
     }, error => this.errorMessage = error.message);
+  }
+
+  public uploadTemplate(appId: number): void {
+    if(this.templateHasContent()){
+      this.serviceConfigTemplate.forEach(template => {
+        template.applicationId = appId;
+        this.nmConfigService.addAppTemplate(template).subscribe(() => console.debug('Template sent'), error => throwError(error.message));
+      });
+    }
+  }
+
+  public templateHasContent() : boolean {
+    return !isNullOrUndefined(this.serviceConfigTemplate[0].configFileName) && !isNullOrUndefined(this.serviceConfigTemplate[0].configFileTemplateContent);
   }
 
   public uploadLogo(id: number){
@@ -254,7 +298,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       this.app.tags.push(event.value.toLowerCase());
     }
     if(!this.tags.some(tag => tag.value.toLowerCase() === event.value.toLowerCase())){
-      this.tags.push({label: event.value, value: event.value});
+      this.tags.push({label: event.value, value: event.value.toLowerCase()});
     } else {
       this.newTags.pop()
     }

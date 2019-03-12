@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationTemplateService;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -22,6 +23,8 @@ import net.geant.nmaas.portal.service.ApplicationService;
 public class ApplicationServiceImpl implements ApplicationService {
 
 	private ApplicationRepository appRepo;
+
+	private NmServiceConfigurationTemplateService templateService;
 
 	private ModelMapper modelMapper;
 
@@ -77,6 +80,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		}
 		if(state.equals(ApplicationState.ACTIVE)){
 			checkApp(app);
+			checkTemplates(app);
 		}
 		app.setState(state);
 		appRepo.save(app);
@@ -89,6 +93,12 @@ public class ApplicationServiceImpl implements ApplicationService {
 		app.validate();
 		app.getAppDeploymentSpec().validate();
 		app.getAppDeploymentSpec().getKubernetesTemplate().validate();
+	}
+
+	private void checkTemplates(Application app){
+		if(app.getAppDeploymentSpec().isConfigFileRepositoryRequired()){
+			templateService.validateSubmittedTemplates(app.getId());
+		}
 	}
 
 	@Override
