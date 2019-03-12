@@ -515,6 +515,7 @@
     "BASIC_APP_INFO_STEP": "Podstawowe dane aplikacji",
     "LOGO_AND_SCREENSHOTS_STEP": "Logo i zrzuty ekranu",
     "APP_DESCRIPTIONS_STEP": "Opisy aplikacji",
+    "APP_DEPLOYMENT_SPEC_STEP": "Specyfikacja deploymentu",
     "CONFIG_TEMPLATES_STEP": "Formularze konfiguracyjne",
     "SHORT_REVIEW_STEP": "Podgląd aplikacji",
     "NEW_APP_WIZARD_HEADER": "Dodawanie nowej aplikacji",
@@ -542,7 +543,18 @@
     "CONFIG_FILENAME_TOOLTIP": "Podaj nazwe pliku konfiguracyjnego",
     "CONFIG_CONTENT_LABEL": "Szablon konfiguracyjny",
     "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language.",
-    "ADD_CONFIG_BUTTON": "Dodaj nowy szablon"
+    "ADD_CONFIG_BUTTON": "Dodaj nowy szablon",
+    "APP_CONFIG_TEMPLATES_HEADER": "Konfiguracja szablonów aplikacji",
+    "APP_REQUIRED_DESCRIPTIONS_HEADER": "Wymagane opisy aplikacji",
+    "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Opcjonalne opisy aplikacji",
+    "OPTIONAL_LANGS_LABEL": "Wybierz język opcjonalny",
+    "OPTIONAL_LANGS_TOOLTIP": "Możesz podać dodatkowe opisy aplikacji w różnych, opcjonalych językach.",
+    "FIRST_PAGE_HEADER": "Informacje",
+    "BASIC_APP_INFO_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "APP_DESCRIPTIONS_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "CONFIG_TEMPLATES_STEP_INFO": "Tekst zostanie dodany wkrótce"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",
@@ -569,5 +581,11 @@
       "MESSAGE": "NMaaS Team wyśle odpowiedź niedługo.",
       "CLOSE_BUTTON": "Zamknij"
     }
+  },
+  "LANGUAGE": {
+    "EN_LABEL": "Angielski",
+    "DE_LABEL": "Niemiecki",
+    "PL_LABEL": "Polski",
+    "FR_LABEL": "Francuski"
   }
 }

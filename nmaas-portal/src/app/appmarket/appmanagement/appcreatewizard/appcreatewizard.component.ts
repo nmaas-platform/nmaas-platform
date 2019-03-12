@@ -48,6 +48,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public errorMessage:string = undefined;
   public urlPattern: string = '(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)';
   public serviceConfigTemplate: NmServiceConfigurationTemplate[] = [];
+  public selectedLanguages: string[] = [];
+  public languages: SelectItem[] = [];
 
   public defaultTooltipOptions = {
       'placement': 'right',
@@ -75,6 +77,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       {label: this.translate.instant('APPS_WIZARD.BASIC_APP_INFO_STEP')},
       {label: this.translate.instant('APPS_WIZARD.LOGO_AND_SCREENSHOTS_STEP')},
       {label: this.translate.instant('APPS_WIZARD.APP_DESCRIPTIONS_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.APP_DEPLOYMENT_SPEC_STEP')},
       {label: this.translate.instant('APPS_WIZARD.CONFIG_TEMPLATES_STEP')},
       {label: this.translate.instant('APPS_WIZARD.SHORT_REVIEW_STEP')}
     ];
@@ -120,8 +123,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       } else {
         this.serviceConfigTemplate = templates;
       }
-
     });
+    this.internationalization.getAllSupportedLanguages().subscribe(val => val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language})));
   }
 
   public getLogo(id:number) : void {
@@ -153,6 +156,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         let appDescription:AppDescription = new AppDescription();
         appDescription.language = lang.language;
         this.app.descriptions.push(appDescription);
+        val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language}))
       });
     });
     this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
@@ -256,6 +260,16 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public isInvalidDescriptions(): boolean {
     let enAppDescription  = this.app.descriptions.filter(lang => lang.language === "en")[0];
     return isNullOrUndefined(enAppDescription.fullDescription) || enAppDescription.fullDescription === "" || isNullOrUndefined(enAppDescription.briefDescription) || enAppDescription.briefDescription === "";
+  }
+
+  public getDescriptionsInSelectedLanguage(lang: string) : AppDescription {
+    return this.app.descriptions.filter(description => description.language === lang)[0] || this.createAppDescription(lang);
+  }
+
+  public createAppDescription(lang: string): AppDescription {
+    let description: AppDescription = new AppDescription();
+    description.language = lang;
+    return description;
   }
 
   public setConfigTemplate(event): void {

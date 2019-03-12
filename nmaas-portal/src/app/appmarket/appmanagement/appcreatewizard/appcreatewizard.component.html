@@ -1,4 +1,4 @@
-<h3 *ngIf="isInMode(ComponentMode.CREATE)">{{ 'APPS_WIZARD.NEW_APP_WIZARD_HEADER' | translate }}</h3>
+<h3 *ngIf="isInMode(ComponentMode.CREATE)" xmlns="http://www.w3.org/1999/html">{{ 'APPS_WIZARD.NEW_APP_WIZARD_HEADER' | translate }}</h3>
 <h3 *ngIf="isInMode(ComponentMode.EDIT)">{{ 'APPS_WIZARD.EDIT_APP_WIZARD_HEADER' | translate: {'app_name': appName} }}</h3>
 
 <p-steps [model]="steps" [(activeIndex)]="activeStepIndex"></p-steps>
@@ -6,13 +6,19 @@
 
     <div *ngIf="activeStepIndex === 0">
         <div class="panel">
-            <p class="text-center">{{'APPS_WIZARD.FIRST_PAGE_MESSAGE' | translate}}</p>
+            <div class="bs-callout bs-callout-primary">
+                <h4>{{'APPS_WIZARD.FIRST_PAGE_HEADER' | translate }}</h4>
+                {{'APPS_WIZARD.FIRST_PAGE_MESSAGE' | translate }}
+            </div>
         </div>
         <input type="checkbox" [checked]="rulesAccepted" (click)="changeRulesAcceptedFlag()"> {{'APPS_WIZARD.ACCEPT_RULES_CHECKBOX' | translate}}
         <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="!rulesAccepted" [display]="!rulesAccepted" tooltip="{{'APPS_WIZARD.ACCEPT_RULES_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}}</button>
     </div>
 
     <div *ngIf="activeStepIndex === 1">
+        <div class="bs-callout bs-callout-primary">
+            {{'APPS_WIZARD.BASIC_APP_INFO_STEP_INFO' | translate }}
+        </div>
         <div *ngIf="app">
             <div class="panel">
                 <form class="form-horizontal" #basicInfoForm="ngForm">
@@ -66,14 +72,14 @@
                         <input type="url" id="issuesUrl" class="form-control" [pattern]="urlPattern" required name="issuesUrl" #issuesUrl="ngModel" tooltip="{{'APPS_WIZARD.PROJECT_ISSUES_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" [(ngModel)]="app.issuesUrl">
                     </div>
                     <div class="form-group form-group-sm">
-                        <label for="newTags" class="control-label">{{'APPS_WIZARD.NEW_TAGS_LABEL' | translate}}</label>
-                        <br>
-                        <p-chips class="ui-fluid" [(ngModel)]="newTags" [allowDuplicate]="false" (onAdd)="addNewTag($event)" (onRemove)="removeNewTag($event)" name="newTags" id="newTags" tooltip="{{'APPS_WIZARD.NEW_TAGS_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true"></p-chips>
-                    </div>
-                    <div class="form-group form-group-sm">
                         <label for="tags" class="control-label">{{'APPS_WIZARD.TAGS_LABEL' | translate}} * </label>
                         <br>
                         <p-multiSelect #tagsMultiSelect id="tags" [panelStyle]="{minWidth:'25em'}" [options]="tags" [(ngModel)]="app.tags" name="tags" tooltip="{{'APPS_WIZARD.TAGS_TOOLTIP' | translate}}" placement="bottom" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <label for="newTags" class="control-label">{{'APPS_WIZARD.NEW_TAGS_LABEL' | translate}}</label>
+                        <br>
+                        <p-chips class="ui-fluid" [(ngModel)]="newTags" [allowDuplicate]="false" (onAdd)="addNewTag($event)" (onRemove)="removeNewTag($event)" name="newTags" id="newTags" tooltip="{{'APPS_WIZARD.NEW_TAGS_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true"></p-chips>
                     </div>
                 </form>
             </div>
@@ -82,6 +88,9 @@
     </div>
 
     <div *ngIf="activeStepIndex === 2">
+        <div class="bs-callout bs-callout-primary">
+            {{'APPS_WIZARD.LOGO_AND_SCREENSHOTS_STEP_INFO' | translate }}
+        </div>
         <div class="panel">
             <div class="panel-heading">
                 {{'APPS_WIZARD.UPLOAD_LOGO_LABEL' | translate}}
@@ -106,42 +115,60 @@
         <button class="btn btn-success pull-right" (click)="nextStep()">{{'APPS_WIZARD.NEXT_BUTTON' | translate}}</button>
     </div>
     <div *ngIf="activeStepIndex === 3">
+        <div class="bs-callout bs-callout-primary">
+            {{'APPS_WIZARD.APP_DESCRIPTIONS_STEP_INFO' | translate }}
+        </div>
         <div *ngIf="app">
             <form class="form-horizontal" #descriptionForm="ngForm">
-                <div class="panel" *ngFor="let appDescription of app.descriptions; let i=index">
-                    <div class="panel-heading">
-                        <div *ngIf="appDescription.language === 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}} *</div>
-                        <div *ngIf="appDescription.language != 'en'"><img alt="language" src="assets/images/country/{{appDescription.language}}_circle.png" style="height: 22px"> {{appDescription.language.toUpperCase()}}</div>
-                    </div>
+                <div class="panel">
+                    <div class="panel-heading">{{'APPS_WIZARD.APP_REQUIRED_DESCRIPTIONS_HEADER' | translate }}</div>
                     <div class="panel-body">
-                        <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
-                            <label for="briefDescription-{{i}}" class="col-sm-2 control-label">{{'APPS_WIZARD.BRIEF_DESCRIPTION_LABEL' | translate}}</label>
+                        <div><img alt="language" src="assets/images/country/en_circle.png" style="height: 22px"> {{'LANGUAGE.EN_LABEL' | translate}} * </div>
+                        <br>
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  defaultLangBriefDescription.invalid && (defaultLangBriefDescription.dirty || defaultLangBriefDescription.touched),
+ 				    	 	'has-success': defaultLangBriefDescription.valid && (defaultLangBriefDescription.dirty || defaultLangBriefDescription.touched)}">
+                            <label for="defaultLangBriefDescription" class="col-sm-2 control-label">{{'APPS_WIZARD.BRIEF_DESCRIPTION_LABEL' | translate }} *</label>
                             <div class="col-sm-10">
-                            <textarea class="form-control" id="briefDescription-{{i}}" name="briefDescription-{{i}}" [maxLength]="200"
-                                      [(ngModel)]="appDescription.briefDescription" tooltip="{{'APPS_WIZARD.BRIEF_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
+                                <textarea class="form-control" id="defaultLangBriefDescription" name="defaultLangBriefDescription" [maxLength]="200" #defaultLangBriefDescription="ngModel" required
+                                          [(ngModel)]="getDescriptionsInSelectedLanguage('en').briefDescription" tooltip="{{'APPS_WIZARD.BRIEF_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
                             </div>
                         </div>
-                        <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.briefDescription || appDescription.briefDescription === '',
- 			    		 	'has-success': appDescription.briefDescription && appDescription.briefDescription != ''}">
-                            <label for="enBriefDescription" class="col-sm-2 control-label">{{'APPS_WIZARD.BRIEF_DESCRIPTION_LABEL' | translate}} *</label>
+                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  defaultLangFullDescription.invalid && (defaultLangFullDescription.dirty || defaultLangFullDescription.touched),
+ 				    	 	'has-success': defaultLangFullDescription.valid && (defaultLangFullDescription.dirty || defaultLangFullDescription.touched)}">
+                            <label for="defaultLangFullDescription" class="col-sm-2 control-label">{{'APPS_WIZARD.FULL_DESCRIPTION_LABEL' | translate}} *</label>
                             <div class="col-sm-10">
-                            <textarea class="form-control" id="enBriefDescription" name="enBriefDescription" [maxLength]="200"
-                                      [(ngModel)]="appDescription.briefDescription" required tooltip="{{'APPS_WIZARD.BRIEF_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
+                                <textarea class="form-control" id="defaultLangFullDescription" name="defaultLangFullDescription" rows="10" #defaultLangFullDescription="ngModel" required
+                                          [(ngModel)]="getDescriptionsInSelectedLanguage('en').fullDescription" tooltip="{{'APPS_WIZARD.FULL_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
                             </div>
                         </div>
-                        <div class="form-group form-group-sm" *ngIf="appDescription.language != 'en'">
-                            <label for="fullDescription-{{i}}" class="col-sm-2 control-label">{{'APPS_WIZARD.FULL_DESCRIPTION_LABEL' | translate}}</label>
-                            <div class="col-sm-10">
-                            <textarea class="form-control" id="fullDescription-{{i}}" name="fullDescription-{{i}}"
-                                      [(ngModel)]="appDescription.fullDescription" tooltip="{{'APPS_WIZARD.FULL_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
-                            </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="panel">
+                    <div class="panel-heading">{{'APPS_WIZARD.APP_OPTIONAL_DESCRIPTIONS_HEADER' | translate }}</div>
+                    <div class="panel-body">
+                        <div class="form-group form-group-sm">
+                            <label class="control-label" for="optionalLangs">{{'APPS_WIZARD.OPTIONAL_LANGS_LABEL' | translate}}</label>
+                            <br>
+                            <p-multiSelect [panelStyle]="{minWidth:'15em'}" [options]="languages" [(ngModel)]="selectedLanguages" id="optionalLangs" name="optionalLangs" tooltip="{{'APPS_WIZARD.OPTIONAL_LANGS_TOOLTIP' | translate}}" placement="bottom" show-delay="50" theme="dark" [display]="true"></p-multiSelect>
                         </div>
-                        <div class="form-group form-group-sm" *ngIf="appDescription.language === 'en'" [ngClass]="{'has-error':  !appDescription.fullDescription || appDescription.fullDescription === '',
- 			    		 	'has-success': appDescription.fullDescription && appDescription.fullDescription != ''}">
-                            <label for="enFullDescription" class="col-sm-2 control-label">{{'APPS_WIZARD.FULL_DESCRIPTION_LABEL' | translate}} *</label>
-                            <div class="col-sm-10">
-                            <textarea class="form-control" id="enFullDescription" name="enFullDescription"
-                                      [(ngModel)]="appDescription.fullDescription" tooltip="{{'APPS_WIZARD.FULL_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions" required></textarea>
+                        <div *ngFor="let lang of selectedLanguages;let i=index">
+                            <hr>
+                            <div><img alt="language" src="assets/images/country/{{lang}}_circle.png" style="height: 22px;"> {{'LANGUAGE.' + lang.toUpperCase() + '_LABEL' | translate}}</div>
+                            <br>
+                            <div class="form-group form-group-sm">
+                                <label for="briefDescription-{{i}}" class="col-sm-2 control-label">{{'APPS_WIZARD.BRIEF_DESCRIPTION_LABEL' | translate}}</label>
+                                <div class="col-sm-10">
+                                <textarea class="form-control" id="briefDescription-{{i}}" name="briefDescription-{{i}}" [maxLength]="200"
+                                      [(ngModel)]="getDescriptionsInSelectedLanguage(lang).briefDescription" tooltip="{{'APPS_WIZARD.BRIEF_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label for="fullDescription-{{i}}" class="col-sm-2 control-label">{{'APPS_WIZARD.FULL_DESCRIPTION_LABEL' | translate}}</label>
+                                <div class="col-sm-10">
+                                <textarea class="form-control" id="fullDescription-{{i}}" name="fullDescription-{{i}}" rows="10"
+                                      [(ngModel)]="getDescriptionsInSelectedLanguage(lang).fullDescription" tooltip="{{'APPS_WIZARD.FULL_DESCRIPTION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -150,43 +177,61 @@
             <button class="btn btn-success pull-right" (click)="nextStep()" [disabled]="descriptionForm.invalid" [display]="descriptionForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}}</button>
         </div>
     </div>
+
     <div *ngIf="activeStepIndex === 4">
+        <div class="bs-callout bs-callout-primary">
+            {{'APPS_WIZARD.APP_DEPLOYMENT_SPEC_STEP_INFO' | translate }}
+        </div>
+        <div class="panel">
+            <div class="panel-heading">{{'APPS_WIZARD.APP_DEPLOYMENT_HEADER' | translate }}</div>
+            <form class="form-horizontal" #appDeploymentForm="ngForm">
+                <div class="panel-body">
+                    <div class="form-group form-group-sm" [ngClass]="{'has-error':  kubernetesTemplateChartName.invalid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched),
+ 			    		 	'has-success': kubernetesTemplateChartName.valid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched)}">
+                        <label *ngIf="!isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}}</label>
+                        <label *ngIf="isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}} *</label>
+                        <br>
+                        <input type="text" class="form-control" id="kubernetesTemplateChartName" name="kubernetesTemplateChartName" #kubernetesTemplateChartName="ngModel"
+                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <label for="kubernetesTemplateChartVersion" class="control-label">{{'APPS_WIZARD.CHART_VERSION_LABEL' | translate}}</label>
+                        <br>
+                        <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
+                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version" tooltip="{{'APPS_WIZARD.CHART_VERSION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                    </div>
+                    <div class="form-group form-group-sm" [ngClass]="{'has-error':  storageSpace.invalid && (storageSpace.dirty || storageSpace.touched),
+ 			    		 	'has-success': storageSpace.valid && (storageSpace.dirty || storageSpace.touched)}">
+                        <label for="defaultStorageSpace" class="control-label">{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_LABEL' | translate}} *</label>
+                        <br>
+                        <input type="number" class="form-control no-spin" id="defaultStorageSpace" name="defaultStorageSpace" [min]="1" required
+                               [(ngModel)]="app.appDeploymentSpec.defaultStorageSpace" #storageSpace="ngModel" tooltip="{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                    </div>
+                    <div class="form-group form-group-sm">
+                        <label for="deployParameters" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETERS_DROPDOWN' | translate}}</label>
+                        <br>
+                        <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                    </div>
+                    <div class="form-group form-group-sm" *ngFor="let val of selectedDeployParameters">
+                        <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
+                        <br>
+                        <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <button class="btn btn-success pull-right" [disabled]="appDeploymentForm.invalid"  (click)="nextStep()" [display]="appDeploymentForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}} </button>
+    </div>
+
+    <div *ngIf="activeStepIndex === 5">
+        <div class="bs-callout bs-callout-primary">
+            {{'APPS_WIZARD.CONFIG_TEMPLATES_STEP_INFO' | translate }}
+        </div>
         <div *ngIf="app">
             <div class="panel">
-                <div class="panel-heading">{{'APPS_WIZARD.APP_DEPLOYMENT_HEADER' | translate}}</div>
-                <form class="form-horizontal" #appDeploymentForm="ngForm">
+                <div class="panel-heading">{{'APPS_WIZARD.APP_CONFIG_TEMPLATES_HEADER' | translate}}</div>
+                <form class="form-horizontal" #appConfigForm="ngForm">
                     <div class="panel-body">
-                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  kubernetesTemplateChartName.invalid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched),
- 			    		 	'has-success': kubernetesTemplateChartName.valid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched)}">
-                            <label *ngIf="!isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}}</label>
-                            <label *ngIf="isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}} *</label>
-                            <br>
-                            <input type="text" class="form-control" id="kubernetesTemplateChartName" name="kubernetesTemplateChartName" #kubernetesTemplateChartName="ngModel"
-                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
-                        </div>
-                        <div class="form-group form-group-sm">
-                            <label for="kubernetesTemplateChartVersion" class="control-label">{{'APPS_WIZARD.CHART_VERSION_LABEL' | translate}}</label>
-                            <br>
-                            <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
-                                   [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version" tooltip="{{'APPS_WIZARD.CHART_VERSION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
-                        </div>
-                        <div class="form-group form-group-sm" [ngClass]="{'has-error':  storageSpace.invalid && (storageSpace.dirty || storageSpace.touched),
- 			    		 	'has-success': storageSpace.valid && (storageSpace.dirty || storageSpace.touched)}">
-                            <label for="defaultStorageSpace" class="control-label">{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_LABEL' | translate}} *</label>
-                            <br>
-                            <input type="number" class="form-control no-spin" id="defaultStorageSpace" name="defaultStorageSpace" [min]="1" required
-                                   [(ngModel)]="app.appDeploymentSpec.defaultStorageSpace" #storageSpace="ngModel" tooltip="{{'APPS_WIZARD.DEFAULT_STORAGE_SPACE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
-                        </div>
-                        <div class="form-group form-group-sm">
-                            <label for="deployParameters" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETERS_DROPDOWN' | translate}}</label>
-                            <br>
-                            <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
-                        </div>
-                        <div class="form-group form-group-sm" *ngFor="let val of selectedDeployParameters">
-                            <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
-                            <br>
-                            <input type="text" class="form-control" id="val" name="val" (change)="addToDeployParametersMap(val, $event)" [value]="getDeployParameterValue(val)">
-                        </div>
                         <div class="form-group form-group-sm">
                             <label for="configFileRepositoryRequired" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.REPOSITORY_REQUIRED_LABEL' | translate}}</label>
                             <div class="col-sm-10">
@@ -210,7 +255,7 @@
                                     <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileTemplateContent-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_CONTENT_LABEL' | translate}}</label>
                                     <label *ngIf="isInMode(ComponentMode.EDIT)" for="configFileTemplateContent-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_CONTENT_LABEL' | translate}} *</label>
                                     <br>
-                                    <textarea class="form-control" id="configFileTemplateContent-{{i}}" name="configFileTemplateContent-{{i}}" #configFileTemplateContent="ngModel"
+                                    <textarea class="form-control" id="configFileTemplateContent-{{i}}" name="configFileTemplateContent-{{i}}" #configFileTemplateContent="ngModel" rows="6"
                                               [(ngModel)]="configTemplate.configFileTemplateContent" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_CONTENT_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions"></textarea>
                                 </div>
                             </div>
@@ -235,16 +280,16 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-success pull-right" [disabled]="appDeploymentForm.invalid"  (click)="nextStep()" [display]="appDeploymentForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}} </button>
+            <button class="btn btn-success pull-right" [disabled]="appConfigForm.invalid"  (click)="nextStep()" [display]="appConfigForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}} </button>
         </div>
     </div>
-    <div *ngIf="activeStepIndex === 5">
+    <div *ngIf="activeStepIndex === 6">
         <app-apppreview [app]="app" [logo]="logo[0]" [screenshots]="screenshots"></app-apppreview>
         <div class="alert alert-danger" *ngIf="errorMessage">
             {{errorMessage}}
         </div>
-        <button class="btn btn-success pull-right" (click)="sendCreateRequest()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
-        <button class="btn btn-success pull-right" (click)="sendUpdateRequest()" *ngIf="activeStepIndex == 5 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="sendCreateRequest()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="sendUpdateRequest()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">{{'APPS_WIZARD.PREVIOUS_BUTTON' | translate}}</button>
 
