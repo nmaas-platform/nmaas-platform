@@ -180,7 +180,7 @@
                         <div class="form-group form-group-sm">
                             <label for="deployParameters" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETERS_DROPDOWN' | translate}}</label>
                             <br>
-                            <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="right" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
+                            <p-multiSelect id="deployParameters" (onChange)="removeDeployParameterFromMap($event)" [panelStyle]="{minWidth:'25em'}" [options]="deployParameter" [(ngModel)]="selectedDeployParameters" name="deployParameters" tooltip="{{'APPS_WIZARD.DEPLOY_PARAMETER_TOOLTIP' | translate}}" placement="left" show-delay="50" theme="dark" [display]="true" [defaultLabel]="translate.instant('APPS_WIZARD.CHOOSE_LABEL')"></p-multiSelect>
                         </div>
                         <div class="form-group form-group-sm" *ngFor="let val of selectedDeployParameters">
                             <label for="val" class="control-label">{{'APPS_WIZARD.DEPLOY_PARAMETER_LABEL' | translate}}: {{val}}</label>
@@ -200,7 +200,7 @@
  			    		 	        'has-success': configFileName.valid && (configFileName.dirty || configFileName.touched)}">
                                     <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}}</label>
                                     <label *ngIf="isInMode(ComponentMode.EDIT)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}} *</label>
-                                    <button class="btn btn-xs btn-danger" style="float: right;" (click)="removeConfig(i)"><span class="glyphicon glyphicon-remove"></span></button>
+                                    <button class="btn btn-xs btn-danger" style="float: right;" (click)="removeConfig(i)" [disabled]="serviceConfigTemplate.length <= 1"><span class="glyphicon glyphicon-remove"></span></button>
                                     <br>
                                     <input type="text" class="form-control" id="configFileName-{{i}}" name="configFileName-{{i}}" #configFileName="ngModel"
                                            [(ngModel)]="configTemplate.configFileName" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_FILENAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">

@@ -213,7 +213,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public templateHasContent() : boolean {
-    return !isNullOrUndefined(this.serviceConfigTemplate[0].configFileName) && !isNullOrUndefined(this.serviceConfigTemplate[0].configFileTemplateContent);
+    return this.serviceConfigTemplate.length > 0 && !isNullOrUndefined(this.serviceConfigTemplate[0].configFileName) && !isNullOrUndefined(this.serviceConfigTemplate[0].configFileTemplateContent);
   }
 
   public uploadLogo(id: number){
