@@ -156,7 +156,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         let appDescription:AppDescription = new AppDescription();
         appDescription.language = lang.language;
         this.app.descriptions.push(appDescription);
-        val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language}))
+        if(lang.language != "en"){
+          this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language});
+        }
       });
     });
     this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
