@@ -66,4 +66,11 @@ export class AppPreviewComponent implements OnInit {
     }
   }
 
+  public getValidLink(url: string) : string {
+    if(!url.startsWith("http://") && !url.startsWith("https://")){
+      return '//' + url;
+    }
+    return url;
+  }
+
 }

@@ -537,7 +537,7 @@
     "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
     "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
-    "DEPLOY_PARAMETERS_DROPDOWN": "Select global parameters",
+    "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
     "CONFIG_FILENAME_LABEL": "Configuration filename",
     "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
     "CONFIG_CONTENT_LABEL": "Configuration template",
@@ -553,7 +553,11 @@
     "LOGO_AND_SCREENSHOTS_STEP_INFO": "Text to be added soon",
     "APP_DESCRIPTIONS_STEP_INFO": "Text to be added soon",
     "APP_DEPLOYMENT_SPEC_STEP_INFO": "Text to be added soon",
-    "CONFIG_TEMPLATES_STEP_INFO": "Text to be added soon"
+    "CONFIG_TEMPLATES_STEP_INFO": "Text to be added soon",
+    "BASIC_AUTH_LABEL": "Requires basic authorization",
+    "BASIC_AUTH_TOOLTIP": "You can add basic authorization for your application simply by checking this checkbox.",
+    "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",

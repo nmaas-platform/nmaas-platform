@@ -19,6 +19,21 @@
           ]
         },
         {
+          "label": "Additional",
+          "key": "additionalParametersTab",
+          "components": [
+            {
+              "label": "additionalParameters",
+              "hideLabel": true,
+              "type": "container",
+              "input": true,
+              "tab": 2,
+              "key": "additionalParameters",
+              "components": []
+            }
+          ]
+        },
+        {
           "label": "Advanced",
           "key": "advancedTab",
           "components": [

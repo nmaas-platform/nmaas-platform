@@ -159,4 +159,11 @@ export class AppDetailsComponent implements OnInit {
     return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
   }
 
+  public getValidLink(url: string) : string {
+    if(!url.startsWith("http://") && !url.startsWith("https://")){
+      return '//' + url;
+    }
+    return url;
+  }
+
 }

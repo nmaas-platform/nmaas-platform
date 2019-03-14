@@ -111,6 +111,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throw new IllegalArgumentException("Request cannot be null");
 		if(StringUtils.isEmpty(request.getName()))
 			throw new IllegalArgumentException("name is null");
+		if(!request.getName().matches("^[a-zA-Z0-9-]+$"))
+			throw new IllegalArgumentException("Name contains illegal arguments");
 		if(StringUtils.isEmpty(request.getVersion()))
 		    throw new IllegalArgumentException("version is null");
 		if(StringUtils.isEmpty(owner))

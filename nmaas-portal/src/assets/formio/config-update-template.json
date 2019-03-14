@@ -2,6 +2,7 @@
   "components": [
     {
       "label": "Configuration",
+      "hideLabel": true,
       "tableView": true,
       "type": "container",
       "input": true,

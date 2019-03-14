@@ -580,7 +580,11 @@
     "LOGO_AND_SCREENSHOTS_STEP_INFO": "Tekst zostanie dodany wkrótce",
     "APP_DESCRIPTIONS_STEP_INFO": "Tekst zostanie dodany wkrótce",
     "APP_DEPLOYMENT_SPEC_STEP_INFO": "Tekst zostanie dodany wkrótce",
-    "CONFIG_TEMPLATES_STEP_INFO": "Tekst zostanie dodany wkrótce"
+    "CONFIG_TEMPLATES_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "BASIC_AUTH_LABEL": "Wymaga podstawowego uwierzytelnienia",
+    "BASIC_AUTH_TOOLTIP": "Możesz dodać podstawowe uwierzytelnienie do Twojej aplikacji zaznaczając tą opcję.",
+    "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji."
   },
   "LANGUAGE": {
     "EN_LABEL": "Angielski",

@@ -47,9 +47,12 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public screenshots: any[] = [];
   public errorMessage:string = undefined;
   public urlPattern: string = '(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)';
-  public serviceConfigTemplate: NmServiceConfigurationTemplate[] = [];
+  public nmServiceConfigurationTemplates: NmServiceConfigurationTemplate[] = [];
+  public addConfigUpdate: boolean = false;
+  public basicAuth: boolean = false;
   public selectedLanguages: string[] = [];
   public languages: SelectItem[] = [];
+  public formDisplayChange: boolean = true;
 
   public defaultTooltipOptions = {
       'placement': 'right',
@@ -119,12 +122,14 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     });
     this.nmConfigService.getAllTemplates(appToEdit.id).subscribe(templates => {
       if(templates.length === 0){
-        this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
+        this.nmServiceConfigurationTemplates.push(new NmServiceConfigurationTemplate());
       } else {
-        this.serviceConfigTemplate = templates;
+        this.nmServiceConfigurationTemplates = templates;
       }
     });
     this.internationalization.getAllSupportedLanguages().subscribe(val => val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language})));
+    this.basicAuth = this.hasAlreadyBasicAuth();
+    this.addConfigUpdate = !isNullOrUndefined(this.app.configurationUpdateTemplate);
   }
 
   public getLogo(id:number) : void {
@@ -161,7 +166,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
         }
       });
     });
-    this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
+    this.nmServiceConfigurationTemplates.push(new NmServiceConfigurationTemplate());
+    this.app.configTemplate = new ConfigTemplate();
+    this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
   }
 
   public nextStep(): void{
@@ -175,7 +182,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public sendUpdateRequest(): void {
     if(this.app.appDeploymentSpec.configFileRepositoryRequired){
-      this.nmConfigService.validateTemplates(this.serviceConfigTemplate).subscribe(() => this.updateApplication(), error => this.errorMessage = error.message);
+      this.nmConfigService.validateTemplates(this.nmServiceConfigurationTemplates).subscribe(() => this.updateApplication(), error => this.errorMessage = error.message);
     } else {
       this.updateApplication();
     }
@@ -183,7 +190,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public sendCreateRequest(): void {
     if(this.app.appDeploymentSpec.configFileRepositoryRequired && this.templateHasContent()){
-      this.nmConfigService.validateTemplates(this.serviceConfigTemplate).subscribe(() => this.addApplication(), error => this.errorMessage = error.message);
+      this.nmConfigService.validateTemplates(this.nmServiceConfigurationTemplates).subscribe(() => this.addApplication(), error => this.errorMessage = error.message);
     } else {
       this.addApplication();
     }
@@ -211,15 +218,15 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public uploadTemplate(appId: number): void {
     if(this.templateHasContent()){
-      this.serviceConfigTemplate.forEach(template => {
+      this.nmServiceConfigurationTemplates.forEach(template => {
         template.applicationId = appId;
       });
-      this.nmConfigService.addAppTemplates(appId, this.serviceConfigTemplate).subscribe(() => console.debug('Template sent'), error => throwError(error.message));
+      this.nmConfigService.addAppTemplates(appId, this.nmServiceConfigurationTemplates).subscribe(() => console.debug('Template sent'), error => throwError(error.message));
     }
   }
 
   public templateHasContent() : boolean {
-    return this.serviceConfigTemplate.length > 0 && !isNullOrUndefined(this.serviceConfigTemplate[0].configFileName) && !isNullOrUndefined(this.serviceConfigTemplate[0].configFileTemplateContent);
+    return this.nmServiceConfigurationTemplates.length > 0 && !isNullOrUndefined(this.nmServiceConfigurationTemplates[0].configFileName) && !isNullOrUndefined(this.nmServiceConfigurationTemplates[0].configFileTemplateContent);
   }
 
   public uploadLogo(id: number){
@@ -327,11 +334,93 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public addConfig(){
-    this.serviceConfigTemplate.push(new NmServiceConfigurationTemplate());
+    this.nmServiceConfigurationTemplates.push(new NmServiceConfigurationTemplate());
   }
 
   public removeConfig(id:number){
-    this.serviceConfigTemplate.splice(id, 1);
+    this.nmServiceConfigurationTemplates.splice(id, 1);
   }
 
+  public hasAlreadyBasicAuth() : boolean {
+    if(isNullOrUndefined(this.app.configTemplate)){
+      return false;
+    }
+    let config: string = JSON.stringify(this.app.configTemplate.template);
+    return config.search(/accessCredentials/g) != -1 && config.search(/accessUsername/g) != -1 && config.search(/accessPassword/g) != -1;
+  }
+
+  public handleBasicAuth(){
+    if(!this.app.appDeploymentSpec.configFileRepositoryRequired && isNullOrUndefined(this.app.configTemplate)){
+      this.app.configTemplate = new ConfigTemplate();
+      this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
+    }
+    if(this.basicAuth){
+      this.addBasicAuth();
+    } else {
+      this.removeBasicAuth();
+    }
+  }
+
+  public addBasicAuth() : any {
+    this.app.configTemplate.template.components[0].components[0].components.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+    if(isNullOrUndefined(this.app.configurationUpdateTemplate)){
+      this.app.configurationUpdateTemplate = new ConfigTemplate();
+      this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+    }
+    this.app.configurationUpdateTemplate.template.components.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+  }
+
+  public removeBasicAuth() : any {
+    this.app.configTemplate.template.components[0].components[0].components = this.app.configTemplate.template.components[0].components[0].components.filter(val => val.key != "accessCredentials");
+    this.app.configurationUpdateTemplate.template.components = this.app.configurationUpdateTemplate.template.components.filter(val => val.key != "accessCredentials");
+    if(this.app.configurationUpdateTemplate.template.components[0].components.length === 0){
+      this.app.configurationUpdateTemplate = undefined;
+      this.addConfigUpdate = false;
+    }
+  }
+
+  public handleConfigTemplate() : any {
+    if(this.addConfigUpdate && isNullOrUndefined(this.app.configurationUpdateTemplate)){
+      this.app.configurationUpdateTemplate = new ConfigTemplate();
+      this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+    }
+    if(!this.addConfigUpdate && !this.hasAlreadyBasicAuth()){
+      this.app.configurationUpdateTemplate = undefined;
+    }
+  }
+
+  public changeBasicAuthInForms() {
+    this.formDisplayChange = false;
+    this.handleBasicAuth();
+    setTimeout(()=>{this.formDisplayChange = true},1);
+  }
+
+  public changeDefaultElementInForms() {
+    this.formDisplayChange = false;
+    this.handleDefaultElement();
+    setTimeout(()=>{this.formDisplayChange = true},1);
+  }
+
+  public handleDefaultElement() {
+    if(this.app.appDeploymentSpec.configFileRepositoryRequired) {
+      this.addDefaultElement();
+    } else {
+      this.removeDefaultElement();
+    }
+  }
+
+  public addDefaultElement() : void {
+    let config = this.app.configTemplate.template.components[0].components[0].components.find(val => val.key === 'configuration');
+    if(!isNullOrUndefined(config)){
+      config.components.length = 0;
+      config.components.push(this.configTemplateService.getDefaultElement());
+    }
+  }
+
+  public removeDefaultElement(): void {
+    let config = this.app.configTemplate.template.components[0].components[0].components.find(val => val.key === 'configuration');
+    if (!isNullOrUndefined(config)) {
+      config.components.length = 0;
+    }
+  }
 }
