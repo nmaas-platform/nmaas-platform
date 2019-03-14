@@ -195,7 +195,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Eigentümer",
-    "DEPLOYED_AT": "Installiert in",
+    "DEPLOYED_AT": "Bereitstellungszeit",
     "APPLICATION": "Anwendung",
     "STATE": "Status",
     "DETAILS_BUTTON": "Details",

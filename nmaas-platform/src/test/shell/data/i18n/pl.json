@@ -193,7 +193,7 @@
     "NAME": "Nazwa",
     "DOMAIN": "Domena",
     "OWNER": "Właściciel",
-    "DEPLOYED_AT": "Uruchomiony na",
+    "DEPLOYED_AT": "Czas uruchomienia",
     "APPLICATION": "Aplikacja",
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",

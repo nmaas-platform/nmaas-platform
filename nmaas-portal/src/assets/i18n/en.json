@@ -195,7 +195,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Owner",
-    "DEPLOYED_AT": "Deployed at",
+    "DEPLOYED_AT": "Deployment time",
     "APPLICATION": "Application",
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
