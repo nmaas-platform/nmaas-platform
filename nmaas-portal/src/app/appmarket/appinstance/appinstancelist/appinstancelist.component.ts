@@ -66,36 +66,18 @@ export class AppInstanceListComponent implements OnInit {
   }
 
   public translateEnum(value: AppInstanceListSelection): string{
-    switch (this.translateService.currentLang) {
-      case 'en':
-        return value.toString();
-      case 'de':
-        if(value.toString() == 'ALL'){
-          return 'Alles';
-        }
-        if(value.toString() == 'MY'){
-          return 'Meine';
-        }
-        break;
-      case 'fr':
-        if(value.toString() == 'ALL'){
-          return 'Tout';
-        }
-        if(value.toString() == 'MY'){
-          return 'Mon';
-        }
-        break;
-      case 'pl':
-        if(value.toString() == 'ALL'){
-          return 'Wszystkie';
-        }
-        if(value.toString() == 'MY'){
-          return 'Moje';
-        }
-        break;
-      default:
-        return value.toString();
+    let outValue = "";
+    if(value.toString() == 'ALL'){
+      this.translateService.get("ENUM.ALL").subscribe((res: string) => {
+        outValue = res;
+      })
     }
+    if(value.toString() == 'MY'){
+      this.translateService.get("ENUM.MY").subscribe((res: string) => {
+        outValue = res;
+      })
+    }
+    return outValue;
   }
 
   public update(domainId: number): void {

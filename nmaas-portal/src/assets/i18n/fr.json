@@ -8,7 +8,7 @@
     "USERS": "Utilisateurs",
     "INVENTORY": "Inventaire",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Réglages",
     "PROFILE": "Profil",
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
@@ -496,5 +496,9 @@
   "FILTER": {
     "TAGS": "Mots clés",
     "DOMAIN": "Domaine"
+  },
+  "ENUM": {
+    "ALL": "Tout",
+    "MY": "Mon"
   }
 }

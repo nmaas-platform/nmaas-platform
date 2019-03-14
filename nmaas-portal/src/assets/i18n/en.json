@@ -8,7 +8,7 @@
     "USERS": "Users",
     "INVENTORY": "External components",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
     "LOGIN_REGISTER": "Login | Register",
@@ -496,5 +496,9 @@
   "FILTER": {
     "TAGS": "Tags",
     "DOMAIN": "Domain"
+  },
+  "ENUM": {
+    "ALL": "ALL",
+    "MY": "MY"
   }
 }

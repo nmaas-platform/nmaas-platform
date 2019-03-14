@@ -8,7 +8,7 @@
     "USERS": "Benutzer",
     "INVENTORY": "Externe Komponenten",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Einstellungen",
+    "SETTINGS": "Einstellungen",
     "PROFILE": "Profil",
     "LOGOUT": "Ausloggen",
     "LOGIN_REGISTER": "Einloggen | Registrieren",
@@ -498,5 +498,9 @@
   "FILTER": {
     "TAGS": "Stichworte",
     "DOMAIN": "Domain"
+  },
+  "ENUM": {
+    "ALL": "Alles",
+    "MY": "Meine"
   }
 }
