@@ -23,7 +23,7 @@
                         <nmaas-domain-filter class="drop-domain"></nmaas-domain-filter>
                     </li>
                     <li class="divider-vertical"></li>
-                    <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"
+                    <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_DOMAIN_ADMIN', 'ROLE_TOOL_MANAGER']" [routerLinkActiveOptions]="{exact:true}"
                         [routerLinkActive]="['active']" class="dropdown">
                         <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle" data-toggle="dropdown"
                            role="button">{{ 'NAVBAR.SETTINGS' | translate }}<strong class="caret"></strong></a>
@@ -31,14 +31,14 @@
                             <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">Portal</a></li>
                             <li *roles="['ROLE_SYSTEM_ADMIN']" class="divider"></li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a></li>
-                            <li *roles="['ROLE_SYSTEM_ADMIN']" class="divider"></li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']" class="divider"></li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a></li>
-                            <li *roles="['ROLE_SYSTEM_ADMIN']" class="divider"></li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']" class="divider"></li>
                             <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']"><a [routerLink]="['/management/apps']">{{ 'NAVBAR.MARKET' | translate }}</a></li>
-                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']" class="divider"></li>
-                            <li><a [routerLink]="['/admin/clusters']">Kubernetes</a></li>
-                            <li class="divider"></li>
-                            <li><a [routerLink]="['/admin/gitlab']">GitLab</a></li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" class="divider"></li>
+                            <li><a *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLink]="['/admin/clusters']">Kubernetes</a></li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" class="divider"></li>
+                            <li><a *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLink]="['/admin/gitlab']">GitLab</a></li>
                             <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" class="divider"></li>
                             <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"
                                 [routerLinkActive]="['active']"><a
