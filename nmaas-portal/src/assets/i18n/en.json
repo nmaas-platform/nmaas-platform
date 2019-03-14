@@ -493,7 +493,8 @@
   "FOOTER": {
     "NOTICE": "Privacy Notice"
   },
-  "TAGFILTER": {
-    "TAGS": "Tags"
+  "FILTER": {
+    "TAGS": "Tags",
+    "DOMAIN": "Domain"
   }
 }

@@ -493,7 +493,8 @@
   "FOOTER": {
     "NOTICE": "Polityka Prywatności"
   },
-  "TAGFILTER": {
-    "TAGS": "Tagi"
+  "FILTER": {
+    "TAGS": "Tagi",
+    "DOMAIN": "Domena"
   }
 }

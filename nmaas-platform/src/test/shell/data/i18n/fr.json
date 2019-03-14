@@ -492,7 +492,8 @@
   "FOOTER": {
     "NOTICE": "Avis de confidentialité"
   },
-  "TAGFILTER": {
-    "TAGS": "Mots clés"
+  "FILTER": {
+    "TAGS": "Mots clés",
+    "DOMAIN": "Domaine"
   }
 }

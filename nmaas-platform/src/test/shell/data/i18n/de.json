@@ -495,7 +495,8 @@
   "FOOTER": {
     "NOTICE": "Datenschutzerklärung"
   },
-  "TAGFILTER": {
-    "TAGS": "Stichworte"
+  "FILTER": {
+    "TAGS": "Stichworte",
+    "DOMAIN": "Domain"
   }
 }
