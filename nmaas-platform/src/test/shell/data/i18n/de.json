@@ -382,6 +382,7 @@
     "RESTART_BUTTON": "Neustart",
     "REDEPLOY_BUTTON": "Neu installieren",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installations Fortschritt",
       "STATE": "Status",

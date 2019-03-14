@@ -3,3 +3,22 @@
     margin: 0;
     -moz-appearance:textfield;
 }
+
+#app-progress-info{
+    text-align: justify;
+    padding: 10px 5px 10px 5px;
+}
+
+#app-progress-info-sub{
+    text-align: justify;
+    padding: 5px 5px 5px 5px;
+    font-style: italic;
+}
+
+.app-progress-info-hidden{
+    visibility: hidden;
+}
+
+.app-progress-info-visible{
+    visibility: visible;
+}
