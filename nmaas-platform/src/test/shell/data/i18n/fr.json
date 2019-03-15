@@ -8,7 +8,7 @@
     "USERS": "Utilisateurs",
     "INVENTORY": "Inventaire",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Réglages",
     "PROFILE": "Profil",
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
@@ -194,7 +194,7 @@
     "NAME": "Nom",
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
-    "DEPLOYED_AT": "Déployé à",
+    "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
     "STATE": "Etat",
     "DETAILS_BUTTON": "Détails",
@@ -380,6 +380,7 @@
     "RESTART_BUTTON": "Re-démarrer",
     "REDEPLOY_BUTTON": "Re-déployer",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
       "STATE": "Etat",
@@ -492,7 +493,12 @@
   "FOOTER": {
     "NOTICE": "Avis de confidentialité"
   },
-  "TAGFILTER": {
-    "TAGS": "Mots clés"
+  "FILTER": {
+    "TAGS": "Mots clés",
+    "DOMAIN": "Domaine"
+  },
+  "ENUM": {
+    "ALL": "Tout",
+    "MY": "Mon"
   }
 }

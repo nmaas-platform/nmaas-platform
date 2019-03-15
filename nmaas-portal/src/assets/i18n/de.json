@@ -8,7 +8,7 @@
     "USERS": "Benutzer",
     "INVENTORY": "Externe Komponenten",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Einstellungen",
+    "SETTINGS": "Einstellungen",
     "PROFILE": "Profil",
     "LOGOUT": "Ausloggen",
     "LOGIN_REGISTER": "Einloggen | Registrieren",
@@ -195,7 +195,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Eigentümer",
-    "DEPLOYED_AT": "Installiert in",
+    "DEPLOYED_AT": "Bereitstellungszeit",
     "APPLICATION": "Anwendung",
     "STATE": "Status",
     "DETAILS_BUTTON": "Details",
@@ -382,6 +382,7 @@
     "RESTART_BUTTON": "Neustart",
     "REDEPLOY_BUTTON": "Neu installieren",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installations Fortschritt",
       "STATE": "Status",
@@ -495,7 +496,12 @@
   "FOOTER": {
     "NOTICE": "Datenschutzerklärung"
   },
-  "TAGFILTER": {
-    "TAGS": "Stichworte"
+  "FILTER": {
+    "TAGS": "Stichworte",
+    "DOMAIN": "Domain"
+  },
+  "ENUM": {
+    "ALL": "Alles",
+    "MY": "Meine"
   }
 }
