@@ -9,12 +9,20 @@
           "components": [
             {
               "label": "Configuration",
+              "hideLabel": true,
               "tableView": true,
               "type": "container",
               "input": true,
               "tab": 0,
               "key": "configuration",
-              "components": []
+              "components": [
+                {
+                  "type": "htmlelement",
+                  "input": false,
+                  "content": "<p>All required configuration should be applied using graphical interface</p>",
+                  "tab": 0
+                }
+              ]
             }
           ]
         },

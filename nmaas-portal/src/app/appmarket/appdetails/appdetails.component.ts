@@ -160,6 +160,9 @@ export class AppDetailsComponent implements OnInit {
   }
 
   public getValidLink(url: string) : string {
+    if(isNullOrUndefined(url)){
+      return;
+    }
     if(!url.startsWith("http://") && !url.startsWith("https://")){
       return '//' + url;
     }

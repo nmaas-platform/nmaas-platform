@@ -411,9 +411,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public handleDefaultElement() {
     if(this.app.appDeploymentSpec.configFileRepositoryRequired) {
-      this.addDefaultElement();
-    } else {
       this.removeDefaultElement();
+    } else {
+      this.addDefaultElement();
     }
   }
 
