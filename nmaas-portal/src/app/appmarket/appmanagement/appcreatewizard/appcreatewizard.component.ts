@@ -380,6 +380,10 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       config.splice(index, 1);
     }
     this.app.configurationUpdateTemplate.template.components = this.app.configurationUpdateTemplate.template.components.filter(val => val.key != "accessCredentials");
+    this.removeEmptyUpdateConfig();
+  }
+
+  public removeEmptyUpdateConfig() : void {
     let updateConfig = this.getNestedObject(this.app.configurationUpdateTemplate.template, ["components", 0, "components"]);
     if(isNullOrUndefined(updateConfig) || updateConfig.length === 0){
       this.app.configurationUpdateTemplate = undefined;
@@ -414,6 +418,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       this.removeDefaultElement();
     } else {
       this.addDefaultElement();
+      this.removeElementsFromUpdateConfig();
     }
   }
 
@@ -430,6 +435,16 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
     if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
       config.find(val => val.key === 'configuration').components.length = 0;
+    }
+  }
+
+  public removeElementsFromUpdateConfig() : void {
+    if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
+      let config = this.getNestedObject(this.app.configurationUpdateTemplate.template, ["components"]);
+      if(!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
+        config.find(val => val.key === 'configuration').components.length = 0;
+      }
+      this.removeEmptyUpdateConfig();
     }
   }
 
