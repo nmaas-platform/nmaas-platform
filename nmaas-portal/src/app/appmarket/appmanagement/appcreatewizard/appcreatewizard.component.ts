@@ -362,7 +362,10 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public addBasicAuth() : any {
-    this.app.configTemplate.template.components[0].components[0].components.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    if(!isNullOrUndefined(config)){
+      config.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+    }
     if(isNullOrUndefined(this.app.configurationUpdateTemplate)){
       this.app.configurationUpdateTemplate = new ConfigTemplate();
       this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
@@ -371,9 +374,14 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public removeBasicAuth() : any {
-    this.app.configTemplate.template.components[0].components[0].components = this.app.configTemplate.template.components[0].components[0].components.filter(val => val.key != "accessCredentials");
+    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    if(!isNullOrUndefined(config)){
+      let index = config.findIndex(val => val.key === 'accessCredentials');
+      config.splice(index, 1);
+    }
     this.app.configurationUpdateTemplate.template.components = this.app.configurationUpdateTemplate.template.components.filter(val => val.key != "accessCredentials");
-    if(this.app.configurationUpdateTemplate.template.components[0].components.length === 0){
+    let updateConfig = this.getNestedObject(this.app.configurationUpdateTemplate.template, ["components", 0, "components"]);
+    if(isNullOrUndefined(updateConfig) || updateConfig.length === 0){
       this.app.configurationUpdateTemplate = undefined;
       this.addConfigUpdate = false;
     }
@@ -410,17 +418,23 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public addDefaultElement() : void {
-    let config = this.app.configTemplate.template.components[0].components[0].components.find(val => val.key === 'configuration');
-    if(!isNullOrUndefined(config)){
+    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    if(!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))){
+      config = config.find(val => val.key === 'configuration');
       config.components.length = 0;
       config.components.push(this.configTemplateService.getDefaultElement());
     }
   }
 
   public removeDefaultElement(): void {
-    let config = this.app.configTemplate.template.components[0].components[0].components.find(val => val.key === 'configuration');
-    if (!isNullOrUndefined(config)) {
-      config.components.length = 0;
+    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
+      config.find(val => val.key === 'configuration').components.length = 0;
     }
+  }
+
+  getNestedObject = (nestedObj, pathArr) => {
+    return pathArr.reduce((obj, key) =>
+        (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
   }
 }
