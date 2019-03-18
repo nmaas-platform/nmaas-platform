@@ -15,11 +15,14 @@ import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ConfigTemplate;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -56,71 +59,90 @@ public class ApplicationServiceImplTest {
         applicationService = new ApplicationServiceImpl(applicationRepository, templateService, new ModelMapper());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void createMethodShouldThrowExceptionDueToNullRequest(){
-        applicationService.create(null, null);
+        assertThrows(IllegalArgumentException.class, () -> applicationService.create(null, null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToIncorrectName(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setName("");
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setName("");
+            applicationService.create(applicationView, "admin");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToIncorrectVersion(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setVersion("");
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setVersion("");
+            applicationService.create(applicationView, "admin");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToIncorrectOwner(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationService.create(applicationView, null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationService.create(applicationView, null);
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionDueToIncorrectNameAndVersion(){
-        ApplicationView applicationView = getDefaultAppView();
-        when(applicationRepository.existsByNameAndVersion(applicationView.getName(), applicationView.getVersion())).thenReturn(true);
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalStateException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            when(applicationRepository.existsByNameAndVersion(applicationView.getName(), applicationView.getVersion())).thenReturn(true);
+            applicationService.create(applicationView, "admin");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToAppDeploymentSpec(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setAppDeploymentSpec(null);
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setAppDeploymentSpec(null);
+            applicationService.create(applicationView, "admin");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToIncorrectConfigTemplate(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setConfigTemplate(null);
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setConfigTemplate(null);
+            applicationService.create(applicationView, "admin");
+        });
+
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToIncorrectDescriptions(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setDescriptions(null);
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setDescriptions(null);
+            applicationService.create(applicationView, "admin");
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionDueToEmptyDescriptions(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setDescriptions(Collections.emptyList());
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setDescriptions(Collections.emptyList());
+            applicationService.create(applicationView, "admin");
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenEnglishDescriptionIsMissing(){
-        ApplicationView applicationView = getDefaultAppView();
-        applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("pl", "test", "test")));
-        applicationService.create(applicationView, "admin");
+        assertThrows(IllegalStateException.class, () -> {
+            ApplicationView applicationView = getDefaultAppView();
+            applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("pl", "test", "test")));
+            applicationService.create(applicationView, "admin");
+        });
     }
 
     @Test
@@ -146,102 +168,128 @@ public class ApplicationServiceImplTest {
         assertEquals(result.getDescriptions().get(1).getFullDescription(), result.getDescriptions().get(0).getFullDescription());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullPassedAsParameter(){
         assertThrows(IllegalArgumentException.class, () -> {
             applicationService.update(null);
         });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToEmptyName(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setName("");
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setName("");
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToEmptyVersion(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setVersion("");
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setVersion("");
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToEmptyOwner(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setOwner("");
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setOwner("");
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullAppDeploymentSpec(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setAppDeploymentSpec(null);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setAppDeploymentSpec(null);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullConfigTemplate(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setConfigTemplate(null);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setConfigTemplate(null);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setConfigTemplate(new ConfigTemplate(""));
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setConfigTemplate(new ConfigTemplate(""));
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullDescriptions(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setDescriptions(null);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setDescriptions(null);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToEmptyDescriptions(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setDescriptions(Collections.emptyList());
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setDescriptions(Collections.emptyList());
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullKubernetesTemplate(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.getAppDeploymentSpec().setKubernetesTemplate(null);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.getAppDeploymentSpec().setKubernetesTemplate(null);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToDefaultStorageSpaceLowerThanZero(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.getAppDeploymentSpec().setDefaultStorageSpace(-3);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.getAppDeploymentSpec().setDefaultStorageSpace(-3);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullDefaultStorageSpace(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.getAppDeploymentSpec().setDefaultStorageSpace(null);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.getAppDeploymentSpec().setDefaultStorageSpace(null);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToNullKubernetesChart(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.getAppDeploymentSpec().getKubernetesTemplate().setChart(null);
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.getAppDeploymentSpec().getKubernetesTemplate().setChart(null);
+            applicationService.update(app);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void updateMethodShouldThrowExceptionDueToEmptyKubernetesChartName(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setName("");
-        applicationService.update(app);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.getAppDeploymentSpec().getKubernetesTemplate().getChart().setName("");
+            applicationService.update(app);
+        });
     }
 
     @Test
@@ -264,9 +312,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void deleteMethodShouldTrowExceptionDueToNullPassedAsId(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            applicationService.delete(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> applicationService.delete(null));
     }
 
     @Test
@@ -283,9 +329,7 @@ public class ApplicationServiceImplTest {
 
     @Test
     public void findApplicationShouldThrowExceptionDueToNullId(){
-        assertThrows(IllegalArgumentException.class, () -> {
-            applicationService.findApplication(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> applicationService.findApplication(null));
     }
 
     @Test
@@ -315,11 +359,13 @@ public class ApplicationServiceImplTest {
         verify(applicationRepository, times(1)).save(any());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotChangeApplicationStateDueToForbiddenStateChange(){
-        Application app = modelMapper.map(getDefaultAppView(), Application.class);
-        app.setState(ApplicationState.DELETED);
-        applicationService.changeApplicationState(app, ApplicationState.ACTIVE);
+        assertThrows(IllegalStateException.class, () -> {
+            Application app = modelMapper.map(getDefaultAppView(), Application.class);
+            app.setState(ApplicationState.DELETED);
+            applicationService.changeApplicationState(app, ApplicationState.ACTIVE);
+        });
     }
 
     private ApplicationView getDefaultAppView(){
