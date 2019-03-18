@@ -8,7 +8,7 @@
     "USERS": "Utilisateurs",
     "INVENTORY": "Inventaire",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Réglages",
     "PROFILE": "Profil",
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
@@ -194,7 +194,7 @@
     "NAME": "Nom",
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
-    "DEPLOYED_AT": "Déployé à",
+    "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
     "STATE": "Etat",
     "DETAILS_BUTTON": "Détails",
@@ -330,7 +330,12 @@
     "NO_COMMENTS_MESSAGE": "Pas de commentaire encore ajouté",
     "COMMENTS_LIST": "Commentaires",
     "REPLY_BUTTON": "Répondre",
-    "PLACEHOLDER": "Ajouter un commentaire ici..."
+    "PLACEHOLDER": "Ajouter un commentaire ici...",
+    "COMMENTS_TODAY": "Aujourd'hui à ",
+    "COMMENTS_YESTERDAY": "Hier à ",
+    "REMOVE": "Supprimer le commentaire",
+    "RESPONSE_TO": "Réponse à",
+    "REMOVED": "Ce commentaire a été supprimé"
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",
@@ -375,6 +380,7 @@
     "RESTART_BUTTON": "Re-démarrer",
     "REDEPLOY_BUTTON": "Re-déployer",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
       "STATE": "Etat",
@@ -590,5 +596,16 @@
     "DE_LABEL": "German",
     "PL_LABEL": "Polish",
     "FR_LABEL": "French"
+  },
+  "FOOTER": {
+    "NOTICE": "Avis de confidentialité"
+  },
+  "FILTER": {
+    "TAGS": "Mots clés",
+    "DOMAIN": "Domaine"
+  },
+  "ENUM": {
+    "ALL": "Tout",
+    "MY": "Mon"
   }
 }

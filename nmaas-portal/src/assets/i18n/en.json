@@ -8,7 +8,7 @@
     "USERS": "Users",
     "INVENTORY": "External components",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
     "LOGIN_REGISTER": "Login | Register",
@@ -195,7 +195,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Owner",
-    "DEPLOYED_AT": "Deployed at",
+    "DEPLOYED_AT": "Deployment time",
     "APPLICATION": "Application",
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
@@ -331,7 +331,12 @@
     "NO_COMMENTS_MESSAGE": "No comment added yet",
     "COMMENTS_LIST": "Comments",
     "REPLY_BUTTON": "Reply",
-    "PLACEHOLDER": "Add some comment here..."
+    "PLACEHOLDER": "Add some comment here...",
+    "COMMENTS_TODAY": "Today at ",
+    "COMMENTS_YESTERDAY": "Yesterday at ",
+    "REMOVE": "Remove comment",
+    "RESPONSE_TO": "Response to",
+    "REMOVED": "This comment was removed"
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Details",
@@ -376,6 +381,7 @@
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Redeploy",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
@@ -591,5 +597,16 @@
     "DE_LABEL": "German",
     "PL_LABEL": "Polish",
     "FR_LABEL": "French"
+  },
+  "FOOTER": {
+    "NOTICE": "Privacy Notice"
+  },
+  "FILTER": {
+    "TAGS": "Tags",
+    "DOMAIN": "Domain"
+  },
+  "ENUM": {
+    "ALL": "ALL",
+    "MY": "MY"
   }
 }

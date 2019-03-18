@@ -1,8 +1,10 @@
 package net.geant.nmaas.utils.ssh;
 
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm.HelmListCommand;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SingleCommandExecutorTest {
 
@@ -10,7 +12,7 @@ public class SingleCommandExecutorTest {
 
     private SingleCommandExecutor executor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         command = HelmListCommand.command(false);
         executor = SingleCommandExecutor.getExecutor("", "");
@@ -21,9 +23,11 @@ public class SingleCommandExecutorTest {
         executor.validateOutput("No error string at the beginning ...", command.isOutputCorrect());
     }
 
-    @Test(expected = CommandExecutionException.class)
+    @Test
     public void shouldProperlyValidateCommandExecutionOutputAndThrowExceptionOnError() throws CommandExecutionException {
-        executor.validateOutput("Error ...", command.isOutputCorrect());
+        assertThrows(CommandExecutionException.class, () -> {
+            executor.validateOutput("Error ...", command.isOutputCorrect());
+        });
     }
 
 }

@@ -1,12 +1,11 @@
 package net.geant.nmaas.orchestration;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
-import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployActionEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnDeployedEvent;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyActionEvent;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEvent;
 
 import java.util.Optional;
@@ -30,7 +29,7 @@ public class DcnDeploymentStateChangeManagerTest {
 
     private static final String DOMAIN = "domain";
 
-    @Before
+    @BeforeEach
     public void setup() {
         manager = new DcnDeploymentStateChangeManager();
     }

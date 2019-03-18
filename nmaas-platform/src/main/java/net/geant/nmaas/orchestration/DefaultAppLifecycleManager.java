@@ -14,7 +14,6 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.entities.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
 import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
@@ -45,7 +44,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 @AllArgsConstructor
 public class DefaultAppLifecycleManager implements AppLifecycleManager {
 
-    private DefaultAppDeploymentRepositoryManager repositoryManager;
+    private AppDeploymentRepositoryManager repositoryManager;
 
     private ApplicationEventPublisher eventPublisher;
 

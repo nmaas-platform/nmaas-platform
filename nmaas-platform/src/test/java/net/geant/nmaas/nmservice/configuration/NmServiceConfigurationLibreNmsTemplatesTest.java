@@ -7,13 +7,13 @@ import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileT
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class NmServiceConfigurationLibreNmsTemplatesTest {
 
@@ -42,7 +42,7 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
 
     private Long librenmsAppId;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Application app = new Application("librenmsAppName","testversion", "owner");
         app.setVersion("librenmsAppVersion");
@@ -75,7 +75,7 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
                 Matchers.allOf(containsString("192.168.1.1"), containsString("v2c"), containsString("private")));
     }
 
-    @After
+    @AfterEach
     public void removeTestAppFromDatabase() {
         applicationRepository.deleteAll();
         templatesRepository.deleteAll();

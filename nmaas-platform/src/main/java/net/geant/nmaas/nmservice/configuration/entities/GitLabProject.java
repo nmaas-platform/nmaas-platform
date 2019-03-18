@@ -3,7 +3,7 @@ package net.geant.nmaas.nmservice.configuration.entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

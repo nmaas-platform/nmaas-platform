@@ -17,35 +17,33 @@
                     <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_USER']"
                         [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                             [routerLink]="['/instances']">{{ 'NAVBAR.INSTANCES' | translate }}</a></li>
-                    <li class="divider-vertical"></li>
-                    <li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{exact:true}" *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_DOMAIN_ADMIN', 'ROLE_TOOL_MANAGER', 'ROLE_OPERATOR']" class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{'NAVBAR.MANAGEMENT' | translate }}<strong class="caret"></strong></a>
-                        <ul class="dropdown-menu">
-                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a></li>
-                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a></li>
-                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']"><a [routerLink]="['/management/apps']">{{ 'NAVBAR.MARKET' | translate }}</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <ul *ngIf="authService.isLogged()" class="nav navbar-nav navbar-right">
                     <li *ngIf="checkUserRole()" class="drop-domain">
                         <nmaas-domain-filter class="drop-domain"></nmaas-domain-filter>
                     </li>
                     <li class="divider-vertical"></li>
-                    <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"
-                        [routerLinkActive]="['active']"><a
-                            [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a></li>
-                    <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"
+                    <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR', 'ROLE_DOMAIN_ADMIN', 'ROLE_TOOL_MANAGER']" [routerLinkActiveOptions]="{exact:true}"
                         [routerLinkActive]="['active']" class="dropdown">
                         <a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle" data-toggle="dropdown"
-                           role="button">{{ 'NAVBAR.CONFIGURATION' | translate }}<strong class="caret"></strong></a>
+                           role="button">{{ 'NAVBAR.SETTINGS' | translate }}<strong class="caret"></strong></a>
                         <ul class="dropdown-menu">
                             <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">Portal</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li><a [routerLink]="['/admin/clusters']">Kubernetes</a></li>
-                            <li class="divider"></li>
-                            <li><a [routerLink]="['/admin/gitlab']">GitLab</a></li>
+                                </li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a>
+                                </li>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
+                                </li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']"><a [routerLink]="['/management/apps']">{{ 'NAVBAR.MARKET' | translate }}</a>
+                                </li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" ><a  [routerLink]="['/admin/clusters']">Kubernetes</a>
+                                </li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/gitlab']">GitLab</a>
+                                </li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLinkActiveOptions]="{exact:true}"
+                                [routerLinkActive]="['active']"><a
+                                    [routerLink]="['/admin/monitor']">{{ 'NAVBAR.MONITOR' | translate }}</a>
+                                </li>
                         </ul>
                     </li>
                     <li [routerLinkActive]="['active']" class="dropdown"><a aria-expanded="false" aria-haspopup="true"
@@ -57,10 +55,8 @@
                         <ul class="dropdown-menu">
                             <li [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                                 [routerLink]="['/profile']">{{ 'NAVBAR.PROFILE' | translate }}</a></li>
-                            <li class="divider"></li>
                             <li [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                                     [routerLink]="['/about']">{{ 'NAVBAR.ABOUT' | translate }}</a></li>
-                            <li class="divider"></li>
                             <li [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']"><a
                                     [routerLink]="['/logout']">{{ 'NAVBAR.LOGOUT' | translate }}</a></li>
                         </ul>

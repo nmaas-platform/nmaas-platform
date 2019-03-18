@@ -7,8 +7,8 @@ import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.ProjectApi;
 import org.gitlab4j.api.models.Project;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,7 +23,7 @@ public class GitlabConfigUploaderTest {
 
     private GitLabConfigUploader uploader;
 
-    @Before
+    @BeforeEach
     public void setup() {
         uploader = new GitLabConfigUploader(repositoryManager, null, gitLabManager);
     }

@@ -5,18 +5,18 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.dcn.deployment.repositories.DcnInfoRepository;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class AnsibleDcnDeploymentExecutorTest {
 
@@ -28,7 +28,7 @@ public class AnsibleDcnDeploymentExecutorTest {
 
     private AnsibleDcnDeploymentExecutor executor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         executor = new AnsibleDcnDeploymentExecutor(
                 dcnRepositoryManager,
@@ -39,7 +39,7 @@ public class AnsibleDcnDeploymentExecutorTest {
         );
     }
 
-    @After
+    @AfterEach
     public void clean() {
         dcnInfoRepository.deleteAll();
     }

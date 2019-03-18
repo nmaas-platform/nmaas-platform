@@ -6,14 +6,15 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,7 +27,7 @@ public class BasicAuthControllerTest {
 
     private PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
 
-    @Before
+    @BeforeEach
     public void setup(){
         basicAuthController = new BasicAuthController(null, domains, passwordEncoder, null, null);
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
@@ -37,30 +38,40 @@ public class BasicAuthControllerTest {
         basicAuthController.validate("TEST", "TEST", "TEST", true);
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void testValidateWithInvalidUserNameAndValidPassword() throws AuthenticationException {
-        basicAuthController.validate(null,"TEST", "TEST",true);
+        assertThrows(AuthenticationException.class, () -> {
+            basicAuthController.validate(null, "TEST", "TEST", true);
+        });
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void testValidateWithValidUserNameAndInvalidPassword() throws AuthenticationException {
-        basicAuthController.validate("TEST", null, "TEST",true);
+        assertThrows(AuthenticationException.class, () -> {
+            basicAuthController.validate("TEST", null, "TEST", true);
+        });
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void testValidateWithInvalidUserNameAndInvalidPassword() throws AuthenticationException {
-        basicAuthController.validate(null, null, "TEST",true);
+        assertThrows(AuthenticationException.class, () -> {
+            basicAuthController.validate(null, null, "TEST", true);
+        });
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void testValidateWithValidUserNameAndValidPasswordAndUserNotEnabled() throws AuthenticationException {
-        basicAuthController.validate("TEST", "TEST", "TEST",false);
+        assertThrows(AuthenticationException.class, () -> {
+            basicAuthController.validate("TEST", "TEST", "TEST", false);
+        });
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void testValidateWithValidUserNameAndWrongPassword() throws AuthenticationException {
-        when(passwordEncoder.matches(any(), any())).thenReturn(false);
-        basicAuthController.validate("TEST", "TEST", "TEST",true);
+        assertThrows(AuthenticationException.class, () -> {
+            when(passwordEncoder.matches(any(), any())).thenReturn(false);
+            basicAuthController.validate("TEST", "TEST", "TEST", true);
+        });
     }
 
     @Test

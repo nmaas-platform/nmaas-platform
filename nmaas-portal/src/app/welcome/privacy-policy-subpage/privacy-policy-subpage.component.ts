@@ -16,7 +16,7 @@ export class PrivacyPolicySubpageComponent implements OnInit, AfterViewChecked, 
 
   public content: Content;
 
-  constructor(private contentDisplayService: ContentDisplayService) {
+  constructor(private contentDisplayService: ContentDisplayService, private translate: TranslateService) {
   }
 
   ngOnInit() {

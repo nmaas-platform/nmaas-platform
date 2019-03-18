@@ -4,9 +4,9 @@
 			<form role="form" (ngSubmit)="this.addComment()">
 				<div class="form-group">
 					<label class="sr-only" for="comment">{{'COMMENTS.ADD_COMMENT' | translate}}:</label>
-					<textarea name="comment" id="comment" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
+					<textarea #textAreaNewComment name="comment" id="comment" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
 						class="form-control" rows="2" required [(ngModel)]="newComment.comment"></textarea>
-					<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
+					<button type="submit" class="btn btn-default pull-right">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
 					<div class="alert alert-danger" *ngIf="commentErrorMsg">
 						{{commentErrorMsg}}
 					</div>
@@ -20,71 +20,41 @@
 	<div class="row" *ngIf="comments.length > 0">
 				<h3>{{'COMMENTS.COMMENTS_LIST' | translate}}:</h3>
 				<ul class="media-list">
-					<ng-template ngFor let-comment [ngForOf]="comments">
-					<li *ngIf="!comment.parentId" class="media">
-						<div class="media-left">
-						  <a href="#">
-							<span class="glyphicon glyphicon-user"></span>
-						  </a>
-						</div>
-						<div class="media-body">
-						  <h6 class="media-heading">{{comment.owner.username}}, {{comment.createdAt | date}}
-                              <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(comment.id, false)">{{'COMMENTS.REPLY_BUTTON' | translate}}</button>
-                              <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === comment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(comment.id)"></span>
-                          </h6>
-						  <p>{{comment.comment}}</p>
-							<div *ngIf="this.commentId === comment.id && !this.subComment && this.active">
-								<form role="form" (ngSubmit)="this.addReply(comment.id)">
-									<div class="form-group">
-										<textarea name="comment" id="comment2" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
-												  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
-										<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
-										<div class="alert alert-danger" *ngIf="replyErrorMsg">
-											{{replyErrorMsg}}
-										</div>
-									</div>
-								</form>
-							</div>
-						  <hr>
-
-							<ul *ngIf="comment.subComments !== null" class="media-list">
-								<ng-template ngFor let-subcomment [ngForOf]="comment.subComments">
-							
-								<li class="media">
-									<div class="media-left">
-									  <a href="#">
-										<span class="glyphicon glyphicon-user"></span>
-									  </a>
-									</div>
-									<div class="media-body">
-                                     <h6 class="media-heading">{{subcomment.owner.username}}, {{subcomment.createdAt | date}}
-                                          <button class="btn-xs btn-default" (click)="setCommentNumberOnClick(subcomment.id, true)">{{'COMMENTS.REPLY_BUTTON' | translate}}</button>
-                                          <span *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.getUsername() === subcomment.owner.username" class="glyphicon glyphicon-remove" (click)="this.deleteComment(subcomment.id)"></span>
-                                     </h6>
-									  <p>{{subcomment.comment}}</p>
-										<div *ngIf="this.commentId === subcomment.id && this.subComment && this.active">
-											<form role="form" (ngSubmit)="this.addReply(comment.id)">
-												<div class="form-group">
-													<textarea name="comment3" id="comment3" placeholder="{{'COMMENTS.PLACEHOLDER' | translate}}"
-															  class="form-control" rows="2" required [(ngModel)]="newReply.comment"></textarea>
-													<button type="submit" class="btn btn-default">{{'COMMENTS.ADD_BUTTON' | translate}}</button>
-													<div class="alert alert-danger" *ngIf="replyErrorMsg">
-														{{replyErrorMsg}}
-													</div>
+						<li *ngFor="let comment of comments|slice:0:showMainCommentsList let x=index" class="media">
+							<app-single-comment *ngIf="!comment.parentId" [createdAt]=comment.createdAt [commentAuthor]=comment.owner.username
+												[commentId]=comment.id [commentText]=comment.comment
+							(removeEvent)="OnRemove($event)" (addReplyEvent)="onAddReply($event)">
+							</app-single-comment>
+							<div class="media-body">
+								<ul *ngIf="comment.subComments !== null" class="media-list">
+										<li class="media" *ngFor="let subcomment of comment.subComments|slice:0:show[comment.id] let i=index">
+											<app-single-comment [createdAt]=subcomment.createdAt [commentAuthor]=subcomment.owner.username
+																[commentId]=subcomment.id [commentText]=subcomment.comment [parentId]=comment.id
+																(removeEvent)="OnRemove($event)" (addReplyEvent)="onAddReply($event)">
+											</app-single-comment>
+											<div [id]="'load_more_' + subcomment.id.toString()"
+												 *ngIf="(i+1) % 3 == 0 && show[comment.id] < (i+2) && comment.subComments.length > 3"
+											class="col-xs-offset-2 col-sm-offset-1 col-xs-10 col-sm-11">
+												<div class="load-more-box">
+													<p class="text-center load-more-box-text">
+														<a (click)="loadMore(comment.subComments.length,
+														('load_more_' + subcomment.id.toString()), comment.id)">Load more</a>
+													</p>
 												</div>
-											</form>
-										</div>
-									  <hr>
-									</div>							
-								</li>
-								</ng-template>
-							</ul>
-						
-						
-						</div>
-					
-					
-					</li>
-					</ng-template>
+											</div>
+										</li>
+								</ul>
+							</div>
+							<div [id]="'load_more_comm_' + comment.id.toString()"
+								 *ngIf="(x+1) % 5 == 0 && showMainCommentsList  <= (x+2)"
+								 class="col-xs-offset-2 col-sm-offset-1 col-xs-10 col-sm-11">
+								<div class="load-more-box">
+									<p class="text-center load-more-box-text">
+										<a (click)="loadMoreComments(comments.length,
+										('load_more_comm_' + comment.id.toString() ) )">Load more</a>
+									</p>
+								</div>
+							</div>
+						</li>
 				</ul>
 	</div>

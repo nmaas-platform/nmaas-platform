@@ -1,36 +1,33 @@
 package net.geant.nmaas.portal.persistent;
 
-import javax.validation.ConstraintViolationException;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ContextConfiguration(classes={PersistentConfig.class}/* loader = AnnotationConfigContextLoader.class, */ )
 @EnableAutoConfiguration
@@ -46,23 +43,11 @@ public class UserRepositoryTest {
 	@Autowired
 	DomainService domains;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		domains.createGlobalDomain();
 		domains.createDomain(DOMAIN, DOMAIN);
 		userRepository.deleteAll();
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test
@@ -74,15 +59,12 @@ public class UserRepositoryTest {
 		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);
-		
-		
 		assertEquals(2, userRepository.count());
 		
 		Optional<User> adminPersisted = userRepository.findByUsername("testadmin");
-		assertNotNull(adminPersisted.get());
+		assertTrue(adminPersisted.isPresent());
 		assertNotNull(adminPersisted.get().getId());
 		assertEquals(2, adminPersisted.get().getRoles().size());
-		
 	}
 
 	@Test
@@ -153,12 +135,14 @@ public class UserRepositoryTest {
 		userRepository.save(testUser);
 	}
 
-	@Test(expected = ConstraintViolationException.class)
+	@Test
 	public void shouldNotSaveUserWithWrongMailFormat(){
-		User testUser = new User("testUser", true, "test123",
-				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
-		testUser.setEmail("emailemail.com");
-		userRepository.save(testUser);
+		assertThrows(ConstraintViolationException.class, () -> {
+			User testUser = new User("testUser", true, "test123",
+					domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+			testUser.setEmail("emailemail.com");
+			userRepository.save(testUser);
+		});
 	}
 
 	@Test
@@ -169,22 +153,26 @@ public class UserRepositoryTest {
 		userRepository.save(testUser);
 	}
 
-	@Test(expected = ConstraintViolationException.class)
+	@Test
 	public void shouldNotSaveUserWithoutBothMailAndToken(){
-		User testUser = new User("testUser", true, "test123",
-				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
-		userRepository.save(testUser);
+		assertThrows(ConstraintViolationException.class, () -> {
+			User testUser = new User("testUser", true, "test123",
+					domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+			userRepository.save(testUser);
+		});
 	}
 
-	@Test(expected = DataIntegrityViolationException.class)
+	@Test
 	public void shouldNotSaveUserWithNonUnique(){
-		User testUser = new User("testUser", true, "test123",
-				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
-		testUser.setEmail("test@test.com");
-		userRepository.save(testUser);
-		User testUser2 = new User("testUser2", true, "test123",
-				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
-		testUser2.setEmail("test@test.com");
-		userRepository.save(testUser2);
+		assertThrows(DataIntegrityViolationException.class, () -> {
+			User testUser = new User("testUser", true, "test123",
+					domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+			testUser.setEmail("test@test.com");
+			userRepository.save(testUser);
+			User testUser2 = new User("testUser2", true, "test123",
+					domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
+			testUser2.setEmail("test@test.com");
+			userRepository.save(testUser2);
+		});
 	}
 }

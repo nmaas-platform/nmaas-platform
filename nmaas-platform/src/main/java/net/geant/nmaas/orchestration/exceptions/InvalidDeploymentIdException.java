@@ -1,6 +1,6 @@
 package net.geant.nmaas.orchestration.exceptions;
 
-import net.geant.nmaas.orchestration.entities.Identifier;
+import net.geant.nmaas.orchestration.Identifier;
 
 public class InvalidDeploymentIdException extends RuntimeException {
 

@@ -8,7 +8,7 @@
     "USERS": "Użytkownicy",
     "INVENTORY": "Zewnętrzne komponenty",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Konfiguracja",
+    "SETTINGS": "Ustawienia",
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
@@ -193,7 +193,7 @@
     "NAME": "Nazwa",
     "DOMAIN": "Domena",
     "OWNER": "Właściciel",
-    "DEPLOYED_AT": "Uruchomiony na",
+    "DEPLOYED_AT": "Czas uruchomienia",
     "APPLICATION": "Aplikacja",
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",
@@ -330,7 +330,12 @@
     "NO_COMMENTS_MESSAGE": "Jeszcze nie ma żadnych komentarzy",
     "COMMENTS_LIST": "Komentarze",
     "REPLY_BUTTON": "Odpowiedz",
-    "PLACEHOLDER": "Wpisz tutaj komentarz..."
+    "PLACEHOLDER": "Wpisz tutaj komentarz...",
+    "COMMENTS_TODAY": "Dzisiaj o ",
+    "COMMENTS_YESTERDAY": "Wczoraj o ",
+    "REMOVE": "Usuń komentarz",
+    "RESPONSE_TO": "Odpowiedź do",
+    "REMOVED": "Ten komentarz został usunięty"
   },
   "APPLICATIONS": {
     "DETAILS_BUTTON": "Szczegóły",
@@ -375,6 +380,7 @@
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
     "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
+    "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
@@ -591,5 +597,16 @@
     "DE_LABEL": "Niemiecki",
     "PL_LABEL": "Polski",
     "FR_LABEL": "Francuski"
+  },
+  "FOOTER": {
+    "NOTICE": "Polityka Prywatności"
+  },
+  "FILTER": {
+    "TAGS": "Tagi",
+    "DOMAIN": "Domena"
+  },
+  "ENUM": {
+    "ALL": "Wszystkie",
+    "MY": "Moje"
   }
 }

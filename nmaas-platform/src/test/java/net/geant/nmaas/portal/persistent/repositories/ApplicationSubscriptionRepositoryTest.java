@@ -4,16 +4,16 @@ import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ContextConfiguration(classes = {PersistentConfig.class})
 @EnableAutoConfiguration
@@ -45,7 +45,7 @@ public class ApplicationSubscriptionRepositoryTest {
 	Domain domain1, domain2, domain3;
 	ApplicationSubscription appSub1, appSub2, appSub3;
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		app1 = appRepo.save(new Application("APP1","testversion","owner"));
@@ -64,7 +64,7 @@ public class ApplicationSubscriptionRepositoryTest {
 		appSubRepo.flush();
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		app1 = app2 = app3 = null;
 		domain1 = domain2 = domain3 = null;

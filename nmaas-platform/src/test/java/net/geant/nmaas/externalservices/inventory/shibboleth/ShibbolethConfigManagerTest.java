@@ -1,10 +1,12 @@
 package net.geant.nmaas.externalservices.inventory.shibboleth;
 
 import net.geant.nmaas.externalservices.inventory.shibboleth.model.ShibbolethView;
-import static org.hamcrest.MatcherAssert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ShibbolethConfigManagerTest {
 
@@ -18,7 +20,7 @@ public class ShibbolethConfigManagerTest {
 
     private static final String KEY = "jovana_shared_secret_key";
 
-    @Before
+    @BeforeEach
     public void setup(){
         configManager = new ShibbolethConfigManager();
         ReflectionTestUtils.setField(configManager, "loginUrl", LOGIN_URL);
@@ -32,46 +34,60 @@ public class ShibbolethConfigManagerTest {
         configManager.checkParam();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenLoginUrlIsEmpty(){
-        ReflectionTestUtils.setField(configManager, "loginUrl", "");
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "loginUrl", "");
+            configManager.checkParam();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenLoginUrlIsNull(){
-        ReflectionTestUtils.setField(configManager, "loginUrl", null);
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "loginUrl", null);
+            configManager.checkParam();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenLogoutUrlIsNull(){
-        ReflectionTestUtils.setField(configManager, "logoutUrl", null);
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "logoutUrl", null);
+            configManager.checkParam();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenLogoutUrlIsEmpty(){
-        ReflectionTestUtils.setField(configManager, "logoutUrl", "");
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "logoutUrl", "");
+            configManager.checkParam();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenKeyIsNull(){
-        ReflectionTestUtils.setField(configManager, "key", null);
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "key", null);
+            configManager.checkParam();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenKeyIsEmpty(){
-        ReflectionTestUtils.setField(configManager, "key", "");
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "key", "");
+            configManager.checkParam();
+        });
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenTimeoutIsLessThanZero(){
-        ReflectionTestUtils.setField(configManager, "timeout", -123);
-        configManager.checkParam();
+        assertThrows(IllegalStateException.class, () -> {
+            ReflectionTestUtils.setField(configManager, "timeout", -123);
+            configManager.checkParam();
+        });
     }
 
     @Test

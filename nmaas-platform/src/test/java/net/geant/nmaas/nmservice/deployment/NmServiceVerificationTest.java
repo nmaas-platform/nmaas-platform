@@ -2,20 +2,21 @@ package net.geant.nmaas.nmservice.deployment;
 
 import net.geant.nmaas.nmservice.deployment.exceptions.ContainerCheckFailedException;
 import net.geant.nmaas.nmservice.deployment.exceptions.CouldNotVerifyNmServiceException;
-import net.geant.nmaas.orchestration.entities.Identifier;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import net.geant.nmaas.orchestration.Identifier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class NmServiceVerificationTest {
 
@@ -26,7 +27,7 @@ public class NmServiceVerificationTest {
 
     private NmServiceDeploymentCoordinator provider;
 
-    @Before
+    @BeforeEach
     public void setup() {
         provider = new NmServiceDeploymentCoordinator(orchestrator, applicationEventPublisher);
         provider.serviceDeploymentCheckMaxWaitTime = 5;
@@ -40,7 +41,7 @@ public class NmServiceVerificationTest {
     }
 
     @Test
-    public void shouldVerifyDeploymentSuccessAfterThirdAttempt() throws Exception {
+    public void shouldVerifyDeploymentSuccessAfterThirdAttempt() {
         doThrow(new ContainerCheckFailedException(""))
                 .doThrow(new ContainerCheckFailedException(""))
                 .doNothing()
@@ -48,16 +49,18 @@ public class NmServiceVerificationTest {
         provider.verifyNmService(Identifier.newInstance("id"));
     }
 
-    @Test(expected = CouldNotVerifyNmServiceException.class)
-    public void shouldVerifyDeploymentFailure() throws Exception {
-        doThrow(new ContainerCheckFailedException(""))
-                .doThrow(new ContainerCheckFailedException(""))
-                .doThrow(new ContainerCheckFailedException(""))
-                .doThrow(new ContainerCheckFailedException(""))
-                .doThrow(new ContainerCheckFailedException(""))
-                .doThrow(new ContainerCheckFailedException(""))
-                .when(orchestrator).checkService(any());
-        provider.verifyNmService(Identifier.newInstance("id"));
+    @Test
+    public void shouldVerifyDeploymentFailure(){
+        assertThrows(CouldNotVerifyNmServiceException.class, () -> {
+            doThrow(new ContainerCheckFailedException(""))
+                    .doThrow(new ContainerCheckFailedException(""))
+                    .doThrow(new ContainerCheckFailedException(""))
+                    .doThrow(new ContainerCheckFailedException(""))
+                    .doThrow(new ContainerCheckFailedException(""))
+                    .doThrow(new ContainerCheckFailedException(""))
+                    .when(orchestrator).checkService(any());
+            provider.verifyNmService(Identifier.newInstance("id"));
+        });
     }
 
 }

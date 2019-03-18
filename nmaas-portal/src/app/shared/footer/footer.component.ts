@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import {AppConfigService, ChangelogService} from "../../service";
 import {GitInfo} from "../../model/gitinfo";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'nmaas-footer',
@@ -13,7 +14,8 @@ export class FooterComponent implements OnInit {
 
   public gitInfo: GitInfo;
 
-  constructor(private changelogService:ChangelogService, private router:Router, public appConfigService: AppConfigService) {
+  constructor(private changelogService:ChangelogService, private router:Router,
+              public appConfigService: AppConfigService, public translate: TranslateService) {
   }
 
   ngOnInit() {

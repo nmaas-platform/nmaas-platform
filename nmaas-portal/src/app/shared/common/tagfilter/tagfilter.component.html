@@ -1,7 +1,7 @@
 
 <form class="form-inline" role="form">
 	<div class="form-group">
-		<label for="tag">Tags</label> <select class="form-control" id="tag" 
+		<label style="margin-right: 6px;" for="tag">{{ "FILTER.TAGS" | translate }}</label> <select class="form-control" id="tag"
 			[(ngModel)]="value" [ngModelOptions]="{standalone: true}"
 			(ngModelChange)="onChange()">
 			<option [value]="'all'">all</option>
