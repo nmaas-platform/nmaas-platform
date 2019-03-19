@@ -8,7 +8,7 @@
     "USERS": "Użytkownicy",
     "INVENTORY": "Zewnętrzne komponenty",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Konfiguracja",
+    "SETTINGS": "Ustawienia",
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
@@ -193,7 +193,7 @@
     "NAME": "Nazwa",
     "DOMAIN": "Domena",
     "OWNER": "Właściciel",
-    "DEPLOYED_AT": "Uruchomiony na",
+    "DEPLOYED_AT": "Czas uruchomienia",
     "APPLICATION": "Aplikacja",
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",
@@ -380,6 +380,7 @@
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
     "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
+    "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
@@ -533,10 +534,13 @@
   "FOOTER": {
     "NOTICE": "Polityka Prywatności"
   },
-  "TAGFILTER": {
-    "TAGS": "Tagi"
+  "FILTER": {
+    "TAGS": "Tagi",
+    "DOMAIN": "Domena"
   },
   "ENUM": {
+    "ALL": "Wszystkie",
+    "MY": "Moje",
     "REQUESTED": "Inicjalizacja",
     "VALIDATION": "Walidacja",
     "PREPARATION": "Przygotowywanie",

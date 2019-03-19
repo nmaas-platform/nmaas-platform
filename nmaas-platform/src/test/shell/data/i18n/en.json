@@ -8,7 +8,7 @@
     "USERS": "Users",
     "INVENTORY": "External components",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Settings",
     "PROFILE": "Profile",
     "LOGOUT": "Logout",
     "LOGIN_REGISTER": "Login | Register",
@@ -195,7 +195,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Owner",
-    "DEPLOYED_AT": "Deployed at",
+    "DEPLOYED_AT": "Deployment time",
     "APPLICATION": "Application",
     "STATE": "State",
     "DETAILS_BUTTON": "Details",
@@ -381,6 +381,7 @@
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Redeploy",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation progress",
       "STATE": "State",
@@ -534,10 +535,13 @@
   "FOOTER": {
     "NOTICE": "Privacy Notice"
   },
-  "TAGFILTER": {
-    "TAGS": "Tags"
+  "FILTER": {
+    "TAGS": "Tags",
+    "DOMAIN": "Domain"
   },
   "ENUM": {
+    "ALL": "ALL",
+    "MY": "MY",
     "REQUESTED": "Requested",
     "VALIDATION": "Validation",
     "PREPARATION": "Preparation",
