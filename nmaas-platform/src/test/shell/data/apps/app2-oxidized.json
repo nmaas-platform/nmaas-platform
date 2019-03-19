@@ -1,6 +1,6 @@
 {
 	"name":"Oxidized",
-	"version":"0.24.0",
+	"version":"0.25.1",
 	"license":"MIT",
 	"licenseUrl": "https://opensource.org/licenses/MIT",
 	"tags": [ "management", "backup", "configuration"],

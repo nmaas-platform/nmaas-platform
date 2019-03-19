@@ -1,6 +1,6 @@
 {
 	"name":"NAV",
-	"version":"4.8.2",
+	"version":"4.8.6",
 	"license":"GPLv2",
 	"licenseUrl": "https://opensource.org/licenses/GPL-2.0",
 	"tags": [ "management", "monitoring"],
