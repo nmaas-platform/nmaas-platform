@@ -1,6 +1,6 @@
 alter table nm_service_configuration_template rename to config_file_template;
 alter table config_template rename to config_wizard_template;
-alter table application alter column config_template_id rename to config_wizard_template_id;
+alter table application rename column config_template_id to config_wizard_template_id;
 alter table config_file_template drop column application_id;
 
 create table app_configuration_spec (
