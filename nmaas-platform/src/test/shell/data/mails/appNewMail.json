@@ -12,7 +12,7 @@
       "subject": "NMaaS: New application request",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "${app_name} in version ${app_version} has been submitted through portal. You can review this request in application management view.",
+        "CONTENT": "${app_name} in version ${app_version} has been submitted through the Portal. You can review this request in application management view.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -23,7 +23,7 @@
       "subject": "NMaaS: New application request",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "${app_name} in version ${app_version} has been submitted through portal. You can review this request in application management view.",
+        "CONTENT": "${app_name} in version ${app_version} has been submitted through the Portal. You can review this request in application management view.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -34,7 +34,7 @@
       "subject": "NMaaS: New application request",
       "template": {
         "HEADER": "Dear {$username},",
-        "CONTENT": "${app_name} in version ${app_version} has been submitted through portal. You can review this request in application management view.",
+        "CONTENT": "${app_name} in version ${app_version} has been submitted through the Portal. You can review this request in application management view.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
@@ -45,8 +45,8 @@
       "subject": "NMaaS: Nowe zgłoszenie aplikacji",
       "template": {
         "HEADER": "Drogi {$username},",
-        "CONTENT": "Aplikacja o nazwie ${app_name} w wersji ${app_version} została wysłana przez portal. Możesz sprawdzić zgłoszenie w widoku zarządzania aplikacjami.",
-        "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
+        "CONTENT": "Aplikacja o nazwie ${app_name} w wersji ${app_version} została wysłana przez Portal. Możesz sprawdzić zgłoszenie w widoku zarządzania aplikacjami.",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
       }

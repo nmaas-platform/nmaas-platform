@@ -46,7 +46,7 @@
       "template": {
         "HEADER": "Drogi {$username},",
         "CONTENT": "Twoja aplikacja ${app_name} w wersji ${app_version} jest już dostępna w systemie NMaaS.",
-        "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
       }
