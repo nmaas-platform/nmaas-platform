@@ -1,6 +1,6 @@
 import {User} from './user';
 import {AppInstanceState} from './appinstancestatus';
-import {ConfigWizardTemplate} from "./configWizardTemplate";
+import {ConfigWizardTemplate} from "./configwizardtemplate";
 
 export class AppInstanceRequest {
 

@@ -1,4 +1,4 @@
-import {ConfigWizardTemplate} from './configWizardTemplate';
+import {ConfigWizardTemplate} from './configwizardtemplate';
 import {AppDeploymentSpec} from "./appdeploymentspec";
 import {AppDescription} from "./appdescription";
 import {ApplicationState} from "./applicationstate";
