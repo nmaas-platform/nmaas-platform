@@ -107,6 +107,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		app.validate();
 		app.getAppDeploymentSpec().validate();
 		app.getAppDeploymentSpec().getKubernetesTemplate().validate();
+		checkTemplates(app);
 	}
 
 	private void checkTemplates(Application app){

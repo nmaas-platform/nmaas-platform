@@ -236,7 +236,7 @@
                             <label for="configFileRepositoryRequired" style="text-align: left; padding-left: 0;" class="col-sm-2 control-label">{{'APPS_WIZARD.REPOSITORY_REQUIRED_LABEL' | translate}}</label>
                             <div class="col-sm-10">
                                 <input type="checkbox" id="configFileRepositoryRequired" name="configFileRepositoryRequired" (change)="changeDefaultElementInForms()"
-                                       [defaultChecked]="false" [(ngModel)]="app.appDeploymentSpec.configFileRepositoryRequired" tooltip="{{'APPS_WIZARD.REPOSITORY_REQUIRED_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                                       [defaultChecked]="false" [(ngModel)]="app.appConfigurationSpec.configFileRepositoryRequired" tooltip="{{'APPS_WIZARD.REPOSITORY_REQUIRED_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                             </div>
                         </div>
                         <div class="form-group form-group-sm">
@@ -245,13 +245,13 @@
                                 <input type="checkbox" id="basicAuth" name="basicAuth" (change)="changeBasicAuthInForms()" [defaultChecked]="hasAlreadyBasicAuth()" [(ngModel)]="basicAuth" tooltip="{{'APPS_WIZARD.BASIC_AUTH_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                             </div>
                         </div>
-                        <div *ngIf="app.appDeploymentSpec.configFileRepositoryRequired">
-                            <div *ngFor="let configTemplate of nmServiceConfigurationTemplates; let i=index">
+                        <div *ngIf="app.appConfigurationSpec.configFileRepositoryRequired">
+                            <div *ngFor="let configTemplate of configFileTemplates; let i=index">
                                 <div class="form-group form-group-sm" [ngClass]="{'has-error':  configFileName.invalid && (configFileName.dirty || configFileName.touched),
  			    		 	        'has-success': configFileName.valid && (configFileName.dirty || configFileName.touched)}">
                                     <label *ngIf="isInMode(ComponentMode.CREATE)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}}</label>
                                     <label *ngIf="isInMode(ComponentMode.EDIT)" for="configFileName-{{i}}" class="control-label">{{'APPS_WIZARD.CONFIG_FILENAME_LABEL' | translate}} *</label>
-                                    <button class="btn btn-xs btn-danger" style="float: right;" (click)="removeConfig(i)" [disabled]="nmServiceConfigurationTemplates.length <= 1"><span class="glyphicon glyphicon-remove"></span></button>
+                                    <button class="btn btn-xs btn-danger" style="float: right;" (click)="removeConfig(i)" [disabled]="configFileTemplates.length <= 1"><span class="glyphicon glyphicon-remove"></span></button>
                                     <br>
                                     <input type="text" class="form-control" id="configFileName-{{i}}" name="configFileName-{{i}}" #configFileName="ngModel"
                                            [(ngModel)]="configTemplate.configFileName" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CONFIG_FILENAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
@@ -300,8 +300,8 @@
         <div class="alert alert-danger" *ngIf="errorMessage">
             {{errorMessage}}
         </div>
-        <button class="btn btn-success pull-right" (click)="sendCreateRequest()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
-        <button class="btn btn-success pull-right" (click)="sendUpdateRequest()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="addApplication()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="updateApplication()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">{{'APPS_WIZARD.PREVIOUS_BUTTON' | translate}}</button>
 
