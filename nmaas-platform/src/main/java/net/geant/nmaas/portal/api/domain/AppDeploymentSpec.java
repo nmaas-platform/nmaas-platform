@@ -21,6 +21,4 @@ public class AppDeploymentSpec {
 
     private Map<ParameterType, String> deployParameters;
 
-    private boolean configFileRepositoryRequired;
-
 }

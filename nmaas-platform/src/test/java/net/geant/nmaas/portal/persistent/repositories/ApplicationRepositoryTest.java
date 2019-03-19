@@ -27,9 +27,6 @@ import static org.junit.Assert.assertNull;
 @Transactional
 @Rollback
 public class ApplicationRepositoryTest {
-
-	@Autowired
-	private WebApplicationContext context;
 	
 	@Autowired
 	ApplicationRepository appRepo;
@@ -50,7 +47,7 @@ public class ApplicationRepositoryTest {
 	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})
 	public void testAddApplication() {
 		Application app1 = new Application("zabbix", "testversion", "owner");
-		app1.setTags(new HashSet<Tag>());
+		app1.setTags(new HashSet<>());
 		app1.getTags().add(new Tag("monitoring1"));
 		app1.getTags().add(new Tag("network1"));
 		appRepo.save(app1);
@@ -73,22 +70,22 @@ public class ApplicationRepositoryTest {
 	@Test
 	public void testTags() {
 		Tag monitoringTag = new Tag("monitoring");
-		monitoringTag.setApplications(new HashSet<Application>());
+		monitoringTag.setApplications(new HashSet<>());
 		monitoringTag = tagRepo.save(monitoringTag);
 		monitoringTag = tagRepo.findByName("monitoring");
 
 		Tag networkTag = new Tag("network");
-		networkTag.setApplications(new HashSet<Application>());
+		networkTag.setApplications(new HashSet<>());
 		networkTag = tagRepo.save(networkTag);
 		networkTag = tagRepo.findByName("network");
 		
 		Tag managementTag = tagRepo.save(new Tag("management"));
-		managementTag.setApplications(new HashSet<Application>());
+		managementTag.setApplications(new HashSet<>());
 		managementTag = tagRepo.save(managementTag);
 		managementTag = tagRepo.findByName("management");
 		
 		Application app1 = new Application("zabbix", "testversion", "owner");
-		app1.setTags(new HashSet<Tag>());
+		app1.setTags(new HashSet<>());
 		app1.getTags().add(monitoringTag);
 		monitoringTag.getApplications().add(app1);
 		app1.getTags().add(networkTag);
@@ -96,7 +93,7 @@ public class ApplicationRepositoryTest {
 		appRepo.saveAndFlush(app1);
 
 		Application app2 = new Application("librenms", "testversion", "owner");
-		app2.setTags(new HashSet<Tag>());
+		app2.setTags(new HashSet<>());
 		app2.getTags().add(monitoringTag);
 		monitoringTag.getApplications().add(app2);
 		app2.getTags().add(managementTag);

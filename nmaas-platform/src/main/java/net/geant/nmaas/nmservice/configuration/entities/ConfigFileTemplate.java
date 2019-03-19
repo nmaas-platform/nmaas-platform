@@ -16,16 +16,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name="nm_service_configuration_template")
-public class NmServiceConfigurationTemplate {
+@Table
+public class ConfigFileTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
-
-    @Column(nullable = false)
-    private Long applicationId;
 
     @Column(nullable = false)
     private String configFileName;

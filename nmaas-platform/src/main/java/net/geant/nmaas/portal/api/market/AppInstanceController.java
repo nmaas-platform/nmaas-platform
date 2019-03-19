@@ -16,7 +16,7 @@ import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
 import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.ConfigTemplate;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -142,7 +142,7 @@ public class AppInstanceController extends AppBaseController {
                 .deploymentId(Identifier.newInstance(appInstance.getApplication().getId()))
                 .applicationId(Identifier.newInstance(appInstance.getApplication().getId()))
                 .deploymentName(appInstance.getName())
-                .configFileRepositoryRequired(appDeploymentSpec.isConfigFileRepositoryRequired())
+                .configFileRepositoryRequired(app.getAppConfigurationSpec().isConfigFileRepositoryRequired())
                 .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
                 .owner(principal.getName())
                 .appName(app.getName())
@@ -337,7 +337,7 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
-        ai.setConfigTemplate(new ConfigTemplate(appInstance.getApplication().getConfigTemplate().getTemplate()));
+        ai.setConfigTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
 
         return ai;
     }

@@ -57,7 +57,7 @@ public class ApplicationController extends AppBaseController {
 	@PostMapping
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
-	public Id addApplication(@RequestBody(required=true) ApplicationView appRequest, Principal principal) {
+	public Id addApplication(@RequestBody ApplicationView appRequest, Principal principal) {
 		Application app = applications.create(appRequest, principal.getName());
 		this.sendMail(app, new ApplicationStateChangeRequest(app.getState(), ""));
 		return new Id(app.getId());
@@ -81,7 +81,7 @@ public class ApplicationController extends AppBaseController {
 	@GetMapping(value="/{appId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
-	public ApplicationView getApplication(@PathVariable(value = "appId", required=true) Long id) {
+	public ApplicationView getApplication(@PathVariable(value = "appId") Long id) {
 		Application app = getApp(id);
 		return modelMapper.map(app, ApplicationView.class);
 	}
