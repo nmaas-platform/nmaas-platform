@@ -90,7 +90,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
-    private translateState: TranslateStateModule,
+    public translateState: TranslateStateModule,
     private location: Location,
     private translateService: TranslateService,
     private sessionService: SessionService,
