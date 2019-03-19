@@ -12,7 +12,7 @@
 									|| (stage.activeState > AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE])
 									|| (activeState == AppInstanceState[AppInstanceState.UNKNOWN]) || (stage.activeState === AppInstanceState.REQUESTED) || (!stage?.activeState)
 				}">{{stage.activeState}}</a> 
-			<p>{{stage.name}}</p>
+			<p>{{ getTranslateTag(stage.name) }}</p>
 		</div>
 		</ng-template>
 	</div>

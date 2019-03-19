@@ -403,7 +403,47 @@
     },
     "REQUIRED_FIELDS": "benötigte Felder",
     "APPLY_CONFIG_BUTTON": "Konfiguration anwenden",
-    "DEFAULT_VALUE": "Standardwert"
+    "DEFAULT_VALUE": "Standardwert",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Abonnement-Validierung",
+      "ENVIRONMENT_CREATION": "Umweltschaffung",
+      "SETTING_UP_CONNECTIVITY": "Konnektivität einrichten",
+      "APPLYING_APP_CONFIGURATION": "App-Konfiguration anwenden",
+      "APP_CONTAINER_DEPLOYMENT": "App-Container-Bereitstellung",
+      "APP_RUNNING": "App läuft",
+      "UNDEPLOYING": "Bereitstellung aufheben",
+      "REMOVED": "Entfernt",
+      "DEPLOY_REQUESTED": "Bereitstellung der Anwendungsinstanz wurde angefordert",
+      "VALIDATION_REQUEST": "Gültigkeitsprüfung anfordern",
+      "REQUEST_VALIDATE": "Validierte Anforderung",
+      "VALIDATE_FAILED": "Validierung der Anforderung fehlgeschlagen",
+      "DEPLOY_IN_PROGRESS": "Vorbereitung der Bereitstellungsumgebung",
+      "ENV_READY":"Bereitstellungsumgebung ist bereit",
+      "ENV_FAILED": "Vorbereitung der Bereitstellungsumgebung fehlgeschlagen",
+      "DCN_PROGRESS": "DCN-Konfiguration läuft",
+      "DCN_SUCCESS": "DCN erfolgreich konfiguriert",
+      "DCN_FAILED": "DCN-Konfiguration fehlgeschlagen",
+      "APP_CONFIG_PROGRESS": "Anwendungskonfiguration läuft",
+      "APP_CONFIG_SUCCESS": "Anwendung erfolgreich konfiguriert",
+      "APP_CONFIG_FAILED": "Anwendungskonfiguration fehlgeschlagen",
+      "APP_DEPLOY_PROGRESS": "Anwendungsimplementierung läuft",
+      "APP_DEPLOY_SUCCESS": "Anwendung wurde erfolgreich implementiert",
+      "APP_DEPLOY_FAILED": "Anwendungsbereitstellung fehlgeschlagen",
+      "DEPLOY_VER_PROGRESS": "Überprüfung der Bereitstellung läuft",
+      "DEPLOY_VER_SUCCESS": "Bereitstellung erfolgreich verifiziert",
+      "DEPLOY_VER_FAILED": "Deployment-Überprüfung fehlgeschlagen",
+      "APP_REMOVE_PROGRESS": "Das Entfernen der Anwendung wird ausgeführt",
+      "APP_REMOVE_SUCCESS": "Anwendung erfolgreich entfernt",
+      "APP_REMOVE_FAILED": "Entfernen der Anwendung fehlgeschlagen",
+      "APP_RESTART_PROGRESS": "Anwendungsneustart läuft",
+      "APP_RESTART_SUCCESS": "Anwendung erfolgreich neu gestartet",
+      "APP_RESTART_FAILED": "Anwendungsneustart fehlgeschlagen",
+      "APP_UPDATE_PROGRESS": "Aktualisierung der Anwendungskonfiguration läuft",
+      "APP_UPDATE_SUCCESS": "Anwendungskonfiguration erfolgreich aktualisiert",
+      "APP_UPDATE_FAILED": "Update der Anwendungskonfiguration ist fehlgeschlagen",
+      "UNKNOWN": "Unbekannter Zustand",
+      "ERROR": "Interner Fehler"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
@@ -497,5 +537,18 @@
   },
   "TAGFILTER": {
     "TAGS": "Stichworte"
+  },
+  "ENUM": {
+    "REQUESTED": "Angeforderte",
+    "VALIDATION": "Validierung",
+    "PREPARATION": "Vorbereitung",
+    "CONNECTING": "Anschließen",
+    "CONFIGURATION_AWAITING": "Warten auf Konfiguration",
+    "DEPLOYING": "Installieren",
+    "RUNNING": "Am Laufen",
+    "UNDEPLOYING": "Deinstallieren",
+    "DONE": "Erledigt",
+    "FAILURE": "Fehler",
+    "UNKNOWN": "Unbekannt"
   }
 }

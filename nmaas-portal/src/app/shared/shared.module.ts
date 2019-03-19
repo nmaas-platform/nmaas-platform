@@ -41,6 +41,7 @@ import {ChangelogComponent} from "./changelog/changelog.component";
 import {NotificationService} from "../service/notification.service";
 import {RecaptchaModule} from "ng-recaptcha";
 import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
+import {TranslateStateModule} from "./translate-state/translate-state.module";
 
 @NgModule({
   imports: [
@@ -118,7 +119,8 @@ import { SingleCommentComponent } from './comments/single-comment/single-comment
     SortableColumnComponent,
     SortableTableDirective,
     RatingExtendedComponent,
-    AboutComponent
+    AboutComponent,
+    TranslateStateModule
   ]
 })
 export class SharedModule {}

@@ -401,7 +401,47 @@
     },
     "REQUIRED_FIELDS": "pola wymagane",
     "APPLY_CONFIG_BUTTON": "Prześlij konfigurację",
-    "DEFAULT_VALUE": "Wartość domyślna"
+    "DEFAULT_VALUE": "Wartość domyślna",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Sprawdzanie subskrypcji",
+      "ENVIRONMENT_CREATION": "Tworzenie środowiska",
+      "SETTING_UP_CONNECTIVITY": "Ustanawianie połączenia",
+      "APPLYING_APP_CONFIGURATION": "Dodawanie konfiugracji",
+      "APP_CONTAINER_DEPLOYMENT": "Tworzenie kontenera",
+      "APP_RUNNING": "Aplikacja uruchomiona",
+      "UNDEPLOYING": "Usuwanie kontenera",
+      "REMOVED": "Aplikacja usunięta",
+      "DEPLOY_REQUESTED": "Wysłano żądanie utworzenia aplikacji",
+      "VALIDATION_REQUEST": "Weryfikacja żądania trwa",
+      "REQUEST_VALIDATE": "Żądanie zweryfikowane poprawnie",
+      "VALIDATE_FAILED": "Weryfikacja żądania nieudana",
+      "DEPLOY_IN_PROGRESS": "Tworzenie środowiska trwa",
+      "ENV_READY":"Srodowisko jest gotowe",
+      "ENV_FAILED": "Przygotowanie srodowiska nie powiodło się",
+      "DCN_PROGRESS": "Konfiugracja DCN trwa",
+      "DCN_SUCCESS": "DCN skonfiugurowano poprawnie",
+      "DCN_FAILED": "Konfiugracja DCN nie powiodła się",
+      "APP_CONFIG_PROGRESS": "Konfiguracja aplikacji trwa",
+      "APP_CONFIG_SUCCESS": "Aplikacja skonfigurowana poprawnie",
+      "APP_CONFIG_FAILED": "Konfiguracja aplikacji nie powiodła się",
+      "APP_DEPLOY_PROGRESS": "Instalowanie aplikacji trwa",
+      "APP_DEPLOY_SUCCESS": "Aplikacja zainstalowana poprawnie",
+      "APP_DEPLOY_FAILED": "Instalacja aplikacji nie powiodła się",
+      "DEPLOY_VER_PROGRESS": "Weryfikacja instalacji trwa",
+      "DEPLOY_VER_SUCCESS": "Weryfikacja instalacji powiodła się",
+      "DEPLOY_VER_FAILED": "Weryfikacja instalacji nie powiodła się",
+      "APP_REMOVE_PROGRESS": "Trwa usuwanie aplikacji",
+      "APP_REMOVE_SUCCESS": "Aplikacja usunięta poprawnie",
+      "APP_REMOVE_FAILED": "Usuwanie aplikacji nie powiodło się",
+      "APP_RESTART_PROGRESS": "Trwa restart aplikacji",
+      "APP_RESTART_SUCCESS": "Aplikacja zrestartowana poprawnie",
+      "APP_RESTART_FAILED": "Restart aplikacji nie powiódł się",
+      "APP_UPDATE_PROGRESS": "Trwa aktualizowanie aplikacji",
+      "APP_UPDATE_SUCCESS": "Aplikacja zaktualizowana poprawnie",
+      "APP_UPDATE_FAILED": "Aktualizacja aplikacji nie powiodła się",
+      "UNKNOWN": "Nieznany stan",
+      "ERROR": "Błąd wewnętrzny"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
@@ -495,5 +535,18 @@
   },
   "TAGFILTER": {
     "TAGS": "Tagi"
+  },
+  "ENUM": {
+    "REQUESTED": "Inicjalizacja",
+    "VALIDATION": "Walidacja",
+    "PREPARATION": "Przygotowywanie",
+    "CONNECTING": "Łączenie",
+    "CONFIGURATION_AWAITING": "Oczekiwanie na konfiguracje",
+    "DEPLOYING": "Instalowanie",
+    "RUNNING": "Uruchomiono",
+    "UNDEPLOYING": "Odinstalowywanie",
+    "DONE": "Zakończono",
+    "FAILURE": "Błąd",
+    "UNKNOWN": "Nieznany"
   }
 }

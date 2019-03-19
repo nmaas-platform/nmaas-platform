@@ -402,7 +402,47 @@
     },
     "REQUIRED_FIELDS": "required fields",
     "APPLY_CONFIG_BUTTON": "Apply configuration",
-    "DEFAULT_VALUE": "Default value"
+    "DEFAULT_VALUE": "Default value",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Subscription validation",
+      "ENVIRONMENT_CREATION": "Environment creation",
+      "SETTING_UP_CONNECTIVITY": "Setting up connectivity",
+      "APPLYING_APP_CONFIGURATION": "Applying app configuration",
+      "APP_CONTAINER_DEPLOYMENT": "App container deployment",
+      "APP_RUNNING": "App running",
+      "UNDEPLOYING": "Undeploying",
+      "REMOVED": "Removed",
+      "DEPLOY_REQUESTED": "Application instance deployment requested",
+      "VALIDATION_REQUEST": "Request validation in progress",
+      "REQUEST_VALIDATE": "Request validated",
+      "VALIDATE_FAILED": "Request validation failed",
+      "DEPLOY_IN_PROGRESS": "Deployment environment preparation in progress",
+      "ENV_READY":"Deployment environment is ready",
+      "ENV_FAILED": "Deployment environment preparation failed",
+      "DCN_PROGRESS": "DCN configuration in progress",
+      "DCN_SUCCESS": "DCN configured successfully",
+      "DCN_FAILED": "DCN configuration failed",
+      "APP_CONFIG_PROGRESS": "Application configuration in progress",
+      "APP_CONFIG_SUCCESS": "Application configured successfully",
+      "APP_CONFIG_FAILED": "Application configuration failed",
+      "APP_DEPLOY_PROGRESS": "Application deployment in progress",
+      "APP_DEPLOY_SUCCESS": "Application deployed successfully",
+      "APP_DEPLOY_FAILED": "Application deployment failed",
+      "DEPLOY_VER_PROGRESS": "Deployment verification in progress",
+      "DEPLOY_VER_SUCCESS": "Deployment verified successfully",
+      "DEPLOY_VER_FAILED": "Deployment verification failed",
+      "APP_REMOVE_PROGRESS": "Application removal in progress",
+      "APP_REMOVE_SUCCESS": "Application removed successfully",
+      "APP_REMOVE_FAILED": "Application removal failed",
+      "APP_RESTART_PROGRESS": "Application restart in progress",
+      "APP_RESTART_SUCCESS": "Application restarted successfully",
+      "APP_RESTART_FAILED": "Application restart failed",
+      "APP_UPDATE_PROGRESS": "Application configuration update in progress",
+      "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
+      "APP_UPDATE_FAILED": "Application configuration update failed",
+      "UNKNOWN": "Unknown state",
+      "ERROR": "Internal error"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Undeploy confirmation",
@@ -496,5 +536,18 @@
   },
   "TAGFILTER": {
     "TAGS": "Tags"
+  },
+  "ENUM": {
+    "REQUESTED": "Requested",
+    "VALIDATION": "Validation",
+    "PREPARATION": "Preparation",
+    "CONNECTING": "Connecting",
+    "CONFIGURATION_AWAITING": "Waiting for configuration",
+    "DEPLOYING": "Deploying",
+    "RUNNING": "Running",
+    "UNDEPLOYING": "Undeploying",
+    "DONE": "Done",
+    "FAILURE": "Failure",
+    "UNKNOWN": "Unknown"
   }
 }
