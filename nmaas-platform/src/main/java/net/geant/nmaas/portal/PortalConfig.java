@@ -115,19 +115,4 @@ public class PortalConfig {
 			}
 		};
 	}
-
-	@Bean
-	public InitializingBean addConfigurationProperties(){
-		return new InitializingBean() {
-			@Autowired
-			ConfigurationManager configurationManager;
-
-			@Override
-			@Transactional
-			public void afterPropertiesSet() throws Exception {
-                configurationManager.deleteAllConfigurations();
-                configurationManager.addConfiguration(new ConfigurationView(false, false, "en"));
-			}
-		};
-	}
 }
