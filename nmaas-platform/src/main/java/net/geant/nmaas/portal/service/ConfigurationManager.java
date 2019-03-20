@@ -7,5 +7,4 @@ public interface ConfigurationManager {
     Long addConfiguration(ConfigurationView configuration);
     ConfigurationView getConfiguration();
     void updateConfiguration(Long id, ConfigurationView updatedConfiguration);
-    void deleteAllConfigurations();
 }

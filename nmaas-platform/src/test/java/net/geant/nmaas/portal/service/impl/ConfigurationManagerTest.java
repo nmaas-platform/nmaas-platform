@@ -58,14 +58,6 @@ public class ConfigurationManagerTest {
     }
 
     @Test
-    public void shouldNotGetConfigWhenThereIsNoConfig(){
-        assertThrows(IllegalStateException.class, () -> {
-            when(repository.findAll()).thenReturn(Collections.emptyList());
-            this.configurationManager.getConfiguration();
-        });
-    }
-
-    @Test
     public void shouldAddConfiguration(){
         when(repository.count()).thenReturn(0L);
         Long id = configurationManager.addConfiguration(modelMapper.map(config, ConfigurationView.class));
@@ -117,12 +109,5 @@ public class ConfigurationManagerTest {
                     .thenReturn(Optional.of(internationalization));
             configurationManager.updateConfiguration(1L, configView);
         });
-    }
-
-    @Test
-    public void shouldDeleteAllConfigurations(){
-        when(repository.count()).thenReturn(1L);
-        this.configurationManager.deleteAllConfigurations();
-        verify(repository, times(1)).deleteAll();
     }
 }
