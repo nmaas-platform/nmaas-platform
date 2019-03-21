@@ -20,6 +20,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -276,6 +276,7 @@ public class UsersController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void sendResetPasswordNotification(@RequestBody String email){
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(email);
+		checkSSOUser(user);
 		this.sendMail(modelMapper.map(user, User.class), MailType.PASSWORD_RESET, ImmutableMap.of("accessURL", generateResetPasswordUrl(this.jwtTokenService.getResetToken(email))));
 	}
 
@@ -292,7 +293,9 @@ public class UsersController {
 	public User validateResetRequest(@RequestBody String token){
 		try {
 			Claims claims = jwtTokenService.getResetClaims(token);
-			return modelMapper.map(userService.findByEmail(claims.getSubject()), User.class);
+			net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(claims.getSubject());
+			checkSSOUser(user);
+			return modelMapper.map(user, User.class);
 		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Validation of reset request failed -> "+ e.getMessage());
 		}
@@ -304,6 +307,7 @@ public class UsersController {
 		try {
 			Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
 			net.geant.nmaas.portal.persistent.entity.User user = userService.findByEmail(claims.getSubject());
+			checkSSOUser(user);
 			changePassword(user, passwordReset.getPassword());
 		} catch(JwtException | IllegalArgumentException e){
 			throw new ProcessingException("Unable to reset password -> " + e.getMessage());
@@ -316,6 +320,7 @@ public class UsersController {
 	public void changePassword(Principal principal, @RequestBody PasswordChange passwordChange) {
 		net.geant.nmaas.portal.persistent.entity.User user = userService.findByUsername(principal.getName()).orElseThrow(() -> new ProcessingException("Internal error. User not found."));
 		try {
+			checkSSOUser(user);
 			checkPassword(user, passwordChange.getPassword());
 			changePassword(user, passwordChange.getNewPassword());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
@@ -331,6 +336,11 @@ public class UsersController {
 	private void changePassword(net.geant.nmaas.portal.persistent.entity.User user, String password) {
 		user.setPassword(passwordEncoder.encode(password));
 		userService.update(user);
+	}
+
+	private void checkSSOUser(net.geant.nmaas.portal.persistent.entity.User user) {
+    	if(StringUtils.isNotEmpty(user.getSamlToken()))
+    		throw new ProcessingException("SSO user cannot change or reset password");
 	}
 
 	@GetMapping("/domains/{domainId}/users")

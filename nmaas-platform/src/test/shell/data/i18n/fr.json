@@ -436,7 +436,7 @@
     "GO_BACK": "Retourner à la page d'accueil",
     "MODAL": {
       "HEADER": "Veuillez vérifier votre email",
-      "BODY": "Si votre est email valide, vous dervriez recevoir un lien pour ré-initialiser votre mot de passe.",
+      "BODY": "Si votre est email valide, vous dervriez recevoir un lien pour ré-initialiser votre mot de passe. Veuillez noter que vous ne pouvez réinitialiser le mot de passe que pour un compte local.",
       "CLOSE_BUTTON": "Fermer"
     },
     "SITE": {

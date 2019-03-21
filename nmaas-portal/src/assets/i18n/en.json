@@ -437,7 +437,7 @@
     "GO_BACK": "Go back to the NMaaS page",
     "MODAL": {
       "HEADER": "Please check your email",
-      "BODY": "If you have provided valid email we will send to you link for resetting password.",
+      "BODY": "If you have provided valid email we will send to you link for resetting password. Please be advised that you can only reset password for local account.",
       "CLOSE_BUTTON": "Close"
     },
     "SITE": {

@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.geant.nmaas.portal.api.domain.UserRole;
 import net.geant.nmaas.portal.persistent.entity.User;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.AbstractConverter;
 
 public class UserConverter extends AbstractConverter<User, net.geant.nmaas.portal.api.domain.User> {
@@ -18,7 +19,7 @@ public class UserConverter extends AbstractConverter<User, net.geant.nmaas.porta
                 .email(source.getEmail())
                 .enabled(source.isEnabled())
                 .roles(convertUserRole(source))
-                .ssoUser(source.getSamlToken() != null && !source.getSamlToken().isEmpty())
+                .ssoUser(StringUtils.isNotEmpty(source.getSamlToken()))
                 .build();
     }
 
