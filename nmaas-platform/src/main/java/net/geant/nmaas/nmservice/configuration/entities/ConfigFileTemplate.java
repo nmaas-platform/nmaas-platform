@@ -25,6 +25,9 @@ public class ConfigFileTemplate {
     private Long id;
 
     @Column(nullable = false)
+    private Long applicationId;
+
+    @Column(nullable = false)
     private String configFileName;
 
     @Lob

@@ -13,6 +13,8 @@ public class ConfigFileTemplateView {
 
     private Long id;
 
+    private Long applicationId;
+
     private String configFileName;
 
     private String configFileTemplateContent;

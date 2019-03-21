@@ -103,6 +103,9 @@ public class ApplicationServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
             applicationView.setAppDeploymentSpec(null);
+            Application app = modelMapper.map(applicationView, Application.class);
+            app.setId(1L);
+            when(applicationRepository.save(any())).thenReturn(app);
             applicationService.create(applicationView, "admin");
         });
     }
@@ -112,6 +115,9 @@ public class ApplicationServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
             applicationView.setConfigTemplate(null);
+            Application app = modelMapper.map(applicationView, Application.class);
+            app.setId(1L);
+            when(applicationRepository.save(any())).thenReturn(app);
             applicationService.create(applicationView, "admin");
         });
 
@@ -140,6 +146,9 @@ public class ApplicationServiceImplTest {
         assertThrows(IllegalStateException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
             applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("pl", "test", "test")));
+            Application app = modelMapper.map(applicationView, Application.class);
+            app.setId(1L);
+            when(applicationRepository.save(any())).thenReturn(app);
             applicationService.create(applicationView, "admin");
         });
     }

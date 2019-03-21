@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ public interface ApplicationService {
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();
 
-	void setMissingProperties(ApplicationView app);
-	List<ConfigFileTemplateView> getConfigFileTemplates(Long applicationId);
-	
+	void setMissingProperties(ApplicationView app, Long appId);
+
 }

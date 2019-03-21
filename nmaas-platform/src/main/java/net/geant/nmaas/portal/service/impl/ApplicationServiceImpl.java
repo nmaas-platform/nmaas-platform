@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
-import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -36,7 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	public Application create(ApplicationView request, String owner) {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
-		this.setMissingProperties(request);
+		this.setMissingProperties(request, app.getId());
 		modelMapper.map(request, app);
 		checkParam(app);
 		return appRepo.save(app);
@@ -90,16 +87,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		appRepo.save(app);
 	}
 
-	@Override
-	@Transactional
-	public List<ConfigFileTemplateView> getConfigFileTemplates(Long applicationId){
-		return appRepo.findById(applicationId).orElseThrow(() -> new IllegalStateException("Application not found"))
-				.getAppConfigurationSpec()
-				.getTemplates().stream()
-				.map(template -> modelMapper.map(template, ConfigFileTemplateView.class))
-				.collect(Collectors.toList());
-	}
-
 	private void checkApp(Application app){
 		if(app == null){
 			throw new IllegalArgumentException("App cannot be null");
@@ -125,8 +112,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 	}
 
 	@Override
-	public void setMissingProperties(ApplicationView app){
+	public void setMissingProperties(ApplicationView app, Long appId){
 		setMissingDescriptions(app);
+		setMissingTemplatesId(app, appId);
 	}
 
 	private void checkParam(ApplicationView request, String owner) {
@@ -171,5 +159,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 						description.setFullDescription(appDescription.getFullDescription());
 					}
 				});
+	}
+
+	private void setMissingTemplatesId(ApplicationView app, Long appId){
+		app.getAppConfigurationSpec().getTemplates()
+				.forEach(template -> template.setApplicationId(appId));
 	}
 }

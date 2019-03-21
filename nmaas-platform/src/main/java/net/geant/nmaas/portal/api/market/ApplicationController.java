@@ -67,7 +67,7 @@ public class ApplicationController extends AppBaseController {
 	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
 	@Transactional
 	public void updateApplication(@RequestBody ApplicationView appRequest){
-		applications.setMissingProperties(appRequest);
+		applications.setMissingProperties(appRequest, appRequest.getId());
 		applications.update(modelMapper.map(appRequest, Application.class));
 	}
 

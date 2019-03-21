@@ -6,15 +6,15 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.NoArgsConstructor;
+import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.exceptions.ConfigTemplateHandlingException;
 import net.geant.nmaas.nmservice.configuration.exceptions.UserConfigHandlingException;
+import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesRepository;
 import net.geant.nmaas.nmservice.configuration.repositories.NmServiceConfigFileRepository;
 import net.geant.nmaas.nmservice.deployment.NmServiceRepositoryManager;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
-import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
-import net.geant.nmaas.portal.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,14 +37,14 @@ class NmServiceConfigurationFilePreparer {
 
     private NmServiceConfigFileRepository configurations;
 
-    private ApplicationService applicationService;
+    private ConfigFileTemplatesRepository templatesRepository;
 
     private NmServiceRepositoryManager nmServiceRepositoryManager;
 
     @Autowired
-    NmServiceConfigurationFilePreparer(NmServiceConfigFileRepository configurations, ApplicationService applicationService, NmServiceRepositoryManager nmServiceRepositoryManager){
+    NmServiceConfigurationFilePreparer(NmServiceConfigFileRepository configurations, ConfigFileTemplatesRepository templatesRepository, NmServiceRepositoryManager nmServiceRepositoryManager){
         this.configurations = configurations;
-        this.applicationService = applicationService;
+        this.templatesRepository = templatesRepository;
         this.nmServiceRepositoryManager = nmServiceRepositoryManager;
     }
 
@@ -52,7 +52,7 @@ class NmServiceConfigurationFilePreparer {
         final Map<String, Object> appConfigurationModel = createModelFromJson(appConfiguration);
         updateStoredNmServiceInfoWithListOfManagedDevices(deploymentId, appConfigurationModel);
         List<String> configIds = new ArrayList<>();
-        for (ConfigFileTemplateView configFileTemplate : applicationService.getConfigFileTemplates(applicationId.longValue())) {
+        for (ConfigFileTemplate configFileTemplate : templatesRepository.getAllByApplicationId(applicationId.longValue())) {
             final String configId = generateNewConfigId(configurations);
             final Template template = convertToTemplate(configFileTemplate);
             final NmServiceConfiguration config = buildConfigFromTemplateAndUserProvidedInput(configId, template, appConfigurationModel);
@@ -70,7 +70,7 @@ class NmServiceConfigurationFilePreparer {
         return generatedConfigId;
     }
 
-    Template convertToTemplate(ConfigFileTemplateView configFileTemplate) {
+    Template convertToTemplate(ConfigFileTemplate configFileTemplate) {
         try {
             return new Template(configFileTemplate.getConfigFileName(),
                             new StringReader(configFileTemplate.getConfigFileTemplateContent()),

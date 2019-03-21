@@ -5,7 +5,14 @@ import java.util.Collections;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
+import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesRepository;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
+import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
+import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
+import net.geant.nmaas.portal.api.domain.AppDescriptionView;
+import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
@@ -44,22 +51,24 @@ public class LibreNmsConfigFileTemplateTest {
     @Autowired
     private ApplicationService applicationService;
 
+    @Autowired
+    private ConfigFileTemplatesRepository configFileTemplatesRepository;
+
     private Long librenmsAppId;
 
     @BeforeEach
     public void setup() {
-        Application app = new Application("librenmsAppName","librenmsAppVersion", "owner");
-        ConfigFileTemplate librenmsConfigTemplate1 = new ConfigFileTemplate();
+        ApplicationView app = getDefaultAppView();
+        ConfigFileTemplateView librenmsConfigTemplate1 = new ConfigFileTemplateView();
         librenmsConfigTemplate1.setConfigFileName(TEST_TEMPLATE_NAME);
         librenmsConfigTemplate1.setConfigFileTemplateContent("<#list targets as target>\\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\\n</#list>");
-        app.setAppConfigurationSpec(new AppConfigurationSpec());
         app.getAppConfigurationSpec().setTemplates(Collections.singletonList(librenmsConfigTemplate1));
-        librenmsAppId = applicationRepository.save(app).getId();
+        librenmsAppId = applicationService.create(app,"admin").getId();
     }
 
     @Test
     public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
-        List<ConfigFileTemplateView> configFileTemplates = applicationService.getConfigFileTemplates(librenmsAppId);
+        List<ConfigFileTemplate> configFileTemplates = configFileTemplatesRepository.getAllByApplicationId(librenmsAppId);
         Template template = configurationsPreparer.convertToTemplate(configFileTemplates.get(0));
         NmServiceConfiguration nmServiceConfiguration =
                 configurationsPreparer.buildConfigFromTemplateAndUserProvidedInput(
@@ -93,4 +102,19 @@ public class LibreNmsConfigFileTemplateTest {
         return model;
     }
 
+    private ApplicationView getDefaultAppView(){
+        ApplicationView applicationView = new ApplicationView();
+        applicationView.setName("test");
+        applicationView.setVersion("testversion");
+        applicationView.setOwner("owner");
+        applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("en", "test", "testfull")));
+        net.geant.nmaas.portal.api.domain.AppDeploymentSpec appDeploymentSpec = new net.geant.nmaas.portal.api.domain.AppDeploymentSpec();
+        appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
+        appDeploymentSpec.setDefaultStorageSpace(1);
+        applicationView.setAppDeploymentSpec(appDeploymentSpec);
+        applicationView.setConfigTemplate(new ConfigWizardTemplateView("template"));
+        applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
+        applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
+        return applicationView;
+    }
 }
