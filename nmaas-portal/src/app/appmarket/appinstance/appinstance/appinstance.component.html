@@ -95,8 +95,8 @@
 				{{ 'APP_INSTANCE.DEPLOYMENT_IN_PROGRESS' | translate }}
 			</div>
 		</div>
-		<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? appInstanceStatus?.userFriendlyState : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
-		<p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.DETAILS' | translate}}: {{appInstanceStatus?.userFriendlyDetails}}</p>
+        <p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? translateState.translateState(appInstanceStatus.state) : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
+        <p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.DETAILS' | translate}}: {{ appInstanceStatus?.userFriendlyDetails | translate }}</p>
 	</div>
 
 	<div class="row" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
@@ -119,9 +119,9 @@
 			<tbody>
 			<ng-template ngFor let-history [ngForOf]="this.appInstanceStateHistory | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }" let-isLast="last">
 				<tr>
-					<td>{{history.timestamp | date:'medium'}}</td>
-					<td *ngIf="history.previousState !== null">{{history.previousState}}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState}}</td>
-					<td *ngIf="history.previousState === null">{{history.currentState}}</td>
+					<td>{{history.timestamp | localDate:'medium' }}</td>
+					<td *ngIf="history.previousState !== null">{{history.previousState | translate }}<span class="glyphicon glyphicon-arrow-right" style="padding-left: 5px;padding-right: 5px"></span>{{history.currentState | translate }}</td>
+					<td *ngIf="history.previousState === null">{{history.currentState | translate }}</td>
 				</tr>
 			</ng-template>
 			</tbody>

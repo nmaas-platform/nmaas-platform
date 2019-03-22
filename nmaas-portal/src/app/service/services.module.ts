@@ -11,7 +11,7 @@ import {TagService} from './tag.service';
 import {UserService} from './user.service';
 import {ConfigurationService} from './configuration.service';
 import {ConfigTemplateService} from "./configtemplate.service";
-
+import {SessionService} from "./session.service";
 
 @NgModule({
   providers: [
@@ -25,7 +25,8 @@ import {ConfigTemplateService} from "./configtemplate.service";
     TagService,
     UserService,
     ConfigurationService,
-    ConfigTemplateService
+    ConfigTemplateService,
+    SessionService
   ]
 })
 export class ServicesModule {}

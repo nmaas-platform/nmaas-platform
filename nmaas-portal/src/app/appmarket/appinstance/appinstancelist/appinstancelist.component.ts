@@ -14,6 +14,8 @@ import {CustomerSearchCriteria} from "../../../service/index";
 import {element} from "protractor";
 import {TranslateModule, TranslateService} from "@ngx-translate/core";
 import {map} from 'rxjs/operators';
+import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
+import {SessionService} from "../../../service/session.service";
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -57,10 +59,13 @@ export class AppInstanceListComponent implements OnInit {
               private userDataService: UserDataService,
               private authService: AuthService,
               private appConfig: AppConfigService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private sessionService: SessionService,
+              private translateState: TranslateStateModule) {
   }
 
   ngOnInit() {
+    this.sessionService.registerCulture(this.translateService.currentLang);
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
 
   }

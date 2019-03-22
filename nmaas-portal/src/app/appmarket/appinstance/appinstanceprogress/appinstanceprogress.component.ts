@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {AppInstanceProgressStage, AppInstanceState} from '../../../model/index';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
     selector: 'nmaas-appinstanceprogress',
@@ -21,10 +22,15 @@ export class AppInstanceProgressComponent implements OnInit {
     @Input()
     previousState: AppInstanceState = AppInstanceState.UNKNOWN;
     
-    constructor() { }
+    constructor(private translate: TranslateService) { }
 
     ngOnInit() {
 
+    }
+
+    getTranslateTag(stateProgress): string{
+        stateProgress = stateProgress.toString().toUpperCase().split(' ').join('_');
+        return this.translate.instant("APP_INSTANCE.PROGRESS." + stateProgress.toString());
     }
 
     ngAfterViewInit() {

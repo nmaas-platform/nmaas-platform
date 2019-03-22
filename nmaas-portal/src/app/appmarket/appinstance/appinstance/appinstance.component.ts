@@ -1,6 +1,15 @@
-import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  EventEmitter,
+  Inject,
+  LOCALE_ID, NgModule,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Location} from '@angular/common';
+import {Location, registerLocaleData} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 import {
@@ -20,12 +29,17 @@ import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
 import {interval} from 'rxjs/internal/observable/interval';
 import {UserDataService} from "../../../service/userdata.service";
+import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
+import {TranslateService} from "@ngx-translate/core";
+import {SessionService} from "../../../service/session.service";
+import {LocalDatePipe} from "../../../pipe/local-date.pipe";
+import {Local} from "protractor/built/driverProviders";
 
 @Component({
   selector: 'nmaas-appinstance',
   templateUrl: './appinstance.component.html',
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
+  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, LocalDatePipe]
 })
 export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
 
@@ -47,6 +61,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public readonly appRate: RateComponent;
 
   app: Application;
+
 
   public p_first: string = "p_first";
 
@@ -75,10 +90,14 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
+    public translateState: TranslateStateModule,
     private location: Location,
+    private translateService: TranslateService,
+    private sessionService: SessionService,
     @Inject(LOCAL_STORAGE) public storage: StorageService) {}
 
   ngOnInit() {
+    this.dateFormatChanges();
     this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
@@ -101,6 +120,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       this.undeployModal.setModalType("warning");
       this.undeployModal.setStatusOfIcons(true);
     });
+  }
+
+  dateFormatChanges(): void{
+    this.sessionService.registerCulture(this.translateService.currentLang);
   }
 
   ngAfterViewChecked(): void {
