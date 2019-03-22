@@ -38,7 +38,7 @@ class MockContentDisplayService{
   }
 }
 
-class MockAuthService{
+export class MockAuthService{
 
   public loginUsingSsoService: boolean;
 

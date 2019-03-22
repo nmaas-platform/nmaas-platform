@@ -11,10 +11,10 @@ public class ApplicationSubscriptionTest {
         assertEquals(
                 new ApplicationSubscription(
                         new Domain("name", "codename"),
-                        new Application("name")).getId(),
+                        new Application("name","testversion", "owner")).getId(),
                 new ApplicationSubscription(
                         new Domain("name", "codename"),
-                        new Application("name")).getId());
+                        new Application("name","testversion", "owner")).getId());
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
 @Getter
 @Setter
@@ -20,10 +21,12 @@ public class ApplicationBriefView {
 	String wwwUrl;
 	String sourceUrl;
 	String issuesUrl;
+
+	String owner;
 	
 	List<AppDescriptionView> descriptions;
 
-	boolean deleted;
+	ApplicationState state;
 
 	Set<String> tags = new HashSet<>();
 

@@ -191,6 +191,7 @@ public class UserServiceImplTest {
         assertTrue(userService.existsById((long) 0));
     }
 
+    @Test
     public void existsByEmailShouldThrowTrue(){
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
         assertTrue(userService.existsByEmail("test@test.com"));

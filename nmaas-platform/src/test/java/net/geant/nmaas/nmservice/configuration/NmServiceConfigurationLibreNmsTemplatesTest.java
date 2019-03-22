@@ -44,7 +44,7 @@ public class NmServiceConfigurationLibreNmsTemplatesTest {
 
     @BeforeEach
     public void setup() {
-        Application app = new Application("librenmsAppName");
+        Application app = new Application("librenmsAppName","testversion", "owner");
         app.setVersion("librenmsAppVersion");
         librenmsAppId = applicationRepository.save(app).getId();
         NmServiceConfigurationTemplate librenmsConfigTemplate1 = new NmServiceConfigurationTemplate();

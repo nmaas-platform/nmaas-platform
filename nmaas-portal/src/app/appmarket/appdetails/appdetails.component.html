@@ -13,10 +13,10 @@
 					<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
 					<rate [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(appId)"></rate>
 					<div class="text-muted" style="font-size: small;">
-						v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
-						| <a href="{{app?.wwwUrl}}">WWW</a>
-						| <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
-						| <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+						v.{{app?.version}} | <a [href]="getValidLink(app?.licenseUrl)" target="_blank">{{app?.license}}</a>
+						| <a [href]="getValidLink(app?.wwwUrl)">WWW</a>
+						| <a [href]="getValidLink(app?.sourceUrl)" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+						| <a [href]="getValidLink(app?.sourceUrl)" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
 					</div>
 				</div>
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -34,8 +34,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<div *ngIf="!subscribed && isSubscriptionAllowed() && !app?.deleted" class="btn-group pull-right">
-					<button class="btn btn-primary" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
+				<div *ngIf="!subscribed && isSubscriptionAllowed() && (isActive(app?.state) || isDisabled(app?.state))" class="btn-group pull-right">
+					<button class="btn btn-primary" [disabled]="isDisabled(app?.state)" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 				<div *ngIf="subscribed" class="btn-group pull-right">
 					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>

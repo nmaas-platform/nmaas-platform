@@ -26,7 +26,7 @@ public class NmServiceConfigurationNavTemplatesTest {
 
     @BeforeEach
     public void setup() {
-        Application app = new Application("navAppName");
+        Application app = new Application("navAppName","testversion", "owner");
         app.setVersion("navAppVersion");
         navAppId = applicationRepository.save(app).getId();
     }
