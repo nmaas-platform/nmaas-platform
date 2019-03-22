@@ -476,7 +476,7 @@
     "GO_BACK": "Powrót do strony NMaaS",
     "MODAL": {
       "HEADER": "Proszę sprawdź skrzynkę pocztową",
-      "BODY": "Jeśli wprowadziłeś poprawny adres mailowy, link do zresetowania hasła został przesłany.",
+      "BODY": "Jeśli wprowadziłeś poprawny adres mailowy, link do zresetowania hasła został przesłany. Reset hasła dotyczy jedynie kont lokalnych.",
       "CLOSE_BUTTON": "Zamknij"
     },
     "SITE": {

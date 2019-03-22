@@ -478,7 +478,7 @@
     "GO_BACK": "Zurück zur NMaaS Seite",
     "MODAL": {
       "HEADER": "Bitte überprüfen Sie Ihre E-Mails",
-      "BODY": "Wenn Sie eine gültige E-Mail Adresse angegeben haben, werden wir Ihnen einen Link für das Zurücksetzen des Passworts senden.",
+      "BODY": "Wenn Sie eine gültige E-Mail Adresse angegeben haben, werden wir Ihnen einen Link für das Zurücksetzen des Passworts senden. Bitte beachten Sie, dass Sie das Kennwort nur für das lokale Konto zurücksetzen können.",
       "CLOSE_BUTTON": "Schließen"
     },
     "SITE": {
