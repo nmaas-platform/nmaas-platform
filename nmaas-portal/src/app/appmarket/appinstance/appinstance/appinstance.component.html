@@ -1,28 +1,28 @@
-<div class="container">
-	<link rel='stylesheet' href='https://unpkg.com/formiojs@latest/dist/formio.full.min.css'>
-	<div class="row">
-		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
-			<div class="thumbnail" *ngIf="app">
-				<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
-			</div>
-			<div class="thumbnail" *ngIf="!app">
-				<img alt="App logo" src="assets/images/app-logo-example.png"/>
-			</div>
-		</div>
-		<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+
+		<div class="container">
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-					<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
-					<rate [showVotes]="true" [short]="true" [pathUrl]="'/apps/' + app?.id + '/rate'"></rate>
-					<div class="text-muted" style="font-size: small;">
-						v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
-						| <a href="{{app?.wwwUrl}}">WWW</a>
-						| <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
-						| <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+				<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
+					<div class="thumbnail" *ngIf="app">
+						<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+					</div>
+					<div class="thumbnail" *ngIf="!app">
+						<img alt="App logo" src="assets/images/app-logo-example.png"/>
 					</div>
 				</div>
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-					<div class="text-right">
+				<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
+					<div class="row">
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
+							<rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
+							<div class="text-muted" style="font-size: small;">
+								v.{{app?.version}} | <a href="{{app?.licenseUrl}}" target="_blank">{{app?.license}}</a>
+								| <a href="{{app?.wwwUrl}}">WWW</a>
+								| <a href="{{app?.sourceUrl}}" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
+								| <a href="{{app?.issuesUrl}}" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
+							</div>
+						</div>
+						<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+							<div class="text-right">
 
 					</div>
 				</div>
@@ -145,4 +145,3 @@
 	<hr>
 	<nmaas-modal-app-restart [appInstanceId]="appInstanceId" [domainId]="appInstance?.domainId"></nmaas-modal-app-restart>
 </div>
-	

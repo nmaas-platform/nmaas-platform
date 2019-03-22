@@ -42,6 +42,7 @@
 		"defaultStorageSpace":20,
 		"configFileRepositoryRequired":true
 	},
+	"state": "ACTIVE",
 	"configTemplate": {
 		"template": {
 			"components": [

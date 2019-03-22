@@ -281,4 +281,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appRate.refresh();
   }
 
+  public getPathUrl(id: number): string{
+      if(!isNullOrUndefined(id) && !isNaN(id)){
+          return '/apps/' + id + '/rate/my';
+      }else{
+          return "";
+      }
+  }
+
 }

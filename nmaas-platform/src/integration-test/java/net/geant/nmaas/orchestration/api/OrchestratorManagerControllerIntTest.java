@@ -69,7 +69,7 @@ public class OrchestratorManagerControllerIntTest {
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, new ModelMapper())).build();
-        Application application = new Application("testapp");
+        Application application = new Application("testapp", "testversion","owner");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
         application.getAppDeploymentSpec().setDefaultStorageSpace(20);
         application.getAppDeploymentSpec().setConfigFileRepositoryRequired(true);

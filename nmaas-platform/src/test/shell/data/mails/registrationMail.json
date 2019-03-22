@@ -45,8 +45,8 @@
       "subject": "NMaaS: Rejestracja nowego użytkownika",
       "template": {
         "HEADER": "Drogi ${username},",
-        "CONTENT": "Użytkownik ${newUser} wypełnił formularz rejestracyjny i czeka na aktywacje konta",
-        "SENDER": "Z pozdrowieniami,<br />NMaaS Team",
+        "CONTENT": "Użytkownik ${newUser} wypełnił formularz rejestracyjny i czeka na aktywację konta.",
+        "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
       }

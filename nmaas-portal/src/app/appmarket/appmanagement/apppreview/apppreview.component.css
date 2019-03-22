@@ -1,0 +1,127 @@
+.tag-button{
+    background-color: white;
+    border: solid lightgray 1px;
+    color: gray;
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 8px 2px;
+    border-radius: 12px;
+}
+
+.tag-button:hover{
+    background-color: rgb(51, 122, 183);
+    color: white;
+}
+
+.block-light-gray{
+    background-image: linear-gradient(rgba(211, 211, 211, 0.1),rgba(211, 211, 211, 0.1));
+    color: black;
+    margin-left: 10px;
+}
+
+.block-border{
+    border-radius: 8px;
+}
+
+hr{
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.media-carousel .carousel-control.left
+{
+    /* left: -12px; */
+    background-image: none;
+    background: none repeat scroll 0 0 #222222;
+    border: 4px solid #FFFFFF;
+    border-radius: 23px 23px 23px 23px;
+    height: 40px;
+    width : 40px;
+    margin-top: 55px;
+}
+/* Next button  */
+.media-carousel .carousel-control.right
+{
+    /* right: -12px !important; */
+    background-image: none;
+    background: none repeat scroll 0 0 #222222;
+    border: 4px solid #FFFFFF;
+    border-radius: 23px 23px 23px 23px;
+    height: 40px;
+    width : 40px;
+    margin-top: 55px;
+}
+
+.carousel-inner .item img {
+    min-height: 150px;
+    max-height: 150px;
+}
+
+.modal-dialog{
+    position: relative;
+    display: table;
+    overflow-y: auto;
+    overflow-x: auto;
+    width: auto;
+    min-width: 300px;
+}
+
+.bs-callout {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    border-radius: 3px;
+}
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+.bs-callout-default {
+    border-left-color: #777;
+}
+.bs-callout-default h4 {
+    color: #777;
+}
+.bs-callout-primary {
+    border-left-color: #428bca;
+}
+.bs-callout-primary h4 {
+    color: #428bca;
+}
+.bs-callout-success {
+    border-left-color: #5cb85c;
+}
+.bs-callout-success h4 {
+    color: #5cb85c;
+}
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+.bs-callout-warning {
+    border-left-color: #f0ad4e;
+}
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+.bs-callout-info {
+    border-left-color: #5bc0de;
+}
+.bs-callout-info h4 {
+    color: #5bc0de;
+}

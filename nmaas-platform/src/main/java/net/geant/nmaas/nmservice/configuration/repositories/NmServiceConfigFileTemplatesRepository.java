@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface NmServiceConfigFileTemplatesRepository extends JpaRepository<NmServiceConfigurationTemplate, Long> {
-
     List<NmServiceConfigurationTemplate> findAllByApplicationId(Long applicationId);
+    void deleteAllByApplicationId(Long applicationId);
 
 }

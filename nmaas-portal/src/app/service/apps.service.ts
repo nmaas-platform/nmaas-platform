@@ -1,4 +1,3 @@
-
 import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -11,11 +10,8 @@ import { FileInfo } from '../model/fileinfo';
 import { AppConfigService } from '../service/appconfig.service';
 import { GenericDataService } from './genericdata.service';
 import {catchError, debounceTime} from 'rxjs/operators';
+import {AppStateChange} from "../model/appstatechange";
 import {isNullOrUndefined} from "util";
-
-
-
-
 
 @Injectable()
 export class AppsService extends GenericDataService {
@@ -75,6 +71,30 @@ export class AppsService extends GenericDataService {
 
     public deleteApp(appId: number): Observable<any> {
         return this.delete(this.appConfig.getApiUrl() + '/apps/' + appId);
+    }
+
+    public addApp(app:Application): Observable<any> {
+        return this.post(this.appConfig.getApiUrl() + '/apps', app);
+    }
+
+    public updateApp(app:Application) : Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps', app);
+    }
+
+    public uploadAppLogo(id: number, file: any): Observable<FileInfo> {
+        let fd: FormData = new FormData();
+        fd.append("file", file);
+        return this.post(this.appConfig.getApiUrl() + "/apps/" + id + '/logo', fd);
+    }
+
+    public uploadScreenshot(id: number, file: any): Observable<FileInfo> {
+        let fd: FormData = new FormData();
+        fd.append("file", file);
+        return this.post(this.appConfig.getApiUrl() + "/apps/" + id + '/screenshots', fd);
+    }
+
+    public changeApplicationState(id: number, appStateChange: AppStateChange): Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + "/apps/state/" + id, appStateChange);
     }
 
     private getByUrl(urlPath: string): Observable<any>{

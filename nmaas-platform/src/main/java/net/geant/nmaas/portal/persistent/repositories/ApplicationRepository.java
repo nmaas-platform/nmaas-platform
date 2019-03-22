@@ -13,4 +13,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 	List<Application> findByName(String name);
 	
 	List<Application> findByTags(Tag tag);
+
+	boolean existsByNameAndVersion(String name, String version);
 }

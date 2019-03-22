@@ -56,15 +56,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     private Configuration loadSingleConfiguration(){
-        if(repository.count() != 1){
+        if(repository.count() == 0){
+            addConfiguration(new ConfigurationView(false, true, "en"));
+        }
+        else if(repository.count() > 1){
             throw new IllegalStateException("Found "+repository.count()+" configuration instead of one");
         }
         return repository.findAll().get(0);
-    }
-
-    @Override
-    public void deleteAllConfigurations(){
-        if(this.repository.count() > 0)
-            this.repository.deleteAll();
     }
 }

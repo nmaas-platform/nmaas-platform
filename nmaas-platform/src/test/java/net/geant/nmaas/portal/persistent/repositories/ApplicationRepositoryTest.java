@@ -49,7 +49,7 @@ public class ApplicationRepositoryTest {
 	@Test
 	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})
 	public void testAddApplication() {
-		Application app1 = new Application("zabbix");
+		Application app1 = new Application("zabbix", "testversion", "owner");
 		app1.setTags(new HashSet<Tag>());
 		app1.getTags().add(new Tag("monitoring1"));
 		app1.getTags().add(new Tag("network1"));
@@ -87,7 +87,7 @@ public class ApplicationRepositoryTest {
 		managementTag = tagRepo.save(managementTag);
 		managementTag = tagRepo.findByName("management");
 		
-		Application app1 = new Application("zabbix");
+		Application app1 = new Application("zabbix", "testversion", "owner");
 		app1.setTags(new HashSet<Tag>());
 		app1.getTags().add(monitoringTag);
 		monitoringTag.getApplications().add(app1);
@@ -95,7 +95,7 @@ public class ApplicationRepositoryTest {
 		networkTag.getApplications().add(app1);
 		appRepo.saveAndFlush(app1);
 
-		Application app2 = new Application("librenms");
+		Application app2 = new Application("librenms", "testversion", "owner");
 		app2.setTags(new HashSet<Tag>());
 		app2.getTags().add(monitoringTag);
 		monitoringTag.getApplications().add(app2);

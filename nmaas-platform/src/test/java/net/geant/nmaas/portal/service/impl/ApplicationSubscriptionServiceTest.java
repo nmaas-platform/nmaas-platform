@@ -29,6 +29,8 @@ public class ApplicationSubscriptionServiceTest {
 
     Long applicationId = 1L;
     String applicationName = "app1";
+    String applicationVersion = "1.0.0";
+    String applicationOwner = "owner";
     Application app1;
 
     Long domainId = 1L;
@@ -38,7 +40,7 @@ public class ApplicationSubscriptionServiceTest {
     @BeforeEach
     public void setup() {
         appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications);
-        app1 = new Application(applicationId, applicationName);
+        app1 = new Application(applicationId, applicationName, applicationVersion, applicationOwner);
         domain1 = new Domain(domainId, domainName, domainName);
     }
 

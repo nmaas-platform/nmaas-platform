@@ -43,6 +43,16 @@ curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --h
 echo
 curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/contactFormMail.json
 echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appActiveMail.json
+echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeletedMail.json
+echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appNewMail.json
+echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appNotActiveMail.json
+echo
+curl -X POST $API_URL/mail/templates --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appRejectedMail.json
+echo
 echo Register User First with username user1
 curl -X POST $API_URL/auth/basic/registration --header "Content-Type: application/json" --header "Accept: application/json" -d @data/users/user1.json
 echo

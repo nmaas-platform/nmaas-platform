@@ -76,7 +76,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void createByIdsMethodShouldThrowObjectNotFoundExceptionDueToDomainObjectDoNotExists(){
         assertThrows(ObjectNotFoundException.class, () -> {
-            Application app = new Application("test");
+            Application app = new Application("test", "testVersion", "admin");
             when(applications.findApplication(anyLong())).thenReturn(Optional.of(app));
             when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
             applicationInstanceService.create((long) 0, (long) 0, "test");
@@ -86,7 +86,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void createMethodShouldThrowIllegalArgumentExceptionDueToDomainIsNull(){
         assertThrows(IllegalArgumentException.class, () -> {
-            Application app = new Application((long) 1, "test");
+            Application app = new Application((long) 1, "test", "testVersion", "admin");
             applicationInstanceService.create(null, app, "test");
         });
     }
@@ -94,7 +94,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void createMethodShouldThrowIllegalArgumentExceptionDueToDomainIdIsNull(){
         assertThrows(IllegalArgumentException.class, () -> {
-            Application app = new Application((long) 1, "test");
+            Application app = new Application((long) 1, "test", "testVersion", "admin");
             Domain domain = new Domain("test", "test");
             applicationInstanceService.create(domain, app, "test");
         });
@@ -112,7 +112,7 @@ public class ApplicationInstanceServiceTest {
     public void createMethodShouldThrowIllegalArgumentExceptionDueToApplicationIdIsNull(){
         assertThrows(IllegalArgumentException.class, () -> {
             Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application("test");
+            Application application = new Application("test", "testVersion", "admin");
             applicationInstanceService.create(domain, application, "test");
         });
     }
@@ -121,7 +121,7 @@ public class ApplicationInstanceServiceTest {
     public void createMethodShouldThrowIllegalArgumentExceptionDueToNameIsInvalid(){
         assertThrows(IllegalArgumentException.class, () -> {
             Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application((long) 1, "test");
+            Application application = new Application((long) 1, "test", "testVersion", "admin");
             when(validator.valid(anyString())).thenReturn(false);
             applicationInstanceService.create(domain, application, "test");
         });
@@ -131,7 +131,7 @@ public class ApplicationInstanceServiceTest {
     public void createMethodShouldThrowIllegalArgumentExceptionDueToNameIsNotUnique(){
         assertThrows(IllegalArgumentException.class, () -> {
             Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application((long) 1, "test");
+            Application application = new Application((long) 1, "test", "testVersion", "admin");
             when(validator.valid(anyString())).thenReturn(true);
             List<AppInstance> appInstances = new ArrayList<>();
             AppInstance appInstance = new AppInstance(application, domain, "test");
@@ -145,7 +145,7 @@ public class ApplicationInstanceServiceTest {
     public void createMethodShouldThrowApplicationSubscriptionNotActiveExceptionDueToMissingSubscriptionOrSubscriptionNotActive(){
         assertThrows(ApplicationSubscriptionNotActiveException.class, () -> {
             Domain domain = new Domain((long) 1, "test", "test");
-            Application application = new Application((long) 1, "test");
+            Application application = new Application((long) 1, "test", "testVersion", "admin");
             when(validator.valid(anyString())).thenReturn(true);
             List<AppInstance> appInstances = new ArrayList<>();
             when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
@@ -157,7 +157,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void createMethodShouldCorrectlyReturnAppInstanceObject(){
         Domain domain = new Domain((long) 1, "test", "test");
-        Application application = new Application((long) 1,"test");
+        Application application = new Application((long) 1,"test","testversion","owner");
         when(validator.valid(anyString())).thenReturn(true);
         List<AppInstance> appInstances = new ArrayList<>();
         when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
@@ -171,7 +171,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void createByIdsMethodShouldCorrectlyReturnAppInstanceObject(){
         Domain domain = new Domain((long) 0, "test", "test");
-        Application application = new Application((long) 0,"test");
+        Application application = new Application((long) 0,"test","testversion","owner");
         when(applications.findApplication(anyLong())).thenReturn(Optional.of(application));
         when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain));
         when(validator.valid(anyString())).thenReturn(true);
@@ -201,7 +201,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void deleteMethodShouldSuccessfulDeleteObject(){
         Domain domain = new Domain((long) 0, "test", "test");
-        Application application = new Application((long) 0,"test");
+        Application application = new Application((long) 0,"test","testversion","owner");
         AppInstance appInstance = new AppInstance(application, domain, "test");
         appInstance.setId((long) 0);
         when(appInstanceRepo.findById(anyLong())).thenReturn(Optional.of(appInstance));
@@ -220,7 +220,7 @@ public class ApplicationInstanceServiceTest {
     public void updateMethodShouldThrowIllegalArgumentExceptionDueToMissingApplicationInstanceId(){
         assertThrows(IllegalArgumentException.class, () -> {
             Domain domain = new Domain((long) 0, "test", "test");
-            Application application = new Application((long) 0, "test");
+            Application application = new Application((long) 0, "test", "testVersion", "admin");
             AppInstance appInstance = new AppInstance(application, domain, "test");
             applicationInstanceService.update(appInstance);
         });
@@ -229,7 +229,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void updateMethodShouldSuccessfulUpdateApplicationInstance(){
         Domain domain = new Domain((long) 0, "test", "test");
-        Application application = new Application((long) 0,"test");
+        Application application = new Application((long) 0,"test","testversion","owner");
         AppInstance appInstance = new AppInstance(application, domain, "test");
         appInstance.setId((long) 0);
         applicationInstanceService.update(appInstance);
@@ -252,7 +252,7 @@ public class ApplicationInstanceServiceTest {
     @Test
     public void findMethodShouldSuccessfulReturnObject(){
         Domain domain = new Domain((long) 0, "test", "test");
-        Application application = new Application((long) 0,"test");
+        Application application = new Application((long) 0,"test","testversion","owner");
         AppInstance appInstance = new AppInstance(application, domain, "test");
         appInstance.setId((long) 0);
         when(appInstanceRepo.findById(anyLong())).thenReturn(Optional.of(appInstance));
@@ -453,7 +453,7 @@ public class ApplicationInstanceServiceTest {
         user.setId((long) 0);
         Domain domain = new Domain("test", "test");
         domain.setId((long) 0);
-        Application testApp = new Application("test");
+        Application testApp = new Application("test","testversion","owner");
         AppInstance test1 = new AppInstance(testApp, domain, "test1");
         List<AppInstance> testList = new ArrayList<>();
         testList.add(test1);
@@ -512,7 +512,7 @@ public class ApplicationInstanceServiceTest {
         user.setId((long) 0);
         Domain domain = new Domain("test", "test");
         domain.setId((long) 0);
-        Application testApp = new Application("test");
+        Application testApp = new Application("test","testversion","owner");
         AppInstance test1 = new AppInstance(testApp, domain, "test1");
         List<AppInstance> testList = new ArrayList<>();
         testList.add(test1);

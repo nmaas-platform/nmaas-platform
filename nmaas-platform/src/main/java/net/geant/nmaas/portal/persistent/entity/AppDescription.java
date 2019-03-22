@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-class AppDescription {
+public class AppDescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

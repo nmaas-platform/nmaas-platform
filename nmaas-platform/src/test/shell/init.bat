@@ -82,6 +82,21 @@ echo.
 echo
 curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/contactFormMail.json
 echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appActiveMail.json
+echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appDeletedMail.json
+echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appNewMail.json
+echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appNotActiveMail.json
+echo.
+echo
+curl -X POST %API_URL%/mail/templates --header "Authorization: Bearer %token%" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/mails/appRejectedMail.json
+echo.
 
 echo
 echo Register User First with username user1

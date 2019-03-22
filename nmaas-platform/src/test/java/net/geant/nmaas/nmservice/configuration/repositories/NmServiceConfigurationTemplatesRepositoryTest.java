@@ -33,7 +33,7 @@ public class NmServiceConfigurationTemplatesRepositoryTest {
 
     @BeforeEach
     public void setup() {
-        Application app = new Application("oxidizedAppName");
+        Application app = new Application("oxidizedAppName", "testVersion", "owner");
         app.setVersion("oxidizedAppVersion");
         testAppId = applicationRepository.save(app).getId();
         NmServiceConfigurationTemplate oxidizedConfigTemplate1 = new NmServiceConfigurationTemplate();
