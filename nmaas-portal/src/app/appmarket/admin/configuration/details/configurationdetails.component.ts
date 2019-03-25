@@ -40,7 +40,7 @@ export class ConfigurationDetailsComponent extends BaseComponent implements OnIn
   public changeLanguageState(language:Language, state: boolean): void{
     if(language.language !== this.translate.currentLang && language.language !== this.translate.getDefaultLang()){
         language.enabled = state;
-        this.languageService.changeSupportedLanguageState(language).subscribe(() => {this.contentService.setUpdateRequiredFlag(true); this.langErrorMsg=false}, error => this.langErrorMsg = true);
+        this.languageService.changeSupportedLanguageState(language).subscribe(() => {this.languageService.setUpdateRequiredFlag(true); this.langErrorMsg=false}, () => this.langErrorMsg = true);
     } else {
       this.langErrorMsg = true;
     }

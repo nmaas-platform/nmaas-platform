@@ -118,6 +118,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS, "/api/orchestration/deployments/**/access").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/management/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/api/content/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/i18n/content/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/i18n/all/enabled").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/configuration/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/management/shibboleth/").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/mail").permitAll()
@@ -150,7 +152,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 										new AntPathRequestMatcher("/api/dcns/notifications/**/status"),
 										new AntPathRequestMatcher("/api/content/**"),
 										new AntPathRequestMatcher("/api/users/reset/**"),
-										new AntPathRequestMatcher("/api/mail")
+										new AntPathRequestMatcher("/api/mail"),
+										new AntPathRequestMatcher("/api/i18n/content/**", "GET"),
+										new AntPathRequestMatcher("/api/i18n/all/enabled", "GET")
 								}),
 								null,//failureHandler, 
 								tokenAuthenticationService),

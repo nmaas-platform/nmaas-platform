@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class LanguageView {
+@AllArgsConstructor
+@NoArgsConstructor
+public class InternationalizationBriefView {
+
+    private boolean enabled;
 
     private String language;
 
-    private boolean enabled;
 }

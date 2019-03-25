@@ -4,6 +4,7 @@ import {User} from "../../model";
 import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {TranslateService} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
+import {InternationalizationService} from "../../service/internationalization.service";
 
 @Component({
   selector: 'app-profile',
@@ -14,7 +15,7 @@ import {ContentDisplayService} from "../../service/content-display.service";
 export class ProfileComponent extends BaseComponent implements OnInit {
 
   constructor(protected profileService:ProfileService, private translate: TranslateService,
-              private contentService:ContentDisplayService) {
+              private languageService:InternationalizationService) {
       super();
   }
 
@@ -34,7 +35,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   }
 
   public getSupportedLanguages(){
-    this.contentService.getLanguages().subscribe(langs =>{
+    this.languageService.getEnabledLanguages().subscribe(langs =>{
       this.translate.addLangs(langs);
       this.languages = langs;
     });

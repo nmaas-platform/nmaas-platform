@@ -9,14 +9,15 @@ import {ModalComponent} from "../../shared/modal";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {ContentDisplayService} from "../../service/content-display.service";
-import {Observable, of} from "rxjs";
-import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from "angular-password-strength-meter";
+import {of} from "rxjs";
+import {PasswordStrengthMeterModule} from "angular-password-strength-meter";
 import {RecaptchaFormsModule} from 'ng-recaptcha/forms';
+import {InternationalizationService} from "../../service/internationalization.service";
 
 describe('Password reset component', () =>{
    let component: PasswordResetComponent;
    let fixture: ComponentFixture<PasswordResetComponent>;
-   let contentService: ContentDisplayService;
+   let languageService: InternationalizationService;
 
    beforeEach(async (() =>{
        TestBed.configureTestingModule({
@@ -42,8 +43,8 @@ describe('Password reset component', () =>{
    beforeEach(() => {
        fixture = TestBed.createComponent(PasswordResetComponent);
        component = fixture.componentInstance;
-       contentService = fixture.debugElement.injector.get(ContentDisplayService);
-       spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
+       languageService = fixture.debugElement.injector.get(InternationalizationService);
+       spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
        fixture.debugElement.injector.get(TranslateService).use("en");
        fixture.detectChanges();
    });
