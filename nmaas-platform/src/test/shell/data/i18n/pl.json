@@ -659,5 +659,14 @@
     "DONE": "Zakończono",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Poprzednia",
+    "NEXT": "Następna",
+    "SCREEN_READER": {
+      "PAGINATION": "Paginacja",
+      "PAGE": "strona",
+      "CURRENT": "Jesteś na stronie"
+    }
   }
 }
