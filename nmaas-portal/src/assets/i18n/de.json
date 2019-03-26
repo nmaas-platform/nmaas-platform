@@ -661,5 +661,14 @@
     "DONE": "Erledigt",
     "FAILURE": "Fehler",
     "UNKNOWN": "Unbekannt"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Bisherige",
+    "NEXT": "Nächster",
+    "SCREEN_READER": {
+      "PAGINATION": "Seitennummerierung",
+      "PAGE": "seite",
+      "CURRENT": "Du bist auf der Seite"
+    }
   }
 }
