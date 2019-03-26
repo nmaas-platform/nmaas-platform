@@ -39,11 +39,19 @@
 				"version": "1.0.1-alfa"
 			}
 		},
-		"defaultStorageSpace":20,
-		"configFileRepositoryRequired":true
+		"defaultStorageSpace":20
+	},
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired":true,
+		"templates": [
+			{
+				"configFileName":"addhosts.cfg",
+				"configFileTemplateContent":"<#list targets as target>\n-f ${target.ipAddress} ${target.snmpCommunity} ${target.snmpVersion}\n</#list>"
+			}
+		]
 	},
 	"state": "ACTIVE",
-	"configTemplate": {
+	"configWizardTemplate": {
 		"template":{
 			"components": [
 				{

@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -14,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class NmServiceConfigurationNavTemplatesTest {
+public class NavConfigFileTemplatesTest {
 
     @Autowired
     private NmServiceConfigurationFilePreparer configurationsPreparer;
@@ -28,6 +29,7 @@ public class NmServiceConfigurationNavTemplatesTest {
     public void setup() {
         Application app = new Application("navAppName","testversion", "owner");
         app.setVersion("navAppVersion");
+        app.setAppConfigurationSpec(new AppConfigurationSpec());
         navAppId = applicationRepository.save(app).getId();
     }
 

@@ -16,8 +16,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name="nm_service_configuration_template")
-public class NmServiceConfigurationTemplate {
+@Table
+public class ConfigFileTemplate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

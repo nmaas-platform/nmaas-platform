@@ -1,11 +1,11 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
 import javax.persistence.CascadeType;
@@ -63,13 +63,13 @@ public class Application implements Serializable {
 	private List<FileInfo> screenshots = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	List<AppDescription> descriptions;
+	private List<AppDescription> descriptions;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private ConfigTemplate configTemplate;
+	private ConfigWizardTemplate configWizardTemplate;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private ConfigTemplate configurationUpdateTemplate;
+	private ConfigWizardTemplate configUpdateWizardTemplate;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "application_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -80,6 +80,9 @@ public class Application implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private AppDeploymentSpec appDeploymentSpec;
+
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private AppConfigurationSpec appConfigurationSpec;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -105,7 +108,8 @@ public class Application implements Serializable {
 		checkArgument(name.matches("^[a-zA-Z0-9-]+$"), "Name contains illegal characters");
 		checkArgument(StringUtils.isNotEmpty(owner), "Owner must be specified");
 		checkArgument(appDeploymentSpec != null, "Application deployment specification cannot be null");
-		checkArgument(configTemplate != null && StringUtils.isNotEmpty(configTemplate.getTemplate()), "Configuration template cannot be null");
+		checkArgument(appConfigurationSpec != null, "Application configuration specification cannot be null");
+		checkArgument(configWizardTemplate != null && StringUtils.isNotEmpty(configWizardTemplate.getTemplate()), "Configuration template cannot be null");
 		checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
 	}
 

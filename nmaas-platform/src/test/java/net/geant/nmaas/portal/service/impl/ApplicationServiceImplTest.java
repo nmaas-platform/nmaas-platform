@@ -2,18 +2,20 @@ package net.geant.nmaas.portal.service.impl;
 
 import java.util.Arrays;
 import java.util.Collections;
-import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationTemplateService;
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesChartView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.api.KubernetesTemplateView;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesChart;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
+import net.geant.nmaas.portal.api.domain.AppConfigurationSpecView;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
-import net.geant.nmaas.portal.persistent.entity.ConfigTemplate;
+import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,14 +51,11 @@ public class ApplicationServiceImplTest {
     @InjectMocks
     ApplicationServiceImpl applicationService;
 
-    @Mock
-    NmServiceConfigurationTemplateService templateService;
-
     private ModelMapper modelMapper = new ModelMapper();
 
     @BeforeEach
     public void setup(){
-        applicationService = new ApplicationServiceImpl(applicationRepository, templateService, new ModelMapper());
+        applicationService = new ApplicationServiceImpl(applicationRepository, new ModelMapper());
     }
 
     @Test
@@ -104,6 +103,9 @@ public class ApplicationServiceImplTest {
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
             applicationView.setAppDeploymentSpec(null);
+            Application app = modelMapper.map(applicationView, Application.class);
+            app.setId(1L);
+            when(applicationRepository.save(any())).thenReturn(app);
             applicationService.create(applicationView, "admin");
         });
     }
@@ -112,7 +114,10 @@ public class ApplicationServiceImplTest {
     public void shouldThrowExceptionDueToIncorrectConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
-            applicationView.setConfigTemplate(null);
+            applicationView.setConfigWizardTemplate(null);
+            Application app = modelMapper.map(applicationView, Application.class);
+            app.setId(1L);
+            when(applicationRepository.save(any())).thenReturn(app);
             applicationService.create(applicationView, "admin");
         });
 
@@ -141,6 +146,9 @@ public class ApplicationServiceImplTest {
         assertThrows(IllegalStateException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
             applicationView.setDescriptions(Collections.singletonList(new AppDescriptionView("pl", "test", "test")));
+            Application app = modelMapper.map(applicationView, Application.class);
+            app.setId(1L);
+            when(applicationRepository.save(any())).thenReturn(app);
             applicationService.create(applicationView, "admin");
         });
     }
@@ -161,6 +169,7 @@ public class ApplicationServiceImplTest {
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         ApplicationView applicationView = getDefaultAppView();
         applicationView.setDescriptions(Arrays.asList(new AppDescriptionView("pl", "", ""), new AppDescriptionView("en", "test", "testfull")));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         Application result = applicationService.create(applicationView,"owner");
         assertTrue(StringUtils.isNotEmpty(result.getDescriptions().get(1).getBriefDescription()));
         assertTrue(StringUtils.isNotEmpty(result.getDescriptions().get(1).getFullDescription()));
@@ -215,7 +224,7 @@ public class ApplicationServiceImplTest {
     public void updateMethodShouldThrowExceptionDueToNullConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = modelMapper.map(getDefaultAppView(), Application.class);
-            app.setConfigTemplate(null);
+            app.setConfigWizardTemplate(null);
             applicationService.update(app);
         });
     }
@@ -224,7 +233,7 @@ public class ApplicationServiceImplTest {
     public void updateMethodShouldThrowExceptionDueToEmptyConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             Application app = modelMapper.map(getDefaultAppView(), Application.class);
-            app.setConfigTemplate(new ConfigTemplate(""));
+            app.setConfigWizardTemplate(new ConfigWizardTemplate(""));
             applicationService.update(app);
         });
     }
@@ -303,7 +312,8 @@ public class ApplicationServiceImplTest {
         application.getAppDeploymentSpec().setDefaultStorageSpace(1);
         application.getAppDeploymentSpec().setKubernetesTemplate(new KubernetesTemplate());
         application.getAppDeploymentSpec().getKubernetesTemplate().setChart(new KubernetesChart("chart", "version"));
-        application.setConfigTemplate(new ConfigTemplate("test-template"));
+        application.setConfigWizardTemplate(new ConfigWizardTemplate("test-template"));
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
         application.setDescriptions(Collections.singletonList(new AppDescription()));
         Application result = applicationService.update(application);
         assertNotNull(result);
@@ -378,7 +388,9 @@ public class ApplicationServiceImplTest {
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(1);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
-        applicationView.setConfigTemplate(new net.geant.nmaas.portal.api.domain.ConfigTemplate("template"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
+        applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
+        applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
         return applicationView;
     }
 

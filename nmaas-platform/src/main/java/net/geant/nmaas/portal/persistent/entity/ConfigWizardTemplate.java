@@ -19,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-public class ConfigTemplate implements Serializable {
+public class ConfigWizardTemplate implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -30,7 +30,7 @@ public class ConfigTemplate implements Serializable {
 	@Column(nullable = false)
 	private String template;
 	
-	public ConfigTemplate(String template) {
+	public ConfigWizardTemplate(String template) {
 		super();
 		this.template = template;
 	}
