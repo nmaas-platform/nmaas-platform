@@ -51,7 +51,7 @@
 		"configFileRepositoryRequired":false
 	},
 	"state": "ACTIVE",
-	"configTemplate": {
+	"configWizardTemplate": {
 		"template": {
 			"components": [
 				{

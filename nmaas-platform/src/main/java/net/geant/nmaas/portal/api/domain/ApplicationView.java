@@ -9,8 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ApplicationView extends ApplicationBriefView {
 
-	ConfigWizardTemplateView configTemplate;
-	ConfigWizardTemplateView configurationUpdateTemplate;
+	ConfigWizardTemplateView configWizardTemplate;
+	ConfigWizardTemplateView configUpdateWizardTemplate;
 	AppDeploymentSpec appDeploymentSpec;
 	AppConfigurationSpecView appConfigurationSpec;
 	

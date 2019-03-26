@@ -55,7 +55,7 @@
         ]
     },
     "state": "ACTIVE",
-    "configTemplate": {
+    "configWizardTemplate": {
         "template": {
             "components": [
                 {
@@ -296,7 +296,7 @@
             ]
         }
     },
-    "configurationUpdateTemplate": {
+    "configUpdateWizardTemplate": {
         "template": {
             "components": [
                 {

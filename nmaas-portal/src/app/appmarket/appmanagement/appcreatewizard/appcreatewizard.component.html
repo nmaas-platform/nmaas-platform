@@ -274,7 +274,7 @@
                 <div class="panel">
                     <div class="panel-heading">{{'APPS_WIZARD.CONFIG_WIZARD_TEMPLATE_LABEL' | translate}}</div>
                     <div class="panel-body">
-                        <form-builder *ngIf="formDisplayChange && app.configTemplate.template" [form]="app.configTemplate.template" (change)="setConfigTemplate($event)"></form-builder>
+                        <form-builder *ngIf="formDisplayChange && app.configWizardTemplate.template" [form]="app.configWizardTemplate.template" (change)="setConfigTemplate($event)"></form-builder>
                     </div>
                 </div>
                 <div class="panel">
@@ -286,8 +286,8 @@
                                 <input type="checkbox" id="addConfigUpdate" (change)="handleConfigTemplate()" name="addConfigUpdate" [defaultChecked]="false" [(ngModel)]="addConfigUpdate" tooltip="{{'APPS_WIZARD.ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                             </div>
                         </div>
-                        <div *ngIf="addConfigUpdate && app.configurationUpdateTemplate">
-                            <form-builder *ngIf="formDisplayChange" [form]="app.configurationUpdateTemplate.template" (change)="setUpdateConfigTemplate($event)"></form-builder>
+                        <div *ngIf="addConfigUpdate && app.configUpdateWizardTemplate">
+                            <form-builder *ngIf="formDisplayChange" [form]="app.configUpdateWizardTemplate.template" (change)="setUpdateConfigTemplate($event)"></form-builder>
                         </div>
                     </div>
                 </div>

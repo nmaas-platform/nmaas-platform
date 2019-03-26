@@ -25,5 +25,5 @@ public class AppInstanceView extends AppInstanceBase {
 	
 	private String url;
 
-	private ConfigWizardTemplateView configTemplate;
+	private ConfigWizardTemplateView configWizardTemplate;
 }

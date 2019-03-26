@@ -337,7 +337,7 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
-        ai.setConfigTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
+        ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
 
         return ai;
     }

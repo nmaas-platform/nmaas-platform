@@ -16,8 +16,8 @@ export class Application {
   public owner: string = undefined;
   public descriptions: AppDescription[] = [];
   public tags: string[] = [];
-  public configTemplate: ConfigWizardTemplate = undefined;
-  public configurationUpdateTemplate: ConfigWizardTemplate = undefined;
+  public configWizardTemplate: ConfigWizardTemplate = undefined;
+  public configUpdateWizardTemplate: ConfigWizardTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
   public appConfigurationSpec: AppConfigurationSpec = new AppConfigurationSpec();
   public state: ApplicationState = ApplicationState.NEW;

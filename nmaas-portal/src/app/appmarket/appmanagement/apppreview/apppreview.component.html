@@ -96,24 +96,24 @@
 </div>
 <hr>
 
-<div class="row" *ngIf="app?.configTemplate">
+<div class="row" *ngIf="app?.configWizardTemplate">
   <div class="col-xs-12">
     <h3>{{'APPS_PREVIEW.CONFIG_WIZARD_PREVIEW_HEADER' | translate}}</h3>
     <hr>
-    <formio *ngIf="app !== undefined && app.configTemplate.template !== undefined"
-            [form]="app.configTemplate.template"
+    <formio *ngIf="app !== undefined && app.configWizardTemplate.template !== undefined"
+            [form]="app.configWizardTemplate.template"
             [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'>
     </formio>
   </div>
 </div>
 
-<div class="row" *ngIf="app?.configurationUpdateTemplate">
+<div class="row" *ngIf="app?.configUpdateWizardTemplate">
     <hr>
     <div class="col-xs-12">
       <h3>{{'APPS_PREVIEW.UPDATE_CONFIG_WIZARD_PREVIEW_HEADER' | translate}}</h3>
       <hr>
-      <formio *ngIf="app !== undefined && app.configurationUpdateTemplate.template !== undefined"
-              [form]="app.configurationUpdateTemplate.template"
+      <formio *ngIf="app !== undefined && app.configUpdateWizardTemplate.template !== undefined"
+              [form]="app.configUpdateWizardTemplate.template"
               [options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'>
       </formio>
     </div>

@@ -104,9 +104,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       this.selectedDeployParameters.push(key);
     });
     this.app.appDeploymentSpec.deployParameters = temp;
-    if(isNullOrUndefined(this.app.configTemplate)){
-      this.app.configTemplate = new ConfigWizardTemplate();
-      this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
+    if(isNullOrUndefined(this.app.configWizardTemplate)){
+      this.app.configWizardTemplate = new ConfigWizardTemplate();
+      this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
     }
     this.getLogo(appToEdit.id);
     this.getScreenshots(appToEdit.id);
@@ -125,7 +125,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     }
     this.internationalization.getAllSupportedLanguages().subscribe(val => val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language})));
     this.basicAuth = this.hasAlreadyBasicAuth();
-    this.addConfigUpdate = !isNullOrUndefined(this.app.configurationUpdateTemplate);
+    this.addConfigUpdate = !isNullOrUndefined(this.app.configUpdateWizardTemplate);
   }
 
   public getLogo(id:number) : void {
@@ -163,8 +163,8 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       });
     });
     this.configFileTemplates.push(new ConfigFileTemplate());
-    this.app.configTemplate = new ConfigWizardTemplate();
-    this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
+    this.app.configWizardTemplate = new ConfigWizardTemplate();
+    this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
   }
 
   public nextStep(): void{
@@ -257,17 +257,17 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public setConfigTemplate(event): void {
-    if(!this.app.configTemplate){
-      this.app.configTemplate = new ConfigWizardTemplate();
+    if(!this.app.configWizardTemplate){
+      this.app.configWizardTemplate = new ConfigWizardTemplate();
     }
-    this.app.configTemplate.template = event.form;
+    this.app.configWizardTemplate.template = event.form;
   }
 
   public setUpdateConfigTemplate(event): void {
-    if(!this.app.configurationUpdateTemplate){
-      this.app.configurationUpdateTemplate = new ConfigWizardTemplate();
+    if(!this.app.configUpdateWizardTemplate){
+      this.app.configUpdateWizardTemplate = new ConfigWizardTemplate();
     }
-    this.app.configurationUpdateTemplate.template = event.form;
+    this.app.configUpdateWizardTemplate.template = event.form;
   }
 
   public getParametersTypes(): string[] {
@@ -317,17 +317,17 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public hasAlreadyBasicAuth() : boolean {
-    if(isNullOrUndefined(this.app.configTemplate)){
+    if(isNullOrUndefined(this.app.configWizardTemplate)){
       return false;
     }
-    let config: string = JSON.stringify(this.app.configTemplate.template);
+    let config: string = JSON.stringify(this.app.configWizardTemplate.template);
     return config.search(/accessCredentials/g) != -1 && config.search(/accessUsername/g) != -1 && config.search(/accessPassword/g) != -1;
   }
 
   public handleBasicAuth(){
-    if(!this.app.appConfigurationSpec.configFileRepositoryRequired && isNullOrUndefined(this.app.configTemplate)){
-      this.app.configTemplate = new ConfigWizardTemplate();
-      this.app.configTemplate.template = this.configTemplateService.getConfigTemplate();
+    if(!this.app.appConfigurationSpec.configFileRepositoryRequired && isNullOrUndefined(this.app.configWizardTemplate)){
+      this.app.configWizardTemplate = new ConfigWizardTemplate();
+      this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
     }
     if(this.basicAuth){
       this.addBasicAuth();
@@ -337,42 +337,42 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public addBasicAuth() : any {
-    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
     if(!isNullOrUndefined(config)){
       config.unshift(this.configTemplateService.getBasicAuth(this.app.name));
     }
-    if(isNullOrUndefined(this.app.configurationUpdateTemplate)){
-      this.app.configurationUpdateTemplate = new ConfigWizardTemplate();
-      this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+    if(isNullOrUndefined(this.app.configUpdateWizardTemplate)){
+      this.app.configUpdateWizardTemplate = new ConfigWizardTemplate();
+      this.app.configUpdateWizardTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
     }
-    this.app.configurationUpdateTemplate.template.components.unshift(this.configTemplateService.getBasicAuth(this.app.name));
+    this.app.configUpdateWizardTemplate.template.components.unshift(this.configTemplateService.getBasicAuth(this.app.name));
   }
 
   public removeBasicAuth() : any {
-    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
     if(!isNullOrUndefined(config)){
       let index = config.findIndex(val => val.key === 'accessCredentials');
       config.splice(index, 1);
     }
-    this.app.configurationUpdateTemplate.template.components = this.app.configurationUpdateTemplate.template.components.filter(val => val.key != "accessCredentials");
+    this.app.configUpdateWizardTemplate.template.components = this.app.configUpdateWizardTemplate.template.components.filter(val => val.key != "accessCredentials");
     this.removeEmptyUpdateConfig();
   }
 
   public removeEmptyUpdateConfig() : void {
-    let updateConfig = this.getNestedObject(this.app.configurationUpdateTemplate.template, ["components", 0, "components"]);
+    let updateConfig = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ["components", 0, "components"]);
     if(isNullOrUndefined(updateConfig) || updateConfig.length === 0){
-      this.app.configurationUpdateTemplate = undefined;
+      this.app.configUpdateWizardTemplate = undefined;
       this.addConfigUpdate = false;
     }
   }
 
   public handleConfigTemplate() : any {
-    if(this.addConfigUpdate && isNullOrUndefined(this.app.configurationUpdateTemplate)){
-      this.app.configurationUpdateTemplate = new ConfigWizardTemplate();
-      this.app.configurationUpdateTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
+    if(this.addConfigUpdate && isNullOrUndefined(this.app.configUpdateWizardTemplate)){
+      this.app.configUpdateWizardTemplate = new ConfigWizardTemplate();
+      this.app.configUpdateWizardTemplate.template = this.configTemplateService.getConfigUpdateTemplate();
     }
     if(!this.addConfigUpdate && !this.hasAlreadyBasicAuth()){
-      this.app.configurationUpdateTemplate = undefined;
+      this.app.configUpdateWizardTemplate = undefined;
     }
   }
 
@@ -398,7 +398,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public addDefaultElement() : void {
-    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
     if(!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))){
       config = config.find(val => val.key === 'configuration');
       config.components.length = 0;
@@ -407,15 +407,15 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   }
 
   public removeDefaultElement(): void {
-    let config = this.getNestedObject(this.app.configTemplate.template, ['components', 0, "components", 0, "components"]);
+    let config = this.getNestedObject(this.app.configWizardTemplate.template, ['components', 0, "components", 0, "components"]);
     if (!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
       config.find(val => val.key === 'configuration').components.length = 0;
     }
   }
 
   public removeElementsFromUpdateConfig() : void {
-    if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
-      let config = this.getNestedObject(this.app.configurationUpdateTemplate.template, ["components"]);
+    if(!isNullOrUndefined(this.app.configUpdateWizardTemplate)){
+      let config = this.getNestedObject(this.app.configUpdateWizardTemplate.template, ["components"]);
       if(!isNullOrUndefined(config) && !isNullOrUndefined(config.find(val => val.key === 'configuration'))) {
         config.find(val => val.key === 'configuration').components.length = 0;
       }

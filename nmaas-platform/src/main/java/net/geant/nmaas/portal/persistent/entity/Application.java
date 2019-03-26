@@ -69,7 +69,7 @@ public class Application implements Serializable {
 	private ConfigWizardTemplate configWizardTemplate;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private ConfigWizardTemplate configurationUpdateTemplate;
+	private ConfigWizardTemplate configUpdateWizardTemplate;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "application_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
