@@ -23,18 +23,25 @@ public class InternationalizationController {
         this.internationalizationService.addNewLanguage(new InternationalizationView(language, enabled, content));
     }
 
-    @GetMapping("/brief/all")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
-    @ResponseStatus(HttpStatus.OK)
-    public List<InternationalizationBriefView> getAllSupportedBriefLanguages(){
-        return this.internationalizationService.getAllSupportedBriefLanguages();
+    @PatchMapping("/{language}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateLanguageContent(@PathVariable("language") String language, @RequestBody String content) {
+        this.internationalizationService.updateLanguage(language, content);
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @ResponseStatus(HttpStatus.OK)
-    public List<InternationalizationView> getAllSupportedLanguages(){
+    public List<InternationalizationBriefView> getAllSupportedLanguages(){
         return this.internationalizationService.getAllSupportedLanguages();
+    }
+
+    @GetMapping("/{language}")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    public InternationalizationView getLanguage(@PathVariable String language){
+        return this.internationalizationService.getLanguage(language);
     }
 
     @PutMapping("/state")
@@ -46,8 +53,8 @@ public class InternationalizationController {
 
     @GetMapping("/content/{language}")
     @ResponseStatus(HttpStatus.OK)
-    public String getLanguage(@PathVariable("language") String language) {
-        return this.internationalizationService.getLanguage(language);
+    public String getLanguageContent(@PathVariable("language") String language) {
+        return this.internationalizationService.getLanguageContent(language);
     }
 
     @GetMapping("/all/enabled")

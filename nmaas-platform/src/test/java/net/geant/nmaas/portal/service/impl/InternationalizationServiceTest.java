@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
@@ -79,7 +80,7 @@ public class InternationalizationServiceTest {
     @Test
     public void shouldGetAllSupportedLanguages(){
         when(repository.findAll()).thenReturn(Collections.singletonList(new Internationalization(1L, "pl", true, "{\"test\":\"content\"")));
-        List<InternationalizationView> languageList = internationalizationService.getAllSupportedLanguages();
+        List<InternationalizationBriefView> languageList = internationalizationService.getAllSupportedLanguages();
         assertEquals(1, languageList.size());
         assertEquals("pl", languageList.get(0).getLanguage());
         assertTrue(languageList.get(0).isEnabled());
@@ -88,7 +89,7 @@ public class InternationalizationServiceTest {
     @Test
     public void shouldReturnEmptyList(){
         when(repository.findAll()).thenReturn(Collections.emptyList());
-        List<InternationalizationView> languageList = internationalizationService.getAllSupportedLanguages();
+        List<InternationalizationBriefView> languageList = internationalizationService.getAllSupportedLanguages();
         assertTrue(languageList.isEmpty());
     }
 
@@ -123,14 +124,14 @@ public class InternationalizationServiceTest {
     public void shouldGetLanguage(){
         Internationalization internationalization = new Internationalization(1L, "pl", true, "{\"test\":\"content\"");
         when(repository.findByLanguageOrderByIdDesc("pl")).thenReturn(Optional.of(internationalization));
-        assertEquals(internationalization.getContent(), internationalizationService.getLanguage("pl"));
+        assertEquals(internationalization.getContent(), internationalizationService.getLanguageContent("pl"));
     }
 
     @Test
     public void shouldThrowAnExceptionWhenLanguageIsNotAvailable(){
         assertThrows(IllegalStateException.class, () -> {
             when(repository.findByLanguageOrderByIdDesc(any())).thenReturn(Optional.empty());
-            internationalizationService.getLanguage("pl");
+            internationalizationService.getLanguageContent("pl");
         });
     }
 

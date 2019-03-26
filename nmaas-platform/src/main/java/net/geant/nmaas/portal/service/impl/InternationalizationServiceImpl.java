@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationBriefView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 import net.geant.nmaas.portal.persistent.entity.Internationalization;
@@ -59,17 +60,37 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     }
 
     @Override
-    public List<InternationalizationBriefView> getAllSupportedBriefLanguages(){
+    @Transactional
+    public void updateLanguage(String language, String content){
+        checkRequest(language, content);
+        Internationalization internationalization = repository.findByLanguageOrderByIdDesc(language).orElseThrow(() -> new IllegalArgumentException("Language not found"));
+        internationalization.setContent(content);
+        repository.save(internationalization);
+    }
+
+    private void checkRequest(String language, String content){
+        if(StringUtils.isEmpty(language)){
+            throw new IllegalArgumentException("Language must be specified");
+        }
+        if(StringUtils.isEmpty(content) || !isJsonValid(content)){
+            throw new IllegalArgumentException("New language must contain proper json object");
+        }
+    }
+
+    @Override
+    public List<InternationalizationBriefView> getAllSupportedLanguages(){
         return repository.findAll().stream()
                 .map(lang -> modelMapper.map(lang, InternationalizationBriefView.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<InternationalizationView> getAllSupportedLanguages(){
-        return repository.findAll().stream()
+    @Transactional
+    public InternationalizationView getLanguage(String language){
+        return repository
+                .findByLanguageOrderByIdDesc(language)
                 .map(lang -> modelMapper.map(lang, InternationalizationView.class))
-                .collect(Collectors.toList());
+                .orElseThrow(() -> new IllegalArgumentException("Language is not available"));
     }
 
     @Override
@@ -84,7 +105,7 @@ public class InternationalizationServiceImpl implements InternationalizationServ
     }
 
     @Override
-    public String getLanguage(String language){
+    public String getLanguageContent(String language){
         return repository
                 .findByLanguageOrderByIdDesc(language)
                 .map(Internationalization::getContent)

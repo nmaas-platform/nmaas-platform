@@ -15,15 +15,15 @@ export class InternationalizationService extends GenericDataService{
   }
 
   public saveLanguageContent(language: Language) : Observable<any> {
-    return this.post(this.getInternationalizationUrl()+ language.language + '?enabled=' + language.enabled, language);
+    return this.patch(this.getInternationalizationUrl()+ language.language, language.content);
   }
 
   public getAllSupportedLanguages():Observable<Language[]>{
-    return this.get(this.getInternationalizationUrl() + 'brief/all');
+    return this.get(this.getInternationalizationUrl() + 'all');
   }
 
-  public getAllSupportedLanguagesWithContent(): Observable<Language[]> {
-    return this.get(this.getInternationalizationUrl() + 'all');
+  public getLanguage(language: string): Observable<Language> {
+    return this.get(this.getInternationalizationUrl() + language);
   }
 
   public changeSupportedLanguageState(language: Language):Observable<any>{

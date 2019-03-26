@@ -6,9 +6,10 @@ import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
 
 public interface InternationalizationService {
     void addNewLanguage(InternationalizationView newLanguage);
-    List<InternationalizationBriefView> getAllSupportedBriefLanguages();
-    List<InternationalizationView> getAllSupportedLanguages();
+    void updateLanguage(String language, String content);
+    List<InternationalizationBriefView> getAllSupportedLanguages();
+    InternationalizationView getLanguage(String language);
     void changeLanguageState(InternationalizationBriefView language);
-    String getLanguage(String language);
+    String getLanguageContent(String language);
     List<String> getEnabledLanguages();
 }
