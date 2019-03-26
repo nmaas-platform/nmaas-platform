@@ -114,7 +114,7 @@ public class ApplicationServiceImplTest {
     public void shouldThrowExceptionDueToIncorrectConfigTemplate(){
         assertThrows(IllegalArgumentException.class, () -> {
             ApplicationView applicationView = getDefaultAppView();
-            applicationView.setConfigTemplate(null);
+            applicationView.setConfigWizardTemplate(null);
             Application app = modelMapper.map(applicationView, Application.class);
             app.setId(1L);
             when(applicationRepository.save(any())).thenReturn(app);
@@ -169,7 +169,7 @@ public class ApplicationServiceImplTest {
         when(applicationRepository.save(isA(Application.class))).thenReturn(application);
         ApplicationView applicationView = getDefaultAppView();
         applicationView.setDescriptions(Arrays.asList(new AppDescriptionView("pl", "", ""), new AppDescriptionView("en", "test", "testfull")));
-        applicationView.setConfigTemplate(new ConfigWizardTemplateView("template"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         Application result = applicationService.create(applicationView,"owner");
         assertTrue(StringUtils.isNotEmpty(result.getDescriptions().get(1).getBriefDescription()));
         assertTrue(StringUtils.isNotEmpty(result.getDescriptions().get(1).getFullDescription()));
@@ -388,7 +388,7 @@ public class ApplicationServiceImplTest {
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(1);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
-        applicationView.setConfigTemplate(new ConfigWizardTemplateView("template"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
         applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
         return applicationView;

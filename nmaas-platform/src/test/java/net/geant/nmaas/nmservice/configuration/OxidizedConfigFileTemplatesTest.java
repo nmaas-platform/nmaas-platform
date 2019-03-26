@@ -131,7 +131,7 @@ public class OxidizedConfigFileTemplatesTest {
         appDeploymentSpec.setKubernetesTemplate(new KubernetesTemplateView(new KubernetesChartView("name", "version"), "archive"));
         appDeploymentSpec.setDefaultStorageSpace(1);
         applicationView.setAppDeploymentSpec(appDeploymentSpec);
-        applicationView.setConfigTemplate(new ConfigWizardTemplateView("template"));
+        applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
         applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
         return applicationView;
