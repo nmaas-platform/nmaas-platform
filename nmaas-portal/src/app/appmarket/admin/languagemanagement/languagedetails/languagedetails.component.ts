@@ -23,6 +23,11 @@ export class LanguageDetailsComponent implements OnInit {
   public keys: string[] = [];
   public hide: boolean[] = [];
   public hideMails: boolean[] = [];
+  public newKeys: string[] = [];
+  public newValues: string[] = [];
+  public newNestedKeys: any[] = [];
+  public newNestedValues: any[] = [];
+  public errorMsg: string;
 
   public advanced: boolean = false;
   public switchLabel: string;
@@ -38,7 +43,19 @@ export class LanguageDetailsComponent implements OnInit {
             this.language = lang;
             this.languageContent = JSON.parse(lang.content);
             this.keys = this.getKeys(this.languageContent);
-            this.keys.forEach(() => this.hide.push(true));
+            this.keys.forEach(key => {
+                this.hide.push(true);
+                this.newKeys.push("");
+                this.newValues.push("");
+                this.newNestedKeys.push([]);
+                this.newNestedValues.push([]);
+                this.getKeys(key).forEach(value => {
+                    if(this.isObject(value)){
+                        this.newNestedKeys[this.newNestedKeys.length-1].push("");
+                        this.newNestedValues[this.newNestedValues.length-1].push("");
+                    }
+                })
+            });
             this.mailTemplateService.getTemplates().subscribe(templates => {
                 this.mailTemplates = templates;
                 templates.forEach(() => this.hideMails.push(true));
@@ -77,6 +94,36 @@ export class LanguageDetailsComponent implements OnInit {
 
   public prepareData(){
       this.language.content = this.languageContent;
+  }
+
+  public handleAddingNewElements(element: any, index: number, nestedIndex: number){
+      if(isNullOrUndefined(nestedIndex)){
+          this.addNewElement(element,index)
+      } else {
+          this.addNewNestedElement(element, index, nestedIndex);
+      }
+  }
+
+  public addNewElement(element: any, index: number){
+      if(!element.hasOwnProperty(this.newKeys[index])){
+          element[this.newKeys[index]] = this.newValues[index];
+          this.errorMsg = undefined;
+          this.newKeys[index] = "";
+          this.newValues[index] = "";
+      } else {
+          this.errorMsg = this.translate.instant('LANGUAGE_MANAGEMENT.KEY_EXISTS_MESSAGE');
+      }
+  }
+
+  public addNewNestedElement(element: any, index: number, nestedIndex: number){
+      if(!element.hasOwnProperty(this.newNestedKeys[index][nestedIndex])){
+          element[this.newNestedKeys[index][nestedIndex]] = this.newNestedValues[index][nestedIndex];
+          this.newNestedKeys[index][nestedIndex] = "";
+          this.newNestedValues[index][nestedIndex] = "";
+          this.errorMsg = undefined;
+      } else {
+          this.errorMsg = this.translate.instant('LANGUAGE_MANAGEMENT.KEY_EXISTS_MESSAGE');
+      }
   }
 
 }

@@ -29,12 +29,25 @@
                     <td><input [(ngModel)]="languageContent[key][innerKey][nestedKey]" name="input-{{innerKey}}-{{nestedKey}}-{{i}}" /></td>
                   </tr>
                 </ng-template>
+                <tr>
+                  <td><input [(ngModel)]="newNestedKeys[ix][i]" name="newNestedElementKey" /></td>
+                  <td><input [(ngModel)]="newNestedValues[ix][i]" name="newNestedElementValue" /></td>
+                </tr>
+                <button class="btn btn-primary" (click)="handleAddingNewElements(languageContent[key][innerKey], ix, i)">{{'LANGUAGE_MANAGEMENT.ADD_NEW_ITEM_BUTTON' | translate }}</button>
                 </tbody>
               </table>
             </tr>
           </ng-template>
+          <tr>
+            <td><input [(ngModel)]="newKeys[ix]" name="newElementKey" /></td>
+            <td><input [(ngModel)]="newValues[ix]" name="newElementValue" /></td>
+           </tr>
+          <button class="btn btn-primary" (click)="handleAddingNewElements(languageContent[key], ix, undefined)">{{'LANGUAGE_MANAGEMENT.ADD_NEW_ITEM_BUTTON' | translate }}</button>
         </tbody>
       </table>
+      <div class="alert alert-danger" *ngIf="errorMsg && !hide[ix]">
+        {{errorMsg}}
+      </div>
     </div>
   </div>
 
