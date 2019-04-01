@@ -24,7 +24,7 @@ import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
-import {isNullOrUndefined} from "util";
+import {debug, isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
 import {interval} from 'rxjs/internal/observable/interval';
@@ -205,7 +205,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   public redeploy(): void{
-    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log("Redeployed"));
+    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.debug("Redeployed"));
+  }
+
+  public removalFailed(): void{
+    this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.debug("Removed failed instance"));
   }
 
   public changeAdditionalParameters(additionalParameters: any): void{
