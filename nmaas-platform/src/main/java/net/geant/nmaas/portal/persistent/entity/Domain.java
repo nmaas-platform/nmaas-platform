@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -71,20 +72,20 @@ public class Domain implements Serializable {
 		this.active = active;
 	}
 
-	public Domain(String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass){
+	public Domain(String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, DcnDeploymentType dcnDeploymentType){
 		this(name, codename);
-		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass, dcnDeploymentType);
 	}
 
-	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
+	public Domain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain, DcnDeploymentType dcnDeploymentType) {
 		this(name, codename, active);
-		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass, dcnDeploymentType);
 		this.externalServiceDomain = externalServiceDomain;
 	}
 
-	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass) {
+	public Domain(Long id, String name, String codename, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, DcnDeploymentType dcnDeploymentType) {
 		this(id, name, codename);
-		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass);
+		this.domainTechDetails = new DomainTechDetails(dcnConfigured, kubernetesNamespace, kubernetesStorageClass, dcnDeploymentType);
 	}
 
 	public boolean isDcnConfigured(){
@@ -96,6 +97,10 @@ public class Domain implements Serializable {
 	}
 
 	public String getKubernetesStorageClass(){return this.domainTechDetails.getKubernetesStorageClass();}
+
+	public DcnDeploymentType getDcnDeploymentType(){
+		return this.domainTechDetails.getDcnDeploymentType();
+	}
 
 }
 

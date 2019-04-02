@@ -4,6 +4,8 @@ import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
+import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ActiveProfiles({"env_kubernetes", "dcn_none"})
+@ActiveProfiles({"env_kubernetes", "db_memory"})
 public class DummyDcnDeploymentExecutorWorkflowIntTest {
 
     @Autowired
@@ -32,13 +34,22 @@ public class DummyDcnDeploymentExecutorWorkflowIntTest {
     @MockBean
     private DcnRepositoryManager dcnRepositoryManager;
 
+    @Autowired
+    private DomainService domainService;
+
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
     private static final String DOMAIN = "domain";
 
+    @BeforeEach
+    public void setup(){
+        domainService.createDomain(DOMAIN, DOMAIN, true, false, null, null, null, DcnDeploymentType.NONE);
+    }
+
     @Test
     public void shouldCompleteDcnWorkflowWithDummyExecutor() {
-        when(appDeploymentRepositoryManager.loadDomain(any())).thenReturn(DOMAIN);
+        when(appDeploymentRepositoryManager.loadDomain(DEPLOYMENT_ID)).thenReturn(DOMAIN);
         when(dcnRepositoryManager.loadCurrentState(DOMAIN)).thenThrow(new InvalidDomainException());
+        when(dcnRepositoryManager.loadType(any())).thenReturn(DcnDeploymentType.NONE);
         eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));
         verify(appDeploymentRepositoryManager, timeout(1000)).loadAllWaitingForDcn(DOMAIN);
     }

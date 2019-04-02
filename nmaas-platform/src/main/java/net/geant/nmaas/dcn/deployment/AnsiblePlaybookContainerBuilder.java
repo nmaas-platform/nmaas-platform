@@ -6,14 +6,12 @@ import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.Action;
 import net.geant.nmaas.dcn.deployment.entities.AnsiblePlaybookVpnConfig.Type;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Profile("dcn_ansible")
 public class AnsiblePlaybookContainerBuilder {
 
     private static String ansibleDockerImageName;

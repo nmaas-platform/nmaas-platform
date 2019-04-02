@@ -1,5 +1,6 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
@@ -108,15 +109,15 @@ public class KubernetesClusterManagerTest {
         KCluster cluster = simpleKubernetesCluster();
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        Domain domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", null);
+        Domain domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", null, DcnDeploymentType.NONE);
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "");
+        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "", DcnDeploymentType.NONE);
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "domainStorageClass");
+        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "domainStorageClass", DcnDeploymentType.NONE);
         when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(domain.getDomainTechDetails().getKubernetesStorageClass()));
     }

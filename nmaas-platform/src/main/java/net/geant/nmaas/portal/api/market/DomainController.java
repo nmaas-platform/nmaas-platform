@@ -84,9 +84,9 @@ public class DomainController extends AppBaseController {
 		
 		Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(),
-					domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain());
-			this.domainService.storeDcnInfo(domain.getCodename());
+			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.isDcnConfigured(),
+					domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain(), domainRequest.getDcnDeploymentType());
+			this.domainService.storeDcnInfo(domain.getCodename(), domain.getDcnDeploymentType());
 
 			if(domain.isDcnConfigured()){
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
@@ -112,6 +112,7 @@ public class DomainController extends AppBaseController {
 		domain.setActive(domainUpdate.isActive());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
+		domain.getDomainTechDetails().setDcnDeploymentType(domainUpdate.getDcnDeploymentType());
 		if(domainUpdate.getExternalServiceDomain() == null || domainUpdate.getExternalServiceDomain().isEmpty()){
 			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
 		} else {
@@ -120,6 +121,7 @@ public class DomainController extends AppBaseController {
 		}
 		try {
 			domainService.updateDomain(domain);
+			domainService.updateDcnInfo(domain.getCodename(), domain.getDcnDeploymentType());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}
@@ -137,8 +139,10 @@ public class DomainController extends AppBaseController {
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
+		domain.getDomainTechDetails().setDcnDeploymentType(domainUpdate.getDcnDeploymentType());
 		try {
 			domainService.updateDomain(domain);
+			domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDcnDeploymentType());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}

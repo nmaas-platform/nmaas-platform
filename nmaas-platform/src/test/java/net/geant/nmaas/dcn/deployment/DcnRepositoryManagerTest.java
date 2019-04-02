@@ -172,7 +172,7 @@ public class DcnRepositoryManagerTest {
     }
 
     private void storeDefaultDcnInfoInRepository() throws InvalidDomainException {
-        DcnSpec spec = new DcnSpec("", DOMAIN);
+        DcnSpec spec = new DcnSpec("", DOMAIN, DcnDeploymentType.NONE);
         dcnRepositoryManager.storeDcnInfo(new DcnInfo(spec));
     }
 }

@@ -14,6 +14,7 @@ import {CacheService} from "../../../service/cache.service";
 import {AuthService} from "../../../auth/auth.service";
 import {ModalComponent} from '../../../shared/modal';
   import {map, shareReplay, take} from 'rxjs/operators';
+  import {DcnDeploymentType} from "../../../model/dcndeploymenttype";
 
 
 @Component({
@@ -28,6 +29,8 @@ export class DomainComponent extends BaseComponent implements OnInit {
   public domain: Domain;
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
+  private dcnDeploymentTypes: typeof DcnDeploymentType = DcnDeploymentType;
+  private keys: any = Object.keys;
 
   @ViewChild(ModalComponent)
   public modal:ModalComponent;

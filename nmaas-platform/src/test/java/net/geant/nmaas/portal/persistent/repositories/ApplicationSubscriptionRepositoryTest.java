@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
@@ -53,9 +54,9 @@ public class ApplicationSubscriptionRepositoryTest {
 		app3 = appRepo.save(new Application("APP3","testversion","owner"));
 		appRepo.flush();
 
-		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false,"testnamespace","teststorageclass"));
-		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2",false,"testnamespace","teststorageclass"));
-		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3",false,"testnamespace","teststorageclass"));
+		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false,"testnamespace","teststorageclass", DcnDeploymentType.NONE));
+		domain2 = domainRepo.save(new Domain("DOMAIN2", "D2",false,"testnamespace","teststorageclass", DcnDeploymentType.NONE));
+		domain3 = domainRepo.save(new Domain("DOMAIN3", "D3",false,"testnamespace","teststorageclass", DcnDeploymentType.NONE));
 		domainRepo.flush();
 		
 		appSub1 = appSubRepo.save(new ApplicationSubscription(domain1, app1, true));

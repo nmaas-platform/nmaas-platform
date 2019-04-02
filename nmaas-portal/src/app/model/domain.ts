@@ -1,3 +1,5 @@
+import {DcnDeploymentType} from "./dcndeploymenttype";
+
 export class Domain {
   public id: number = undefined;
   public name: string = undefined;
@@ -7,6 +9,7 @@ export class Domain {
   public kubernetesNamespace = undefined;
   public kubernetesStorageClass = undefined;
   public externalServiceDomain = undefined;
+  public dcnDeploymentType = undefined;
   
   constructor();  
   constructor(id?: number,
@@ -16,7 +19,8 @@ export class Domain {
               dcnConfigured?:boolean,
               kubernetesNamespace?:string,
               kubernetesStorageClass?:string,
-              externalServiceDomain?:string) {
+              externalServiceDomain?:string,
+              dcnDeploymentType?:DcnDeploymentType) {
     this.id = id;
     this.name = name;
     this.codename = codename;
@@ -25,5 +29,6 @@ export class Domain {
     this.kubernetesNamespace = kubernetesNamespace;
     this.kubernetesStorageClass = kubernetesStorageClass;
     this.externalServiceDomain = externalServiceDomain;
+    this.dcnDeploymentType = dcnDeploymentType;
   }
 }

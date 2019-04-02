@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 
 @NoArgsConstructor
 @Getter
@@ -23,6 +24,8 @@ public class DomainRequest {
 	private String kubernetesStorageClass;
 
 	private String externalServiceDomain;
+
+	private DcnDeploymentType dcnDeploymentType;
 	
 	private boolean active = true;
 

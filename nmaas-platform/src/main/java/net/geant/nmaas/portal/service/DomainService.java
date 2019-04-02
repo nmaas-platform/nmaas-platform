@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -24,9 +25,10 @@ public interface DomainService {
 	
 	Domain createDomain(String name, String codename);
 	Domain createDomain(String name, String codename, boolean active);
-	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain);
+	Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain, DcnDeploymentType dcnDeploymentType);
 
-	void storeDcnInfo(String domain);
+	void storeDcnInfo(String domain, DcnDeploymentType dcnDeploymentType);
+	void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType);
 
 	Optional<Domain> findDomain(String name);
 	Optional<Domain> findDomain(Long id);

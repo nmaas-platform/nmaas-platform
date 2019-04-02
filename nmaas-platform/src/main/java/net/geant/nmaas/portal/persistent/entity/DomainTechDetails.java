@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 
 @Embeddable
 @AllArgsConstructor
@@ -20,5 +21,7 @@ public class DomainTechDetails implements Serializable {
     private String kubernetesNamespace;
 
     private String kubernetesStorageClass;
+
+    private DcnDeploymentType dcnDeploymentType;
 
 }

@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -120,9 +121,9 @@ public class DomainServiceTest {
         String codename = "testdom";
         String kubernetesNamespace = "default-namespace";
         String kubernetesStorageClass = "kub-stor-class";
-        Domain domain = new Domain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null);
+        Domain domain = new Domain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null, DcnDeploymentType.NONE);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null);
+        Domain result = this.domainService.createDomain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null, DcnDeploymentType.NONE);
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));
         assertThat("Active flag is incorrect", !result.isActive());
@@ -135,7 +136,7 @@ public class DomainServiceTest {
     public void shouldUpdateDomain(){
         String name = "testdomain";
         String codename = "testdom";
-        Domain domain = new Domain(1L, name, codename, true, "default", "default");
+        Domain domain = new Domain(1L, name, codename, true, "default", "default", DcnDeploymentType.NONE);
         this.domainService.updateDomain(domain);
         verify(domainRepository, times(1)).save(domain);
     }

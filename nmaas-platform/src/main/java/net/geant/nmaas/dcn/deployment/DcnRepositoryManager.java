@@ -61,6 +61,13 @@ public class DcnRepositoryManager {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateDcnDeploymentType(String domain, DcnDeploymentType dcnDeploymentType){
+        DcnInfo dcnInfo = loadDcnOrThrowException(domain);
+        dcnInfo.setDcnDeploymentType(dcnDeploymentType);
+        dcnInfoRepository.save(dcnInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeDcnInfo(String domain) {
         DcnInfo dcnInfo = loadDcnOrThrowException(domain);
         dcnInfoRepository.delete(dcnInfo);
@@ -76,6 +83,10 @@ public class DcnRepositoryManager {
 
     public DcnDeploymentState loadCurrentState(String domain) {
         return dcnInfoRepository.getStateByDomain(domain).orElseThrow(() -> new InvalidDomainException(domain));
+    }
+
+    public DcnDeploymentType loadType(String domain){
+        return this.loadDcnOrThrowException(domain).getDcnDeploymentType();
     }
 
     private DcnInfo loadDcnOrThrowException(String domain) {

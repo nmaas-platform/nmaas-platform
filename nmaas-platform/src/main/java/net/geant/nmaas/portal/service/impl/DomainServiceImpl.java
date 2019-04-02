@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
@@ -121,11 +122,11 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public Domain createDomain(String name, String codename, boolean active) {
-		return createDomain(name, codename, active, false, null, null, null);
+		return createDomain(name, codename, active, false, null, null, null, null);
 	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
+	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain, DcnDeploymentType dcnDeploymentType) {
 		checkParam(name);
 		checkParam(codename);
 
@@ -142,25 +143,30 @@ public class DomainServiceImpl implements DomainService {
 			checkArgument(!domainRepo.existsByExternalServiceDomain(externalServiceDomain), "External service domain is not unique");
 		}
 		try {
-			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass, externalServiceDomain));
+			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass, externalServiceDomain, dcnDeploymentType));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
 	}
 
 	@Override
-	public void storeDcnInfo(String domain) {
-		this.dcnRepositoryManager.storeDcnInfo(new DcnInfo(constructDcnSpec(domain)));
+	public void storeDcnInfo(String domain, DcnDeploymentType dcnDeploymentType) {
+		this.dcnRepositoryManager.storeDcnInfo(new DcnInfo(constructDcnSpec(domain, dcnDeploymentType)));
 	}
 
-	private DcnSpec constructDcnSpec(String domain) {
-		return new DcnSpec(buildDcnName(domain), domain);
+	private DcnSpec constructDcnSpec(String domain, DcnDeploymentType dcnDeploymentType) {
+		return new DcnSpec(buildDcnName(domain), domain, dcnDeploymentType);
 	}
 
 	private String buildDcnName(String domain) {
 		return domain + "-" + System.nanoTime();
 	}
-	
+
+	@Override
+    public void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType){
+	    this.dcnRepositoryManager.updateDcnDeploymentType(domain, dcnDeploymentType);
+    }
+
 	@Override
 	public Optional<Domain> findDomain(String name) {
 		return domainRepo.findByName(name);
