@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent;
 
 import net.geant.nmaas.portal.PersistentConfig;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -46,7 +47,7 @@ public class UserRepositoryTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN, DOMAIN);
+		domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
 		userRepository.deleteAll();
 	}
 

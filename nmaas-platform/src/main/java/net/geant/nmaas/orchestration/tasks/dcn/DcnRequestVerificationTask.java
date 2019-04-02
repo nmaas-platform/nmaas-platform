@@ -2,9 +2,9 @@ package net.geant.nmaas.orchestration.tasks.dcn;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.dcn.deployment.repositories.DomainDcnDetailsRepository;
 import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class DcnRequestVerificationTask extends BaseDcnTask {
 
-    private DomainService domainService;
+    private DomainDcnDetailsRepository repository;
 
     @Autowired
-    public DcnRequestVerificationTask(DomainService domainService){
-        this.domainService = domainService;
+    public DcnRequestVerificationTask(DomainDcnDetailsRepository repository){
+        this.repository = repository;
     }
 
     @EventListener
@@ -38,8 +38,8 @@ public class DcnRequestVerificationTask extends BaseDcnTask {
     }
 
     private DcnSpec constructDcnSpec(String domainName) {
-        Domain domain = domainService.findDomainByCodename(domainName).orElseThrow(() -> new IllegalArgumentException("Domain does not exist"));
-        return new DcnSpec(buildDcnName(domainName), domainName, domain.getDcnDeploymentType());
+        DomainDcnDetails domainDcnDetails = repository.findByDomainCodename(domainName).orElseThrow(() -> new IllegalArgumentException("Domain does not exist"));
+        return new DcnSpec(buildDcnName(domainName), domainName, domainDcnDetails.getDcnDeploymentType());
     }
 
     private String buildDcnName(String domain) {

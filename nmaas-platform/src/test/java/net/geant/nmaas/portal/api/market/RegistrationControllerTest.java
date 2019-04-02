@@ -41,9 +41,9 @@ public class RegistrationControllerTest {
 
     private Registration registration;
 
-    private static final Domain GLOBAL_DOMAIN = new Domain(1L,"global", "global", true, "namespace", "storage", DcnDeploymentType.NONE);
+    private static final Domain GLOBAL_DOMAIN = new Domain(1L,"global", "global", true);
 
-    private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true,  "namespace", "storage", DcnDeploymentType.NONE);
+    private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true);
 
     @BeforeEach
     public void setup(){

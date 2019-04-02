@@ -1,8 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.UserToken;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.UserRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -30,7 +32,6 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -86,19 +87,19 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         when(principal.getName()).thenReturn("admin");
 
         domains.createGlobalDomain();
-        domains.createDomain(DOMAIN, DOMAIN);
+        domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
 
         //Add extra users, default admin is already there
-        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Arrays.asList(ROLE_SYSTEM_ADMIN));
+        User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Collections.singletonList(ROLE_SYSTEM_ADMIN));
         admin.setEmail("manager@testemail.com");
         userRepo.save(admin);
 
-        User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Arrays.asList(ROLE_USER));
+        User userStub = new User("userEntity", true, "userEntity", domains.findDomain(DOMAIN).get(), Collections.singletonList(ROLE_USER));
         userStub.setFirstname("Test");
         userStub.setLastname("Test");
         userStub.setEmail("test@gmail.com");
         userEntity = userRepo.save(userStub);
-        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Arrays.asList(ROLE_USER));
+        User user2 = new User("user2", true, "user2", domains.findDomain(DOMAIN).get(), Collections.singletonList(ROLE_USER));
         user2.setEmail("user2@testemail.com");
         userRepo.save(user2);
 

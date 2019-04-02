@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,11 +42,11 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
-	UserService userService;
+	private UserService userService;
 	
-	DomainService domainService;
+	private DomainService domainService;
 
-	ApplicationEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
 	private static final String DOMAIN_NOT_FOUND = "Domain not found.";
@@ -84,11 +85,10 @@ public class DomainController extends AppBaseController {
 		
 		Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(), domainRequest.isDcnConfigured(),
-					domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain(), domainRequest.getDcnDeploymentType());
-			this.domainService.storeDcnInfo(domain.getCodename(), domain.getDcnDeploymentType());
+			domain = domainService.createDomain(domainRequest);
+			this.domainService.storeDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 
-			if(domain.isDcnConfigured()){
+			if(domain.getDomainDcnDetails().isDcnConfigured()){
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
 			}
@@ -110,18 +110,18 @@ public class DomainController extends AppBaseController {
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
-		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
-		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
-		domain.getDomainTechDetails().setDcnDeploymentType(domainUpdate.getDcnDeploymentType());
-		if(domainUpdate.getExternalServiceDomain() == null || domainUpdate.getExternalServiceDomain().isEmpty()){
-			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
+		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+		if(StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())){
+			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		} else {
-			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getExternalServiceDomain()), "External service domain is not unique");
-			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
+			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		}
 		try {
 			domainService.updateDomain(domain);
-			domainService.updateDcnInfo(domain.getCodename(), domain.getDcnDeploymentType());
+			domainService.updateDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}
@@ -137,12 +137,12 @@ public class DomainController extends AppBaseController {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
-		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
-		domain.getDomainTechDetails().setDcnDeploymentType(domainUpdate.getDcnDeploymentType());
+		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
+		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
 		try {
 			domainService.updateDomain(domain);
-			domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDcnDeploymentType());
+			domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}
@@ -158,10 +158,10 @@ public class DomainController extends AppBaseController {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
+		domain.getDomainDcnDetails().setDcnConfigured(domainUpdate.getDomainDcnDetails().isDcnConfigured());
 		try{
 			domainService.updateDomain(domain);
-			if(domain.isDcnConfigured()){
+			if(domain.getDomainDcnDetails().isDcnConfigured()){
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
 			} else{

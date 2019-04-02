@@ -1,5 +1,7 @@
 {
   "name":"Domain Two",
   "codename":"dom-two",
-  "dcnDeploymentType": "MANUAL"
+  "domainDcnDetails": {
+    "dcnDeploymentType": "MANUAL"
+  }
 }

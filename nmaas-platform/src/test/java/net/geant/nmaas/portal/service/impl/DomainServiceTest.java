@@ -4,6 +4,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
+import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -41,6 +47,8 @@ public class DomainServiceTest {
 
     DomainRepository domainRepository = mock(DomainRepository.class);
 
+    DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
+
     UserService userService = mock(UserService.class);
 
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
@@ -53,7 +61,7 @@ public class DomainServiceTest {
     public void setup(){
         validator = new DefaultCodenameValidator("[a-z-]{2,8}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, userService, userRoleRepo, dcnRepositoryManager, new ModelMapper());
+        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, domainTechDetailsRepository, userService, userRoleRepo, dcnRepositoryManager, new ModelMapper());
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -80,7 +88,7 @@ public class DomainServiceTest {
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename);
+        Domain result = this.domainService.createDomain(new DomainRequest(name, codename, true));
         assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
         assertThat("Active is false", result.isActive());
     }
@@ -92,7 +100,7 @@ public class DomainServiceTest {
             String codename = "test-domain";
             Domain domain = new Domain(name, codename);
             when(domainRepository.save(domain)).thenReturn(domain);
-            this.domainService.createDomain(name, codename);
+            this.domainService.createDomain(new DomainRequest(name, codename, true));
         });
     }
 
@@ -100,7 +108,7 @@ public class DomainServiceTest {
     public void shouldNotCreateDomainWithNullName(){
         assertThrows(IllegalArgumentException.class, () -> {
             String codename = "test-domain";
-            this.domainService.createDomain(null, codename);
+            this.domainService.createDomain(new DomainRequest(null, codename,true));
         });
     }
 
@@ -110,7 +118,7 @@ public class DomainServiceTest {
         String codename = "testdom";
         Domain domain = new Domain(name, codename, false);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename, false);
+        Domain result = this.domainService.createDomain(new DomainRequest(name, codename, false));
         assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
         assertThat("Active is false", !result.isActive());
     }
@@ -121,22 +129,32 @@ public class DomainServiceTest {
         String codename = "testdom";
         String kubernetesNamespace = "default-namespace";
         String kubernetesStorageClass = "kub-stor-class";
-        Domain domain = new Domain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null, DcnDeploymentType.NONE);
+        Domain domain = new Domain(name, codename, false);
+        DomainTechDetails domainTechDetails = new DomainTechDetails(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails(null, codename, false, DcnDeploymentType.NONE);
+        domain.setDomainTechDetails(domainTechDetails);
+        domain.setDomainDcnDetails(domainDcnDetails);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null, DcnDeploymentType.NONE);
+        DomainRequest domainRequest = new DomainRequest(name, codename, false);
+        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE);
+        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        domainRequest.setDomainDcnDetailsView(domainDcnDetailsView);
+        domainRequest.setDomainTechDetailsView(domainTechDetailsView);
+        Domain result = this.domainService.createDomain(domainRequest);
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));
         assertThat("Active flag is incorrect", !result.isActive());
-        assertThat("dcnConfigured flag is incorrect", !result.isDcnConfigured());
-        assertThat("Kubernetes namespace mismatch", result.getKubernetesNamespace().equals(kubernetesNamespace));
-        assertThat("Kubernetes storage class mismatch", result.getKubernetesStorageClass().equals(kubernetesStorageClass));
+        assertThat("dcnConfigured flag is incorrect", !result.getDomainDcnDetails().isDcnConfigured());
+        assertThat("Kubernetes namespace mismatch", result.getDomainTechDetails().getKubernetesNamespace().equals(kubernetesNamespace));
+        assertThat("Kubernetes storage class mismatch", result.getDomainTechDetails().getKubernetesStorageClass().equals(kubernetesStorageClass));
     }
 
     @Test
     public void shouldUpdateDomain(){
         String name = "testdomain";
         String codename = "testdom";
-        Domain domain = new Domain(1L, name, codename, true, "default", "default", DcnDeploymentType.NONE);
+        Domain domain = new Domain(1L, name, codename, true);
+        domain.setDomainTechDetails(new DomainTechDetails());
         this.domainService.updateDomain(domain);
         verify(domainRepository, times(1)).save(domain);
     }

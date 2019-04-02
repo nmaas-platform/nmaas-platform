@@ -1,6 +1,5 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
@@ -12,8 +11,9 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceC
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.ExternalNetworkNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,13 +36,13 @@ public class KubernetesClusterManagerTest {
     private static final String DOMAIN = "testDomain";
 
     private KubernetesClusterRepository repository = mock(KubernetesClusterRepository.class);
-    private DomainService domainService = mock(DomainService.class);
+    private DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
 
     private KubernetesClusterManager manager;
 
     @BeforeEach
     public void setup() {
-        manager = new KubernetesClusterManager(repository, null, null, domainService);
+        manager = new KubernetesClusterManager(repository, null, null, domainTechDetailsRepository);
     }
 
     @Test
@@ -96,29 +96,33 @@ public class KubernetesClusterManagerTest {
         deploymentWithoutStorageClass.setDefaultNamespace("testNamespace");
         deploymentWithoutStorageClass.setDefaultStorageClass(null);
         clusterWithoutStorageClass.setDeployment(deploymentWithoutStorageClass);
-        when(repository.findAll()).thenReturn(Arrays.asList(clusterWithoutStorageClass));
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
+        when(repository.findAll()).thenReturn(Collections.singletonList(clusterWithoutStorageClass));
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         assertThat(manager.getStorageClass(DOMAIN).isPresent(), is(false));
     }
 
     @Test
     public void shouldReturnProperStorageClassName() throws UnknownHostException {
         when(repository.count()).thenReturn(1L);
-        when(repository.findAll()).thenReturn(Arrays.asList(simpleKubernetesCluster()));
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.empty());
+        when(repository.findAll()).thenReturn(Collections.singletonList(simpleKubernetesCluster()));
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.empty());
         KCluster cluster = simpleKubernetesCluster();
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        Domain domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", null, DcnDeploymentType.NONE);
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
+        DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null);
+        Domain domain = new Domain("Domain Name", DOMAIN, false);
+        domain.setDomainTechDetails(domainTechDetails);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "", DcnDeploymentType.NONE);
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
+        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "");
+        domain.setDomainTechDetails(domainTechDetails);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domain = new Domain("Domain Name", DOMAIN, false, "domainNamespace", "domainStorageClass", DcnDeploymentType.NONE);
-        when(domainService.findDomainByCodename(DOMAIN)).thenReturn(Optional.of(domain));
+        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "domainStorageClass");
+        domain.setDomainTechDetails(domainTechDetails);
+        when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(domain.getDomainTechDetails().getKubernetesStorageClass()));
     }
 

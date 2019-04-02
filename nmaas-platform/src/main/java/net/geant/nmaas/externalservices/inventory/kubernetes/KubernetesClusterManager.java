@@ -14,9 +14,12 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneK
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,14 +41,14 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
     private static final String NMAAS_NAMESPACE_PREFIX = "nmaas-ns-";
 
     private KubernetesClusterRepository repository;
-    private DomainService domainService;
+    private DomainTechDetailsRepository domainTechDetailsRepository;
     private ModelMapper modelMapper;
     private DomainServiceImpl.CodenameValidator namespaceValidator;
 
     @Autowired
-    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, @Qualifier("NamespaceValidator") DomainServiceImpl.CodenameValidator namespaceValidator, DomainService domainService) {
+    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, @Qualifier("NamespaceValidator") DomainServiceImpl.CodenameValidator namespaceValidator, DomainTechDetailsRepository domainTechDetailsRepository) {
         this.repository = repository;
-        this.domainService = domainService;
+        this.domainTechDetailsRepository = domainTechDetailsRepository;
         this.namespaceValidator = namespaceValidator;
         this.modelMapper = modelMapper;
     }
@@ -90,7 +93,7 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
     public String getExternalServiceDomain(String codename) {
         KClusterIngress cluster = loadSingleCluster().getIngress();
         if(cluster.getIngressPerDomain()){
-            return domainService.findDomainByCodename(codename)
+            return domainTechDetailsRepository.findByDomainCodename(codename)
                 .orElseThrow(()-> new IllegalArgumentException("Domain not found")).getExternalServiceDomain();
         }
         return cluster.getExternalServiceDomain();
@@ -148,7 +151,7 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
             case USE_DEFAULT_NAMESPACE:
                 return clusterDeployment.getDefaultNamespace();
             case USE_DOMAIN_NAMESPACE:
-                Optional<Domain> foundDomain = this.domainService.findDomainByCodename(domain);
+                Optional<DomainTechDetails> foundDomain = this.domainTechDetailsRepository.findByDomainCodename(domain);
                 if(foundDomain.isPresent()){
                     return foundDomain.get().getKubernetesNamespace();
                 }
@@ -160,8 +163,8 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
 
     @Override
     public Optional<String> getStorageClass(String domain) {
-        Optional <Domain> foundDomain = domainService.findDomainByCodename(domain);
-        if(foundDomain.isPresent() && foundDomain.get().getKubernetesStorageClass() != null && !foundDomain.get().getKubernetesStorageClass().isEmpty()){
+        Optional <DomainTechDetails> foundDomain = domainTechDetailsRepository.findByDomainCodename(domain);
+        if(foundDomain.isPresent() && StringUtils.isNotEmpty(foundDomain.get().getKubernetesStorageClass())){
             return Optional.of(foundDomain.get().getKubernetesStorageClass());
         }
         if (loadSingleCluster().getDeployment().getDefaultStorageClass() != null && !loadSingleCluster().getDeployment().getDefaultStorageClass().isEmpty()) {

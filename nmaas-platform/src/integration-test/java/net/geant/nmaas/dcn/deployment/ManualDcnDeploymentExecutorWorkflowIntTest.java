@@ -4,6 +4,8 @@ import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
+import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,9 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
 
     @BeforeEach
     public void setup(){
-        domainService.createDomain(DOMAIN, DOMAIN, true, false, null, null, null, DcnDeploymentType.MANUAL);
+        DomainRequest domainRequest = new DomainRequest(DOMAIN, DOMAIN, true);
+        domainRequest.setDomainDcnDetailsView(new DomainDcnDetailsView(null, DOMAIN, false, DcnDeploymentType.MANUAL));
+        domainService.createDomain(domainRequest);
     }
 
     @Test
