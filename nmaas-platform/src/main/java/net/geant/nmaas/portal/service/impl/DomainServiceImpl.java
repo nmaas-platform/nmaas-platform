@@ -142,8 +142,7 @@ public class DomainServiceImpl implements DomainService {
 		}
 		this.setCodenames(request);
 		try {
-			Domain domain = modelMapper.map(request, Domain.class);
-			return domainRepo.save(domain);
+			return domainRepo.save(modelMapper.map(request, Domain.class));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}

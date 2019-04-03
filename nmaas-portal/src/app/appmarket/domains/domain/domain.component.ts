@@ -70,7 +70,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
   }
 
   public updateDcnConfigured(): void {
-      this.domain.dcnConfigured = !this.domain.dcnConfigured;
+      this.domain.domainDcnDetails.dcnConfigured = !this.domain.domainDcnDetails.dcnConfigured;
       this.domainService.updateDcnConfigured(this.domain).subscribe((value) => {
         this.modal.hide();
         this.router.navigate(['domains/edit/'+value.id])
