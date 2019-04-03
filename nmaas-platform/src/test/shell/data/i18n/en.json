@@ -379,6 +379,7 @@
     "GO_TO_APP_BUTTON": "Go to app",
     "UNDEPLOY_BUTTON": "Undeploy",
     "RESTART_BUTTON": "Restart",
+    "REMOVE_BUTTON": "Remove failed",
     "REDEPLOY_BUTTON": "Redeploy",
     "UPDATE_CONFIG_BUTTON": "Update",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
@@ -442,7 +443,8 @@
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",
-      "ERROR": "Internal error"
+      "ERROR": "Internal error",
+      "FAILED_APPLICATION_REMOVED": "Failed application removed"
     }
   },
   "UNDEPLOY_MODAL": {
@@ -659,7 +661,8 @@
     "UNDEPLOYING": "Undeploying",
     "DONE": "Done",
     "FAILURE": "Failure",
-    "UNKNOWN": "Unknown"
+    "UNKNOWN": "Unknown",
+    "REMOVED": "Removed"
   },
   "PAGINATION": {
     "PREVIOUS": "Previous",

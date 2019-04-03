@@ -43,7 +43,7 @@
 					</div>
 					<div class="btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
 						<button class="btn btn-primary" (click)="redeploy()">{{'APP_INSTANCE.REDEPLOY_BUTTON' | translate}}</button>
-						<button class="btn btn-primary btn-warning" (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
+						<button class="btn btn-primary btn-danger" (click)="removalFailed()">{{'APP_INSTANCE.REMOVE_BUTTON' | translate}}</button>
 					</div>
 				</div>
 			</div>

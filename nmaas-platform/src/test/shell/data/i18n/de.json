@@ -380,6 +380,7 @@
     "GO_TO_APP_BUTTON": "Gehe zu App",
     "UNDEPLOY_BUTTON": "Deinstallieren",
     "RESTART_BUTTON": "Neustart",
+    "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
     "REDEPLOY_BUTTON": "Neu installieren",
     "UPDATE_CONFIG_BUTTON": "Update",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
@@ -443,7 +444,8 @@
       "APP_UPDATE_SUCCESS": "Anwendungskonfiguration erfolgreich aktualisiert",
       "APP_UPDATE_FAILED": "Update der Anwendungskonfiguration ist fehlgeschlagen",
       "UNKNOWN": "Unbekannter Zustand",
-      "ERROR": "Interner Fehler"
+      "ERROR": "Interner Fehler",
+      "FAILED_APPLICATION_REMOVED": "Fehlerhafte Anwendung entfernt"
     }
   },
   "UNDEPLOY_MODAL": {
@@ -660,7 +662,8 @@
     "UNDEPLOYING": "Deinstallieren",
     "DONE": "Erledigt",
     "FAILURE": "Fehler",
-    "UNKNOWN": "Unbekannt"
+    "UNKNOWN": "Unbekannt",
+    "REMOVED": "Entfernt"
   },
   "PAGINATION": {
     "PREVIOUS": "Bisherige",

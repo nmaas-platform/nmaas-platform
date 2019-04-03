@@ -378,6 +378,7 @@
     "GO_TO_APP_BUTTON": "Przejdź do aplikacji",
     "UNDEPLOY_BUTTON": "Zatrzymaj",
     "RESTART_BUTTON": "Restart",
+    "REMOVE_BUTTON": "Usuń wadliwą instancje",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
     "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
     "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
@@ -441,7 +442,8 @@
       "APP_UPDATE_SUCCESS": "Aplikacja zaktualizowana poprawnie",
       "APP_UPDATE_FAILED": "Aktualizacja aplikacji nie powiodła się",
       "UNKNOWN": "Nieznany stan",
-      "ERROR": "Błąd wewnętrzny"
+      "ERROR": "Błąd wewnętrzny",
+      "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta"
     }
   },
   "UNDEPLOY_MODAL": {
@@ -658,7 +660,8 @@
     "UNDEPLOYING": "Odinstalowywanie",
     "DONE": "Zakończono",
     "FAILURE": "Błąd",
-    "UNKNOWN": "Nieznany"
+    "UNKNOWN": "Nieznany",
+    "REMOVED": "Usunięty"
   },
   "PAGINATION": {
     "PREVIOUS": "Poprzednia",
