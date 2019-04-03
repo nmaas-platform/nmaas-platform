@@ -4,15 +4,13 @@ import {isUndefined} from 'util';
 
 import {AppInstance, AppInstanceState} from '../../../model/index';
 import {DomainService} from '../../../service/domain.service';
-import {AppInstanceService, AppsService} from '../../../service/index';
+import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service/index';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable, of} from 'rxjs';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {CustomerSearchCriteria} from "../../../service/index";
-import {element} from "protractor";
-import {TranslateModule, TranslateService} from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
 import {map} from 'rxjs/operators';
 import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
 import {SessionService} from "../../../service/session.service";
@@ -125,12 +123,14 @@ export class AppInstanceListComponent implements OnInit {
         this.appInstances = of<AppInstance[]>([]);
         break;
     }
+    //not REMOVED && not DONE
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => app.userFriendlyState != 'Undeployed')));
+      app => (app.userFriendlyState != "Removed" && app.userFriendlyState !== 'Failed application removed'))));
+    // REMOVED or DONE
     this.appUndeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => app.userFriendlyState == 'Undeployed')));
+      app => (app.userFriendlyState == "Removed" || app.userFriendlyState == 'Failed application removed'))));
   }
 
 

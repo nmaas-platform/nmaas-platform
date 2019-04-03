@@ -209,6 +209,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   public removalFailed(): void{
+    console.debug("Removing failed test...");
     this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.debug("Removed failed instance"));
   }
 

@@ -55,6 +55,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -107,6 +110,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -178,6 +184,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -248,6 +257,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -278,6 +290,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -326,6 +341,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -358,11 +376,18 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
         @Override
         public boolean isInFailedState() { return true; }
+    },
+    FAILED_APPLICATION_REMOVED{
+      @Override
+      public AppLifecycleState lifecycleState() {return AppLifecycleState.FAILED_APPLICATION_REMOVED; }
     },
     APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS {
         @Override
@@ -402,6 +427,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 
@@ -416,6 +444,9 @@ public enum AppDeploymentState {
 
         @Override
         public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if (state == NmServiceDeploymentState.FAILED_APPLICATION_REMOVED) {
+                return FAILED_APPLICATION_REMOVED;
+            }
             return nextStateForNotMatchingNmServiceDeploymentState(this, state);
         }
 

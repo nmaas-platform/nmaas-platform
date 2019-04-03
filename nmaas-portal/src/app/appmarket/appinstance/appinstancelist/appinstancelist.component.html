@@ -43,7 +43,7 @@
 						   </thead>
 						   <tbody>
 						   <ng-template ngFor let-appInstance [ngForOf]="appDeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPage, currentPage: pageNumber, id: p_first }">
-							  <tr *ngIf="appInstance?.userFriendlyState !== 'Undeployed'">
+							  <tr>
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
 								  <td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
 								  <td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
@@ -83,13 +83,13 @@
 							</thead>
 							<tbody>
 							<ng-template ngFor let-appInstance [ngForOf]="appUndeployedInstances | async | paginate: { itemsPerPage: maxItemsOnPageSec, currentPage: secondPageNumber, id: p_second }">
-								<tr *ngIf="appInstance?.userFriendlyState == 'Undeployed'">
+								<tr>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.name}}</td>
 									<td class="col-lg-1 col-md-1 text-center"  *ngIf="domainId === undefined">{{appInstance?.domainId}}</td>
 									<td class="col-lg-1 col-md-1 text-center" >{{appInstance?.owner?.username}}</td>
 									<td class="col-lg-2 col-md-2 text-center" >{{appInstance?.createdAt | localDate:'medium'}}</td>
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
-									<td class="col-lg-3 col-md-3 text-center">{{appInstance?.userFriendlyState}}</td>
+									<td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 									<td class="col-lg-3 col-md-3 text-center">
 										<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
 											{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}

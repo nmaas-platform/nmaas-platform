@@ -135,7 +135,7 @@
 							 screenReaderCurrentLabel="{{ 'PAGINATION.SCREEN_READER.CURRENT' | translate }}"></pagination-controls>
 	</div>
 
-	<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
+	<div class="row" [ngClass]="{'collapse': storage.has('appConfig_' + appInstanceId.toString()) || AppInstanceState[appInstanceStatus?.state] === undefined || AppInstanceState[appInstanceStatus?.state].toString() == AppInstanceState.REMOVED.toString() || AppInstanceState[appInstanceStatus?.state].toString() > AppInstanceState.CONFIGURATION_AWAITING.toString()}" >
 		<div class="col-xs-12">
 			<h3>{{'APP_INSTANCE.CONFIGURATION.HEADER' | translate}}</h3>
 			<hr>

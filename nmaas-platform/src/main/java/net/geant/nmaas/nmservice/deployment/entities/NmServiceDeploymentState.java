@@ -30,7 +30,8 @@ public enum NmServiceDeploymentState {
     RESTART_INITIATED(true),
     RESTARTED(true),
     RESTART_FAILED(false),
-    ERROR(false);
+    ERROR(false),
+    FAILED_APPLICATION_REMOVED(false);
 
     private boolean isRunning;
 

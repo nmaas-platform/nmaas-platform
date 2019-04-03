@@ -148,6 +148,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     }
 
     @Override
+    @Loggable(LogLevel.DEBUG)
+    public void removeFailedApplication(Identifier deploymentId){
+        eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
+    }
+
+    @Override
     @Loggable(LogLevel.INFO)
     public void updateApplication(Identifier deploymentId, Identifier applicationId) {
         throw new NotImplementedException();

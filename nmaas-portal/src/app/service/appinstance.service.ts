@@ -102,7 +102,7 @@ export class AppInstanceService extends GenericDataService {
   }
 
   public removeFailedInstance(appInstanceId: number, domainId?: number): Observable<any> {
-    return this.delete<any>(this.getUrl(domainId) + appInstanceId + '/failed');
+    return this.delete<any>(this.getUrl(domainId) + "failed/" + appInstanceId);
   }
 
   protected getUrl(domainId?: number): string {

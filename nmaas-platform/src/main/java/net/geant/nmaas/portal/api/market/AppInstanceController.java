@@ -181,6 +181,19 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
+    @DeleteMapping({"/apps/instances/failed/{appInstanceId}", "/domains/{domainId}/apps/instances/failed/{appInstanceId}"})
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
+    @Transactional
+    public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                  @NotNull Principal principal) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            appLifecycleManager.removeFailedApplication(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
     @GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
@@ -301,6 +314,9 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_CONFIGURATION_UPDATE_FAILED:
             case APPLICATION_DEPLOYMENT_FAILED:
                 appInstanceState = AppInstanceState.FAILURE;
+                break;
+            case FAILED_APPLICATION_REMOVED:
+                appInstanceState = AppInstanceState.REMOVED;
                 break;
             case UNKNOWN:
             default:
