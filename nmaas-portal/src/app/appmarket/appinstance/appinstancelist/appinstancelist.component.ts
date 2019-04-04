@@ -123,11 +123,9 @@ export class AppInstanceListComponent implements OnInit {
         this.appInstances = of<AppInstance[]>([]);
         break;
     }
-    //not REMOVED && not DONE
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
       app => (app.userFriendlyState != "Removed" && app.userFriendlyState !== 'Failed application removed'))));
-    // REMOVED or DONE
     this.appUndeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
       app => (app.userFriendlyState == "Removed" || app.userFriendlyState == 'Failed application removed'))));
