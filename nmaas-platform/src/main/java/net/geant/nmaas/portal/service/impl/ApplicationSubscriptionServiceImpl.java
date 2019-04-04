@@ -287,6 +287,8 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		if(appSub == null)
 			throw new IllegalArgumentException("appSub is null");
 		checkParam(appSub.getId());
+		if(!appSub.getDomain().isActive())
+			throw new IllegalArgumentException("Domain cannot be inactive");
 	}
 	
 	protected void checkParam(Long id, String name) {

@@ -39,7 +39,7 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
     private DomainService domainService;
 
     private static final Identifier DEPLOYMENT_ID = Identifier.newInstance("did");
-    private static final String DOMAIN = "domain";
+    private static final String DOMAIN = "testdom";
 
     @BeforeEach
     public void setup(){

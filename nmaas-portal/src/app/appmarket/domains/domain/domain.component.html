@@ -31,14 +31,6 @@
 			</div>
 		</div>
 
-		<div class="form-group">
-			<label for="active" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.ACTIVE' | translate }}</label>
-			<div class="col-sm-10">
-				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW) || authService.hasRole('ROLE_OPERATOR')" id="active"
-					name="active" [(ngModel)]="domain.active">
-			</div>
-		</div>
-
 		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.hasRole('ROLE_OPERATOR'))">
 			<label class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.ID_IN_DB' | translate }}</label>
 			<div class="col-sm-10">

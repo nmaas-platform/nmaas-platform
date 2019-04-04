@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Rollback
 public class UsersControllerIntTest extends BaseControllerTestSetup {
 
-    final static String DOMAIN = "domain";
+    final static String DOMAIN = "domtest";
 
     @Autowired
     private UserRepository userRepo;
@@ -357,5 +358,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());
+    }
+
+    @AfterEach
+    public void tearUp(){
+        domains.getDomains().forEach(domain -> domains.removeDomain(domain.getId()));
     }
 }

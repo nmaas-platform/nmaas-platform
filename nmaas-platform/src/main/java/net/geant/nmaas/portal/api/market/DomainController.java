@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
@@ -150,17 +151,19 @@ public class DomainController extends AppBaseController {
 		return new Id(domainId);
 	}
 
+	@PatchMapping("/{domainId}/state")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
+	public void updateDomainState(@PathVariable Long domainId, @RequestParam boolean active){
+		this.domainService.changeDomainState(domainId, active);
+	}
+
 	@PatchMapping("/{domainId}/dcn")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
-		if(!domainId.equals(domainUpdate.getId())){
-			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
-		}
-		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		domain.getDomainDcnDetails().setDcnConfigured(domainUpdate.getDomainDcnDetails().isDcnConfigured());
+	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestParam(value = "configured") boolean dcnConfigured) {
 		try{
-			domainService.updateDomain(domain);
+			Domain domain = domainService.changeDcnConfiguredFlag(domainId, dcnConfigured);
 			if(domain.getDomainDcnDetails().isDcnConfigured()){
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));

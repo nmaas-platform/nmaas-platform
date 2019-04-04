@@ -186,7 +186,8 @@
     "ACTIVATE": "Aktiv",
     "DETAILS_BUTTON": "Details",
     "EDIT_BUTTON": "Bearbeiten",
-    "REMOVE_BUTTON": "Löschen",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Hinzufügen"
   },
   "APP_INSTANCES": {

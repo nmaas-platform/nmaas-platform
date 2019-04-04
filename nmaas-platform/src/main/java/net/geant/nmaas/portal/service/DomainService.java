@@ -34,6 +34,8 @@ public interface DomainService {
 	Optional<Domain> findDomainByCodename(String codename);
 	
 	void updateDomain(Domain domain);
+	Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured);
+	void changeDomainState(Long domainId, boolean active);
 	boolean removeDomain(Long id);
 	
 	List<User> getMembers(Long id);

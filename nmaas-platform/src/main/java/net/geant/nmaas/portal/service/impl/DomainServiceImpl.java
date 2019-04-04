@@ -95,8 +95,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Domain createGlobalDomain() {
-		Optional<Domain> globalDomainOptional = getGlobalDomain();
-		return globalDomainOptional.orElseGet(() -> createDomain(new DomainRequest(this.globalDomain, this.globalDomain.toLowerCase(), true)));
+		return getGlobalDomain().orElseGet(() -> createDomain(new DomainRequest(this.globalDomain, this.globalDomain.toLowerCase(), true)));
 	}
 	
 	@Override
@@ -196,8 +195,24 @@ public class DomainServiceImpl implements DomainService {
 			domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
 		}
 		if(!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())){
-			throw new ProcessingException("Namespace is not valid.");
+			throw new ProcessingException("Kubernetes namespace is not valid.");
 		}
+		domainRepo.save(domain);
+	}
+
+	@Override
+	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured){
+		checkParams(domainId);
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		domain.getDomainDcnDetails().setDcnConfigured(dcnConfigured);
+		return domainRepo.save(domain);
+	}
+
+	@Override
+	public void changeDomainState(Long domainId, boolean active){
+		checkParams(domainId);
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		domain.setActive(active);
 		domainRepo.save(domain);
 	}
 
@@ -241,8 +256,10 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private void removePreviousRoleInDomain(Domain domain, User user){
-		Optional<UserRole> previousRole = user.getRoles().stream().filter(value -> value.getDomain().getId().equals(domain.getId())).findAny();
-		previousRole.ifPresent(value -> userRoleRepo.deleteBy(user, domain, value.getRole()));
+		user.getRoles().stream()
+				.filter(value -> value.getDomain().getId().equals(domain.getId()))
+				.findAny()
+				.ifPresent(value -> userRoleRepo.deleteBy(user.getId(), domain.getId(), value.getRole()));
 	}
 
 	private User getUser(Long userId) {
@@ -257,52 +274,34 @@ public class DomainServiceImpl implements DomainService {
 	public void removeMemberRole(Long domainId, Long userId, Role role) {
 		checkParams(domainId, userId);
 		checkParams(role);
-			
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		
-		userRoleRepo.deleteBy(user, domain, role);
+		userRoleRepo.deleteBy(userId, domainId, role);
 	}
 
 	@Override
 	public void removeMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		 
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		
-		userRoleRepo.deleteBy(user, domain);		
+		userRoleRepo.deleteBy(userId, domainId);
 	}
 
 	@Override
 	public Set<Role> getMemberRoles(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		
-		return userRoleRepo.findRolesByDomainAndUser(domain, user);
+		return userRoleRepo.findRolesByDomainAndUser(domainId, userId);
 	}
 
 	@Override
 	public User getMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		User userMember = userRoleRepo.findDomainMember(domain, user);
-		if(userMember == null) {
-			throw new ProcessingException("User is not domain member");
-		}
-
-		return userMember;
+		return userRoleRepo.findDomainMember(domainId, userId)
+				.orElseThrow(() -> new ProcessingException("User is not domain member"));
 	}
 
 	@Override
 	public Set<Domain> getUserDomains(Long userId) {
 		checkParams(userId);
-		User user = getUser(userId);
-		return user.getRoles().stream().map(UserRole::getDomain).collect(Collectors.toSet());
+		return getUser(userId).getRoles().stream()
+				.map(UserRole::getDomain)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -314,7 +313,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	protected void checkParam(String name) {
-		if(name == null) {
+		if(StringUtils.isEmpty(name)) {
 			throw new IllegalArgumentException("Name is null");
 		}
 	}

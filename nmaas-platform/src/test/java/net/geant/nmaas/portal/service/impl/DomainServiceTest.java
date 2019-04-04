@@ -10,7 +10,6 @@ import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -240,35 +239,38 @@ public class DomainServiceTest {
         Long domainId = 1L;
         Long userId = 1L;
         Role role = Role.ROLE_OPERATOR;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMemberRole(domainId, userId, role);
-        verify(userRoleRepo, times(1)).deleteBy(user, domain, role);
+        verify(userRoleRepo, times(1)).deleteBy(user.getId(), domain.getId(), role);
     }
 
     @Test
     public void shouldRemoveMember(){
         Long domainId = 1L;
         Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMember(domainId, userId);
-        verify(userRoleRepo, times(1)).deleteBy(user, domain);
+        verify(userRoleRepo, times(1)).deleteBy(user.getId(), domain.getId());
     }
 
     @Test
     public void shouldGetMemberRoles(){
         Long domainId = 1L;
         Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findRolesByDomainAndUser(domain, user)).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
+        when(userRoleRepo.findRolesByDomainAndUser(domain.getId(), user.getId())).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
         Set<Role> roleSet = this.domainService.getMemberRoles(domainId, userId);
         assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN)));
     }
@@ -277,11 +279,12 @@ public class DomainServiceTest {
     public void shouldGetMember(){
         Long domainId = 1L;
         Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findDomainMember(domain, user)).thenReturn(user);
+        when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.of(user));
         this.domainService.getMember(domainId, userId);
     }
 
@@ -290,18 +293,18 @@ public class DomainServiceTest {
         assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Long userId = 1L;
-            Domain domain = new Domain(domainId, "testdom", "testdom");
+            Domain domain = new Domain(domainId, "testdom", "testdom", true);
             User user = new User("user");
             when(userService.findById(userId)).thenReturn(Optional.of(user));
             when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-            when(userRoleRepo.findDomainMember(domain, user)).thenReturn(null);
+            when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.empty());
             this.domainService.getMember(domainId, userId);
         });
     }
 
     @Test
     public void shouldNotGetMemberWithEmptyUser(){
-        assertThrows(ObjectNotFoundException.class, () -> {
+        assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Domain domain = new Domain(domainId, "testdom", "testdom");
             when(userService.findById(1L)).thenReturn(Optional.empty());
@@ -312,7 +315,7 @@ public class DomainServiceTest {
 
     @Test
     public void shouldThrowAnExceptionWhenGetMemberWithNullDomain(){
-        assertThrows(ObjectNotFoundException.class, () -> {
+        assertThrows(ProcessingException.class, () -> {
             Long userId = 1L;
             User user = new User("user");
             when(userService.findById(userId)).thenReturn(Optional.of(user));
