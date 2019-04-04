@@ -444,6 +444,20 @@
       "UNKNOWN": "Nieznany stan",
       "ERROR": "Błąd wewnętrzny",
       "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta"
+    },
+    "USER_FRIENDLY": {
+      "REQUESTED": "NMaaS przetwarza Twoje żądanie",
+      "VALIDATION": "NMaaS weryfikuje dostępne zasoby",
+      "PREPARATION": "NMaaS przygotowuje środowisko wdrażania dla Twojej aplikacji",
+      "CONNECTING": "NMaaS nawiązuje bezpieczne połączenie",
+      "CONFIGURATION_AWAITING":  "NMaaS oczekuje na konfigurację aplikacji. Zapewnij początkową konfigurację za pomocą kreatora poniżej historii wdrażania",
+      "DEPLOYING": "Aplikacja jest wdrażana przez NMaaS. Ten proces może potrwać do kilku minut. Po otrzymaniu instancji zostaniesz powiadomiony e-mailem",
+      "RUNNING": "Twoja aplikacja jest gotowa. Możesz teraz uzyskać dostęp do swojej aplikacji, klikając przycisk powyżej",
+      "UNDEPLOYING": "Aplikacja jest usuwana. Ten proces może potrwać do kilku minut",
+      "DONE":  "Aplikacja została pomyślnie usunięta",
+      "FAILURE": "",
+      "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem NMaaS za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
+      "REMOVED": "Aplikacja została pomyślnie usunięta"
     }
   },
   "UNDEPLOY_MODAL": {

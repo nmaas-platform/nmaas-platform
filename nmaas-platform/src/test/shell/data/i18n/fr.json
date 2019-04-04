@@ -444,6 +444,20 @@
       "UNKNOWN": "Etat inconnu",
       "ERROR": "Erreur interne",
       "FAILED_APPLICATION_REMOVED": "Échec de l'application supprimée"
+    },
+    "USER_FRIENDLY": {
+      "REQUESTED": "NMaaS traite votre demande",
+      "VALIDATION": "NMaaS valide les ressources disponibles",
+      "PREPARATION": "NMaaS prépare l'environnement de déploiement de votre application",
+      "CONNECTING": "NMaaS met en place une connectivité sécurisée à votre équipement",
+      "CONFIGURATION_AWAITING": "NMaaS attend la configuration de votre application. Fournissez la configuration initiale à l'aide de l'assistant situé sous l'historique de déploiement",
+      "DEPLOYING": "L'application est en cours de déploiement par NMaaS. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois votre instance prête"
+      "RUNNING": "Votre application est prête. Vous pouvez maintenant accéder à votre application en cliquant sur le bouton ci-dessus",
+      "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
+      "DONE": "Application non déployée avec succès",
+      "FAILURE": "",
+      "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
+      "REMOVED": "Application non déployée avec succès"
     }
   },
   "UNDEPLOY_MODAL": {

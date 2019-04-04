@@ -90,11 +90,11 @@
 			<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 		</div>
 		<div id="app-progress-info" class="col-xs-12">
-			<div id="app-progress-info-sub"
+			<div id="app-progress-info-sub alert"
 				 [ngClass]="{
-				 'alert alert-danger': appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus?.state === AppInstanceState[AppInstanceState.UNKNOWN],
-				 'active': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN] }"
-				 class="col-xs-offset-1 col-xs-10 text-muted">
+				 'alert-danger': appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus?.state === AppInstanceState[AppInstanceState.UNKNOWN],
+				 'other-states': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN] }"
+				 class="col-xs-offset-1 col-xs-10">
 				<span *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
 					{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
 				</span>

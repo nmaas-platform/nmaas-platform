@@ -447,18 +447,18 @@
       "FAILED_APPLICATION_REMOVED": "Failed application removed"
     },
     "USER_FRIENDLY": {
-      "REQUESTED": "Initialization of deployment procedure",
-      "VALIDATION": "NMaaS is validating your subscription",
-      "PREPARATION": "NMaaS is preparing deployment environment for your application.",
-      "CONNECTING": "NMaaS is connecting to prepared environment",
-      "CONFIGURATION_AWAITING":  "NMaaS is waiting for configuration. Check section below history to apply configuration.",
-      "DEPLOYING": "Application is being deployed by NMaaS. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
-      "RUNNING": "You application is ready to use. You can now access your application by clicking button above.",
-      "UNDEPLOYING": "Application is being deployed. This process may take up to several minutes.",
-      "DONE":  "Application undeployed successfully.",
+      "REQUESTED": "NMaaS is processing your request",
+      "VALIDATION": "NMaaS is validating available resources",
+      "PREPARATION": "NMaaS is preparing deployment environment for your application",
+      "CONNECTING": "NMaaS is setting up secure connectivity to your equipment",
+      "CONFIGURATION_AWAITING":  "NMaaS is waiting for your application configuration. Provide initial configuration using the wizard below deployment history",
+      "DEPLOYING": "Application is being deployed by NMaaS. This process may take up to several minutes. You will be notified with an email once your instance is ready",
+      "RUNNING": "You application is ready. You can now access your application by clicking the button above",
+      "UNDEPLOYING": "Application is being undeployed. This process may take up to several minutes",
+      "DONE":  "Application undeployed successfully",
       "FAILURE": "",
-      "UNKNOWN": "Unknown state of application - contact with NMaaS Team using contact form which is available in About subpage.",
-      "REMOVED": "Application undeployed successfully."
+      "UNKNOWN": "Unknown state of application - contact with NMaaS Team using contact form available on the \" About\" subpage",
+      "REMOVED": "Application undeployed successfully"
     }
   },
   "UNDEPLOY_MODAL": {
