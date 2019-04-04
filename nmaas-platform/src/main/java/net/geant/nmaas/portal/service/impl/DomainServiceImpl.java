@@ -204,6 +204,7 @@ public class DomainServiceImpl implements DomainService {
 	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured){
 		checkParams(domainId);
 		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		checkGlobal(domain);
 		domain.getDomainDcnDetails().setDcnConfigured(dcnConfigured);
 		return domainRepo.save(domain);
 	}
@@ -212,6 +213,7 @@ public class DomainServiceImpl implements DomainService {
 	public void changeDomainState(Long domainId, boolean active){
 		checkParams(domainId);
 		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		checkGlobal(domain);
 		domain.setActive(active);
 		domainRepo.save(domain);
 	}

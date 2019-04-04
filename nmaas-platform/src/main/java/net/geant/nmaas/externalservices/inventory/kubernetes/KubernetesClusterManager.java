@@ -16,8 +16,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
-import net.geant.nmaas.portal.persistent.entity.Domain;
-import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
