@@ -6,12 +6,12 @@
 
 #app-progress-info{
     text-align: justify;
-    padding: 10px 5px 10px 5px;
+    padding: 10px 10px 10px 10px;
 }
 
 #app-progress-info-sub{
     text-align: justify;
-    padding: 5px 5px 5px 5px;
+    padding: 10px 10px 10px 10px;
     font-style: italic;
 }
 

@@ -89,20 +89,19 @@
 		<div id="app-prop" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="overflow-x: auto;">
 			<nmaas-appinstanceprogress [stages]='getStages()' [activeState]="appInstanceStatus?.state"></nmaas-appinstanceprogress>
 		</div>
-		<div id="app-progress-info" class="col-xs-12"
-			 [ngClass]="{'app-progress-info-visible': appInstanceStatus?.state === AppInstanceState[AppInstanceState.DEPLOYING],
-			 'app-progress-info-hidden': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.DEPLOYING]}">
-			<div id="app-progress-info-sub" class="col-xs-offset-1 col-xs-10 text-muted">
-				{{ 'APP_INSTANCE.DEPLOYMENT_IN_PROGRESS' | translate }}
+		<div id="app-progress-info" class="col-xs-12">
+			<div id="app-progress-info-sub"
+				 [ngClass]="{
+				 'alert alert-danger': appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE] || appInstanceStatus?.state === AppInstanceState[AppInstanceState.UNKNOWN],
+				 'active': appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN] }"
+				 class="col-xs-offset-1 col-xs-10 text-muted">
+				<span *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
+					{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
+				</span>
+				<span *ngIf="appInstanceStatus?.state !== AppInstanceState[AppInstanceState.FAILURE] && appInstanceStatus?.state !== AppInstanceState[AppInstanceState.UNKNOWN]">
+					{{  'APP_INSTANCE.USER_FRIENDLY.' +  getStateAsString(appInstanceStatus?.state) | translate }}
+				</span>
 			</div>
-		</div>
-        <p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.STATE' | translate}}: {{appInstanceStatus?.userFriendlyState ? translateState.translateState(appInstanceStatus.state) : 'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_STATE' | translate}}</p>
-        <p>{{'APP_INSTANCE.INSTALLATION_PROGRESS.DETAILS' | translate}}: {{ appInstanceStatus?.userFriendlyDetails | translate }}</p>
-	</div>
-
-	<div class="row" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.FAILURE]">
-		<div class="alert alert-danger">
-			{{'APP_INSTANCE.INSTALLATION_PROGRESS.DEFAULT_ERROR_MESSAGE' | translate}}
 		</div>
 	</div>
 

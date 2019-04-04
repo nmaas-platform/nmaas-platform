@@ -34,6 +34,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {SessionService} from "../../../service/session.service";
 import {LocalDatePipe} from "../../../pipe/local-date.pipe";
 import {Local} from "protractor/built/driverProviders";
+import {ApplicationState} from "../../../model/applicationstate";
 
 @Component({
   selector: 'nmaas-appinstance',
@@ -127,6 +128,10 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngAfterViewChecked(): void {
+  }
+
+  public getStateAsString(state: any): string {
+    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
   }
 
   changeForm(){
