@@ -15,6 +15,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,19 +33,22 @@ import java.util.Optional;
 @Log4j2
 public class UserServiceImpl implements UserService {
 	
-	UserRepository userRepo;
+	private UserRepository userRepo;
 	
-	UserRoleRepository userRoleRepo;
+	private UserRoleRepository userRoleRepo;
 
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
-	ModelMapper modelMapper;
+	private ConfigurationManager configurationManager;
+
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder, ModelMapper modelMapper){
+	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder, ConfigurationManager configurationManager, ModelMapper modelMapper){
 		this.userRepo = userRepo;
 		this.userRoleRepo = userRoleRepo;
 		this.passwordEncoder = passwordEncoder;
+		this.configurationManager = configurationManager;
 		this.modelMapper = modelMapper;
 	}
 	
@@ -124,6 +128,7 @@ public class UserServiceImpl implements UserService {
 		}
 		newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
 		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
+		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
 		userRepo.save(newUser);
 
 		return newUser;
@@ -136,6 +141,7 @@ public class UserServiceImpl implements UserService {
 		String generatedString = new String(array, Charset.forName("UTF-8"));
 		User newUser = new User("thirdparty-"+System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
 		newUser.setSamlToken(userSSO.getUsername()); //Check user ID TODO: check if it's truly unique!
+		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
 		userRepo.save(newUser);
 
 		return newUser;
@@ -165,6 +171,12 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void setEnabledFlag(Long userId, boolean isEnabled) {
 		userRepo.setEnabledFlag(userId, isEnabled);
+	}
+
+	@Override
+	@Transactional
+	public void setUserLanguage(Long userId, final String userLanguage){
+		userRepo.setUserLanguage(userId, userLanguage);
 	}
 
 	@Override

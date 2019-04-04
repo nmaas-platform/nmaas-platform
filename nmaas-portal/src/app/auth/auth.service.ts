@@ -48,6 +48,10 @@ export class AuthService {
     localStorage.removeItem(this.appConfig.config.tokenName);
   }
 
+  public getSelectedLanguage(): string {
+    return this.jwtHelper.decodeToken(this.getToken()).language;
+  }
+
   public getUsername(): string {
     const token = this.getToken();
     return (token ? this.jwtHelper.decodeToken(token).sub : null);

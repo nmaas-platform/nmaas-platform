@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -8,7 +7,6 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.ContentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
-import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -67,6 +65,7 @@ public class PortalConfig {
 				if(globalDomain.isPresent()) {
 					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
 					user.setEmail(email);
+					user.setSelectedLanguage("en");
 					userRepository.save(user);
 				}
 			}

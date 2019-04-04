@@ -36,6 +36,7 @@ public interface UserService {
     void setTermsOfUseAcceptedFlagByUsername(String username, boolean termsOfUseAcceptedFlag);
     void setPrivacyPolicyAcceptedFlag(Long userId, boolean privacyPolicyAcceptedFlag);
     void setPrivacyPolicyAcceptedFlagByUsername(String username, boolean privacyPolicyAcceptedFlag);
+	void setUserLanguage(Long userId, final String defaultLanguage);
     List<net.geant.nmaas.portal.api.domain.User> findAllUsersWithAdminRole();
 	List<net.geant.nmaas.portal.api.domain.User> findUsersWithRoleSystemAdminAndOperator();
 }
