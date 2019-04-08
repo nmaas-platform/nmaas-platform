@@ -19,8 +19,9 @@ public class AppRemoveFailedActionTask {
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public AppRemoveFailedActionTask(NmServiceDeploymentProvider serviceDeployment) {
+    public AppRemoveFailedActionTask(NmServiceDeploymentProvider serviceDeployment, ApplicationEventPublisher eventPublisher) {
         this.serviceDeployment = serviceDeployment;
+        this.eventPublisher = eventPublisher;
     }
 
     @EventListener

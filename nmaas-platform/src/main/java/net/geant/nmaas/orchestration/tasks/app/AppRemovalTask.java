@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 public class AppRemovalTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
-    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public AppRemovalTask(NmServiceDeploymentProvider serviceDeployment) {
