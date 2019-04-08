@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
-import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationExecutor;
+import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationProvider;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
@@ -19,14 +19,14 @@ public class AppRemoveFailedActionTask {
 
     private NmServiceDeploymentProvider serviceDeployment;
 
-    private NmServiceConfigurationExecutor configurationExecutor;
+    private NmServiceConfigurationProvider configurationProvider;
 
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public AppRemoveFailedActionTask(NmServiceDeploymentProvider serviceDeployment, NmServiceConfigurationExecutor configurationExecutor, ApplicationEventPublisher eventPublisher) {
+    public AppRemoveFailedActionTask(NmServiceDeploymentProvider serviceDeployment, NmServiceConfigurationProvider configurationProvider, ApplicationEventPublisher eventPublisher) {
         this.serviceDeployment = serviceDeployment;
-        this.configurationExecutor = configurationExecutor;
+        this.configurationProvider = configurationProvider;
         this.eventPublisher = eventPublisher;
     }
 
@@ -35,7 +35,7 @@ public class AppRemoveFailedActionTask {
     public void trigger(AppRemoveFailedActionEvent event) {
         try{
             this.serviceDeployment.removeNmService(event.getRelatedTo());
-            this.configurationExecutor.removeNmService(event.getRelatedTo());
+            this.configurationProvider.removeNmService(event.getRelatedTo());
             eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, event.getRelatedTo(), NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();
