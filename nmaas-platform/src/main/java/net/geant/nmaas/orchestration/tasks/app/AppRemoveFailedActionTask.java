@@ -1,8 +1,10 @@
 package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.extern.log4j.Log4j2;
+import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.NmServiceDeploymentProvider;
-import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
+import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
+import net.geant.nmaas.orchestration.events.app.AppRemoveFailedActionEvent;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,25 +14,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
-public class AppRemovalTask {
-
+public class AppRemoveFailedActionTask {
     private NmServiceDeploymentProvider serviceDeployment;
     private ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public AppRemovalTask(NmServiceDeploymentProvider serviceDeployment) {
+    public AppRemoveFailedActionTask(NmServiceDeploymentProvider serviceDeployment) {
         this.serviceDeployment = serviceDeployment;
     }
 
     @EventListener
     @Loggable(LogLevel.INFO)
-    public void trigger(AppRemoveActionEvent event) {
+    public void trigger(AppRemoveFailedActionEvent event) {
         try{
-            serviceDeployment.removeNmService(event.getRelatedTo());
+            //TODO
+            eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, event.getRelatedTo(), NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, ""));
         }catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);
         }
     }
-
 }
