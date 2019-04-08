@@ -458,7 +458,7 @@
       "DONE":  "Application undeployed successfully",
       "FAILURE": "",
       "UNKNOWN": "Unknown state of application - contact with NMaaS Team using contact form available on the \" About\" subpage",
-      "REMOVED": "Application undeployed successfully"
+      "REMOVED": "Undeployed successfully after failure"
     }
   },
   "UNDEPLOY_MODAL": {
