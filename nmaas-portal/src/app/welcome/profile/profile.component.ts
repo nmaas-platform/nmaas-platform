@@ -25,6 +25,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   setLanguage(language: string) {
     this.userService.setUserLanguage(this.user.id, language).subscribe(() => {
       this.user.selectedLanguage = language;
+      localStorage.setItem('lang', language);
       this.translate.use(language);
     });
   }

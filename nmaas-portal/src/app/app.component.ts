@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { AppConfigService } from './service/appconfig.service';
 import {TranslateService} from "@ngx-translate/core";
 import {ConfigurationService} from "./service";
+import {AuthService} from "./auth/auth.service";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'nmaas-root',
@@ -12,18 +14,29 @@ import {ConfigurationService} from "./service";
 export class AppComponent {
     config: any;
     
-    constructor(private appConfigService: AppConfigService, private configService: ConfigurationService, private translate: TranslateService) {
+    constructor(private appConfigService: AppConfigService, private configService: ConfigurationService, private authService: AuthService, private translate: TranslateService) {
     }
     
     ngOnInit() {
-        this.translate.use("en");
-        this.configService.getConfiguration().subscribe(config => {
-            this.translate.use(config.defaultLanguage)
-            this.translate.setDefaultLang(config.defaultLanguage);
-        },error1 => {
-            this.translate.setDefaultLang("en");
-        });
+        this.handleDefaultLanguage();
         this.config = this.appConfigService.config;
         console.log('Configuration: ' + JSON.stringify(this.config));
+    }
+
+    public handleDefaultLanguage() : void {
+        if(!isNullOrUndefined(this.authService.getSelectedLanguage())){
+            this.setLanguage(this.authService.getSelectedLanguage());
+        } else {
+            this.configService.getConfiguration().subscribe(config => {
+                this.setLanguage(config.defaultLanguage);
+            },() => {
+                this.translate.setDefaultLang("en");
+            });
+        }
+    }
+
+    private setLanguage(lang: string){
+        this.translate.use(lang);
+        this.translate.setDefaultLang(lang);
     }
 }
