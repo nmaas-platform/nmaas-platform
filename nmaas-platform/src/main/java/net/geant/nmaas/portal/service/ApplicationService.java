@@ -23,6 +23,6 @@ public interface ApplicationService {
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();
 
-	void setMissingProperties(ApplicationView app);
-	
+	void setMissingProperties(ApplicationView app, Long appId);
+
 }

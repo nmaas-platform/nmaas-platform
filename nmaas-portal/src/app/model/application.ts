@@ -1,7 +1,8 @@
-import {ConfigTemplate} from './configtemplate';
+import {ConfigWizardTemplate} from './configwizardtemplate';
 import {AppDeploymentSpec} from "./appdeploymentspec";
 import {AppDescription} from "./appdescription";
 import {ApplicationState} from "./applicationstate";
+import {AppConfigurationSpec} from "./appconfigurationspec";
 
 export class Application {
   public id: number = undefined;
@@ -15,8 +16,9 @@ export class Application {
   public owner: string = undefined;
   public descriptions: AppDescription[] = [];
   public tags: string[] = [];
-  public configTemplate: ConfigTemplate = undefined;
-  public configurationUpdateTemplate: ConfigTemplate = undefined;
+  public configWizardTemplate: ConfigWizardTemplate = undefined;
+  public configUpdateWizardTemplate: ConfigWizardTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
+  public appConfigurationSpec: AppConfigurationSpec = new AppConfigurationSpec();
   public state: ApplicationState = ApplicationState.NEW;
 }

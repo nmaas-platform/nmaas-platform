@@ -7,5 +7,4 @@ export class AppDeploymentSpec {
     public kubernetesTemplate: KubernetesTemplate = new KubernetesTemplate();
     public defaultStorageSpace: number = 1;
     public deployParameters: Map<ParameterType, string> = new Map();
-    public configFileRepositoryRequired: boolean = false;
 }

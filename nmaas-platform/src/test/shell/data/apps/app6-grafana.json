@@ -42,11 +42,19 @@
                 "version": "1.0.3-alfa"
             }
         },
-        "defaultStorageSpace": 1,
-        "configFileRepositoryRequired": true
+        "defaultStorageSpace": 1
+    },
+    "appConfigurationSpec": {
+        "configFileRepositoryRequired":true,
+        "templates": [
+            {
+                "configFileName":"datasource.yaml",
+                "configFileTemplateContent":"<#if source_name?has_content>apiVersion: 1\ndeleteDatasources:\n  - name: ${source_name}\n    orgId: 1\ndatasources:\n- name: ${source_name}\n  type: prometheus\n  access: proxy\n  orgId: 1\n  url: \"http://<#if prom_ext_addr?has_content>${prom_ext_addr}<#else>${prom_int_addr}</#if>\"\n  basicAuth: false\n  isDefault: true\n  version: 1\n  editable: true</#if>"
+            }
+        ]
     },
     "state": "ACTIVE",
-    "configTemplate": {
+    "configWizardTemplate": {
         "template": {
             "components": [
                 {

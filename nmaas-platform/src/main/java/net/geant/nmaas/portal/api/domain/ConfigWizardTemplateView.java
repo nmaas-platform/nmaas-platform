@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ConfigTemplate {
+public class ConfigWizardTemplateView {
 
 	@JsonRawValue
 	String template;

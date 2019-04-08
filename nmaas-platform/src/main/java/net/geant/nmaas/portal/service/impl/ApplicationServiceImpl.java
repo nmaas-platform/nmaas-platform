@@ -1,10 +1,13 @@
 package net.geant.nmaas.portal.service.impl;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
-import net.geant.nmaas.nmservice.configuration.NmServiceConfigurationTemplateService;
+import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -24,15 +27,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	private ApplicationRepository appRepo;
 
-	private NmServiceConfigurationTemplateService templateService;
-
 	private ModelMapper modelMapper;
 
 	@Override
 	public Application create(ApplicationView request, String owner) {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
-		this.setMissingProperties(request);
+		this.setMissingProperties(request, app.getId());
 		modelMapper.map(request, app);
 		checkParam(app);
 		return appRepo.save(app);
@@ -93,17 +94,27 @@ public class ApplicationServiceImpl implements ApplicationService {
 		app.validate();
 		app.getAppDeploymentSpec().validate();
 		app.getAppDeploymentSpec().getKubernetesTemplate().validate();
+		checkTemplates(app);
 	}
 
 	private void checkTemplates(Application app){
-		if(app.getAppDeploymentSpec().isConfigFileRepositoryRequired()){
-			templateService.validateSubmittedTemplates(app.getId());
+		if(app.getAppConfigurationSpec().isConfigFileRepositoryRequired()){
+			app.getAppConfigurationSpec().getTemplates().forEach(this::validateConfigFileTemplates);
+		}
+	}
+
+	private void validateConfigFileTemplates(ConfigFileTemplate configFileTemplate){
+		try {
+			new Template("test", configFileTemplate.getConfigFileTemplateContent(), new Configuration(Configuration.VERSION_2_3_28));
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Template " + configFileTemplate.getConfigFileName() + " is invalid");
 		}
 	}
 
 	@Override
-	public void setMissingProperties(ApplicationView app){
+	public void setMissingProperties(ApplicationView app, Long appId){
 		setMissingDescriptions(app);
+		setMissingTemplatesId(app, appId);
 	}
 
 	private void checkParam(ApplicationView request, String owner) {
@@ -148,5 +159,10 @@ public class ApplicationServiceImpl implements ApplicationService {
 						description.setFullDescription(appDescription.getFullDescription());
 					}
 				});
+	}
+
+	private void setMissingTemplatesId(ApplicationView app, Long appId){
+		app.getAppConfigurationSpec().getTemplates()
+				.forEach(template -> template.setApplicationId(appId));
 	}
 }
