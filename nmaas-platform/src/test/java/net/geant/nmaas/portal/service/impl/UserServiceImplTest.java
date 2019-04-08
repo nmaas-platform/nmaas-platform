@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -10,6 +11,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,12 +45,15 @@ public class UserServiceImplTest {
     @Mock
     UserRoleRepository userRoleRepository;
 
+    @Mock
+    ConfigurationManager configurationManager;
+
     @InjectMocks
     UserServiceImpl userService;
 
     @BeforeEach
     public void setup(){
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), new ModelMapper());
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper());
     }
 
     @Test
@@ -208,6 +213,7 @@ public class UserServiceImplTest {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(registration, domain, null);
         verify(userRepository, times(1)).save(any());
         assertEquals(user.getRoles().size(), 1);
@@ -218,6 +224,7 @@ public class UserServiceImplTest {
     @Test
     public void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain(){
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
         Domain domain = new Domain("Non Global", "NONGLO");
@@ -252,6 +259,7 @@ public class UserServiceImplTest {
     public void shouldRegisterSSOUser(){
         UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(ssoUser, domain);
         verify(userRepository, times(1)).save(any());
         assertEquals(user.getSamlToken(), ssoUser.getUsername());

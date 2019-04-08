@@ -20,6 +20,7 @@ public class UserConverter extends AbstractConverter<User, net.geant.nmaas.porta
                 .enabled(source.isEnabled())
                 .roles(convertUserRole(source))
                 .ssoUser(StringUtils.isNotEmpty(source.getSamlToken()))
+                .selectedLanguage(source.getSelectedLanguage())
                 .build();
     }
 

@@ -23,6 +23,8 @@ public class JWTTokenService {
 
 	private static final String SCOPES = "scopes";
 
+	private static final String LANGUAGE = "language";
+
 	@Autowired
 	public JWTTokenService(JWTSettings jwtSettings){
 		this.jwtSettings = jwtSettings;
@@ -38,6 +40,7 @@ public class JWTTokenService {
 		.setIssuedAt(new Date())
 		.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
 		.claim(SCOPES, user.getRoles().stream().filter(role -> role.getDomain().isActive()).map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
+		.claim(LANGUAGE, user.getSelectedLanguage())
 		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 		.compact();
 	}
@@ -53,6 +56,7 @@ public class JWTTokenService {
 					.setIssuedAt(new Date())
 					.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getRefreshTokenExpTime()))
 					.claim(SCOPES, Collections.singletonList(JWTSettings.Scopes.REFRESH_TOKEN))
+					.claim(LANGUAGE, user.getSelectedLanguage())
 					.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 					.compact();
 	}

@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -45,6 +44,9 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
+			@Autowired
+			private ConfigurationManager configurationManager;
+
 			@Value("${admin.password}")
 			String adminPassword;
 
@@ -67,6 +69,7 @@ public class PortalConfig {
 				if(globalDomain.isPresent()) {
 					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
 					user.setEmail(email);
+					user.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 					userRepository.save(user);
 				}
 			}

@@ -60,6 +60,8 @@ export class LoginComponent implements OnInit {
       this.auth.login(this.model.username, this.model.password)
         .subscribe(result => {
           this.loading = false;
+          this.translate.setDefaultLang(this.auth.getSelectedLanguage());
+          this.translate.use(this.auth.getSelectedLanguage());
           this.router.navigate(['/']);
         }, err => {
           this.loading = false;
@@ -79,6 +81,8 @@ export class LoginComponent implements OnInit {
             .subscribe(result => {
                 if (result === true) {
                     this.ssoLoading = false;
+                    this.translate.setDefaultLang(this.auth.getSelectedLanguage());
+                    this.translate.use(this.auth.getSelectedLanguage());
                     this.router.navigate(['/']);
                 } else {
                     this.ssoError = 'Failed to propagate SSO user id';
