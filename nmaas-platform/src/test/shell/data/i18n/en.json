@@ -186,7 +186,8 @@
     "ACTIVATE": "Active",
     "DETAILS_BUTTON": "Details",
     "EDIT_BUTTON": "Edit",
-    "REMOVE_BUTTON": "Remove",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
@@ -282,7 +283,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
@@ -379,6 +381,7 @@
     "GO_TO_APP_BUTTON": "Go to app",
     "UNDEPLOY_BUTTON": "Undeploy",
     "RESTART_BUTTON": "Restart",
+    "REMOVE_BUTTON": "Remove failed",
     "REDEPLOY_BUTTON": "Redeploy",
     "UPDATE_CONFIG_BUTTON": "Update",
     "DEPLOYMENT_IN_PROGRESS": "Application is being deployed. This process may take up to several minutes. You will be notified with an email once your instance is ready.",
@@ -442,7 +445,22 @@
       "APP_UPDATE_SUCCESS": "Application configuration updated successfully",
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",
-      "ERROR": "Internal error"
+      "ERROR": "Internal error",
+      "FAILED_APPLICATION_REMOVED": "Failed application removed"
+    },
+    "USER_FRIENDLY": {
+      "REQUESTED": "NMaaS is processing your request",
+      "VALIDATION": "NMaaS is validating available resources",
+      "PREPARATION": "NMaaS is preparing deployment environment for your application",
+      "CONNECTING": "NMaaS is setting up secure connectivity to your equipment",
+      "CONFIGURATION_AWAITING":  "NMaaS is waiting for your application configuration. Provide initial configuration using the wizard below deployment history",
+      "DEPLOYING": "Application is being deployed by NMaaS. This process may take up to several minutes. You will be notified with an email once your instance is ready",
+      "RUNNING": "You application is ready. You can now access your application by clicking the button above",
+      "UNDEPLOYING": "Application is being undeployed. This process may take up to several minutes",
+      "DONE":  "Application undeployed successfully",
+      "FAILURE": "",
+      "UNKNOWN": "Unknown state of application - contact with NMaaS Team using contact form available on the \" About\" subpage",
+      "REMOVED": "Undeployed successfully after failure"
     }
   },
   "UNDEPLOY_MODAL": {
@@ -657,9 +675,10 @@
     "DEPLOYING": "Deploying",
     "RUNNING": "Running",
     "UNDEPLOYING": "Undeploying",
-    "DONE": "Done",
+    "DONE": "Undeployed",
     "FAILURE": "Failure",
-    "UNKNOWN": "Unknown"
+    "UNKNOWN": "Unknown",
+    "REMOVED": "Undeployed after failure"
   },
   "PAGINATION": {
     "PREVIOUS": "Previous",

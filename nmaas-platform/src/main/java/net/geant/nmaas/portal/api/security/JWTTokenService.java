@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.security;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -40,7 +39,7 @@ public class JWTTokenService {
 		.setIssuer(jwtSettings.getIssuer())
 		.setIssuedAt(new Date())
 		.setExpiration(new Date(System.currentTimeMillis() + jwtSettings.getTokenValidFor()))
-		.claim(SCOPES, user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
+		.claim(SCOPES, user.getRoles().stream().filter(role -> role.getDomain().isActive()).map(role -> new SimpleGrantedAuthority(role.getAuthority())).collect(Collectors.toList()))
 		.claim(LANGUAGE, user.getSelectedLanguage())
 		.signWith(SignatureAlgorithm.HS512, jwtSettings.getSigningKey())
 		.compact();

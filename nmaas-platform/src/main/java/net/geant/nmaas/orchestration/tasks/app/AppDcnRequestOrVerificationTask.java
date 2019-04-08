@@ -2,7 +2,7 @@ package net.geant.nmaas.orchestration.tasks.app;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.nmservice.deployment.entities.NmServiceDeploymentState;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
@@ -23,7 +23,7 @@ public class AppDcnRequestOrVerificationTask {
 
     private DefaultAppDeploymentRepositoryManager appDeploymentRepositoryManager;
 
-    private DcnDeploymentProvider dcnDeployment;
+    private DcnDeploymentProvidersManager providersManager;
 
     /**
      * Checks current state of DCN for given client and depending on the result requests new DCN deployment
@@ -39,7 +39,7 @@ public class AppDcnRequestOrVerificationTask {
         try{
             final Identifier deploymentId = event.getRelatedTo();
             final String domain = appDeploymentRepositoryManager.loadDomain(deploymentId);
-            switch(dcnDeployment.checkState(domain)) {
+            switch(providersManager.getDcnDeploymentProvider(domain).checkState(domain)) {
                 case NONE:
                 case REMOVED:
                     return dcnDeploymentEvent(domain);

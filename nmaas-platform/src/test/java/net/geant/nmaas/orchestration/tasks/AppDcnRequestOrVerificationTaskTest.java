@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration.tasks;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentProvider;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentProvidersManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnState;
 import net.geant.nmaas.nmservice.NmServiceDeploymentStateChangeEvent;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
@@ -10,6 +11,7 @@ import net.geant.nmaas.orchestration.events.dcn.DcnVerifyRequestActionEvent;
 import net.geant.nmaas.orchestration.tasks.app.AppDcnRequestOrVerificationTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.springframework.context.ApplicationEvent;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -22,7 +24,9 @@ import static org.mockito.Mockito.when;
 public class AppDcnRequestOrVerificationTaskTest {
 
     private DefaultAppDeploymentRepositoryManager deployments = mock(DefaultAppDeploymentRepositoryManager.class);
-    private DcnDeploymentProvider deploy = mock(DcnDeploymentProvider.class);
+    private DcnDeploymentProvidersManager deploy = mock(DcnDeploymentProvidersManager.class);
+    private DcnDeploymentProvider deploymentProvider = mock(DcnDeploymentProvider.class);
+
 
     private AppDcnRequestOrVerificationTask task;
 
@@ -33,33 +37,34 @@ public class AppDcnRequestOrVerificationTaskTest {
     @BeforeEach
     public void setup() {
         when(deployments.loadDomain(deploymentId)).thenReturn("domain");
+        when(deploy.getDcnDeploymentProvider(any())).thenReturn(deploymentProvider);
         task = new AppDcnRequestOrVerificationTask(deployments, deploy);
     }
 
     @Test
     public void shouldGenerateNewDcnDeploymentActionIfDcnNotExists() {
-        when(deploy.checkState(DOMAIN)).thenReturn(DcnState.NONE);
+        when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.NONE);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(instanceOf(DcnVerifyRequestActionEvent.class)));
     }
 
     @Test
     public void shouldGenerateNewDcnDeploymentActionIfDcnRemoved() {
-        when(deploy.checkState(DOMAIN)).thenReturn(DcnState.REMOVED);
+        when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.REMOVED);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(instanceOf(DcnVerifyRequestActionEvent.class)));
     }
 
     @Test
     public void shouldNotifyReadyForDeploymentState() {
-        when(deploy.checkState(DOMAIN)).thenReturn(DcnState.DEPLOYED);
+        when(deploymentProvider.checkState(DOMAIN)).thenReturn(DcnState.DEPLOYED);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(instanceOf(NmServiceDeploymentStateChangeEvent.class)));
     }
 
     @Test
     public void shouldDoNothingWhenDcnCurrentlyProcessed() {
-        when(deploy.checkState("domain")).thenReturn(DcnState.PROCESSED);
+        when(deploymentProvider.checkState("domain")).thenReturn(DcnState.PROCESSED);
         ApplicationEvent resultEvent = task.trigger(event);
         assertThat(resultEvent, is(nullValue()));
     }

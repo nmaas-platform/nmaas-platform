@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,8 +26,8 @@ public interface UserRoleRepository extends JpaRepository<UserRole, UserRole.Id>
 	@Query("SELECT ur FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2 AND ur.id.role = ?3")
 	UserRole findByDomainAndUserAndRole(Domain domain, User user, Role role);	
 	
-	@Query("SELECT ur.id.role FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2")
-	Set<Role> findRolesByDomainAndUser(Domain domain, User user);
+	@Query("SELECT ur.id.role FROM UserRole ur WHERE ur.id.domain.id = ?1 AND ur.id.user.id = ?2")
+	Set<Role> findRolesByDomainAndUser(Long domainId, Long userId);
 	
 	@Query("SELECT DISTINCT id.user FROM UserRole ur WHERE ur.id.domain.name = ?1")
 	List<User> findDomainMembers(String domainName);
@@ -40,16 +41,16 @@ public interface UserRoleRepository extends JpaRepository<UserRole, UserRole.Id>
 	@Query("SELECT DISTINCT id.user FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user.id = ?2")
 	User findDomainMember(Domain domain, Long userId);
 	
-	@Query("SELECT DISTINCT id.user FROM UserRole ur WHERE ur.id.domain = ?1 AND ur.id.user = ?2")
-	User findDomainMember(Domain domain, User user);	
+	@Query("SELECT DISTINCT id.user FROM UserRole ur WHERE ur.id.domain.id = ?1 AND ur.id.user.id = ?2")
+	Optional<User> findDomainMember(Long domainId, Long userId);
 	
 	@Modifying
-	@Query("DELETE FROM UserRole ur WHERE ur.id.user = ?1 AND ur.id.domain = ?2")
-	void deleteBy(User user, Domain domain);
+	@Query("DELETE FROM UserRole ur WHERE ur.id.user.id = ?1 AND ur.id.domain.id = ?2")
+	void deleteBy(Long userId, Long domainId);
 	
 	@Modifying
-	@Query("DELETE FROM UserRole ur WHERE ur.id.user = ?1 AND ur.id.domain = ?2 AND ur.id.role = ?3")	
-	void deleteBy(User user, Domain domain, Role role);
+	@Query("DELETE FROM UserRole ur WHERE ur.id.user.id = ?1 AND ur.id.domain.id = ?2 AND ur.id.role = ?3")
+	void deleteBy(Long userId, Long domainId, Role role);
 		
 	@Modifying
 	@Query("DELETE FROM UserRole ur WHERE ur.id.user = ?1")

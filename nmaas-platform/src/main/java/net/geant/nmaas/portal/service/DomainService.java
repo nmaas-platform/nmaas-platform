@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -21,18 +23,19 @@ public interface DomainService {
 	boolean existsDomain(String name);
 	boolean existsDomainByCodename(String codename);
 	boolean existsDomainByExternalServiceDomain(String externalServiceDomain);
-	
-	Domain createDomain(String name, String codename);
-	Domain createDomain(String name, String codename, boolean active);
-	Domain createDomain(String name, String codename, boolean active,  boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain);
 
-	void storeDcnInfo(String domain);
+	Domain createDomain(DomainRequest request);
+
+	void storeDcnInfo(String domain, DcnDeploymentType dcnDeploymentType);
+	void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType);
 
 	Optional<Domain> findDomain(String name);
 	Optional<Domain> findDomain(Long id);
 	Optional<Domain> findDomainByCodename(String codename);
 	
 	void updateDomain(Domain domain);
+	Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured);
+	void changeDomainState(Long domainId, boolean active);
 	boolean removeDomain(Long id);
 	
 	List<User> getMembers(Long id);

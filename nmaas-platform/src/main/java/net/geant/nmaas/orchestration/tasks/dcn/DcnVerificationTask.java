@@ -16,7 +16,7 @@ public class DcnVerificationTask extends BaseDcnTask {
     public void trigger(DcnVerifyActionEvent event) {
     	try{
 	        final String domain = event.getRelatedTo();
-	        dcnDeployment.verifyDcn(domain);
+	        providersManager.getDcnDeploymentProvider(domain).verifyDcn(domain);
     	} catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

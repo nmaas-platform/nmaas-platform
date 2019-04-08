@@ -58,6 +58,8 @@ public class ApplicationInstanceServiceImpl implements ApplicationInstanceServic
 	@Override
 	public AppInstance create(Domain domain, Application application, String name) {
 		checkParam(domain);
+		if(!domain.isActive())
+			throw new IllegalArgumentException("Domain is inactive");
 		checkParam(application);
 		checkNameCharacters(name);
 		checkNameUniqueness(domain, name);
