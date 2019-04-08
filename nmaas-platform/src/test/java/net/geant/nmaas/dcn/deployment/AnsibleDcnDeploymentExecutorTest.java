@@ -60,6 +60,7 @@ public class AnsibleDcnDeploymentExecutorTest {
         DcnInfo dcnInfo = new DcnInfo();
         dcnInfo.setDomain("domain2");
         dcnInfo.setName("name");
+        dcnInfo.setDcnDeploymentType(DcnDeploymentType.ANSIBLE);
         dcnRepositoryManager.storeDcnInfo(dcnInfo);
         assertThat(executor.checkState(domain), equalTo(DcnState.NONE));
         dcnInfo.setDomain(domain);

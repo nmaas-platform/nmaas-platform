@@ -16,7 +16,7 @@ public class DcnRemovalTask extends BaseDcnTask {
     public void trigger(DcnRemoveActionEvent event) {
     	try{
 	        final String domain = event.getRelatedTo();
-	        dcnDeployment.removeDcn(domain);
+	        providersManager.getDcnDeploymentProvider(domain).removeDcn(domain);
     	} catch(Exception ex){
             long timestamp = System.currentTimeMillis();
             log.error("Error reported at " + timestamp, ex);

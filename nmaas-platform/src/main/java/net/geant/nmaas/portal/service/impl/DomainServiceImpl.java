@@ -1,8 +1,11 @@
 package net.geant.nmaas.portal.service.impl;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -14,6 +17,7 @@ import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,27 +43,30 @@ public class DomainServiceImpl implements DomainService {
 		boolean valid(String codename);
 	}
 
-	CodenameValidator validator;
+	private CodenameValidator validator;
 
-	CodenameValidator namespaceValidator;
+	private CodenameValidator namespaceValidator;
 	
 	@Value("${domain.global:GLOBAL}")
 	String globalDomain;
 
-	DomainRepository domainRepo;
+	private DomainRepository domainRepo;
 
-	UserService users;
+	private DomainTechDetailsRepository domainTechDetailsRepo;
 
-	UserRoleRepository userRoleRepo;
+	private UserService users;
 
-	DcnRepositoryManager dcnRepositoryManager;
+	private UserRoleRepository userRoleRepo;
 
-	ModelMapper modelMapper;
+	private DcnRepositoryManager dcnRepositoryManager;
+
+	private ModelMapper modelMapper;
 
 	@Autowired
 	public DomainServiceImpl(CodenameValidator validator,
 							 @Qualifier("NamespaceValidator") CodenameValidator namespaceValidator,
 							 DomainRepository domainRepo,
+							 DomainTechDetailsRepository domainTechDetailsRepo,
 							 UserService users,
 							 UserRoleRepository userRoleRepo,
 							 DcnRepositoryManager dcnRepositoryManager,
@@ -68,6 +75,7 @@ public class DomainServiceImpl implements DomainService {
 		this.validator = validator;
 		this.namespaceValidator = namespaceValidator;
 		this.domainRepo = domainRepo;
+		this.domainTechDetailsRepo = domainTechDetailsRepo;
 		this.users = users;
 		this.userRoleRepo = userRoleRepo;
 		this.dcnRepositoryManager = dcnRepositoryManager;
@@ -87,8 +95,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public Domain createGlobalDomain() {
-		Optional<Domain> globalDomainOptional = getGlobalDomain();
-		return globalDomainOptional.orElseGet(() -> createDomain(this.globalDomain, this.globalDomain.toLowerCase()));
+		return getGlobalDomain().orElseGet(() -> createDomain(new DomainRequest(this.globalDomain, this.globalDomain.toLowerCase(), true)));
 	}
 	
 	@Override
@@ -111,56 +118,58 @@ public class DomainServiceImpl implements DomainService {
 
 	@Override
 	public boolean existsDomainByExternalServiceDomain(String externalServiceDomain) {
-		return domainRepo.existsByExternalServiceDomain(externalServiceDomain);
+		return domainTechDetailsRepo.existsByExternalServiceDomain(externalServiceDomain);
 	}
 
-	@Override
-	public Domain createDomain(String name, String codename) {
-		return createDomain(name, codename, true);
-	}
-
-	@Override
-	public Domain createDomain(String name, String codename, boolean active) {
-		return createDomain(name, codename, active, false, null, null, null);
-	}
 	
 	@Override
-	public Domain createDomain(String name, String codename, boolean active, boolean dcnConfigured, String kubernetesNamespace, String kubernetesStorageClass, String externalServiceDomain) {
-		checkParam(name);
-		checkParam(codename);
+	public Domain createDomain(DomainRequest request) {
+		checkParam(request.getName());
+		checkParam(request.getCodename());
 
-		if(!Optional.ofNullable(validator).map(v -> v.valid(codename)).filter(result -> result).isPresent()){
+		if(!Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isPresent()){
 			throw new ProcessingException("Domain codename is not valid");
 		}
-		if(kubernetesNamespace == null || kubernetesNamespace.isEmpty()){
-			kubernetesNamespace = codename;
+		if(StringUtils.isEmpty(request.getDomainTechDetailsView().getKubernetesNamespace())){
+			request.getDomainTechDetailsView().setKubernetesNamespace(request.getCodename());
 		}
-		if(!namespaceValidator.valid(kubernetesNamespace)){
+		if(!namespaceValidator.valid(request.getDomainTechDetailsView().getKubernetesNamespace())){
 			throw new ProcessingException("Kubernetes namespace is not valid");
 		}
-		if(externalServiceDomain != null && !externalServiceDomain.isEmpty()){
-			checkArgument(!domainRepo.existsByExternalServiceDomain(externalServiceDomain), "External service domain is not unique");
+		if(StringUtils.isNotEmpty(request.getDomainTechDetailsView().getExternalServiceDomain())){
+			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetailsView().getExternalServiceDomain()), "External service domain is not unique");
 		}
+		this.setCodenames(request);
 		try {
-			return domainRepo.save(new Domain(name, codename, active, dcnConfigured, kubernetesNamespace, kubernetesStorageClass, externalServiceDomain));
+			return domainRepo.save(modelMapper.map(request, Domain.class));
 		} catch(Exception ex) {
 			throw new ProcessingException("Unable to create new domain with given name or codename.");
 		}
 	}
 
-	@Override
-	public void storeDcnInfo(String domain) {
-		this.dcnRepositoryManager.storeDcnInfo(new DcnInfo(constructDcnSpec(domain)));
+	private void setCodenames(DomainRequest request){
+		request.getDomainTechDetailsView().setDomainCodename(request.getCodename());
+		request.getDomainDcnDetailsView().setDomainCodename(request.getCodename());
 	}
 
-	private DcnSpec constructDcnSpec(String domain) {
-		return new DcnSpec(buildDcnName(domain), domain);
+	@Override
+	public void storeDcnInfo(String domain, DcnDeploymentType dcnDeploymentType) {
+		this.dcnRepositoryManager.storeDcnInfo(new DcnInfo(constructDcnSpec(domain, dcnDeploymentType)));
+	}
+
+	private DcnSpec constructDcnSpec(String domain, DcnDeploymentType dcnDeploymentType) {
+		return new DcnSpec(buildDcnName(domain), domain, dcnDeploymentType);
 	}
 
 	private String buildDcnName(String domain) {
 		return domain + "-" + System.nanoTime();
 	}
-	
+
+	@Override
+    public void updateDcnInfo(String domain, DcnDeploymentType dcnDeploymentType){
+	    this.dcnRepositoryManager.updateDcnDeploymentType(domain, dcnDeploymentType);
+    }
+
 	@Override
 	public Optional<Domain> findDomain(String name) {
 		return domainRepo.findByName(name);
@@ -182,12 +191,30 @@ public class DomainServiceImpl implements DomainService {
 		checkGlobal(domain);
 		if(domain.getId() == null)
 			throw new ProcessingException("Cannot update domain. Domain not created previously?");
-		if(domain.getKubernetesNamespace() == null || domain.getKubernetesNamespace().isEmpty()){
+		if(StringUtils.isEmpty(domain.getDomainTechDetails().getKubernetesNamespace())){
 			domain.getDomainTechDetails().setKubernetesNamespace(domain.getCodename());
 		}
-		if(!namespaceValidator.valid(domain.getKubernetesNamespace())){
-			throw new ProcessingException("Namespace is not valid.");
+		if(!namespaceValidator.valid(domain.getDomainTechDetails().getKubernetesNamespace())){
+			throw new ProcessingException("Kubernetes namespace is not valid.");
 		}
+		domainRepo.save(domain);
+	}
+
+	@Override
+	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured){
+		checkParams(domainId);
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		checkGlobal(domain);
+		domain.getDomainDcnDetails().setDcnConfigured(dcnConfigured);
+		return domainRepo.save(domain);
+	}
+
+	@Override
+	public void changeDomainState(Long domainId, boolean active){
+		checkParams(domainId);
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		checkGlobal(domain);
+		domain.setActive(active);
 		domainRepo.save(domain);
 	}
 
@@ -231,8 +258,10 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private void removePreviousRoleInDomain(Domain domain, User user){
-		Optional<UserRole> previousRole = user.getRoles().stream().filter(value -> value.getDomain().getId().equals(domain.getId())).findAny();
-		previousRole.ifPresent(value -> userRoleRepo.deleteBy(user, domain, value.getRole()));
+		user.getRoles().stream()
+				.filter(value -> value.getDomain().getId().equals(domain.getId()))
+				.findAny()
+				.ifPresent(value -> userRoleRepo.deleteBy(user.getId(), domain.getId(), value.getRole()));
 	}
 
 	private User getUser(Long userId) {
@@ -247,52 +276,34 @@ public class DomainServiceImpl implements DomainService {
 	public void removeMemberRole(Long domainId, Long userId, Role role) {
 		checkParams(domainId, userId);
 		checkParams(role);
-			
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		
-		userRoleRepo.deleteBy(user, domain, role);
+		userRoleRepo.deleteBy(userId, domainId, role);
 	}
 
 	@Override
 	public void removeMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		 
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		
-		userRoleRepo.deleteBy(user, domain);		
+		userRoleRepo.deleteBy(userId, domainId);
 	}
 
 	@Override
 	public Set<Role> getMemberRoles(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-		
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		
-		return userRoleRepo.findRolesByDomainAndUser(domain, user);
+		return userRoleRepo.findRolesByDomainAndUser(domainId, userId);
 	}
 
 	@Override
 	public User getMember(Long domainId, Long userId) {
 		checkParams(domainId, userId);
-
-		Domain domain = getDomain(domainId);
-		User user = getUser(userId);
-		User userMember = userRoleRepo.findDomainMember(domain, user);
-		if(userMember == null) {
-			throw new ProcessingException("User is not domain member");
-		}
-
-		return userMember;
+		return userRoleRepo.findDomainMember(domainId, userId)
+				.orElseThrow(() -> new ProcessingException("User is not domain member"));
 	}
 
 	@Override
 	public Set<Domain> getUserDomains(Long userId) {
 		checkParams(userId);
-		User user = getUser(userId);
-		return user.getRoles().stream().map(UserRole::getDomain).collect(Collectors.toSet());
+		return getUser(userId).getRoles().stream()
+				.map(UserRole::getDomain)
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -304,7 +315,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	protected void checkParam(String name) {
-		if(name == null) {
+		if(StringUtils.isEmpty(name)) {
 			throw new IllegalArgumentException("Name is null");
 		}
 	}

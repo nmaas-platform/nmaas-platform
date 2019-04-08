@@ -1,24 +1,23 @@
-package net.geant.nmaas.portal.persistent.entity;
+package net.geant.nmaas.portal.api.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Embeddable;
-import java.io.Serializable;
-
-@Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class DomainTechDetails implements Serializable {
+public class DomainTechDetailsView {
 
-    private boolean dcnConfigured;
+    private Long id;
+
+    private String domainCodename;
+
+    private String externalServiceDomain;
 
     private String kubernetesNamespace;
 
     private String kubernetesStorageClass;
-
 }

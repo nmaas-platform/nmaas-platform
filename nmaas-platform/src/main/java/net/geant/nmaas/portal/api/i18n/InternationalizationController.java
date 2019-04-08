@@ -32,7 +32,7 @@ public class InternationalizationController {
     }
 
     @GetMapping("/languages/all")
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @ResponseStatus(HttpStatus.OK)
     public List<LanguageView> getAllSupportedLanguages(){
         return internationalizationRepository.findAll().stream()

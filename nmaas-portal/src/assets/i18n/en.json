@@ -186,7 +186,8 @@
     "ACTIVATE": "Active",
     "DETAILS_BUTTON": "Details",
     "EDIT_BUTTON": "Edit",
-    "REMOVE_BUTTON": "Remove",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
@@ -282,7 +283,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename has to be 2-8 characters long.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
