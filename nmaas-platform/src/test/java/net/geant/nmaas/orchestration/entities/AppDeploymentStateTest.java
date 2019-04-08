@@ -32,6 +32,7 @@ import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICAT
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARATION_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARATION_IN_PROGRESS;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.DEPLOYMENT_ENVIRONMENT_PREPARED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.FAILED_APPLICATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.INTERNAL_ERROR;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.MANAGEMENT_VPN_CONFIGURED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.REQUESTED;
@@ -77,6 +78,7 @@ public class AppDeploymentStateTest {
     void shouldTransitFromFailingState(AppDeploymentState state) {
         assertThat(state.nextState(NmServiceDeploymentState.INIT), is(REQUESTED));
         assertThat(state.nextState(NmServiceDeploymentState.REMOVAL_INITIATED), is(APPLICATION_REMOVAL_IN_PROGRESS));
+        assertThat(state.nextState(NmServiceDeploymentState.FAILED_APPLICATION_REMOVED), is(FAILED_APPLICATION_REMOVED));
     }
 
     private static Stream<AppDeploymentState> allRunningStates() {
