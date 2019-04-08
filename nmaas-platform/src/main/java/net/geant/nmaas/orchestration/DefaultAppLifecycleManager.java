@@ -14,11 +14,7 @@ import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.entities.AppDeploymentState;
-import net.geant.nmaas.orchestration.events.app.AppApplyConfigurationActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRemoveActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppRestartActionEvent;
-import net.geant.nmaas.orchestration.events.app.AppUpdateConfigurationEvent;
-import net.geant.nmaas.orchestration.events.app.AppVerifyRequestActionEvent;
+import net.geant.nmaas.orchestration.events.app.*;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -145,6 +141,12 @@ public class DefaultAppLifecycleManager implements AppLifecycleManager {
     @Loggable(LogLevel.INFO)
     public void removeApplication(Identifier deploymentId) {
         eventPublisher.publishEvent(new AppRemoveActionEvent(this, deploymentId));
+    }
+
+    @Override
+    @Loggable(LogLevel.DEBUG)
+    public void removeFailedApplication(Identifier deploymentId){
+        eventPublisher.publishEvent(new AppRemoveFailedActionEvent(this, deploymentId));
     }
 
     @Override

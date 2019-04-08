@@ -364,6 +364,10 @@ public enum AppDeploymentState {
         @Override
         public boolean isInFailedState() { return true; }
     },
+    FAILED_APPLICATION_REMOVED {
+      @Override
+      public AppLifecycleState lifecycleState() {return AppLifecycleState.FAILED_APPLICATION_REMOVED; }
+    },
     APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS; }
@@ -442,6 +446,8 @@ public enum AppDeploymentState {
                     return REQUESTED;
                 case REMOVAL_INITIATED:
                     return APPLICATION_REMOVAL_IN_PROGRESS;
+                case FAILED_APPLICATION_REMOVED:
+                    return FAILED_APPLICATION_REMOVED;
             }
         }
         if(currentAppDeploymentState.isInRunningState()) {
