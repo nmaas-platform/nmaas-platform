@@ -673,10 +673,10 @@
     "DEPLOYING": "Deploying",
     "RUNNING": "Running",
     "UNDEPLOYING": "Undeploying",
-    "DONE": "Done",
+    "DONE": "Undeployed",
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
-    "REMOVED": "Removed"
+    "REMOVED": "Undeployed after failure"
   },
   "PAGINATION": {
     "PREVIOUS": "Previous",
