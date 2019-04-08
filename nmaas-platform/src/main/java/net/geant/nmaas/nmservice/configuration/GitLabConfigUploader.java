@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import java.util.Optional;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -99,6 +100,24 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
             gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
             GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
             uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
+        }
+    }
+
+    @Override
+    public void removeConfigFiles(Identifier deploymentId){
+        GitLabProject gitLabProject = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
+        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+        this.removeProject(gitLabProject.getProjectId());
+    }
+
+    private void removeProject(Integer projectId){
+        try{
+            Optional<Project> project = gitlab.getProjectApi().getOptionalProject(projectId);
+            if(project.isPresent()) {
+                gitlab.getProjectApi().deleteProject(projectId);
+            }
+        } catch (GitLabApiException e) {
+            throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 
