@@ -41,4 +41,7 @@ public class MonitorEntry {
 
     @Enumerated
     private TimeFormat timeFormat;
+
+    @Column(nullable = false)
+    private boolean active;
 }

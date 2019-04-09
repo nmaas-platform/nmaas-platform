@@ -14,6 +14,14 @@ public enum ServiceType {
     SHIBBOLETH{
         @Override
         public String getName(){return "SHIBBOLETH";}
+    },
+    DATABASE{
+        @Override
+        public String getName(){return "DATABASE";}
+    },
+    JANITOR{
+        @Override
+        public String getName(){return "JANITOR";}
     };
 
     public abstract String getName();

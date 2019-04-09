@@ -58,12 +58,6 @@ describe('MonitorListComponent', () => {
      expect(monitorService.executeJob).toHaveBeenCalled();
   });
 
-  it('should remove job', ()=>{
-      spyOn(monitorService, 'deleteMonitorEntryAndJob').and.returnValue(of("test"));
-      component.removeJob("test");
-      expect(monitorService.deleteMonitorEntryAndJob).toHaveBeenCalled();
-  });
-
   it('should return 1 hour', ()=>{
       expect(component.getIntervalCheck(1, TimeFormat.H)).toContain('1 hour');
   });

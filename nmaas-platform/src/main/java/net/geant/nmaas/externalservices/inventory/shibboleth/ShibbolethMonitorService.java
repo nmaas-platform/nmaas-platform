@@ -34,12 +34,13 @@ public class ShibbolethMonitorService implements MonitorService {
 
     @Override
     public void checkStatus() {
-        String url = shibbolethManager.getLoginUrl().replaceFirst("^https", "http");
+        String url = shibbolethManager.getLoginUrl();
         try{
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setConnectTimeout(shibbolethManager.getTimeout() * 1000);
             connection.setReadTimeout(shibbolethManager.getTimeout() * 1000);
-            connection.setRequestMethod("HEAD");
+            connection.setRequestMethod("GET");
+            connection.setDoOutput(true);
             int responseCode = connection.getResponseCode();
             if(responseCode >= 200 && responseCode <= 399){
                 monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);

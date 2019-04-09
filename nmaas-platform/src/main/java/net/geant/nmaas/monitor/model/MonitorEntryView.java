@@ -21,4 +21,12 @@ public class MonitorEntryView {
     private Date lastSuccess;
     private Long checkInterval;
     private TimeFormat timeFormat;
+    private boolean active;
+
+    public MonitorEntryView(ServiceType serviceName, Long checkInterval, TimeFormat timeFormat){
+        this.serviceName = serviceName;
+        this.checkInterval = checkInterval;
+        this.timeFormat = timeFormat;
+        this.active = true;
+    }
 }

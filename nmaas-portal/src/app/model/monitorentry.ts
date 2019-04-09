@@ -1,7 +1,9 @@
 export enum ServiceType{
     GITLAB = "GitLab",
     HELM = "Helm",
-    SHIBBOLETH = "Shibboleth"
+    SHIBBOLETH = "Shibboleth",
+    DATABASE = "Database",
+    JANITOR = "Janitor"
 }
 
 export enum MonitorStatus{
@@ -23,4 +25,5 @@ export class MonitorEntry {
     public lastSuccess: Date;
     public checkInterval: number;
     public timeFormat: TimeFormat = TimeFormat.MIN;
+    public active: boolean;
 }
