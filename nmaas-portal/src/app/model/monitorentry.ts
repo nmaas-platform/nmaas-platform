@@ -8,7 +8,8 @@ export enum ServiceType{
 
 export enum MonitorStatus{
     SUCCESS,
-    FAILURE
+    FAILURE,
+    NOT_CHECKED
 }
 
 export enum TimeFormat {

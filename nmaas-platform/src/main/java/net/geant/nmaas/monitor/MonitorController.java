@@ -2,8 +2,6 @@ package net.geant.nmaas.monitor;
 
 import java.util.List;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.monitor.MonitorManager;
-import net.geant.nmaas.monitor.scheduling.JobDescriptor;
 import net.geant.nmaas.monitor.scheduling.ScheduleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,7 +64,6 @@ public class MonitorController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public List<MonitorEntryView> getAllMonitorEntries(){
         return this.monitorManager.getAllMonitorEntries();
     }
