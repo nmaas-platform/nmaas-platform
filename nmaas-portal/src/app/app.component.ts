@@ -30,7 +30,7 @@ export class AppComponent {
             this.configService.getConfiguration().subscribe(config => {
                 this.setLanguage(config.defaultLanguage);
             },() => {
-                this.translate.setDefaultLang("en");
+                this.setLanguage("en");
             });
         }
     }
