@@ -9,6 +9,8 @@ import {TranslateService, TranslateModule, TranslateLoader} from "@ngx-translate
 import {TranslateFakeLoader} from "@ngx-translate/core";
 import {Observable, of} from "rxjs";
 import {Configuration} from "./model/configuration";
+import {AuthService} from "./auth/auth.service";
+import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 
 class MockConfigurationService{
     protected uri:string;
@@ -44,6 +46,13 @@ describe('App: NmaasPortal', () => {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader
                 }
+            }),
+            JwtModule.forRoot({
+                config: {
+                    tokenGetter: () => {
+                        return '';
+                    }
+                }
             })
         ],
         providers: [
@@ -51,7 +60,9 @@ describe('App: NmaasPortal', () => {
             HttpClient,
             HttpHandler,
             ConfigurationService,
-            TranslateService
+            TranslateService,
+            AuthService,
+            JwtHelperService
         ]
     });
   });

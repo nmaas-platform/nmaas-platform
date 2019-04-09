@@ -9,7 +9,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 
 
-import {isUndefined} from 'util';
+import {isNullOrUndefined, isUndefined} from 'util';
 import {Authority} from '../model/authority';
 import {catchError, debounceTime} from 'rxjs/operators';
 
@@ -49,7 +49,10 @@ export class AuthService {
   }
 
   public getSelectedLanguage(): string {
-    return this.jwtHelper.decodeToken(this.getToken()).language;
+    if(!isNullOrUndefined(localStorage.getItem('lang'))){
+      return localStorage.getItem('lang')
+    }
+    return !isNullOrUndefined(this.getToken()) ? this.jwtHelper.decodeToken(this.getToken()).language : undefined;
   }
 
   public getUsername(): string {
