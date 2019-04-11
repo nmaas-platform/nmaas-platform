@@ -2,8 +2,6 @@ package net.geant.nmaas.monitor;
 
 import java.util.List;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
-import net.geant.nmaas.monitor.MonitorManager;
-import net.geant.nmaas.monitor.scheduling.JobDescriptor;
 import net.geant.nmaas.monitor.scheduling.ScheduleManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,8 +35,7 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void createMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
-        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
-        this.scheduleManager.createJob(jobDescriptor);
+        this.scheduleManager.createJob(monitorEntryView);
         this.monitorManager.createMonitorEntry(monitorEntryView);
     }
 
@@ -53,8 +50,7 @@ public class MonitorController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void updateMonitorEntryAndJob(@RequestBody MonitorEntryView monitorEntryView){
-        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
-        this.scheduleManager.updateJob(jobDescriptor);
+        this.scheduleManager.updateJob(monitorEntryView);
         this.monitorManager.updateMonitorEntry(monitorEntryView);
     }
 
@@ -68,7 +64,6 @@ public class MonitorController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public List<MonitorEntryView> getAllMonitorEntries(){
         return this.monitorManager.getAllMonitorEntries();
     }
@@ -85,6 +80,7 @@ public class MonitorController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void resumeJob(@PathVariable String serviceName){
         scheduleManager.resumeJob(serviceName);
+        monitorManager.changeJobState(serviceName, true);
     }
 
     @PatchMapping("/{serviceName}/pause")
@@ -92,5 +88,6 @@ public class MonitorController {
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
     public void pauseJob(@PathVariable String serviceName){
         scheduleManager.pauseJob(serviceName);
+        monitorManager.changeJobState(serviceName, false);
     }
 }

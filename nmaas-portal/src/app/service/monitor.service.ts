@@ -15,16 +15,8 @@ export class MonitorService extends GenericDataService{
     this.url = this.appConfig.getApiUrl() + '/monitor/'
   }
 
-  public createMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-    return this.post(this.url, monitorEntry);
-  }
-
   public updateMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
     return this.put(this.url, monitorEntry);
-  }
-
-  public deleteMonitorEntryAndJob(serviceName: string):Observable<any>{
-    return this.delete(this.url + serviceName);
   }
 
   public getAllMonitorEntries():Observable<MonitorEntry[]>{

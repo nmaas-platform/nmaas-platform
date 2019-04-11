@@ -214,7 +214,8 @@
     "VIEW_SETTINGS_BUTTON": "Pokaż ustawienia",
     "CHECK_NOW_BUTTON": "Sprawdź teraz",
     "EDIT_SETTINGS_BUTTON": "Edytuj ustawienia",
-    "REMOVE_BUTTON": "Usuń"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Szczegóły monitorowania",

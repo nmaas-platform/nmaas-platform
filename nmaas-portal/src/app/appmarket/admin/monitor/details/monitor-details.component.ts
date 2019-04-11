@@ -3,7 +3,6 @@ import {MonitorService} from "../../../../service/monitor.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MonitorEntry, ServiceType, TimeFormat} from "../../../../model/monitorentry";
 import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
-import {ComponentMode} from "../../../../shared";
 import {isNullOrUndefined} from "util";
 
 @Component({
@@ -33,7 +32,7 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
       if(!isNullOrUndefined(params['name'])){
         this.monitorService.getOneMonitorEntry(params['name']).subscribe(entry => {
           this.monitorEntry = entry;
-          if(entry.timeFormat === 0){
+          if(this.getTimeFormatAsString(entry.timeFormat) === 'H'){
             this.monitorEntry.timeFormat = TimeFormat.H;
           } else{
             this.monitorEntry.timeFormat = TimeFormat.MIN;
@@ -45,12 +44,12 @@ export class MonitorDetailsComponent extends BaseComponent implements OnInit {
     });
   }
 
+  public getTimeFormatAsString(timeFormat: any) : string{
+    return typeof timeFormat === "string" && isNaN(Number(timeFormat.toString())) ? timeFormat: TimeFormat[timeFormat];
+  }
+
   public submit():void{
-    if(this.isInMode(ComponentMode.CREATE)){
-      this.monitorService.createMonitorEntryAndJob(this.monitorEntry).subscribe(val => this.router.navigate(["/admin/monitor"]), err => this.errMsg = err.message);
-    } else if(this.isInMode(ComponentMode.EDIT)){
-      this.monitorService.updateMonitorEntryAndJob(this.monitorEntry).subscribe(val => this.router.navigate(["/admin/monitor"]), err => this.errMsg = err.message);
-    }
+    this.monitorService.updateMonitorEntryAndJob(this.monitorEntry).subscribe(() => this.router.navigate(["/admin/monitor"]), err => this.errMsg = err.message);
   }
 
 }

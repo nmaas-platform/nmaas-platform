@@ -216,7 +216,8 @@
     "VIEW_SETTINGS_BUTTON": "Ansichtseinstellungen",
     "CHECK_NOW_BUTTON": "Jetzt prüfen",
     "EDIT_SETTINGS_BUTTON": "Einstellungen bearbeiten",
-    "REMOVE_BUTTON": "Löschen"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Überwachungs Service Details",

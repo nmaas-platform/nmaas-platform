@@ -216,7 +216,8 @@
     "VIEW_SETTINGS_BUTTON": "View settings",
     "CHECK_NOW_BUTTON": "Check now",
     "EDIT_SETTINGS_BUTTON": "Edit settings",
-    "REMOVE_BUTTON": "Remove"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Monitor service details",
