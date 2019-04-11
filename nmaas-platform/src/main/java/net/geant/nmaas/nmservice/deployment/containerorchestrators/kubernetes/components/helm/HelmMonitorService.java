@@ -1,31 +1,20 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.helm;
 
-import java.util.Date;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.MonitorStatus;
 import net.geant.nmaas.monitor.ServiceType;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @NoArgsConstructor
 @Log4j2
-public class HelmMonitorService implements MonitorService {
-
-    private MonitorManager monitorManager;
+public class HelmMonitorService extends MonitorService {
 
     private HelmCommandExecutor helmCommandExecutor;
-
-    @Autowired
-    public void setMonitorManager(MonitorManager monitorManager) {
-        this.monitorManager = monitorManager;
-    }
 
     @Autowired
     public void setHelmCommandExecutor(HelmCommandExecutor helmCommandExecutor){
@@ -36,10 +25,10 @@ public class HelmMonitorService implements MonitorService {
     public void checkStatus(){
         try{
             helmCommandExecutor.executeVersionCommand();
-            this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.SUCCESS);
+            this.updateMonitorEntry(MonitorStatus.SUCCESS);
             log.debug("Helm instance is running");
         } catch(CommandExecutionException | IllegalStateException e){
-            this.monitorManager.updateMonitorEntry(new Date(), this.getServiceType(), MonitorStatus.FAILURE);
+            this.updateMonitorEntry(MonitorStatus.FAILURE);
             log.error("Helm instance is not running -> " + e.getMessage());
         }
     }
@@ -49,8 +38,4 @@ public class HelmMonitorService implements MonitorService {
         return ServiceType.HELM;
     }
 
-    @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException{
-        this.checkStatus();
-    }
 }

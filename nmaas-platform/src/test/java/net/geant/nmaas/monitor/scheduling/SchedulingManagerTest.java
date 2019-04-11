@@ -1,5 +1,6 @@
 package net.geant.nmaas.monitor.scheduling;
 
+import java.util.Collections;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabMonitorService;
 import net.geant.nmaas.monitor.MonitorManager;
@@ -14,7 +15,6 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.TriggerKey;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +47,7 @@ public class SchedulingManagerTest {
         GitLabMonitorService gitLabMonitorService = new GitLabMonitorService();
         gitLabMonitorService.setGitLabManager(gitLabManager);
         gitLabMonitorService.setMonitorManager(monitorManager);
-        monitorServices = Arrays.asList(gitLabMonitorService);
+        monitorServices = Collections.singletonList(gitLabMonitorService);
         scheduleManager = new ScheduleManager(monitorServices, scheduler);
         when(scheduler.checkExists(JobKey.jobKey(ServiceType.GITLAB.getName()))).thenReturn(false);
     }
