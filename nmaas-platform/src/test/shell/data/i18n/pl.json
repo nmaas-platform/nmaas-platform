@@ -14,7 +14,8 @@
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
     "LANGUAGE": "Język",
     "ABOUT": "O nas",
-    "BACK": "Wróć do strony głównej"
+    "BACK": "Wróć do strony głównej",
+    "LANGUAGES": "Języki"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -667,6 +668,24 @@
       "PAGINATION": "Paginacja",
       "PAGE": "strona",
       "CURRENT": "Jesteś na stronie"
+    }
+  },
+  "LANGUAGE_MANAGEMENT": {
+    "TABLE_KEY": "Klucz",
+    "TABLE_VALUE": "Wartość",
+    "ADD_NEW_ITEM_BUTTON": "Dodaj nowy",
+    "SUBJECT_LABEL": "Temat",
+    "LABELS_TRANSLATION": "Tłumaczenie etykiet",
+    "MAILS_TRANSLATION": "Tłumaczenie maili",
+    "SUBMIT_BUTTON": "Prześlij",
+    "NOT_SUPPORTED_MESSAGE": "Nieobsługiwane",
+    "EDIT_BUTTON": "Edytuj",
+    "LANGUAGE_DISABLED": "Niekatywne",
+    "LANGUAGE_ENABLED": "Aktywne",
+    "LANGUAGE_ERROR": "Wystąpił błąd",
+    "MODAL": {
+      "CLOSE_BUTTON": "Zamknij",
+      "HEADER": "Nagłówek"
     }
   }
 }

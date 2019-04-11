@@ -14,7 +14,8 @@
     "LOGIN_REGISTER": "Login | Register",
     "LANGUAGE": "Language",
     "ABOUT": "About",
-    "BACK": "Back to Home Page"
+    "BACK": "Back to Home Page",
+    "LANGUAGES": "Languages"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -668,6 +669,24 @@
       "PAGINATION": "Pagination",
       "PAGE": "page",
       "CURRENT": "You're on page"
+    }
+  },
+  "LANGUAGE_MANAGEMENT": {
+    "TABLE_KEY": "Key",
+    "TABLE_VALUE": "Value",
+    "ADD_NEW_ITEM_BUTTON": "Add new item",
+    "SUBJECT_LABEL": "Subject",
+    "LABELS_TRANSLATION": "Labels translations",
+    "MAILS_TRANSLATION": "Mail translations",
+    "SUBMIT_BUTTON": "Submit",
+    "NOT_SUPPORTED_MESSAGE": "Not supported",
+    "EDIT_BUTTON": "Edit",
+    "LANGUAGE_DISABLED": "Disabled",
+    "LANGUAGE_ENABLED": "Enabled",
+    "LANGUAGE_ERROR": "Error occured",
+    "MODAL": {
+      "CLOSE_BUTTON": "Close",
+      "HEADER": "Header"
     }
   }
 }

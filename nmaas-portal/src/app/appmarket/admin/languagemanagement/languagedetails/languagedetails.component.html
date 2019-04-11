@@ -6,7 +6,7 @@
   <div *ngFor="let key of keys; let ix=index">
     <div class="panel panel-default">
       <div class="panel-heading" (click)="hide[ix]=!hide[ix]">{{key.toString()}}</div>
-      <table class="table" *ngIf="!hide[ix]">
+      <table class="table table-striped" *ngIf="!hide[ix]">
         <thead>
         <tr>
           <th>{{'LANGUAGE_MANAGEMENT.TABLE_KEY' | translate}}</th>
@@ -58,7 +58,7 @@
         <label for="subject-textarea">{{'LANGUAGE_MANAGEMENT.SUBJECT_LABEL' | translate}}</label>
         <input style="width:100%;" class="form-control"  [(ngModel)]="getTemplateInSelectedLang(template.templates).subject" name="subject-textarea" id="subject-textarea" />
         <hr>
-        <table class="table">
+        <table class="table table-striped">
           <tbody>
           <tr *ngFor="let content of getTemplateInSelectedLang(template.templates).template | keyvalue; let i=index">
             <td>{{content.key}}</td>

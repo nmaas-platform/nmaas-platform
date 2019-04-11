@@ -14,7 +14,8 @@
     "LOGIN_REGISTER": "Einloggen | Registrieren",
     "LANGUAGE": "Sprache",
     "ABOUT": "Über",
-    "BACK": "Zurück zur Startseite"
+    "BACK": "Zurück zur Startseite",
+    "LANGUAGES": "Sprachen"
   },
   "WELCOME": {
     "LOGIN": "Login",
@@ -669,6 +670,24 @@
       "PAGINATION": "Seitennummerierung",
       "PAGE": "seite",
       "CURRENT": "Du bist auf der Seite"
+    }
+  },
+  "LANGUAGE_MANAGEMENT": {
+    "TABLE_KEY": "Schlüssel",
+    "TABLE_VALUE": "Wert",
+    "ADD_NEW_ITEM_BUTTON": "Neues Element hinzufügen",
+    "SUBJECT_LABEL": "Betreff",
+    "LABELS_TRANSLATION": "Übersetzungen von Etiketten",
+    "MAILS_TRANSLATION": "Mail-Übersetzungen",
+    "SUBMIT_BUTTON": "Submit",
+    "NOT_SUPPORTED_MESSAGE": "Nicht unterstützt",
+    "EDIT_BUTTON": "Bearbeiten",
+    "LANGUAGE_DISABLED": "Deaktiviert",
+    "LANGUAGE_ENABLED": "aktiviert",
+    "LANGUAGE_ERROR": "Fehler aufgetreten",
+    "MODAL": {
+      "CLOSE_BUTTON": "Schließen",
+      "HEADER": "Header"
     }
   }
 }
