@@ -1,3 +1,10 @@
 .panel-heading:hover {
     cursor: pointer;
 }
+
+h3{
+    margin-top: 15px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
