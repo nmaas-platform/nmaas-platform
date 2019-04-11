@@ -28,6 +28,7 @@ import net.geant.nmaas.orchestration.entities.AppDeploymentEnv;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.orchestration.AppUiAccessDetails;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.exceptions.InvalidConfigurationException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
@@ -165,8 +166,8 @@ public class KubernetesManager implements ContainerOrchestrator {
                             service.getDomain(),
                             serviceExternalUrl);
             }
-        } catch (InvalidDeploymentIdException idie) {
-            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(idie.getMessage()));
+        } catch (InvalidDeploymentIdException | InvalidConfigurationException ex) {
+            throw new ContainerOrchestratorInternalErrorException(serviceNotFoundMessage(ex.getMessage()));
         } catch (KServiceManipulationException e) {
             throw new CouldNotDeployNmServiceException(e.getMessage());
         }
