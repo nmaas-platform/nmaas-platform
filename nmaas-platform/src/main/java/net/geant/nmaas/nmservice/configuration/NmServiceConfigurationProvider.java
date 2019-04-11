@@ -32,4 +32,11 @@ public interface NmServiceConfigurationProvider {
      */
     void updateNmService(Identifier deploymentId, Identifier applicationId, AppConfiguration appConfiguration,
                          String domain, boolean configFileRepositoryRequired);
+
+    /**
+     * Removes NM service configuration
+     *
+     * @param deploymentId unique identifier of service deployment
+     */
+    void removeNmService(Identifier deploymentId);
 }

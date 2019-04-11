@@ -186,7 +186,8 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
@@ -215,7 +216,8 @@
     "VIEW_SETTINGS_BUTTON": "Afficher les paramètres",
     "CHECK_NOW_BUTTON": "Vérifier maintenant",
     "EDIT_SETTINGS_BUTTON": "Modifier les paramètres",
-    "REMOVE_BUTTON": "Supprimer"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Monitor service details",
@@ -282,7 +284,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "L'identifiant doit comporter entre 2 et 8 caractères.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
@@ -379,6 +382,7 @@
     "GO_TO_APP_BUTTON": "Aller à l'application",
     "UNDEPLOY_BUTTON": "Supprimer",
     "RESTART_BUTTON": "Re-démarrer",
+    "REMOVE_BUTTON": "Supprimer échoué",
     "REDEPLOY_BUTTON": "Re-déployer",
     "UPDATE_CONFIG_BUTTON": "Update",
     "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
@@ -442,7 +446,22 @@
       "APP_UPDATE_SUCCESS": "La configuration de l'application a été mise à jour avec succès",
       "APP_UPDATE_FAILED": "La mise à jour de la configuration de l'application a échoué",
       "UNKNOWN": "Etat inconnu",
-      "ERROR": "Erreur interne"
+      "ERROR": "Erreur interne",
+      "FAILED_APPLICATION_REMOVED": "Échec de l'application supprimée"
+    },
+    "USER_FRIENDLY": {
+      "REQUESTED": "NMaaS traite votre demande",
+      "VALIDATION": "NMaaS valide les ressources disponibles",
+      "PREPARATION": "NMaaS prépare l'environnement de déploiement de votre application",
+      "CONNECTING": "NMaaS met en place une connectivité sécurisée à votre équipement",
+      "CONFIGURATION_AWAITING": "NMaaS attend la configuration de votre application. Fournissez la configuration initiale à l'aide de l'assistant situé sous l'historique de déploiement",
+      "DEPLOYING": "L'application est en cours de déploiement par NMaaS. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois votre instance prête",
+      "RUNNING": "Votre application est prête. Vous pouvez maintenant accéder à votre application en cliquant sur le bouton ci-dessus",
+      "UNDEPLOYING": "L'application n'est pas déployée. Ce processus peut prendre plusieurs minutes",
+      "DONE": "Application non déployée avec succès",
+      "FAILURE": "",
+      "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
+      "REMOVED": "Application non déployée avec succès"
     }
   },
   "UNDEPLOY_MODAL": {
@@ -658,7 +677,8 @@
     "UNDEPLOYING": "Désinstaller",
     "DONE": "Terminé",
     "FAILURE": "Échec",
-    "UNKNOWN": "Inconnu"
+    "UNKNOWN": "Inconnu",
+    "REMOVED": "Enlevé"
   },
   "PAGINATION": {
     "PREVIOUS": "Précédent",

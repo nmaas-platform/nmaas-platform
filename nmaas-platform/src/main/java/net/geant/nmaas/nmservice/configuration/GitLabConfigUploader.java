@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import java.util.Optional;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
 import net.geant.nmaas.nmservice.configuration.entities.GitLabProject;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
@@ -67,7 +68,7 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     @Override
     public void transferConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired) {
         if(configFileRepositoryRequired){
-            GitLabProject gitLabProject = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
+            GitLabProject gitLabProject = loadGitlabProject(deploymentId);
             if(gitLabProject == null){
                 createProjectAndUploadFiles(deploymentId, configIds);
             } else{
@@ -78,7 +79,6 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
 
     private void createProjectAndUploadFiles(Identifier deploymentId, List<String> configIds){
         String domain = serviceRepositoryManager.loadDomain(deploymentId);
-        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
         String gitLabPassword = generateRandomPassword();
         Integer gitLabUserId = createUser(domain, deploymentId, gitLabPassword);
         Integer gitLabGroupId = getOrCreateGroupWithMemberForUserIfNotExists(gitLabUserId, domain);
@@ -89,16 +89,42 @@ public class GitLabConfigUploader implements ConfigurationFileTransferProvider {
     }
 
     private void updateConfigFiles(GitLabProject project, List<String> configIds){
-        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
         uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
+    }
+
+    private void createGitLabApi(){
+        gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
+    }
+
+    private GitLabProject loadGitlabProject(Identifier deploymentId){
+        this.createGitLabApi();
+        return serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
     }
 
     @Override
     public void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired){
         if(configFileRepositoryRequired){
-            gitlab = new GitLabApi(ApiVersion.V4, gitLabManager.getGitLabApiUrl(), gitLabManager.getGitLabApiToken());
             GitLabProject project = serviceRepositoryManager.loadService(deploymentId).getGitLabProject();
             uploadUpdateConfigFilesToProject(project.getProjectId(), configIds);
+        }
+    }
+
+    @Override
+    public void removeConfigFiles(Identifier deploymentId){
+        GitLabProject gitLabProject = loadGitlabProject(deploymentId);
+        if(gitLabProject != null){
+            this.removeProject(gitLabProject.getProjectId());
+        }
+    }
+
+    private void removeProject(Integer projectId){
+        try{
+            Optional<Project> project = gitlab.getProjectApi().getOptionalProject(projectId);
+            if(project.isPresent()) {
+                gitlab.getProjectApi().deleteProject(projectId);
+            }
+        } catch (GitLabApiException e) {
+            throw new FileTransferException(e.getClass().getName() + e.getMessage());
         }
     }
 

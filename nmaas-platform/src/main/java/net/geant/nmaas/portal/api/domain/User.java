@@ -14,6 +14,7 @@ public class User extends UserBase {
 	protected String lastname;
 	protected String email;
 	protected boolean ssoUser;
+	protected String selectedLanguage;
 	
 	protected Set<UserRole> roles = new HashSet<>();
 	
@@ -26,7 +27,7 @@ public class User extends UserBase {
 	}
 
 	@Builder
-	public User(Long id, String username, String firstname, String lastname, String email, boolean enabled, Set<UserRole> roles, boolean ssoUser) {
+	public User(Long id, String username, String firstname, String lastname, String email, boolean enabled, Set<UserRole> roles, boolean ssoUser, String selectedLanguage) {
 		this(id, username);
 		this.firstname = firstname;
 		this.lastname = lastname;
@@ -34,6 +35,7 @@ public class User extends UserBase {
 		this.enabled = enabled;
 		this.roles = roles;
 		this.ssoUser = ssoUser;
+		this.selectedLanguage = selectedLanguage;
 	}
 	
 }

@@ -187,7 +187,8 @@
     "ACTIVATE": "Aktiv",
     "DETAILS_BUTTON": "Details",
     "EDIT_BUTTON": "Bearbeiten",
-    "REMOVE_BUTTON": "Löschen",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Hinzufügen"
   },
   "APP_INSTANCES": {
@@ -216,7 +217,8 @@
     "VIEW_SETTINGS_BUTTON": "Ansichtseinstellungen",
     "CHECK_NOW_BUTTON": "Jetzt prüfen",
     "EDIT_SETTINGS_BUTTON": "Einstellungen bearbeiten",
-    "REMOVE_BUTTON": "Löschen"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Überwachungs Service Details",
@@ -284,7 +286,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename muss 2-8 Zeichen lang sein.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",
@@ -381,6 +384,7 @@
     "GO_TO_APP_BUTTON": "Gehe zu App",
     "UNDEPLOY_BUTTON": "Deinstallieren",
     "RESTART_BUTTON": "Neustart",
+    "REMOVE_BUTTON": "Entfernen fehlgeschlagen",
     "REDEPLOY_BUTTON": "Neu installieren",
     "UPDATE_CONFIG_BUTTON": "Update",
     "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
@@ -444,7 +448,22 @@
       "APP_UPDATE_SUCCESS": "Anwendungskonfiguration erfolgreich aktualisiert",
       "APP_UPDATE_FAILED": "Update der Anwendungskonfiguration ist fehlgeschlagen",
       "UNKNOWN": "Unbekannter Zustand",
-      "ERROR": "Interner Fehler"
+      "ERROR": "Interner Fehler",
+      "FAILED_APPLICATION_REMOVED": "Fehlerhafte Anwendung entfernt"
+    },
+    "USER_FRIENDLY": {
+      "REQUESTED": "NMaaS bearbeitet Ihre Anfrage",
+      "VALIDATION": "NMaaS validiert verfügbare Ressourcen",
+      "PREPARATION": "NMaaS bereitet die Implementierungsumgebung für Ihre Anwendung vor",
+      "CONNECTING": "NMaaS richtet sichere Verbindungen zu Ihren Geräten ein",
+      "CONFIGURATION_AWAITING": "NMaaS wartet auf Ihre Anwendungskonfiguration. Erstkonfiguration mithilfe des Assistenten unterhalb des Implementierungsverlaufs vornehmen",
+      "DEPLOYING": "Die Anwendung wird von NMaaS bereitgestellt. Dieser Vorgang kann bis zu mehreren Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz bereit ist",
+      "RUNNING": "Ihre Anwendung ist bereit. Sie können jetzt auf Ihre Anwendung zugreifen, indem Sie auf die Schaltfläche oben klicken",
+      "UNDEPLOYING": "Die Anwendung wird nicht bereitgestellt. Dieser Vorgang kann bis zu mehreren Minuten dauern",
+      "DONE": "Anwendung erfolgreich aufgehoben",
+      "FAILURE": "",
+      "UNKNOWN": "Unbekannter Anwendungszustand - Kontakt mit dem NMaaS-Team über das Kontaktformular auf der Unterseite \" Über \"",
+      "REMOVED": "Anwendung erfolgreich aufgehoben"
     }
   },
   "UNDEPLOY_MODAL": {
@@ -661,7 +680,8 @@
     "UNDEPLOYING": "Deinstallieren",
     "DONE": "Erledigt",
     "FAILURE": "Fehler",
-    "UNKNOWN": "Unbekannt"
+    "UNKNOWN": "Unbekannt",
+    "REMOVED": "Entfernt"
   },
   "PAGINATION": {
     "PREVIOUS": "Bisherige",

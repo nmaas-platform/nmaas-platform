@@ -21,7 +21,7 @@
 				<td class="text-right">
 					<a [routerLink]="['view/', domain.id]" class="btn btn-sm btn-primary" role="button">{{ 'DOMAINS.DETAILS_BUTTON' | translate }}</a>
 					<a *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLink]="['edit/', domain.id]" class="btn btn-sm btn-success" role="button">{{ 'DOMAINS.EDIT_BUTTON' | translate }}</a>
-					<a *roles="['ROLE_SYSTEM_ADMIN']" (click)="remove(domain.id)" class="btn btn-sm btn-danger" role="button">{{ 'DOMAINS.REMOVE_BUTTON' | translate }}</a>
+					<a *roles="['ROLE_SYSTEM_ADMIN']" (click)="changeState(domain)" class="btn btn-sm btn-danger" role="button">{{ getStateLabel(domain?.active) }}</a>
 				</td>
 			</tr>
 			</ng-template>

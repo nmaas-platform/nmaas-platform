@@ -5,6 +5,7 @@ import {BaseComponent} from "../../shared/common/basecomponent/base.component";
 import {TranslateService} from "@ngx-translate/core";
 import {ContentDisplayService} from "../../service/content-display.service";
 import {InternationalizationService} from "../../service/internationalization.service";
+import {UserService} from "../../service";
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,8 @@ import {InternationalizationService} from "../../service/internationalization.se
 export class ProfileComponent extends BaseComponent implements OnInit {
 
   constructor(protected profileService:ProfileService, private translate: TranslateService,
+              private contentService:ContentDisplayService,
+              public userService: UserService,
               private languageService:InternationalizationService) {
       super();
   }
@@ -22,16 +25,16 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   public user:User;
   public languages: string[];
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
-
-  getCurrent(){
-    return this.translate.currentLang;
+  setLanguage(language: string) {
+    this.userService.setUserLanguage(this.user.id, language).subscribe(() => {
+      this.user.selectedLanguage = language;
+      localStorage.setItem('lang', language);
+      this.translate.use(language);
+    });
   }
 
   getPathToCurrent(){
-    return "assets/images/country/" + this.getCurrent() + "_circle.png";
+    return "assets/images/country/" + this.user.selectedLanguage + "_circle.png";
   }
 
   public getSupportedLanguages(){

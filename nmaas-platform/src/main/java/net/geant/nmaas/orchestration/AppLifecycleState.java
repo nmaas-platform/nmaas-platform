@@ -184,6 +184,10 @@ public enum AppLifecycleState {
         public String getUserFriendlyState(){
             return "APP_INSTANCE.PROGRESS.ERROR";
         }
+    },
+    FAILED_APPLICATION_REMOVED{
+        @Override
+        public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.FAILED_APPLICATION_REMOVED"; }
     };
 
     public abstract String getUserFriendlyState();

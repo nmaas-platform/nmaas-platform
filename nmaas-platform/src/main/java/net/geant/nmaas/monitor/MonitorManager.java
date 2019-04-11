@@ -80,6 +80,17 @@ public class MonitorManager {
                 .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName)));
     }
 
+    public void changeJobState(String serviceName, boolean active){
+        MonitorEntry monitorEntry = this.repository.findByServiceName(ServiceType.valueOf(serviceName.toUpperCase()))
+                .orElseThrow(() -> new MonitorEntryNotFound(monitorEntryNotFoundMessage(serviceName.toUpperCase())));
+        monitorEntry.setActive(active);
+        this.repository.save(monitorEntry);
+    }
+
+    public boolean existsByServiceName(ServiceType serviceName){
+        return repository.existsByServiceName(serviceName);
+    }
+
     private void validateMonitorEntryUpdate(Date lastCheck, MonitorStatus status){
         if(status == null)
             throw new IllegalStateException("Status cannot be null");

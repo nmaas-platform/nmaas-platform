@@ -1,6 +1,11 @@
 package net.geant.nmaas.portal;
 
-import net.geant.nmaas.portal.api.configuration.ConfigurationView;
+import java.util.Arrays;
+import net.geant.nmaas.monitor.MonitorManager;
+import net.geant.nmaas.monitor.ServiceType;
+import net.geant.nmaas.monitor.TimeFormat;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
+import net.geant.nmaas.monitor.scheduling.ScheduleManager;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Content;
 import net.geant.nmaas.portal.persistent.entity.Domain;
@@ -45,6 +50,9 @@ public class PortalConfig {
 			@Autowired
 			private DomainService domains;
 
+			@Autowired
+			private ConfigurationManager configurationManager;
+
 			@Value("${admin.password}")
 			String adminPassword;
 
@@ -67,10 +75,35 @@ public class PortalConfig {
 				if(globalDomain.isPresent()) {
 					User user = new User(username, true, passwordEncoder.encode(password), globalDomain.get(), role, true, true);
 					user.setEmail(email);
+					user.setSelectedLanguage(configurationManager.getConfiguration().getDefaultLanguage());
 					userRepository.save(user);
 				}
 			}
 						
+		};
+	}
+
+	@Bean
+	public InitializingBean insertDefaultMonitoringJobs(){
+		return new InitializingBean() {
+
+			@Autowired
+			private ScheduleManager scheduleManager;
+
+			@Autowired
+			private MonitorManager monitorManager;
+
+			@Override
+			@Transactional
+			public void afterPropertiesSet() {
+				Arrays.asList(ServiceType.values()).forEach(service ->{
+					if(!monitorManager.existsByServiceName(service)){
+						MonitorEntryView monitorEntry = new MonitorEntryView(service, 24L, TimeFormat.H);
+						this.monitorManager.createMonitorEntry(monitorEntry);
+						this.scheduleManager.createJob(monitorEntry);
+					}
+				});
+			}
 		};
 	}
 

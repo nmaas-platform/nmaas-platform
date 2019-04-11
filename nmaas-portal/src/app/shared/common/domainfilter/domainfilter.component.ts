@@ -52,7 +52,7 @@ export class DomainFilterComponent implements OnInit, OnDestroy {
       this.domains = this.domainService.getMyDomains();
       if(!isUndefined(this.domains) && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(),'ROLE_TOOL_MANAGER') && !this.authService.hasDomainRole(this.appConfig.getNmaasGlobalDomainId(), 'ROLE_OPERATOR')) {
            this.domains = this.domains.pipe(
-               map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
+               map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId() && domain.active)));
       }
     }
   }

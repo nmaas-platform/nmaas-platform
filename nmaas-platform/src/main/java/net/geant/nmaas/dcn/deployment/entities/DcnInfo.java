@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 
 @Entity
 @Table(name="dcn_info")
@@ -37,6 +38,10 @@ public class DcnInfo {
     @Enumerated(EnumType.STRING)
     private DcnDeploymentState state = DcnDeploymentState.INIT;
 
+    @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
+    private DcnDeploymentType dcnDeploymentType;
+
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval=true)
     private DcnCloudEndpointDetails cloudEndpointDetails;
 
@@ -49,6 +54,7 @@ public class DcnInfo {
     public DcnInfo(DcnSpec spec) {
         this.name = spec.getName();
         this.domain = spec.getDomain();
+        this.dcnDeploymentType = spec.getDcnDeploymentType();
     }
 
 }

@@ -1,0 +1,1 @@
+alter table monitor_entry add column active boolean not null default true;

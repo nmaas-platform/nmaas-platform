@@ -22,6 +22,10 @@ public interface UserRepository extends JpaRepository<User, Long>{
     void setEnabledFlag(Long userId,  boolean isEnabledFlag);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("update User u set u.selectedLanguage = ?2 where u.id = ?1")
+    void setUserLanguage(Long userId, String userLanguage);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("update User u set u.termsOfUseAccepted = ?2 where u.id = ?1")
     void setTermsOfUseAcceptedFlag(Long userId, boolean termsOfUseAcceptedFlag);
 

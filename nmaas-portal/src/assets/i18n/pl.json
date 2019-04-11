@@ -184,7 +184,8 @@
     "ACTIVATE": "Aktywna",
     "DETAILS_BUTTON": "Szczegóły",
     "EDIT_BUTTON": "Edytuj",
-    "REMOVE_BUTTON": "Usuń",
+    "DISABLE_BUTTON": "Dezaktywuj",
+    "ENABLE_BUTTON": "Aktywuj",
     "ADD_BUTTON": "Dodaj"
   },
   "APP_INSTANCES": {
@@ -213,7 +214,8 @@
     "VIEW_SETTINGS_BUTTON": "Pokaż ustawienia",
     "CHECK_NOW_BUTTON": "Sprawdź teraz",
     "EDIT_SETTINGS_BUTTON": "Edytuj ustawienia",
-    "REMOVE_BUTTON": "Usuń"
+    "ACTIVATE_BUTTON": "Aktywuj",
+    "DEACTIVATE_BUTTON": "Deaktywuj"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Szczegóły monitorowania",
@@ -281,7 +283,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu nazwy domeny musi zawierać się w przedziale od 2 do 8 znaków.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru Kubernetes namespace to 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "Zewnętrzna nazwa domenowa"
+    "EXTERNAL_SERVICE_DOMAIN": "Zewnętrzna nazwa domenowa",
+    "DCN_DEPLOYMENT_TYPE": "Typ konfiguracji dcn"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -643,7 +646,7 @@
   },
   "FILTER": {
     "TAGS": "Tagi",
-    "DOMAIN": "Domena",
+    "DOMAIN": "Domena"
   },
   "ENUM": {
     "ALL": "Wszystkie",

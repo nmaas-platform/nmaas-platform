@@ -61,6 +61,8 @@ public class User implements Serializable {
 	private boolean termsOfUseAccepted;
 	private boolean privacyPolicyAccepted;
 
+	private String selectedLanguage;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
 	private List<UserRole> roles = new ArrayList<>();
 	

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentStateChangeEvent;
@@ -41,11 +43,11 @@ import net.geant.nmaas.portal.service.UserService;
 @RequestMapping("/api/domains")
 public class DomainController extends AppBaseController {
 
-	UserService userService;
+	private UserService userService;
 	
-	DomainService domainService;
+	private DomainService domainService;
 
-	ApplicationEventPublisher eventPublisher;
+	private ApplicationEventPublisher eventPublisher;
 
 	private static final String UNABLE_TO_CHANGE_DOMAIN_ID = "Unable to change domain id";
 	private static final String DOMAIN_NOT_FOUND = "Domain not found.";
@@ -84,11 +86,10 @@ public class DomainController extends AppBaseController {
 		
 		Domain domain;
 		try {
-			domain = domainService.createDomain(domainRequest.getName(), domainRequest.getCodename(), domainRequest.isActive(),
-					domainRequest.isDcnConfigured(), domainRequest.getKubernetesNamespace(), domainRequest.getKubernetesStorageClass(), domainRequest.getExternalServiceDomain());
-			this.domainService.storeDcnInfo(domain.getCodename());
+			domain = domainService.createDomain(domainRequest);
+			this.domainService.storeDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 
-			if(domain.isDcnConfigured()){
+			if(domain.getDomainDcnDetails().isDcnConfigured()){
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
 			}
@@ -110,16 +111,18 @@ public class DomainController extends AppBaseController {
 		
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
-		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
-		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
-		if(domainUpdate.getExternalServiceDomain() == null || domainUpdate.getExternalServiceDomain().isEmpty()){
-			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
-		} else {
-			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getExternalServiceDomain()), "External service domain is not unique");
-			domain.setExternalServiceDomain(domainUpdate.getExternalServiceDomain());
+		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
+		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+		if(StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())){
+			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
+		} else if(!domainUpdate.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())){
+			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
+			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		}
 		try {
 			domainService.updateDomain(domain);
+			domainService.updateDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}
@@ -135,10 +138,12 @@ public class DomainController extends AppBaseController {
 			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
 		}
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getKubernetesNamespace());
-		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getKubernetesStorageClass());
+		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
+		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
 		try {
 			domainService.updateDomain(domain);
+			domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
 		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
 			throw new ProcessingException(e.getMessage());
 		}
@@ -146,18 +151,20 @@ public class DomainController extends AppBaseController {
 		return new Id(domainId);
 	}
 
+	@PatchMapping("/{domainId}/state")
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
+	public void updateDomainState(@PathVariable Long domainId, @RequestParam boolean active){
+		this.domainService.changeDomainState(domainId, active);
+	}
+
 	@PatchMapping("/{domainId}/dcn")
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
-	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestBody DomainView domainUpdate) {
-		if(!domainId.equals(domainUpdate.getId())){
-			throw new ProcessingException(UNABLE_TO_CHANGE_DOMAIN_ID);
-		}
-		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
-		domain.getDomainTechDetails().setDcnConfigured(domainUpdate.isDcnConfigured());
+	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestParam(value = "configured") boolean dcnConfigured) {
 		try{
-			domainService.updateDomain(domain);
-			if(domain.isDcnConfigured()){
+			Domain domain = domainService.changeDcnConfiguredFlag(domainId, dcnConfigured);
+			if(domain.getDomainDcnDetails().isDcnConfigured()){
 				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
 				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
 			} else{

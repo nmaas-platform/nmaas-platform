@@ -71,6 +71,20 @@ public class NmServiceConfigurationExecutor implements NmServiceConfigurationPro
         }
     }
 
+    @Override
+    @Loggable(LogLevel.INFO)
+    public void removeNmService(Identifier deploymentId) {
+        try{
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED);
+            this.fileUploader.removeConfigFiles(deploymentId);
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_REMOVED);
+        } catch (Exception e){
+            notifyStateChangeListeners(deploymentId, NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED);
+            throw new NmServiceConfigurationFailedException(e.getMessage());
+        }
+    }
+
+
     private void notifyStateChangeListeners(Identifier deploymentId, NmServiceDeploymentState state) {
         eventPublisher.publishEvent(new NmServiceDeploymentStateChangeEvent(this, deploymentId, state, ""));
     }

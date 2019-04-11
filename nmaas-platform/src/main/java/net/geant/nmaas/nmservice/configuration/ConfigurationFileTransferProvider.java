@@ -33,4 +33,11 @@ public interface ConfigurationFileTransferProvider {
      */
     void updateConfigFiles(Identifier deploymentId, List<String> configIds, boolean configFileRepositoryRequired);
 
+    /**
+     * Method to delete configuration files
+     *
+     * @param deploymentId unique identifier of service deployment
+     */
+    void removeConfigFiles(Identifier deploymentId);
+
 }

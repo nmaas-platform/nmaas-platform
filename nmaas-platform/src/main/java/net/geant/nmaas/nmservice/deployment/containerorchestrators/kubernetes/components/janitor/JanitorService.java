@@ -1,7 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
 
+import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import java.util.Arrays;
 import net.geant.nmaas.externalservices.inventory.janitor.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
@@ -93,6 +95,11 @@ public class JanitorService {
         JanitorManager.ServiceResponse response = stub.deleteIfExists(buildInstanceRequest(deploymentId, domain));
         if (response.getStatus() != JanitorManager.Status.OK)
             throw new JanitorResponseException(response.getMessage());
+    }
+
+    //TODO: Replace with proper health check once it's implemented in Janitor
+    boolean isJanitorAvailable(){
+        return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
     }
 
     public boolean checkIfReady(Identifier deploymentId, String domain) {
