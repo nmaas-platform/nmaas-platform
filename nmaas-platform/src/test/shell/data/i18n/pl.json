@@ -680,8 +680,8 @@
     "SUBMIT_BUTTON": "Prześlij",
     "NOT_SUPPORTED_MESSAGE": "Nieobsługiwane",
     "EDIT_BUTTON": "Edytuj",
-    "LANGUAGE_DISABLED": "Niekatywne",
-    "LANGUAGE_ENABLED": "Aktywne",
+    "LANGUAGE_DISABLED": "Deaktywuj",
+    "LANGUAGE_ENABLED": "Aktywuj",
     "LANGUAGE_ERROR": "Wystąpił błąd",
     "MODAL": {
       "CLOSE_BUTTON": "Zamknij",

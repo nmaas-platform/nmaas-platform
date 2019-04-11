@@ -17,7 +17,7 @@
           <td>{{'LANGUAGE.' + lang.language.toUpperCase() + '_LABEL' | translate}}</td>
           <td class="text-right">
             <button [routerLink]="['/admin/languages/' + lang.language]" class="btn btn-sm btn-primary">{{'LANGUAGE_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-            <button *ngIf="lang.enabled" class="btn btn-sm btn-danger" (click)="changeLanguageState(lang)">{{'LANGUAGE_MANAGEMENT.LANGUAGE_DISABLED' | translate }}</button>
+            <button *ngIf="lang.enabled" class="btn btn-sm btn-success" (click)="changeLanguageState(lang)">{{'LANGUAGE_MANAGEMENT.LANGUAGE_DISABLED' | translate }}</button>
             <button *ngIf="!lang.enabled" class="btn btn-sm btn-danger" (click)="changeLanguageState(lang)">{{'LANGUAGE_MANAGEMENT.LANGUAGE_ENABLED' | translate }}</button>
           </td>
         </tr>
