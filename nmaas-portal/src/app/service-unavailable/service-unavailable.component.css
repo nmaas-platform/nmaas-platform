@@ -1,0 +1,14 @@
+#service-denied{
+    margin-top: 20vh;
+}
+
+.border-denied{
+    padding: 25px;
+    border: 1px lightgray solid;
+    border-radius: 15px;
+}
+
+.content-denied{
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
