@@ -706,6 +706,10 @@
     "MODAL": {
       "CLOSE_BUTTON": "Zamknij",
       "HEADER": "Nagłówek"
-    }
+    },
+    "TITLE": "Zarządzanie językami",
+    "LANGUAGE": "Język",
+    "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
+    "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"
   }
 }

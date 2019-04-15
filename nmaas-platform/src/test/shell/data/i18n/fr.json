@@ -705,6 +705,10 @@
     "MODAL": {
       "CLOSE_BUTTON": "Fermer",
       "HEADER": "Header"
-    }
+    },
+    "TITLE": "Language mangement",
+    "LANGUAGE": "Language",
+    "RAW_MODE_ENABLED": "Raw mode is enabled",
+    "RAW_MODE_DISABLED": "Raw mode is disabled"
   }
 }

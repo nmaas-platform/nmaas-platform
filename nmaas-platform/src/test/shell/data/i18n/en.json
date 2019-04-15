@@ -706,7 +706,11 @@
     "LANGUAGE_ERROR": "Error occured",
     "MODAL": {
       "CLOSE_BUTTON": "Close",
-      "HEADER": "Header"
-    }
+      "HEADER": "Error"
+    },
+    "TITLE": "Language management",
+    "LANGUAGE": "Language",
+    "RAW_MODE_ENABLED": "Raw mode is enabled",
+    "RAW_MODE_DISABLED": "Raw mode is disabled"
   }
 }

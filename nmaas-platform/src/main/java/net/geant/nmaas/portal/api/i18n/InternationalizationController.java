@@ -23,10 +23,10 @@ public class InternationalizationController {
         this.internationalizationService.addNewLanguage(new InternationalizationView(language, enabled, content));
     }
 
-    @GetMapping("/languages/all")
+    @PatchMapping("/{language}")
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateLanguageContent(@PathVariable("language") String language, @RequestBody String content) {
+    public void updateLanguageContent(@PathVariable("language") String language, @RequestBody String content){
         this.internationalizationService.updateLanguage(language, content);
     }
 

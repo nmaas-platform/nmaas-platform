@@ -708,6 +708,10 @@
     "MODAL": {
       "CLOSE_BUTTON": "Schließen",
       "HEADER": "Header"
-    }
+    },
+    "TITLE": "Sprachverwaltung",
+    "LANGUAGE": "Sprache",
+    "RAW_MODE_ENABLED": "Der Raw-Modus ist aktiviert",
+    "RAW_MODE_DISABLED": "Der Raw-Modus ist deaktiviert"
   }
 }

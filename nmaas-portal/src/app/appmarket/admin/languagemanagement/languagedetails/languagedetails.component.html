@@ -106,6 +106,10 @@
 
 <button class="btn btn-primary" *ngIf="language" (click)="saveChanges()">{{'LANGUAGE_MANAGEMENT.SUBMIT_BUTTON' | translate }}</button>
 
+<div class="alert alert-danger" *ngIf="formErrorMsg" style="margin-top: 10px;">
+  {{formErrorMsg}}
+</div>
+
 <div *ngIf="!language">
   <h3>{{'LANGUAGE_MANAGEMENT.NOT_SUPPORTED_MESSAGE' | translate }}</h3>
 </div>

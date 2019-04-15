@@ -28,6 +28,7 @@ export class LanguageDetailsComponent implements OnInit {
   public newNestedKeys: any[] = [];
   public newNestedValues: any[] = [];
   public errorMsg: string;
+  public formErrorMsg: string;
 
   public advanced: boolean = false;
   public switchLabel: string;
@@ -74,7 +75,7 @@ export class LanguageDetailsComponent implements OnInit {
   }
 
   public handleLabel() {
-      this.switchLabel =  this.advanced === true ? 'Raw mode is enabled' : 'Raw mode is disabled'; //TODO: Add translations
+      this.switchLabel =  this.advanced === true ? this.translate.instant("LANGUAGE_MANAGEMENT.RAW_MODE_ENABLED") : this.translate.instant("LANGUAGE_MANAGEMENT.RAW_MODE_DISABLED");
   }
 
   public getTemplateInSelectedLang(templates: LanguageMailContent[]) : LanguageMailContent {
@@ -86,10 +87,11 @@ export class LanguageDetailsComponent implements OnInit {
           this.prepareData();
       }
       this.languageService.saveLanguageContent(this.language).subscribe(() => {
+          this.formErrorMsg = undefined;
           this.translate.reloadLang(this.language.language).subscribe(() => console.debug("Language reloaded"));
           this.mailTemplateService.saveTemplates(this.mailTemplates).subscribe(() => console.debug("Mail templates saved"));
           this.router.navigate(['/admin/languages']);
-      })
+      }, error => this.formErrorMsg = error.message);
   }
 
   public prepareData(){
