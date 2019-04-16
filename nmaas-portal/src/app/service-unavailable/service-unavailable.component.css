@@ -12,3 +12,10 @@
     padding-top: 15px;
     padding-bottom: 15px;
 }
+
+.lang-circle{
+    max-height: 48px !important;
+    max-width: 48px !important;
+    margin: 2px;
+    cursor: pointer;
+}

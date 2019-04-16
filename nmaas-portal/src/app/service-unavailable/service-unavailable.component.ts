@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-service-unavailable',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ServiceUnavailableComponent implements OnInit {
 
-  constructor() { }
+  constructor(private translateService: TranslateService) { }
 
   ngOnInit() {
+
+  }
+
+  public changeLang(lang: string): void{
+    console.debug("lang_change: ", lang);
+    this.translateService.use(lang);
   }
 
 }

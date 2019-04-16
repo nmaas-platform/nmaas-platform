@@ -4,13 +4,14 @@ import { ServiceUnavailableComponent } from './service-unavailable.component';
 import {RouterModule} from "@angular/router";
 import {ServiceUnavailableRoutes} from "./service-unavailable.routes";
 
+
 @NgModule({
   declarations: [
     ServiceUnavailableComponent
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [
   ]

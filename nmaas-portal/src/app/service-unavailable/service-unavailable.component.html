@@ -2,7 +2,10 @@
   <div id="service-denied" class="col-md-offset-4 col-sm-offset-3 col-xs-offset-1 col-md-4 col-sm-6 col-xs-10">
     <div class="border-denied col-xs-12" style="width: 100%; height: 100%;">
       <div class="col-lg-9"><h1 class="text-danger">Ooops!</h1></div>
-      <div class="col-lg-3">langs</div>
+      <div class="col-lg-3">
+        <a style="display: inline-block !important;" (click)="changeLang('en')"><img class="lang-circle" alt="en-flag-label" src="assets/images/country/en_circle.png"></a>
+        <a style="display: inline-block !important;" (click)="changeLang('de')"><img class="lang-circle" alt="de-flag-label" src="assets/images/country/de_circle.png"></a>
+      </div>
       <div class="col-xs-12">
         <h2>503 - Service unavailable</h2>
         <p>
