@@ -5,10 +5,11 @@ import { AppComponent } from './app.component';
 import { RouterTestingModule} from "@angular/router/testing";
 import {AppConfigService, ConfigurationService} from "./service";
 import {HttpClient, HttpHandler} from "@angular/common/http";
-import {TranslateService, TranslateModule, TranslateLoader} from "@ngx-translate/core";
+import {TranslateService, TranslateModule, TranslateLoader, MissingTranslationHandler} from "@ngx-translate/core";
 import {TranslateFakeLoader} from "@ngx-translate/core";
 import {Observable, of} from "rxjs";
 import {Configuration} from "./model/configuration";
+import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
 import {AuthService} from "./auth/auth.service";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 
@@ -42,6 +43,7 @@ describe('App: NmaasPortal', () => {
         imports: [
             RouterTestingModule,
             TranslateModule.forRoot({
+                missingTranslationHandler: {provide: MissingTranslationHandler, useClass: CustomMissingTranslationService},
                 loader: {
                     provide: TranslateLoader,
                     useClass: TranslateFakeLoader

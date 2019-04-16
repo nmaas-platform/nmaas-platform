@@ -60,7 +60,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldUpdateConfiguration() throws Exception {
-        mvc.perform(post("/api/i18n/en")
+        mvc.perform(post("/api/i18n/en?enabled=true")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer " + getValidTokenForUser(user))
                 .content("[]"));

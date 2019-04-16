@@ -45,6 +45,12 @@ public class TemplateService {
         return modelMapper.map(mailTemplate, MailTemplateView.class);
     }
 
+    List<MailTemplateView> getMailTemplates(){
+        return this.repository.findAll().stream()
+                .map(mailTemplate -> modelMapper.map(mailTemplate, MailTemplateView.class))
+                .collect(Collectors.toList());
+    }
+
     void saveMailTemplate(MailTemplateView mailTemplate){
         checkArgument(!repository.existsByMailType(mailTemplate.getMailType()),"Mail template already exists");
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
@@ -54,7 +60,8 @@ public class TemplateService {
     void updateMailTemplate(MailTemplateView mailTemplate){
         MailTemplate mailTemplateEntity = repository.findByMailType(mailTemplate.getMailType()).orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         checkArgument(mailTemplate.getTemplates() != null && !mailTemplate.getTemplates().isEmpty(), "Mail template cannot be null or empty");
-        mailTemplateEntity.setTemplates(mailTemplate.getTemplates().stream().map(template -> modelMapper.map(template, LanguageMailContent.class)).collect(Collectors.toList()));
+        mailTemplateEntity.getTemplates().clear();
+        mailTemplateEntity.getTemplates().addAll(mailTemplate.getTemplates().stream().map(template -> modelMapper.map(template, LanguageMailContent.class)).collect(Collectors.toList()));
         repository.save(mailTemplateEntity);
     }
 

@@ -30,6 +30,8 @@
                         <ul class="dropdown-menu">
                             <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/configuration']">Portal</a>
                                 </li>
+                            <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/languages']">{{'NAVBAR.LANGUAGES' | translate }}</a>
+                                </li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a>
                                 </li>
                             <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
