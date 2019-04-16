@@ -1,13 +1,12 @@
 import {User} from '../../../model/user';
 import {BaseComponent} from '../../common/basecomponent/base.component';
-import {ComponentMode} from '../../common/componentmode';
 import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild
 } from '@angular/core';
 import {AuthService} from "../../../auth/auth.service";
 import {PasswordComponent} from "../../common/password/password.component";
@@ -25,14 +24,39 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
   @Input()
   public user: User = new User();
 
+  public _errorMessage: string;
+
   @Input()
-  public errorMessage: string;
+  get errorMessage(){
+      return this._errorMessage;
+  }
+
+  @Output()
+  errorMessageChange: EventEmitter<any> = new EventEmitter();
+
+  set errorMessage(val){
+      this._errorMessage = val;
+  }
 
   @Output()
   public onSave: EventEmitter<User> = new EventEmitter<User>();
 
   @Output()
   public refresh: EventEmitter<any> = new EventEmitter();
+
+  @Input()
+  get userDetailsMode(){
+      return this.mode;
+  }
+
+  @Output()
+  userDetailsModeChange: EventEmitter<any> = new EventEmitter();
+
+  set userDetailsMode(val){
+      this.mode = val;
+      this.userDetailsModeChange.emit(this.mode);
+  }
+
 
   constructor(private authService:AuthService) {
     super();
@@ -42,18 +66,13 @@ export class UserDetailsComponent extends BaseComponent implements OnInit {
 
   }
 
-  public submit() {
+    public submit() {
     console.log('submit(' + this.user.username + ')');
     this.onSave.emit(this.user);
   }
 
   public onModeChange(): void {
-    const newMode: ComponentMode = (this.mode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
-    if (this.isModeAllowed(newMode)) {
-      this.mode = newMode;
-      this.errorMessage = undefined;
       this.refresh.emit();
-    }
   }
 
   public canChangePassword(): boolean {

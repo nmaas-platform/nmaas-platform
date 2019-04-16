@@ -51,11 +51,18 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   }
 
   public onRefresh(){
-    this.profileService.getOne().subscribe((user)=>this.user = user);
+    this.profileService.getOne().subscribe((user)=>{
+        this.user = user;
+        this.onModeChange();
+        this.errorMessage = undefined;
+    });
+  }
+
+  public onModeChange(){
+      this.userDetailsMode = (this.userDetailsMode === ComponentMode.VIEW ? ComponentMode.EDIT : ComponentMode.VIEW);
   }
 
   public onSave($event) {
-    this.userDetailsMode = ComponentMode.EDIT;
     const user: User = $event;
 
     if (!user) {
