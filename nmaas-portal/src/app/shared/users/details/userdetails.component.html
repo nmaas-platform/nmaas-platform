@@ -1,9 +1,7 @@
 <div style="padding-bottom: 15px;" class="panel panel-default">
 	<div class="panel-heading">{{'USER_DETAILS.HEADER' | translate}}</div>
 	<div class="panel-body">
-		<form *ngIf="user"
-			(submit)="submit()"
-			class="form-horizontal">
+		<form *ngIf="user" (submit)="submit()" class="form-horizontal">
 
 			<div class="form-group">
 				<label class="col-sm-2 control-label">{{'USER_DETAILS.USERNAME' | translate}}:</label>
@@ -17,7 +15,7 @@
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="firstname"
 						name="firstname" [(ngModel)]="user.firstname"
-						[disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
+						[disabled]="isInMode(ComponentMode.VIEW)">
 				</div>
 			</div>
 
@@ -26,7 +24,7 @@
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="lastname"
 						name="lastname" [(ngModel)]="user.lastname"
-						[disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
+						[disabled]="isInMode(ComponentMode.VIEW)">
 				</div>
 			</div>
 
@@ -34,30 +32,29 @@
 				<label for="email" class="col-sm-2 control-label">{{'USER_DETAILS.EMAIL' | translate}}:</label>
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="email" name="email"
-						[(ngModel)]="user.email" [disabled]="isInMode(ComponentMode.VIEW) || isInMode(ComponentMode.PROFILVIEW)">
+						[(ngModel)]="user.email" [disabled]="isInMode(ComponentMode.VIEW)">
 				</div>
 			</div>
 
-			<div *ngIf="user?.id && !isInMode(ComponentMode.PROFILVIEW) && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="form-group">
+			<div *ngIf="user?.id && authService.hasRole('ROLE_SYSTEM_ADMIN')" class="form-group">
 				<label class="col-sm-2 control-label">{{'USER_DETAILS.ID' | translate}}:</label>
 				<div class="col-sm-10">
 					<p class="form-control-static">{{user?.id}}</p>
 				</div>
 			</div>
 
-			<button *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') && !isInMode(ComponentMode.VIEW) && !isInMode(ComponentMode.PROFILVIEW)" type="button"
+			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
 				class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.VIEW_BUTTON' | translate}}</button>
-			<button *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') && !isInMode(ComponentMode.VIEW) && !isInMode(ComponentMode.PROFILVIEW)" type="submit"
+			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit"
 				class="btn btn-danger">{{'USER_DETAILS.SUBMIT_BUTTON' | translate}}</button>
-			<button
-				*ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN') && isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)"
-				type="button" class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.EDIT_BUTTON' | translate}}</button>
-			<button (click)="passwordModal.show()" class="btn btn-success" *ngIf="isInMode(ComponentMode.PROFILVIEW) && !user.ssoUser">{{'USER_DETAILS.CHANGE_PASSWORD_BUTTON' | translate}}</button>
-			<div class="alert alert-danger" *ngIf="errorMessage">
-				{{errorMessage}}
-			</div>
+			<button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)" type="button"
+				class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.EDIT_BUTTON' | translate}}</button>
+			<button (click)="passwordModal.show()" class="btn btn-success" *ngIf="canChangePassword() && !user.ssoUser" style="float: right;">{{'USER_DETAILS.CHANGE_PASSWORD_BUTTON' | translate}}</button>
 		</form>
-
+		<br>
+		<div class="alert alert-danger" *ngIf="errorMessage">
+			{{errorMessage}}
+		</div>
 	</div>
 </div>
 

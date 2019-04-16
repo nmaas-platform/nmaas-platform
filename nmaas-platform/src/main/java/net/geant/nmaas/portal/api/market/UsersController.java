@@ -121,7 +121,6 @@ public class UsersController {
 
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
 	@Transactional
 	public void updateUser(@PathVariable("userId") final Long userId,
 						   @RequestBody final UserRequest userRequest,

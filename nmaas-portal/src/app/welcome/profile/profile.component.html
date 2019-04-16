@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="col-xs-12">
-        <nmaas-userdetails [user]="user" [mode]="ComponentMode.PROFILVIEW" [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]"></nmaas-userdetails>
+        <nmaas-userdetails [user]="user" [mode]="userDetailsMode" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" [errorMessage]="errorMessage" (onSave)="onSave($event)" (refresh)="onRefresh()"></nmaas-userdetails>
         <nmaas-userprivileges [user]="user" [mode]="ComponentMode.PROFILVIEW" [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]"></nmaas-userprivileges>
     </div>
 </div>
