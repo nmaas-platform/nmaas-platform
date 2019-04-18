@@ -100,6 +100,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldUpdateUser(){
+		when(principal.getName()).thenReturn(userList.get(0).getUsername());
 		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
 		userRequest.setEmail("test@nmaas.net");
 		userRequest.setFirstname("test");
@@ -137,6 +138,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldNotUpdateUserWithNonUniqueEmail(){
+		when(principal.getName()).thenReturn(userList.get(0).getUsername());
 		assertThrows(ProcessingException.class, () -> {
 			when(userService.existsByEmail(anyString())).thenReturn(true);
 			UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
@@ -149,6 +151,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldUpdateUserWithNullEmail(){
+		when(principal.getName()).thenReturn(userList.get(0).getUsername());
 		UserRequest userRequest = new UserRequest(userList.get(0).getId(), userList.get(0).getUsername(), userList.get(0).getPassword());
 		userRequest.setEmail(null);
 		userRequest.setFirstname("test");

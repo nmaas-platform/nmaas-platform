@@ -122,17 +122,16 @@ public class UsersController {
 	@PutMapping(value="/users/{userId}")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@Transactional
-	public void updateUser(@PathVariable("userId") final Long userId,
-						   @RequestBody final UserRequest userRequest,
-						   final Principal principal) {
+	public void updateUser(@PathVariable("userId") final Long userId, @RequestBody final UserRequest userRequest, final Principal principal) {
 		net.geant.nmaas.portal.persistent.entity.User userDetails = userService.findById(userId).orElseThrow(() -> new MissingElementException(USER_NOT_FOUND_ERROR_MESSAGE));
 
 		if(userRequest == null)
 			throw new MissingElementException("User request is null");
+		if(!userDetails.getUsername().equals(principal.getName()) && !userService.canUpdateData(principal.getName(), userDetails.getRoles())){
+			throw new ProcessingException(principal.getName() + " was trying to edit data of user " + userDetails.getUsername() + " without required role.");
+		}
 		try {
         	String message = getMessageWhenUserUpdated(userDetails, userRequest);
-			final net.geant.nmaas.portal.persistent.entity.User adminUser = userService.findByUsername(principal.getName()).orElseThrow(ProcessingException::new);
-			final String adminRoles = getRoleAsString(adminUser.getRoles());
 			final String userRoles = getRoleAsString(userDetails.getRoles());
 
 			if (userRequest.getFirstname() != null)
@@ -147,9 +146,7 @@ public class UsersController {
 			}
 			userService.update(userDetails);
 			if (!StringUtils.isEmpty(message)) {
-				log.info(String.format("User [%s] with role [%s] updated data of user [%s] with roles [%s]. The following changes are: [%s] ",
-						principal.getName(),
-						adminRoles,
+				log.info(String.format("Data of user [%s] with role [%s] were updated. The following changes are: [%s] ",
 						userDetails.getUsername(),
 						userRoles,
 						message));

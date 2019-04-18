@@ -1,5 +1,7 @@
 package net.geant.nmaas.portal.service.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
@@ -97,6 +99,46 @@ public class UserServiceImplTest {
         UserRole userRole = new UserRole(user, domain, role);
         when(userRoleRepository.findByDomainAndUserAndRole(domain, user, role)).thenReturn(userRole);
         assertTrue(userService.hasPrivilege(user, domain, role));
+    }
+
+    @Test
+    void adminShouldUpdateData(){
+        User admin = new User("admin", true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_SYSTEM_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertTrue(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(admin, domain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void domainAdminShouldUpdateDataOfUserInHisDomain(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_DOMAIN_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertTrue(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, domain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void domainAdminShouldNotUpdateDataOfUserNotInHisDomain(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        Domain otherDomain = new Domain("domtest", "domtest");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_DOMAIN_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertFalse(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, otherDomain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void userShouldNotUpdateOtherUserData(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_USER)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertFalse(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, domain, Role.ROLE_USER))));
     }
 
     @Test
