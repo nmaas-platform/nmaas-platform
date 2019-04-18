@@ -1,7 +1,7 @@
 <div style="padding-bottom: 15px;" class="panel panel-default">
 	<div class="panel-heading">{{'USER_DETAILS.HEADER' | translate}}</div>
 	<div class="panel-body">
-		<form *ngIf="user" (submit)="submit()" class="form-horizontal">
+		<form *ngIf="user" (submit)="submit()" class="form-horizontal" #userDetailsForm="ngForm">
 
 			<div class="form-group">
 				<label class="col-sm-2 control-label">{{'USER_DETAILS.USERNAME' | translate}}:</label>
@@ -28,10 +28,11 @@
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="form-group" [ngClass]="{'has-error':  emailField.invalid && (emailField.dirty || emailField.touched),
+ 			    		 	'has-success': emailField.valid && (emailField.dirty || emailField.touched)}">
 				<label for="email" class="col-sm-2 control-label">{{'USER_DETAILS.EMAIL' | translate}}:</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="email" name="email"
+					<input type="text" class="form-control" id="email" name="email" required #emailField="ngModel"
 						[(ngModel)]="user.email" [disabled]="isInMode(ComponentMode.VIEW)">
 				</div>
 			</div>
@@ -45,7 +46,7 @@
 
 			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="button"
 				class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.VIEW_BUTTON' | translate}}</button>
-			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit"
+			<button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit" [disabled]="userDetailsForm.invalid"
 				class="btn btn-danger">{{'USER_DETAILS.SUBMIT_BUTTON' | translate}}</button>
 			<button *ngIf="isInMode(ComponentMode.VIEW) && isModeAllowed(ComponentMode.EDIT)" type="button"
 				class="btn btn-default" (click)="onModeChange()">{{'USER_DETAILS.EDIT_BUTTON' | translate}}</button>
