@@ -44,7 +44,7 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
     @BeforeEach
     public void setup(){
         DomainRequest domainRequest = new DomainRequest(DOMAIN, DOMAIN, true);
-        domainRequest.setDomainDcnDetailsView(new DomainDcnDetailsView(null, DOMAIN, false, DcnDeploymentType.MANUAL));
+        domainRequest.setDomainDcnDetails(new DomainDcnDetailsView(null, DOMAIN, false, DcnDeploymentType.MANUAL));
         domainService.createDomain(domainRequest);
     }
 

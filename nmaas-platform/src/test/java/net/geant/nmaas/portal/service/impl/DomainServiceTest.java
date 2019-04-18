@@ -137,8 +137,8 @@ public class DomainServiceTest {
         DomainRequest domainRequest = new DomainRequest(name, codename, false);
         DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE);
         DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
-        domainRequest.setDomainDcnDetailsView(domainDcnDetailsView);
-        domainRequest.setDomainTechDetailsView(domainTechDetailsView);
+        domainRequest.setDomainDcnDetails(domainDcnDetailsView);
+        domainRequest.setDomainTechDetails(domainTechDetailsView);
         Domain result = this.domainService.createDomain(domainRequest);
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));

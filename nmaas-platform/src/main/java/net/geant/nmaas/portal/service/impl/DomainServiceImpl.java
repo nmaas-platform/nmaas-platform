@@ -130,14 +130,14 @@ public class DomainServiceImpl implements DomainService {
 		if(!Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isPresent()){
 			throw new ProcessingException("Domain codename is not valid");
 		}
-		if(StringUtils.isEmpty(request.getDomainTechDetailsView().getKubernetesNamespace())){
-			request.getDomainTechDetailsView().setKubernetesNamespace(request.getCodename());
+		if(StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())){
+			request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
 		}
-		if(!namespaceValidator.valid(request.getDomainTechDetailsView().getKubernetesNamespace())){
+		if(!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace())){
 			throw new ProcessingException("Kubernetes namespace is not valid");
 		}
-		if(StringUtils.isNotEmpty(request.getDomainTechDetailsView().getExternalServiceDomain())){
-			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetailsView().getExternalServiceDomain()), "External service domain is not unique");
+		if(StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())){
+			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 		}
 		this.setCodenames(request);
 		try {
@@ -148,8 +148,8 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private void setCodenames(DomainRequest request){
-		request.getDomainTechDetailsView().setDomainCodename(request.getCodename());
-		request.getDomainDcnDetailsView().setDomainCodename(request.getCodename());
+		request.getDomainTechDetails().setDomainCodename(request.getCodename());
+		request.getDomainDcnDetails().setDomainCodename(request.getCodename());
 	}
 
 	@Override

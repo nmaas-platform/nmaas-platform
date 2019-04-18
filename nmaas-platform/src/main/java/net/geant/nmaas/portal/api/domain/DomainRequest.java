@@ -18,9 +18,9 @@ public class DomainRequest {
 	@NotNull
 	private String codename;
 
-	private DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView();
+	private DomainDcnDetailsView domainDcnDetails = new DomainDcnDetailsView();
 
-	private DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView();
+	private DomainTechDetailsView domainTechDetails = new DomainTechDetailsView();
 	
 	private boolean active = true;
 
