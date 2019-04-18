@@ -92,4 +92,10 @@ public class AppConfigurationController {
         }
     }
 
+    @GetMapping("/apps/instances/{appInstanceId}/configuration")
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
+    @Transactional
+    public String getConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId){
+        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found.")).getConfiguration();
+    }
 }
