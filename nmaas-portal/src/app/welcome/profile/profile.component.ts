@@ -18,7 +18,7 @@ import {ComponentMode} from "../../shared";
 export class ProfileComponent extends BaseComponent implements OnInit {
 
   constructor(protected profileService:ProfileService, private translate: TranslateService,
-              private contentService:ContentDisplayService,
+              private contentService:ContentDisplayService, private router: Router,
               public userService: UserService,
               private languageService:InternationalizationService) {
       super();
@@ -28,11 +28,6 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   public languages: string[];
   public errorMessage: string;
   public userDetailsMode: ComponentMode = ComponentMode.VIEW;
-
-  constructor(protected profileService:ProfileService, private translate: TranslateService, private router:Router,
-              private contentService:ContentDisplayService, public userService: UserService) {
-      super();
-  }
 
   setLanguage(language: string) {
     this.userService.setUserLanguage(this.user.id, language).subscribe(() => {
