@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.service.impl.security;
 
+import java.util.EnumMap;
 import net.geant.nmaas.portal.persistent.entity.AppInstance;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -13,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,8 +27,8 @@ public class AppInstancePermissionCheck extends BasePermissionCheck {
 	static final String APPINSTANCE = "appInstance";
 
 	private static final Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
-	private final Map<Role, Permissions[]> globalPermMatrix = new HashMap<>();
-	private final Map<Role, Permissions[]> permMatrix = new HashMap<>();
+	private final EnumMap<Role, Permissions[]> globalPermMatrix = new EnumMap<>(Role.class);
+	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 
 	@Autowired
 	private AppInstanceRepository appInstanceRepository;

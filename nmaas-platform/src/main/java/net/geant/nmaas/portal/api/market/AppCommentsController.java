@@ -25,9 +25,9 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 @RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
-	CommentRepository commentRepo;
+	private CommentRepository commentRepo;
 	
-	UserRepository userRepo;
+	private UserRepository userRepo;
 
 	@Autowired
 	public AppCommentsController(CommentRepository commentRepo, UserRepository userRepo){
@@ -37,7 +37,7 @@ public class AppCommentsController extends AppBaseController {
 			
 	@GetMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
-	public List<Comment> getComments(@PathVariable(value="appId", required=true) Long appId, Pageable pageable) {
+	public List<Comment> getComments(@PathVariable(value="appId") Long appId, Pageable pageable) {
 		Application app = getApp(appId);
 		Page<net.geant.nmaas.portal.persistent.entity.Comment> page = commentRepo.findByApplication(app, pageable);
 		return page.getContent().stream().map(comment -> { 
@@ -59,7 +59,7 @@ public class AppCommentsController extends AppBaseController {
 	@PostMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
 	@Transactional
-	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) {
+	public Id addComment(@PathVariable(value="appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
 		Application app = getApp(appId);
 
 		if(comment.getComment() == null || comment.getComment().isEmpty())
@@ -80,13 +80,13 @@ public class AppCommentsController extends AppBaseController {
 		persistentComment.setApplication(app);
 		persistentComment.setOwner(user);
 
-		net.geant.nmaas.portal.persistent.entity.Comment persistentParentComment = null;
+		net.geant.nmaas.portal.persistent.entity.Comment persistentParentComment;
 		
 		if(parentId != null) {
 			persistentParentComment = getComment(parentId);
 			if(persistentParentComment == null)
 				throw new MissingElementException("Unable to add comment to non-existing one");
-			if( persistentParentComment.getApplication().getId() != appId )
+			if(!persistentParentComment.getApplication().getId().equals(appId))
 				throw new ProcessingException("Unable to add comment to different application");
 			persistentComment.setParent(persistentParentComment);
 		}

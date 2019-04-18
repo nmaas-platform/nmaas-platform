@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.auth;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
-import net.geant.nmaas.portal.api.auth.UserSSOLogin;
-import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -48,7 +45,7 @@ public class SSOAuthController {
 	}
 
 	@PostMapping(value="/login")
-	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws IOException {
+	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) {
 		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
 			throw new AuthenticationException("AUTH.SSO_LOGIN_NOT_ENABLED_MESSAGE");

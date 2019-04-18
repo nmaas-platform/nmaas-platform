@@ -1,6 +1,7 @@
 package net.geant.nmaas.nmservice.configuration.entities;
 
 
+import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table
-public class ConfigFileTemplate {
+public class ConfigFileTemplate implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

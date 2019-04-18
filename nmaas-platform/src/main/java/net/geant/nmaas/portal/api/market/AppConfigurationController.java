@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
@@ -41,8 +40,6 @@ public class AppConfigurationController {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.readTree(json);
             return true;
-        } catch (JsonProcessingException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }

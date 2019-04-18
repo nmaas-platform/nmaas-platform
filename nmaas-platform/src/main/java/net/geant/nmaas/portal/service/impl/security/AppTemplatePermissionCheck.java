@@ -2,9 +2,8 @@ package net.geant.nmaas.portal.service.impl.security;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class AppTemplatePermissionCheck extends BasePermissionCheck {
 	@Autowired
 	ApplicationRepository applications;
 	
-	protected final Map<Role, Permissions[]> permMatrix = new HashMap<>(); 
+	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 	
 	public AppTemplatePermissionCheck() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});

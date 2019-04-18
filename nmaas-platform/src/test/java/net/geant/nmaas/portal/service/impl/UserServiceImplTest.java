@@ -216,9 +216,9 @@ public class UserServiceImplTest {
         when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(registration, domain, null);
         verify(userRepository, times(1)).save(any());
-        assertEquals(user.getRoles().size(), 1);
-        assertEquals(user.getRoles().get(0).getRole(), Role.ROLE_GUEST);
-        assertEquals(user.getRoles().get(0).getDomain(), domain);
+        assertEquals(1, user.getRoles().size());
+        assertEquals(Role.ROLE_GUEST, user.getRoles().get(0).getRole());
+        assertEquals(domain, user.getRoles().get(0).getDomain());
     }
 
     @Test
@@ -230,9 +230,9 @@ public class UserServiceImplTest {
         Domain domain = new Domain("Non Global", "NONGLO");
         User user = userService.register(registration, globalDomain, domain);
         verify(userRepository, times(1)).save(any());
-        assertEquals(user.getRoles().size(), 2);
-        assertEquals(user.getRoles().get(0).getDomain(), globalDomain);
-        assertEquals(user.getRoles().get(1).getDomain(), domain);
+        assertEquals(2, user.getRoles().size());
+        assertEquals(globalDomain, user.getRoles().get(0).getDomain());
+        assertEquals(domain, user.getRoles().get(1).getDomain());
     }
 
     @Test
