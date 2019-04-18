@@ -14,7 +14,8 @@
     "LOGIN_REGISTER": "Connexion | S'inscrire",
     "LANGUAGE": "Language",
     "ABOUT": "A propos",
-    "BACK": "Retour à la page d'accueil"
+    "BACK": "Retour à la page d'accueil",
+    "LANGUAGES": "Langages"
   },
   "WELCOME": {
     "LOGIN": "S'identifier",
@@ -687,5 +688,27 @@
       "PAGE": "page",
       "CURRENT": "Vous êtes sur la page"
     }
+  },
+  "LANGUAGE_MANAGEMENT": {
+    "TABLE_KEY": "Clé",
+    "TABLE_VALUE": "Valeur",
+    "ADD_NEW_ITEM_BUTTON": "Ajouter un nouvel élément",
+    "SUBJECT_LABEL": "Sujet",
+    "LABELS_TRANSLATION": "Traductions d'étiquettes",
+    "MAILS_TRANSLATION": "Traductions du courrier",
+    "SUBMIT_BUTTON": "Soumettre",
+    "NOT_SUPPORTED_MESSAGE": "Non pris en charge",
+    "EDIT_BUTTON": "Modifier",
+    "LANGUAGE_DISABLED": "Désactivé",
+    "LANGUAGE_ENABLED": "Activé",
+    "LANGUAGE_ERROR": "Une erreur s'est produite",
+    "MODAL": {
+      "CLOSE_BUTTON": "Fermer",
+      "HEADER": "Header"
+    },
+    "TITLE": "Language mangement",
+    "LANGUAGE": "Language",
+    "RAW_MODE_ENABLED": "Raw mode is enabled",
+    "RAW_MODE_DISABLED": "Raw mode is disabled"
   }
 }

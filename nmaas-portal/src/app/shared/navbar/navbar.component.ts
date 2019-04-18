@@ -1,10 +1,10 @@
 import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import { Router } from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {interval, Observable, Subscription} from "rxjs";
-import {ContentDisplayService} from "../../service/content-display.service";
+import {interval, Subscription} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {DomainService} from "../../service";
+import {InternationalizationService} from "../../service/internationalization.service";
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit, OnChanges {
     public refresh: Subscription;
 
     constructor(private router: Router, public authService: AuthService, private translate: TranslateService,
-                private contentService:ContentDisplayService, private domainService: DomainService) {
+                private languageService:InternationalizationService, private domainService: DomainService) {
     }
 
     useLanguage(language: string) {
@@ -37,9 +37,9 @@ export class NavbarComponent implements OnInit, OnChanges {
         if(this.authService.isLogged()) {
             if (this.authService.hasRole('ROLE_SYSTEM_ADMIN')) {
                 this.refresh = interval(5000).subscribe(next => {
-                    if (this.contentService.shouldUpdate()) {
+                    if (this.languageService.shouldUpdate()) {
                         this.getSupportedLanguages();
-                        this.contentService.setUpdateRequiredFlag(false);
+                        this.languageService.setUpdateRequiredFlag(false);
                     }
                 });
             }
@@ -50,7 +50,7 @@ export class NavbarComponent implements OnInit, OnChanges {
     }
 
     public getSupportedLanguages(){
-        this.contentService.getLanguages().subscribe(langs =>{
+        this.languageService.getEnabledLanguages().subscribe(langs =>{
             this.translate.addLangs(langs);
             this.languages = langs;
         });

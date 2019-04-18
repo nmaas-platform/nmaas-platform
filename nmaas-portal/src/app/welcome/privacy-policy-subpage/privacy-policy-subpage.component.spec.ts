@@ -8,12 +8,15 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-transl
 import {RouterTestingModule} from "@angular/router/testing";
 import {JwtModule} from "@auth0/angular-jwt";
 import {EMPTY, of} from "rxjs";
-import {ChangelogService} from "../../service";
+import {AppConfigService, ChangelogService} from "../../service";
+import {InternationalizationService} from "../../service/internationalization.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('PrivacyPolicySubpageComponent', () => {
   let component: PrivacyPolicySubpageComponent;
   let fixture: ComponentFixture<PrivacyPolicySubpageComponent>;
   let contentService: ContentDisplayService;
+  let languageService: InternationalizationService;
   let changelogService: ChangelogService;
   let navbar: NavbarComponent;
 
@@ -23,6 +26,7 @@ describe('PrivacyPolicySubpageComponent', () => {
       imports: [
           SharedModule,
           RouterTestingModule,
+          HttpClientTestingModule,
           TranslateModule.forRoot({
               loader: {
                   provide: TranslateLoader,
@@ -38,7 +42,7 @@ describe('PrivacyPolicySubpageComponent', () => {
           })
       ],
       providers: [
-          ContentDisplayService, ChangelogService, NavbarComponent
+          ContentDisplayService, ChangelogService, NavbarComponent, InternationalizationService, AppConfigService
       ]
     })
     .compileComponents();
@@ -48,10 +52,11 @@ describe('PrivacyPolicySubpageComponent', () => {
     fixture = TestBed.createComponent(PrivacyPolicySubpageComponent);
     component = fixture.componentInstance;
     contentService = fixture.debugElement.injector.get(ContentDisplayService);
+    languageService = fixture.debugElement.injector.get(InternationalizationService);
     changelogService = fixture.debugElement.injector.get(ChangelogService);
     navbar = fixture.debugElement.injector.get(NavbarComponent);
     spyOn(contentService, 'getContent').and.returnValue(EMPTY);
-    spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
+    spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     navbar.useLanguage("en");
     spyOn(changelogService, 'getGitInfo').and.returnValue(EMPTY);
     spyOn(changelogService, 'getChangelog').and.returnValue(EMPTY);

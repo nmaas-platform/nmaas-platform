@@ -21,8 +21,7 @@ public class DatabaseMonitorService extends MonitorService {
 
     @Override
     public void checkStatus() {
-        try {
-            Connection connection = dataSource.getConnection();
+        try(Connection connection = dataSource.getConnection()) {
             if (connection.isValid(100)) {
                 this.updateMonitorEntry(MonitorStatus.SUCCESS);
             } else {
