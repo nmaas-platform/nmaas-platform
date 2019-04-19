@@ -7,10 +7,13 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -60,6 +63,23 @@ public class UserServiceImpl implements UserService {
 		UserRole userRole = userRoleRepo.findByDomainAndUserAndRole(domain, user, role);		
 		
 		return (userRole != null);
+	}
+
+	@Override
+	public boolean canUpdateData(String username, final List<UserRole> userRoles){
+		checkParam(username);
+		User user = findByUsername(username).orElseThrow(() -> new MissingElementException("User with username " + username + " not found"));
+		return isAdmin(user) || isDomainAdminInUserDomain(user, userRoles);
+	}
+
+	private boolean isDomainAdminInUserDomain(User admin, final List<UserRole> userRoles){
+		return admin.getRoles().stream()
+				.filter(role -> role.getRole().equals(ROLE_DOMAIN_ADMIN))
+				.anyMatch(role -> userRoles.stream().anyMatch(userRole -> userRole.getDomain().equals(role.getDomain())));
+	}
+
+	private boolean isAdmin(User user){
+		return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
 	}
 
 	@Override
