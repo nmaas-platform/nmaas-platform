@@ -22,14 +22,14 @@ public class SkipPathRequestMatcher implements RequestMatcher {
 	}
 	
 	public SkipPathRequestMatcher(List<String> skipPaths) {
-		Assert.notNull(skipPaths);
-		List<RequestMatcher> list = skipPaths.stream().map(path -> new AntPathRequestMatcher(path)).collect(Collectors.toList());
+		Assert.notNull(skipPaths, "Paths cannot be null");
+		List<RequestMatcher> list = skipPaths.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
 		list.add(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name()));
 		matchers = new OrRequestMatcher(list);
 	}
 	
 	public SkipPathRequestMatcher(RequestMatcher[] skipPaths) {
-		Assert.notNull(skipPaths);
+		Assert.notNull(skipPaths, "Paths cannot be null");
 		List<RequestMatcher> list = Arrays.stream(skipPaths).collect(Collectors.toList());
 		list.add(new AntPathRequestMatcher("/**", HttpMethod.OPTIONS.name()));		
 		matchers = new OrRequestMatcher(list);
@@ -37,10 +37,8 @@ public class SkipPathRequestMatcher implements RequestMatcher {
 	
 	@Override
 	public boolean matches(HttpServletRequest request) {
-		if(matchers.matches(request))
-			return false;
-		
-		return true;
+		return !matchers.matches(request);
+
 	}
 
 	

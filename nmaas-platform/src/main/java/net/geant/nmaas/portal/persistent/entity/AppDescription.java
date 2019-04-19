@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class AppDescription {
+public class AppDescription implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

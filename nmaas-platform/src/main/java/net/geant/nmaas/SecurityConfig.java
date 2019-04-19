@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		if (Arrays.stream(env.getActiveProfiles()).anyMatch(p -> "dcn_ansible".equals(p))) {
+		if (Arrays.asList(env.getActiveProfiles()).contains("dcn_ansible")) {
 			auth.inMemoryAuthentication()
 					.passwordEncoder(passwordEncoder)
 					.withUser(env.getProperty(ANSIBLE_NOTIFICATION_CLIENT_USERNAME_PROPERTY_NAME))

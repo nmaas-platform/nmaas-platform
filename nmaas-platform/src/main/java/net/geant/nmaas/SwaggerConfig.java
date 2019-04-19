@@ -27,7 +27,6 @@ public class SwaggerConfig {
         return new ApiInfoBuilder().title("NMAAS API")
                 .description("NMAAS API documentation")
                 .termsOfServiceUrl("TBD")
-                .contact("geant.net")
                 .license("TBD")
                 .licenseUrl("TBD")
                 .version("1.0.0-pre")

@@ -80,10 +80,7 @@ public class JWTTokenService {
 		try {
 			Claims claims = getClaims(token);
 			Object scope = claims.get(SCOPES);
-			if(scope instanceof List<?> && ((List<String>)scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name())) {
-					return true;
-			} 
-			return false;
+			return scope instanceof List<?> && ((List<String>) scope).contains(JWTSettings.Scopes.REFRESH_TOKEN.name());
 		} catch(JwtException e) {
 			return false;
 		}
