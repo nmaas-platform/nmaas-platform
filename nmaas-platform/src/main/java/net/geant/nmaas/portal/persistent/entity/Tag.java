@@ -27,13 +27,13 @@ public class Tag implements Serializable {
 	@Id
 	@Column(name = "tag_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 
 	@Column(unique = true)
-	String name;
+	private String name;
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
-	Set<Application> applications = new HashSet<>();
+	private Set<Application> applications = new HashSet<>();
 	
 	public Tag(Long id, String name) {
 		this(name);

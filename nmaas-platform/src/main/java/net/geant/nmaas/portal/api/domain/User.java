@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Builder;
@@ -8,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class User extends UserBase {
+public class User extends UserBase implements Serializable {
 	
 	protected String firstname;
 	protected String lastname;

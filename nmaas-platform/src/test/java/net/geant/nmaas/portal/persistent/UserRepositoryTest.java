@@ -133,7 +133,8 @@ public class UserRepositoryTest {
 		User testUser = new User("testUser", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
 		testUser.setEmail("email@email.com");
-		userRepository.save(testUser);
+		User result = userRepository.save(testUser);
+		assertEquals(testUser.getEmail(), result.getEmail());
 	}
 
 	@Test
@@ -151,7 +152,8 @@ public class UserRepositoryTest {
 		User testUser = new User("testUser", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
 		testUser.setSamlToken("test|1234|saml");
-		userRepository.save(testUser);
+		User result = userRepository.save(testUser);
+		assertEquals(testUser.getSamlToken(), result.getSamlToken());
 	}
 
 	@Test

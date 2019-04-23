@@ -39,6 +39,8 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 @Service
 public class DomainServiceImpl implements DomainService {
 
+	private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain not found";
+
 	public interface CodenameValidator {
 		boolean valid(String codename);
 	}
@@ -203,7 +205,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured){
 		checkParams(domainId);
-		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
 		domain.getDomainDcnDetails().setDcnConfigured(dcnConfigured);
 		return domainRepo.save(domain);
@@ -212,7 +214,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public void changeDomainState(Long domainId, boolean active){
 		checkParams(domainId);
-		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
 		domain.setActive(active);
 		domainRepo.save(domain);
@@ -269,7 +271,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private Domain getDomain(Long domainId) {
-		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
+		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException(DOMAIN_NOT_FOUND_MESSAGE));
 	}
 
 	@Override

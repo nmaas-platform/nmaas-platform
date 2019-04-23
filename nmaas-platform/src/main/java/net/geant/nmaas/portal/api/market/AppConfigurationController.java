@@ -22,6 +22,8 @@ public class AppConfigurationController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
+    private static final String INSTANCE_NOT_FOUND_MESSAGE = "App instance not found";
+
     private ApplicationInstanceService instances;
 
     private AppLifecycleManager appLifecycleManager;
@@ -50,7 +52,7 @@ public class AppConfigurationController {
     @Transactional
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                    @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
-        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
+        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         boolean valid = validJSON(configuration.getJsonInput());
         if (!valid)
@@ -74,7 +76,7 @@ public class AppConfigurationController {
     @Transactional
     public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
                                     @RequestBody AppConfigurationView configuration, @NotNull Principal principal) {
-        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found."));
+        AppInstance appInstance = instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE));
 
         if (!validJSON(configuration.getJsonInput()))
             throw new ProcessingException("Configuration is not in valid JSON format");
@@ -93,6 +95,6 @@ public class AppConfigurationController {
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public String getConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId){
-        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException("App instance not found.")).getConfiguration();
+        return instances.find(appInstanceId).orElseThrow(() -> new MissingElementException(INSTANCE_NOT_FOUND_MESSAGE)).getConfiguration();
     }
 }

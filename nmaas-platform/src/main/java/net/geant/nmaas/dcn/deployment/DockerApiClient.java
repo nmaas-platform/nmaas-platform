@@ -98,7 +98,7 @@ public class DockerApiClient {
 
     public List<String> listNetworks(String apiUrl) throws DockerException, InterruptedException {
         try (DockerClient client = DefaultDockerClient.builder().uri(apiUrl).build()) {
-            return client.listNetworks().stream().map(n -> n.id()).collect(Collectors.toList());
+            return client.listNetworks().stream().map(Network::id).collect(Collectors.toList());
         }
     }
 
