@@ -75,6 +75,8 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public configurationTemplate: any;
   public configurationUpdateTemplate:any;
   public submission: any = { data:{} };
+  public isSubmissionUpdated: boolean = false;
+  public isUpdateFormValid: boolean = true;
   public appConfiguration: AppConfiguration;
 
   public intervalCheckerSubscribtion;
@@ -265,10 +267,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       });
   }
 
-  public changeConfigUpdate(input): void {
-    if(!isNullOrUndefined(input)){
-      this.changeConfiguration(input['configuration']);
-      this.changeAccessCredentials(input['accessCredentials']);
+  public changeConfigUpdate(input:any): void {
+    console.log(input);
+    if(!isNullOrUndefined(input) && !isNullOrUndefined(input['data'])){
+      this.isUpdateFormValid = input['isValid'];
+      this.changeConfiguration(input['data']['configuration']);
+      this.changeAccessCredentials(input['data']['accessCredentials']);
     }
   }
 
@@ -301,13 +305,19 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public getConfigurationModal(){
     this.appInstanceService.getConfiguration(this.appInstanceId).subscribe(config => {
       this.appInstance.configuration = config;
-      this.submission.data.configuration = config;
+      this.submission['data']['configuration'] = config;
       this.refreshUpdateForm.emit({
         property: 'submission',
         value: this.submission
       });
+      this.isSubmissionUpdated = true;
       this.updateConfigModal.show();
     });
+  }
+
+  public closeConfigurationModal(){
+    this.isSubmissionUpdated = false;
+    this.updateConfigModal.hide();
   }
 
 }
