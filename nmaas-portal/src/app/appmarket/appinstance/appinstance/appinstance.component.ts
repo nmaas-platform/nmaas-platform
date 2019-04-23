@@ -268,7 +268,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   public changeConfigUpdate(input:any): void {
-    console.log(input);
     if(!isNullOrUndefined(input) && !isNullOrUndefined(input['data'])){
       this.isUpdateFormValid = input['isValid'];
       this.changeConfiguration(input['data']['configuration']);
