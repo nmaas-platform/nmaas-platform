@@ -70,17 +70,16 @@
 			<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
 		</div>
 		<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-			<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined"
+			<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined && isSubmissionUpdated"
 					[form]="configurationUpdateTemplate"
 					[submission]="submission"
 					[refresh]="refreshUpdateForm"
-					[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-					(change)="changeConfigUpdate($event.data)">
+					(change)="changeConfigUpdate($event)">
 			</formio>
 		</div>
 		<div class="nmaas-modal-footer">
-			<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
-			<button type="button" class="btn btn-primary" (click)="this.updateConfigModal.hide()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
+			<button type="button" class="btn btn-danger" [disabled]="!isUpdateFormValid" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
+			<button type="button" class="btn btn-primary" (click)="this.closeConfigurationModal()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
 		</div>
 	</nmaas-modal>
 
