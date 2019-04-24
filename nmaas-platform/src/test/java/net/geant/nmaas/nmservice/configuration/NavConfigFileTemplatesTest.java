@@ -1,11 +1,13 @@
 package net.geant.nmaas.nmservice.configuration;
 
+import java.util.List;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
 import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,10 +42,11 @@ public class NavConfigFileTemplatesTest {
 
     @Test
     public void shouldProceedNormallyForApplicationWithoutAnyConfigurationFiles() throws Exception {
-        configurationsPreparer.generateAndStoreConfigFiles(
+        List<String> result = configurationsPreparer.generateAndStoreConfigFiles(
                 null,
                 Identifier.newInstance(String.valueOf(navAppId)),
                 new AppConfiguration("{}"));
+        assertTrue(result.isEmpty());
     }
 
 }

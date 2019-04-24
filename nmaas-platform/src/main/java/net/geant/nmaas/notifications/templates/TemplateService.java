@@ -2,6 +2,7 @@ package net.geant.nmaas.notifications.templates;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import net.geant.nmaas.notifications.MailTemplateElements;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.entities.LanguageMailContent;
 import net.geant.nmaas.notifications.templates.entities.MailTemplate;
@@ -67,8 +68,8 @@ public class TemplateService {
 
     void storeHTMLTemplate(MultipartFile file){
         checkArgument(file != null && !file.isEmpty(), "HTML template cannot be null or empty");
-        checkArgument(Objects.equals(file.getContentType(), "text/html"), "HTML template must be in html format");
-        checkArgument(fileStorageService.getFileInfoByContentType("text/html").size() == 0, "Only one HTML template is supported.");
+        checkArgument(Objects.equals(file.getContentType(), MailTemplateElements.HTML_TYPE), "HTML template must be in html format");
+        checkArgument(fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE).isEmpty(), "Only one HTML template is supported.");
         fileStorageService.store(file);
     }
 
@@ -85,7 +86,7 @@ public class TemplateService {
     }
 
     private FileInfo getHTMLTemplateFileInfo(){
-        List<net.geant.nmaas.portal.persistent.entity.FileInfo> template = fileStorageService.getFileInfoByContentType("text/html");
+        List<net.geant.nmaas.portal.persistent.entity.FileInfo> template = fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE);
         if(template.size() == 1){
             return template.get(0);
         }

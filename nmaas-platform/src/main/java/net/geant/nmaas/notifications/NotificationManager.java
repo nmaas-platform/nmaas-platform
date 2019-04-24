@@ -92,22 +92,22 @@ public class NotificationManager {
     private String getFilledTemplate(Template template, LanguageMailContentView langContent, User user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
-                .put("PORTAL_LINK", this.portalAddress == null ? "" : this.portalAddress)
-                .put("HEADER", getHeader(langContent.getTemplate().get("HEADER"), user))
-                .put("CONTENT", getContent(langContent.getTemplate().get("CONTENT"), mailAttributes.getOtherAttributes()))
-                .put("SENDER", langContent.getTemplate().get("SENDER"))
-                .put("NOREPLY", langContent.getTemplate().get("NOREPLY"))
-                .put("SENDER_POLICY", langContent.getTemplate().get("SENDER_POLICY"))
-                .put("TITLE", langContent.getSubject())
+                .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)
+                .put(MailTemplateElements.HEADER, getHeader(langContent.getTemplate().get(MailTemplateElements.HEADER), user))
+                .put(MailTemplateElements.CONTENT, getContent(langContent.getTemplate().get(MailTemplateElements.CONTENT), mailAttributes.getOtherAttributes()))
+                .put(MailTemplateElements.SENDER, langContent.getTemplate().get(MailTemplateElements.SENDER))
+                .put(MailTemplateElements.NOREPLY, langContent.getTemplate().get(MailTemplateElements.NOREPLY))
+                .put(MailTemplateElements.SENDER_POLICY, langContent.getTemplate().get(MailTemplateElements.SENDER_POLICY))
+                .put(MailTemplateElements.TITLE, langContent.getSubject())
                 .build());
     }
 
     private String getHeader(String header, User user) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("HEADER", new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
     private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("CONTENT", new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
     }
 
     private List<String> getListOfMails(List<User> users){

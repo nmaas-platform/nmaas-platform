@@ -107,14 +107,14 @@ public class JanitorService {
 
         JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
         switch (response.getStatus()) {
-            case FAILED:
-            case UNRECOGNIZED:
-            default:
-                throw new JanitorResponseException(response.getMessage());
             case OK:
                 return true;
             case PENDING:
                 return false;
+            case FAILED:
+            case UNRECOGNIZED:
+            default:
+                throw new JanitorResponseException(response.getMessage());
         }
     }
 }
