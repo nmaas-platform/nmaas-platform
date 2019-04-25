@@ -191,7 +191,7 @@ public class KubernetesManager implements ContainerOrchestrator {
     @Loggable(LogLevel.INFO)
     public void removeNmService(Identifier deploymentId) {
         try {
-            serviceLifecycleManager.deleteService(deploymentId);
+            serviceLifecycleManager.deleteServiceIfExists(deploymentId);
             KubernetesNmServiceInfo service = repositoryManager.loadService(deploymentId);
             janitorService.deleteConfigMapIfExists(deploymentId, service.getDomain());
             janitorService.deleteBasicAuthIfExists(deploymentId, service.getDomain());
