@@ -109,18 +109,18 @@ public class KubernetesClusterManagerTest {
         KCluster cluster = simpleKubernetesCluster();
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null);
+        DomainTechDetails domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", null, null);
         Domain domain = new Domain("Domain Name", DOMAIN, false);
         domain.setDomainTechDetails(domainTechDetails);
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "");
+        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "", null);
         domain.setDomainTechDetails(domainTechDetails);
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(cluster.getDeployment().getDefaultStorageClass()));
 
-        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "domainStorageClass");
+        domainTechDetails = new DomainTechDetails(1L, DOMAIN, null, "domainNamespace", "domainStorageClass", null);
         domain.setDomainTechDetails(domainTechDetails);
         when(domainTechDetailsRepository.findByDomainCodename(DOMAIN)).thenReturn(Optional.of(domain.getDomainTechDetails()));
         assertThat(manager.getStorageClass(DOMAIN).get(), is(domain.getDomainTechDetails().getKubernetesStorageClass()));

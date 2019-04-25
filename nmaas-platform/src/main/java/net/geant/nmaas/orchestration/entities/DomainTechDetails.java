@@ -32,4 +32,6 @@ public class DomainTechDetails implements Serializable {
 
     private String kubernetesStorageClass;
 
+    private String kubernetesIngressClass;
+
 }

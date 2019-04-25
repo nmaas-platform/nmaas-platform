@@ -4,4 +4,5 @@ export class DomainTechDetails {
     public externalServiceDomain: string;
     public kubernetesNamespace: string;
     public kubernetesStorageClass: string;
+    public kubernetesIngressClass: string;
 }

@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes;
 
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.externalservices.inventory.gitlab.GitLabManager;
@@ -137,7 +138,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
-            if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
+            if(!Arrays.asList(IngressControllerConfigOption.USE_EXISTING, IngressControllerConfigOption.USE_EXISTING_PER_NAMESPACE).contains(clusterIngressManager.getControllerConfigOption())) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }

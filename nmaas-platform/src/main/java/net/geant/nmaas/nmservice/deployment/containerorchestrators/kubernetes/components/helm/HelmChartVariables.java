@@ -2,6 +2,7 @@ package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.c
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 
 class HelmChartVariables {
 
@@ -33,7 +34,14 @@ class HelmChartVariables {
     }
 
     private static String getIngressAnnotationsValue(String ingressClass) {
+        validateIngressClass(ingressClass);
         return QUOTE + INGRESS_CLASS_ANNOTATION_KEY + ": " + ingressClass + QUOTE;
+    }
+
+    private static void validateIngressClass(String ingressClass){
+        if(StringUtils.isEmpty(ingressClass)){
+            throw new IllegalArgumentException("Ingress class is null or empty");
+        }
     }
 
 }

@@ -131,14 +131,14 @@ public class DomainServiceTest {
         String kubernetesNamespace = "default-namespace";
         String kubernetesStorageClass = "kub-stor-class";
         Domain domain = new Domain(name, codename, false);
-        DomainTechDetails domainTechDetails = new DomainTechDetails(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        DomainTechDetails domainTechDetails = new DomainTechDetails(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
         DomainDcnDetails domainDcnDetails = new DomainDcnDetails(null, codename, false, DcnDeploymentType.NONE);
         domain.setDomainTechDetails(domainTechDetails);
         domain.setDomainDcnDetails(domainDcnDetails);
         when(domainRepository.save(domain)).thenReturn(domain);
         DomainRequest domainRequest = new DomainRequest(name, codename, false);
         DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE);
-        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
         domainRequest.setDomainDcnDetails(domainDcnDetailsView);
         domainRequest.setDomainTechDetails(domainTechDetailsView);
         Domain result = this.domainService.createDomain(domainRequest);
