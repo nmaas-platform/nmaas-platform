@@ -217,7 +217,7 @@ export class AuthService {
           message = 'Server error';
 
         console.debug(error['status']+' - '+message);
-        return observableThrowError(message);
+        return observableThrowError(error);
       }));
   }
 
@@ -250,13 +250,7 @@ export class AuthService {
       }),
       catchError((error) => {
           console.debug('SSO login error: ' + error.error['message']);
-          let message : string;
-          if(error.error['message'])
-              message = error.error['message'];
-          else
-              message = 'Server error';
-
-          return observableThrowError(message);
+          return observableThrowError(error);
       }));
   }
 

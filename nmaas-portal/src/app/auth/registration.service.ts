@@ -25,8 +25,7 @@ export class RegistrationService {
   }
 
   protected handleError(error: Response | any) {
-    const errorMsg = error.error.message;
-    return observableThrowError(errorMsg);
+    return observableThrowError(error.error);
   }
 
   protected getUrl(): string {

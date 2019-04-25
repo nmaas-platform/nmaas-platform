@@ -64,10 +64,7 @@
     "FORM_SUBMISSION": "Registration form submission",
     "THANK_YOU_MESSAGE": "Thank you for submitting the registration form. Your account needs to be enabled by the system administrator. This make take some time.",
     "DONE_MESSAGE": "Done",
-    "INVALID_CREDENTIALS_MESSAGE": "Invalid credentials.",
-    "UNABLE_TO_REGISTER_MESSAGE": "Unable to register new user.",
-    "TERMS_NOT_ACCEPTED_MESSAGE": "Terms of Use were not accepted.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Please confirm that you read Privacy Notice",
+    "INVALID_INPUT_MESSAGE": "Invalid input data",
     "USER_ALREADY_EXISTS_MESSAGE": "User already exists.",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found.",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Unable to update newly registered user.",
@@ -82,9 +79,7 @@
     "LOGIN_WITH": "Login with",
     "LOGIN_FAILURE_MESSAGE": "Invalid Credentials",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Application is undergoing maintenance right now. Please try again later.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed",
-    "MISSING_TOKEN_MESSAGE": "Missing token.",
-    "UNABLE_TO_GENERATE_MESSAGE": "Unable to generate new tokens"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "System component login cannot be performed"
   },
   "CLUSTERS": {
     "TITLE": "Kubernetes cluster configuration",
@@ -240,14 +235,6 @@
     "LANGUAGE_SUPPORT": "Language support",
     "LANGUAGE_ENABLED": "Enabled",
     "LANGUAGE_DISABLED": "Disabled"
-  },
-  "AUTH":{
-    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "SSO login method is not enabled",
-    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Received user SSO login data is empty",
-    "MISSING_USERNAME_MESSAGE": "Missing username",
-    "USER_ALREADY_EXITS_MESSAGE": "User already exists",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domain not found",
-    "INTERNAL_SERVER_ERROR_MESSAGE": "Internal server error"
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Domain details",

@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.api.domain.Pong;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.SignupException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
+import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -46,12 +47,12 @@ public class BasicAuthController {
 
 	@PostMapping(value="/login")
 	public UserToken login(@RequestBody final UserLogin userLogin) {
-        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("LOGIN.LOGIN_FAILURE_MESSAGE"));
+        User user = users.findByUsername(userLogin.getUsername()).orElseThrow(() -> new AuthenticationException("User not found"));
         validate(userLogin.getUsername(), userLogin.getPassword(), user.getPassword(), user.isEnabled());
         checkUserApprovals(user);
 
         if(configurationManager.getConfiguration().isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().equals(Role.ROLE_SYSTEM_ADMIN))) {
-            throw new AuthenticationException("LOGIN.APPLICATION_UNDER_MAINTENANCE_MESSAGE");
+            throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
         }
 
         log.info(format("User [%s] logged in with role [%s]", userLogin.getUsername(),
@@ -62,7 +63,7 @@ public class BasicAuthController {
 	@PostMapping(value="/token")
 	public UserToken token(@RequestBody final UserRefreshToken userRefreshToken) {
         if(userRefreshToken == null || StringUtils.isEmpty(userRefreshToken.getRefreshToken())) {
-            throw new AuthenticationException("LOGIN.MISSING_TOKEN_MESSAGE");
+            throw new AuthenticationException("Token is missing");
         }
 
         if(jwtTokenService.validateRefreshToken(userRefreshToken.getRefreshToken())) {
@@ -70,7 +71,7 @@ public class BasicAuthController {
             final User user = users.findByUsername(claims.getSubject()).orElseThrow(() -> new AuthenticationException("User in token not found."));
             return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
         } else {
-            throw new AuthenticationException("LOGIN.UNABLE_TO_GENERATE_MESSAGE");
+            throw new AuthenticationException("Unable to generate new tokens");
         }
 	}
 	
