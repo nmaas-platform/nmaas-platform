@@ -39,7 +39,7 @@ describe('ClusterDetailsComponent', () => {
     });
 
     it('should return correct length of maps', ()=>{
-        expect(component.controllerConfigOption.size).toBe(3);
+        expect(component.controllerConfigOption.size).toBe(4);
         expect(component.namespaceConfigOption.size).toBe(3);
         expect(component.resourceConfigOption.size).toBe(3);
     });
