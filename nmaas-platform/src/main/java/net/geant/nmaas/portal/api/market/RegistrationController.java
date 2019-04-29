@@ -53,18 +53,18 @@ public class RegistrationController {
 				|| StringUtils.isEmpty(registration.getUsername())
 				|| StringUtils.isEmpty(registration.getPassword())
 				|| StringUtils.isEmpty(registration.getEmail())) {
-			throw new SignupException("REGISTRATION.INVALID_CREDENTIALS_MESSAGE");
+			throw new SignupException("Invalid credentials");
 		}
 
 		if(!registration.getTermsOfUseAccepted()){
-			throw new SignupException("REGISTRATION.TERMS_NOT_ACCEPTED_MESSAGE");
+			throw new SignupException("Terms of Use were not accepted");
 		}
 		if(!registration.getPrivacyPolicyAccepted()){
-			throw new SignupException("REGISTRATION.PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE");
+			throw new SignupException("Privacy policy was not accepted");
 		}
 		Domain domain = null;
 		if(registration.getDomainId() != null){
-			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE"));
+			domain = domains.findDomain(registration.getDomainId()).orElseThrow(()-> new SignupException("Domain not found"));
 		}
 		Domain globalDomain = domains.getGlobalDomain().orElseThrow(MissingElementException::new);
 		try {
@@ -80,9 +80,9 @@ public class RegistrationController {
 				domains.addMemberRole(registration.getDomainId(), newUser.getId(), Role.ROLE_GUEST);
 			}
 		} catch (ObjectAlreadyExistsException e){
-			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
+			throw new SignupException("User already exists");
 		} catch (MissingElementException e){
-			throw new SignupException("REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE");
+			throw new SignupException("Domain not found");
 		}
 	}
 	
