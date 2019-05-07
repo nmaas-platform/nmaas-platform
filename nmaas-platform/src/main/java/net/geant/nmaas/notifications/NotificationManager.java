@@ -11,7 +11,7 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
-import net.geant.nmaas.portal.api.domain.User;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -67,7 +67,7 @@ public class NotificationManager {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         this.getAllAddressees(mailAttributes);
-        for(User user : mailAttributes.getAddressees()){
+        for(UserView user : mailAttributes.getAddressees()){
             this.notificationService.sendMail(user.getEmail(), langTemplate.getSubject(), getFilledTemplate(template, langTemplate, user, mailAttributes, mailTemplate));
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
@@ -84,12 +84,12 @@ public class NotificationManager {
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getOtherAttributes().get("domainName")));
             if(mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))){
                 userService.findByUsername(mailAttributes.getOtherAttributes().get("owner"))
-                        .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, User.class)));
+                        .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
             }
         }
     }
 
-    private String getFilledTemplate(Template template, LanguageMailContentView langContent, User user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
+    private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
                 .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)
@@ -102,7 +102,7 @@ public class NotificationManager {
                 .build());
     }
 
-    private String getHeader(String header, User user) throws IOException, TemplateException {
+    private String getHeader(String header, UserView user) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
@@ -110,9 +110,9 @@ public class NotificationManager {
         return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
     }
 
-    private List<String> getListOfMails(List<User> users){
+    private List<String> getListOfMails(List<UserView> users){
         return users.stream()
-                .map(User::getEmail)
+                .map(UserView::getEmail)
                 .collect(Collectors.toList());
     }
 

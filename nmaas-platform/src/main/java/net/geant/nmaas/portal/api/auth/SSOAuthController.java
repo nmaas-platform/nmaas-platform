@@ -76,8 +76,6 @@ public class SSOAuthController {
 			throw new SignupException("User already exists");
 		} catch (MissingElementException e) {
 			throw new SignupException("Domain not found");
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new SignupException("Internal server error");
 		}
 	}
 }

@@ -14,7 +14,7 @@ import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppInstanceBase;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.domain.Id;
@@ -126,14 +126,14 @@ public class AppInstanceController extends AppBaseController {
     @PostMapping("/domains/{domainId}/apps/instances")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
     @Transactional
-    public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
+    public Id createAppInstance(@RequestBody(required = true) AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal, @PathVariable Long domainId) {
-        Application app = getApp(appInstanceSubscription.getApplicationId());
+        Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         AppInstance appInstance;
         try {
-            appInstance = instances.create(domain, app, appInstanceSubscription.getName());
+            appInstance = instances.create(domain, app, appInstanceRequest.getName());
         } catch (ApplicationSubscriptionNotActiveException e) {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }

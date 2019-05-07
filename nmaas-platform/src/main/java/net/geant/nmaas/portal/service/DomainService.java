@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service;
 
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -50,5 +51,5 @@ public interface DomainService {
 	
 	Set<Domain> getUserDomains(Long userId);
 
-	List<net.geant.nmaas.portal.api.domain.User> findUsersWithDomainAdminRole(String domain);
+	List<UserView> findUsersWithDomainAdminRole(String domain);
 }
