@@ -48,7 +48,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 	@Override
 	public void delete(Long id) {
 		checkParam(id);
-		appRepo.findById(id).ifPresent((app) -> {
+		appRepo.findById(id).ifPresent(app -> {
 			if(app.getState().isChangeAllowed(ApplicationState.DELETED)){
 				app.setState(ApplicationState.DELETED);
 				appRepo.save(app);

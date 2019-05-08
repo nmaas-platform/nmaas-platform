@@ -64,6 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     final static String DOMAIN = "domtest";
+    final static String DOMAIN2 = "tetdom";
 
     @Autowired
     private UserRepository userRepo;
@@ -89,6 +90,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
         domains.createGlobalDomain();
         domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
+        domains.createDomain(new DomainRequest(DOMAIN2, DOMAIN2, true));
 
         //Add extra users, default admin is already there
         User admin = new User("manager", true, "manager", domains.getGlobalDomain().get(), Collections.singletonList(ROLE_SYSTEM_ADMIN));
@@ -107,6 +109,10 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         user3 = new User("user3", true, "user3", domains.getGlobalDomain().get(), ROLE_NOT_ACCEPTED, false, false);
         user3.setEmail("user3@testemail.com");
         userRepo.save(user3);
+
+        User domTestAdmin = new User("domAdmin", true, "domAdmin",domains.findDomain(DOMAIN2).get(), ROLE_DOMAIN_ADMIN, false, false);
+        domTestAdmin.setEmail("domAdmin@testemail.com");
+        userRepo.save(domTestAdmin);
 
         UserToken userToken = new UserToken(tokenService.getToken(admin), tokenService.getRefreshToken(admin));
         token = userToken.getToken();
@@ -151,7 +157,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testGetUsers() {
-        assertEquals(5, userController.getUsers(Pageable.unpaged()).size());
+        assertEquals(6, userController.getUsers(Pageable.unpaged()).size());
     }
 
     @Test
@@ -202,8 +208,39 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     }
 
     @Test
+    public void shouldUpdateUserOwnData(){
+        when(principal.getName()).thenReturn(user3.getUsername());
+        String newEmail = "admin@test.com";
+        UserRequest userRequest = new UserRequest(null, user3.getUsername(), user3.getPassword());
+        userRequest.setEmail(newEmail);
+        userController.updateUser(user3.getId(), userRequest, principal);
+    }
+
+    @Test
+    public void shouldNotUpdateOtherUserDataWithoutAdminRole(){
+        when(principal.getName()).thenReturn(user3.getUsername());
+        assertThrows(ProcessingException.class, () ->{
+            String newEmail = "stub@nottakenmail.com";
+            UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+            userRequest.setEmail(newEmail);
+            userController.updateUser(userEntity.getId(), userRequest, principal);
+        });
+    }
+
+    @Test
+    public void shouldNotUpdateUserWithoutDomainAdminRoleInUserDomain(){
+        when(principal.getName()).thenReturn("domAdmin");
+        assertThrows(ProcessingException.class, () ->{
+            String newEmail = "stub@nottakenmail.com";
+            UserRequest userRequest = new UserRequest(null, userEntity.getUsername(), userEntity.getPassword());
+            userRequest.setEmail(newEmail);
+            userController.updateUser(userEntity.getId(), userRequest, principal);
+        });
+    }
+
+    @Test
     public void testDeleteUser() {
-        //Update test when user delete is supported
+        //TODO: Update test when user delete is supported
         try {
             userController.deleteUser(userEntity.getId());
             fail();

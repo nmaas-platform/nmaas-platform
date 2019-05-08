@@ -1,9 +1,8 @@
 package net.geant.nmaas.portal.service.impl.security;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Role;
@@ -23,9 +22,9 @@ public class CommentPermissionCheck extends BasePermissionCheck {
 	@Autowired
 	CommentRepository comments;
 	
-	protected final Map<Role, Permissions[]> permMatrix = new HashMap<>();
+	private final EnumMap<Role, Permissions[]> permMatrix = new EnumMap<>(Role.class);
 	
-	protected static final Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
+	private static final Permissions[] OWNER_DEFAULT_PERMS = new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER};
 	
 	public CommentPermissionCheck() {
 		permMatrix.put(Role.ROLE_SYSTEM_ADMIN, new Permissions[] {Permissions.CREATE, Permissions.DELETE, Permissions.READ, Permissions.WRITE, Permissions.OWNER});

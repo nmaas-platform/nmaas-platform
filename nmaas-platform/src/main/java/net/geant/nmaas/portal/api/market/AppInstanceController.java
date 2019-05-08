@@ -51,6 +51,8 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
+    private static final String MISSING_USER_MESSAGE = "User not found";
+
     private AppLifecycleManager appLifecycleManager;
 
     private AppDeploymentMonitor appDeploymentMonitor;
@@ -71,7 +73,7 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/apps/instances/my")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
-        User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("User not found"));
+        User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
@@ -105,7 +107,7 @@ public class AppInstanceController extends AppBaseController {
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = users.findByUsername(username)
-                .orElseThrow(() -> new MissingElementException("User not found"));
+                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, domain, pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
@@ -232,7 +234,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
         return this.getAllRunningInstancesByOwnerAndDomain(owner, domain);
     }
 

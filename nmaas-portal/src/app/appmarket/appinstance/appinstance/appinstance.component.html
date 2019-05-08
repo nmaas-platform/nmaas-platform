@@ -37,7 +37,7 @@
 				<div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
 						<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
-						<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="this.updateConfigModal.show()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
+						<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
 						<button class="btn btn-primary" style="display: none" (click)="this.modal.show()" disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
 						<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
 					</div>
@@ -70,16 +70,16 @@
 			<h4>{{'UPDATE_CONFIG_MODAL.HEADER' | translate}}</h4>
 		</div>
 		<div class="nmaas-modal-body" style="height: 30%; min-width: 30vw; max-height: 45vh;overflow-y: auto;">
-			<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined"
+			<formio *ngIf="appInstance !== undefined && configurationUpdateTemplate !== undefined && isSubmissionUpdated"
 					[form]="configurationUpdateTemplate"
 					[submission]="submission"
-					[options]='{"alerts": {"submitMessage": "Configuration applied"}, "errors": {"message": "Invalid configuration"}}'
-					(change)="changeConfigUpdate($event.data)">
+					[refresh]="refreshUpdateForm"
+					(change)="changeConfigUpdate($event)">
 			</formio>
 		</div>
 		<div class="nmaas-modal-footer">
-			<button type="button" class="btn btn-danger" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
-			<button type="button" class="btn btn-primary" (click)="this.updateConfigModal.hide()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
+			<button type="button" class="btn btn-danger" [disabled]="!isUpdateFormValid" (click)="this.updateConfiguration()">{{'UPDATE_CONFIG_MODAL.SUBMIT_BUTTON' | translate}}</button>
+			<button type="button" class="btn btn-primary" (click)="this.closeConfigurationModal()">{{'UPDATE_CONFIG_MODAL.CANCEL_BUTTON' | translate}}</button>
 		</div>
 	</nmaas-modal>
 

@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.configuration.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -19,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AppConfigurationSpec {
+public class AppConfigurationSpec implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

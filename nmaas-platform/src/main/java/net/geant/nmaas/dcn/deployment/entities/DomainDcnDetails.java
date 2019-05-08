@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +17,7 @@ import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 @NoArgsConstructor
 @Getter
 @Setter
-public class DomainDcnDetails {
+public class DomainDcnDetails implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

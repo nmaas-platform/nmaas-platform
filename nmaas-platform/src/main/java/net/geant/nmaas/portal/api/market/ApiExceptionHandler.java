@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.api.security.exceptions.AuthenticationMethodNotSup
 import net.geant.nmaas.portal.api.security.exceptions.BasicAuthenticationException;
 import net.geant.nmaas.portal.api.security.exceptions.MissingTokenException;
 import net.geant.nmaas.portal.api.security.exceptions.TokenAuthenticationException;
+import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,7 +44,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return createApiError(ex, HttpStatus.CONFLICT);
 	}
 	
-	@ExceptionHandler(value = { ProcessingException.class })
+	@ExceptionHandler(value = { ProcessingException.class, UndergoingMaintenanceException.class})
 	@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 	public ApiError handleProcessingException(WebRequest req, MarketException ex) {
 		return createApiError(ex, HttpStatus.NOT_ACCEPTABLE);

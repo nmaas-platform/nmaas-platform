@@ -1,0 +1,1 @@
+alter table internationalization add unique(language);

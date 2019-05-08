@@ -211,7 +211,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
 			if(!appSubRepo.existsById(appSub.getId()))
-				throw new ObjectNotFoundException("Application subscription not found.");
+				throw new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE);
 
 			appSub.setActive(false);
 			appSub.setDeleted(true);

@@ -20,8 +20,10 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
+import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
@@ -137,8 +139,8 @@ public class DomainServiceTest {
         DomainRequest domainRequest = new DomainRequest(name, codename, false);
         DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE);
         DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
-        domainRequest.setDomainDcnDetailsView(domainDcnDetailsView);
-        domainRequest.setDomainTechDetailsView(domainTechDetailsView);
+        domainRequest.setDomainDcnDetails(domainDcnDetailsView);
+        domainRequest.setDomainTechDetails(domainTechDetailsView);
         Domain result = this.domainService.createDomain(domainRequest);
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));
@@ -211,6 +213,7 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.addMemberRole(domainId, userId, role);
+        verify(userRoleRepo, times(1)).save(any());
     }
 
     @Test
@@ -285,7 +288,9 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.of(user));
-        this.domainService.getMember(domainId, userId);
+        User result = this.domainService.getMember(domainId, userId);
+        assertEquals(user.getUsername(), result.getUsername());
+        assertEquals(user.getId(), result.getId());
     }
 
     @Test

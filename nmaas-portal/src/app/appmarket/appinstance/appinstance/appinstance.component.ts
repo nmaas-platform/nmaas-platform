@@ -3,13 +3,12 @@ import {
   Component,
   EventEmitter,
   Inject,
-  LOCALE_ID, NgModule,
   OnDestroy,
   OnInit,
   ViewChild
 } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Location, registerLocaleData} from '@angular/common';
+import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
 import {AppInstanceProgressComponent} from '../appinstanceprogress/appinstanceprogress.component';
 import {
@@ -24,7 +23,7 @@ import {AppRestartModalComponent} from "../../modals/apprestart";
 import {AppInstanceStateHistory} from "../../../model/appinstancestatehistory";
 import {RateComponent} from '../../../shared/rate/rate.component';
 import {AppConfiguration} from "../../../model/appconfiguration";
-import {debug, isNullOrUndefined} from "util";
+import {isNullOrUndefined} from "util";
 import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
 import {interval} from 'rxjs/internal/observable/interval';
@@ -33,7 +32,6 @@ import {TranslateStateModule} from "../../../shared/translate-state/translate-st
 import {TranslateService} from "@ngx-translate/core";
 import {SessionService} from "../../../service/session.service";
 import {LocalDatePipe} from "../../../pipe/local-date.pipe";
-import {Local} from "protractor/built/driverProviders";
 import {ApplicationState} from "../../../model/applicationstate";
 
 @Component({
@@ -77,12 +75,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public configurationTemplate: any;
   public configurationUpdateTemplate:any;
   public submission: any = { data:{} };
+  public isSubmissionUpdated: boolean = false;
+  public isUpdateFormValid: boolean = true;
   public appConfiguration: AppConfiguration;
 
   public intervalCheckerSubscribtion;
 
   public wasUpdated: boolean = false;
   public refreshForm: EventEmitter<any>;
+  public refreshUpdateForm: EventEmitter<any>;
   public readonly REPLACE_TEXT = "\"insert-app-instances-here\"";
 
   constructor(private appsService: AppsService,
@@ -107,6 +108,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
         this.appInstance = appInstance;
         this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
         this.refreshForm = new EventEmitter();
+        this.refreshUpdateForm = new EventEmitter();
         this.submission.data.configuration = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
@@ -199,7 +201,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
-      this.submission.data.configuration = JSON.parse(appInstance.configuration);
     });
   }
 
@@ -266,10 +267,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       });
   }
 
-  public changeConfigUpdate(input): void {
-    if(!isNullOrUndefined(input)){
-      this.changeConfiguration(input['configuration']);
-      this.changeAccessCredentials(input['accessCredentials']);
+  public changeConfigUpdate(input:any): void {
+    if(!isNullOrUndefined(input) && !isNullOrUndefined(input['data'])){
+      this.isUpdateFormValid = input['isValid'];
+      this.changeConfiguration(input['data']['configuration']);
+      this.changeAccessCredentials(input['data']['accessCredentials']);
     }
   }
 
@@ -297,6 +299,24 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       }else{
           return "";
       }
+  }
+
+  public getConfigurationModal(){
+    this.appInstanceService.getConfiguration(this.appInstanceId).subscribe(config => {
+      this.appInstance.configuration = config;
+      this.submission['data']['configuration'] = config;
+      this.refreshUpdateForm.emit({
+        property: 'submission',
+        value: this.submission
+      });
+      this.isSubmissionUpdated = true;
+      this.updateConfigModal.show();
+    });
+  }
+
+  public closeConfigurationModal(){
+    this.isSubmissionUpdated = false;
+    this.updateConfigModal.hide();
   }
 
 }

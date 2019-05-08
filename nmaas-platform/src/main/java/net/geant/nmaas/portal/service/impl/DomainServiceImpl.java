@@ -39,6 +39,8 @@ import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_GUEST;
 @Service
 public class DomainServiceImpl implements DomainService {
 
+	private static final String DOMAIN_NOT_FOUND_MESSAGE = "Domain not found";
+
 	public interface CodenameValidator {
 		boolean valid(String codename);
 	}
@@ -130,14 +132,14 @@ public class DomainServiceImpl implements DomainService {
 		if(!Optional.ofNullable(validator).map(v -> v.valid(request.getCodename())).filter(result -> result).isPresent()){
 			throw new ProcessingException("Domain codename is not valid");
 		}
-		if(StringUtils.isEmpty(request.getDomainTechDetailsView().getKubernetesNamespace())){
-			request.getDomainTechDetailsView().setKubernetesNamespace(request.getCodename());
+		if(StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesNamespace())){
+			request.getDomainTechDetails().setKubernetesNamespace(request.getCodename());
 		}
-		if(!namespaceValidator.valid(request.getDomainTechDetailsView().getKubernetesNamespace())){
+		if(!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace())){
 			throw new ProcessingException("Kubernetes namespace is not valid");
 		}
-		if(StringUtils.isNotEmpty(request.getDomainTechDetailsView().getExternalServiceDomain())){
-			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetailsView().getExternalServiceDomain()), "External service domain is not unique");
+		if(StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())){
+			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 		}
 		this.setCodenames(request);
 		try {
@@ -148,8 +150,8 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private void setCodenames(DomainRequest request){
-		request.getDomainTechDetailsView().setDomainCodename(request.getCodename());
-		request.getDomainDcnDetailsView().setDomainCodename(request.getCodename());
+		request.getDomainTechDetails().setDomainCodename(request.getCodename());
+		request.getDomainDcnDetails().setDomainCodename(request.getCodename());
 	}
 
 	@Override
@@ -203,7 +205,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public Domain changeDcnConfiguredFlag(Long domainId, boolean dcnConfigured){
 		checkParams(domainId);
-		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
 		domain.getDomainDcnDetails().setDcnConfigured(dcnConfigured);
 		return domainRepo.save(domain);
@@ -212,7 +214,7 @@ public class DomainServiceImpl implements DomainService {
 	@Override
 	public void changeDomainState(Long domainId, boolean active){
 		checkParams(domainId);
-		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException("Domain not found"));
+		Domain domain = findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND_MESSAGE));
 		checkGlobal(domain);
 		domain.setActive(active);
 		domainRepo.save(domain);
@@ -269,7 +271,7 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	private Domain getDomain(Long domainId) {
-		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException("Domain not found"));
+		return findDomain(domainId).orElseThrow(() -> new ObjectNotFoundException(DOMAIN_NOT_FOUND_MESSAGE));
 	}
 
 	@Override

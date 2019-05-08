@@ -3,7 +3,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ClusterDetailsComponent } from './clusterdetails.component';
 import {FormsModule} from "@angular/forms";
 import {RouterTestingModule} from "@angular/router/testing";
-import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
+import {MissingTranslationHandler, TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-translate/core";
+import {CustomMissingTranslationService} from "../../../../i18n/custommissingtranslation.service";
 
 describe('ClusterDetailsComponent', () => {
     let component: ClusterDetailsComponent;
@@ -16,6 +17,7 @@ describe('ClusterDetailsComponent', () => {
                 FormsModule,
                 RouterTestingModule,
                 TranslateModule.forRoot({
+                    missingTranslationHandler: {provide: MissingTranslationHandler, useClass: CustomMissingTranslationService},
                     loader: {
                         provide: TranslateLoader,
                         useClass: TranslateFakeLoader

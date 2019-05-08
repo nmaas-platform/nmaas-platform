@@ -71,11 +71,13 @@ public class SchedulingManagerTest {
     @Test
     public void shouldExecuteJobWithCorrectName(){
         this.scheduleManager.executeJob("GITLAB");
+        verify(monitorManager, times(1)).updateMonitorEntry(any(), any(), any());
     }
 
     @Test
     public void shouldExecuteJobWhenNameIsCorrectButIsNotUpperCase(){
         this.scheduleManager.executeJob("GiTLaB");
+        verify(monitorManager, times(1)).updateMonitorEntry(any(), any(), any());
     }
 
     @Test

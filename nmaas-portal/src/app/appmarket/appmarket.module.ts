@@ -33,6 +33,7 @@ import {SortService} from "../service/sort.service";
 import {AppManagementModule} from "./appmanagement/appmanagement.module";
 import {SessionService} from "../service/session.service";
 import {LocalDatePipe} from "../pipe/local-date.pipe";
+import {LanguageManagementModule} from "./admin/languagemanagement/languagemanagement.module";
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import {LocalDatePipe} from "../pipe/local-date.pipe";
     AppListModule,
     AppInstanceModule,
     AppManagementModule,
+    LanguageManagementModule,
     DomainsModule,
     UsersModule,
     AuthModule,

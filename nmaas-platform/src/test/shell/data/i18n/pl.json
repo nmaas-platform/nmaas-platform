@@ -14,7 +14,8 @@
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
     "LANGUAGE": "Język",
     "ABOUT": "O nas",
-    "BACK": "Wróć do strony głównej"
+    "BACK": "Wróć do strony głównej",
+    "LANGUAGES": "Języki"
   },
   "WELCOME": {
     "LOGIN": "Logowanie",
@@ -63,10 +64,7 @@
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
     "DONE_MESSAGE": "Gotowe",
-    "INVALID_CREDENTIALS_MESSAGE": "Nieprawidłowe dane uwierzytelniające.",
-    "UNABLE_TO_REGISTER_MESSAGE": "Nie można zarejestrować nowego użytkownika.",
-    "TERMS_NOT_ACCEPTED_MESSAGE": "Warunki użytkowania nie zostały zaakceptowane.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Polityka prywatności nie została zaakceptowana.",
+    "INVALID_INPUT_MESSAGE": "Podano niewłaściwe dane",
     "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje.",
     "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona.",
     "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika.",
@@ -81,9 +79,7 @@
     "LOGIN_WITH": "Zaloguj się za pomocą",
     "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Logowanie komponentu systemu nie może być wykonane",
-    "MISSING_TOKEN_MESSAGE": "Brakujący token.",
-    "UNABLE_TO_GENERATE_MESSAGE": "Nie można wygenerować nowych tokenów"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Logowanie komponentu systemu nie może być wykonane"
   },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
@@ -237,15 +233,6 @@
     "LANGUAGE_SUPPORT": "Aktywowane języki",
     "LANGUAGE_ENABLED": "Aktywny",
     "LANGUAGE_DISABLED": "Nieaktywny"
-  },
-  "AUTH": {
-    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "Metoda logowania SSO nie jest włączona",
-    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Dane logowania otrzymanego użytkownika SSO są puste",
-    "MISSING_USERNAME_MESSAGE": "Brakująca nazwa użytkownika",
-    "USER_ALREADY_EXITS_MESSAGE": "Użytkownik już istnieje",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona",
-    "INTERNAL_SERVER_ERROR_MESSAGE": "Błąd wewnętrzny serwera",
-    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Aplikacja jest aktualnie w trakcie konserwacji. Spróbuj ponownie później."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
@@ -688,5 +675,27 @@
       "PAGE": "strona",
       "CURRENT": "Jesteś na stronie"
     }
+  },
+  "LANGUAGE_MANAGEMENT": {
+    "TABLE_KEY": "Klucz",
+    "TABLE_VALUE": "Wartość",
+    "ADD_NEW_ITEM_BUTTON": "Dodaj nowy",
+    "SUBJECT_LABEL": "Temat",
+    "LABELS_TRANSLATION": "Tłumaczenie etykiet",
+    "MAILS_TRANSLATION": "Tłumaczenie maili",
+    "SUBMIT_BUTTON": "Prześlij",
+    "NOT_SUPPORTED_MESSAGE": "Nieobsługiwane",
+    "EDIT_BUTTON": "Edytuj",
+    "LANGUAGE_DISABLED": "Deaktywuj",
+    "LANGUAGE_ENABLED": "Aktywuj",
+    "LANGUAGE_ERROR": "Wystąpił błąd",
+    "MODAL": {
+      "CLOSE_BUTTON": "Zamknij",
+      "HEADER": "Nagłówek"
+    },
+    "TITLE": "Zarządzanie językami",
+    "LANGUAGE": "Język",
+    "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
+    "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"
   }
 }

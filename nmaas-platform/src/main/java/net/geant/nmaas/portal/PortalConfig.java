@@ -3,7 +3,6 @@ package net.geant.nmaas.portal;
 import java.util.Arrays;
 import net.geant.nmaas.monitor.MonitorManager;
 import net.geant.nmaas.monitor.ServiceType;
-import net.geant.nmaas.monitor.TimeFormat;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
 import net.geant.nmaas.monitor.scheduling.ScheduleManager;
 import net.geant.nmaas.portal.exceptions.ProcessingException;
@@ -96,13 +95,13 @@ public class PortalConfig {
 			@Override
 			@Transactional
 			public void afterPropertiesSet() {
-				Arrays.asList(ServiceType.values()).forEach(service ->{
-					if(!monitorManager.existsByServiceName(service)){
-						MonitorEntryView monitorEntry = new MonitorEntryView(service, 24L, TimeFormat.H);
-						this.monitorManager.createMonitorEntry(monitorEntry);
-						this.scheduleManager.createJob(monitorEntry);
-					}
-				});
+				Arrays.stream(ServiceType.values())
+						.filter(service -> !monitorManager.existsByServiceName(service))
+						.forEach(service ->{
+							MonitorEntryView monitorEntry = service.getDefaultMonitorEntry();
+							this.monitorManager.createMonitorEntry(monitorEntry);
+							this.scheduleManager.createJob(monitorEntry);
+						});
 			}
 		};
 	}

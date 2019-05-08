@@ -12,6 +12,8 @@ import {DomainFilterComponent} from "../common/domainfilter/domainfilter.compone
 import {Component} from "@angular/core";
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {Content} from "../../model/content";
+import {InternationalizationService} from "../../service/internationalization.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 class MockContentDisplayService{
 
@@ -101,7 +103,7 @@ class MockDomainService{
 describe('NavbarComponent_Shared', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  let contentService: ContentDisplayService;
+  let languageService: InternationalizationService;
   let spy: any;
 
   beforeEach(async(() => {
@@ -112,6 +114,7 @@ describe('NavbarComponent_Shared', () => {
         MockDomainFilter
       ],
         imports: [
+            HttpClientTestingModule,
             TranslateModule.forRoot({
                 loader: {
                     provide: TranslateLoader,
@@ -124,6 +127,8 @@ describe('NavbarComponent_Shared', () => {
           {provide: ContentDisplayService, useClass: MockContentDisplayService},
           {provide: AuthService, useClass: MockAuthService},
           {provide: DomainService, useClass: MockDomainService},
+          InternationalizationService,
+          AppConfigService
         ]
     })
     .compileComponents();
@@ -132,8 +137,8 @@ describe('NavbarComponent_Shared', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
-    contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    spy = spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
+    languageService = fixture.debugElement.injector.get(InternationalizationService);
+    spy = spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     component.useLanguage('en');
     fixture.detectChanges();
   });

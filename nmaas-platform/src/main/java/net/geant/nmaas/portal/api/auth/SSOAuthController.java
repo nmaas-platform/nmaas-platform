@@ -1,8 +1,6 @@
 package net.geant.nmaas.portal.api.auth;
 
-import java.io.IOException;
-import java.util.Optional;
-
+import net.geant.nmaas.portal.exceptions.UndergoingMaintenanceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigManager;
-import net.geant.nmaas.portal.api.auth.UserSSOLogin;
-import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.AuthenticationException;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -48,42 +44,40 @@ public class SSOAuthController {
 	}
 
 	@PostMapping(value="/login")
-	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) throws IOException {
+	public UserToken login(@RequestBody final UserSSOLogin userSSOLoginData) {
 		ConfigurationView configuration = this.configurationManager.getConfiguration();
 		if(!configuration.isSsoLoginAllowed())
-			throw new AuthenticationException("AUTH.SSO_LOGIN_NOT_ENABLED_MESSAGE");
+			throw new SignupException("SSO login method is not enabled");
 
 		if(userSSOLoginData == null)
-			throw new AuthenticationException("AUTH.EMPTY_SSO_LOGIN_DATA_MESSAGE");
+			throw new AuthenticationException("Received user SSO login data is incorrect");
 
 		if(StringUtils.isEmpty(userSSOLoginData.getUsername()))
-			throw new AuthenticationException("AUTH.MISSING_USERNAME_MESSAGE");
+			throw new AuthenticationException("Missing username");
 
 		shibbolethConfigManager.checkParam();
 		userSSOLoginData.validate(shibbolethConfigManager.getKey(), shibbolethConfigManager.getTimeout());
 
-		Optional<User> maybeUser = users.findBySamlToken(userSSOLoginData.getUsername());
-		User user = maybeUser.orElse(null);
-
-		if(user == null) {
-			// Autocreate as we trust sso
-			try {
-				user = users.register(userSSOLoginData, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
-			} catch (ObjectAlreadyExistsException e) {
-				throw new SignupException("AUTH.USER_ALREADY_EXITS_MESSAGE");
-			} catch (MissingElementException e) {
-				throw new SignupException("AUTH.DOMAIN_NOT_FOUND_MESSAGE");
-			} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-				throw new SignupException("AUTH.INTERNAL_SERVER_ERROR_MESSAGE");
-			}
-		}
+		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElse(registerNewUser(userSSOLoginData));
 
 		if(!user.isEnabled())
 			throw new AuthenticationException("User is not active.");
 
-		if(user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN")) && configuration.isMaintenance())
-			throw new AuthenticationException("AUTH.APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE");
+		if(configuration.isMaintenance() && user.getRoles().stream().noneMatch(value -> value.getRole().authority().equals("ROLE_SYSTEM_ADMIN")))
+			throw new UndergoingMaintenanceException("Application is undergoing maintenance right now");
 
 		return new UserToken(jwtTokenService.getToken(user), jwtTokenService.getRefreshToken(user));
+	}
+
+	private User registerNewUser(UserSSOLogin userSSOLoginData){
+		try{
+			return users.register(userSSOLoginData, domains.getGlobalDomain().orElseThrow(MissingElementException::new));
+		} catch (ObjectAlreadyExistsException e) {
+			throw new SignupException("User already exists");
+		} catch (MissingElementException e) {
+			throw new SignupException("Domain not found");
+		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
+			throw new SignupException("Internal server error");
+		}
 	}
 }

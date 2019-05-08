@@ -254,13 +254,13 @@ curl -X GET $API_URL/subscriptions --header "Authorization: Bearer $TOKEN" --hea
 echo
 echo ---------------------
 echo Create english language content
-curl -X POST $API_URL/i18n/en --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/en.json
+curl -X POST $API_URL/i18n/en?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/en.json
 echo
 echo Create french language content
-curl -X POST $API_URL/i18n/fr --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/fr.json
+curl -X POST $API_URL/i18n/fr?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/fr.json
 echo
 echo Create polish language content
-curl -X POST $API_URL/i18n/pl --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
+curl -X POST $API_URL/i18n/pl?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/pl.json
 echo
 echo Create german language content
-curl -X POST $API_URL/i18n/de --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
+curl -X POST $API_URL/i18n/de?enabled=true --header "Authorization: Bearer $TOKEN" --header "Content-Type: application/json" --header "Accept: application/json" -d @data/i18n/de.json
