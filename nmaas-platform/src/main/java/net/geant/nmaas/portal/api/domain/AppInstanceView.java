@@ -15,7 +15,7 @@ public class AppInstanceView extends AppInstanceBase {
 	
 	private Long createdAt;
 	
-	private User owner;
+	private UserView owner;
 	
 	private String configuration;
 	
