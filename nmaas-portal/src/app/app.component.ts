@@ -34,7 +34,6 @@ export class AppComponent {
                 services.forEach(value => {
                     if (value.serviceName.toString() == "DATABASE") {
                         if (value.status.toString() == "FAILURE") {
-                            console.debug("#2");
                             this.isServiceAvailable = false;
                         }
                     }
@@ -54,7 +53,7 @@ export class AppComponent {
         }
         this.handleDefaultLanguage();
         this.config = this.appConfigService.config;
-        console.log('Configuration: ' + JSON.stringify(this.config));
+        console.debug('Configuration: ' + JSON.stringify(this.config));
     }
 
     public handleDefaultLanguage() : void {

@@ -22,7 +22,7 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateService} from "@ngx-translate/core";
 import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
-import {TranslateLoaderImpl} from "./service/translate-loader-impl.service";
+import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
 import {ServiceUnavailableModule} from "./service-unavailable/service-unavailable.module";
 
 
