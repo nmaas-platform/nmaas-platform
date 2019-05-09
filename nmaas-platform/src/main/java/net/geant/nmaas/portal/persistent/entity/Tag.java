@@ -33,7 +33,7 @@ public class Tag implements Serializable {
 	private String name;
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
-	private Set<Application> applications = new HashSet<>();
+	private Set<ApplicationBase> applications = new HashSet<>();
 	
 	public Tag(Long id, String name) {
 		this(name);

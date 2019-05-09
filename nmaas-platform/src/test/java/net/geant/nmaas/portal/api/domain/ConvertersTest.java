@@ -1,9 +1,18 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.util.Collections;
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
+import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.ConvertersConfig;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
+import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
+import net.geant.nmaas.portal.persistent.entity.FileInfo;
 import net.geant.nmaas.portal.persistent.entity.Tag;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,27 +44,64 @@ public class ConvertersTest {
 
     @Autowired
     TagRepository tagRepo;
-	
+
+    @Autowired
+    ApplicationBaseRepository appBaseRepo;
+
+    @Test
+    public void testConvertAppToAppView(){
+        ApplicationBase defaultAppBase = getDefaultAppBase();
+        appBaseRepo.save(defaultAppBase);
+        ApplicationView appView = modelMapper.map(getDefaultApp(), ApplicationView.class);
+        assertNotNull(appView.getConfigWizardTemplate());
+        assertNull(appView.getConfigUpdateWizardTemplate());
+        assertEquals(defaultAppBase.getIssuesUrl(), appView.getIssuesUrl());
+    }
+
+    @Test
+    public void testConvertAppViewToAppBase(){
+        ApplicationView appView = getDefaultAppView();
+        ApplicationBase appBase = modelMapper.map(appView, ApplicationBase.class);
+        assertEquals(appView.getId(), appBase.getId());
+        assertEquals(appView.getName(), appBase.getName());
+        assertNotNull(appBase.getTags());
+    }
+
+    @Test
+    public void testConvertAppBaseToAppBriefView(){
+        ApplicationBase appBase = getDefaultAppBase();
+        ApplicationBriefView appBriefView = modelMapper.map(appBase, ApplicationBriefView.class);
+        assertEquals(appBase.getName(), appBriefView.getName());
+        assertNotNull(appBriefView.getTags());
+        assertEquals(1, appBriefView.getAppVersions().size());
+        assertEquals("0.0.1", appBriefView.getAppVersions().get(0).getVersion());
+        assertEquals(ApplicationState.ACTIVE, appBriefView.getAppVersions().get(0).getState());
+    }
+
+    @Test
+    public void testConvertAppViewToApp(){
+        ApplicationView appView = getDefaultAppView();
+        Application app = modelMapper.map(appView, Application.class);
+        assertEquals(appView.getState(), app.getState());
+        assertNotNull(app.getConfigWizardTemplate());
+        assertNotNull(app.getAppDeploymentSpec());
+    }
+
 	@Test
-	public void testConvertApp() {
+	public void testConvertAppBriefViewToAppBase() {
         tagRepo.save(new Tag("network"));
 		
-		ApplicationBriefView appDto = null;
-	    Application appEntity = null;
-
-        appDto = new ApplicationBriefView();
+		ApplicationBriefView appDto = new ApplicationBriefView() ;
         appDto.setId(1L);
         appDto.setName("myApp");
-        appDto.setVersion("version");
         appDto.setLicense("GNL");
         appDto.getTags().add("monitoring");
         appDto.getTags().add("network");
 
-        appEntity = modelMapper.map(appDto, Application.class);
+        ApplicationBase appEntity = modelMapper.map(appDto, ApplicationBase.class);
 
         assertEquals(appDto.getId(), appEntity.getId());
         assertEquals(appDto.getName(), appEntity.getName());
-        assertEquals(appDto.getVersion(), appEntity.getVersion());
         assertEquals(appDto.getLicense(), appEntity.getLicense());
         assertEquals(2, appEntity.getTags().size());
         assertEquals(appDto.getTags().size(), appEntity.getTags().size());
@@ -74,5 +120,51 @@ public class ConvertersTest {
   
 	    
 	}
+
+	private ApplicationView getDefaultAppView(){
+        ApplicationView appView = new ApplicationView();
+        appView.setName("testApp");
+        appView.setLicense("MIT");
+        appView.setLicenseUrl("MIT.org");
+        appView.setWwwUrl("default-website.com");
+        appView.setSourceUrl("default-website.com");
+        appView.setIssuesUrl("default-website.com");
+        appView.setId(1L);
+        appView.setVersion("0.0.1");
+        appView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
+        appView.setAppConfigurationSpec(new AppConfigurationSpecView());
+        appView.setAppDeploymentSpec(new net.geant.nmaas.portal.api.domain.AppDeploymentSpec());
+        appView.getAppDeploymentSpec().setDefaultStorageSpace(15);
+        appView.setState(ApplicationState.ACTIVE);
+        appView.setOwner("admin");
+        return appView;
+    }
+
+	private ApplicationBase getDefaultAppBase(){
+        ApplicationBase appBase = new ApplicationBase();
+        appBase.setName("testApp");
+        appBase.setLicense("MIT");
+        appBase.setLicenseUrl("MIT.org");
+        appBase.setWwwUrl("default-website.com");
+        appBase.setSourceUrl("default-website.com");
+        appBase.setIssuesUrl("default-website.com");
+        appBase.setLogo(new FileInfo("logo", "png"));
+        appBase.setVersions(Collections.singletonList(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
+        return appBase;
+    }
+
+	private Application getDefaultApp(){
+        Application app = new Application();
+        app.setId(1L);
+        app.setName("testApp");
+        app.setVersion("0.0.1");
+        app.setConfigWizardTemplate(new ConfigWizardTemplate("template"));
+        app.setAppConfigurationSpec(new AppConfigurationSpec());
+        app.setAppDeploymentSpec(new AppDeploymentSpec());
+        app.getAppDeploymentSpec().setDefaultStorageSpace(15);
+        app.setState(ApplicationState.ACTIVE);
+        app.setOwner("admin");
+        return app;
+    }
 
 }

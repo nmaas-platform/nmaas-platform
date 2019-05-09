@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
-import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +33,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
 		this.setMissingProperties(request, app.getId());
-		modelMapper.map(request, app);
+		request.setId(app.getId());
+		request.setOwner(owner);
+		app = modelMapper.map(request, Application.class);
 		checkParam(app);
 		return appRepo.save(app);
 	}
@@ -113,7 +114,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 
 	@Override
 	public void setMissingProperties(ApplicationView app, Long appId){
-		setMissingDescriptions(app);
 		setMissingTemplatesId(app, appId);
 	}
 
@@ -144,21 +144,6 @@ public class ApplicationServiceImpl implements ApplicationService {
 		if(app == null)
 			throw new IllegalArgumentException("app is null");
 		app.validate();
-	}
-
-	private void setMissingDescriptions(ApplicationView app){
-		AppDescriptionView appDescription = app.getDescriptions().stream()
-				.filter(description -> description.getLanguage().equals("en"))
-				.findFirst().orElseThrow(() -> new IllegalStateException("English description is missing"));
-		app.getDescriptions()
-				.forEach(description ->{
-					if(StringUtils.isEmpty(description.getBriefDescription())){
-						description.setBriefDescription(appDescription.getBriefDescription());
-					}
-					if(StringUtils.isEmpty(description.getFullDescription())){
-						description.setFullDescription(appDescription.getFullDescription());
-					}
-				});
 	}
 
 	private void setMissingTemplatesId(ApplicationView app, Long appId){

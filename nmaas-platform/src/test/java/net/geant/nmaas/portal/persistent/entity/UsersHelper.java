@@ -33,6 +33,10 @@ public class UsersHelper {
 	public final static Application APP1 = new Application(1l, "App1","testversion", "owner");
 	public final static Application APP2 = new Application(2l, "App2","testversion", "owner");
 	public final static Application APP3 = new Application(3l, "App3","testversion", "owner");
+
+	public final static ApplicationBase APP1_BASE = new ApplicationBase(1l, "App1");
+	public final static ApplicationBase APP2_BASE = new ApplicationBase(2l, "App2");
+	public final static ApplicationBase APP3_BASE = new ApplicationBase(3l, "App3");
 	
 	
 	public final static AppInstance DOMAIN1_APP1 = new AppInstance(1l, APP1, "domain1_app1", DOMAIN1, DOMAIN1_USER1);
@@ -44,9 +48,9 @@ public class UsersHelper {
 	List<AppInstance> appInstances = Arrays.asList(DOMAIN1_APP1, DOMAIN1_APP2, DOMAIN2_APP1, DOMAIN2_APP2);
 	
 	
-	public final static Comment COMMENT1 = new Comment(1l, APP1, "app1_comment1", DOMAIN1_USER1);
-	public final static Comment COMMENT2 = new Comment(2l, APP2, "app2_comment1", DOMAIN1_USER1);
-	public final static Comment COMMENT3 = new Comment(3l, APP2, "app2_comment2", DOMAIN2_USER2);
+	public final static Comment COMMENT1 = new Comment(1l, APP1_BASE, "app1_comment1", DOMAIN1_USER1);
+	public final static Comment COMMENT2 = new Comment(2l, APP2_BASE, "app2_comment1", DOMAIN1_USER1);
+	public final static Comment COMMENT3 = new Comment(3l, APP2_BASE, "app2_comment2", DOMAIN2_USER2);
 	
 	List<Comment> comments = Arrays.asList(COMMENT1, COMMENT2, COMMENT3);
 }

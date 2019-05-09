@@ -2,7 +2,6 @@ package net.geant.nmaas.nmservice.configuration;
 
 import freemarker.template.Template;
 import java.util.Collections;
-import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.nmservice.configuration.entities.NmServiceConfiguration;
 import net.geant.nmaas.nmservice.configuration.repositories.ConfigFileTemplatesRepository;
@@ -13,7 +12,7 @@ import net.geant.nmaas.portal.api.domain.AppDescriptionView;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.api.domain.ConfigFileTemplateView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
-import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import org.hamcrest.Matchers;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -115,6 +113,7 @@ public class LibreNmsConfigFileTemplateTest {
         applicationView.setConfigWizardTemplate(new ConfigWizardTemplateView("template"));
         applicationView.setAppConfigurationSpec(new AppConfigurationSpecView());
         applicationView.getAppConfigurationSpec().setConfigFileRepositoryRequired(false);
+        applicationView.setState(ApplicationState.ACTIVE);
         return applicationView;
     }
 }

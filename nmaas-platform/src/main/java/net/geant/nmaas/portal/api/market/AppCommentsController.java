@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,6 @@ import net.geant.nmaas.portal.api.domain.CommentRequest;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
-import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.repositories.CommentRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
@@ -38,7 +38,7 @@ public class AppCommentsController extends AppBaseController {
 	@GetMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
 	public List<Comment> getComments(@PathVariable(value="appId") Long appId, Pageable pageable) {
-		Application app = getApp(appId);
+		ApplicationBase app = getBaseApp(appId);
 		Page<net.geant.nmaas.portal.persistent.entity.Comment> page = commentRepo.findByApplication(app, pageable);
 		return page.getContent().stream().map(comment -> { 
 												Comment c = modelMapper.map(comment, Comment.class); 
@@ -60,7 +60,7 @@ public class AppCommentsController extends AppBaseController {
 	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
 	@Transactional
 	public Id addComment(@PathVariable(value="appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
-		Application app = getApp(appId);
+		ApplicationBase app = getBaseApp(appId);
 
 		if(comment.getComment() == null || comment.getComment().isEmpty())
 			throw new IllegalArgumentException("Comment cannot be empty");
