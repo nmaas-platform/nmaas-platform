@@ -14,7 +14,6 @@ import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstall
 import {Observable} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {AppSubscription} from "../../model";
-import {isEmpty} from 'rxjs/operators';
 import {AppDescription} from "../../model/appdescription";
 import {TranslateService} from "@ngx-translate/core";
 import {ApplicationState} from "../../model/applicationstate";
@@ -60,7 +59,7 @@ export class AppDetailsComponent implements OnInit {
        
     this.route.params.subscribe(params => {
       this.appId = +params['id'];
-      this.appsService.getApp(this.appId).subscribe(application => this.app = application);
+      this.appsService.getBaseApp(this.appId).subscribe(application => this.app = application);
       this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
     });
   }

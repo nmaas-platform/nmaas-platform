@@ -33,7 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 		checkParam(request, owner);
 		Application app =  appRepo.save(new Application(request.getName(), request.getVersion(), owner));
 		this.setMissingProperties(request, app.getId());
-		request.setId(app.getId());
+		request.setAppVersionId(app.getId());
 		request.setOwner(owner);
 		app = modelMapper.map(request, Application.class);
 		checkParam(app);

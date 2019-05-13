@@ -1,8 +1,7 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.PersistentConfig;
-import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +33,7 @@ public class ApplicationSubscriptionRepositoryTest {
 	private WebApplicationContext context;
 	
 	@Autowired
-	ApplicationRepository appRepo;
+	ApplicationBaseRepository appRepo;
 	
 	@Autowired
 	DomainRepository domainRepo;
@@ -42,16 +41,16 @@ public class ApplicationSubscriptionRepositoryTest {
 	@Autowired
 	ApplicationSubscriptionRepository appSubRepo;
 	
-	Application app1, app2, app3;
-	Domain domain1, domain2, domain3;
-	ApplicationSubscription appSub1, appSub2, appSub3;
+	private ApplicationBase app1, app2, app3;
+	private Domain domain1, domain2, domain3;
+	private ApplicationSubscription appSub1, appSub2, appSub3;
 	
 	@BeforeEach
 	public void setUp() {
 
-		app1 = appRepo.save(new Application("APP1","testversion","owner"));
-		app2 = appRepo.save(new Application("APP2","testversion","owner"));
-		app3 = appRepo.save(new Application("APP3","testversion","owner"));
+		app1 = appRepo.save(new ApplicationBase("APP1"));
+		app2 = appRepo.save(new ApplicationBase("APP2"));
+		app3 = appRepo.save(new ApplicationBase("APP3"));
 		appRepo.flush();
 
 		domain1 = domainRepo.save(new Domain("DOMAIN1", "D1",false));

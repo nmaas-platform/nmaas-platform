@@ -21,4 +21,8 @@ public interface ApplicationBaseService {
 
     ApplicationBase getBaseApp(Long id);
 
+    ApplicationBase findByName(String name);
+
+    boolean isAppActive(ApplicationBase application);
+
 }

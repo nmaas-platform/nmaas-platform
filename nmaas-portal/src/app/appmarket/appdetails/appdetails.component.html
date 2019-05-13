@@ -1,7 +1,7 @@
 	<div class="row">
 		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
 			<div class="thumbnail" *ngIf="app">
-				<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+				<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(appId) | secure) || 'assets/images/app-logo-example.png'"/>
 			</div>
 			<div class="thumbnail" *ngIf="!app">
 				<img alt="App logo" src="assets/images/app-logo-example.png"/>
@@ -71,5 +71,5 @@
 	<comments [pathUrl]="'/apps/' + appId + '/comments'"></comments>
 
 
-	<nmaas-modal-app-install [app]="app">
+	<nmaas-modal-app-install *ngIf="app" [app]="app">
 	</nmaas-modal-app-install>

@@ -357,7 +357,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Name der Instanz wird benötigt.",
     "DOMAIN": "Domain",
     "CLOSE_BUTTON": "Schließen",
-    "DEPLOY_BUTTON": "Installieren"
+    "DEPLOY_BUTTON": "Installieren",
+    "USE_DEFAULT_VERSION": "Standardversion verwenden",
+    "SELECT_VERSION": "Version auswählen"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",

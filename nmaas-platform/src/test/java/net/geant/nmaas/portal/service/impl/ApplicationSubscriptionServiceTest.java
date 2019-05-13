@@ -1,10 +1,10 @@
 package net.geant.nmaas.portal.service.impl;
 
-import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
-import net.geant.nmaas.portal.service.ApplicationService;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.DomainService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,15 +23,13 @@ public class ApplicationSubscriptionServiceTest {
 
     DomainService domains = mock(DomainService.class);
 
-    ApplicationService applications = mock(ApplicationService.class);
+    ApplicationBaseService applications = mock(ApplicationBaseService.class);
 
     ApplicationSubscriptionService appSubSrv;
 
     Long applicationId = 1L;
     String applicationName = "app1";
-    String applicationVersion = "1.0.0";
-    String applicationOwner = "owner";
-    Application app1;
+    ApplicationBase app1;
 
     Long domainId = 1L;
     String domainName = "DOMAIN1";
@@ -40,7 +38,7 @@ public class ApplicationSubscriptionServiceTest {
     @BeforeEach
     public void setup() {
         appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications);
-        app1 = new Application(applicationId, applicationName, applicationVersion, applicationOwner);
+        app1 = new ApplicationBase(applicationId, applicationName);
         domain1 = new Domain(domainId, domainName, domainName);
     }
 
@@ -49,12 +47,13 @@ public class ApplicationSubscriptionServiceTest {
         ApplicationSubscription applicationSubscription = new ApplicationSubscription(domain1, app1, false);
         when(appSubRepo.findById(applicationSubscription.getId())).thenReturn(Optional.of(applicationSubscription));
         when(appSubRepo.findByDomainAndApplicationId(domainId, applicationId)).thenReturn(Optional.of(applicationSubscription));
+        when(applications.findByName(app1.getName())).thenReturn(app1);
         when(appSubRepo.findByDomainAndApplication(domain1, app1)).thenReturn(Optional.of(applicationSubscription));
 
         assertThat("Subscription should be inactive!",
                 !(appSubSrv.isActive(applicationSubscription.getId()) ||
                         appSubSrv.isActive(applicationId, domainId) ||
-                        appSubSrv.isActive(app1, domain1)));
+                        appSubSrv.isActive(app1.getName(), domain1)));
     }
 
     @Test
@@ -62,12 +61,13 @@ public class ApplicationSubscriptionServiceTest {
         ApplicationSubscription applicationSubscription = new ApplicationSubscription(domain1, app1, true);
         when(appSubRepo.findById(applicationSubscription.getId())).thenReturn(Optional.of(applicationSubscription));
         when(appSubRepo.findByDomainAndApplicationId(domainId, applicationId)).thenReturn(Optional.of(applicationSubscription));
+        when(applications.findByName(app1.getName())).thenReturn(app1);
         when(appSubRepo.findByDomainAndApplication(domain1, app1)).thenReturn(Optional.of(applicationSubscription));
 
         assertThat("Subscription should be active!",
                 appSubSrv.isActive(applicationSubscription.getId()) &&
                         appSubSrv.isActive(applicationId, domainId) &&
-                        appSubSrv.isActive(app1, domain1));
+                        appSubSrv.isActive(app1.getName(), domain1));
     }
 
     @Test

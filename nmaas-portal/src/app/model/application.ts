@@ -3,9 +3,11 @@ import {AppDeploymentSpec} from "./appdeploymentspec";
 import {AppDescription} from "./appdescription";
 import {ApplicationState} from "./applicationstate";
 import {AppConfigurationSpec} from "./appconfigurationspec";
+import {ApplicationVersion} from "./applicationversion";
 
 export class Application {
   public id: number = undefined;
+  public appVersionId: number = undefined;
   public name: string = undefined;
   public version: string = undefined;
   public license: string = undefined;
@@ -16,6 +18,7 @@ export class Application {
   public owner: string = undefined;
   public descriptions: AppDescription[] = [];
   public tags: string[] = [];
+  public appVersions: ApplicationVersion[] = [];
   public configWizardTemplate: ConfigWizardTemplate = undefined;
   public configUpdateWizardTemplate: ConfigWizardTemplate = undefined;
   public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();

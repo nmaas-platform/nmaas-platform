@@ -355,7 +355,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
     "DOMAIN": "Organisation",
     "CLOSE_BUTTON": "Fermer",
-    "DEPLOY_BUTTON": "Déployer"
+    "DEPLOY_BUTTON": "Déployer",
+    "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
+    "SELECT_VERSION": "Sélectionnez la version"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",

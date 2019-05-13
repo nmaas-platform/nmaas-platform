@@ -98,12 +98,19 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
         return appBaseRepository.findById(id).orElseThrow(() -> new MissingElementException("App cannot be found"));
     }
 
+    @Override
+    public boolean isAppActive(ApplicationBase application) {
+        return application.getVersions().stream()
+                .anyMatch(app -> app.getState().equals(ApplicationState.ACTIVE));
+    }
+
     private boolean isAppActiveOrDisabled(ApplicationBase applicationBase){
         return applicationBase.getVersions().stream()
                 .anyMatch(app -> Arrays.asList(ApplicationState.ACTIVE, ApplicationState.DISABLED).contains(app.getState()));
     }
 
-    private ApplicationBase findByName(String name){
+    @Override
+    public ApplicationBase findByName(String name){
         return appBaseRepository.findByName(name).orElseThrow(() -> new MissingElementException(name + " app base not found"));
     }
 

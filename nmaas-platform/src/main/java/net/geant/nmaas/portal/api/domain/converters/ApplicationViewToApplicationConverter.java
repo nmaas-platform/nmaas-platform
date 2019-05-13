@@ -22,7 +22,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
 
     @Override
     protected Application convert(ApplicationView source) {
-        Application app = new Application(source.getId(), source.getName(), source.getVersion(), source.getOwner());
+        Application app = new Application(source.getAppVersionId(), source.getName(), source.getVersion(), source.getOwner());
         app.setState(source.getState());
         app.setConfigWizardTemplate(getConfigWizardTemplate(source.getConfigWizardTemplate()));
         app.setConfigUpdateWizardTemplate(getConfigWizardTemplate(source.getConfigWizardTemplate()));

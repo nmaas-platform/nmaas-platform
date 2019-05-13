@@ -357,7 +357,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Instance name is required.",
     "DOMAIN": "Domain",
     "CLOSE_BUTTON": "Close",
-    "DEPLOY_BUTTON": "Deploy"
+    "DEPLOY_BUTTON": "Deploy",
+    "USE_DEFAULT_VERSION": "Use default version",
+    "SELECT_VERSION": "Select version"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",

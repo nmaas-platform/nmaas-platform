@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ApplicationView extends ApplicationBriefView {
 
+	Long appVersionId;
 	String version;
 	ConfigWizardTemplateView configWizardTemplate;
 	ConfigWizardTemplateView configUpdateWizardTemplate;

@@ -9,6 +9,9 @@ alter table application drop column www_url;
 alter table application drop column logo_id;
 alter table comment drop column application_application_id;
 alter table comment add column application_id bigint not null default 0;
+alter table application_subscription drop primary key;
+alter table application_subscription drop column application_application_id;
+alter table application_subscription add column application_id bigint not null default 0;
 
 create table application_base_tag (
     application_base_id bigint not null,
@@ -71,3 +74,6 @@ alter table application_base_versions add constraint FKg1skowbclv6id34rdcsffbp5r
 alter table application_base_versions add constraint FKqetk98q77hml9tenqtyygtra3 foreign key (application_base_id) references application_base;
 alter table comment drop constraint if exists FKl1ijg86at535f02qrnag2884f;
 alter table comment add constraint FKemn5p9e8r6aeywsuvfyx18v8p foreign key (application_id) references application_base;
+alter table application_subscription drop constraint if exists FKnp15lbug6jtxwyl46qtkambd4;
+alter table application_subscription add primary key (application_id, domain_id);
+alter table application_subscription add constraint FK68lfog47c3c2nel7cfahifsth foreign key (application_id) references application_base;

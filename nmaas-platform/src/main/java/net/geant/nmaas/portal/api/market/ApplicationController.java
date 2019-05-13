@@ -89,9 +89,9 @@ public class ApplicationController extends AppBaseController {
     @GetMapping(value = "/base/{appId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional
-	public ApplicationView getBaseApplication(@PathVariable(value = "appId") Long id) {
+	public ApplicationBriefView getBaseApplication(@PathVariable(value = "appId") Long id) {
 		ApplicationBase app = appBaseService.getBaseApp(id);
-		return modelMapper.map(app, ApplicationView.class);
+		return modelMapper.map(app, ApplicationBriefView.class);
 	}
 
 	@GetMapping(value="/{appId}")

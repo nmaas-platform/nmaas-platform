@@ -33,6 +33,10 @@ export class AppsService extends GenericDataService {
         return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
 
+    public getBaseApp(id: number): Observable<Application> {
+        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/base/' + id);
+    }
+
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
         if(!isNullOrUndefined(urlPath) && urlPath != "") {
             return this.getByUrl(urlPath);

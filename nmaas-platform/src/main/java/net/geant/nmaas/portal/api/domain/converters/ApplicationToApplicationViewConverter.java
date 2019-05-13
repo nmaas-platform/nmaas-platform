@@ -34,6 +34,8 @@ public class ApplicationToApplicationViewConverter extends AbstractConverter<App
     protected ApplicationView convert(Application source) {
         ApplicationBase appBase = getAppBase(source.getName());
         return ApplicationView.builder()
+                .id(appBase.getId())
+                .appVersionId(source.getId())
                 .name(source.getName())
                 .license(appBase.getLicense())
                 .licenseUrl(appBase.getLicenseUrl())

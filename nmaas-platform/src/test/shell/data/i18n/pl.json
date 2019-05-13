@@ -355,7 +355,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana.",
     "DOMAIN": "Domena",
     "CLOSE_BUTTON": "Zamknij",
-    "DEPLOY_BUTTON": "Uruchom"
+    "DEPLOY_BUTTON": "Uruchom",
+    "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
+    "SELECT_VERSION": "Wybierz wersje"
   },
   "APP_INSTANCE": {
     "SOURCE": "Źródło",
