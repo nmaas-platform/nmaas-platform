@@ -188,6 +188,18 @@ public enum AppLifecycleState {
     FAILED_APPLICATION_REMOVED{
         @Override
         public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.FAILED_APPLICATION_REMOVED"; }
+    },
+    APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS{
+        @Override
+        public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_PROGRESS"; }
+    },
+    APPLICATION_CONFIGURATION_REMOVED{
+        @Override
+        public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_SUCCESS"; }
+    },
+    APPLICATION_CONFIGURATION_REMOVAL_FAILED{
+        @Override
+        public String getUserFriendlyState() { return "APP_INSTANCE.PROGRESS.APP_CONF_REMOVE_ERROR"; }
     };
 
     public abstract String getUserFriendlyState();

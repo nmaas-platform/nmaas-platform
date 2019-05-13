@@ -435,7 +435,10 @@
       "APP_UPDATE_FAILED": "Update der Anwendungskonfiguration ist fehlgeschlagen",
       "UNKNOWN": "Unbekannter Zustand",
       "ERROR": "Interner Fehler",
-      "FAILED_APPLICATION_REMOVED": "Fehlerhafte Anwendung entfernt"
+      "FAILED_APPLICATION_REMOVED": "Fehlerhafte Anwendung entfernt",
+      "APP_CONF_REMOVE_PROGRESS": "Anwendungskonfiguration wird entfernt",
+      "APP_CONF_REMOVE_SUCCESS": "Anwendungskonfiguration erfolgreich entfernt",
+      "APP_CONF_REMOVE_ERROR": "Das Entfernen der Anwendungskonfiguration ist fehlgeschlagen"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS bearbeitet Ihre Anfrage",
