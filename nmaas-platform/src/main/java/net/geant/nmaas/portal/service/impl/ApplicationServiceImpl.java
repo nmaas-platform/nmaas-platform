@@ -3,12 +3,14 @@ package net.geant.nmaas.portal.service.impl;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.nmservice.configuration.entities.ConfigFileTemplate;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -63,6 +65,16 @@ public class ApplicationServiceImpl implements ApplicationService {
 			return appRepo.findById(applicationId);
 		else
 			throw new IllegalArgumentException("applicationId is null");
+	}
+
+	@Override
+	public Application findApplicationLatestVersion(String name) {
+		if(StringUtils.isEmpty(name)){
+			throw new IllegalArgumentException("Application name cannot be null or empty");
+		}
+		return appRepo.findByName(name).stream()
+				.max(Comparator.comparing(Application::getVersion))
+				.orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
 	}
 
 	@Override

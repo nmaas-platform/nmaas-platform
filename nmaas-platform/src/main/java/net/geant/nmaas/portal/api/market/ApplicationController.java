@@ -94,6 +94,13 @@ public class ApplicationController extends AppBaseController {
 		return modelMapper.map(app, ApplicationBriefView.class);
 	}
 
+	@GetMapping(value = "/{appName}/latest")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public ApplicationView getLatestAppVersion(@PathVariable String appName){
+		return modelMapper.map(applications.findApplicationLatestVersion(appName), ApplicationView.class);
+	}
+
 	@GetMapping(value="/{appId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
 	@Transactional

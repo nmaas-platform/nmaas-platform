@@ -85,6 +85,10 @@ export class AppsService extends GenericDataService {
         return this.patch(this.appConfig.getApiUrl() + '/apps', app);
     }
 
+    public getLatestVersion(appName: string) : Observable<any> {
+        return this.get(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
+    }
+
     public uploadAppLogo(id: number, file: any): Observable<FileInfo> {
         let fd: FormData = new FormData();
         fd.append("file", file);

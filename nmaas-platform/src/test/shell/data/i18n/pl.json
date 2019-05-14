@@ -519,7 +519,8 @@
     "REJECTED_TAB": "Odrzucone",
     "NEW_TAB": "Nowe",
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
-    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji"
+    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
+    "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -612,7 +613,18 @@
     "BASIC_AUTH_LABEL": "Wymaga podstawowego uwierzytelnienia",
     "BASIC_AUTH_TOOLTIP": "Możesz dodać podstawowe uwierzytelnienie do Twojej aplikacji zaznaczając tą opcję.",
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
-    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji."
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji.",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}"
+  },
+  "APP_CHANGE_STATE_MODAL": {
+    "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
+    "CURRENT_STATE": "Obecny stan",
+    "NEW_STATE": "Nowy stan",
+    "REASON": "Powód",
+    "REASON_PLACEHOLDER": "Proszę uzasadnij swoją decyzję",
+    "CANCEL_BUTTON": "Anuluj",
+    "CHANGE_STATE_BUTTON": "Zmień stan"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",

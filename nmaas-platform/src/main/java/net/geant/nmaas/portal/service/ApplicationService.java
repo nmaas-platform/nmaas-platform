@@ -19,6 +19,7 @@ public interface ApplicationService {
 	void changeApplicationState(Application app, ApplicationState state);
 	
 	Optional<Application> findApplication(Long applicationId);
+	Application findApplicationLatestVersion(String name);
 
 	Page<Application> findAll(Pageable pageable);
 	List<Application> findAll();

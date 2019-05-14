@@ -1,13 +1,13 @@
 <nmaas-modal>
-  <div class="nmaas-modal-header">Change state of {{app?.name}}</div>
+  <div class="nmaas-modal-header">{{'APP_CHANGE_STATE_MODAL.HEADER' | translate:{'app_name': appName, 'app_version': app?.version} }}</div>
   <div class="nmaas-modal-body">
     <div class="form-group">
       <div style="padding-top: 15px" class="row">
-        <p class="col-sm-12"><strong>Current state: </strong></p>
+        <p class="col-sm-12"><strong>{{'APP_CHANGE_STATE_MODAL.CURRENT_STATE' | translate}}: </strong></p>
         <p class="col-sm-12">{{getStateAsString(app?.state)}}</p>
       </div>
       <div class="row">
-        <label for="changeState" class="col-sm-12 control-label">New state:</label>
+        <label for="changeState" class="col-sm-12 control-label">{{'APP_CHANGE_STATE_MODAL.NEW_STATE' | translate}}:</label>
         <br>
         <span class="col-md-12">
           <select class="form-control" id="changeState" name="changeState" #changeState="ngModel" [(ngModel)]="stateChange.state" required>
@@ -15,10 +15,10 @@
           </select>
         </span>
         <div *ngIf="getStateAsString(stateChange?.state) != 'ACTIVE' && getStateAsString(stateChange?.state) != 'NEW'">
-          <label for="reason" class="col-sm-12 control-label">Reason:</label>
+          <label for="reason" class="col-sm-12 control-label">{{'APP_CHANGE_STATE_MODAL.REASON' | translate}}:</label>
           <br>
           <span class="col-md-12">
-            <textarea class="form-control" id="reason" name="reason" placeholder="Please explain your decision" [(ngModel)]="stateChange.reason"></textarea>
+            <textarea class="form-control" id="reason" name="reason" placeholder="{{'APP_CHANGE_STATE_MODAL.REASON_PLACEHOLDER' | translate}}" [(ngModel)]="stateChange.reason"></textarea>
           </span>
         </div>
       </div>
@@ -29,8 +29,8 @@
     </div>
   </div>
   <div class="nmaas-modal-footer">
-    <button type="button" class="btn btn-default" (click)="modal.hide()">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="changeState.invalid">Change state</button>
+    <button type="button" class="btn btn-default" (click)="modal.hide()">{{'APP_CHANGE_STATE_MODAL.CANCEL_BUTTON' | translate}}</button>
+    <button type="button" class="btn btn-primary" (click)="submit()" [disabled]="changeState.invalid">{{'APP_CHANGE_STATE_MODAL.CHANGE_STATE_BUTTON' | translate}}</button>
   </div>
 </nmaas-modal>
 

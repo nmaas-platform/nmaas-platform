@@ -24,4 +24,5 @@ export class Application {
   public appDeploymentSpec: AppDeploymentSpec = new AppDeploymentSpec();
   public appConfigurationSpec: AppConfigurationSpec = new AppConfigurationSpec();
   public state: ApplicationState = ApplicationState.NEW;
+  public rowWithVersionVisible: boolean = false;
 }

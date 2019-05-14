@@ -43,6 +43,7 @@ export class AppDetailsComponent implements OnInit {
   public app: Application;
   public subscribed: boolean;
   public domainId: number;
+  public active: boolean = false;
 
   constructor(private appsService: AppsService,
     private appSubsService: AppSubscriptionsService,
@@ -56,10 +57,12 @@ export class AppDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-       
     this.route.params.subscribe(params => {
       this.appId = +params['id'];
-      this.appsService.getBaseApp(this.appId).subscribe(application => this.app = application);
+      this.appsService.getBaseApp(this.appId).subscribe(application => {
+        this.app = application;
+        this.active = application.appVersions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
+      });
       this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
     });
   }
@@ -144,14 +147,6 @@ export class AppDetailsComponent implements OnInit {
     }else{
       return "";
     }
-  }
-
-  public isActive(state: any): boolean {
-    return this.getStateAsString(state) === ApplicationState[ApplicationState.ACTIVE];
-  }
-
-  public isDisabled(state: any): boolean {
-    return this.getStateAsString(state) === ApplicationState[ApplicationState.DISABLED];
   }
 
   public getStateAsString(state: any): string {

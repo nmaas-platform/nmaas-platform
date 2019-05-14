@@ -13,23 +13,37 @@
       <table class="table table-hover table-condensed">
         <thead>
         <tr>
+          <th>&nbsp;</th>
           <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-          <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
+          <th>&nbsp;</th>
           <th>&nbsp;</th>
         </tr>
         </thead>
 
         <tbody>
         <ng-template ngFor let-app [ngForOf]="apps" let-i="index">
-          <tr>
+          <tr class="table-row" (click)="clickTableRow(app)">
+            <td *ngIf="!app.rowWithVersionVisible"><span class="glyphicon glyphicon-chevron-right"></span></td>
+            <td *ngIf="app.rowWithVersionVisible"><span class="glyphicon glyphicon-chevron-down"></span></td>
             <td>{{app?.name}}</td>
-            <td>{{getStateAsString(app?.state)}}</td>
+            <td>&nbsp;</td>
             <td class="text-right">
-              <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
               <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+              <button [routerLink]="['/management/apps/create/version', app?.name]" class="btn btn-sm btn-success">{{ 'APPS_MANAGEMENT.ADD_NEW_VERSION_BUTTON' | translate }}</button>
             </td>
           </tr>
+          <ng-template ngFor let-version [ngForOf]="app.appVersions">
+            <tr *ngIf="app.rowWithVersionVisible">
+              <td>&nbsp;</td>
+              <td>{{version.version}}</td>
+              <td>{{getStateAsString(version.state)}}</td>
+              <td class="text-right">
+                <button [routerLink]="['/management/apps/view', version?.appVersionId]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/management/apps/edit/version', version?.appVersionId]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button [disabled]="getStateAsString(version?.state) === 'DELETED'" (click)="showModal(app, version)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+              </td>
+            </tr>
+          </ng-template>
         </ng-template>
         </tbody>
       </table>
@@ -53,7 +67,7 @@
               <td class="text-right">
                 <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
                 <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-                <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+                <button class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>
           </ng-template>
@@ -84,7 +98,7 @@
               <td class="text-right">
                 <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
                 <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-                <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+                <button class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>
           </ng-template>
@@ -98,4 +112,4 @@
   </div>
 
 </div>
-<app-appchangestatemodal [app]="selectedApp"></app-appchangestatemodal>
+<app-appchangestatemodal [appName]="selectedAppName" [app]="selectedVersion"></app-appchangestatemodal>
