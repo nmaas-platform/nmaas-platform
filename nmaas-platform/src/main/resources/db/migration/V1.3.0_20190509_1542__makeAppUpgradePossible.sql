@@ -12,6 +12,7 @@ alter table comment add column application_id bigint not null default 0;
 alter table application_subscription drop primary key;
 alter table application_subscription drop column application_application_id;
 alter table application_subscription add column application_id bigint not null default 0;
+alter table application add column creation_date timestamp not null default now();
 
 create table application_base_tag (
     application_base_id bigint not null,

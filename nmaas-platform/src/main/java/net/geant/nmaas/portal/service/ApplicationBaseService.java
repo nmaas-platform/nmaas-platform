@@ -7,7 +7,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 
 public interface ApplicationBaseService {
 
-    void createApplicationOrAddNewVersion(ApplicationView application);
+    ApplicationBase createApplicationOrAddNewVersion(ApplicationView application);
 
     void updateApplicationBase(ApplicationView application);
 

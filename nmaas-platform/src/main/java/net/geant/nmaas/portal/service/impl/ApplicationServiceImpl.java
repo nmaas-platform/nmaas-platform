@@ -73,7 +73,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 			throw new IllegalArgumentException("Application name cannot be null or empty");
 		}
 		return appRepo.findByName(name).stream()
-				.max(Comparator.comparing(Application::getVersion))
+				.max(Comparator.comparing(Application::getCreationDate))
 				.orElseThrow(() -> new MissingElementException("Application " + name + " cannot be found"));
 	}
 

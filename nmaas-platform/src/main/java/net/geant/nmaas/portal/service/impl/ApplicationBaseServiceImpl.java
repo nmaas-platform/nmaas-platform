@@ -25,19 +25,18 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     private ModelMapper modelMapper;
 
     @Override
-    public void createApplicationOrAddNewVersion(ApplicationView application) {
+    public ApplicationBase createApplicationOrAddNewVersion(ApplicationView application) {
         if(appBaseRepository.existsByName(application.getName())){
-            addNewAppVersion(application);
-        } else{
-            createAppBase(application);
+            return addNewAppVersion(application);
         }
+        return createAppBase(application);
     }
 
-    private void addNewAppVersion(ApplicationView application){
+    private ApplicationBase addNewAppVersion(ApplicationView application){
         ApplicationBase applicationBase = this.findByName(application.getName());
         applicationBase.getVersions().add(createAppVersion(application));
         applicationBase.validate();
-        appBaseRepository.save(applicationBase);
+        return appBaseRepository.save(applicationBase);
     }
 
     private ApplicationVersion createAppVersion(ApplicationView app){
@@ -48,12 +47,12 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
                 .build();
     }
 
-    private void createAppBase(ApplicationView application){
+    private ApplicationBase createAppBase(ApplicationView application){
         this.setMissingDescriptions(application);
         ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         appBase.validate();
         appBase.getVersions().add(createAppVersion(application));
-        appBaseRepository.save(appBase);
+        return appBaseRepository.save(appBase);
     }
 
     @Override

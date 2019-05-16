@@ -28,8 +28,8 @@
             <td>{{app?.name}}</td>
             <td>&nbsp;</td>
             <td class="text-right">
-              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
               <button [routerLink]="['/management/apps/create/version', app?.name]" class="btn btn-sm btn-success">{{ 'APPS_MANAGEMENT.ADD_NEW_VERSION_BUTTON' | translate }}</button>
+              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
             </td>
           </tr>
           <ng-template ngFor let-version [ngForOf]="app.appVersions">
@@ -38,9 +38,9 @@
               <td>{{version.version}}</td>
               <td>{{getStateAsString(version.state)}}</td>
               <td class="text-right">
+                <button [disabled]="getStateAsString(version?.state) === 'DELETED'" (click)="showModal(app, version)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
                 <button [routerLink]="['/management/apps/view', version?.appVersionId]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
                 <button [routerLink]="['/management/apps/edit/version', version?.appVersionId]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-                <button [disabled]="getStateAsString(version?.state) === 'DELETED'" (click)="showModal(app, version)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>
           </ng-template>

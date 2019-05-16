@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,11 +62,15 @@ public class Application implements Serializable {
 	@Column(nullable = false)
 	private String owner;
 
+	@Column(nullable = false)
+	private LocalDateTime creationDate;
+
 	public Application(String name, String version, String owner) {
 		this.name = name;
 		this.version = version;
 		this.owner = owner;
 		this.state = ApplicationState.NEW;
+		this.creationDate = LocalDateTime.now();
 	}
 
 	public Application(Long id, String name, String version, String owner) {

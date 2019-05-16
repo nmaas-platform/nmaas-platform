@@ -63,9 +63,9 @@ public class ApplicationController extends AppBaseController {
 	public Id addApplication(@RequestBody ApplicationView appRequest, Principal principal) {
 		Application app = applications.create(appRequest, principal.getName());
 		appRequest.setId(app.getId());
-		appBaseService.createApplicationOrAddNewVersion(appRequest);
+		ApplicationBase appBase = appBaseService.createApplicationOrAddNewVersion(appRequest);
 		this.sendMail(app, new ApplicationStateChangeRequest(app.getState(), ""));
-		return new Id(app.getId());
+		return new Id(appBase.getId());
 	}
 
 	@PatchMapping

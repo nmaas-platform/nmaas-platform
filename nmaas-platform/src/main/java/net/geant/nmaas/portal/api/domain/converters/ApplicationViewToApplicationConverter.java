@@ -60,7 +60,7 @@ public class ApplicationViewToApplicationConverter extends AbstractConverter<App
     }
 
     private KubernetesChart getKubernetesChartView(KubernetesChartView kubernetesChart){
-        if(kubernetesChart == null){
+        if(kubernetesChart == null || StringUtils.isEmpty(kubernetesChart.getName())){
             return null;
         }
         return new KubernetesChart(kubernetesChart.getName(), kubernetesChart.getVersion());
