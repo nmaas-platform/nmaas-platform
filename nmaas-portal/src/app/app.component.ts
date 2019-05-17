@@ -6,6 +6,7 @@ import {AuthService} from "./auth/auth.service";
 import {isNullOrUndefined} from "util";
 import {MonitorService} from "./service/monitor.service";
 import {Router} from "@angular/router";
+import {ServiceUnavailableService} from "./service-unavailable/service-unavailable.service";
 
 @Component({
   selector: 'nmaas-root',
@@ -15,40 +16,16 @@ import {Router} from "@angular/router";
 })
 export class AppComponent {
     config: any;
-    isServiceAvailable: boolean;
+
     
     constructor(private appConfigService: AppConfigService, private configService: ConfigurationService,
                 private authService: AuthService, private translate: TranslateService,
-                private monitorService: MonitorService, private router: Router) {
-    }
-
-    async validateServicesAvailability() {
-        this.isServiceAvailable = true;
-        try {
-            let services = await Promise.resolve(this.monitorService.getAllMonitorEntries().toPromise())
-              .catch(err => {
-                  console.debug(err);
-                  this.isServiceAvailable = false;
-              });
-            if (services) {
-                services.forEach(value => {
-                    if (value.serviceName.toString() == "DATABASE") {
-                        if (value.status.toString() == "FAILURE") {
-                            this.isServiceAvailable = false;
-                        }
-                    }
-                });
-            } else {
-                this.isServiceAvailable = false;
-            }
-        } catch (err) {
-            this.isServiceAvailable = false;
-        }
+                private router: Router, private serviceHealth: ServiceUnavailableService) {
     }
 
     async ngOnInit() {
-        await this.validateServicesAvailability();
-        if(!this.isServiceAvailable){
+        await this.serviceHealth.validateServicesAvailability();
+        if(!this.serviceHealth.isServiceAvailable){
             this.router.navigate(['/service-unavailable']);
         }
         this.handleDefaultLanguage();

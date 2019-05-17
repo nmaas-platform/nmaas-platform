@@ -9,6 +9,8 @@ import {
     OnInit,
     ViewChild
 } from '@angular/core';
+import {Router} from "@angular/router";
+import {ServiceUnavailableService} from "../service-unavailable/service-unavailable.service";
 
 @Component({
   selector: 'app-welcome',
@@ -19,10 +21,15 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
 
   private height = 0;
 
-  constructor(private appConfig: AppConfigService){
+  constructor(private appConfig: AppConfigService, private router: Router,
+              private serviceHealth: ServiceUnavailableService){
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.serviceHealth.validateServicesAvailability();
+    if(!this.serviceHealth.isServiceAvailable){
+      this.router.navigate(['/service-unavailable']);
+    }
     this.onResize();
   }
 

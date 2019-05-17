@@ -22,8 +22,7 @@ export class NavbarComponent implements OnInit, OnChanges {
     public isServiceAvailable: boolean;
 
     constructor(private router: Router, public authService: AuthService, private translate: TranslateService,
-                private languageService:InternationalizationService, private domainService: DomainService,
-                private contentService: ContentDisplayService, private monitorService: MonitorService) {
+                private languageService:InternationalizationService, private domainService: DomainService) {
     }
 
     useLanguage(language: string) {

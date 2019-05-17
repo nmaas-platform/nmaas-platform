@@ -12,27 +12,35 @@ import {Configuration} from "./model/configuration";
 import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
 import {AuthService} from "./auth/auth.service";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
+import {ServiceUnavailableService} from "./service-unavailable/service-unavailable.service";
 
 class MockConfigurationService{
-    protected uri:string;
+  protected uri:string;
 
-    constructor() {
-        this.uri = 'http://localhost/api';
-    }
+  constructor() {
+    this.uri = 'http://localhost/api';
+  }
 
-    public getApiUrl(): string {
-        return 'http://localhost/api';
-    }
+  public getApiUrl(): string {
+    return 'http://localhost/api';
+  }
 
-    public getConfiguration():Observable<Configuration>{
-        return of<Configuration>();
-    }
+  public getConfiguration():Observable<Configuration>{
+    return of<Configuration>();
+  }
 
-    public updateConfiguration(configuration:Configuration):Observable<any>{
-        return of<Configuration>();
-    }
+  public updateConfiguration(configuration:Configuration):Observable<any>{
+    return of<Configuration>();
+  }
 }
 
+class MockServiceUnavailableService{
+  public isServiceAvailable: boolean;
+
+  constructor() {
+    this.isServiceAvailable = true;
+  }
+}
 
 describe('App: NmaasPortal', () => {
   beforeEach(() => {
@@ -55,7 +63,7 @@ describe('App: NmaasPortal', () => {
                         return '';
                     }
                 }
-            })
+            }),
         ],
         providers: [
             {provide: AppConfigService, useClass: MockConfigurationService},
@@ -64,7 +72,8 @@ describe('App: NmaasPortal', () => {
             ConfigurationService,
             TranslateService,
             AuthService,
-            JwtHelperService
+            JwtHelperService,
+            {provide: ServiceUnavailableService, useClass: MockServiceUnavailableService}
         ]
     });
   });
