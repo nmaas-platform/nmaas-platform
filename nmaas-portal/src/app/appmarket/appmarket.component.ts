@@ -6,7 +6,6 @@ import {Router} from "@angular/router";
   selector: 'app-appmarket',
   templateUrl: './appmarket.component.html',
   styleUrls: [ '../../assets/css/main.css', './appmarket.component.css' ]
-//  encapsulation: ViewEncapsulation.None
 })
 export class AppMarketComponent implements OnInit, AfterViewChecked, AfterContentChecked {
 

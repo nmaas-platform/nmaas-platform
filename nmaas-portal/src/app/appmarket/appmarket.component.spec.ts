@@ -1,8 +1,7 @@
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {TestBed, async} from '@angular/core/testing';
 import { AppMarketComponent } from './appmarket.component';
 import {RouterTestingModule} from "@angular/router/testing";
 import {ServiceUnavailableService} from "../service-unavailable/service-unavailable.service";
-import {AppManagementModule} from "./appmanagement/appmanagement.module";
 import {
   MissingTranslationHandler,
   TranslateFakeLoader,
@@ -20,9 +19,7 @@ import {AuthService} from "../auth/auth.service";
 import {Observable, of} from "rxjs";
 import {Configuration} from "../model/configuration";
 import {Language} from "../model/language";
-import {any} from "codelyzer/util/function";
 import {MockAuthService} from "../shared/navbar/navbar.component.spec";
-import {isNullOrUndefined} from "util";
 
 class MockServiceUnavailableService {
   public isServiceAvailable: boolean;
