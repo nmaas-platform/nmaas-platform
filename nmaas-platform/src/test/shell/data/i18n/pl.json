@@ -433,7 +433,10 @@
       "APP_UPDATE_FAILED": "Aktualizacja aplikacji nie powiodła się",
       "UNKNOWN": "Nieznany stan",
       "ERROR": "Błąd wewnętrzny",
-      "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta"
+      "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta",
+      "APP_CONF_REMOVE_PROGRESS": "Trwa usuwanie konfiguration aplikacji",
+      "APP_CONF_REMOVE_SUCCESS": "Konfiguracja aplikacji usunięta poprawnie",
+      "APP_CONF_REMOVE_ERROR": "Usuwanie konfiguracji aplikacji nie powiodło się"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS przetwarza Twoje żądanie",

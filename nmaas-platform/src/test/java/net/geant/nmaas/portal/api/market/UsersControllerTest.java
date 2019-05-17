@@ -3,7 +3,8 @@ package net.geant.nmaas.portal.api.market;
 import com.google.common.collect.ImmutableSet;
 import net.geant.nmaas.portal.api.domain.PasswordChange;
 import net.geant.nmaas.portal.api.domain.UserRequest;
-import net.geant.nmaas.portal.api.domain.UserRole;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -83,8 +84,8 @@ public class UsersControllerTest {
 	@Test
 	public void shouldRetrieveUser(){
 		when(userService.findById(userList.get(0).getId())).thenReturn(Optional.of(userList.get(0)));
-		UserRole userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRole.class);
-		net.geant.nmaas.portal.api.domain.User user = usersController.retrieveUser(userList.get(0).getId());
+		UserRoleView userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRoleView.class);
+		UserView user = usersController.retrieveUser(userList.get(0).getId());
 		assertThat("Wrong username", user.getUsername().equals(userList.get(0).getUsername()));
 		assertThat("Wrong role", user.getRoles().iterator().next().getRole().equals(userRole.getRole()));
 	}
@@ -161,8 +162,8 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldGetUserRoles(){
-		Set<UserRole> result = usersController.getUserRoles(userList.get(0).getId());
-		UserRole userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRole.class);
+		Set<UserRoleView> result = usersController.getUserRoles(userList.get(0).getId());
+		UserRoleView userRole = modelMapper.map(userList.get(0).getRoles().get(0), UserRoleView.class);
 		assertThat("Wrong roles set", result.iterator().next().getRole().equals(userRole.getRole()));
 	}
 
@@ -171,13 +172,13 @@ public class UsersControllerTest {
 		assertThrows(MissingElementException.class, () -> {
 			Long userId = 5L;
 			when(userService.findById(userId)).thenReturn(Optional.empty());
-			Set<UserRole> result = usersController.getUserRoles(userId);
+			Set<UserRoleView> result = usersController.getUserRoles(userId);
 		});
 	}
 
 	@Test
 	public void shouldRemoveUserRoleWithGlobalDomainAndAddGuestRole(){
-		UserRole userRole = new UserRole();
+		UserRoleView userRole = new UserRoleView();
 		userRole.setRole(Role.ROLE_OPERATOR);
 		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
 		verify(domainService, times(1)).removeMemberRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), Role.ROLE_OPERATOR);
@@ -186,7 +187,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldRemoveUserRoleWithNonGlobalDomain(){
-		UserRole userRole = new UserRole();
+		UserRoleView userRole = new UserRoleView();
 		userRole.setRole(Role.ROLE_OPERATOR);
 		userRole.setDomainId(DOMAIN.getId());
 		usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
@@ -204,7 +205,7 @@ public class UsersControllerTest {
 	public void shouldNotRemoveUserRoleWhenUserIdIsNull(){
 		assertThrows(MissingElementException.class, () -> {
 			Long userId = null;
-			UserRole userRole = new UserRole();
+			UserRoleView userRole = new UserRoleView();
 			userRole.setRole(Role.ROLE_OPERATOR);
 			when(userService.findById(userId)).thenReturn(Optional.empty());
 			usersController.removeUserRole(userId, userRole, principal);
@@ -214,7 +215,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldNotRemoveUserRoleWhenUserRoleIsNull(){
 		assertThrows(MissingElementException.class, () -> {
-			UserRole userRole = null;
+			UserRoleView userRole = null;
 			usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
 		});
 	}
@@ -222,7 +223,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldNotRemoveUserRoleWithoutDomain(){
 		assertThrows(MissingElementException.class, () -> {
-			UserRole userRole = new UserRole();
+			UserRoleView userRole = new UserRoleView();
 			userRole.setRole(Role.ROLE_OPERATOR);
 			when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
 			usersController.removeUserRole(userList.get(0).getId(), userRole, principal);
@@ -255,7 +256,7 @@ public class UsersControllerTest {
 	public void shouldGetDomainUsers(){
 		Long domainId = 1L;
 		when(domainService.getMembers(domainId)).thenReturn(userList);
-		List<net.geant.nmaas.portal.api.domain.User> users = usersController.getDomainUsers(domainId);
+		List<UserView> users = usersController.getDomainUsers(domainId);
 		assertThat("List size mismatch", users.size() == userList.size());
 	}
 
@@ -264,7 +265,7 @@ public class UsersControllerTest {
 		Long domainId = 1L;
 		Long userId = 1L;
 		when(domainService.getMember(domainId, userId)).thenReturn(userList.get(0));
-		net.geant.nmaas.portal.api.domain.User user = usersController.getDomainUser(domainId, userId);
+		UserView user = usersController.getDomainUser(domainId, userId);
 		assertThat("User mismatch", user.getUsername().equals(userList.get(0).getUsername()));
 	}
 
@@ -274,7 +275,7 @@ public class UsersControllerTest {
 			Long domainId = 5L;
 			Long userId = 1L;
 			when(domainService.getMember(domainId, userId)).thenThrow(ObjectNotFoundException.class);
-			net.geant.nmaas.portal.api.domain.User user = usersController.getDomainUser(domainId, userId);
+			UserView user = usersController.getDomainUser(domainId, userId);
 		});
 	}
 
@@ -283,8 +284,8 @@ public class UsersControllerTest {
 		assertThrows(ProcessingException.class, () -> {
 			Long domainId = 1L;
 			Long userId = 8L;
-			when(domainService.getMember(domainId, userId)).thenThrow(net.geant.nmaas.portal.exceptions.ProcessingException.class);
-			net.geant.nmaas.portal.api.domain.User user = usersController.getDomainUser(domainId, userId);
+			when(domainService.getMember(domainId, userId)).thenThrow(ProcessingException.class);
+			UserView user = usersController.getDomainUser(domainId, userId);
 		});
 	}
 
@@ -302,7 +303,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldAddUserRoleToCustomDomain(){
-		UserRole userRole = new UserRole();
+		UserRoleView userRole = new UserRoleView();
 		userRole.setDomainId(DOMAIN.getId());
 		userRole.setRole(Role.ROLE_USER);
 		usersController.addUserRole(DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
@@ -311,7 +312,7 @@ public class UsersControllerTest {
 
 	@Test
 	public void shouldAddUserRoleToGlobalDomain(){
-		UserRole userRole = new UserRole();
+		UserRoleView userRole = new UserRoleView();
 		userRole.setDomainId(GLOBAL_DOMAIN.getId());
 		userRole.setRole(Role.ROLE_OPERATOR);
 		when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
@@ -329,7 +330,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldNotAddUserRoleWithNullUserRole(){
 		assertThrows(MissingElementException.class, () -> {
-			UserRole userRole = new UserRole();
+			UserRoleView userRole = new UserRoleView();
 			userRole.setRole(null);
 			usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);
 		});
@@ -338,7 +339,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldNotAddGlobalUserRoleInNotGlobalDomain(){
 		assertThrows(ProcessingException.class, () -> {
-			UserRole userRole = new UserRole();
+			UserRoleView userRole = new UserRoleView();
 			userRole.setDomainId(DOMAIN.getId());
 			userRole.setRole(Role.ROLE_OPERATOR);
 			when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
@@ -349,7 +350,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldNotAddNonGlobalRoleToGlobalDomain(){
 		assertThrows(ProcessingException.class, () -> {
-			UserRole userRole = new UserRole();
+			UserRoleView userRole = new UserRoleView();
 			userRole.setDomainId(GLOBAL_DOMAIN.getId());
 			userRole.setRole(Role.ROLE_DOMAIN_ADMIN);
 			when(domainService.findDomain(GLOBAL_DOMAIN.getId())).thenReturn(Optional.of(GLOBAL_DOMAIN));
@@ -360,7 +361,7 @@ public class UsersControllerTest {
 	@Test
 	public void shouldNotAddGlobalRoleToCustomDomain(){
 		assertThrows(ProcessingException.class, () -> {
-			UserRole userRole = new UserRole();
+			UserRoleView userRole = new UserRoleView();
 			userRole.setDomainId(DOMAIN.getId());
 			userRole.setRole(Role.ROLE_SYSTEM_ADMIN);
 			usersController.addUserRole(GLOBAL_DOMAIN.getId(), userList.get(0).getId(), userRole, principal);

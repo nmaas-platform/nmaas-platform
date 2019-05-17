@@ -7,9 +7,10 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
@@ -239,18 +240,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findAllUsersWithAdminRole(){
+	public List<UserView> findAllUsersWithAdminRole(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findUsersWithRoleSystemAdminAndOperator(){
+	public List<UserView> findUsersWithRoleSystemAdminAndOperator(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 }

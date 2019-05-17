@@ -6,9 +6,10 @@ import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -309,10 +310,10 @@ public class DomainServiceImpl implements DomainService {
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findUsersWithDomainAdminRole(String domain){
+	public List<UserView> findUsersWithDomainAdminRole(String domain){
 		return this.userRoleRepo.findDomainMembers(domain).stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_DOMAIN_ADMIN.name()) && role.getDomain().getCodename().equals(domain)))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 

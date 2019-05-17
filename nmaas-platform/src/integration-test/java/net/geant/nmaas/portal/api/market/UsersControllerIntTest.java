@@ -7,6 +7,8 @@ import net.geant.nmaas.portal.api.auth.UserToken;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.PasswordReset;
 import net.geant.nmaas.portal.api.domain.UserRequest;
+import net.geant.nmaas.portal.api.domain.UserRoleView;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.api.security.JWTTokenService;
@@ -167,7 +169,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @Test
     public void testGetUser() throws MissingElementException {
-        net.geant.nmaas.portal.api.domain.User user = userController.retrieveUser(1L);
+        UserView user = userController.retrieveUser(1L);
         assertEquals(new Long(1), user.getId());
         assertEquals("admin", user.getUsername());
     }
@@ -279,13 +281,13 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         userRoles1.add(userRole2);
 
         Role role3 = ROLE_DOMAIN_ADMIN;
-        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole();
+        UserRoleView userRole3 = new UserRoleView();
         userRole3.setRole(role3);
         userRole3.setDomainId(1L);
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles3 = new HashSet<>();
+        Set<UserRoleView> userRoles3 = new HashSet<>();
         userRoles3.add(userRole3);
 
-        net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
+        User user = new User("user1");
         user.setFirstname("FirstName");
         user.setLastname("Lastname");
         user.setEmail("email@email.com");
@@ -310,15 +312,15 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         UserRole userRole1 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_USER);
         UserRole userRole2 = new UserRole(new User("user1"), new Domain("TEST", "TEST"), ROLE_TOOL_MANAGER);
 
-        net.geant.nmaas.portal.persistent.entity.User user = new User("user1");
+        User user = new User("user1");
         user.setFirstname("FirstName");
         user.setLastname("Lastname");
         user.setEmail("email@email.com");
         user.setRoles(Stream.of(userRole1, userRole2).collect(Collectors.toList()));
         user.setEnabled(true);
 
-        net.geant.nmaas.portal.api.domain.UserRole userRole3 = new net.geant.nmaas.portal.api.domain.UserRole(ROLE_TOOL_MANAGER, 1L);
-        net.geant.nmaas.portal.api.domain.UserRole userRole4 = new net.geant.nmaas.portal.api.domain.UserRole(ROLE_USER, 1L);
+        UserRoleView userRole3 = new UserRoleView(ROLE_TOOL_MANAGER, 1L);
+        UserRoleView userRole4 = new UserRoleView(ROLE_USER, 1L);
 
         UserRequest userRequest = new UserRequest(2L, "user2", "password");
         userRequest.setFirstname("FirstName1");
@@ -336,16 +338,16 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void testGetRoleWithDomainIdAsString(){
         Role role1 = ROLE_USER;
-        net.geant.nmaas.portal.api.domain.UserRole userRole1 = new net.geant.nmaas.portal.api.domain.UserRole();
+        UserRoleView userRole1 = new UserRoleView();
         userRole1.setRole(role1);
         userRole1.setDomainId(1L);
 
         Role role2 = ROLE_GUEST;
-        net.geant.nmaas.portal.api.domain.UserRole userRole2 = new net.geant.nmaas.portal.api.domain.UserRole();
+        UserRoleView userRole2 = new UserRoleView();
         userRole2.setRole(role2);
         userRole2.setDomainId(2L);
 
-        Set<net.geant.nmaas.portal.api.domain.UserRole> userRoles = new LinkedHashSet<>();
+        Set<UserRoleView> userRoles = new LinkedHashSet<>();
         userRoles.add(userRole1);
         userRoles.add(userRole2);
 
