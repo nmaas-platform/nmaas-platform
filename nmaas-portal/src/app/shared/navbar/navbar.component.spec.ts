@@ -5,12 +5,10 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-transl
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Observable, of} from "rxjs";
 import {RouterTestingModule} from "@angular/router/testing";
-import {AuthService, DomainRoles} from "../../auth/auth.service";
-import {AppConfigService, ConfigurationService, DomainService} from "../../service";
+import {AuthService} from "../../auth/auth.service";
+import {AppConfigService, DomainService} from "../../service";
 import {RolesDirective} from "../../directive/roles.directive";
-import {DomainFilterComponent} from "../common/domainfilter/domainfilter.component";
 import {Component} from "@angular/core";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {Content} from "../../model/content";
 import {InternationalizationService} from "../../service/internationalization.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing";

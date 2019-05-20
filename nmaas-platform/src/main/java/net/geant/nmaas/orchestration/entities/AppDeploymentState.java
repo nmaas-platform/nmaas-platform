@@ -391,6 +391,14 @@ public enum AppDeploymentState {
     APPLICATION_CONFIGURATION_REMOVED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_REMOVED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if  (NmServiceDeploymentState.FAILED_APPLICATION_REMOVED.equals(state)) {
+                return FAILED_APPLICATION_REMOVED;
+            }
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
     },
     APPLICATION_CONFIGURATION_REMOVAL_FAILED {
         @Override
