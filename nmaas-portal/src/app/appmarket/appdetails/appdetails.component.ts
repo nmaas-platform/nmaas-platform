@@ -44,6 +44,7 @@ export class AppDetailsComponent implements OnInit {
   public subscribed: boolean;
   public domainId: number;
   public active: boolean = false;
+  public versionVisible: boolean = false;
 
   constructor(private appsService: AppsService,
     private appSubsService: AppSubscriptionsService,
@@ -161,6 +162,10 @@ export class AppDetailsComponent implements OnInit {
       return '//' + url;
     }
     return url;
+  }
+
+  public showVersions(){
+    this.versionVisible = !this.versionVisible;
   }
 
 }

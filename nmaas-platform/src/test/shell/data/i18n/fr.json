@@ -450,7 +450,8 @@
       "FAILURE": "",
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
-    }
+    },
+    "SHOW_VERSIONS_LABEL": "Show available versions"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",

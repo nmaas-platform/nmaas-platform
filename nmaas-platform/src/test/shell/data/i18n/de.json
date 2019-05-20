@@ -452,7 +452,8 @@
       "FAILURE": "",
       "UNKNOWN": "Unbekannter Anwendungszustand - Kontakt mit dem NMaaS-Team über das Kontaktformular auf der Unterseite \" Über \"",
       "REMOVED": "Anwendung erfolgreich aufgehoben"
-    }
+    },
+    "SHOW_VERSIONS_LABEL": "Show available versions"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
