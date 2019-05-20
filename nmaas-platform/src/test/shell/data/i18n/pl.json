@@ -668,7 +668,22 @@
     "DONE": "Zakończono",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
-    "REMOVED": "Usunięty"
+    "REMOVED": "Usunięty",
+    "STATE": {
+      "ACTIVE": "Aktywne",
+      "REJECTED": "Odrzucone",
+      "NEW": "Nowe",
+      "DISABLED": "Zdeaktywowane",
+      "DELETED": "Usunięte"
+    },
+    "USER_ROLES": {
+      "ROLE_SYSTEM_ADMIN": "Administrator systemu",
+      "ROLE_OPERATOR": "Operator",
+      "ROLE_USER": "Użytkownik",
+      "ROLE_TOOL_MANAGER": "Menadżer narzędzi",
+      "ROLE_DOMAIN_ADMIN": "Administrator domeny",
+      "ROLE_GUEST": "Gość"
+    }
   },
   "PAGINATION": {
     "PREVIOUS": "Poprzednia",
@@ -700,20 +715,5 @@
     "LANGUAGE": "Język",
     "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
     "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"
-  },
-  "STATE": {
-    "ACTIVE": "Aktywne",
-    "REJECTED": "Odrzucone",
-    "NEW": "Nowe",
-    "DISABLED": "Zdeaktywowane",
-    "DELETED": "Usunięte"
-  },
-  "USER_ROLES": {
-    "ROLE_SYSTEM_ADMIN": "Administrator systemu",
-    "ROLE_OPERATOR": "Operator",
-    "ROLE_USER": "Użytkownik",
-    "ROLE_TOOL_MANAGER": "Menadżer narzędzi",
-    "ROLE_DOMAIN_ADMIN": "Administrator domeny",
-    "ROLE_GUEST": "Gość"
   }
 }
