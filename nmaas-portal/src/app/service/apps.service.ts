@@ -85,6 +85,10 @@ export class AppsService extends GenericDataService {
         return this.patch(this.appConfig.getApiUrl() + '/apps', app);
     }
 
+    public updateBaseApp(app:Application) : Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps/base', app);
+    }
+
     public getLatestVersion(appName: string) : Observable<any> {
         return this.get(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
     }

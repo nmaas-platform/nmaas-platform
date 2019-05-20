@@ -58,8 +58,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     @Override
     public void updateApplicationBase(ApplicationView application) {
         this.setMissingDescriptions(application);
-        ApplicationBase appBase = findByName(application.getName());
-        modelMapper.map(application, appBase);
+        ApplicationBase appBase = modelMapper.map(application, ApplicationBase.class);
         updateApplicationBase(appBase);
     }
 

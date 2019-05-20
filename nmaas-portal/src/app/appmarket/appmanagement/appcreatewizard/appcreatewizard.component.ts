@@ -73,20 +73,12 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
       this.tags.push({label: val, value: val});
     }));
     this.getParametersTypes().forEach(val => this.deployParameter.push({label: val.replace("_", " "), value:val}));
-    this.steps = [
-      {label: this.translate.instant('APPS_WIZARD.GENERAL_INFO_STEP')},
-      {label: this.translate.instant('APPS_WIZARD.BASIC_APP_INFO_STEP')},
-      {label: this.translate.instant('APPS_WIZARD.LOGO_AND_SCREENSHOTS_STEP')},
-      {label: this.translate.instant('APPS_WIZARD.APP_DESCRIPTIONS_STEP')},
-      {label: this.translate.instant('APPS_WIZARD.APP_DEPLOYMENT_SPEC_STEP')},
-      {label: this.translate.instant('APPS_WIZARD.CONFIG_TEMPLATES_STEP')},
-      {label: this.translate.instant('APPS_WIZARD.SHORT_REVIEW_STEP')}
-    ];
+    this.steps = this.getSteps()
     this.route.params.subscribe(params => {
       if(isNullOrUndefined(params['id'])){
         this.createNewWizard();
       } else {
-        this.appsService.getApp(params['id']).subscribe(result =>{
+        this.appsService.getBaseApp(params['id']).subscribe(result =>{
             this.app = result;
             this.appName = result.name;
             this.fillWizardWithData(result);
@@ -97,39 +89,41 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     });
   }
 
-  public fillWizardWithData(appToEdit: Application): void {
-    let temp:Map<ParameterType, string> = new Map();
-    Object.keys(appToEdit.appDeploymentSpec.deployParameters).forEach(key =>{
-      temp.set(ParameterType[key], appToEdit.appDeploymentSpec.deployParameters[key]);
-      this.selectedDeployParameters.push(key);
-    });
-    this.app.appDeploymentSpec.deployParameters = temp;
-    if(isNullOrUndefined(this.app.configWizardTemplate)){
-      this.app.configWizardTemplate = new ConfigWizardTemplate();
-      this.app.configWizardTemplate.template = this.configTemplateService.getConfigTemplate();
+  public getSteps() : any {
+    if(this.isInMode(ComponentMode.CREATE)){
+      return [
+        {label: this.translate.instant('APPS_WIZARD.GENERAL_INFO_STEP')},
+        {label: this.translate.instant('APPS_WIZARD.BASIC_APP_INFO_STEP')},
+        {label: this.translate.instant('APPS_WIZARD.LOGO_AND_SCREENSHOTS_STEP')},
+        {label: this.translate.instant('APPS_WIZARD.APP_DESCRIPTIONS_STEP')},
+        {label: this.translate.instant('APPS_WIZARD.APP_DEPLOYMENT_SPEC_STEP')},
+        {label: this.translate.instant('APPS_WIZARD.CONFIG_TEMPLATES_STEP')},
+        {label: this.translate.instant('APPS_WIZARD.SHORT_REVIEW_STEP')}
+      ];
     }
+    return [
+      {label: this.translate.instant('APPS_WIZARD.GENERAL_INFO_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.BASIC_APP_INFO_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.LOGO_AND_SCREENSHOTS_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.APP_DESCRIPTIONS_STEP')},
+      {label: this.translate.instant('APPS_WIZARD.SHORT_REVIEW_STEP')}
+    ];
+  }
+
+  public fillWizardWithData(appToEdit: Application): void {
     this.getLogo(appToEdit.id);
     this.getScreenshots(appToEdit.id);
-    if(isNullOrUndefined(appToEdit.appDeploymentSpec.kubernetesTemplate)){
-      this.app.appDeploymentSpec.kubernetesTemplate = new KubernetesTemplate();
-    }
     this.app.tags.forEach(appTag =>{
       if(!this.tags.some(tag => tag.value === appTag)){
         this.tags.push({label:appTag, value: appTag});
       }
     });
-    if(this.app.appConfigurationSpec.templates.length > 0){
-      this.configFileTemplates = this.app.appConfigurationSpec.templates;
-    } else {
-      this.configFileTemplates.push(new ConfigFileTemplate());
-    }
     this.internationalization.getAllSupportedLanguages().subscribe(val => val.filter(lang => lang.language != "en").forEach(lang => this.languages.push({label: this.translate.instant('LANGUAGE.' + lang.language.toUpperCase() + '_LABEL'), value: lang.language})));
-    this.basicAuth = this.hasAlreadyBasicAuth();
-    this.addConfigUpdate = !isNullOrUndefined(this.app.configUpdateWizardTemplate);
   }
 
   public getLogo(id:number) : void {
     this.appImagesService.getLogoFile(id).subscribe(file => {
+      console.log(id);
       this.logo.push(this.convertToProperImageFile(file));
     }, err => console.debug(err.message));
   }
@@ -192,7 +186,7 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
     if(this.templateHasContent()){
       this.app.appConfigurationSpec.templates = this.configFileTemplates;
     }
-    this.appsService.updateApp(this.app).subscribe(() => {
+    this.appsService.updateBaseApp(this.app).subscribe(() => {
       this.uploadLogo(this.app.id);
       this.handleUploadingScreenshots(this.app.id);
       this.errorMessage = undefined;

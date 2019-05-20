@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import net.geant.nmaas.portal.api.domain.ApplicationView;
 import net.geant.nmaas.portal.persistent.entity.AppDescription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
+import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import org.modelmapper.AbstractConverter;
@@ -30,7 +31,14 @@ public class ApplicationViewToApplicationBaseConverter extends AbstractConverter
         applicationBase.setIssuesUrl(source.getIssuesUrl());
         applicationBase.setTags(getTags(source));
         applicationBase.setDescriptions(getDescriptions(source));
+        applicationBase.setVersions(getAppVersions(source));
         return applicationBase;
+    }
+
+    private List<ApplicationVersion> getAppVersions(ApplicationView source){
+        return Optional.ofNullable(source.getAppVersions()).orElse(Collections.emptyList()).stream()
+                .map(version -> new ApplicationVersion(version.getVersion(), version.getState(), version.getAppVersionId()))
+                .collect(Collectors.toList());
     }
 
     private List<AppDescription> getDescriptions(ApplicationView source){

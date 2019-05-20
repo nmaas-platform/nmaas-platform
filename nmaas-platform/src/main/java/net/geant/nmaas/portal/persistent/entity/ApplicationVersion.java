@@ -35,4 +35,10 @@ public class ApplicationVersion {
     @Column(nullable = false)
     private Long appVersionId;
 
+    public ApplicationVersion(String version, ApplicationState state, Long appVersionId){
+        this.version = version;
+        this.state = state;
+        this.appVersionId = appVersionId;
+    }
+
 }

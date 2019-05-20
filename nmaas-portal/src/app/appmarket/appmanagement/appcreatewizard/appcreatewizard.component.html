@@ -29,7 +29,7 @@
                         <br>
                         <input type="text" id="appName" class="form-control" required [(ngModel)]="app.name" [maxLength]="30" pattern="^[a-zA-Z0-9-]+$" name="appName" #appName="ngModel" tooltip="{{'APPS_WIZARD.NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
-                    <div class="form-group form-group-sm"
+                    <div class="form-group form-group-sm" *ngIf="isInMode(ComponentMode.CREATE)"
                          [ngClass]="{'has-error':  version.invalid && (version.dirty || version.touched),
  			    		 	'has-success': version.valid && (version.dirty || version.touched)}">
                         <label for="appVersion" class="control-label">{{'APPS_WIZARD.VERSION_LABEL' | translate}} *</label>
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <div *ngIf="activeStepIndex === 4">
+    <div *ngIf="isInMode(ComponentMode.CREATE) && activeStepIndex === 4">
         <div class="bs-callout bs-callout-primary">
             {{'APPS_WIZARD.APP_DEPLOYMENT_SPEC_STEP_INFO' | translate }}
         </div>
@@ -223,7 +223,7 @@
         <button class="btn btn-success pull-right" [disabled]="appDeploymentForm.invalid"  (click)="nextStep()" [display]="appDeploymentForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}} </button>
     </div>
 
-    <div *ngIf="activeStepIndex === 5">
+    <div *ngIf="isInMode(ComponentMode.CREATE) && activeStepIndex === 5">
         <div class="bs-callout bs-callout-primary">
             {{'APPS_WIZARD.CONFIG_TEMPLATES_STEP_INFO' | translate }}
         </div>
@@ -295,13 +295,13 @@
             <button class="btn btn-success pull-right" [disabled]="appConfigForm.invalid"  (click)="nextStep()" [display]="appConfigForm.invalid" tooltip="{{'APPS_WIZARD.DISABLED_NEXT_BUTTON_TOOLTIP' | translate}}" [options]="defaultTooltipOptions">{{'APPS_WIZARD.NEXT_BUTTON' | translate}} </button>
         </div>
     </div>
-    <div *ngIf="activeStepIndex === 6">
+    <div *ngIf="(isInMode(ComponentMode.CREATE) && activeStepIndex === 6) || (isInMode(ComponentMode.EDIT) && activeStepIndex === 4)">
         <app-apppreview [app]="app" [logo]="logo[0]" [screenshots]="screenshots"></app-apppreview>
         <div class="alert alert-danger" *ngIf="errorMessage">
             {{errorMessage}}
         </div>
-        <button class="btn btn-success pull-right" (click)="addApplication()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
-        <button class="btn btn-success pull-right" (click)="updateApplication()" *ngIf="activeStepIndex == 6 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="addApplication()" *ngIf="activeStepIndex === 6 && isInMode(ComponentMode.CREATE)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
+        <button class="btn btn-success pull-right" (click)="updateApplication()" *ngIf="activeStepIndex === 4 && isInMode(ComponentMode.EDIT)" [disabled]="isInvalidDescriptions()">{{'APPS_WIZARD.SUBMIT_BUTTON' | translate}}</button>
     </div>
     <button class="btn btn-warning pull-left" (click)="previousStep()" *ngIf="activeStepIndex != 0">{{'APPS_WIZARD.PREVIOUS_BUTTON' | translate}}</button>
 

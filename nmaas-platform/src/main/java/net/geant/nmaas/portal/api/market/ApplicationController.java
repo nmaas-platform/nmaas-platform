@@ -74,6 +74,12 @@ public class ApplicationController extends AppBaseController {
 	public void updateApplication(@RequestBody ApplicationView appRequest){
 		applications.setMissingProperties(appRequest, appRequest.getId());
 		applications.update(modelMapper.map(appRequest, Application.class));
+	}
+
+	@PatchMapping(value = "/base")
+	@PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_TOOL_MANAGER')")
+	@Transactional
+	public void updateApplicationBase(@RequestBody ApplicationView appRequest){
 		appBaseService.updateApplicationBase(appRequest);
 	}
 
