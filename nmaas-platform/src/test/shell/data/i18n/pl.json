@@ -680,7 +680,7 @@
       "ROLE_SYSTEM_ADMIN": "Administrator systemu",
       "ROLE_OPERATOR": "Operator",
       "ROLE_USER": "Użytkownik",
-      "ROLE_TOOL_MANAGER": "Menadżer narzędzi",
+      "ROLE_TOOL_MANAGER": "Dostawca aplikacji",
       "ROLE_DOMAIN_ADMIN": "Administrator domeny",
       "ROLE_GUEST": "Gość"
     }

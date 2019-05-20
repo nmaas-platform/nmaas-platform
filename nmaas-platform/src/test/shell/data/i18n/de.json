@@ -672,7 +672,7 @@
     "UNKNOWN": "Unbekannt",
     "REMOVED": "Entfernt",
     "STATE": {
-      "ACTIVE": "Aktiv",
+      "ACTIVE": "Active",
       "REJECTED": "Rejected",
       "NEW": "New",
       "DISABLED": "Disabled",
@@ -682,7 +682,7 @@
       "ROLE_SYSTEM_ADMIN": "System admin",
       "ROLE_OPERATOR": "Operator",
       "ROLE_USER": "User",
-      "ROLE_TOOL_MANAGER": "Tool manager",
+      "ROLE_TOOL_MANAGER": "Application manager",
       "ROLE_DOMAIN_ADMIN": "Domain admin",
       "ROLE_GUEST": "Guest"
     }
