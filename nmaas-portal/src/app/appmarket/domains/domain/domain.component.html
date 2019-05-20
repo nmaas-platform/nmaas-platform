@@ -123,7 +123,7 @@
 									</td>
 									<td *ngIf="domainId != domainService.getGlobalDomainId()">
 										<span *ngFor="let role of this.getDomainRoleNames(user.roles)">
-											{{role.role | slice:5}}
+											{{"USER_ROLES." + role.role.toUpperCase() | translate}}
 										</span>
 									</td>
 								</tr>
