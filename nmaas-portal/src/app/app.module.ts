@@ -23,6 +23,7 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateService} from "@ngx-translate/core";
 import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
 import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
+import {RouterModule} from "@angular/router";
 
 
 export function appConfigFactory( config: AppConfigService) {

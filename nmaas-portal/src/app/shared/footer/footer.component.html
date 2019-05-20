@@ -1,17 +1,30 @@
 		<footer class="footer col-lg-12" id="global-footer">
-			<div class="container-fluid">
-
-				<div class="col-lg-4 col-md-4 text-center bottom-left">
-					<a routerLink="/privacy">{{ 'FOOTER.NOTICE' | translate }}</a>
+			<div class="col-lg-offset-2 col-lg-8 text-left">
+				<div class="row footer-line">
+					<hr class="col-lg-12">
 				</div>
-
-                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-center" >
-                    <p style="text-align:center; vertical-align: text-bottom;"><a href="http://geant.org" target="_blank" rel="nofollow"><img class="img-footer" src="assets/images/geant-logo-small.png" alt="GEANT"></a></p>
-					<p>NMaaS @Geant 2017-2018</p>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-center bottom-right">
-
-                </div>
-
+				<div class="row footer-upper">
+					<div class="col-lg-5">
+						<div>
+							<a href="https://www.geant.org/">Check the GÉANT website</a>
+							<br/>
+							<a class="footer-size-normal" routerLink="/privacy">{{ 'FOOTER.NOTICE' | translate }}</a>
+						</div>
+					</div>
+					<div class="col-lg-5">
+						<div>
+							<a href="mailto:nmaas@lists.geant.org">nmaas@lists.geant.org</a><br/>
+							<a routerLink="/about">Contact form</a>
+							<br/>
+						</div>
+					</div>
+					<div class="col-lg-2">
+						<div>
+							<a class="footer-light footer-move-top" onClick="moveToTop()">
+								<i class="fas fa-arrow-up"></i> Top
+							</a>
+						</div>
+					</div>
+				</div>
 			</div>
 		</footer>
