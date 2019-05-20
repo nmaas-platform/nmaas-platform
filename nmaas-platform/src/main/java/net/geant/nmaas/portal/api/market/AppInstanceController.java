@@ -3,18 +3,18 @@ package net.geant.nmaas.portal.api.market;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppInstanceBase;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
 import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.domain.Id;
@@ -126,14 +126,14 @@ public class AppInstanceController extends AppBaseController {
     @PostMapping("/domains/{domainId}/apps/instances")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
     @Transactional
-    public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
+    public Id createAppInstance(@RequestBody(required = true) AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal, @PathVariable Long domainId) {
-        Application app = getApp(appInstanceSubscription.getApplicationId());
+        Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         AppInstance appInstance;
         try {
-            appInstance = instances.create(domain, app, appInstanceSubscription.getName());
+            appInstance = instances.create(domain, app, appInstanceRequest.getName());
         } catch (ApplicationSubscriptionNotActiveException e) {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
@@ -303,6 +303,8 @@ public class AppInstanceController extends AppBaseController {
                 appInstanceState = AppInstanceState.UNDEPLOYING;
                 break;
             case APPLICATION_REMOVED:
+            case APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS:
+            case APPLICATION_CONFIGURATION_REMOVED:
                 appInstanceState = AppInstanceState.DONE;
                 break;
             case INTERNAL_ERROR:
@@ -315,6 +317,7 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_RESTART_FAILED:
             case APPLICATION_CONFIGURATION_UPDATE_FAILED:
             case APPLICATION_DEPLOYMENT_FAILED:
+            case APPLICATION_CONFIGURATION_REMOVAL_FAILED:
                 appInstanceState = AppInstanceState.FAILURE;
                 break;
             case FAILED_APPLICATION_REMOVED:

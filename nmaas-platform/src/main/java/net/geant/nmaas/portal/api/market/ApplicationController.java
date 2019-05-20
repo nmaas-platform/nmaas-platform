@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import net.geant.nmaas.notifications.MailAttributes;
 import net.geant.nmaas.notifications.NotificationEvent;
 import net.geant.nmaas.portal.api.domain.ApplicationStateChangeRequest;
-import net.geant.nmaas.portal.api.domain.User;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
@@ -131,7 +131,7 @@ public class ApplicationController extends AppBaseController {
 				.otherAttributes(ImmutableMap.of("app_name", app.getName(), "app_version", app.getVersion(), "reason", stateChangeRequest.getReason() == null? "": stateChangeRequest.getReason()))
 				.build();
 		if(!stateChangeRequest.getState().equals(ApplicationState.NEW)){
-			User owner = modelMapper.map(users.findByUsername(app.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), User.class);
+			UserView owner = modelMapper.map(users.findByUsername(app.getOwner()).orElseThrow(() -> new IllegalArgumentException("Owner not found")), UserView.class);
 			mailAttributes.setAddressees(Collections.singletonList(owner));
 		}
 		this.eventPublisher.publishEvent(new NotificationEvent(this, mailAttributes));

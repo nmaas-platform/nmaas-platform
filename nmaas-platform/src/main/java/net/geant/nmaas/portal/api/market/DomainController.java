@@ -95,7 +95,7 @@ public class DomainController extends AppBaseController {
 			}
 
 			return new Id(domain.getId());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException | InvalidDomainException e) {
+		} catch (InvalidDomainException e) {
 			throw new ProcessingException(e.getMessage());
 		}
 	}
@@ -120,12 +120,8 @@ public class DomainController extends AppBaseController {
 			checkArgument(!domainService.existsDomainByExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		}
-		try {
-			domainService.updateDomain(domain);
-			domainService.updateDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException(e.getMessage());
-		}
+		domainService.updateDomain(domain);
+		domainService.updateDcnInfo(domain.getCodename(), domain.getDomainDcnDetails().getDcnDeploymentType());
 		
 		return new Id(domainId);
 	}
@@ -141,12 +137,10 @@ public class DomainController extends AppBaseController {
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
 		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
-		try {
-			domainService.updateDomain(domain);
-			domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException(e.getMessage());
-		}
+
+		domainService.updateDomain(domain);
+		domainService.updateDcnInfo(domain.getCodename(), domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+
 
 		return new Id(domainId);
 	}
@@ -162,16 +156,12 @@ public class DomainController extends AppBaseController {
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_OPERATOR') || hasRole('ROLE_SYSTEM_ADMIN')")
 	public Id updateDcnConfiguredFlag(@PathVariable Long domainId, @RequestParam(value = "configured") boolean dcnConfigured) {
-		try{
-			Domain domain = domainService.changeDcnConfiguredFlag(domainId, dcnConfigured);
-			if(domain.getDomainDcnDetails().isDcnConfigured()){
-				this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
-				this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
-			} else{
-				this.eventPublisher.publishEvent(new DcnRemoveActionEvent(this, domain.getCodename()));
-			}
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException(e.getMessage());
+		Domain domain = domainService.changeDcnConfiguredFlag(domainId, dcnConfigured);
+		if(domain.getDomainDcnDetails().isDcnConfigured()){
+			this.eventPublisher.publishEvent(new DcnDeploymentStateChangeEvent(this, domain.getCodename(), DcnDeploymentState.DEPLOYED));
+			this.eventPublisher.publishEvent(new DcnDeployedEvent(this, domain.getCodename()));
+		} else{
+			this.eventPublisher.publishEvent(new DcnRemoveActionEvent(this, domain.getCodename()));
 		}
 
 		return new Id(domainId);

@@ -437,7 +437,10 @@
       "APP_UPDATE_FAILED": "Application configuration update failed",
       "UNKNOWN": "Unknown state",
       "ERROR": "Internal error",
-      "FAILED_APPLICATION_REMOVED": "Failed application removed"
+      "FAILED_APPLICATION_REMOVED": "Failed application removed",
+      "APP_CONF_REMOVE_PROGRESS": "Application configuration removal in progress",
+      "APP_CONF_REMOVE_SUCCESS": "Application configuration removed successfully",
+      "APP_CONF_REMOVE_ERROR": "Application configuration removal failed"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS is processing your request",

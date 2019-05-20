@@ -10,7 +10,8 @@ import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -353,7 +354,7 @@ public class DomainServiceTest {
 
         List<User> users = ImmutableList.of(user1, user2);
         when(userRoleRepo.findDomainMembers(anyString())).thenReturn(users);
-        List<net.geant.nmaas.portal.api.domain.User> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
+        List<UserView> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
         assertThat("Result mismatch", filteredUsers.size() == 2);
     }
 

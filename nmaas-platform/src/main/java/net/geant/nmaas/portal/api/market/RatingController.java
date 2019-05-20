@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
+import net.geant.nmaas.portal.persistent.entity.AppRate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.geant.nmaas.portal.api.domain.ApiResponse;
-import net.geant.nmaas.portal.api.domain.AppRate;
+import net.geant.nmaas.portal.api.domain.AppRateView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -36,29 +37,29 @@ public class RatingController extends AppBaseController {
 	}
 	
 	@GetMapping
-	public AppRate getAppRating(@PathVariable("appId") Long appId) {
+	public AppRateView getAppRating(@PathVariable("appId") Long appId) {
 		Application app = getApp(appId);
 		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
-		return new AppRate(getAverageRate(rateList), getRatingMap(rateList));
+		return new AppRateView(getAverageRate(rateList), getRatingMap(rateList));
 	}
 	
 	@GetMapping(value="/my")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
-	public AppRate getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) {
+	public AppRateView getMyAppRating(@PathVariable("appId") Long appId, @NotNull Principal principal) {
 		User user = getUser(principal.getName());
 		return getUserAppRating(appId, user.getId());
 	}
 
 	@GetMapping(value="/user/{userId}")
 	@PreAuthorize("hasPermission(#appId, 'application', 'READ')")
-	public AppRate getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
+	public AppRateView getUserAppRating(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
 		Application app = getApp(appId);
 		User user = getUser(userId);
 		
-		net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId appRateId = new net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId(app.getId(), user.getId());
-		Optional<net.geant.nmaas.portal.persistent.entity.AppRate> appRate = ratingRepo.findById(appRateId);
+		AppRate.AppRateId appRateId = new AppRate.AppRateId(app.getId(), user.getId());
+		Optional<AppRate> appRate = ratingRepo.findById(appRateId);
 		Integer[] rateList = ratingRepo.getApplicationRating(app.getId());
-		return appRate.map(appRate1 -> new AppRate(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(() -> new AppRate(getAverageRate(rateList), getRatingMap(rateList)));
+		return appRate.map(appRate1 -> new AppRateView(appRate1.getRate(), getAverageRate(rateList), getRatingMap(rateList))).orElseGet(() -> new AppRateView(getAverageRate(rateList), getRatingMap(rateList)));
 	}
 
 	@PostMapping(value="/my/{rate}")
@@ -68,9 +69,8 @@ public class RatingController extends AppBaseController {
 		Application app = getApp(appId);
 		User user = getUser(principal.getName());
 		
-		net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId appRatingId = new net.geant.nmaas.portal.persistent.entity.AppRate.AppRateId(app.getId(), user.getId());
-		net.geant.nmaas.portal.persistent.entity.AppRate appRate = ratingRepo.findById(appRatingId)
-				.orElse(new net.geant.nmaas.portal.persistent.entity.AppRate(appRatingId));
+		AppRate.AppRateId appRatingId = new AppRate.AppRateId(app.getId(), user.getId());
+		AppRate appRate = ratingRepo.findById(appRatingId).orElse(new AppRate(appRatingId));
 		
 		appRate.setRate(normalizeRate(rate));
 		

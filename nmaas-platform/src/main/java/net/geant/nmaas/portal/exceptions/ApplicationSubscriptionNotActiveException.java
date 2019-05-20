@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.exceptions;
 
-public class ApplicationSubscriptionNotActiveException extends ProcessingException {
+public class ApplicationSubscriptionNotActiveException extends RuntimeException {
 
 	public ApplicationSubscriptionNotActiveException() {
 		super();

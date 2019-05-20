@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.exceptions;
 
-public class ObjectNotFoundException extends ProcessingException {
+public class ObjectNotFoundException extends RuntimeException {
 
 	public ObjectNotFoundException() {
 	}

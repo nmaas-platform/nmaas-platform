@@ -435,7 +435,10 @@
       "APP_UPDATE_FAILED": "La mise à jour de la configuration de l'application a échoué",
       "UNKNOWN": "Etat inconnu",
       "ERROR": "Erreur interne",
-      "FAILED_APPLICATION_REMOVED": "Échec de l'application supprimée"
+      "FAILED_APPLICATION_REMOVED": "Échec de l'application supprimée",
+      "APP_CONF_REMOVE_PROGRESS": "Suppression de la configuration de l'application en cours",
+      "APP_CONF_REMOVE_SUCCESS": "Configuration de l'application supprimée avec succès",
+      "APP_CONF_REMOVE_ERROR": "La suppression de la configuration de l'application a échoué"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS traite votre demande",
