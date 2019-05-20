@@ -22,27 +22,13 @@ export class AppManagementListComponent implements OnInit {
   public selectedVersion: ApplicationVersion = new ApplicationVersion();
 
   public apps:Application[] = [];
-  public newApps:Application[] = [];
-  public rejectedApps:Application[] = [];
-  public allApps:Application[] = [];
-  public intervalChecker;
 
   constructor(public appsService:AppsService, public router:Router, public authService: AuthService) { }
 
   ngOnInit() {
     this.appsService.getAllApps().subscribe(val => {
-      this.allApps = val;
-      this.apps = val.filter(app => app.appVersions.filter(version => this.getStateAsString(version.state) != this.getStateAsString(ApplicationState.NEW) && this.getStateAsString(version.state) != this.getStateAsString(ApplicationState.REJECTED)).length > 0);
-      this.newApps = val.filter(app => app.appVersions.filter(version => this.getStateAsString(version.state) === this.getStateAsString(ApplicationState.NEW)).length > 0);
-      this.rejectedApps = val.filter(app => app.appVersions.filter(version => this.getStateAsString(version.state) === this.getStateAsString(ApplicationState.REJECTED)).length > 0);
+      this.apps = val;
     });
-    this.intervalChecker = interval(5000).subscribe(() => this.filterApps());
-  }
-
-  public filterApps(): void {
-      this.apps = this.allApps.filter(app => app.appVersions.filter(version => this.getStateAsString(version.state) != this.getStateAsString(ApplicationState.NEW) && this.getStateAsString(version.state) != this.getStateAsString(ApplicationState.REJECTED)).length > 0);
-      this.newApps = this.allApps.filter(app => app.appVersions.filter(version => this.getStateAsString(version.state) === this.getStateAsString(ApplicationState.NEW)).length > 0);
-      this.rejectedApps = this.allApps.filter(app => app.appVersions.filter(version => this.getStateAsString(version.state) === this.getStateAsString(ApplicationState.REJECTED)).length > 0);
   }
 
   public getStateAsString(state: any): string {
