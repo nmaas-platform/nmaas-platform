@@ -12,6 +12,7 @@ import {Configuration} from "./model/configuration";
 import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
 import {AuthService} from "./auth/auth.service";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
+import {SharedModule} from "./shared";
 
 class MockConfigurationService{
     protected uri:string;
@@ -55,7 +56,8 @@ describe('App: NmaasPortal', () => {
                         return '';
                     }
                 }
-            })
+            }),
+          SharedModule
         ],
         providers: [
             {provide: AppConfigService, useClass: MockConfigurationService},

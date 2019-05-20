@@ -37,10 +37,7 @@ a:hover {
 
 .footer-upper{
   padding-top: 10px;
-}
-
-.footer-bottom{
-  padding-top: 15px;
+  font-size: 14px;
 }
 
 .btn-circle {
@@ -68,10 +65,9 @@ a:hover {
 }
 
 .footer-move-top{
-  font-size: x-large;
   cursor: pointer;
 }
 
 .footer-size-normal{
-  font-size: small;
+  font-size: smaller;
 }

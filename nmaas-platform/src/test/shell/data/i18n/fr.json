@@ -647,7 +647,10 @@
     "FR_LABEL": "French"
   },
   "FOOTER": {
-    "NOTICE": "Avis de confidentialité"
+    "NOTICE": "Avis de confidentialité",
+    "CONTACT":  "Contact",
+    "WEBSITE": "Consultez le site web de GÉANT",
+    "TOP": "HAUT"
   },
   "FILTER": {
     "TAGS": "Mots clés",

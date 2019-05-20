@@ -24,7 +24,7 @@ export class FooterComponent implements OnInit {
     }
   }
 
-  static moveToTop() {
+  public moveToTop() {
     window.scroll({
       top: 0,
       left: 0,
