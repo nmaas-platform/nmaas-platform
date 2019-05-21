@@ -33,7 +33,7 @@
           <td></td>
           <td style="width: 10%"></td>
           <td>{{version.version}}</td>
-          <td>{{getStateAsString(version.state)}}</td>
+          <td>{{"ENUM.STATE." + getStateAsString(version.state).toUpperCase() | translate }}</td>
           <td class="text-right">
             <div class="btn-group">
               <button [disabled]="getStateAsString(version?.state) === 'DELETED'" (click)="showModal(app, version)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
