@@ -18,7 +18,7 @@
         <rate *ngIf="app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(app?.id)"></rate>
         <rate *ngIf="!app?.id" [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(1)"></rate>
         <div class="text-muted" style="font-size: small;">
-          v.{{app?.version}} | <a [href]="getValidLink(app?.licenseUrl)" target="_blank">{{app?.license}}</a>
+          <span *ngIf="isVersionView()">v.{{app?.version}}</span><a *ngIf="!isVersionView()" style="cursor: pointer;" (click)="showVersions()">{{'APP_INSTANCE.SHOW_VERSIONS_LABEL' | translate }}</a> | <a [href]="getValidLink(app?.licenseUrl)" target="_blank">{{app?.license}}</a>
           | <a [href]="getValidLink(app?.wwwUrl)">WWW</a>
           | <a [href]="getValidLink(app?.sourceUrl)" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
           | <a [href]="getValidLink(app?.issuesUrl)" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
@@ -28,6 +28,13 @@
         <div class="text-right">
 
         </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="versionVisible">
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.appVersions">
+        <a *ngFor="let version of app.appVersions" class="tag-button">
+          v.{{version.version}}
+        </a>
       </div>
     </div>
     <hr>

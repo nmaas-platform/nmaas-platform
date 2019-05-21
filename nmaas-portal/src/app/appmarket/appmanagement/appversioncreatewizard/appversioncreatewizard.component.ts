@@ -13,6 +13,7 @@ import {KubernetesTemplate} from "../../../model/kubernetestemplate";
 import {TranslateService} from "@ngx-translate/core";
 import {DomSanitizer} from "@angular/platform-browser";
 import {ApplicationState} from "../../../model/applicationstate";
+import {KubernetesChart} from "../../../model/kuberneteschart";
 
 @Component({
   selector: 'app-appversioncreatewizard',
@@ -103,6 +104,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     if(isNullOrUndefined(appToEdit.appDeploymentSpec.kubernetesTemplate)){
       this.app.appDeploymentSpec.kubernetesTemplate = new KubernetesTemplate();
     }
+    if(isNullOrUndefined(appToEdit.appDeploymentSpec.kubernetesTemplate.chart)){
+      this.app.appDeploymentSpec.kubernetesTemplate.chart = new KubernetesChart();
+    }
     if(this.app.appConfigurationSpec.templates.length > 0){
       this.configFileTemplates = this.app.appConfigurationSpec.templates;
     } else {
@@ -125,6 +129,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     if(this.templateHasContent()){
       this.app.appConfigurationSpec.templates = this.configFileTemplates;
     }
+    if(!this.isChartValid()){
+      this.app.appDeploymentSpec.kubernetesTemplate.chart = undefined;
+    }
     this.appsService.addApp(this.app).subscribe(() => {
       this.errorMessage = undefined;
       this.modal.show();
@@ -135,6 +142,9 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
     if(this.templateHasContent()){
       this.app.appConfigurationSpec.templates = this.configFileTemplates;
     }
+    if(!this.isChartValid()){
+      this.app.appDeploymentSpec.kubernetesTemplate.chart = undefined;
+    }
     this.appsService.updateApp(this.app).subscribe(() => {
       this.errorMessage = undefined;
       this.modal.show();
@@ -143,6 +153,10 @@ export class AppVersionCreateWizardComponent extends BaseComponent implements On
 
   public templateHasContent() : boolean {
     return this.configFileTemplates.length > 0 && !isNullOrUndefined(this.configFileTemplates[0].configFileName) && !isNullOrUndefined(this.configFileTemplates[0].configFileTemplateContent);
+  }
+
+  public isChartValid() : boolean {
+    return !isNullOrUndefined(this.app.appDeploymentSpec.kubernetesTemplate.chart) && this.app.appDeploymentSpec.kubernetesTemplate.chart.name !== "" && this.app.appDeploymentSpec.kubernetesTemplate.chart.version !== "";
   }
 
   public changeRulesAcceptedFlag(): void {
