@@ -3,10 +3,8 @@ import {BaseComponent} from '../../../../shared/common/basecomponent/base.compon
 import {Router} from '@angular/router';
 import {ConfigurationService} from '../../../../service';
 import {Configuration} from '../../../../model/configuration';
-import {TranslateService} from '@ngx-translate/core';
 import {InternationalizationService} from "../../../../service/internationalization.service";
 import {Language} from "../../../../model/language";
-import {ContentDisplayService} from "../../../../service/content-display.service";
 
 @Component({
   selector: 'app-configurationdetails',

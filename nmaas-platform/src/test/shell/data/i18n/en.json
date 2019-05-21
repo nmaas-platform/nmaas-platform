@@ -670,7 +670,22 @@
     "DONE": "Undeployed",
     "FAILURE": "Failure",
     "UNKNOWN": "Unknown",
-    "REMOVED": "Undeployed after failure"
+    "REMOVED": "Undeployed after failure",
+    "STATE": {
+      "ACTIVE": "Active",
+      "REJECTED": "Rejected",
+      "NEW": "New",
+      "DISABLED": "Disabled",
+      "DELETED": "Deleted"
+    },
+    "USER_ROLES": {
+      "ROLE_SYSTEM_ADMIN": "System admin",
+      "ROLE_OPERATOR": "Operator",
+      "ROLE_USER": "User",
+      "ROLE_TOOL_MANAGER": "Application manager",
+      "ROLE_DOMAIN_ADMIN": "Domain admin",
+      "ROLE_GUEST": "Guest"
+    }
   },
   "PAGINATION": {
     "PREVIOUS": "Previous",
