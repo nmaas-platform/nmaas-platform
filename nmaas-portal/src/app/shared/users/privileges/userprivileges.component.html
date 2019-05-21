@@ -17,7 +17,7 @@
 					<select
 						class="form-control" [formGroup]="newPrivilegeForm" id="role"
 						name="role" formControlName="role" style="min-width: 170px">
-						<option *ngFor="let r of getAllowedRoles()" [value]="r">{{Role[r] | slice:5}}</option>
+						<option *ngFor="let r of getAllowedRoles()" [value]="r">{{"ENUM.USER_ROLES." + Role[r].toUpperCase() | translate}}</option>
 					</select>
 				</div>
 				<div class="col-lg-3">
@@ -42,7 +42,7 @@
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 					<tr *ngIf="userrole.domainId != domainService.getGlobalDomainId() || userrole.role != 'ROLE_GUEST'">
 						<td>{{getDomainName(userrole.domainId)|async}}</td>
-						<td>{{userrole.role | slice:5}}</td>
+						<td>{{"ENUM.USER_ROLES." + userrole.role.toUpperCase() | translate}}</td>
 						<td *ngIf="!isInMode(ComponentMode.PROFILVIEW)" class="text-right"><button type="button"
 								class="btn btn-danger"
 								(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button></td>
@@ -54,7 +54,7 @@
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 						<tr *ngIf="domainId == userrole.domainId">
 							<td>{{getDomainName(userrole.domainId)|async}}</td>
-							<td>{{userrole.role | slice:5}}</td>
+							<td>{{"USER_ROLES." + userrole.role.toUpperCase() | translate}}</td>
 							<td class="text-right">
 								<button type="button" class="btn btn-danger"
 										(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button>
