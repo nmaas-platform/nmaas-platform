@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.exceptions;
 
-public class ObjectAlreadyExistsException extends ProcessingException {
+public class ObjectAlreadyExistsException extends RuntimeException {
 
 	public ObjectAlreadyExistsException() {
 		super();

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserRequest extends User {
+public class UserRequest extends UserView {
 		
 	String password;
 

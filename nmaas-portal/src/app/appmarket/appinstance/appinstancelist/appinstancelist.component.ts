@@ -4,16 +4,16 @@ import {isUndefined} from 'util';
 
 import {AppInstance, AppInstanceState} from '../../../model/index';
 import {DomainService} from '../../../service/domain.service';
-import {AppInstanceService, AppsService} from '../../../service/index';
+import {AppInstanceService, AppsService, CustomerSearchCriteria} from '../../../service/index';
 import {AuthService} from '../../../auth/auth.service';
 import {AppConfigService} from '../../../service/appconfig.service';
 import {UserDataService} from '../../../service/userdata.service';
 import {Observable, of} from 'rxjs';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {CustomerSearchCriteria} from "../../../service/index";
-import {element} from "protractor";
-import {TranslateModule, TranslateService} from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
 import {map} from 'rxjs/operators';
+import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
+import {SessionService} from "../../../service/session.service";
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -57,45 +57,30 @@ export class AppInstanceListComponent implements OnInit {
               private userDataService: UserDataService,
               private authService: AuthService,
               private appConfig: AppConfigService,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private sessionService: SessionService,
+              private translateState: TranslateStateModule) {
   }
 
   ngOnInit() {
+    this.sessionService.registerCulture(this.translateService.currentLang);
     this.userDataService.selectedDomainId.subscribe(domainId => this.update(domainId));
 
   }
 
   public translateEnum(value: AppInstanceListSelection): string{
-    switch (this.translateService.currentLang) {
-      case 'en':
-        return value.toString();
-      case 'de':
-        if(value.toString() == 'ALL'){
-          return 'Alles';
-        }
-        if(value.toString() == 'MY'){
-          return 'Meine';
-        }
-        break;
-      case 'fr':
-        if(value.toString() == 'ALL'){
-          return 'Tout';
-        }
-        if(value.toString() == 'MY'){
-          return 'Mon';
-        }
-        break;
-      case 'pl':
-        if(value.toString() == 'ALL'){
-          return 'Wszystkie';
-        }
-        if(value.toString() == 'MY'){
-          return 'Moje';
-        }
-        break;
-      default:
-        return value.toString();
+    let outValue = "";
+    if(value.toString() == 'ALL'){
+      this.translateService.get("ENUM.ALL").subscribe((res: string) => {
+        outValue = res;
+      })
     }
+    if(value.toString() == 'MY'){
+      this.translateService.get("ENUM.MY").subscribe((res: string) => {
+        outValue = res;
+      })
+    }
+    return outValue;
   }
 
   public update(domainId: number): void {
@@ -140,10 +125,10 @@ export class AppInstanceListComponent implements OnInit {
     }
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => app.userFriendlyState != 'Undeployed')));
+      app => (app.userFriendlyState != "Removed" && app.userFriendlyState !== 'Failed application removed'))));
     this.appUndeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => app.userFriendlyState == 'Undeployed')));
+      app => (app.userFriendlyState == "Removed" || app.userFriendlyState == 'Failed application removed'))));
   }
 
 

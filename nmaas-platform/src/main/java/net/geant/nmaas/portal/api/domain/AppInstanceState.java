@@ -66,6 +66,12 @@ public enum AppInstanceState {
 		public String getUserFriendlyState(){
 			return "Unknown";
 		}
+	},
+	REMOVED{
+		@Override
+		public String getUserFriendlyState(){
+			return "Failed application removed";
+		}
 	};
 
 	public abstract String getUserFriendlyState();

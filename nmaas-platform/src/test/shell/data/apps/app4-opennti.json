@@ -39,10 +39,23 @@
 				"version": "0.0.2-alfa"
 			}
 		},
-		"defaultStorageSpace":20,
-		"configFileRepositoryRequired":true
+		"defaultStorageSpace":20
 	},
-	"configTemplate": {
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired":true,
+		"templates": [
+			{
+				"configFileName":"hosts.yaml",
+				"configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}: generic\n</#list>"
+			},
+			{
+				"configFileName":"credentials.yaml",
+				"configFileTemplateContent":"lab_credentials:\n    username: ${openntiUsername}\n    password: ${openntiPassword}\n    tags: generic"
+			}
+		]
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
 		"template": {
 			"components": [
 				{
@@ -171,7 +184,7 @@
 			]
 		}
 	},
-	"configurationUpdateTemplate": {
+	"configUpdateWizardTemplate": {
 		"template": {
 			"components": [
 				{

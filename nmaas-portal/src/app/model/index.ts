@@ -5,7 +5,7 @@ export * from './appsubscription';
 export * from './application';
 export * from './authority';
 export * from './comment';
-export * from './configtemplate';
+export * from './configwizardtemplate';
 export * from './fileinfo';
 export * from './id';
 export * from './password';

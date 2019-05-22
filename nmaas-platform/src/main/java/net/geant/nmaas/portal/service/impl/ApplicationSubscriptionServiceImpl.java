@@ -4,13 +4,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
@@ -172,9 +173,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 				appSub = appSubOptional.get();
 			}
 		}
-		if(appSub.getApplication().isDeleted()){
-			throw new IllegalStateException("Cannot create subscription of deleted application");
-		}
+		checkParam(appSub.getApplication());
 		if(appSub.isDeleted())
 			appSub.setDeleted(false);
 			
@@ -212,7 +211,7 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 
 		if(!appSubRepo.isDeleted(appSub.getDomain(), appSub.getApplication())){
 			if(!appSubRepo.existsById(appSub.getId()))
-				throw new ObjectNotFoundException("Application subscription not found.");
+				throw new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE);
 
 			appSub.setActive(false);
 			appSub.setDeleted(true);
@@ -288,6 +287,8 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		if(appSub == null)
 			throw new IllegalArgumentException("appSub is null");
 		checkParam(appSub.getId());
+		if(!appSub.getDomain().isActive())
+			throw new IllegalArgumentException("Domain cannot be inactive");
 	}
 	
 	protected void checkParam(Long id, String name) {
@@ -314,6 +315,13 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 		if(domain == null)
 			throw new IllegalArgumentException("domain is null");
 		checkParam(application.getId(), domain.getId());
+	}
+
+	protected void checkParam(Application application){
+		if(application == null)
+			throw new IllegalArgumentException("application is null");
+		if(!application.getState().equals(ApplicationState.ACTIVE))
+			throw new IllegalStateException("Cannot subscribe application which is in state " + application.getState());
 	}
 	
 }

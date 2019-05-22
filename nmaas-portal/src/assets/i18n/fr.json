@@ -8,7 +8,7 @@
     "USERS": "Utilisateurs",
     "INVENTORY": "Inventaire",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Configuration",
+    "SETTINGS": "Réglages",
     "PROFILE": "Profil",
     "LOGOUT": "Déconnexion",
     "LOGIN_REGISTER": "Connexion | S'inscrire",
@@ -185,7 +185,8 @@
     "ACTIVATE": "Actif",
     "DETAILS_BUTTON": "Détails",
     "EDIT_BUTTON": "Modifier",
-    "REMOVE_BUTTON": "Supprimer",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Add"
   },
   "APP_INSTANCES": {
@@ -194,7 +195,7 @@
     "NAME": "Nom",
     "DOMAIN": "Organisation",
     "OWNER": "Propriétaire",
-    "DEPLOYED_AT": "Déployé à",
+    "DEPLOYED_AT": "Temps de déploiement",
     "APPLICATION": "Application",
     "STATE": "Etat",
     "DETAILS_BUTTON": "Détails",
@@ -214,7 +215,8 @@
     "VIEW_SETTINGS_BUTTON": "Afficher les paramètres",
     "CHECK_NOW_BUTTON": "Vérifier maintenant",
     "EDIT_SETTINGS_BUTTON": "Modifier les paramètres",
-    "REMOVE_BUTTON": "Supprimer"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Monitor service details",
@@ -281,7 +283,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "L'identifiant doit comporter entre 2 et 8 caractères.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version",
@@ -380,6 +383,7 @@
     "RESTART_BUTTON": "Re-démarrer",
     "REDEPLOY_BUTTON": "Re-déployer",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "L'application est en cours de déploiement. Ce processus peut prendre plusieurs minutes. Vous recevrez une notification par e-mail une fois que votre instance est prête.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installation en cours",
       "STATE": "Etat",
@@ -401,7 +405,47 @@
     },
     "REQUIRED_FIELDS": "Champs obligatoire",
     "APPLY_CONFIG_BUTTON": "Appliquer la configuration",
-    "DEFAULT_VALUE": "Valeur par défaut"
+    "DEFAULT_VALUE": "Valeur par défaut",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Validation de l'abonnement",
+      "ENVIRONMENT_CREATION": "Création d'environnement",
+      "SETTING_UP_CONNECTIVITY": "Mise en place de la connectivité",
+      "APPLYING_APP_CONFIGURATION": "Application de la configuration de l'application",
+      "APP_CONTAINER_DEPLOYMENT": "Déploiement de conteneur d'application",
+      "APP_RUNNING": "App en cours d'exécution",
+      "UNDEPLOYING": "Déployer",
+      "REMOVED": "Enlevé",
+      "DEPLOY_REQUESTED": "Déploiement d'instance d'application demandé",
+      "VALIDATION_REQUEST": "Demande de validation en cours",
+      "REQUEST_VALIDATE": "Demande validée",
+      "VALIDATE_FAILED": "La validation de la requête a échoué",
+      "DEPLOY_IN_PROGRESS": "Préparation de l'environnement de déploiement en cours",
+      "ENV_READY": "L'environnement de déploiement est prêt",
+      "ENV_FAILED": "La préparation de l'environnement de déploiement a échoué",
+      "DCN_PROGRESS": "Configuration DCN en cours",
+      "DCN_SUCCESS": "DCN configuré avec succès",
+      "DCN_FAILED": "La configuration DCN a échoué",
+      "APP_CONFIG_PROGRESS": "Configuration de l'application en cours",
+      "APP_CONFIG_SUCCESS": "Application configurée avec succès",
+      "APP_CONFIG_FAILED": "La configuration de l'application a échoué",
+      "APP_DEPLOY_PROGRESS": "Déploiement d'application en cours",
+      "APP_DEPLOY_SUCCESS": "Application déployée avec succès",
+      "APP_DEPLOY_FAILED": "Le déploiement de l'application a échoué",
+      "DEPLOY_VER_PROGRESS": "Vérification du déploiement en cours",
+      "DEPLOY_VER_SUCCESS": "Déploiement vérifié avec succès",
+      "DEPLOY_VER_FAILED": "La vérification du déploiement a échoué",
+      "APP_REMOVE_PROGRESS": "Suppression de l'application en cours",
+      "APP_REMOVE_SUCCESS": "Application supprimée avec succès",
+      "APP_REMOVE_FAILED": "La suppression de l'application a échoué",
+      "APP_RESTART_PROGRESS": "Redémarrage de l'application en cours",
+      "APP_RESTART_SUCCESS": "L'application a été redémarrée avec succès",
+      "APP_RESTART_FAILED": "Le redémarrage de l'application a échoué",
+      "APP_UPDATE_PROGRESS": "Mise à jour de la configuration de l'application en cours",
+      "APP_UPDATE_SUCCESS": "La configuration de l'application a été mise à jour avec succès",
+      "APP_UPDATE_FAILED": "La mise à jour de la configuration de l'application a échoué",
+      "UNKNOWN": "Etat inconnu",
+      "ERROR": "Erreur interne"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
@@ -435,7 +479,7 @@
     "GO_BACK": "Retourner à la page d'accueil",
     "MODAL": {
       "HEADER": "Veuillez vérifier votre email",
-      "BODY": "Si votre est email valide, vous dervriez recevoir un lien pour ré-initialiser votre mot de passe.",
+      "BODY": "Si votre est email valide, vous dervriez recevoir un lien pour ré-initialiser votre mot de passe. Veuillez noter que vous ne pouvez réinitialiser le mot de passe que pour un compte local.",
       "CLOSE_BUTTON": "Fermer"
     },
     "SITE": {
@@ -458,12 +502,113 @@
       "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
       "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
     },
-    "APPS_MANAGEMENT": {
-      "TITLE": "Applications management",
-      "NAME": "Name",
-      "ACTIVE": "Active",
-      "REMOVE_BUTTON": "Remove"
+  "APPS_MANAGEMENT": {
+    "TITLE": "Applications management",
+    "NAME": "Name",
+    "STATE": "State",
+    "ADD_BUTTON": "Add",
+    "VIEW_BUTTON": "View",
+    "EDIT_BUTTON": "Edit",
+    "CHANGE_STATE_BUTTON": "Change state",
+    "APPROVED_TAB": "Approved",
+    "REJECTED_TAB": "Rejected",
+    "NEW_TAB": "New",
+    "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+  },
+  "APPS_PREVIEW": {
+    "PREVIEW_MESSAGE": "This page is only a preview of submitted application",
+    "CONFIG_WIZARD_PREVIEW_HEADER": "Configuration wizard preview",
+    "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
+  },
+  "APPS_WIZARD": {
+    "FIRST_PAGE_MESSAGE": "Lorem ipsum",
+    "ACCEPT_RULES_CHECKBOX": "I have accepted the rules",
+    "NEXT_BUTTON": "Next",
+    "SUBMIT_BUTTON": "Submit",
+    "PREVIOUS_BUTTON": "Previous",
+    "NAME_LABEL": "Name",
+    "VERSION_LABEL": "Version",
+    "LICENSE_LABEL": "License",
+    "LICENSE_URL_LABEL": "License url",
+    "PROJECT_WEBSITE_LABEL": "Project website",
+    "SOURCE_CODE_LABEL": "Link to source code",
+    "PROJECT_ISSUES_LABEL": "Link to project issues",
+    "TAGS_LABEL": "Select tags for application",
+    "NEW_TAGS_LABEL": "Add new tags for your application",
+    "CHOOSE_LABEL": "Choose",
+    "CANCEL_LABEL": "Cancel",
+    "UPLOAD_LOGO_LABEL": "Upload application logo",
+    "UPLOAD_SCREENSHOTS_LABEL": "Upload application screenshots",
+    "BRIEF_DESCRIPTION_LABEL": "Brief description",
+    "FULL_DESCRIPTION_LABEL": "Full description",
+    "APP_DEPLOYMENT_HEADER": "Application deployment specification",
+    "CHART_NAME_LABEL": "Chart name",
+    "CHART_VERSION_LABEL": "Chart version",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Default storage space (in GB)",
+    "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
+    "REPOSITORY_REQUIRED_LABEL": "Uses autogenerated configuration files",
+    "CONFIG_WIZARD_TEMPLATE_LABEL": "Application configuration wizard template",
+    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
+    "NEW_APP_MODAL": {
+      "HEADER": "New application submitted correctly",
+      "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
     },
+    "EDIT_APP_MODAL": {
+      "HEADER": "Application edited correctly",
+      "BODY": "Thank you for editing existing application. Your changes should be applied soon",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
+    },
+    "GENERAL_INFO_STEP": "General information",
+    "BASIC_APP_INFO_STEP": "Basic application information",
+    "LOGO_AND_SCREENSHOTS_STEP": "Logo and screenshots",
+    "APP_DESCRIPTIONS_STEP": "Application descriptions",
+    "APP_DEPLOYMENT_SPEC_STEP": "Deployment specification",
+    "CONFIG_TEMPLATES_STEP": "Configuration templates",
+    "SHORT_REVIEW_STEP": "Content review",
+    "NEW_APP_WIZARD_HEADER": "Adding new application",
+    "EDIT_APP_WIZARD_HEADER": "Editing {{app_name}} application",
+    "ACCEPT_RULES_TOOLTIP": "You have to accept the rules!",
+    "NAME_TOOLTIP": "Official application name.",
+    "VERSION_TOOLTIP": "Current release number of application.",
+    "LICENSE_TOOLTIP": "Enter name of license under which application is distributed. Please make sure that application can be used in NMaaS.",
+    "LICENSE_URL_TOOLTIP": "To give user more information about license and permissions to use, provide link to license description.",
+    "PROJECT_WEBSITE_TOOLTIP": "To give user more information about whole project, provide link to project website.",
+    "SOURCE_CODE_TOOLTIP": "Url to project source code e.g. github.com/project.",
+    "PROJECT_ISSUES_TOOLTIP": "To be sure that users can always find way to report bug to team responsible for tool, provide link to issues, e.g. github.com/project/issues.",
+    "TAGS_TOOLTIP": "Please select tags which describes application. This will help users to find applications more effectively.",
+    "NEW_TAGS_TOOLTIP": "You can add tags for your application if existing tags doesn't describe your application well. Type tag name and press enter to add new tag.",
+    "BRIEF_DESCRIPTION_TOOLTIP": "Enter brief description of application. This text will be visible on NMaaS market page.",
+    "FULL_DESCRIPTION_TOOLTIP": "Enter full description of application. This text will be visible on application detail page.",
+    "CHART_NAME_TOOLTIP": "Enter name of chart, which will be used in NMaaS.",
+    "CHART_VERSION_TOOLTIP": "Enter version of chart, which will be used in NMaaS.",
+    "DEFAULT_STORAGE_SPACE_TOOLTIP": "Enter default storage space (in gigabytes).",
+    "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
+    "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
+    "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
+    "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
+    "CONFIG_FILENAME_LABEL": "Configuration filename",
+    "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
+    "CONFIG_CONTENT_LABEL": "Configuration template",
+    "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker Template Language.",
+    "ADD_CONFIG_BUTTON": "Add new template",
+    "APP_CONFIG_TEMPLATES_HEADER": "Application templates configuration",
+    "APP_REQUIRED_DESCRIPTIONS_HEADER": "Required application descriptions",
+    "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Optional application descriptions",
+    "OPTIONAL_LANGS_LABEL": "Select optional languages",
+    "OPTIONAL_LANGS_TOOLTIP": "You can provide additional translations of descriptions into optional languages.",
+    "FIRST_PAGE_HEADER": "General information",
+    "BASIC_APP_INFO_STEP_INFO": "Text to be added soon",
+    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Text to be added soon",
+    "APP_DESCRIPTIONS_STEP_INFO": "Text to be added soon",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Text to be added soon",
+    "CONFIG_TEMPLATES_STEP_INFO": "Text to be added soon",
+    "BASIC_AUTH_LABEL": "Requires basic authorization",
+    "BASIC_AUTH_TOOLTIP": "You can add basic authorization for your application simply by checking this checkbox.",
+    "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates"
+  },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle et journal des modifications",
@@ -490,10 +635,41 @@
       "CLOSE_BUTTON": "Close"
     }
   },
+  "LANGUAGE": {
+    "EN_LABEL": "English",
+    "DE_LABEL": "German",
+    "PL_LABEL": "Polish",
+    "FR_LABEL": "French"
+  },
   "FOOTER": {
     "NOTICE": "Avis de confidentialité"
   },
-  "TAGFILTER": {
-    "TAGS": "Mots clés"
+  "FILTER": {
+    "TAGS": "Mots clés",
+    "DOMAIN": "Domaine"
+  },
+  "ENUM": {
+    "ALL": "Tout",
+    "MY": "Mon",
+    "REQUESTED": "Demandé",
+    "VALIDATION": "Validation",
+    "PREPARATION": "Préparation",
+    "CONNECTING": "De liaison",
+    "CONFIGURATION_AWAITING": "En attente de configuration",
+    "DEPLOYING": "L'installation",
+    "RUNNING": "Fonctionnement",
+    "UNDEPLOYING": "Désinstaller",
+    "DONE": "Terminé",
+    "FAILURE": "Échec",
+    "UNKNOWN": "Inconnu"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Précédent",
+    "NEXT": "Suivant",
+    "SCREEN_READER": {
+      "PAGINATION": "Pagination",
+      "PAGE": "page",
+      "CURRENT": "Vous êtes sur la page"
+    }
   }
 }

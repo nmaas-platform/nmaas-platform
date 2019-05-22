@@ -1,4 +1,12 @@
-import {AfterViewChecked, Component, EventEmitter, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  EventEmitter,
+  Inject,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {AppImagesService, AppInstanceService, AppsService} from '../../../service/index';
@@ -20,12 +28,17 @@ import {LOCAL_STORAGE, StorageService} from "ngx-webstorage-service";
 import {ModalComponent} from "../../../shared/modal";
 import {interval} from 'rxjs/internal/observable/interval';
 import {UserDataService} from "../../../service/userdata.service";
+import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
+import {TranslateService} from "@ngx-translate/core";
+import {SessionService} from "../../../service/session.service";
+import {LocalDatePipe} from "../../../pipe/local-date.pipe";
+import {ApplicationState} from "../../../model/applicationstate";
 
 @Component({
   selector: 'nmaas-appinstance',
   templateUrl: './appinstance.component.html',
   styleUrls: ['./appinstance.component.css', '../../appdetails/appdetails.component.css'],
-  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent]
+  providers: [AppsService, AppImagesService, AppInstanceService, SecurePipe, AppRestartModalComponent, LocalDatePipe]
 })
 export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
 
@@ -48,6 +61,7 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   app: Application;
 
+
   public p_first: string = "p_first";
 
   public maxItemsOnPage: number = 6;
@@ -61,12 +75,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   public configurationTemplate: any;
   public configurationUpdateTemplate:any;
   public submission: any = { data:{} };
+  public isSubmissionUpdated: boolean = false;
+  public isUpdateFormValid: boolean = true;
   public appConfiguration: AppConfiguration;
 
   public intervalCheckerSubscribtion;
 
   public wasUpdated: boolean = false;
   public refreshForm: EventEmitter<any>;
+  public refreshUpdateForm: EventEmitter<any>;
   public readonly REPLACE_TEXT = "\"insert-app-instances-here\"";
 
   constructor(private appsService: AppsService,
@@ -75,23 +92,28 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     private appInstanceService: AppInstanceService,
     private router: Router,
     private route: ActivatedRoute,
+    public translateState: TranslateStateModule,
     private location: Location,
+    private translateService: TranslateService,
+    private sessionService: SessionService,
     @Inject(LOCAL_STORAGE) public storage: StorageService) {}
 
   ngOnInit() {
+    this.dateFormatChanges();
     this.appConfiguration = new AppConfiguration();
     this.route.params.subscribe(params => {
       this.appInstanceId = +params['id'];
 
       this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
         this.appInstance = appInstance;
-        this.configurationTemplate = this.getTemplate(appInstance.configTemplate.template);
+        this.configurationTemplate = this.getTemplate(appInstance.configWizardTemplate.template);
         this.refreshForm = new EventEmitter();
+        this.refreshUpdateForm = new EventEmitter();
         this.submission.data.configuration = JSON.parse(appInstance.configuration);
         this.appsService.getApp(this.appInstance.applicationId).subscribe(app => {
           this.app = app;
-          if(!isNullOrUndefined(this.app.configurationUpdateTemplate)){
-              this.configurationUpdateTemplate = this.getTemplate(this.app.configurationUpdateTemplate.template);
+          if(!isNullOrUndefined(this.app.configUpdateWizardTemplate)){
+              this.configurationUpdateTemplate = this.getTemplate(this.app.configUpdateWizardTemplate.template);
           }
         });
       });
@@ -103,7 +125,15 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     });
   }
 
+  dateFormatChanges(): void{
+    this.sessionService.registerCulture(this.translateService.currentLang);
+  }
+
   ngAfterViewChecked(): void {
+  }
+
+  public getStateAsString(state: any): string {
+    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
   }
 
   changeForm(){
@@ -171,7 +201,6 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
     this.appInstanceService.getAppInstance(this.appInstanceId).subscribe(appInstance => {
       console.log('updated app instance url: ' + appInstance.url);
       this.appInstance = appInstance;
-      this.submission.data.configuration = JSON.parse(appInstance.configuration);
     });
   }
 
@@ -182,7 +211,12 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   public redeploy(): void{
-    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.log("Redeployed"));
+    this.appInstanceService.redeployAppInstance(this.appInstanceId).subscribe(() => console.debug("Redeployed"));
+  }
+
+  public removalFailed(): void{
+    console.debug("Removing failed test...");
+    this.appInstanceService.removeFailedInstance(this.appInstanceId).subscribe(() => console.debug("Removed failed instance"));
   }
 
   public changeAdditionalParameters(additionalParameters: any): void{
@@ -233,10 +267,11 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
       });
   }
 
-  public changeConfigUpdate(input): void {
-    if(!isNullOrUndefined(input)){
-      this.changeConfiguration(input['configuration']);
-      this.changeAccessCredentials(input['accessCredentials']);
+  public changeConfigUpdate(input:any): void {
+    if(!isNullOrUndefined(input) && !isNullOrUndefined(input['data'])){
+      this.isUpdateFormValid = input['isValid'];
+      this.changeConfiguration(input['data']['configuration']);
+      this.changeAccessCredentials(input['data']['accessCredentials']);
     }
   }
 
@@ -256,6 +291,32 @@ export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked
 
   public onRateChanged(): void {
         this.appRate.refresh();
+  }
+
+  public getPathUrl(id: number): string{
+      if(!isNullOrUndefined(id) && !isNaN(id)){
+          return '/apps/' + id + '/rate/my';
+      }else{
+          return "";
+      }
+  }
+
+  public getConfigurationModal(){
+    this.appInstanceService.getConfiguration(this.appInstanceId).subscribe(config => {
+      this.appInstance.configuration = config;
+      this.submission['data']['configuration'] = config;
+      this.refreshUpdateForm.emit({
+        property: 'submission',
+        value: this.submission
+      });
+      this.isSubmissionUpdated = true;
+      this.updateConfigModal.show();
+    });
+  }
+
+  public closeConfigurationModal(){
+    this.isSubmissionUpdated = false;
+    this.updateConfigModal.hide();
   }
 
 }

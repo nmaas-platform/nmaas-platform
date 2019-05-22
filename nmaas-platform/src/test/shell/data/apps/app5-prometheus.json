@@ -1,6 +1,6 @@
 {
     "name": "Prometheus",
-    "version": "2.4.0",
+    "version": "2.8.0",
     "license": "Apache 2.0",
     "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
     "briefDescription": "",
@@ -40,13 +40,22 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-prometheus",
-                "version": "1.0.3-alfa"
+                "version": "1.0.0"
             }
         },
-        "defaultStorageSpace": 20,
-        "configFileRepositoryRequired": true
+        "defaultStorageSpace": 20
     },
-    "configTemplate": {
+    "appConfigurationSpec": {
+        "configFileRepositoryRequired":true,
+        "templates": [
+            {
+                "configFileName":"prometheus.yml",
+                "configFileTemplateContent":"global:\n  scrape_interval: ${global_config.global_scrape}\n  evaluation_interval: ${global_config.global_evaluation}\nalerting:\n  alertmanagers:\n    - static_configs:\n      - targets:\nrule_files:\nscrape_configs:\n<#list targets as target>\n  - job_name: '${target.jobName}'\n    metrics_path: ${target.metrics_path}\n    scrape_interval: ${target.scrape_interval}\n    static_configs:\n    - targets: [<#list target.Addresses as address>'${address.ipAddress}'<#sep>,</#list>]\n<#if target.Labels?has_content>      labels:\n<#list target.Labels as labels>        ${labels.label_name}: ${labels.label_value}\n</#list></#if><#sep>\n</#list>"
+            }
+        ]
+    },
+    "state": "ACTIVE",
+    "configWizardTemplate": {
         "template": {
             "components": [
                 {
@@ -287,7 +296,7 @@
             ]
         }
     },
-    "configurationUpdateTemplate": {
+    "configUpdateWizardTemplate": {
         "template": {
             "components": [
                 {

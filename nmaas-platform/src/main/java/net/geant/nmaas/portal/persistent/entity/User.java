@@ -61,6 +61,8 @@ public class User implements Serializable {
 	private boolean termsOfUseAccepted;
 	private boolean privacyPolicyAccepted;
 
+	private String selectedLanguage;
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "id.user")
 	private List<UserRole> roles = new ArrayList<>();
 	
@@ -82,7 +84,7 @@ public class User implements Serializable {
 	public User(String username, boolean enabled, String password, Domain domain, List<Role> roles) {
 		this(username, enabled);
 		this.password = password;
-		roles.stream().map((r) -> new UserRole(this, domain, r)).forEach(this.roles::add);
+		roles.stream().map(r -> new UserRole(this, domain, r)).forEach(this.roles::add);
 	}
 
 	public User(String username, boolean enabled, String password, Domain domain, Role role, boolean termsOfUseAccepted) {

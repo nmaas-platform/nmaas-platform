@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import {GenericDataService} from "./genericdata.service";
 import {AppConfigService} from "./appconfig.service";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {MonitorEntry} from "../model/monitorentry";
 import {Observable} from "rxjs";
+import {timeout} from "rxjs/operators";
+import {any} from "codelyzer/util/function";
+import {reject} from "q";
 
 @Injectable()
 export class MonitorService extends GenericDataService{
@@ -15,16 +18,8 @@ export class MonitorService extends GenericDataService{
     this.url = this.appConfig.getApiUrl() + '/monitor/'
   }
 
-  public createMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-    return this.post(this.url, monitorEntry);
-  }
-
   public updateMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
     return this.put(this.url, monitorEntry);
-  }
-
-  public deleteMonitorEntryAndJob(serviceName: string):Observable<any>{
-    return this.delete(this.url + serviceName);
   }
 
   public getAllMonitorEntries():Observable<MonitorEntry[]>{

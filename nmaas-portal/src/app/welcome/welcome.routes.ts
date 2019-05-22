@@ -23,7 +23,7 @@ export const WelcomeRoutes: Routes = [
       ]
     },
     { path: 'logout', component: LogoutComponent },
-    { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: {mode: ComponentMode.PROFILVIEW} },
+    { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], data: {mode: ComponentMode.VIEW} },
     { path: 'complete', component: CompleteComponent, canActivate: [AuthGuard] },
     { path: 'terms-acceptance', component: TermsAcceptanceComponent, canActivate: [AuthGuard]},
     { path: 'reset/:token', component: PasswordResetComponent },

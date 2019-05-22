@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import net.geant.nmaas.monitor.MonitorService;
 import net.geant.nmaas.monitor.exceptions.MonitorServiceNotFound;
+import net.geant.nmaas.monitor.model.MonitorEntryView;
 import static org.quartz.JobBuilder.newJob;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -32,7 +33,8 @@ public class ScheduleManager {
         this.scheduler = scheduler;
     }
 
-    public JobDescriptor createJob(JobDescriptor jobDescriptor){
+    public JobDescriptor createJob(MonitorEntryView monitorEntryView){
+        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try{
             if(scheduler.checkExists(jobKey(jobDescriptor.getServiceName().getName())))
@@ -55,13 +57,17 @@ public class ScheduleManager {
         service.checkStatus();
     }
 
-    public void updateJob(JobDescriptor jobDescriptor){
+    public void updateJob(MonitorEntryView monitorEntryView){
+        JobDescriptor jobDescriptor = new JobDescriptor(monitorEntryView.getServiceName(), monitorEntryView.getCheckInterval(), monitorEntryView.getTimeFormat());
         validateJobDescriptor(jobDescriptor);
         try{
             Trigger trigger = scheduler.getTrigger(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()));
             if(trigger != null){
                 trigger = jobDescriptor.buildTrigger();
                 scheduler.rescheduleJob(TriggerKey.triggerKey(jobDescriptor.getServiceName().getName()), trigger);
+                if(!monitorEntryView.isActive()){
+                    this.pauseJob(trigger.getJobKey().getName());
+                }
             }
         } catch (SchedulerException e){
             throw new IllegalStateException("Updating job failed due to " + e.getMessage());
@@ -80,7 +86,7 @@ public class ScheduleManager {
     public void deleteAllJobs(){
         try{
             Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher.anyJobGroup());
-            scheduler.deleteJobs(new ArrayList<JobKey>(keys));
+            scheduler.deleteJobs(new ArrayList<>(keys));
         } catch(SchedulerException e){
             throw new IllegalStateException("Deleting all scheduled jobs failed due to " + e.getMessage());
         }

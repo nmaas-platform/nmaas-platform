@@ -1,7 +1,9 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.janitor;
 
+import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import java.util.Arrays;
 import net.geant.nmaas.externalservices.inventory.janitor.*;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.orchestration.Identifier;
@@ -95,19 +97,24 @@ public class JanitorService {
             throw new JanitorResponseException(response.getMessage());
     }
 
+    //TODO: Replace with proper health check once it's implemented in Janitor
+    boolean isJanitorAvailable(){
+        return Arrays.asList(ConnectivityState.CONNECTING, ConnectivityState.IDLE, ConnectivityState.READY).contains(this.channel.getState(false));
+    }
+
     public boolean checkIfReady(Identifier deploymentId, String domain) {
         ReadinessServiceGrpc.ReadinessServiceBlockingStub stub = ReadinessServiceGrpc.newBlockingStub(channel);
 
         JanitorManager.ServiceResponse response = stub.checkIfReady(buildInstanceRequest(deploymentId, domain));
         switch (response.getStatus()) {
-            case FAILED:
-            case UNRECOGNIZED:
-            default:
-                throw new JanitorResponseException(response.getMessage());
             case OK:
                 return true;
             case PENDING:
                 return false;
+            case FAILED:
+            case UNRECOGNIZED:
+            default:
+                throw new JanitorResponseException(response.getMessage());
         }
     }
 }

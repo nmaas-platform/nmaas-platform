@@ -54,4 +54,6 @@ public interface DcnDeploymentProvider {
      */
     void removeDcn(String domain);
 
+    DcnDeploymentType getDcnDeploymentType();
+
 }

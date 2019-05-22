@@ -4,6 +4,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.geant.nmaas.portal.api.domain.CommentView;
+import net.geant.nmaas.portal.persistent.entity.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import net.geant.nmaas.portal.api.domain.Comment;
 import net.geant.nmaas.portal.api.domain.CommentRequest;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -25,9 +26,9 @@ import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 @RequestMapping("/api/apps/{appId}/comments")
 public class AppCommentsController extends AppBaseController {
 
-	CommentRepository commentRepo;
+	private CommentRepository commentRepo;
 	
-	UserRepository userRepo;
+	private UserRepository userRepo;
 
 	@Autowired
 	public AppCommentsController(CommentRepository commentRepo, UserRepository userRepo){
@@ -37,16 +38,16 @@ public class AppCommentsController extends AppBaseController {
 			
 	@GetMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'READ')")
-	public List<Comment> getComments(@PathVariable(value="appId", required=true) Long appId, Pageable pageable) {
+	public List<CommentView> getComments(@PathVariable(value="appId") Long appId, Pageable pageable) {
 		Application app = getApp(appId);
-		Page<net.geant.nmaas.portal.persistent.entity.Comment> page = commentRepo.findByApplication(app, pageable);
+		Page<Comment> page = commentRepo.findByApplication(app, pageable);
 		return page.getContent().stream().map(comment -> { 
-												Comment c = modelMapper.map(comment, Comment.class); 
+												CommentView c = modelMapper.map(comment, CommentView.class);
 												if(comment.getParent() != null)
 													c.setParentId(comment.getParent().getId());
 												if(comment.isDeleted()) 
 													c.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
-												for(Comment sub : c.getSubComments()) {
+												for(CommentView sub : c.getSubComments()) {
 													if(sub.isDeleted())
 														sub.setComment("<em>@@@\'COMMENTS.REMOVED\'</em>");
 												}
@@ -59,7 +60,7 @@ public class AppCommentsController extends AppBaseController {
 	@PostMapping
 	@PreAuthorize("hasPermission(null, 'comment', 'CREATE')")
 	@Transactional
-	public Id addComment(@PathVariable(value="appId", required=true) Long appId, @RequestBody(required=true) CommentRequest comment, Principal principal) {
+	public Id addComment(@PathVariable(value="appId") Long appId, @RequestBody CommentRequest comment, Principal principal) {
 		Application app = getApp(appId);
 
 		if(comment.getComment() == null || comment.getComment().isEmpty())
@@ -70,7 +71,7 @@ public class AppCommentsController extends AppBaseController {
 		//Workaround problem of mapping parentId -> id
 		//This should be fixed in modelmapper configuration
 		comment.setParentId(null);
-		net.geant.nmaas.portal.persistent.entity.Comment persistentComment = modelMapper.map(comment, net.geant.nmaas.portal.persistent.entity.Comment.class);
+		Comment persistentComment = modelMapper.map(comment, Comment.class);
 		if(persistentComment.getId() != null)
 			throw new IllegalStateException("New comment cannot have id.");
 		
@@ -80,13 +81,13 @@ public class AppCommentsController extends AppBaseController {
 		persistentComment.setApplication(app);
 		persistentComment.setOwner(user);
 
-		net.geant.nmaas.portal.persistent.entity.Comment persistentParentComment = null;
+		Comment persistentParentComment;
 		
 		if(parentId != null) {
 			persistentParentComment = getComment(parentId);
 			if(persistentParentComment == null)
 				throw new MissingElementException("Unable to add comment to non-existing one");
-			if( persistentParentComment.getApplication().getId() != appId )
+			if(!persistentParentComment.getApplication().getId().equals(appId))
 				throw new ProcessingException("Unable to add comment to different application");
 			persistentComment.setParent(persistentParentComment);
 		}
@@ -108,17 +109,16 @@ public class AppCommentsController extends AppBaseController {
 	@DeleteMapping(value="/{commentId}")
 	@PreAuthorize("hasPermission(#commentId, 'comment', 'DELETE')")
 	@Transactional
-	public void deleteComment(@PathVariable(value="appId") Long appId, @PathVariable(value="commentId") Long commentId) {
-		net.geant.nmaas.portal.persistent.entity.Comment comment = getComment(commentId);
+	public void deleteComment(@PathVariable(value="commentId") Long commentId) {
+		Comment comment = getComment(commentId);
 		comment.setDeleted(true);
 		commentRepo.save(comment);
 	}
 	
-	private net.geant.nmaas.portal.persistent.entity.Comment getComment(Long commentId) {
+	private Comment getComment(Long commentId) {
 		if (commentId == null)
 			throw new MissingElementException("Missing comment id." );
-		return commentRepo.findById(commentId).orElseThrow(() ->
-				new MissingElementException("Comment id=" + commentId + " not found."));
+		return commentRepo.findById(commentId).orElseThrow(() -> new MissingElementException("Comment id=" + commentId + " not found."));
 	}
 	
 	

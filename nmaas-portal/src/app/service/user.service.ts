@@ -80,6 +80,10 @@ export class UserService extends GenericDataService {
     return this.post<string, any>(this.getUsersUrl() + "reset/notification", email);
   }
 
+  public setUserLanguage(userId: number, selectedLanguage: string) : Observable<any> {
+    return this.patch(this.getUsersUrl() + userId + '/language?defaultLanguage=' + selectedLanguage, null);
+  }
+
   protected getUsersUrl(): string {
     return this.appConfig.getApiUrl() + '/users/';
   }

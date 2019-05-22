@@ -31,6 +31,9 @@ import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
 import {SortService} from "../service/sort.service";
 import {AppManagementModule} from "./appmanagement/appmanagement.module";
+import {SessionService} from "../service/session.service";
+import {LocalDatePipe} from "../pipe/local-date.pipe";
+import {LanguageManagementModule} from "./admin/languagemanagement/languagemanagement.module";
 
 @NgModule({
   declarations: [
@@ -46,6 +49,7 @@ import {AppManagementModule} from "./appmanagement/appmanagement.module";
     AppListModule,
     AppInstanceModule,
     AppManagementModule,
+    LanguageManagementModule,
     DomainsModule,
     UsersModule,
     AuthModule,
@@ -69,6 +73,7 @@ import {AppManagementModule} from "./appmanagement/appmanagement.module";
     UserService,
     ClusterService,
     SortService,
+    SessionService,
   ]
 
 })

@@ -351,6 +351,14 @@ public enum AppDeploymentState {
     APPLICATION_REMOVED {
         @Override
         public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_REMOVED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if  (NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED.equals(state)) {
+                return APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS;
+            }
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
     },
     APPLICATION_REMOVAL_FAILED {
         @Override
@@ -363,6 +371,42 @@ public enum AppDeploymentState {
 
         @Override
         public boolean isInFailedState() { return true; }
+    },
+    APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            switch (state) {
+                case CONFIGURATION_REMOVED:
+                    return APPLICATION_CONFIGURATION_REMOVED;
+                case CONFIGURATION_REMOVAL_FAILED:
+                    return APPLICATION_CONFIGURATION_REMOVAL_FAILED;
+                default:
+                    return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+            }
+        }
+    },
+    APPLICATION_CONFIGURATION_REMOVED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_REMOVED; }
+
+        @Override
+        public AppDeploymentState nextState(NmServiceDeploymentState state) {
+            if  (NmServiceDeploymentState.FAILED_APPLICATION_REMOVED.equals(state)) {
+                return FAILED_APPLICATION_REMOVED;
+            }
+            return nextStateForNotMatchingNmServiceDeploymentState(this, state);
+        }
+    },
+    APPLICATION_CONFIGURATION_REMOVAL_FAILED {
+        @Override
+        public AppLifecycleState lifecycleState() { return AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_FAILED; }
+    },
+    FAILED_APPLICATION_REMOVED {
+      @Override
+      public AppLifecycleState lifecycleState() {return AppLifecycleState.FAILED_APPLICATION_REMOVED; }
     },
     APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS {
         @Override
@@ -442,6 +486,8 @@ public enum AppDeploymentState {
                     return REQUESTED;
                 case REMOVAL_INITIATED:
                     return APPLICATION_REMOVAL_IN_PROGRESS;
+                case FAILED_APPLICATION_REMOVED:
+                    return FAILED_APPLICATION_REMOVED;
             }
         }
         if(currentAppDeploymentState.isInRunningState()) {

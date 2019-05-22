@@ -7,12 +7,12 @@
 					'btn-success stepwizard-btn-success': (stage.activeState < AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE]) ||
 									(stage.activeState < AppInstanceState[previousState] && AppInstanceState[previousState] !== AppInstanceState[AppInstanceState.UNKNOWN]),
 					'btn-primary stepwizard-btn-primary': (stage.activeState === AppInstanceState[activeState] && activeState != AppInstanceState[AppInstanceState.FAILURE]),
-					'btn-danger stepwizard-btn-danger': (activeState === AppInstanceState[AppInstanceState.FAILURE] && stage.activeState === AppInstanceState[previousState]),
+					'btn-danger stepwizard-btn-danger': (activeState === AppInstanceState[AppInstanceState.FAILURE] && stage.activeState === AppInstanceState[previousState] || activeState === AppInstanceState[AppInstanceState.REMOVED]),
 					'btn-default stepwizard-btn-default':  (stage.activeState > AppInstanceState[previousState] && previousState !== AppInstanceState[AppInstanceState.UNKNOWN] )
 									|| (stage.activeState > AppInstanceState[activeState] && activeState !== AppInstanceState[AppInstanceState.FAILURE])
 									|| (activeState == AppInstanceState[AppInstanceState.UNKNOWN]) || (stage.activeState === AppInstanceState.REQUESTED) || (!stage?.activeState)
 				}">{{stage.activeState}}</a> 
-			<p>{{stage.name}}</p>
+			<p>{{ getTranslateTag(stage.name) }}</p>
 		</div>
 		</ng-template>
 	</div>

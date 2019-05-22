@@ -31,14 +31,6 @@
 			</div>
 		</div>
 
-		<div class="form-group">
-			<label for="active" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.ACTIVE' | translate }}</label>
-			<div class="col-sm-10">
-				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW) || authService.hasRole('ROLE_OPERATOR')" id="active"
-					name="active" [(ngModel)]="domain.active">
-			</div>
-		</div>
-
 		<div class="form-group" *ngIf="!isInMode(ComponentMode.CREATE) && (authService.hasRole('ROLE_SYSTEM_ADMIN') || authService.hasRole('ROLE_OPERATOR'))">
 			<label class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.ID_IN_DB' | translate }}</label>
 			<div class="col-sm-10">
@@ -52,7 +44,7 @@
 			<label for="kubernetesNamespace" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.KUBERNETES_NAMESPACE' | translate }}</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesNamespace" pattern="[a-z-]*" maxlength="64" #namespace="ngModel"
-				name="kubernetesNamespace" [(ngModel)]="domain.kubernetesNamespace" placeholder="{{'DOMAIN_DETAILS.KUBERNETES_NAMESPACE_PLACEHOLDER' | translate}}">
+				name="kubernetesNamespace" [(ngModel)]="domain.domainTechDetails.kubernetesNamespace" placeholder="{{'DOMAIN_DETAILS.KUBERNETES_NAMESPACE_PLACEHOLDER' | translate}}">
 				<div *ngIf="namespace.invalid && (namespace.dirty || namespace.touched)" class="alert alert-danger">
 					<div *ngIf="namespace.errors.pattern">{{ 'DOMAIN_DETAILS.NAMESPACE_PATTERN_VALIDATION_MESSAGE' | translate }}</div>
 					<div *ngIf="namespace.errors.maxlength">{{ 'DOMAIN_DETAILS.NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE' | translate }}</div>
@@ -64,7 +56,7 @@
             <label for="kubernetesStorageClass" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.KUBERNETES_STORAGE_CLASS' | translate }}</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="kubernetesStorageClass"
-                       name="kubernetesStorageClass" [(ngModel)]="domain.kubernetesStorageClass">
+                       name="kubernetesStorageClass" [(ngModel)]="domain.domainTechDetails.kubernetesStorageClass">
             </div>
         </div>
 
@@ -72,23 +64,32 @@
 			<label for="externalServiceDomain " class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.EXTERNAL_SERVICE_DOMAIN' | translate }}</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" [disabled]="isInMode(ComponentMode.VIEW)" id="externalServiceDomain "
-					   name="externalServiceDomain " [(ngModel)]="domain.externalServiceDomain">
+					   name="externalServiceDomain " [(ngModel)]="domain.domainTechDetails.externalServiceDomain">
 			</div>
 		</div>
 
-		<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.VIEW)">
+		<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId()">
+			<label class="col-sm-2 control-label text-right" for="dcnDeploymentType">{{'DOMAIN_DETAILS.DCN_DEPLOYMENT_TYPE' | translate }}</label>
+			<div class="col-sm-10">
+				<select class="form-control" id="dcnDeploymentType" name="dcnDeploymentType" [(ngModel)]="domain.domainDcnDetails.dcnDeploymentType" [disabled]="isInMode(ComponentMode.VIEW)" required>
+					<option *ngFor="let type of keys(dcnDeploymentTypes)" [value]="type">{{dcnDeploymentTypes[type]}}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.VIEW) && isManual()">
 			<label class="col-sm-2 control-label text-right" for="configured-status">{{ 'DOMAIN_DETAILS.DCN_STATUS' | translate }}</label>
 			<div class="col-sm-10" id="configured-status" style="padding-top: 6px;">
-				<p *ngIf="domain?.dcnConfigured">{{ 'DOMAIN_DETAILS.CONFIGURED_VIEW' | translate }}</p>
-				<p *ngIf="!domain?.dcnConfigured">{{ 'DOMAIN_DETAILS.NOT_CONFIGURED_VIEW' | translate }}</p>
+				<p *ngIf="domain?.domainDcnDetails?.dcnConfigured">{{ 'DOMAIN_DETAILS.CONFIGURED_VIEW' | translate }}</p>
+				<p *ngIf="!domain?.domainDcnDetails?.dcnConfigured">{{ 'DOMAIN_DETAILS.NOT_CONFIGURED_VIEW' | translate }}</p>
 			</div>
 		</div>
 
-		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.CREATE)">
+		<div class="form-group" *ngIf="domain.id !== domainService.getGlobalDomainId() && !isInMode(ComponentMode.VIEW) && isManual()">
 			<label for="dcnConfigured" class="col-sm-2 control-label">{{ 'DOMAIN_DETAILS.DCN_CONFIGURED' | translate }}</label>
 			<div class="col-sm-10">
 				<input type="checkbox" class="btn btn-default" [disabled]="isInMode(ComponentMode.VIEW)" id="dcnConfigured"
-				name="dcnConfigured" [(ngModel)]="domain.dcnConfigured">
+				name="dcnConfigured" [(ngModel)]="domain.domainDcnDetails.dcnConfigured" (change)="changeDcnFieldUpdatedFlag()">
 			</div>
 		</div>
 
@@ -122,7 +123,7 @@
 									</td>
 									<td *ngIf="domainId != domainService.getGlobalDomainId()">
 										<span *ngFor="let role of this.getDomainRoleNames(user.roles)">
-											{{role.role | slice:5}}
+											{{"ENUM.USER_ROLES." + role.role.toUpperCase() | translate}}
 										</span>
 									</td>
 								</tr>
@@ -134,16 +135,6 @@
 			</div>
 		<button *ngIf="!isInMode(ComponentMode.VIEW)" type="submit" class="btn btn-default" [disabled]="!domainForm.form.valid">{{ 'DOMAIN_DETAILS.SUBMIT_BUTTON' | translate }}</button>
 	</form>
-	<hr/>
-	<div class="form-group" *ngIf="domain?.id !== domainService.getGlobalDomainId() && isInMode(ComponentMode.EDIT)">
-		<label for="dcnConfiguredButton" class="col-sm-2 control-label" *ngIf="domain?.dcnConfigured">{{ 'DOMAIN_DETAILS.CONFIGURED' | translate }}</label>
-		<label for="dcnNotConfiguredButton" class="col-sm-2 control-label" *ngIf="!domain?.dcnConfigured">{{ 'DOMAIN_DETAILS.NOT_CONFIGURED' | translate }}</label>
-		<div class="col-sm-10">
-			<button *ngIf="domain?.dcnConfigured" id="dcnConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">{{ 'DOMAIN_DETAILS.CHANGE_TO_NOT_CONFIGURE' | translate }}</button>
-			<button *ngIf="!domain?.dcnConfigured" id="dcnNotConfiguredButton" type="button" name="dcnConfiguredButton" class="btn btn-primary" (click)="this.modal.show()" [disabled]="!isInMode(ComponentMode.EDIT)">{{ 'DOMAIN_DETAILS.CHANGE_TO_CONFIGURE' | translate }}</button>
-		</div>
-	</div>
-	<div *ngIf="!domain">{{ 'DOMAIN_DETAILS.NOT_FOUND' | translate }}</div>
 </div>
 
 <nmaas-modal>

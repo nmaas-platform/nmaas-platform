@@ -11,7 +11,7 @@ import net.geant.nmaas.notifications.templates.api.LanguageMailContentView;
 import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
-import net.geant.nmaas.portal.api.domain.User;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
@@ -67,7 +67,7 @@ public class NotificationManager {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         this.getAllAddressees(mailAttributes);
-        for(User user : mailAttributes.getAddressees()){
+        for(UserView user : mailAttributes.getAddressees()){
             this.notificationService.sendMail(user.getEmail(), langTemplate.getSubject(), getFilledTemplate(template, langTemplate, user, mailAttributes, mailTemplate));
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
@@ -77,42 +77,42 @@ public class NotificationManager {
         if(mailAttributes.getMailType().equals(MailType.EXTERNAL_SERVICE_HEALTH_CHECK)){
             mailAttributes.setAddressees(userService.findUsersWithRoleSystemAdminAndOperator());
         }
-        if(mailAttributes.getMailType().equals(MailType.REGISTRATION) || mailAttributes.getMailType().equals(MailType.CONTACT_FORM)){
+        if(mailAttributes.getMailType().equals(MailType.REGISTRATION) || mailAttributes.getMailType().equals(MailType.APP_NEW) || mailAttributes.getMailType().equals(MailType.CONTACT_FORM)){
             mailAttributes.setAddressees(userService.findAllUsersWithAdminRole());
         }
         if(mailAttributes.getMailType().equals(MailType.APP_DEPLOYED)){
             mailAttributes.setAddressees(domainService.findUsersWithDomainAdminRole(mailAttributes.getOtherAttributes().get("domainName")));
             if(mailAttributes.getAddressees().stream().noneMatch(user -> user.getUsername().equals(mailAttributes.getOtherAttributes().get("owner")))){
                 userService.findByUsername(mailAttributes.getOtherAttributes().get("owner"))
-                        .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, User.class)));
+                        .ifPresent(user -> mailAttributes.getAddressees().add(modelMapper.map(user, UserView.class)));
             }
         }
     }
 
-    private String getFilledTemplate(Template template, LanguageMailContentView langContent, User user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
+    private String getFilledTemplate(Template template, LanguageMailContentView langContent, UserView user, MailAttributes mailAttributes, MailTemplateView mailTemplate) throws IOException, TemplateException {
         return FreeMarkerTemplateUtils.processTemplateIntoString(template, ImmutableMap.builder()
                 .putAll(mailTemplate.getGlobalInformation())
-                .put("PORTAL_LINK", this.portalAddress == null ? "" : this.portalAddress)
-                .put("HEADER", getHeader(langContent.getTemplate().get("HEADER"), user))
-                .put("CONTENT", getContent(langContent.getTemplate().get("CONTENT"), mailAttributes.getOtherAttributes()))
-                .put("SENDER", langContent.getTemplate().get("SENDER"))
-                .put("NOREPLY", langContent.getTemplate().get("NOREPLY"))
-                .put("SENDER_POLICY", langContent.getTemplate().get("SENDER_POLICY"))
-                .put("TITLE", langContent.getSubject())
+                .put(MailTemplateElements.PORTAL_LINK, this.portalAddress == null ? "" : this.portalAddress)
+                .put(MailTemplateElements.HEADER, getHeader(langContent.getTemplate().get(MailTemplateElements.HEADER), user))
+                .put(MailTemplateElements.CONTENT, getContent(langContent.getTemplate().get(MailTemplateElements.CONTENT), mailAttributes.getOtherAttributes()))
+                .put(MailTemplateElements.SENDER, langContent.getTemplate().get(MailTemplateElements.SENDER))
+                .put(MailTemplateElements.NOREPLY, langContent.getTemplate().get(MailTemplateElements.NOREPLY))
+                .put(MailTemplateElements.SENDER_POLICY, langContent.getTemplate().get(MailTemplateElements.SENDER_POLICY))
+                .put(MailTemplateElements.TITLE, langContent.getSubject())
                 .build());
     }
 
-    private String getHeader(String header, User user) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("HEADER", new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
+    private String getHeader(String header, UserView user) throws IOException, TemplateException {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.HEADER, new StringReader(header), new Configuration(Configuration.VERSION_2_3_28)), ImmutableMap.of("username", user.getFirstname() == null || user.getFirstname().isEmpty() ? user.getUsername() : user.getFirstname()));
     }
 
     private String getContent(String content, Map<String, String> otherAttributes) throws IOException, TemplateException {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template("CONTENT", new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
+        return FreeMarkerTemplateUtils.processTemplateIntoString(new Template(MailTemplateElements.CONTENT, new StringReader(content), new Configuration(Configuration.VERSION_2_3_28)), otherAttributes);
     }
 
-    private List<String> getListOfMails(List<User> users){
+    private List<String> getListOfMails(List<UserView> users){
         return users.stream()
-                .map(User::getEmail)
+                .map(UserView::getEmail)
                 .collect(Collectors.toList());
     }
 

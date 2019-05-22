@@ -8,7 +8,7 @@
     "USERS": "Benutzer",
     "INVENTORY": "Externe Komponenten",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Einstellungen",
+    "SETTINGS": "Einstellungen",
     "PROFILE": "Profil",
     "LOGOUT": "Ausloggen",
     "LOGIN_REGISTER": "Einloggen | Registrieren",
@@ -186,7 +186,8 @@
     "ACTIVATE": "Aktiv",
     "DETAILS_BUTTON": "Details",
     "EDIT_BUTTON": "Bearbeiten",
-    "REMOVE_BUTTON": "Löschen",
+    "DISABLE_BUTTON": "Disable",
+    "ENABLE_BUTTON": "Enable",
     "ADD_BUTTON": "Hinzufügen"
   },
   "APP_INSTANCES": {
@@ -195,7 +196,7 @@
     "NAME": "Name",
     "DOMAIN": "Domain",
     "OWNER": "Eigentümer",
-    "DEPLOYED_AT": "Installiert in",
+    "DEPLOYED_AT": "Bereitstellungszeit",
     "APPLICATION": "Anwendung",
     "STATE": "Status",
     "DETAILS_BUTTON": "Details",
@@ -215,7 +216,8 @@
     "VIEW_SETTINGS_BUTTON": "Ansichtseinstellungen",
     "CHECK_NOW_BUTTON": "Jetzt prüfen",
     "EDIT_SETTINGS_BUTTON": "Einstellungen bearbeiten",
-    "REMOVE_BUTTON": "Löschen"
+    "ACTIVATE_BUTTON": "Activate",
+    "DEACTIVATE_BUTTON": "Deactivate"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Überwachungs Service Details",
@@ -283,7 +285,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Codename muss 2-8 Zeichen lang sein.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "External service domain"
+    "EXTERNAL_SERVICE_DOMAIN": "External service domain",
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",
@@ -382,6 +385,7 @@
     "RESTART_BUTTON": "Neustart",
     "REDEPLOY_BUTTON": "Neu installieren",
     "UPDATE_CONFIG_BUTTON": "Update",
+    "DEPLOYMENT_IN_PROGRESS": "Anwendung wird bereitgestellt. Dieser Vorgang kann einige Minuten dauern. Sie werden per E-Mail benachrichtigt, sobald Ihre Instanz fertig ist.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Installations Fortschritt",
       "STATE": "Status",
@@ -403,7 +407,47 @@
     },
     "REQUIRED_FIELDS": "benötigte Felder",
     "APPLY_CONFIG_BUTTON": "Konfiguration anwenden",
-    "DEFAULT_VALUE": "Standardwert"
+    "DEFAULT_VALUE": "Standardwert",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Abonnement-Validierung",
+      "ENVIRONMENT_CREATION": "Umweltschaffung",
+      "SETTING_UP_CONNECTIVITY": "Konnektivität einrichten",
+      "APPLYING_APP_CONFIGURATION": "App-Konfiguration anwenden",
+      "APP_CONTAINER_DEPLOYMENT": "App-Container-Bereitstellung",
+      "APP_RUNNING": "App läuft",
+      "UNDEPLOYING": "Bereitstellung aufheben",
+      "REMOVED": "Entfernt",
+      "DEPLOY_REQUESTED": "Bereitstellung der Anwendungsinstanz wurde angefordert",
+      "VALIDATION_REQUEST": "Gültigkeitsprüfung anfordern",
+      "REQUEST_VALIDATE": "Validierte Anforderung",
+      "VALIDATE_FAILED": "Validierung der Anforderung fehlgeschlagen",
+      "DEPLOY_IN_PROGRESS": "Vorbereitung der Bereitstellungsumgebung",
+      "ENV_READY":"Bereitstellungsumgebung ist bereit",
+      "ENV_FAILED": "Vorbereitung der Bereitstellungsumgebung fehlgeschlagen",
+      "DCN_PROGRESS": "DCN-Konfiguration läuft",
+      "DCN_SUCCESS": "DCN erfolgreich konfiguriert",
+      "DCN_FAILED": "DCN-Konfiguration fehlgeschlagen",
+      "APP_CONFIG_PROGRESS": "Anwendungskonfiguration läuft",
+      "APP_CONFIG_SUCCESS": "Anwendung erfolgreich konfiguriert",
+      "APP_CONFIG_FAILED": "Anwendungskonfiguration fehlgeschlagen",
+      "APP_DEPLOY_PROGRESS": "Anwendungsimplementierung läuft",
+      "APP_DEPLOY_SUCCESS": "Anwendung wurde erfolgreich implementiert",
+      "APP_DEPLOY_FAILED": "Anwendungsbereitstellung fehlgeschlagen",
+      "DEPLOY_VER_PROGRESS": "Überprüfung der Bereitstellung läuft",
+      "DEPLOY_VER_SUCCESS": "Bereitstellung erfolgreich verifiziert",
+      "DEPLOY_VER_FAILED": "Deployment-Überprüfung fehlgeschlagen",
+      "APP_REMOVE_PROGRESS": "Das Entfernen der Anwendung wird ausgeführt",
+      "APP_REMOVE_SUCCESS": "Anwendung erfolgreich entfernt",
+      "APP_REMOVE_FAILED": "Entfernen der Anwendung fehlgeschlagen",
+      "APP_RESTART_PROGRESS": "Anwendungsneustart läuft",
+      "APP_RESTART_SUCCESS": "Anwendung erfolgreich neu gestartet",
+      "APP_RESTART_FAILED": "Anwendungsneustart fehlgeschlagen",
+      "APP_UPDATE_PROGRESS": "Aktualisierung der Anwendungskonfiguration läuft",
+      "APP_UPDATE_SUCCESS": "Anwendungskonfiguration erfolgreich aktualisiert",
+      "APP_UPDATE_FAILED": "Update der Anwendungskonfiguration ist fehlgeschlagen",
+      "UNKNOWN": "Unbekannter Zustand",
+      "ERROR": "Interner Fehler"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
@@ -437,7 +481,7 @@
     "GO_BACK": "Zurück zur NMaaS Seite",
     "MODAL": {
       "HEADER": "Bitte überprüfen Sie Ihre E-Mails",
-      "BODY": "Wenn Sie eine gültige E-Mail Adresse angegeben haben, werden wir Ihnen einen Link für das Zurücksetzen des Passworts senden.",
+      "BODY": "Wenn Sie eine gültige E-Mail Adresse angegeben haben, werden wir Ihnen einen Link für das Zurücksetzen des Passworts senden. Bitte beachten Sie, dass Sie das Kennwort nur für das lokale Konto zurücksetzen können.",
       "CLOSE_BUTTON": "Schließen"
     },
     "SITE": {
@@ -463,8 +507,109 @@
   "APPS_MANAGEMENT": {
     "TITLE": "Applications management",
     "NAME": "Name",
-    "ACTIVE": "Active",
-    "REMOVE_BUTTON": "Remove"
+    "STATE": "State",
+    "ADD_BUTTON": "Add",
+    "VIEW_BUTTON": "View",
+    "EDIT_BUTTON": "Edit",
+    "CHANGE_STATE_BUTTON": "Change state",
+    "APPROVED_TAB": "Approved",
+    "REJECTED_TAB": "Rejected",
+    "NEW_TAB": "New",
+    "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+  },
+  "APPS_PREVIEW": {
+    "PREVIEW_MESSAGE": "This page is only a preview of submitted application",
+    "CONFIG_WIZARD_PREVIEW_HEADER": "Configuration wizard preview",
+    "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Update configuration wizard preview"
+  },
+  "APPS_WIZARD": {
+    "FIRST_PAGE_MESSAGE": "Lorem ipsum",
+    "ACCEPT_RULES_CHECKBOX": "I have accepted the rules",
+    "NEXT_BUTTON": "Next",
+    "SUBMIT_BUTTON": "Submit",
+    "PREVIOUS_BUTTON": "Previous",
+    "NAME_LABEL": "Name",
+    "VERSION_LABEL": "Version",
+    "LICENSE_LABEL": "License",
+    "LICENSE_URL_LABEL": "License url",
+    "PROJECT_WEBSITE_LABEL": "Project website",
+    "SOURCE_CODE_LABEL": "Link to source code",
+    "PROJECT_ISSUES_LABEL": "Link to project issues",
+    "TAGS_LABEL": "Select tags for application",
+    "NEW_TAGS_LABEL": "Add new tags for your application",
+    "CHOOSE_LABEL": "Choose",
+    "CANCEL_LABEL": "Cancel",
+    "UPLOAD_LOGO_LABEL": "Upload application logo",
+    "UPLOAD_SCREENSHOTS_LABEL": "Upload application screenshots",
+    "BRIEF_DESCRIPTION_LABEL": "Brief description",
+    "FULL_DESCRIPTION_LABEL": "Full description",
+    "APP_DEPLOYMENT_HEADER": "Application deployment specification",
+    "CHART_NAME_LABEL": "Chart name",
+    "CHART_VERSION_LABEL": "Chart version",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Default storage space (in GB)",
+    "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
+    "REPOSITORY_REQUIRED_LABEL": "Uses autogenerated configuration files",
+    "CONFIG_WIZARD_TEMPLATE_LABEL": "Application configuration wizard template",
+    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Application update configuration wizard template",
+    "NEW_APP_MODAL": {
+      "HEADER": "New application submitted correctly",
+      "BODY": "Thank you for submitting new application. Your request must be now reviewed by NMaaS Team. It may take some time.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
+    },
+    "EDIT_APP_MODAL": {
+      "HEADER": "Application edited correctly",
+      "BODY": "Thank you for editing existing application. Your changes should be applied soon",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Back"
+    },
+    "GENERAL_INFO_STEP": "General information",
+    "BASIC_APP_INFO_STEP": "Basic application information",
+    "LOGO_AND_SCREENSHOTS_STEP": "Logo and screenshots",
+    "APP_DESCRIPTIONS_STEP": "Application descriptions",
+    "APP_DEPLOYMENT_SPEC_STEP": "Deployment specification",
+    "CONFIG_TEMPLATES_STEP": "Configuration templates",
+    "SHORT_REVIEW_STEP": "Content review",
+    "NEW_APP_WIZARD_HEADER": "Adding new application",
+    "EDIT_APP_WIZARD_HEADER": "Editing {{app_name}} application",
+    "ACCEPT_RULES_TOOLTIP": "You have to accept the rules!",
+    "NAME_TOOLTIP": "Official application name.",
+    "VERSION_TOOLTIP": "Current release number of application.",
+    "LICENSE_TOOLTIP": "Enter name of license under which application is distributed. Please make sure that application can be used in NMaaS.",
+    "LICENSE_URL_TOOLTIP": "To give user more information about license and permissions to use, provide link to license description.",
+    "PROJECT_WEBSITE_TOOLTIP": "To give user more information about whole project, provide link to project website.",
+    "SOURCE_CODE_TOOLTIP": "Url to project source code e.g. github.com/project.",
+    "PROJECT_ISSUES_TOOLTIP": "To be sure that users can always find way to report bug to team responsible for tool, provide link to issues, e.g. github.com/project/issues.",
+    "TAGS_TOOLTIP": "Please select tags which describes application. This will help users to find applications more effectively.",
+    "NEW_TAGS_TOOLTIP": "You can add tags for your application if existing tags doesn't describe your application well. Type tag name and press enter to add new tag.",
+    "BRIEF_DESCRIPTION_TOOLTIP": "Enter brief description of application. This text will be visible on NMaaS market page.",
+    "FULL_DESCRIPTION_TOOLTIP": "Enter full description of application. This text will be visible on application detail page.",
+    "CHART_NAME_TOOLTIP": "Enter name of chart, which will be used in NMaaS.",
+    "CHART_VERSION_TOOLTIP": "Enter version of chart, which will be used in NMaaS.",
+    "DEFAULT_STORAGE_SPACE_TOOLTIP": "Enter default storage space (in gigabytes).",
+    "DEPLOY_PARAMETER_TOOLTIP": "Some applications may use global NMaaS settings. If you want to use one of them please specify how we should pass that variable.",
+    "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS can use GitLab to store configuration of each instance.",
+    "DISABLED_NEXT_BUTTON_TOOLTIP": "You have to fill all required fields!",
+    "DEPLOY_PARAMETERS_DROPDOWN": "Select global deployment parameters",
+    "CONFIG_FILENAME_LABEL": "Configuration filename",
+    "CONFIG_FILENAME_TOOLTIP": "Enter name of configuration file",
+    "CONFIG_CONTENT_LABEL": "Configuration template",
+    "CONFIG_CONTENT_TOOLTIP":"Enter configuration template. Please be advised that it has to be compatible with FreeMarker Template Language.",
+    "ADD_CONFIG_BUTTON": "Add new template",
+    "APP_CONFIG_TEMPLATES_HEADER": "Application templates configuration",
+    "APP_REQUIRED_DESCRIPTIONS_HEADER": "Required application descriptions",
+    "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Optional application descriptions",
+    "OPTIONAL_LANGS_LABEL": "Select optional languages",
+    "OPTIONAL_LANGS_TOOLTIP": "You can provide additional translations of descriptions into optional languages.",
+    "FIRST_PAGE_HEADER": "General information",
+    "BASIC_APP_INFO_STEP_INFO": "Text to be added soon",
+    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Text to be added soon",
+    "APP_DESCRIPTIONS_STEP_INFO": "Text to be added soon",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Text to be added soon",
+    "CONFIG_TEMPLATES_STEP_INFO": "Text to be added soon",
+    "BASIC_AUTH_LABEL": "Requires basic authorization",
+    "BASIC_AUTH_TOOLTIP": "You can add basic authorization for your application simply by checking this checkbox.",
+    "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Kontaktieren Sie uns",
@@ -492,10 +637,41 @@
       "CLOSE_BUTTON": "Close"
     }
   },
+  "LANGUAGE": {
+    "EN_LABEL": "English",
+    "DE_LABEL": "German",
+    "PL_LABEL": "Polish",
+    "FR_LABEL": "French"
+  },
   "FOOTER": {
     "NOTICE": "Datenschutzerklärung"
   },
-  "TAGFILTER": {
-    "TAGS": "Stichworte"
+  "FILTER": {
+    "TAGS": "Stichworte",
+    "DOMAIN": "Domain"
+  },
+  "ENUM": {
+    "ALL": "Alles",
+    "MY": "Meine",
+    "REQUESTED": "Angeforderte",
+    "VALIDATION": "Validierung",
+    "PREPARATION": "Vorbereitung",
+    "CONNECTING": "Anschließen",
+    "CONFIGURATION_AWAITING": "Warten auf Konfiguration",
+    "DEPLOYING": "Installieren",
+    "RUNNING": "Am Laufen",
+    "UNDEPLOYING": "Deinstallieren",
+    "DONE": "Erledigt",
+    "FAILURE": "Fehler",
+    "UNKNOWN": "Unbekannt"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Bisherige",
+    "NEXT": "Nächster",
+    "SCREEN_READER": {
+      "PAGINATION": "Seitennummerierung",
+      "PAGE": "seite",
+      "CURRENT": "Du bist auf der Seite"
+    }
   }
 }

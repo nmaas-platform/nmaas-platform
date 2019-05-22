@@ -101,6 +101,14 @@ export class AppInstanceService extends GenericDataService {
     return this.post<number, any>(this.getUrl(domainId) + appInstanceId + '/redeploy', appInstanceId);
   }
 
+  public removeFailedInstance(appInstanceId: number, domainId?: number): Observable<any> {
+    return this.delete<any>(this.getUrl(domainId) + "failed/" + appInstanceId);
+  }
+
+  public getConfiguration(appInstanceId: number): Observable<any> {
+    return this.get<any>(this.getUrl() + appInstanceId + '/configuration');
+  }
+
   protected getUrl(domainId?: number): string {
     if (isUndefined(domainId)) {
       return this.appConfig.getApiUrl() + '/apps/instances/';

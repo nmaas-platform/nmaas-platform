@@ -1,5 +1,6 @@
 package net.geant.nmaas.monitor;
 
+import java.util.Collections;
 import net.geant.nmaas.monitor.entities.MonitorEntry;
 import net.geant.nmaas.monitor.exceptions.MonitorEntryNotFound;
 import net.geant.nmaas.monitor.model.MonitorEntryView;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +39,8 @@ public class MonitorManagerTest {
     @BeforeEach
     public void setup(){
         this.monitorManager = new MonitorManager(repository, modelMapper, eventPublisher);
-        this.monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN);
-        this.monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN);
+        this.monitorEntryView = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN, true);
+        this.monitorEntry = new MonitorEntry(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), 10L, TimeFormat.MIN,true);
         when(repository.existsByServiceName(ServiceType.GITLAB)).thenReturn(false);
         when(repository.findByServiceName(ServiceType.GITLAB)).thenReturn(Optional.of(monitorEntry));
     }
@@ -54,7 +54,7 @@ public class MonitorManagerTest {
     @Test
     public void shouldNotCreateMonitorEntryWithNullCheckInterval(){
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN);
+            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), null, TimeFormat.MIN, true);
             this.monitorManager.createMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -62,7 +62,7 @@ public class MonitorManagerTest {
     @Test
     public void shouldNotCreateMonitorEntryWithCheckIntervalLessThanZero(){
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN);
+            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, MonitorStatus.SUCCESS, new Date(), new Date(), -5L, TimeFormat.MIN, true);
             this.monitorManager.createMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -70,7 +70,7 @@ public class MonitorManagerTest {
     @Test
     public void shouldNotCreateMonitorEntryWithNullServiceName(){
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN);
+            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, null, MonitorStatus.SUCCESS, new Date(), new Date(), 5L, TimeFormat.MIN, true);
             this.monitorManager.createMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -92,7 +92,7 @@ public class MonitorManagerTest {
     @Test
     public void shouldNotUpdateMonitorEntryWithMonitorEntryViewObjectTimeFormatIsNull(){
         assertThrows(IllegalStateException.class, () -> {
-            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null);
+            MonitorEntryView wrongMonitorEntry = new MonitorEntryView(1L, ServiceType.GITLAB, null, new Date(), new Date(), 5L, null, true);
             this.monitorManager.updateMonitorEntry(wrongMonitorEntry);
         });
     }
@@ -126,7 +126,7 @@ public class MonitorManagerTest {
 
     @Test
     public void shouldGetAllMonitorEntries(){
-        when(repository.findAll()).thenReturn(Arrays.asList(monitorEntry));
+        when(repository.findAll()).thenReturn(Collections.singletonList(monitorEntry));
         List<MonitorEntryView> results = this.monitorManager.getAllMonitorEntries();
         assertThat("Different list size", results.size() == 1);
         assertThat("Different entries", results.get(0).getServiceName().equals(monitorEntry.getServiceName()));

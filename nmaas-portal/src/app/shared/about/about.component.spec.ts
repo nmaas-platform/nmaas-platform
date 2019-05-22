@@ -2,7 +2,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AboutComponent } from './about.component';
 import {TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService} from "@ngx-translate/core";
-import {NavbarComponent} from "../navbar";
 import {ChangelogComponent} from "../changelog/changelog.component";
 import {FooterComponent} from "../footer";
 import {AppConfigService, ChangelogService} from "../../service";
@@ -16,6 +15,7 @@ import {NotificationService} from "../../service/notification.service";
 import {RecaptchaModule} from "ng-recaptcha";
 import {TooltipModule} from "ng2-tooltip-directive";
 import {Component} from "@angular/core";
+import {InternationalizationService} from "../../service/internationalization.service";
 
 @Component({
   selector: 'app-navbar',
@@ -26,7 +26,7 @@ class MockAppNavbar{}
 describe('AboutComponent', () => {
   let component: AboutComponent;
   let fixture: ComponentFixture<AboutComponent>;
-  let contentService: ContentDisplayService;
+  let languageService: InternationalizationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -45,7 +45,7 @@ describe('AboutComponent', () => {
           RecaptchaModule,
           TooltipModule
       ],
-      providers: [ChangelogService, AppConfigService, ContentDisplayService, NotificationService]
+      providers: [ChangelogService, AppConfigService, ContentDisplayService, NotificationService, InternationalizationService]
     })
     .compileComponents();
   }));
@@ -53,8 +53,8 @@ describe('AboutComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AboutComponent);
     component = fixture.componentInstance;
-    contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
+    languageService = fixture.debugElement.injector.get(InternationalizationService);
+    spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     fixture.debugElement.injector.get(TranslateService).use("en");
     fixture.detectChanges();
   });

@@ -1,10 +1,9 @@
-<span [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']" class="dropdown dropdown-domains"
-		>
+<span [routerLinkActiveOptions]="{exact:true}" [routerLinkActive]="['active']" class="dropdown dropdown-domains">
 		<a class="dropdown-toggle" data-close-others="true" data-toggle="dropdown" href="#">
-			<span style="color: gray;">Domain: {{ getCurrent() }}<span class="caret"></span></span>
+			<span style="color: gray;">{{ "FILTER.DOMAIN" | translate }}: {{ getCurrent() }}<span class="caret"></span></span>
 		</a>
 		<ul class="dropdown-menu">
-			<li *ngFor="let domain of domains | async" [ngClass]="{'active': getCurrent() == domain?.name}">
+			<li *ngFor="let domain of domains | async; let last = isLast" [ngClass]="{'active': getCurrent() == domain?.name}">
 				<a (click)="changeDomain(domain?.id, domain?.name)">
 					<span>{{domain?.name}}</span>
 				</a>

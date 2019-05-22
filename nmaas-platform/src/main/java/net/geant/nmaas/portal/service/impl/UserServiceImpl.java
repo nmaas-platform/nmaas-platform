@@ -1,20 +1,25 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableSet;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
+import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_SYSTEM_ADMIN;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,19 +37,22 @@ import java.util.Optional;
 @Log4j2
 public class UserServiceImpl implements UserService {
 	
-	UserRepository userRepo;
+	private UserRepository userRepo;
 	
-	UserRoleRepository userRoleRepo;
+	private UserRoleRepository userRoleRepo;
 
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
-	ModelMapper modelMapper;
+	private ConfigurationManager configurationManager;
+
+	private ModelMapper modelMapper;
 
 	@Autowired
-	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder, ModelMapper modelMapper){
+	public UserServiceImpl(UserRepository userRepo, UserRoleRepository userRoleRepo, PasswordEncoder passwordEncoder, ConfigurationManager configurationManager, ModelMapper modelMapper){
 		this.userRepo = userRepo;
 		this.userRoleRepo = userRoleRepo;
 		this.passwordEncoder = passwordEncoder;
+		this.configurationManager = configurationManager;
 		this.modelMapper = modelMapper;
 	}
 	
@@ -56,6 +64,23 @@ public class UserServiceImpl implements UserService {
 		UserRole userRole = userRoleRepo.findByDomainAndUserAndRole(domain, user, role);		
 		
 		return (userRole != null);
+	}
+
+	@Override
+	public boolean canUpdateData(String username, final List<UserRole> userRoles){
+		checkParam(username);
+		User user = findByUsername(username).orElseThrow(() -> new MissingElementException("User with username " + username + " not found"));
+		return isAdmin(user) || isDomainAdminInUserDomain(user, userRoles);
+	}
+
+	private boolean isDomainAdminInUserDomain(User admin, final List<UserRole> userRoles){
+		return admin.getRoles().stream()
+				.filter(role -> role.getRole().equals(ROLE_DOMAIN_ADMIN))
+				.anyMatch(role -> userRoles.stream().anyMatch(userRole -> userRole.getDomain().equals(role.getDomain())));
+	}
+
+	private boolean isAdmin(User user){
+		return user.getRoles().stream().anyMatch(role -> role.getRole().equals(ROLE_SYSTEM_ADMIN));
 	}
 
 	@Override
@@ -111,7 +136,7 @@ public class UserServiceImpl implements UserService {
 	public User register(Registration registration, Domain globalDomain, Domain domain){
 
 		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
-			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
+			throw new SignupException("User already exists");
 		}
 
 		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);
@@ -124,6 +149,7 @@ public class UserServiceImpl implements UserService {
 		}
 		newUser.setTermsOfUseAccepted(registration.getTermsOfUseAccepted());
 		newUser.setPrivacyPolicyAccepted(registration.getPrivacyPolicyAccepted());
+		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
 		userRepo.save(newUser);
 
 		return newUser;
@@ -133,9 +159,10 @@ public class UserServiceImpl implements UserService {
 	public User register(UserSSOLogin userSSO, Domain globalDomain){
 		byte[] array = new byte[16]; // random password
 		new SecureRandom().nextBytes(array);
-		String generatedString = new String(array, Charset.forName("UTF-8"));
+		String generatedString = new String(array, StandardCharsets.UTF_8);
 		User newUser = new User("thirdparty-"+System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
 		newUser.setSamlToken(userSSO.getUsername()); //Check user ID TODO: check if it's truly unique!
+		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
 		userRepo.save(newUser);
 
 		return newUser;
@@ -165,6 +192,12 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void setEnabledFlag(Long userId, boolean isEnabled) {
 		userRepo.setEnabledFlag(userId, isEnabled);
+	}
+
+	@Override
+	@Transactional
+	public void setUserLanguage(Long userId, final String userLanguage){
+		userRepo.setUserLanguage(userId, userLanguage);
 	}
 
 	@Override
@@ -207,18 +240,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findAllUsersWithAdminRole(){
+	public List<UserView> findAllUsersWithAdminRole(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findUsersWithRoleSystemAdminAndOperator(){
+	public List<UserView> findUsersWithRoleSystemAdminAndOperator(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 }

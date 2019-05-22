@@ -1,6 +1,6 @@
 {
 	"name":"Oxidized",
-	"version":"0.24.0",
+	"version":"0.25.1",
 	"license":"MIT",
 	"licenseUrl": "https://opensource.org/licenses/MIT",
 	"tags": [ "management", "backup", "configuration"],
@@ -36,14 +36,27 @@
 		"kubernetesTemplate": {
 			"chart": {
 				"name": "nmaas-oxidized",
-				"version": "1.0.3-alfa"
+				"version": "1.0.0"
 			},
 			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 		},
-		"defaultStorageSpace":20,
-		"configFileRepositoryRequired":true
+		"defaultStorageSpace":20
 	},
-	"configTemplate": {
+	"appConfigurationSpec": {
+		"configFileRepositoryRequired":true,
+		"templates": [
+			{
+				"configFileName":"config",
+				"configFileTemplateContent":"---\nusername: ${oxidizedUsername}\npassword: ${oxidizedPassword}\nmodel: junos\ninterval: 600\nuse_syslog: false\ndebug: false\nthreads: 30\ntimeout: 20\nretries: 3\nprompt: !ruby/regexp /^([\\w.@-]+[#>]\\s?)$/\nrest: 0.0.0.0:8888\nvars: {}\ngroups: {}\npid: \"/storage/pid\"\ninput:\n  default: ssh, telnet\n  debug: false\n  ssh:\n    secure: false\noutput:\n  default: git\n  file:\n    directory: \"/storage/configs\"\n  git:\n    user: oxidized\n    email: oxidized@man.poznan.pl\n    repo: \"/storage/oxidized.git\"\nsource:\n  default: csv\n  csv:\n    file: \"/root/.config/oxidized/router.db\"\n    delimiter: !ruby/regexp /:/\n    map:\n      name: 0\n      model: 1\nmodel_map:\n  cisco: ios\n  juniper: junos"
+			},
+			{
+				"configFileName":"router.db",
+				"configFileTemplateContent":"<#list targets as target>\n${target.ipAddress}:junos\n</#list>"
+			}
+		]
+	},
+	"state": "ACTIVE",
+	"configWizardTemplate": {
 		"template": {
 			"components": [
 				{
@@ -202,7 +215,7 @@
 			]
 		}
 	},
-	"configurationUpdateTemplate": {
+	"configUpdateWizardTemplate": {
 		"template": {
 			"components": [
 				{

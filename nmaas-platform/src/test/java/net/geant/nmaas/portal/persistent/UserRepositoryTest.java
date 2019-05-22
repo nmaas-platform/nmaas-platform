@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent;
 
 import net.geant.nmaas.portal.PersistentConfig;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
@@ -46,7 +47,7 @@ public class UserRepositoryTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		domains.createGlobalDomain();
-		domains.createDomain(DOMAIN, DOMAIN);
+		domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
 		userRepository.deleteAll();
 	}
 
@@ -132,7 +133,8 @@ public class UserRepositoryTest {
 		User testUser = new User("testUser", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
 		testUser.setEmail("email@email.com");
-		userRepository.save(testUser);
+		User result = userRepository.save(testUser);
+		assertEquals(testUser.getEmail(), result.getEmail());
 	}
 
 	@Test
@@ -150,7 +152,8 @@ public class UserRepositoryTest {
 		User testUser = new User("testUser", true, "test123",
 				domains.findDomain(DOMAIN).get(), Role.ROLE_USER, true, false);
 		testUser.setSamlToken("test|1234|saml");
-		userRepository.save(testUser);
+		User result = userRepository.save(testUser);
+		assertEquals(testUser.getSamlToken(), result.getSamlToken());
 	}
 
 	@Test

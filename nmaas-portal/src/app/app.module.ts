@@ -17,11 +17,13 @@ import { SharedModule } from './shared/index';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from './auth/auth.service';
 
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateModule, TranslateLoader, MissingTranslationHandler} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {TranslateService} from "@ngx-translate/core";
-import {TranslateLoaderImpl} from "./service/translate-loader-impl.service";
+import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
+import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
+import {ServiceUnavailableModule} from "./service-unavailable/service-unavailable.module";
 
 
 export function appConfigFactory( config: AppConfigService) {
@@ -55,9 +57,11 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     AppMarketModule,
     SharedModule,
     WelcomeModule,
+    ServiceUnavailableModule,
     routing,
     TranslateModule.forRoot({
-      loader: {
+        missingTranslationHandler: {provide: MissingTranslationHandler, useClass: CustomMissingTranslationService},
+        loader: {
           provide: TranslateLoader,
           useFactory: HttpLoaderFactory,
           deps: [HttpClient, AppConfigService]

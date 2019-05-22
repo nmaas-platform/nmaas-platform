@@ -1,6 +1,7 @@
 package net.geant.nmaas.orchestration.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
 import net.geant.nmaas.orchestration.api.model.AppConfigurationView;
 import net.geant.nmaas.orchestration.entities.AppConfiguration;
@@ -69,10 +70,11 @@ public class OrchestratorManagerControllerIntTest {
         String jsonInput = "{\"id\":\"testvalue\"}";
         appConfiguration = new AppConfiguration(jsonInput);
         mvc = MockMvcBuilders.standaloneSetup(new AppLifecycleManagerRestController(lifecycleManager, appRepo, new ModelMapper())).build();
-        Application application = new Application("testapp");
+        Application application = new Application("testapp", "testversion","owner");
         application.setAppDeploymentSpec(new AppDeploymentSpec());
+        application.setAppConfigurationSpec(new AppConfigurationSpec());
         application.getAppDeploymentSpec().setDefaultStorageSpace(20);
-        application.getAppDeploymentSpec().setConfigFileRepositoryRequired(true);
+        application.getAppConfigurationSpec().setConfigFileRepositoryRequired(true);
         when(appRepo.findById(any())).thenReturn(Optional.of(application));
     }
 

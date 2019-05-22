@@ -1,5 +1,5 @@
 <app-navbar></app-navbar>
-<div class="container">
+<div class="container" *ngIf="user">
     <div class="page-header" style="padding-top: 14px;">
         <div class="col-xs-10 col-sm-9 col-md-9 col-lg-9">
             <h3>{{'USER_DETAILS.USER' | translate}} {{user?.username}} </h3>
@@ -11,8 +11,8 @@
 					<img alt="language" class="lang-circle-icon" src="{{[getPathToCurrent()]}}"/>
 				</a>
 				<ul class="dropdown-menu">
-					<li *ngFor="let lang of languages" [ngClass]="{'active': getCurrent() == lang}">
-						<a (click)="useLanguage(lang)">
+					<li *ngFor="let lang of languages" [ngClass]="{'active': lang === user?.selectedLanguage}">
+						<a (click)="setLanguage(lang)">
 							<img alt="lang flag" class="lang-circle-icon"
                                  src="assets/images/country/{{lang}}_circle.png"/>
 							<span>{{lang.toUpperCase()}}</span>
@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="col-xs-12">
-        <nmaas-userdetails [user]="user" [mode]="ComponentMode.PROFILVIEW" [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]"></nmaas-userdetails>
+        <nmaas-userdetails [user]="user" [(userDetailsMode)]="userDetailsMode" [allowedModes]="[ComponentMode.VIEW, ComponentMode.EDIT]" [(errorMessage)]="errorMessage" (onSave)="onSave($event)" (refresh)="onRefresh()"></nmaas-userdetails>
         <nmaas-userprivileges [user]="user" [mode]="ComponentMode.PROFILVIEW" [allowedModes]="[ComponentMode.PROFILVIEW, ComponentMode.EDIT]"></nmaas-userprivileges>
     </div>
 </div>

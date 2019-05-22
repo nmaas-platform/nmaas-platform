@@ -26,7 +26,6 @@ import net.geant.nmaas.utils.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -46,7 +45,6 @@ import static net.geant.nmaas.dcn.deployment.AnsiblePlaybookIdentifierConverter.
  * Executor used when DCN should be configured by Ansible playbooks.
  */
 @Component
-@Profile("dcn_ansible")
 @Log4j2
 public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, AnsiblePlaybookExecutionStateListener {
 
@@ -59,6 +57,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
     private DockerApiClient dockerApiClient;
 
     private String ansibleDockerApiUrl;
+    private DcnDeploymentType dcnDeploymentType;
 
     @Autowired
     public AnsibleDcnDeploymentExecutor(DcnRepositoryManager dcnRepositoryManager,
@@ -71,6 +70,7 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
         this.basicCustomerNetworkAttachPointRepository = basicCustomerNetworkAttachPointRepository;
         this.kClusterAttachPointManager = kClusterAttachPointManager;
         this.dockerApiClient = dockerApiClient;
+        this.dcnDeploymentType = DcnDeploymentType.ANSIBLE;
     }
 
     @Override
@@ -286,6 +286,11 @@ public class AnsibleDcnDeploymentExecutor implements DcnDeploymentProvider, Ansi
     @Value("${ansible.docker.api.url}")
     public void setAnsibleDockerApiUrl(String ansibleDockerApiUrl) {
         this.ansibleDockerApiUrl = ansibleDockerApiUrl;
+    }
+
+    @Override
+    public DcnDeploymentType getDcnDeploymentType(){
+        return this.dcnDeploymentType;
     }
 
 }

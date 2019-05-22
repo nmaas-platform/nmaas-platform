@@ -8,7 +8,7 @@ public interface KServiceLifecycleManager {
 
     boolean checkServiceDeployed(Identifier deploymentId);
 
-    void deleteService(Identifier deploymentId);
+    void deleteServiceIfExists(Identifier deploymentId);
 
     void upgradeService(Identifier deploymentId);
 

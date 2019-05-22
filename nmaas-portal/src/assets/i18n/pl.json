@@ -8,7 +8,7 @@
     "USERS": "Użytkownicy",
     "INVENTORY": "Zewnętrzne komponenty",
     "MONITOR": "Monitoring",
-    "CONFIGURATION": "Konfiguracja",
+    "SETTINGS": "Ustawienia",
     "PROFILE": "Profil",
     "LOGOUT": "Wyloguj",
     "LOGIN_REGISTER": "Logowanie | Rejestracja",
@@ -184,7 +184,8 @@
     "ACTIVATE": "Aktywna",
     "DETAILS_BUTTON": "Szczegóły",
     "EDIT_BUTTON": "Edytuj",
-    "REMOVE_BUTTON": "Usuń",
+    "DISABLE_BUTTON": "Dezaktywuj",
+    "ENABLE_BUTTON": "Aktywuj",
     "ADD_BUTTON": "Dodaj"
   },
   "APP_INSTANCES": {
@@ -193,7 +194,7 @@
     "NAME": "Nazwa",
     "DOMAIN": "Domena",
     "OWNER": "Właściciel",
-    "DEPLOYED_AT": "Uruchomiony na",
+    "DEPLOYED_AT": "Czas uruchomienia",
     "APPLICATION": "Aplikacja",
     "STATE": "Stan",
     "DETAILS_BUTTON": "Szczegóły",
@@ -213,7 +214,8 @@
     "VIEW_SETTINGS_BUTTON": "Pokaż ustawienia",
     "CHECK_NOW_BUTTON": "Sprawdź teraz",
     "EDIT_SETTINGS_BUTTON": "Edytuj ustawienia",
-    "REMOVE_BUTTON": "Usuń"
+    "ACTIVATE_BUTTON": "Aktywuj",
+    "DEACTIVATE_BUTTON": "Deaktywuj"
   },
   "MONITOR_DETAILS": {
     "HEADER": "Szczegóły monitorowania",
@@ -281,7 +283,8 @@
     "CODE_NAME_PATTERN_MESSAGE_2": "Długość skrótu nazwy domeny musi zawierać się w przedziale od 2 do 8 znaków.",
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru Kubernetes namespace to 64.",
-    "EXTERNAL_SERVICE_DOMAIN": "Zewnętrzna nazwa domenowa"
+    "EXTERNAL_SERVICE_DOMAIN": "Zewnętrzna nazwa domenowa",
+    "DCN_DEPLOYMENT_TYPE": "Typ konfiguracji dcn"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",
@@ -380,6 +383,7 @@
     "RESTART_BUTTON": "Restart",
     "REDEPLOY_BUTTON": "Uruchom ponownie",
     "UPDATE_CONFIG_BUTTON": "Zaktualizuj konfiguracje",
+    "DEPLOYMENT_IN_PROGRESS": "Aplikacja jest uruchamiana. Ten proces może potrwać do kilku minut. Zostaniesz powiadomiony e-mailem, gdy Twoja instancja będzie gotowa.",
     "INSTALLATION_PROGRESS": {
       "HEADER": "Postęp instalacji",
       "STATE": "Stan",
@@ -401,7 +405,47 @@
     },
     "REQUIRED_FIELDS": "pola wymagane",
     "APPLY_CONFIG_BUTTON": "Prześlij konfigurację",
-    "DEFAULT_VALUE": "Wartość domyślna"
+    "DEFAULT_VALUE": "Wartość domyślna",
+    "PROGRESS": {
+      "SUBSCRIPTION_VALIDATION": "Sprawdzanie subskrypcji",
+      "ENVIRONMENT_CREATION": "Tworzenie środowiska",
+      "SETTING_UP_CONNECTIVITY": "Ustanawianie połączenia",
+      "APPLYING_APP_CONFIGURATION": "Dodawanie konfiugracji",
+      "APP_CONTAINER_DEPLOYMENT": "Tworzenie kontenera",
+      "APP_RUNNING": "Aplikacja uruchomiona",
+      "UNDEPLOYING": "Usuwanie kontenera",
+      "REMOVED": "Aplikacja usunięta",
+      "DEPLOY_REQUESTED": "Wysłano żądanie utworzenia aplikacji",
+      "VALIDATION_REQUEST": "Weryfikacja żądania trwa",
+      "REQUEST_VALIDATE": "Żądanie zweryfikowane poprawnie",
+      "VALIDATE_FAILED": "Weryfikacja żądania nieudana",
+      "DEPLOY_IN_PROGRESS": "Tworzenie środowiska trwa",
+      "ENV_READY": "Srodowisko jest gotowe",
+      "ENV_FAILED": "Przygotowanie srodowiska nie powiodło się",
+      "DCN_PROGRESS": "Konfiugracja DCN trwa",
+      "DCN_SUCCESS": "DCN skonfiugurowano poprawnie",
+      "DCN_FAILED": "Konfiugracja DCN nie powiodła się",
+      "APP_CONFIG_PROGRESS": "Konfiguracja aplikacji trwa",
+      "APP_CONFIG_SUCCESS": "Aplikacja skonfigurowana poprawnie",
+      "APP_CONFIG_FAILED": "Konfiguracja aplikacji nie powiodła się",
+      "APP_DEPLOY_PROGRESS": "Instalowanie aplikacji trwa",
+      "APP_DEPLOY_SUCCESS": "Aplikacja zainstalowana poprawnie",
+      "APP_DEPLOY_FAILED": "Instalacja aplikacji nie powiodła się",
+      "DEPLOY_VER_PROGRESS": "Weryfikacja instalacji trwa",
+      "DEPLOY_VER_SUCCESS": "Weryfikacja instalacji powiodła się",
+      "DEPLOY_VER_FAILED": "Weryfikacja instalacji nie powiodła się",
+      "APP_REMOVE_PROGRESS": "Trwa usuwanie aplikacji",
+      "APP_REMOVE_SUCCESS": "Aplikacja usunięta poprawnie",
+      "APP_REMOVE_FAILED": "Usuwanie aplikacji nie powiodło się",
+      "APP_RESTART_PROGRESS": "Trwa restart aplikacji",
+      "APP_RESTART_SUCCESS": "Aplikacja zrestartowana poprawnie",
+      "APP_RESTART_FAILED": "Restart aplikacji nie powiódł się",
+      "APP_UPDATE_PROGRESS": "Trwa aktualizowanie aplikacji",
+      "APP_UPDATE_SUCCESS": "Aplikacja zaktualizowana poprawnie",
+      "APP_UPDATE_FAILED": "Aktualizacja aplikacji nie powiodła się",
+      "UNKNOWN": "Nieznany stan",
+      "ERROR": "Błąd wewnętrzny"
+    }
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
@@ -435,7 +479,7 @@
     "GO_BACK": "Powrót do strony NMaaS",
     "MODAL": {
       "HEADER": "Proszę sprawdź skrzynkę pocztową",
-      "BODY": "Jeśli wprowadziłeś poprawny adres mailowy, link do zresetowania hasła został przesłany.",
+      "BODY": "Jeśli wprowadziłeś poprawny adres mailowy, link do zresetowania hasła został przesłany. Reset hasła dotyczy jedynie kont lokalnych.",
       "CLOSE_BUTTON": "Zamknij"
     },
     "SITE": {
@@ -487,13 +531,145 @@
   "APPS_MANAGEMENT": {
     "TITLE": "Zarządzanie aplikacjami",
     "NAME": "Nazwa",
-    "ACTIVE": "Aktywna",
-    "REMOVE_BUTTON": "Usuń"
+    "STATE": "Stan",
+    "ADD_BUTTON": "Dodaj",
+    "VIEW_BUTTON": "Pokaż",
+    "EDIT_BUTTON": "Edytuj",
+    "CHANGE_STATE_BUTTON": "Zmień stan",
+    "APPROVED_TAB": "Zaakceptowane",
+    "REJECTED_TAB": "Odrzucone",
+    "NEW_TAB": "Nowe",
+    "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
+    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji"
+  },
+  "APPS_PREVIEW": {
+    "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
+    "CONFIG_WIZARD_PREVIEW_HEADER": "Podgląd formularza konfiguracji aplikacji",
+    "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Podgląd formularza do aktualizacji konfiguracji aplikacji"
+  },
+  "APPS_WIZARD": {
+    "FIRST_PAGE_MESSAGE": "Lorem ipsum",
+    "ACCEPT_RULES_CHECKBOX": "Zaakceptowałem/łam zasady korzystania.",
+    "NEXT_BUTTON": "Następne",
+    "SUBMIT_BUTTON": "Wyślij",
+    "PREVIOUS_BUTTON": "Poprzednie",
+    "NAME_LABEL": "Nazwa",
+    "VERSION_LABEL": "Wersja",
+    "LICENSE_LABEL": "Licencja",
+    "LICENSE_URL_LABEL": "Link do licencji",
+    "PROJECT_WEBSITE_LABEL": "Strona internetowa projektu",
+    "SOURCE_CODE_LABEL": "Link do kodu źródłowego",
+    "PROJECT_ISSUES_LABEL": "Link to project issues",
+    "TAGS_LABEL": "Wybierz tagi odpowiednie dla aplikacji",
+    "NEW_TAGS_LABEL": "Dodaj nowe tagi opisujące Twoją aplikacje",
+    "CHOOSE_LABEL": "Wybierz",
+    "CANCEL_LABEL": "Anuluj",
+    "UPLOAD_LOGO_LABEL": "Załaduj logo aplikacji",
+    "UPLOAD_SCREENSHOTS_LABEL": "Załaduj zrzuty ekranu aplikacji",
+    "BRIEF_DESCRIPTION_LABEL": "Krótki opis",
+    "FULL_DESCRIPTION_LABEL": "Szczegółowy opis",
+    "APP_DEPLOYMENT_HEADER": "Specyfikacja aplikacji",
+    "CHART_NAME_LABEL": "Nazwa chart",
+    "CHART_VERSION_LABEL": "Wersja chart",
+    "DEFAULT_STORAGE_SPACE_LABEL": "Domyślna przestrzeń dyskowa (w GB)",
+    "DEPLOY_PARAMETER_LABEL": "Deploy parameter",
+    "REPOSITORY_REQUIRED_LABEL": "Wymagane repozytorium",
+    "CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz konfiguracji aplikacji",
+    "UPDATE_CONFIG_WIZARD_TEMPLATE_LABEL": "Formularz do akutalizacji konfiguracji aplikacji",
+    "NEW_APP_MODAL": {
+      "HEADER": "Nowa aplikacja została wysłana poprawnie",
+      "BODY": "Dziękujemy za przesłanie nowej aplikacji. Twoje zgłoszenie musi zostać teraz sprawdzona przez zespół NMaaS. To może chwile zająć.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Powrót"
+    },
+    "EDIT_APP_MODAL": {
+      "HEADER": "Edycja zakończona sukcesem",
+      "BODY": "Dziękujemy za dokonanie edycji aplikacji. Twoje zmiany zostaną wkrótce zastosowane.",
+      "BACK_TO_APP_MANAGEMENT_BUTTON": "Powrót"
+    },
+    "GENERAL_INFO_STEP": "Informacje ogólne",
+    "BASIC_APP_INFO_STEP": "Podstawowe dane aplikacji",
+    "LOGO_AND_SCREENSHOTS_STEP": "Logo i zrzuty ekranu",
+    "APP_DESCRIPTIONS_STEP": "Opisy aplikacji",
+    "APP_DEPLOYMENT_SPEC_STEP": "Specyfikacja deploymentu",
+    "CONFIG_TEMPLATES_STEP": "Formularze konfiguracyjne",
+    "SHORT_REVIEW_STEP": "Podgląd aplikacji",
+    "NEW_APP_WIZARD_HEADER": "Dodawanie nowej aplikacji",
+    "EDIT_APP_WIZARD_HEADER": "Edytowanie aplikacji o nazwie {{app_name}}",
+    "ACCEPT_RULES_TOOLTIP": "Musisz zaakceptować zasady korzystania!",
+    "NAME_TOOLTIP": "Oficjalna nazwa aplikacji.",
+    "VERSION_TOOLTIP": "Numer bieżącego wydania aplikacji.",
+    "LICENSE_TOOLTIP": "Podaj nazwę licencji, na której aplikacja została wydana. Upewnij się że licencja ta pozwala na wykorzystanie aplikacji w systemie NMaaS.",
+    "LICENSE_URL_TOOLTIP": "Podaj link do opisu licencji, aby użytkownicy mogli uzyskać więcej informacji o niej i prawach do wykorzystania aplikacji.",
+    "PROJECT_WEBSITE_TOOLTIP": "Podaj link do strony projektu, aby użytkownicy mogli uzyskać więcej informacji o całym projekcie.",
+    "SOURCE_CODE_TOOLTIP": "Link do kodu źródłowego na przykład github.com/project.",
+    "PROJECT_ISSUES_TOOLTIP": "Podaj link do issues projektu, aby użytkownicy mogli łatwo znaleźć sposób na zgłoszenie problemu z tym narzędziem.",
+    "TAGS_TOOLTIP": "Wybierz tagi, które najlepiej opisują aplikacje. Pomoże to użytkownikom w bardziej efektywnym wyszukiwaniu aplikacji, których potrzebują.",
+    "NEW_TAGS_TOOLTIP": "Dodaj tagi, jeśli uważasz że obecnie istniejące nie pasują do Twojej aplikacji. Wpisz nazwe tagu i wciśnij enter aby dodać nowy tag.",
+    "BRIEF_DESCRIPTION_TOOLTIP": "Podaj krótki opis aplikacji. Tekst ten będzie widoczny na stronie marketu NMaaS.",
+    "FULL_DESCRIPTION_TOOLTIP": "Podaj pełny opis aplikacji. Tekst ten będzie widoczny w widoku szczegółowym aplikacji.",
+    "CHART_NAME_TOOLTIP": "Podaj nazwę chart, który będzie wykorzystywany w systemie NMaaS.",
+    "CHART_VERSION_TOOLTIP": "Podaj wersję chart, która będzie wykorzystywana w systemie NMaaS.",
+    "DEFAULT_STORAGE_SPACE_TOOLTIP": "Podaj domyślną przestrzeń dyskową (w gigabajtach).",
+    "DEPLOY_PARAMETER_TOOLTIP": "Niektóre aplikacje wykorzystują globalne ustawienia systemu NMaaS. Jeśli chcesz wykorzystać jedną z nich podaj klucz pod którym powinniśmy podać te ustawienia.",
+    "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS może wykorzystać GitLab aby zachować konfiguracje każdej instancji.",
+    "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!",
+    "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
+    "CONFIG_FILENAME_LABEL": "Nazwa pliku konfiguracyjnego",
+    "CONFIG_FILENAME_TOOLTIP": "Podaj nazwe pliku konfiguracyjnego",
+    "CONFIG_CONTENT_LABEL": "Szablon konfiguracyjny",
+    "CONFIG_CONTENT_TOOLTIP":"Podaj szablon konfiguracyjny. Pamiętaj że musi on być zgodny z FreeMarker Template Language.",
+    "ADD_CONFIG_BUTTON": "Dodaj nowy szablon",
+    "APP_CONFIG_TEMPLATES_HEADER": "Konfiguracja szablonów aplikacji",
+    "APP_REQUIRED_DESCRIPTIONS_HEADER": "Wymagane opisy aplikacji",
+    "APP_OPTIONAL_DESCRIPTIONS_HEADER": "Opcjonalne opisy aplikacji",
+    "OPTIONAL_LANGS_LABEL": "Wybierz język opcjonalny",
+    "OPTIONAL_LANGS_TOOLTIP": "Możesz podać dodatkowe opisy aplikacji w różnych, opcjonalych językach.",
+    "FIRST_PAGE_HEADER": "Informacje",
+    "BASIC_APP_INFO_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "APP_DESCRIPTIONS_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "CONFIG_TEMPLATES_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "BASIC_AUTH_LABEL": "Wymaga podstawowego uwierzytelnienia",
+    "BASIC_AUTH_TOOLTIP": "Możesz dodać podstawowe uwierzytelnienie do Twojej aplikacji zaznaczając tą opcję.",
+    "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji."
+  },
+  "LANGUAGE": {
+    "EN_LABEL": "Angielski",
+    "DE_LABEL": "Niemiecki",
+    "PL_LABEL": "Polski",
+    "FR_LABEL": "Francuski"
   },
   "FOOTER": {
     "NOTICE": "Polityka Prywatności"
   },
-  "TAGFILTER": {
-    "TAGS": "Tagi"
+  "FILTER": {
+    "TAGS": "Tagi",
+    "DOMAIN": "Domena"
+  },
+  "ENUM": {
+    "ALL": "Wszystkie",
+    "MY": "Moje",
+    "REQUESTED": "Inicjalizacja",
+    "VALIDATION": "Walidacja",
+    "PREPARATION": "Przygotowywanie",
+    "CONNECTING": "Łączenie",
+    "CONFIGURATION_AWAITING": "Oczekiwanie na konfiguracje",
+    "DEPLOYING": "Instalowanie",
+    "RUNNING": "Uruchomiono",
+    "UNDEPLOYING": "Odinstalowywanie",
+    "DONE": "Zakończono",
+    "FAILURE": "Błąd",
+    "UNKNOWN": "Nieznany"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Poprzednia",
+    "NEXT": "Następna",
+    "SCREEN_READER": {
+      "PAGINATION": "Paginacja",
+      "PAGE": "strona",
+      "CURRENT": "Jesteś na stronie"
+    }
   }
 }

@@ -2,9 +2,16 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
-import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
+import net.geant.nmaas.orchestration.entities.DomainTechDetails;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
+import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
+import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -14,8 +21,10 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
+import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
@@ -40,6 +49,8 @@ public class DomainServiceTest {
 
     DomainRepository domainRepository = mock(DomainRepository.class);
 
+    DomainTechDetailsRepository domainTechDetailsRepository = mock(DomainTechDetailsRepository.class);
+
     UserService userService = mock(UserService.class);
 
     UserRoleRepository userRoleRepo = mock(UserRoleRepository.class);
@@ -52,7 +63,7 @@ public class DomainServiceTest {
     public void setup(){
         validator = new DefaultCodenameValidator("[a-z-]{2,8}");
         namespaceValidator = new DefaultCodenameValidator("[a-z-]{0,64}");
-        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, userService, userRoleRepo, dcnRepositoryManager, new ModelMapper());
+        domainService = new DomainServiceImpl(validator, namespaceValidator, domainRepository, domainTechDetailsRepository, userService, userRoleRepo, dcnRepositoryManager, new ModelMapper());
         ((DomainServiceImpl) domainService).globalDomain = "GLOBAL";
     }
 
@@ -79,7 +90,7 @@ public class DomainServiceTest {
         String codename = "testdom";
         Domain domain = new Domain(name, codename);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename);
+        Domain result = this.domainService.createDomain(new DomainRequest(name, codename, true));
         assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
         assertThat("Active is false", result.isActive());
     }
@@ -91,7 +102,7 @@ public class DomainServiceTest {
             String codename = "test-domain";
             Domain domain = new Domain(name, codename);
             when(domainRepository.save(domain)).thenReturn(domain);
-            this.domainService.createDomain(name, codename);
+            this.domainService.createDomain(new DomainRequest(name, codename, true));
         });
     }
 
@@ -99,7 +110,7 @@ public class DomainServiceTest {
     public void shouldNotCreateDomainWithNullName(){
         assertThrows(IllegalArgumentException.class, () -> {
             String codename = "test-domain";
-            this.domainService.createDomain(null, codename);
+            this.domainService.createDomain(new DomainRequest(null, codename,true));
         });
     }
 
@@ -109,7 +120,7 @@ public class DomainServiceTest {
         String codename = "testdom";
         Domain domain = new Domain(name, codename, false);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename, false);
+        Domain result = this.domainService.createDomain(new DomainRequest(name, codename, false));
         assertThat("Codenames are not the same" ,result.getCodename().equals(codename));
         assertThat("Active is false", !result.isActive());
     }
@@ -120,22 +131,32 @@ public class DomainServiceTest {
         String codename = "testdom";
         String kubernetesNamespace = "default-namespace";
         String kubernetesStorageClass = "kub-stor-class";
-        Domain domain = new Domain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null);
+        Domain domain = new Domain(name, codename, false);
+        DomainTechDetails domainTechDetails = new DomainTechDetails(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails(null, codename, false, DcnDeploymentType.NONE);
+        domain.setDomainTechDetails(domainTechDetails);
+        domain.setDomainDcnDetails(domainDcnDetails);
         when(domainRepository.save(domain)).thenReturn(domain);
-        Domain result = this.domainService.createDomain(name, codename, false, false, kubernetesNamespace, kubernetesStorageClass, null);
+        DomainRequest domainRequest = new DomainRequest(name, codename, false);
+        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE);
+        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        domainRequest.setDomainDcnDetails(domainDcnDetailsView);
+        domainRequest.setDomainTechDetails(domainTechDetailsView);
+        Domain result = this.domainService.createDomain(domainRequest);
         assertThat("Name mismatch", result.getName().equals(name));
         assertThat("Codename mismatch", result.getCodename().equals(codename));
         assertThat("Active flag is incorrect", !result.isActive());
-        assertThat("dcnConfigured flag is incorrect", !result.isDcnConfigured());
-        assertThat("Kubernetes namespace mismatch", result.getKubernetesNamespace().equals(kubernetesNamespace));
-        assertThat("Kubernetes storage class mismatch", result.getKubernetesStorageClass().equals(kubernetesStorageClass));
+        assertThat("dcnConfigured flag is incorrect", !result.getDomainDcnDetails().isDcnConfigured());
+        assertThat("Kubernetes namespace mismatch", result.getDomainTechDetails().getKubernetesNamespace().equals(kubernetesNamespace));
+        assertThat("Kubernetes storage class mismatch", result.getDomainTechDetails().getKubernetesStorageClass().equals(kubernetesStorageClass));
     }
 
     @Test
     public void shouldUpdateDomain(){
         String name = "testdomain";
         String codename = "testdom";
-        Domain domain = new Domain(1L, name, codename, true, "default", "default");
+        Domain domain = new Domain(1L, name, codename, true);
+        domain.setDomainTechDetails(new DomainTechDetails());
         this.domainService.updateDomain(domain);
         verify(domainRepository, times(1)).save(domain);
     }
@@ -193,6 +214,7 @@ public class DomainServiceTest {
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.addMemberRole(domainId, userId, role);
+        verify(userRoleRepo, times(1)).save(any());
     }
 
     @Test
@@ -221,35 +243,38 @@ public class DomainServiceTest {
         Long domainId = 1L;
         Long userId = 1L;
         Role role = Role.ROLE_OPERATOR;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMemberRole(domainId, userId, role);
-        verify(userRoleRepo, times(1)).deleteBy(user, domain, role);
+        verify(userRoleRepo, times(1)).deleteBy(user.getId(), domain.getId(), role);
     }
 
     @Test
     public void shouldRemoveMember(){
         Long domainId = 1L;
         Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
         this.domainService.removeMember(domainId, userId);
-        verify(userRoleRepo, times(1)).deleteBy(user, domain);
+        verify(userRoleRepo, times(1)).deleteBy(user.getId(), domain.getId());
     }
 
     @Test
     public void shouldGetMemberRoles(){
         Long domainId = 1L;
         Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findRolesByDomainAndUser(domain, user)).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
+        when(userRoleRepo.findRolesByDomainAndUser(domain.getId(), user.getId())).thenReturn(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN));
         Set<Role> roleSet = this.domainService.getMemberRoles(domainId, userId);
         assertThat("Result set mismatch", roleSet.equals(ImmutableSet.of(Role.ROLE_SYSTEM_ADMIN)));
     }
@@ -258,12 +283,15 @@ public class DomainServiceTest {
     public void shouldGetMember(){
         Long domainId = 1L;
         Long userId = 1L;
-        Domain domain = new Domain(domainId, "testdom", "testdom");
+        Domain domain = new Domain(domainId, "testdom", "testdom", true);
         User user = new User("user");
+        user.setId(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-        when(userRoleRepo.findDomainMember(domain, user)).thenReturn(user);
-        this.domainService.getMember(domainId, userId);
+        when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.of(user));
+        User result = this.domainService.getMember(domainId, userId);
+        assertEquals(user.getUsername(), result.getUsername());
+        assertEquals(user.getId(), result.getId());
     }
 
     @Test
@@ -271,18 +299,18 @@ public class DomainServiceTest {
         assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Long userId = 1L;
-            Domain domain = new Domain(domainId, "testdom", "testdom");
+            Domain domain = new Domain(domainId, "testdom", "testdom", true);
             User user = new User("user");
             when(userService.findById(userId)).thenReturn(Optional.of(user));
             when(domainRepository.findById(domainId)).thenReturn(Optional.of(domain));
-            when(userRoleRepo.findDomainMember(domain, user)).thenReturn(null);
+            when(userRoleRepo.findDomainMember(domain.getId(), user.getId())).thenReturn(Optional.empty());
             this.domainService.getMember(domainId, userId);
         });
     }
 
     @Test
     public void shouldNotGetMemberWithEmptyUser(){
-        assertThrows(ObjectNotFoundException.class, () -> {
+        assertThrows(ProcessingException.class, () -> {
             Long domainId = 1L;
             Domain domain = new Domain(domainId, "testdom", "testdom");
             when(userService.findById(1L)).thenReturn(Optional.empty());
@@ -293,7 +321,7 @@ public class DomainServiceTest {
 
     @Test
     public void shouldThrowAnExceptionWhenGetMemberWithNullDomain(){
-        assertThrows(ObjectNotFoundException.class, () -> {
+        assertThrows(ProcessingException.class, () -> {
             Long userId = 1L;
             User user = new User("user");
             when(userService.findById(userId)).thenReturn(Optional.of(user));
@@ -326,7 +354,7 @@ public class DomainServiceTest {
 
         List<User> users = ImmutableList.of(user1, user2);
         when(userRoleRepo.findDomainMembers(anyString())).thenReturn(users);
-        List<net.geant.nmaas.portal.api.domain.User> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
+        List<UserView> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
         assertThat("Result mismatch", filteredUsers.size() == 2);
     }
 

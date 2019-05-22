@@ -5,13 +5,13 @@ import {TranslateFakeLoader, TranslateLoader, TranslateModule} from "@ngx-transl
 import {ContentDisplayService} from "../../service/content-display.service";
 import {Observable, of} from "rxjs";
 import {RouterTestingModule} from "@angular/router/testing";
-import {AuthService, DomainRoles} from "../../auth/auth.service";
-import {AppConfigService, ConfigurationService, DomainService} from "../../service";
+import {AuthService} from "../../auth/auth.service";
+import {AppConfigService, DomainService} from "../../service";
 import {RolesDirective} from "../../directive/roles.directive";
-import {DomainFilterComponent} from "../common/domainfilter/domainfilter.component";
 import {Component} from "@angular/core";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {Content} from "../../model/content";
+import {InternationalizationService} from "../../service/internationalization.service";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 class MockContentDisplayService{
 
@@ -38,7 +38,7 @@ class MockContentDisplayService{
   }
 }
 
-class MockAuthService{
+export class MockAuthService{
 
   public loginUsingSsoService: boolean;
 
@@ -101,7 +101,7 @@ class MockDomainService{
 describe('NavbarComponent_Shared', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
-  let contentService: ContentDisplayService;
+  let languageService: InternationalizationService;
   let spy: any;
 
   beforeEach(async(() => {
@@ -112,6 +112,7 @@ describe('NavbarComponent_Shared', () => {
         MockDomainFilter
       ],
         imports: [
+            HttpClientTestingModule,
             TranslateModule.forRoot({
                 loader: {
                     provide: TranslateLoader,
@@ -124,6 +125,8 @@ describe('NavbarComponent_Shared', () => {
           {provide: ContentDisplayService, useClass: MockContentDisplayService},
           {provide: AuthService, useClass: MockAuthService},
           {provide: DomainService, useClass: MockDomainService},
+          InternationalizationService,
+          AppConfigService
         ]
     })
     .compileComponents();
@@ -132,8 +135,8 @@ describe('NavbarComponent_Shared', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
-    contentService = fixture.debugElement.injector.get(ContentDisplayService);
-    spy = spyOn(contentService, 'getLanguages').and.returnValue(of(['en', 'fr', 'pl']));
+    languageService = fixture.debugElement.injector.get(InternationalizationService);
+    spy = spyOn(languageService, 'getEnabledLanguages').and.returnValue(of(['en', 'fr', 'pl']));
     component.useLanguage('en');
     fixture.detectChanges();
   });

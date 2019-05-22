@@ -1,24 +1,101 @@
 <div class="col-sm-12 col-sm-offset-1 col-sm 10 col-md-offset-1 col-md-10">
   <h3>{{'APPS_MANAGEMENT.TITLE'| translate}}</h3>
-  <table class="table table-hover table-condensed">
-    <thead>
-      <tr>
-        <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-        <th>{{'APPS_MANAGEMENT.ACTIVE' | translate}}</th>
-        <th>&nbsp;</th>
-      </tr>
-    </thead>
+  <button [routerLink]="['/management/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
+  <hr>
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#approved">{{ 'APPS_MANAGEMENT.APPROVED_TAB' | translate }}</a></li>
+    <li><a data-toggle="tab" href="#rejected">{{ 'APPS_MANAGEMENT.REJECTED_TAB' | translate }}</a></li>
+    <li *ngIf="authService.hasRole('ROLE_SYSTEM_ADMIN')"><a data-toggle="tab" href="#new">{{ 'APPS_MANAGEMENT.NEW_TAB' | translate }}</a></li>
+  </ul>
 
-    <tbody>
-      <ng-template ngFor let-app [ngForOf]="apps">
+  <div class="tab-content">
+    <div id="approved" class="tab-pane fade in active">
+      <table class="table table-hover table-condensed">
+        <thead>
         <tr>
-          <td>{{app?.name}}</td>
-          <td><span class="glyphicon glyphicon-ok" *ngIf="!app?.deleted"></span><span class="glyphicon glyphicon-remove" *ngIf="app?.deleted"></span></td>
-          <td class="text-right">
-            <button (click)="removeApp(app?.id)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.REMOVE_BUTTON' | translate }}</button>
-          </td>
+          <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+          <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
+          <th>&nbsp;</th>
         </tr>
-      </ng-template>
-    </tbody>
-  </table>
+        </thead>
+
+        <tbody>
+        <ng-template ngFor let-app [ngForOf]="apps" let-i="index">
+          <tr>
+            <td>{{app?.name}}</td>
+            <td>{{"ENUM.STATE." + getStateAsString(app?.state).toUpperCase() | translate }}</td>
+            <td class="text-right">
+              <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+              <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+            </td>
+          </tr>
+        </ng-template>
+        </tbody>
+      </table>
+    </div>
+    <div id="rejected" class="tab-pane fade">
+      <div *ngIf="rejectedApps.length > 0">
+        <table class="table table-hover table-condensed">
+          <thead>
+          <tr>
+            <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+            <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
+            <th>&nbsp;</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <ng-template ngFor let-app [ngForOf]="rejectedApps">
+            <tr>
+              <td>{{app?.name}}</td>
+              <td>{{"ENUM.STATE." + getStateAsString(app?.state).toUpperCase() | translate }}</td>
+              <td class="text-right">
+                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+              </td>
+            </tr>
+          </ng-template>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="rejectedApps.length == 0">
+        <h4 class="text-center">{{ 'APPS_MANAGEMENT.NO_REJECTED_APPS_MESSAGE' | translate }}</h4>
+      </div>
+    </div>
+
+    <div id="new" class="tab-pane fade">
+      <div *ngIf="newApps.length > 0">
+        <table class="table table-hover table-condensed">
+          <thead>
+          <tr>
+            <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
+            <th>{{'APPS_MANAGEMENT.STATE' | translate}}</th>
+            <th>&nbsp;</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <ng-template ngFor let-app [ngForOf]="newApps">
+            <tr>
+              <td>{{app?.name}}</td>
+              <td>{{"ENUM.STATE." + getStateAsString(app?.state).toUpperCase() | translate }}</td>
+              <td class="text-right">
+                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
+              </td>
+            </tr>
+          </ng-template>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="newApps.length == 0">
+        <h4 class="text-center">{{ 'APPS_MANAGEMENT.NO_NEW_APPS_MESSAGE' | translate }}</h4>
+      </div>
+    </div>
+  </div>
+
 </div>
+<app-appchangestatemodal [app]="selectedApp"></app-appchangestatemodal>

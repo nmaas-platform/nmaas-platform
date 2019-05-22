@@ -1,6 +1,6 @@
 import {User} from './user';
 import {AppInstanceState} from './appinstancestatus';
-import {ConfigTemplate} from "./configtemplate";
+import {ConfigWizardTemplate} from "./configwizardtemplate";
 
 export class AppInstanceRequest {
 
@@ -28,5 +28,5 @@ export class AppInstance {
   public state: AppInstanceState = undefined;
   public userFriendlyState = undefined;
   public url: string = undefined;
-  public configTemplate: ConfigTemplate = undefined;
+  public configWizardTemplate: ConfigWizardTemplate = undefined;
 }

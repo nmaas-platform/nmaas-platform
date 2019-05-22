@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
@@ -40,9 +41,9 @@ public class RegistrationControllerTest {
 
     private Registration registration;
 
-    private static final Domain GLOBAL_DOMAIN = new Domain(1L,"global", "global", true, "namespace", "storage");
+    private static final Domain GLOBAL_DOMAIN = new Domain(1L,"global", "global", true);
 
-    private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true,  "namespace", "storage");
+    private static final Domain DOMAIN = new Domain(2L,"testdom", "testdom", true);
 
     @BeforeEach
     public void setup(){

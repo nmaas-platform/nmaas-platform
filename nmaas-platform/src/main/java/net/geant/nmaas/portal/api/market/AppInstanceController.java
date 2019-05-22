@@ -3,20 +3,20 @@ package net.geant.nmaas.portal.api.market;
 import lombok.AllArgsConstructor;
 import net.geant.nmaas.orchestration.AppDeploymentMonitor;
 import net.geant.nmaas.orchestration.AppLifecycleManager;
-import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
-import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.AppLifecycleState;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.api.model.AppDeploymentHistoryView;
+import net.geant.nmaas.orchestration.entities.AppDeployment;
 import net.geant.nmaas.orchestration.exceptions.InvalidAppStateException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDeploymentIdException;
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.AppDeploymentSpec;
 import net.geant.nmaas.portal.api.domain.AppInstanceBase;
+import net.geant.nmaas.portal.api.domain.AppInstanceRequest;
 import net.geant.nmaas.portal.api.domain.AppInstanceState;
 import net.geant.nmaas.portal.api.domain.AppInstanceStatus;
-import net.geant.nmaas.portal.api.domain.AppInstanceSubscription;
 import net.geant.nmaas.portal.api.domain.AppInstanceView;
-import net.geant.nmaas.portal.api.domain.ConfigTemplate;
+import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.api.domain.Id;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
@@ -51,6 +51,8 @@ public class AppInstanceController extends AppBaseController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
 
+    private static final String MISSING_USER_MESSAGE = "User not found";
+
     private AppLifecycleManager appLifecycleManager;
 
     private AppDeploymentMonitor appDeploymentMonitor;
@@ -71,7 +73,7 @@ public class AppInstanceController extends AppBaseController {
     @GetMapping("/apps/instances/my")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
-        User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException("User not found"));
+        User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
@@ -105,7 +107,7 @@ public class AppInstanceController extends AppBaseController {
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain " + domainId + " not found"));
         User user = users.findByUsername(username)
-                .orElseThrow(() -> new MissingElementException("User not found"));
+                .orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
         return instances.findAllByOwner(user, domain, pageable).getContent().stream()
                 .map(this::mapAppInstance)
                 .collect(Collectors.toList());
@@ -124,14 +126,14 @@ public class AppInstanceController extends AppBaseController {
     @PostMapping("/domains/{domainId}/apps/instances")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
     @Transactional
-    public Id createAppInstance(@RequestBody(required = true) AppInstanceSubscription appInstanceSubscription,
+    public Id createAppInstance(@RequestBody(required = true) AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal, @PathVariable Long domainId) {
-        Application app = getApp(appInstanceSubscription.getApplicationId());
+        Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domains.findDomain(domainId)
                 .orElseThrow(() -> new MissingElementException("Domain not found"));
         AppInstance appInstance;
         try {
-            appInstance = instances.create(domain, app, appInstanceSubscription.getName());
+            appInstance = instances.create(domain, app, appInstanceRequest.getName());
         } catch (ApplicationSubscriptionNotActiveException e) {
             throw new ProcessingException("Unable to create instance. " + e.getMessage());
         }
@@ -142,7 +144,7 @@ public class AppInstanceController extends AppBaseController {
                 .deploymentId(Identifier.newInstance(appInstance.getApplication().getId()))
                 .applicationId(Identifier.newInstance(appInstance.getApplication().getId()))
                 .deploymentName(appInstance.getName())
-                .configFileRepositoryRequired(appDeploymentSpec.isConfigFileRepositoryRequired())
+                .configFileRepositoryRequired(app.getAppConfigurationSpec().isConfigFileRepositoryRequired())
                 .storageSpace(appDeploymentSpec.getDefaultStorageSpace())
                 .owner(principal.getName())
                 .appName(app.getName())
@@ -176,6 +178,19 @@ public class AppInstanceController extends AppBaseController {
         try {
             AppInstance appInstance = getAppInstance(appInstanceId);
             appLifecycleManager.removeApplication(appInstance.getInternalId());
+        } catch (InvalidDeploymentIdException e) {
+            throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
+        }
+    }
+
+    @DeleteMapping({"/apps/instances/failed/{appInstanceId}", "/domains/{domainId}/apps/instances/failed/{appInstanceId}"})
+    @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
+    @Transactional
+    public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
+                                  @NotNull Principal principal) {
+        try {
+            AppInstance appInstance = getAppInstance(appInstanceId);
+            appLifecycleManager.removeFailedApplication(appInstance.getInternalId());
         } catch (InvalidDeploymentIdException e) {
             throw new ProcessingException(MISSING_APP_INSTANCE_MESSAGE);
         }
@@ -219,7 +234,7 @@ public class AppInstanceController extends AppBaseController {
     @Transactional
     public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
-        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User owner = this.users.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException(MISSING_USER_MESSAGE));
         return this.getAllRunningInstancesByOwnerAndDomain(owner, domain);
     }
 
@@ -288,6 +303,8 @@ public class AppInstanceController extends AppBaseController {
                 appInstanceState = AppInstanceState.UNDEPLOYING;
                 break;
             case APPLICATION_REMOVED:
+            case APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS:
+            case APPLICATION_CONFIGURATION_REMOVED:
                 appInstanceState = AppInstanceState.DONE;
                 break;
             case INTERNAL_ERROR:
@@ -300,7 +317,11 @@ public class AppInstanceController extends AppBaseController {
             case APPLICATION_RESTART_FAILED:
             case APPLICATION_CONFIGURATION_UPDATE_FAILED:
             case APPLICATION_DEPLOYMENT_FAILED:
+            case APPLICATION_CONFIGURATION_REMOVAL_FAILED:
                 appInstanceState = AppInstanceState.FAILURE;
+                break;
+            case FAILED_APPLICATION_REMOVED:
+                appInstanceState = AppInstanceState.REMOVED;
                 break;
             case UNKNOWN:
             default:
@@ -337,7 +358,7 @@ public class AppInstanceController extends AppBaseController {
             ai.setUrl(null);
         }
 
-        ai.setConfigTemplate(new ConfigTemplate(appInstance.getApplication().getConfigTemplate().getTemplate()));
+        ai.setConfigWizardTemplate(new ConfigWizardTemplateView(appInstance.getApplication().getConfigWizardTemplate().getTemplate()));
 
         return ai;
     }

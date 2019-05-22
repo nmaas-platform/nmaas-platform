@@ -1,15 +1,19 @@
 package net.geant.nmaas.portal.service.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
+import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,12 +47,15 @@ public class UserServiceImplTest {
     @Mock
     UserRoleRepository userRoleRepository;
 
+    @Mock
+    ConfigurationManager configurationManager;
+
     @InjectMocks
     UserServiceImpl userService;
 
     @BeforeEach
     public void setup(){
-        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), new ModelMapper());
+        userService = new UserServiceImpl(userRepository, userRoleRepository, new BCryptPasswordEncoder(), configurationManager, new ModelMapper());
     }
 
     @Test
@@ -92,6 +99,46 @@ public class UserServiceImplTest {
         UserRole userRole = new UserRole(user, domain, role);
         when(userRoleRepository.findByDomainAndUserAndRole(domain, user, role)).thenReturn(userRole);
         assertTrue(userService.hasPrivilege(user, domain, role));
+    }
+
+    @Test
+    void adminShouldUpdateData(){
+        User admin = new User("admin", true);
+        Domain domain = new Domain("GLOBAL", "GLOBAL");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_SYSTEM_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertTrue(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(admin, domain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void domainAdminShouldUpdateDataOfUserInHisDomain(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_DOMAIN_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertTrue(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, domain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void domainAdminShouldNotUpdateDataOfUserNotInHisDomain(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        Domain otherDomain = new Domain("domtest", "domtest");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_DOMAIN_ADMIN)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertFalse(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, otherDomain, Role.ROLE_USER))));
+    }
+
+    @Test
+    void userShouldNotUpdateOtherUserData(){
+        User admin = new User("admin", true);
+        User user = new User("test", true);
+        Domain domain = new Domain("testdom", "testdom");
+        admin.setRoles(Collections.singletonList(new UserRole(admin, domain, Role.ROLE_USER)));
+        when(userRepository.findByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
+        assertFalse(userService.canUpdateData(admin.getUsername(), Collections.singletonList(new UserRole(user, domain, Role.ROLE_USER))));
     }
 
     @Test
@@ -191,6 +238,7 @@ public class UserServiceImplTest {
         assertTrue(userService.existsById((long) 0));
     }
 
+    @Test
     public void existsByEmailShouldThrowTrue(){
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
         assertTrue(userService.existsByEmail("test@test.com"));
@@ -207,24 +255,26 @@ public class UserServiceImplTest {
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(registration, domain, null);
         verify(userRepository, times(1)).save(any());
-        assertEquals(user.getRoles().size(), 1);
-        assertEquals(user.getRoles().get(0).getRole(), Role.ROLE_GUEST);
-        assertEquals(user.getRoles().get(0).getDomain(), domain);
+        assertEquals(1, user.getRoles().size());
+        assertEquals(Role.ROLE_GUEST, user.getRoles().get(0).getRole());
+        assertEquals(domain, user.getRoles().get(0).getDomain());
     }
 
     @Test
     public void shouldRegisterUserWithGlobalGuestRoleAndRoleInDomain(){
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         Registration registration = new Registration("test", "testpass","test@test.com", "name", "surname", 1L, true, true);
         Domain globalDomain = new Domain("GLOBAL", "GLOBAL");
         Domain domain = new Domain("Non Global", "NONGLO");
         User user = userService.register(registration, globalDomain, domain);
         verify(userRepository, times(1)).save(any());
-        assertEquals(user.getRoles().size(), 2);
-        assertEquals(user.getRoles().get(0).getDomain(), globalDomain);
-        assertEquals(user.getRoles().get(1).getDomain(), domain);
+        assertEquals(2, user.getRoles().size());
+        assertEquals(globalDomain, user.getRoles().get(0).getDomain());
+        assertEquals(domain, user.getRoles().get(1).getDomain());
     }
 
     @Test
@@ -251,6 +301,7 @@ public class UserServiceImplTest {
     public void shouldRegisterSSOUser(){
         UserSSOLogin ssoUser = new UserSSOLogin("test|1234|id");
         Domain domain = new Domain("GLOBAL", "GLOBAL");
+        when(configurationManager.getConfiguration()).thenReturn(new ConfigurationView(1L, false, false, "en"));
         User user = userService.register(ssoUser, domain);
         verify(userRepository, times(1)).save(any());
         assertEquals(user.getSamlToken(), ssoUser.getUsername());

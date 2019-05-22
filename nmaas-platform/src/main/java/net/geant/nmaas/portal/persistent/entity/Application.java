@@ -1,12 +1,13 @@
 package net.geant.nmaas.portal.persistent.entity;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,17 +17,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -60,13 +63,13 @@ public class Application implements Serializable {
 	private List<FileInfo> screenshots = new ArrayList<>();
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	List<AppDescription> descriptions;
+	private List<AppDescription> descriptions;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private ConfigTemplate configTemplate;
+	private ConfigWizardTemplate configWizardTemplate;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private ConfigTemplate configurationUpdateTemplate;
+	private ConfigWizardTemplate configUpdateWizardTemplate;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "application_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -77,16 +80,37 @@ public class Application implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private AppDeploymentSpec appDeploymentSpec;
-	
-	private boolean deleted;
 
-	public Application(String name) {
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private AppConfigurationSpec appConfigurationSpec;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ApplicationState state;
+
+	@Column(nullable = false)
+	private String owner;
+
+	public Application(String name, String version, String owner) {
 		this.name = name;
+		this.version = version;
+		this.owner = owner;
+		this.state = ApplicationState.NEW;
 	}
 
-	public Application(Long id, String name) {
-		this(name);
+	public Application(Long id, String name, String version, String owner) {
+		this(name, version, owner);
 		this.id = id;
+	}
+
+	public void validate(){
+		checkArgument(StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(version), "App must have name and version");
+		checkArgument(name.matches("^[a-zA-Z0-9-]+$"), "Name contains illegal characters");
+		checkArgument(StringUtils.isNotEmpty(owner), "Owner must be specified");
+		checkArgument(appDeploymentSpec != null, "Application deployment specification cannot be null");
+		checkArgument(appConfigurationSpec != null, "Application configuration specification cannot be null");
+		checkArgument(configWizardTemplate != null && StringUtils.isNotEmpty(configWizardTemplate.getTemplate()), "Configuration template cannot be null");
+		checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
 	}
 
 }

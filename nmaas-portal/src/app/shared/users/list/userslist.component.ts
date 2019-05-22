@@ -74,7 +74,7 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
 
   public getGlobalRole(user: User): string{
     let userRole: UserRole[] = user.roles.filter(role => role.domainId === this.domainService.getGlobalDomainId());
-    return userRole[0].role.toString() === Role[Role.ROLE_GUEST] ?'-' : userRole[0].role.toString().slice(5);
+    return userRole[0].role.toString();
   }
 
   public getUserDomainIds(user: User): number[] {
