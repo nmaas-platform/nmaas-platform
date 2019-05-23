@@ -665,7 +665,10 @@
     "FR_LABEL": "French"
   },
   "FOOTER": {
-    "NOTICE": "Datenschutzerklärung"
+    "NOTICE": "Datenschutzerklärung",
+    "CONTACT":  "Kontakt",
+    "WEBSITE": "Überprüfen Sie die GÉANT-Website",
+    "TOP": "OBEN"
   },
   "FILTER": {
     "TAGS": "Stichworte",

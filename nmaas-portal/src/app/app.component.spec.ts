@@ -1,3 +1,5 @@
+/* tslint:disable:no-unused-variable */
+
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { RouterTestingModule} from "@angular/router/testing";
@@ -11,6 +13,7 @@ import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.s
 import {AuthService} from "./auth/auth.service";
 import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 import {ServiceUnavailableService} from "./service-unavailable/service-unavailable.service";
+import {SharedModule} from "./shared";
 
 class MockConfigurationService{
   protected uri:string;
@@ -62,6 +65,7 @@ describe('App: NmaasPortal', () => {
                     }
                 }
             }),
+          SharedModule
         ],
         providers: [
             {provide: AppConfigService, useClass: MockConfigurationService},

@@ -13,4 +13,4 @@ const appRoutes: Routes = [
     { path: '**', redirectTo: '/welcome' }
 ];
 
-export const routing = RouterModule.forRoot(appRoutes);
+export const routing = RouterModule.forRoot(appRoutes, {scrollPositionRestoration: 'enabled'});

@@ -1,18 +1,72 @@
-.footer {
-  position: fixed;
+footer {
+  position: absolute;
   bottom: 0;
-  width: 100%;
-  border-top: 1px solid #bbbbbb;
-  /* Set the fixed height of the footer here */
-  /* #max-height: 48px; */
-  background-color: #f5f5f5;
-  z-index: 750;
-  text-align: center;
-  display: block;
-  overflow: hidden;
+  padding-bottom: 15px;
+  color: gray;
+  font-size: larger;
+}
+
+a:link{
+  color: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-decoration: underline;
+}
+
+a:hover {
+  font-weight: 600;
 }
 
 .img-footer{
   max-height: 34px;
   height: 100%;
+}
+
+.footer-light{
+    color: #bbbbbb;
+}
+
+.footer-dark{
+  color: gray !important;
+}
+
+.footer-line{
+  color: rgb(108, 117, 125);
+}
+
+.footer-upper{
+  padding-top: 10px;
+  font-size: 14px;
+}
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+  color: gray;
+  background-color: white;
+  border-color: black;
+  box-shadow: none;
+  background-image: none;
+  border-width: 2px;
+}
+.btn-circle.btn-lg {
+  width: 50px;
+  height: 50px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 25px;
+}
+
+.footer-move-top{
+  cursor: pointer;
+}
+
+.footer-size-normal{
+  font-size: smaller;
 }
