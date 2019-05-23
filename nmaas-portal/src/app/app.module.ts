@@ -24,6 +24,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {CustomMissingTranslationService} from "./i18n/custommissingtranslation.service";
 import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
 import {ServiceUnavailableModule} from "./service-unavailable/service-unavailable.module";
+import {RouterModule} from "@angular/router";
 
 
 export function appConfigFactory( config: AppConfigService) {

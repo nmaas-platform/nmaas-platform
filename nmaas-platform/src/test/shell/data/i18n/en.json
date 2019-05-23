@@ -650,7 +650,10 @@
     "FR_LABEL": "French"
   },
   "FOOTER": {
-    "NOTICE": "Privacy Notice"
+    "NOTICE": "Privacy Notice",
+    "CONTACT":  "Contact",
+    "WEBSITE": "Check the GÉANT website",
+    "TOP": "TOP"
   },
   "FILTER": {
     "TAGS": "Tags",

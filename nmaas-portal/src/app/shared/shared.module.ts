@@ -54,7 +54,7 @@ import {TranslateStateModule} from "./translate-state/translate-state.module";
     RecaptchaModule,
     PasswordStrengthMeterModule,
     TranslateModule.forChild(),
-    TooltipModule,
+    TooltipModule
   ],
   declarations: [
     RateComponent,
