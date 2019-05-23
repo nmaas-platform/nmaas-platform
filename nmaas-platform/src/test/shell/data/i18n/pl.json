@@ -648,7 +648,10 @@
     "FR_LABEL": "Francuski"
   },
   "FOOTER": {
-    "NOTICE": "Polityka Prywatności"
+    "NOTICE": "Polityka Prywatności",
+    "CONTACT":  "Kontakt",
+    "WEBSITE": "Wejdź na stronę GÉANT",
+    "TOP": "GÓRA"
   },
   "FILTER": {
     "TAGS": "Tagi",

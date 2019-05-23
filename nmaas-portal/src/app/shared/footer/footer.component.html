@@ -1,17 +1,23 @@
-		<footer class="footer col-lg-12" id="global-footer">
-			<div class="container-fluid">
-
-				<div class="col-lg-4 col-md-4 text-center bottom-left">
-					<a routerLink="/privacy">{{ 'FOOTER.NOTICE' | translate }}</a>
+		<footer class="footer col-xs-12" id="global-footer">
+			<div class="col-xs-offset-2 col-xs-8 text-left">
+				<div class="row footer-line">
+					<hr class="col-xs-12">
 				</div>
-
-                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-center" >
-                    <p style="text-align:center; vertical-align: text-bottom;"><a href="http://geant.org" target="_blank" rel="nofollow"><img class="img-footer" src="assets/images/geant-logo-small.png" alt="GEANT"></a></p>
-					<p>NMaaS @Geant 2017-2018</p>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-center bottom-right">
-
-                </div>
-
+				<div class="row footer-upper">
+					<div class="col-xs-10">
+						<div>
+							<a href="https://www.geant.org/">{{ 'FOOTER.WEBSITE' | translate }}</a> |
+							<a routerLink="/privacy">{{ 'FOOTER.NOTICE' | translate }}</a> |
+							<a routerLink="/about">{{ 'FOOTER.CONTACT' | translate }}</a>
+						</div>
+					</div>
+					<div class="col-xs-2">
+						<div>
+							<a class="footer-light footer-move-top" (click)="this.moveToTop();">
+								<i class="fas fa-arrow-up"></i> {{ 'FOOTER.TOP' | translate }}
+							</a>
+						</div>
+					</div>
+				</div>
 			</div>
 		</footer>
