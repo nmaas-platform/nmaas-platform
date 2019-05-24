@@ -628,16 +628,16 @@
     "FIXED": "Fixe"
   },
   "CONTACT_FORM": {
-    "TITLE": "Contact form",
-    "EMAIL": "Your email",
-    "NAME": "Your name",
-    "MESSAGE": "Your message",
-    "MESSAGE_PLACEHOLDER": "Please type your message here",
-    "SUBMIT_BUTTON": "Submit",
+    "TITLE": "Formulaire de contact",
+    "EMAIL": "Votre email",
+    "NAME": "Votre nom",
+    "MESSAGE": "Votre message",
+    "MESSAGE_PLACEHOLDER": "Veuillez saisir votre message ici",
+    "SUBMIT_BUTTON": "Soumettre",
     "MODAL": {
-      "TITLE": "Mail has been sent",
-      "MESSAGE": "NMaaS Team will reply soon.",
-      "CLOSE_BUTTON": "Close"
+      "TITLE": "Le courrier a été envoyé",
+      "MESSAGE": "L'équipe NMaaS répondra bientôt.",
+      "CLOSE_BUTTON": "Fermer"
     }
   },
   "LANGUAGE": {

@@ -42,6 +42,7 @@ export class AboutComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.modal.setModalType("info");
     if(this.appConfigService.getShowGitInfo()){
       this.changelogService.getGitInfo().subscribe(info => this.gitInfo = info);
     }
