@@ -65,7 +65,7 @@ public class ApplicationBase {
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ApplicationVersion> versions = new ArrayList<>();
+    private Set<ApplicationVersion> versions = new HashSet<>();
 
     public ApplicationBase(String name){
         this.name = name;
@@ -80,6 +80,5 @@ public class ApplicationBase {
         checkArgument(StringUtils.isNotEmpty(name), "App must have name");
         checkArgument(name.matches("^[a-zA-Z0-9-]+$"), "Name contains illegal characters");
         checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
-        checkArgument(versions.stream().map(ApplicationVersion::getVersion).allMatch(new HashSet<>()::add), "App versions must be unique");
     }
 }

@@ -1,6 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
-import java.util.Collections;
+import com.google.common.collect.Sets;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.ConvertersConfig;
@@ -74,8 +74,8 @@ public class ConvertersTest {
         assertEquals(appBase.getName(), appBriefView.getName());
         assertNotNull(appBriefView.getTags());
         assertEquals(1, appBriefView.getAppVersions().size());
-        assertEquals("0.0.1", appBriefView.getAppVersions().get(0).getVersion());
-        assertEquals(ApplicationState.ACTIVE, appBriefView.getAppVersions().get(0).getState());
+        assertTrue(appBriefView.getAppVersions().stream().anyMatch(version -> version.getVersion().equals("0.0.1")));
+        assertTrue(appBriefView.getAppVersions().stream().anyMatch(version -> version.getState().equals(ApplicationState.ACTIVE)));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ConvertersTest {
         appBase.setSourceUrl("default-website.com");
         appBase.setIssuesUrl("default-website.com");
         appBase.setLogo(new FileInfo("logo", "png"));
-        appBase.setVersions(Collections.singletonList(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
+        appBase.setVersions(Sets.newHashSet(new ApplicationVersion(null, "0.0.1", ApplicationState.ACTIVE, 1L)));
         return appBase;
     }
 

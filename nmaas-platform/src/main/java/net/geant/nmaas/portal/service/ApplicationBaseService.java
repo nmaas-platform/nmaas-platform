@@ -13,7 +13,7 @@ public interface ApplicationBaseService {
 
     void updateApplicationBase(ApplicationBase application);
 
-    void updateApplicationVersion(String name, String version, ApplicationState state);
+    void updateApplicationVersionState(String name, String version, ApplicationState state);
 
     List<ApplicationBase> findAll();
 

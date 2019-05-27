@@ -30,10 +30,10 @@ public class ApplicationBaseToAppBriefViewConverter extends AbstractConverter<Ap
                 .build();
     }
 
-    private List<ApplicationVersionView> getAppVersions(ApplicationBase source){
-        return Optional.ofNullable(source.getVersions()).orElse(Collections.emptyList()).stream()
+    private Set<ApplicationVersionView> getAppVersions(ApplicationBase source){
+        return Optional.ofNullable(source.getVersions()).orElse(Collections.emptySet()).stream()
                 .map(version -> new ApplicationVersionView(version.getVersion(), version.getState(), version.getAppVersionId()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private List<AppDescriptionView> getDescriptions(ApplicationBase source){

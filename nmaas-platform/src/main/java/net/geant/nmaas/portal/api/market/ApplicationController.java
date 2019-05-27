@@ -89,7 +89,7 @@ public class ApplicationController extends AppBaseController {
     public void deleteApplication(@PathVariable(value = "appId") long appId){
 	    Application app = getApp(appId);
 		applications.delete(appId);
-		appBaseService.updateApplicationVersion(app.getName(), app.getOwner(), ApplicationState.DELETED);
+		appBaseService.updateApplicationVersionState(app.getName(), app.getOwner(), ApplicationState.DELETED);
     }
 
     @GetMapping(value = "/base/{appId}")
@@ -121,7 +121,7 @@ public class ApplicationController extends AppBaseController {
 	public void changeApplicationState(@PathVariable(value = "appId") long appId, @RequestBody ApplicationStateChangeRequest stateChangeRequest){
 		Application app = getApp(appId);
 		applications.changeApplicationState(app, stateChangeRequest.getState());
-		appBaseService.updateApplicationVersion(app.getName(), app.getVersion(), stateChangeRequest.getState());
+		appBaseService.updateApplicationVersionState(app.getName(), app.getVersion(), stateChangeRequest.getState());
 		this.sendMail(app, stateChangeRequest);
 	}
 

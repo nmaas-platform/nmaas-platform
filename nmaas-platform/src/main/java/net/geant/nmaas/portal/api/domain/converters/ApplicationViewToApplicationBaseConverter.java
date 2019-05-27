@@ -35,10 +35,10 @@ public class ApplicationViewToApplicationBaseConverter extends AbstractConverter
         return applicationBase;
     }
 
-    private List<ApplicationVersion> getAppVersions(ApplicationView source){
-        return Optional.ofNullable(source.getAppVersions()).orElse(Collections.emptyList()).stream()
+    private Set<ApplicationVersion> getAppVersions(ApplicationView source){
+        return Optional.ofNullable(source.getAppVersions()).orElse(Collections.emptySet()).stream()
                 .map(version -> new ApplicationVersion(version.getVersion(), version.getState(), version.getAppVersionId()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     private List<AppDescription> getDescriptions(ApplicationView source){

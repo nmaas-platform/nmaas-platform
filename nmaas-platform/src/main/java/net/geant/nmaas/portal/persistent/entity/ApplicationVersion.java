@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ApplicationVersion {
 
     @Id
@@ -26,6 +28,7 @@ public class ApplicationVersion {
     private Long id;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private String version;
 
     @Column(nullable = false)
@@ -33,6 +36,7 @@ public class ApplicationVersion {
     private ApplicationState state;
 
     @Column(nullable = false)
+    @EqualsAndHashCode.Include
     private Long appVersionId;
 
     public ApplicationVersion(String version, ApplicationState state, Long appVersionId){

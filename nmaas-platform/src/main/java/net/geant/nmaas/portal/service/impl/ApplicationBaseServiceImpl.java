@@ -69,7 +69,7 @@ public class ApplicationBaseServiceImpl implements ApplicationBaseService {
     }
 
     @Override
-    public void updateApplicationVersion(String name, String version, ApplicationState state) {
+    public void updateApplicationVersionState(String name, String version, ApplicationState state) {
         ApplicationBase appBase = findByName(name);
         appBase.getVersions().stream()
                 .filter(appVersion -> appVersion.getVersion().equals(version))
