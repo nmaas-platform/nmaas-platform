@@ -2,12 +2,17 @@
 
   {
     "verNo" : "1.2.0",
-    "date" : "(2019/03/xx)",
+    "date" : "(2019/05/xx)",
     "topic" : [
       {
         "title" : "Application management added",
         "tags" : "[New Feature]",
         "description" : "New functionality and dedicated view in the UI allows for adding and maintaining information about NMaaS applications."
+      },
+      {
+        "title" : "Language management added",
+        "tags" : "[New Feature]",
+        "description" : "New functionality and dedicated view in the UI allows for maintaining translations of labels and texts displayed in the UI and the content of emails in all supported languages."
       },
       {
         "title" : "About page added",
