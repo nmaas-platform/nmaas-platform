@@ -66,9 +66,9 @@
         "description" : "New version of application view and rating system added to NMaaS."
       },
       {
-        "title": "During deployment of Prometheus application, user cannot remove added target.",
+        "title": "During deployment of Prometheus application, user cannot remove added targets",
         "tags": "[Bugfix]",
-        "description": "There were some problems with old wizard form generation library, and these are one of them. Solution for these problem was adding new library to control that."
+        "description": "There were some problems with old configuration wizard form generation library. Solved with new library to control that."
       },
       {
         "title" : "Removed support for Docker Compose deployment",
