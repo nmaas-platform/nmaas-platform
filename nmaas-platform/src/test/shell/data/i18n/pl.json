@@ -58,16 +58,16 @@
     "DOMAIN": "Domena",
     "NOT_SELECTED": "Nie wybrano",
     "TERMS": "Warunkami Korzystania",
-    "AGREEMENT_MESSAGE": "Zgadzam się z",
+    "AGREEMENT_MESSAGE": "Zapoznałem się z",
     "PRIVACY_POLICY": "Polityką Prywatności",
     "SUBMIT": "Zatwierdź",
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
     "DONE_MESSAGE": "Gotowe",
     "INVALID_INPUT_MESSAGE": "Podano niewłaściwe dane",
-    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje.",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona.",
-    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika.",
+    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie została znaleziona",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika",
     "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
   },
   "LOGIN": {
@@ -506,7 +506,7 @@
     "UNAVAILABLE_MESSAGE": "Usługa jest niedostępna. Spróbuj ponownie później.",
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
-    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
+    "TERMS_OF_USER_MESSAGE": "Musisz potwierdzić zapozanie się z Politykę Prywatności"
   },
   "APPS_MANAGEMENT": {
     "TITLE": "Zarządzanie aplikacjami",

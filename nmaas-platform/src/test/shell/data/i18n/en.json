@@ -508,7 +508,7 @@
     "UNAVAILABLE_MESSAGE": "Service is unavailable. Please try again later.",
     "INVALID_INPUT_MESSAGE": "Invalid input data",
     "NOT_ROBOT_ERROR_MESSAGE": "You have to prove that you're not a robot!",
-    "TERMS_OF_USER_MESSAGE": "You have to accept Terms of Use and Privacy Policy!"
+    "TERMS_OF_USER_MESSAGE": "You have to confirm reading the Privacy Policy"
   },
   "APPS_MANAGEMENT": {
     "TITLE": "Applications management",

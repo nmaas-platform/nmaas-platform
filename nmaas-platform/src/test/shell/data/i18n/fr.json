@@ -505,7 +505,7 @@
       "UNAVAILABLE_MESSAGE": "Le service est indisponible. Veuillez réessayer ultérieurement",
       "INVALID_INPUT_MESSAGE": "Données d'entrée non valides",
       "NOT_ROBOT_ERROR_MESSAGE": "Vous devez prouver que vous n'êtes pas un robot!",
-      "TERMS_OF_USER_MESSAGE": "Vous devez accepter les conditions d'utilisation et la politique de confidentialité!"
+      "TERMS_OF_USER_MESSAGE": "Vous devez accepter politique de confidentialité!"
     },
   "APPS_MANAGEMENT": {
     "TITLE": "Applications management",
