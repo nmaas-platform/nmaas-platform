@@ -109,8 +109,23 @@ export class CompleteComponent extends BaseComponent implements OnInit {
         }
     }
 
-    public useLanguage(language: string) {
+    useLanguage(language: string) {
         this.translate.use(language);
+    }
+
+    getCurrent(){
+        return this.translate.currentLang;
+    }
+
+    getPathToCurrent(){
+        return "assets/images/country/" + this.getCurrent() + "_circle.png";
+    }
+
+    public getSupportedLanguages(){
+        this.languageService.getEnabledLanguages().subscribe(langs =>{
+            this.translate.addLangs(langs);
+            this.languages = langs;
+        });
     }
 
     public hide(): void{
