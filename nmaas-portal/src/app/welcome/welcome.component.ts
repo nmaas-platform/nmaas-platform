@@ -22,6 +22,7 @@ export class WelcomeComponent implements OnInit, AfterViewChecked, AfterContentC
   }
 
   async ngOnInit() {
+    document.getElementById("global-footer").style.display = "block";
     await this.serviceHealth.validateServicesAvailability();
     if(!this.serviceHealth.isServiceAvailable){
       this.router.navigate(['/service-unavailable']);

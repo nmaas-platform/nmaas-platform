@@ -54,7 +54,7 @@
 					<ng-template ngFor let-userrole [ngForOf]="user?.roles">
 						<tr *ngIf="domainId == userrole.domainId">
 							<td>{{getDomainName(userrole.domainId)|async}}</td>
-							<td>{{"USER_ROLES." + userrole.role.toUpperCase() | translate}}</td>
+							<td>{{"ENUM.USER_ROLES." + userrole.role.toUpperCase() | translate}}</td>
 							<td class="text-right">
 								<button type="button" class="btn btn-danger"
 										(click)="remove(user.id, userrole.role, userrole.domainId)">{{'USER_PRIVILEGES.REMOVE_BUTTON' | translate}}</button>

@@ -461,11 +461,11 @@
   },
   "SEARCH": "Rechercher",
   "COMPLETE_REGISTRATION": {
-    "HEADER": "Please provide the following information to finalize your registration",
+    "HEADER": "Veuillez fournir les informations suivantes pour finaliser votre inscription",
     "MODAL": {
-      "HEADER": "Registration completed",
-      "BODY": "Your data has been registered in the system. Please login again.",
-      "RETURN_BUTTON": "Return to login page"
+      "HEADER": "Inscription terminée",
+      "BODY": "Vos données ont été enregistrées dans le système. Veuillez vous reconnecter.",
+      "RETURN_BUTTON": "Retour à la page de connexion"
     }
   },
   "TERMS_ACCEPTANCE": {
