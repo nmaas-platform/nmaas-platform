@@ -32,7 +32,7 @@
     </div>
     <div class="row" *ngIf="versionVisible">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.appVersions">
-        <a *ngFor="let version of app.appVersions" class="tag-button">
+        <a *ngFor="let version of app?.appVersions" class="tag-button">
           v.{{version.version}}
         </a>
       </div>
@@ -40,7 +40,7 @@
     <hr>
     <div class="row">
       <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
-        <a *ngFor="let tag of app.tags" class="tag-button">
+        <a *ngFor="let tag of app?.tags" class="tag-button">
           {{tag | titlecase}}
         </a>
       </div>
