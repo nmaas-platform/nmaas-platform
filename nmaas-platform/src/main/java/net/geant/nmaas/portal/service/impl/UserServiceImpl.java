@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
+import java.util.Base64;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
@@ -159,7 +160,7 @@ public class UserServiceImpl implements UserService {
 	public User register(UserSSOLogin userSSO, Domain globalDomain){
 		byte[] array = new byte[16]; // random password
 		new SecureRandom().nextBytes(array);
-		String generatedString = new String(array, StandardCharsets.UTF_8);
+		String generatedString = Base64.getEncoder().encodeToString(array);
 		User newUser = new User("thirdparty-"+System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
 		newUser.setSamlToken(userSSO.getUsername()); //Check user ID TODO: check if it's truly unique!
 		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
