@@ -188,17 +188,16 @@
                 <div class="panel-body">
                     <div class="form-group form-group-sm" [ngClass]="{'has-error':  kubernetesTemplateChartName.invalid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched),
  			    		 	'has-success': kubernetesTemplateChartName.valid && (kubernetesTemplateChartName.dirty || kubernetesTemplateChartName.touched)}">
-                        <label *ngIf="!isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}}</label>
-                        <label *ngIf="isInMode(ComponentMode.EDIT)" for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}} *</label>
+                        <label for="kubernetesTemplateChartName" class="control-label">{{'APPS_WIZARD.CHART_NAME_LABEL' | translate}} *</label>
                         <br>
                         <input type="text" class="form-control" id="kubernetesTemplateChartName" name="kubernetesTemplateChartName" #kubernetesTemplateChartName="ngModel"
-                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" [required]="isInMode(ComponentMode.EDIT)" tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.name" required tooltip="{{'APPS_WIZARD.CHART_NAME_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
                     <div class="form-group form-group-sm">
-                        <label for="kubernetesTemplateChartVersion" class="control-label">{{'APPS_WIZARD.CHART_VERSION_LABEL' | translate}}</label>
+                        <label for="kubernetesTemplateChartVersion" class="control-label">{{'APPS_WIZARD.CHART_VERSION_LABEL' | translate}} *</label>
                         <br>
                         <input type="text" class="form-control" id="kubernetesTemplateChartVersion" name="kubernetesTemplateChartVersion"
-                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version" tooltip="{{'APPS_WIZARD.CHART_VERSION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
+                               [(ngModel)]="app.appDeploymentSpec.kubernetesTemplate.chart.version" required tooltip="{{'APPS_WIZARD.CHART_VERSION_TOOLTIP' | translate}}" [display]="true" [options]="defaultTooltipOptions">
                     </div>
                     <div class="form-group form-group-sm" [ngClass]="{'has-error':  storageSpace.invalid && (storageSpace.dirty || storageSpace.touched),
  			    		 	'has-success': storageSpace.valid && (storageSpace.dirty || storageSpace.touched)}">

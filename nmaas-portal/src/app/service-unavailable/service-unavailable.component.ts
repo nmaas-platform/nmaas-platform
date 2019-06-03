@@ -51,6 +51,7 @@ export class ServiceUnavailableComponent implements OnInit, OnDestroy {
     console.debug('refresh');
     await this.validateServicesAvailability();
     if(this.isServiceAvailable == true) {
+      document.getElementById("global-footer").style.display = "block";
       this.router.navigate(['welcome']);
     }else{
         this.router.navigate(['service-unavailable']);
@@ -58,6 +59,7 @@ export class ServiceUnavailableComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    document.getElementById("global-footer").style.display = "none";
     await this.validateServicesAvailability();
     if(this.isServiceAvailable == true){
       this.router.navigate(['welcome']);

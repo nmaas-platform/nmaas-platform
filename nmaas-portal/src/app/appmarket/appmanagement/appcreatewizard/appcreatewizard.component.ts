@@ -123,7 +123,6 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
 
   public getLogo(id:number) : void {
     this.appImagesService.getLogoFile(id).subscribe(file => {
-      console.log(id);
       this.logo.push(this.convertToProperImageFile(file));
     }, err => console.debug(err.message));
   }
@@ -420,5 +419,5 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   getNestedObject = (nestedObj, pathArr) => {
     return pathArr.reduce((obj, key) =>
         (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
-  }
+  };
 }
