@@ -70,6 +70,7 @@ export class RegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.modal.setModalType("info");
     this.domains = this.registrationService.getDomains().pipe(
         map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
   }
