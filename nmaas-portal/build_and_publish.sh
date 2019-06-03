@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TAG=1.2.0-SNAPSHOT
+TAG=1.2.0
 PACKAGE=nmaas-portal
-ARTIFACTORY=artifactory.geant.net/nmaas-docker-local
-sudo docker build --rm -t $ARTIFACTORY/$PACKAGE:$TAG -f ./Dockerfile ..
-sudo docker push $ARTIFACTORY/$PACKAGE:$TAG
+REPOSITORY=artifactory.geant.net/nmaas-docker-local
+sudo docker build --rm -t $REPOSITORY/$PACKAGE:$TAG -f ./Dockerfile ..
+sudo docker push $REPOSITORY/$PACKAGE:$TAG

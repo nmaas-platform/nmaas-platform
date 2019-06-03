@@ -1,6 +1,42 @@
 {"versions" : [
 
   {
+    "verNo" : "1.2.0",
+    "date" : "(2019/05/xx)",
+    "topic" : [
+      {
+        "title" : "Application management added",
+        "tags" : "[New Feature]",
+        "description" : "New functionality and dedicated view in the UI allows for adding and maintaining information about NMaaS applications."
+      },
+      {
+        "title" : "Language management added",
+        "tags" : "[New Feature]",
+        "description" : "New functionality and dedicated view in the UI allows for maintaining translations of labels and texts displayed in the UI and the content of emails in all supported languages."
+      },
+      {
+        "title" : "About page added",
+        "tags" : "[New Feature]",
+        "description" : "Added dedicated About page with information about current and previous versions of NMaaS and a contact form."
+      },
+      {
+        "title" : "Extended nmaas-janitor to use readiness probes",
+        "tags" : "[Enhancement]",
+        "description" : "A deployed application instance transits to running state when application is actually ready."
+      },
+      {
+        "title" : "Setting basic authentication details for application instances",
+        "tags" : "[Enhancement]",
+        "description" : "Configuration wizards for applications that do not come with build in user management were extended to allow for setting custom user and password on per application instance basis."
+      },
+      {
+        "title" : "Layout and translation improvements",
+        "tags" : "[Enhancement]",
+        "description" : "Several modifications were introduced in order to improve user experience including reworked application comments view and support for application description texts displayed in different languages."
+      }
+    ]
+  },
+  {
     "verNo" : "1.1.0",
     "date" : "(2019/01/24)",
     "topic" : [
@@ -16,13 +52,8 @@
       },
       {
         "title" : "New library used for configuration wizard forms generation",
-        "tags" : "[New Feature]",
+        "tags" : "[Enhancement]",
         "description" : "New library offers many interesting features and is actively developed."
-      },
-      {
-        "title" : "Removed support for Docker Compose deployment",
-        "tags" : "[Removed]",
-        "description" : "In the current version only container deployment in Kubernetes it supported. Application source code has been cleaned and optimized."
       },
       {
         "title" : "Implemented new version of the NMaaS notification service",
@@ -35,9 +66,14 @@
         "description" : "New version of application view and rating system added to NMaaS."
       },
       {
-        "title": "During deployment of Prometheus application, user cannot remove added target.",
+        "title": "During deployment of Prometheus application, user cannot remove added targets",
         "tags": "[Bugfix]",
-        "description": "There were some problems with old wizard form generation library, and these are one of them. Solution for these problem was adding new library to control that."
+        "description": "There were some problems with old configuration wizard form generation library. Solved with new library to control that."
+      },
+      {
+        "title" : "Removed support for Docker Compose deployment",
+        "tags" : "[Removed]",
+        "description" : "In the current version only container deployment in Kubernetes is supported. Application source code has been cleaned and optimized."
       }
     ]
   },
@@ -48,15 +84,15 @@
       {
         "title" : "Support for Docker Compose and Kubernetes deployment environments",
         "tags" : "[New Feature]",
-        "description" : "NMaaS supports deployment of NM service applications in two environments."
+        "description" : "NMaaS supports deployment of applications in two container orchestration environments."
       },
       {
         "title" : "Support for 6 network management applications",
         "tags" : "[New Feature]",
-        "description" : "Six NM applications were integrated and added to NMaaS portfolio."
+        "description" : "Six network management applications were integrated and added to NMaaS portfolio."
       },
       {
-        "title" : "Support for GitLab repository",
+        "title" : "Support for configuration files storage on GitLab repository",
         "tags" : "[New Feature]",
         "description" : "Application instance configuration files are stored in dedicated repositories on GitLab."
       }
