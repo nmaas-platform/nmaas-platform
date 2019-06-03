@@ -9,46 +9,46 @@
   "templates": [
     {
       "language": "en",
-      "subject": "NMaaS: Contact form",
+      "subject": "NMaaS: Message from the contact form",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "${name} sent message by contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
+        "CONTENT": "${name} sent message using the contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "fr",
-      "subject": "NMaaS: Contact form",
+      "subject": "NMaaS: Message from the contact form",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "${name} sent message by contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
+        "CONTENT": "${name} sent message using the contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "de",
-      "subject": "NMaaS: Contact form",
+      "subject": "NMaaS: Message from the contact form",
       "template": {
         "HEADER": "Dear ${username}",
-        "CONTENT": "${name} sent message by contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
+        "CONTENT": "${name} sent message using the contact form. The content of this message can be found below:<br><p class='message-text'>${message}<p>Please reply to ${email} as soon as possible.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Formularz kontaktowy",
+      "subject": "NMaaS: Wiadomość z formularza kontaktowego",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "${name} wysłał wiadomość przez formularz kontaktowy. Treść możesz znaleźć poniżej:<br><p class='message-text'>${message}<p>Prosimy o jak najszybszą odpowiedź na adres ${email}.",
+        "CONTENT": "${name} wysłał wiadomość korzystając z formularza kontaktowego. Treść możesz znaleźć poniżej:<br><p class='message-text'>${message}<p>Prosimy o jak najszybszą odpowiedź na adres ${email}.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     }
   ]

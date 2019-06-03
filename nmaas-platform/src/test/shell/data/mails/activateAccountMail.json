@@ -12,10 +12,10 @@
       "subject": "NMaaS: Account activated",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>",
+        "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -23,10 +23,10 @@
       "subject": "NMaaS: Account activated",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>",
+        "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -34,21 +34,21 @@
       "subject": "NMaaS: Account activated",
       "template": {
         "HEADER": "Dear ${username},",
-        "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>",
+        "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "pl",
-      "subject": "NMaaS: Twoje konto jest już aktywne",
+      "subject": "NMaaS: Twoje konto zostało aktywowane",
       "template": {
         "HEADER": "Drogi ${username},",
         "CONTENT": "Twoje konto w portalu NMaaS jest już aktywne. Możesz się zalogować w <a href=\"${portalURL}\">portalu NMaaS</a>.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     }
   ]
