@@ -33,7 +33,7 @@
       "language": "de",
       "subject": "NMaaS: New application request",
       "template": {
-        "HEADER": "Dear {$username},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "${app_name} in version ${app_version} has been submitted through the Portal. You can review this request in application management view.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -44,7 +44,7 @@
       "language": "pl",
       "subject": "NMaaS: Nowe zgłoszenie aplikacji",
       "template": {
-        "HEADER": "Drogi {$username},",
+        "HEADER": "Drogi ${username},",
         "CONTENT": "Aplikacja o nazwie ${app_name} w wersji ${app_version} została wysłana przez Portal. Możesz sprawdzić zgłoszenie w widoku zarządzania aplikacjami.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",

@@ -33,7 +33,7 @@
       "language": "de",
       "subject": "NMaaS: Your application has been deleted",
       "template": {
-        "HEADER": "Dear {$username},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "Your application ${app_name} in version ${app_version} has been deleted because of following reason:<br><p class='message-text'>${reason}<p>You can contact NMaaS Team via contact form.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -44,7 +44,7 @@
       "language": "pl",
       "subject": "NMaaS: Twoja aplikacja została usunięta",
       "template": {
-        "HEADER": "Drogi {$username},",
+        "HEADER": "Drogi ${username},",
         "CONTENT": "Twoja aplikacja ${app_name} w wersji ${app_version} została usunięta z powodu:<br><p class='message-text'>${reason}<p>Możesz skontaktować się z Zespołem NMaaS poprzez formularz kontaktowy.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",

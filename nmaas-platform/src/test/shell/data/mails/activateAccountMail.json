@@ -33,7 +33,7 @@
       "language": "de",
       "subject": "NMaaS: Account activated",
       "template": {
-        "HEADER": "Dear {$username},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "Your NMaaS account is now active. You can now login at <a href=\"${portalURL}\">NMaaS portal</a>",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -44,7 +44,7 @@
       "language": "pl",
       "subject": "NMaaS: Twoje konto jest już aktywne",
       "template": {
-        "HEADER": "Drogi {$username},",
+        "HEADER": "Drogi ${username},",
         "CONTENT": "Twoje konto w portalu NMaaS jest już aktywne. Możesz się zalogować w <a href=\"${portalURL}\">portalu NMaaS</a>.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
