@@ -615,6 +615,15 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania."
   },
+  "APP_CHANGE_STATE_MODAL": {
+    "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
+    "CURRENT_STATE": "Obecny stan",
+    "NEW_STATE": "Nowy stan",
+    "REASON": "Powód",
+    "REASON_PLACEHOLDER": "Proszę uzasadnij swoją decyzję",
+    "CANCEL_BUTTON": "Anuluj",
+    "CHANGE_STATE_BUTTON": "Zmień stan"
+  },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",
     "CHANGELOG_TITLE": "Aktualna wersja oraz lista zmian",

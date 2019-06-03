@@ -33,7 +33,7 @@
       "language": "de",
       "subject": "NMaaS: Your request to add application has been rejected",
       "template": {
-        "HEADER": "Dear {$username},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "Your request to add application ${app_name} in version ${app_version} has been rejected because of the following reason:<br><p class='message-text'>${reason}<p>You can contact NMaaS Team via contact form or edit your request in NMaaS.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
@@ -44,7 +44,7 @@
       "language": "pl",
       "subject": "NMaaS: Twoje zgłoszenie dodania nowej aplikacji zostało odrzucone",
       "template": {
-        "HEADER": "Drogi {$username},",
+        "HEADER": "Drogi ${username},",
         "CONTENT": "Twoje zgłoszenie dodania aplikacji ${app_name} w wersji ${app_version} zostało odrzucone z powodu:<br><p class='message-text'>${reason}<p>Możesz skontaktować się z Zespołem NMaaS poprzez formularz kontaktowy lub ponowić zgłoszenie w systemie NMaaS.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
