@@ -23,17 +23,11 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     }
 
     ngOnInit() {
-        this.clusterService.getAll().subscribe(clusters => {
-            if(clusters.length > 0){
-                this.clusterId = clusters[0].id;
-                this.clusterService.getOne(this.clusterId).subscribe(cluster => {
-                    this.cluster = cluster;
-                });
-                this.router.navigate(['/admin/clusters/',this.clusterId])
-            } else{
-                this.cluster = new Cluster();
-                this.mode = ComponentMode.CREATE;
-            }
+        this.clusterService.getCluster().subscribe(cluster => {
+           this.cluster = cluster;
+        }, () => {
+            this.cluster = new Cluster();
+            this.mode = ComponentMode.CREATE;
         });
     }
 
@@ -42,7 +36,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
         if (!upCluster) return;
         if(this.clusterId) {
             this.clusterService.update(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
+                .subscribe(() => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
         } else {
             this.clusterService.add(upCluster)
                 .subscribe((e) => this.router.navigate(['/admin/clusters/', e]),err => this.error=err.message);
