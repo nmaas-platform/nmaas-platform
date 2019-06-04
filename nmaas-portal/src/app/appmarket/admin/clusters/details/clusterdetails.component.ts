@@ -1,10 +1,11 @@
 import {Component, Output} from "@angular/core";
 import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
 import {OnInit} from "@angular/core/public_api";
-import {Cluster} from "../../../../model/cluster";
+import {Cluster, ClusterAttachPoint} from "../../../../model/cluster";
 import {ClusterService} from "../../../../service/cluster.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ComponentMode} from "../../../../shared";
+import {isNullOrUndefined} from "util";
 
 @Component({
     selector: 'app-clusterdetails',
@@ -23,8 +24,11 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
 
     ngOnInit() {
         this.clusterService.getCluster().subscribe(cluster => {
-           this.cluster = cluster;
-           this.router.navigate(['/admin/clusters/view']);
+            if(isNullOrUndefined(cluster.attachPoint)){
+                cluster.attachPoint = new ClusterAttachPoint();
+            }
+            this.cluster = cluster;
+            this.router.navigate(['/admin/clusters/view']);
         }, () => {
             this.cluster = new Cluster();
             this.mode = ComponentMode.CREATE;

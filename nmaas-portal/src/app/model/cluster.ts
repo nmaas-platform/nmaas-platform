@@ -2,7 +2,7 @@ export class ClusterInfo {
     public id: number;
 }
 
-class ClusterAttachPoint {
+export class ClusterAttachPoint {
     public id: number;
     public routerId: string="";
     public routerInterfaceName: string="";
