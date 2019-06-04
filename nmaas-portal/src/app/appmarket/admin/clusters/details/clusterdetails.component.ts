@@ -12,7 +12,6 @@ import {ComponentMode} from "../../../../shared";
     styleUrls: ['./clusterdetails.component.css']
 })
 export class ClusterDetailsComponent extends BaseComponent implements OnInit{
-    public clusterId: number;
     public cluster: Cluster;
 
     @Output()
@@ -25,6 +24,7 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     ngOnInit() {
         this.clusterService.getCluster().subscribe(cluster => {
            this.cluster = cluster;
+           this.router.navigate(['/admin/clusters/view']);
         }, () => {
             this.cluster = new Cluster();
             this.mode = ComponentMode.CREATE;
@@ -34,12 +34,12 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     public onSave($event) {
         const upCluster: Cluster = $event;
         if (!upCluster) return;
-        if(this.clusterId) {
-            this.clusterService.update(upCluster)
-                .subscribe(() => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
-        } else {
+        if(this.isInMode(ComponentMode.CREATE)){
             this.clusterService.add(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/', e]),err => this.error=err.message);
+                .subscribe(() => this.router.navigateByUrl('/admin/clusters'),err => this.error=err.message);
+        } else {
+            this.clusterService.update(upCluster)
+                .subscribe(() => this.router.navigateByUrl('/admin/clusters'),err => this.error=err.message);
         }
     }
 

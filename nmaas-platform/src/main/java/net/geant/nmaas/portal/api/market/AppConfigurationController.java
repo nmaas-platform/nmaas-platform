@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.security.Principal;
 
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/api/apps/instances")
 public class AppConfigurationController {
 
     private static final String MISSING_APP_INSTANCE_MESSAGE = "Missing app instance";
@@ -47,7 +47,7 @@ public class AppConfigurationController {
         }
     }
 
-    @PostMapping({"/apps/instances/{appInstanceId}/configure", "/domains/{domainId}/apps/instances/{appInstanceId}/configure"})
+    @PostMapping("/{appInstanceId}/configure")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void applyConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -71,7 +71,7 @@ public class AppConfigurationController {
         }
     }
 
-    @PostMapping({"/apps/instances/{appInstanceId}/configure/update", "/domains/{domainId}/apps/instances/{appInstanceId}/configure/update"})
+    @PostMapping("/{appInstanceId}/configure/update")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void updateConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -91,7 +91,7 @@ public class AppConfigurationController {
         }
     }
 
-    @GetMapping("/apps/instances/{appInstanceId}/configuration")
+    @GetMapping("/{appInstanceId}/configuration")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public String getConfiguration(@PathVariable(value = "appInstanceId") Long appInstanceId){

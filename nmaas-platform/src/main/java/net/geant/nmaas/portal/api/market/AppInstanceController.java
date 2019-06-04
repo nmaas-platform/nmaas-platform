@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/apps/instances")
 @AllArgsConstructor
 public class AppInstanceController extends AppBaseController {
 
@@ -61,7 +61,7 @@ public class AppInstanceController extends AppBaseController {
 
     private DomainService domains;
 
-    @GetMapping("/apps/instances")
+    @GetMapping
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public List<AppInstanceView> getAllInstances(Pageable pageable) {
@@ -70,7 +70,7 @@ public class AppInstanceController extends AppBaseController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/apps/instances/my")
+    @GetMapping("/my")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@NotNull Principal principal, Pageable pageable) {
         User user = users.findByUsername(principal.getName()).orElseThrow(() -> new MissingElementException(MISSING_USER_MESSAGE));
@@ -79,7 +79,7 @@ public class AppInstanceController extends AppBaseController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/domains/{domainId}/apps/instances")
+    @GetMapping("/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceView> getAllInstances(@PathVariable Long domainId, Pageable pageable) {
@@ -89,14 +89,14 @@ public class AppInstanceController extends AppBaseController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/domains/{domainId}/apps/instances/my")
+    @GetMapping(value = "/domain/{domainId}/my")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'ANY')")
     @Transactional
     public List<AppInstanceView> getMyAllInstances(@PathVariable Long domainId, @NotNull Principal principal, Pageable pageable) {
         return getUserDomainAppInstances(domainId, principal.getName(), pageable);
     }
 
-    @GetMapping("/domains/{domainId}/apps/instances/user/{username}")
+    @GetMapping("/domain/{domainId}/user/{username}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'OWNER')")
     @Transactional
     public List<AppInstanceView> getUserAllInstances(@PathVariable Long domainId, @PathVariable String username, Pageable pageable){
@@ -113,7 +113,7 @@ public class AppInstanceController extends AppBaseController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
+    @GetMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public AppInstanceView getAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -123,10 +123,10 @@ public class AppInstanceController extends AppBaseController {
         return mapAppInstance(appInstance);
     }
 
-    @PostMapping("/domains/{domainId}/apps/instances")
+    @PostMapping("/domain/{domainId}")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
     @Transactional
-    public Id createAppInstance(@RequestBody(required = true) AppInstanceRequest appInstanceRequest,
+    public Id createAppInstance(@RequestBody AppInstanceRequest appInstanceRequest,
                                 @NotNull Principal principal, @PathVariable Long domainId) {
         Application app = getApp(appInstanceRequest.getApplicationId());
         Domain domain = domains.findDomain(domainId)
@@ -158,7 +158,7 @@ public class AppInstanceController extends AppBaseController {
         return new Id(appInstance.getId());
     }
 
-    @PostMapping({"/apps/instances/{appInstanceId}/redeploy", "/domains/{domainId}/apps/instances/{appInstanceId}/redeploy"})
+    @PostMapping("/{appInstanceId}/redeploy")
     @PreAuthorize("hasPermission(#domainId, 'domain', 'CREATE')")
     @Transactional
     public void redeployAppInstance(@PathVariable Long appInstanceId) {
@@ -170,7 +170,7 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @DeleteMapping({"/apps/instances/{appInstanceId}", "/domains/{domainId}/apps/instances/{appInstanceId}"})
+    @DeleteMapping("/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
     public void deleteAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -183,7 +183,7 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @DeleteMapping({"/apps/instances/failed/{appInstanceId}", "/domains/{domainId}/apps/instances/failed/{appInstanceId}"})
+    @DeleteMapping("/failed/{appInstanceId}")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'DELETE')")
     @Transactional
     public void removeFailedInstance(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -196,7 +196,7 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @GetMapping({"/apps/instances/{appInstanceId}/state", "/domains/{domainId}/apps/instances/{appInstanceId}/state"})
+    @GetMapping("/{appInstanceId}/state")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public AppInstanceStatus getState(@PathVariable(value = "appInstanceId") Long appInstanceId,
@@ -205,7 +205,7 @@ public class AppInstanceController extends AppBaseController {
         return getAppInstanceState(appInstance);
     }
 
-    @GetMapping({"/apps/instances/{appInstanceId}/state/history", "/domains/{domainId}/apps/instances/{appInstanceId}/state/history"})
+    @GetMapping("/{appInstanceId}/state/history")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public List<AppDeploymentHistoryView> getStateHistory(@PathVariable(value = "appInstanceId") Long appInstanceId, @NotNull Principal principal) {
@@ -217,8 +217,7 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    //domainId is not used in this method.
-    @PostMapping({"/apps/instances/{appInstanceId}/restart", "/domains/{domainId}/apps/instances/{appInstanceId}/restart"})
+    @PostMapping("/{appInstanceId}/restart")
     @PreAuthorize("hasPermission(#appInstanceId, 'appInstance', 'OWNER')")
     @Transactional
     public void restartAppInstance(@PathVariable(value = "appInstanceId") Long appInstanceId) {
@@ -230,7 +229,7 @@ public class AppInstanceController extends AppBaseController {
         }
     }
 
-    @GetMapping("/domains/{domainId}/apps/instances/running")
+    @GetMapping("/running/domain/{domainId}")
     @Transactional
     public List<AppInstanceBase> getRunningAppInstances(@PathVariable(value = "domainId") long domainId, Principal principal) {
         Domain domain = this.domains.findDomain(domainId).orElseThrow(() -> new InvalidDomainException("Domain not found"));
