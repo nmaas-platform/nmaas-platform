@@ -153,7 +153,7 @@ task integrationTest(type: Test) {
 }
 
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "0.8.4"
 	reportsDir = file("$buildDir/jacoco")
 }
 
@@ -188,6 +188,28 @@ jacocoTestCoverageVerification {
 			excludes = [
 					'**/inventory/janitor/**'
 			]
+		}
+		rule {
+			element = 'BUNDLE'
+			includes = [
+			        'net/geant/nmaas/portal/*'
+			]
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.7
+			}
+		}
+		rule {
+			element = 'BUNDLE'
+			includes = [
+			        'net/geant/nmaas/orchestration/*'
+			]
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.7
+			}
 		}
 	}
 }
