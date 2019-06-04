@@ -42,7 +42,7 @@ public class KubernetesClusterManagerTest {
 
     @BeforeEach
     public void setup() {
-        manager = new KubernetesClusterManager(repository, null, null, domainTechDetailsRepository);
+        manager = new KubernetesClusterManager(repository, null, domainTechDetailsRepository);
     }
 
     @Test

@@ -47,16 +47,12 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('UsersList:onChanges ' + changes.toString());
     this.userDataService.selectedDomainId.subscribe(domain => this.domainId = domain);
   }
   public getDomainName(domainId: number): Observable<string> {
-    //console.debug('getDomainName(' + domainId + ')');
     if (this.domainCache.hasData(domainId)) {
-      //console.debug('getDomainName(' + domainId + ') from cache');
       return of(this.domainCache.getData(domainId).name);
     } else {
-      //console.debug('getDomainName(' + domainId + ') from network');
       return this.domainService.getOne(domainId).pipe(
           map((domain) => {this.domainCache.setData(domainId, domain); return domain.name}),
           shareReplay(1),
@@ -90,7 +86,6 @@ export class UsersListComponent extends BaseComponent implements OnInit, OnChang
   }
 
   public view(userId: number): void {
-    console.debug('view(' + userId + ')');
     this.onView.emit(userId);
   }
 

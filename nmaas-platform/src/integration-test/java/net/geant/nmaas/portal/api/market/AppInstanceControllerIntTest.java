@@ -49,10 +49,6 @@ public class AppInstanceControllerIntTest extends BaseControllerTestSetup {
                 .header("Authorization","Bearer " + getValidTokenForUser(user)))
                 .andExpect(status().isOk());
         verify(appLifecycleManager, times(1)).restartApplication(appInstance.getInternalId());
-        mvc.perform(post("/api/domains/{domainId}/apps/instances/{appInstanceId}/restart",domain.getId(),1L)
-                .header("Authorization","Bearer " + getValidTokenForUser(user)))
-                .andExpect(status().isOk());
-        verify(appLifecycleManager,times(2)).restartApplication(appInstance.getInternalId());
     }
 
     @Test

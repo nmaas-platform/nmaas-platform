@@ -1,11 +1,11 @@
-  import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
-import {Router, ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Domain} from '../../../model/domain';
 import {DomainService} from '../../../service/domain.service';
-import { BaseComponent } from '../../../shared/common/basecomponent/base.component';
+import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
 import {isUndefined} from 'util';
-import { NG_VALIDATORS, PatternValidator } from '@angular/forms';
+import {NG_VALIDATORS, PatternValidator} from '@angular/forms';
 import {User} from "../../../model";
 import {UserService} from '../../../service';
 import {Observable, of} from "rxjs";
@@ -13,8 +13,8 @@ import {UserRole} from "../../../model/userrole";
 import {CacheService} from "../../../service/cache.service";
 import {AuthService} from "../../../auth/auth.service";
 import {ModalComponent} from '../../../shared/modal';
-  import {map, shareReplay, take} from 'rxjs/operators';
-  import {DcnDeploymentType} from "../../../model/dcndeploymenttype";
+import {map, shareReplay, take} from 'rxjs/operators';
+import {DcnDeploymentType} from "../../../model/dcndeploymenttype";
 
 
 @Component({
@@ -30,8 +30,9 @@ export class DomainComponent extends BaseComponent implements OnInit {
   public dcnUpdated: boolean = false;
   private users:User[];
   protected domainCache: CacheService<number, Domain> = new CacheService<number, Domain>();
-  private dcnDeploymentTypes: typeof DcnDeploymentType = DcnDeploymentType;
-  private keys: any = Object.keys;
+  private keys: any = Object.keys(DcnDeploymentType).filter((type) => {
+    return isNaN(Number(type));
+  });
 
   @ViewChild(ModalComponent)
   public modal:ModalComponent;
@@ -65,7 +66,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
     if (!isUndefined(this.domainId)) {
       this.updateExistingDomain();
     } else {
-      this.domainService.add(this.domain).subscribe(() => this.router.navigate(['domains/']));
+      this.domainService.add(this.domain).subscribe(() => this.router.navigate(['admin/domains/']));
     }
     this.domainService.setUpdateRequiredFlag(true);
   }
@@ -78,14 +79,14 @@ export class DomainComponent extends BaseComponent implements OnInit {
     if(this.dcnUpdated && this.isManual()){
       this.modal.show();
     } else {
-      this.router.navigate(['domains/']);
+      this.router.navigate(['admin/domains/']);
     }
   }
 
   public updateDcnConfigured(): void {
       this.domainService.updateDcnConfigured(this.domain).subscribe(() => {
         this.modal.hide();
-        this.router.navigate(['domains/']);
+        this.router.navigate(['admin/domains/']);
       });
   }
 
@@ -117,12 +118,7 @@ export class DomainComponent extends BaseComponent implements OnInit {
       return user.roles.filter(role => role.domainId != this.domainService.getGlobalDomainId() ||  role.role.toString() != "ROLE_GUEST");
     }
 
-    public getStateAsString(state: DcnDeploymentType) : string {
-      return typeof state === "string" && isNaN(Number(state.toString())) ? state: DcnDeploymentType[state];
-    }
-
     public isManual() : boolean {
-      let state = this.domain.domainDcnDetails.dcnDeploymentType;
-      return this.getStateAsString(state) === 'MANUAL';
+      return this.domain.domainDcnDetails.dcnDeploymentType === 'MANUAL';
     }
 }

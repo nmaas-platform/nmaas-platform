@@ -14,6 +14,7 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.entities.NamespaceC
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
+import net.geant.nmaas.portal.api.market.ApiExceptionHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -103,7 +103,10 @@ public class KubernetesClusterControllerIntTest {
 
     @BeforeEach
     public void init() {
-        mvc = MockMvcBuilders.standaloneSetup(new KubernetesClusterController(clusterManager, modelMapper)).build();
+        mvc = MockMvcBuilders
+                .standaloneSetup(new KubernetesClusterController(clusterManager, modelMapper))
+                .setControllerAdvice(new ApiExceptionHandler())
+                .build();
     }
 
     @AfterEach
@@ -113,7 +116,6 @@ public class KubernetesClusterControllerIntTest {
 
     @Test
     public void shouldAddAndRemoveNewKubernetesCluster() throws Exception {
-        long sizeBefore = clusterManager.getAllClusters().size();
         MvcResult result = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
@@ -122,21 +124,20 @@ public class KubernetesClusterControllerIntTest {
 
         Long newId = Long.parseLong(result.getResponse().getContentAsString());
 
-        assertEquals(sizeBefore + 1, clusterManager.getAllClusters().size());
+        mvc.perform(get(URL_PREFIX))
+                .andExpect(status().isOk());
+
         mvc.perform(delete(URL_PREFIX + "/{id}", newId))
                 .andExpect(status().isNoContent());
-        assertEquals(sizeBefore, clusterManager.getAllClusters().size());
     }
 
     @Test
     public void shouldAddNewKubernetesClusterFromJson() throws Exception {
-        long sizeBefore = clusterManager.getAllClusters().size();
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(KUBERNETES_CLUSTER_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        assertEquals(sizeBefore + 1, clusterManager.getAllClusters().size());
     }
 
     @Test
@@ -177,7 +178,7 @@ public class KubernetesClusterControllerIntTest {
                 .content(new ObjectMapper().writeValueAsString(updated))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-        MvcResult result = mvc.perform(get(URL_PREFIX + "/{id}", clusterId))
+        MvcResult result = mvc.perform(get(URL_PREFIX, clusterId))
                 .andExpect(status().isOk())
                 .andReturn();
         assertThat(result.getResponse().getContentAsString(), containsString("updated-chart-name"));
@@ -193,17 +194,7 @@ public class KubernetesClusterControllerIntTest {
     }
 
     @Test
-    public void shouldListAllKubernetesClusters() throws Exception {
-        MvcResult result = mvc.perform(get(URL_PREFIX))
-                .andExpect(status().isOk())
-                .andReturn();
-        assertEquals(
-                clusterManager.getAllClusters().size(),
-                ((List<KCluster>) new ObjectMapper().readValue(result.getResponse().getContentAsString(), new TypeReference<List<KCluster>>() {})).size());
-    }
-
-    @Test
-    public void shouldFetchKubernetesClusterById() throws Exception {
+    public void shouldFetchKubernetesCluster() throws Exception {
         MvcResult createResult = mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(initNewKubernetesCluster()))
@@ -212,7 +203,7 @@ public class KubernetesClusterControllerIntTest {
 
         Long newId = Long.parseLong(createResult.getResponse().getContentAsString());
 
-        MvcResult result = mvc.perform(get(URL_PREFIX + "/{id}", newId))
+        MvcResult result = mvc.perform(get(URL_PREFIX))
                 .andExpect(status().isOk())
                 .andReturn();
         assertEquals(
@@ -221,8 +212,8 @@ public class KubernetesClusterControllerIntTest {
     }
 
     @Test
-    public void shouldNotFetchNotExistingKubernetesClusterById() throws Exception {
-        mvc.perform(get(URL_PREFIX + "/{id}", -1))
+    public void shouldNotFetchNotExistingKubernetesCluster() throws Exception {
+        mvc.perform(get(URL_PREFIX, -1))
                 .andExpect(status().isNotFound());
     }
 

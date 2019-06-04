@@ -62,7 +62,7 @@ export class UsersListComponent implements OnInit {
   }
 
   public onUserView($event): void {
-    this.router.navigate(['/users/view/', $event]);
+    this.router.navigate(['/admin/users/view/', $event]);
   }
 
   public onUserDelete($event): void {
