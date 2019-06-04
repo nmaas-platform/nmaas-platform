@@ -119,9 +119,6 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
 
-	//probably to be removed soon
-	testCompile('net.bytebuddy:byte-buddy:1.9.10')
-
 	integrationTestImplementation('org.junit.jupiter:junit-jupiter-api:5.4.0')
 	integrationTestCompile('org.junit.jupiter:junit-jupiter-params:5.4.0')
 	integrationTestRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
@@ -129,9 +126,6 @@ dependencies {
 	integrationTestCompile("org.mockito:mockito-core:2.24.5")
 	integrationTestCompile('org.mockito:mockito-junit-jupiter:2.24.5')
 	integrationTestCompile('org.springframework.security:spring-security-test')
-
-	//probably to be removed soon
-	integrationTestCompile('net.bytebuddy:byte-buddy:1.9.10')
 }
 
 test {
@@ -181,6 +175,24 @@ jacocoTestReport {
 		})
 	}
 }
+
+jacocoTestCoverageVerification {
+	executionData(test, integrationTest)
+	violationRules {
+		rule {
+			limit {
+				counter = 'INSTRUCTION'
+				value = 'COVEREDRATIO'
+				minimum = 0.5
+			}
+			excludes = [
+					'**/inventory/janitor/**'
+			]
+		}
+	}
+}
+
+integrationTest.finalizedBy(jacocoTestCoverageVerification)
 
 sonarqube {
 	properties {
