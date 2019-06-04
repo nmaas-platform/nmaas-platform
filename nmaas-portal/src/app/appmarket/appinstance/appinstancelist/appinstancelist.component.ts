@@ -55,7 +55,7 @@ export class AppInstanceListComponent implements OnInit {
   constructor(private appInstanceService: AppInstanceService,
               private domainService: DomainService,
               private userDataService: UserDataService,
-              private authService: AuthService,
+              public authService: AuthService,
               private appConfig: AppConfigService,
               private translateService: TranslateService,
               private sessionService: SessionService,
