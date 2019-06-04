@@ -12,7 +12,6 @@ import net.geant.nmaas.notifications.templates.api.MailTemplateView;
 import net.geant.nmaas.notifications.templates.MailType;
 import net.geant.nmaas.notifications.templates.TemplateService;
 import net.geant.nmaas.portal.api.domain.UserView;
-import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -36,8 +35,6 @@ public class NotificationManager {
 
     private NotificationService notificationService;
 
-    private ConfigurationManager configurationManager;
-
     private UserService userService;
 
     private DomainService domainService;
@@ -47,13 +44,11 @@ public class NotificationManager {
     @Autowired
     public NotificationManager(TemplateService templateService,
                                NotificationService notificationService,
-                               ConfigurationManager configurationManager,
                                UserService userService,
                                DomainService domainService,
                                ModelMapper modelMapper){
         this.templateService = templateService;
         this.notificationService = notificationService;
-        this.configurationManager = configurationManager;
         this.userService = userService;
         this.domainService = domainService;
         this.modelMapper = modelMapper;
@@ -62,15 +57,19 @@ public class NotificationManager {
     void prepareAndSendMail(MailAttributes mailAttributes) throws IOException, TemplateException {
         MailTemplateView mailTemplate = templateService.getMailTemplate(mailAttributes.getMailType());
         Template template = templateService.getHTMLTemplate();
-        LanguageMailContentView langTemplate = mailTemplate.getTemplates().stream()
-                .filter(temp -> temp.getLanguage().equals(configurationManager.getConfiguration().getDefaultLanguage()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Mail template not found"));
         this.getAllAddressees(mailAttributes);
         for(UserView user : mailAttributes.getAddressees()){
-            this.notificationService.sendMail(user.getEmail(), langTemplate.getSubject(), getFilledTemplate(template, langTemplate, user, mailAttributes, mailTemplate));
+            LanguageMailContentView mailContent = getTemplateInSelectedLanguage(mailTemplate.getTemplates(), user.getSelectedLanguage());
+            this.notificationService.sendMail(user.getEmail(), mailContent.getSubject(), getFilledTemplate(template, mailContent, user, mailAttributes, mailTemplate));
         }
         log.info("Mail " + mailAttributes.getMailType().name() + " was sent to " + getListOfMails(mailAttributes.getAddressees()));
+    }
+
+    private LanguageMailContentView getTemplateInSelectedLanguage(List<LanguageMailContentView> mailContentList, String selectedLanguage){
+        return mailContentList.stream()
+                .filter(mailContent -> mailContent.getLanguage().equalsIgnoreCase(selectedLanguage))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Mail template in language " + selectedLanguage + " cannot be found"));
     }
 
     private void getAllAddressees(MailAttributes mailAttributes){

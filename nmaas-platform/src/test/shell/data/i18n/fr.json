@@ -614,6 +614,15 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates"
   },
+  "APP_CHANGE_STATE_MODAL": {
+    "HEADER": "Change state of {{app_name}} in {{app_version}} version",
+    "CURRENT_STATE": "Current state",
+    "NEW_STATE": "New state",
+    "REASON": "Reason",
+    "REASON_PLACEHOLDER": "Please explain your decision",
+    "CANCEL_BUTTON": "Cancel",
+    "CHANGE_STATE_BUTTON": "Change state"
+  },
   "ABOUT": {
     "CONTACT_TITLE": "Contactez-nous",
     "CHANGELOG_TITLE": "Version actuelle et journal des modifications",

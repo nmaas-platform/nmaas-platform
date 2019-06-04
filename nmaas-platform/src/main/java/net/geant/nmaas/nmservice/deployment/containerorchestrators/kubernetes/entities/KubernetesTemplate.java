@@ -58,6 +58,7 @@ public class KubernetesTemplate implements Serializable {
     public void validate(){
         checkArgument(chart != null, "Chart cannot not be null");
         checkArgument(StringUtils.isNotEmpty(chart.getName()), "You must provide chart name");
+        checkArgument(StringUtils.isNotEmpty(chart.getVersion()), "You must provide chart version");
     }
 
 }

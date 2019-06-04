@@ -16,6 +16,7 @@ import {ComponentMode} from "../../../shared";
 import {MultiSelect} from "primeng/primeng";
 import {KubernetesTemplate} from "../../../model/kubernetestemplate";
 import {ConfigFileTemplate} from "../../../model/configfiletemplate";
+import {ApplicationState} from "../../../model/applicationstate";
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -191,6 +192,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   public updateApplication(): void {
     if(this.templateHasContent()){
       this.app.appConfigurationSpec.templates = this.configFileTemplates;
+    }
+    if(this.getStateAsString(this.app.state) === this.getStateAsString(ApplicationState.REJECTED)){
+      this.app.state = ApplicationState.NEW;
     }
     this.appsService.updateApp(this.app).subscribe(() => {
       this.uploadLogo(this.app.id);
@@ -426,5 +430,9 @@ export class AppCreateWizardComponent extends BaseComponent implements OnInit {
   getNestedObject = (nestedObj, pathArr) => {
     return pathArr.reduce((obj, key) =>
         (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
+  };
+
+  public getStateAsString(state: any): string {
+    return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
   }
 }

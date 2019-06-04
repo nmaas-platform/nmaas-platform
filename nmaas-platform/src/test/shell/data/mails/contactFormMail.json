@@ -45,7 +45,7 @@
       "subject": "NMaaS: Wiadomość z formularza kontaktowego",
       "template": {
         "HEADER": "Drogi ${username}",
-        "CONTENT": "${username} wysłał wiadomość korzystając z formularza kontaktowego. Treść możesz znaleźć poniżej:<br><p class='message-text'>${message}<p>Prosimy o jak najszybszą odpowiedź na adres ${email}.",
+        "CONTENT": "${name} wysłał wiadomość korzystając z formularza kontaktowego. Treść możesz znaleźć poniżej:<br><p class='message-text'>${message}<p>Prosimy o jak najszybszą odpowiedź na adres ${email}.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
         "SENDER_POLICY": ""
