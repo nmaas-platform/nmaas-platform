@@ -24,8 +24,7 @@ export class AppComponent {
     }
 
     async ngOnInit() {
-        await this.serviceHealth.validateServicesAvailability();
-        if(!this.serviceHealth.isServiceAvailable){
+        if(this.serviceHealth.isServiceAvailable == false){
             this.router.navigate(['/service-unavailable']);
         }
         this.handleDefaultLanguage();
