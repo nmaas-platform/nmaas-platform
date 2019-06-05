@@ -1,6 +1,6 @@
 <div class="col-sm-12 col-sm-offset-1 col-sm 10 col-md-offset-1 col-md-10">
   <h3>{{'APPS_MANAGEMENT.TITLE'| translate}}</h3>
-  <button [routerLink]="['/management/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
+  <button [routerLink]="['/admin/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
   <hr>
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#approved">{{ 'APPS_MANAGEMENT.APPROVED_TAB' | translate }}</a></li>
@@ -25,8 +25,8 @@
             <td>{{app?.name}}</td>
             <td>{{"ENUM.STATE." + getStateAsString(app?.state).toUpperCase() | translate }}</td>
             <td class="text-right">
-              <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
-              <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+              <button [routerLink]="['/admin/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+              <button [routerLink]="['/admin/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
               <button [disabled]="getStateAsString(app?.state) === 'DELETED'" (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
             </td>
           </tr>
@@ -51,8 +51,8 @@
               <td>{{app?.name}}</td>
               <td>{{"ENUM.STATE." + getStateAsString(app?.state).toUpperCase() | translate }}</td>
               <td class="text-right">
-                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
-                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button [routerLink]="['/admin/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/admin/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
                 <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>
@@ -82,8 +82,8 @@
               <td>{{app?.name}}</td>
               <td>{{"ENUM.STATE." + getStateAsString(app?.state).toUpperCase() | translate }}</td>
               <td class="text-right">
-                <button [routerLink]="['/management/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
-                <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+                <button [routerLink]="['/admin/apps/view', app?.id]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+                <button [routerLink]="['/admin/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
                 <button (click)="showModal(app)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
               </td>
             </tr>

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.KCluster;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterViewComplete;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 /**
  * RESTful API for managing Kubernetes cluster instances.
@@ -37,26 +35,15 @@ public class KubernetesClusterController {
     private ModelMapper modelMapper;
 
     /**
-     * List all {@link KCluster} stored in repository
-     * @return list of {@link KClusterView} objects
-     */
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    @GetMapping
-    public List<KClusterView> listAllKubernetesClusters() {
-        return clusterManager.getAllClusters();
-    }
-
-    /**
-     * Fetch {@link KCluster} instance by id
-     * @param id Unique {@link KCluster} id
-     * @return {@link KCluster} instance
-     * @throws KubernetesClusterNotFoundException when cluster with given id does not exist (HttpStatus.NOT_FOUND)
+     * Fetch {@link KCluster} instance
+     * @return {@link KClusterViewComplete} instance
+     * @throws KubernetesClusterNotFoundException when cluster configuration does not exist (HttpStatus.NOT_FOUND)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN') || hasRole('ROLE_OPERATOR')")
-    @GetMapping("/{id}")
-    public KClusterViewComplete getKubernetesCluster(@PathVariable("id") Long id) {
-        return modelMapper.map(clusterManager.getClusterById(id), KClusterViewComplete.class);
+    @GetMapping
+    public KClusterViewComplete getKubernetesCluster() {
+        return modelMapper.map(clusterManager.loadSingleCluster(), KClusterViewComplete.class);
     }
 
     /**

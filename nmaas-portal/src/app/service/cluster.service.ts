@@ -18,12 +18,8 @@ export class ClusterService extends GenericDataService {
         this.url = this.appConfig.getApiUrl() + '/management/kubernetes/';
     }
 
-    public getAll(): Observable<ClusterInfo[]> {
-        return this.get<ClusterInfo[]>(this.url);
-    }
-
-    public getOne(clusterId: number): Observable<Cluster> {
-        return this.get<Cluster>(this.url + clusterId);
+    public getCluster(): Observable<Cluster> {
+        return this.get<Cluster>(this.url);
     }
 
     public add(cluster: Cluster): Observable<any> {

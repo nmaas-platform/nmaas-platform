@@ -12,21 +12,17 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.External
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.KubernetesClusterNotFoundException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.exceptions.OnlyOneKubernetesClusterSupportedException;
 import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterExtNetworkView;
-import net.geant.nmaas.externalservices.inventory.kubernetes.model.KClusterView;
 import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.orchestration.entities.DomainTechDetails;
 import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.service.impl.DomainServiceImpl;
 import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Manages the information about Kubernetes clusters available in the system.
@@ -40,21 +36,13 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
 
     private KubernetesClusterRepository repository;
     private DomainTechDetailsRepository domainTechDetailsRepository;
-    private ModelMapper modelMapper;
     private DomainServiceImpl.CodenameValidator namespaceValidator;
 
     @Autowired
-    public KubernetesClusterManager(KubernetesClusterRepository repository, ModelMapper modelMapper, @Qualifier("NamespaceValidator") DomainServiceImpl.CodenameValidator namespaceValidator, DomainTechDetailsRepository domainTechDetailsRepository) {
+    public KubernetesClusterManager(KubernetesClusterRepository repository, @Qualifier("NamespaceValidator") DomainServiceImpl.CodenameValidator namespaceValidator, DomainTechDetailsRepository domainTechDetailsRepository) {
         this.repository = repository;
         this.domainTechDetailsRepository = domainTechDetailsRepository;
         this.namespaceValidator = namespaceValidator;
-        this.modelMapper = modelMapper;
-    }
-
-    public List<KClusterView> getAllClusters() {
-        return repository.findAll().stream()
-                .map(cluster -> modelMapper.map(cluster, KClusterView.class))
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -196,17 +184,12 @@ public class KubernetesClusterManager implements KClusterAttachPointManager, KCl
         return Optional.ofNullable(loadSingleCluster().getDeployment().getSmtpServerPassword());
     }
 
-    private KCluster loadSingleCluster() {
+    KCluster loadSingleCluster() {
         long noOfClusters = repository.count();
         if (noOfClusters != 1) {
-            throw new IllegalStateException("Found " + repository.count() + " instead of one");
+            throw new KubernetesClusterNotFoundException("Found " + repository.count() + " instead of one");
         }
         return repository.findAll().get(0);
-    }
-
-    KCluster getClusterById(Long id) {
-        return modelMapper.map(repository.findById(id).orElseThrow(() -> new KubernetesClusterNotFoundException(clusterNotFoundMessage(id)))
-                , KCluster.class);
     }
 
     void addNewCluster(KCluster newKubernetesCluster) {

@@ -72,7 +72,7 @@
 			<label class="col-sm-2 control-label text-right" for="dcnDeploymentType">{{'DOMAIN_DETAILS.DCN_DEPLOYMENT_TYPE' | translate }}</label>
 			<div class="col-sm-10">
 				<select class="form-control" id="dcnDeploymentType" name="dcnDeploymentType" [(ngModel)]="domain.domainDcnDetails.dcnDeploymentType" [disabled]="isInMode(ComponentMode.VIEW)" required>
-					<option *ngFor="let type of keys(dcnDeploymentTypes)" [value]="type">{{dcnDeploymentTypes[type]}}</option>
+					<option *ngFor="let type of keys" [value]="type">{{type | titlecase}}</option>
 				</select>
 			</div>
 		</div>

@@ -32,11 +32,11 @@
                                 </li>
                             <li *roles="['ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/languages']">{{'NAVBAR.LANGUAGES' | translate }}</a>
                                 </li>
-                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']"><a [routerLink]="['/admin/domains']">{{ 'NAVBAR.DOMAINS' | translate }}</a>
                                 </li>
-                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/users']">{{ 'NAVBAR.USERS' | translate }}</a>
+                            <li *roles="['ROLE_DOMAIN_ADMIN', 'ROLE_SYSTEM_ADMIN']"><a [routerLink]="['/admin/users']">{{ 'NAVBAR.USERS' | translate }}</a>
                                 </li>
-                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']"><a [routerLink]="['/management/apps']">{{ 'NAVBAR.MARKET' | translate }}</a>
+                            <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_TOOL_MANAGER']"><a [routerLink]="['/admin/apps']">{{ 'NAVBAR.MARKET' | translate }}</a>
                                 </li>
                             <li *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" ><a  [routerLink]="['/admin/clusters']">Kubernetes</a>
                                 </li>

@@ -30,7 +30,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(get("/api/management/kubernetes")
                 .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test
