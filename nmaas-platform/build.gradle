@@ -190,25 +190,33 @@ jacocoTestCoverageVerification {
 			]
 		}
 		rule {
-			element = 'BUNDLE'
+			element = 'PACKAGE'
 			includes = [
-			        'net/geant/nmaas/portal/*'
+			        'net.geant.nmaas.portal.**'
+			]
+			excludes = [
+			        '**.exception*',
+					'**profile**',
+					'**i18n**'
 			]
 			limit {
 				counter = 'INSTRUCTION'
 				value = 'COVEREDRATIO'
-				minimum = 0.7
+				minimum = 0.4
 			}
 		}
 		rule {
-			element = 'BUNDLE'
+			element = 'PACKAGE'
 			includes = [
-			        'net/geant/nmaas/orchestration/*'
+			        'net.geant.nmaas.orchestration.**'
+			]
+			excludes = [
+					'**.exception*'
 			]
 			limit {
 				counter = 'INSTRUCTION'
 				value = 'COVEREDRATIO'
-				minimum = 0.7
+				minimum = 0.4
 			}
 		}
 	}
