@@ -58,7 +58,7 @@ public class SSOAuthController {
 		shibbolethConfigManager.checkParam();
 		userSSOLoginData.validate(shibbolethConfigManager.getKey(), shibbolethConfigManager.getTimeout());
 
-		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElse(registerNewUser(userSSOLoginData));
+		User user = users.findBySamlToken(userSSOLoginData.getUsername()).orElseGet(() -> registerNewUser(userSSOLoginData));
 
 		if(!user.isEnabled())
 			throw new AuthenticationException("User is not active.");

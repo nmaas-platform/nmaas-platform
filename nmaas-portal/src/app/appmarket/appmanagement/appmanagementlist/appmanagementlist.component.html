@@ -1,6 +1,6 @@
 <div class="col-sm-12 col-sm-offset-1 col-sm 10 col-md-offset-1 col-md-10">
   <h3>{{'APPS_MANAGEMENT.TITLE'| translate}}</h3>
-  <button [routerLink]="['/management/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
+  <button [routerLink]="['/admin/apps/create']" class="btn btn-primary">{{ 'APPS_MANAGEMENT.ADD_BUTTON' | translate }}</button>
   <hr>
   <table class="table table-hover table-condensed">
     <thead>
@@ -23,8 +23,8 @@
         <td></td>
         <td class="text-right">
           <div class="btn-group">
-            <button [routerLink]="['/management/apps/create/version', app?.name]" class="btn btn-sm btn-success">{{ 'APPS_MANAGEMENT.ADD_NEW_VERSION_BUTTON' | translate }}</button>
-            <button [routerLink]="['/management/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+            <button [routerLink]="['/admin/apps/create/version', app?.name]" class="btn btn-sm btn-success">{{ 'APPS_MANAGEMENT.ADD_NEW_VERSION_BUTTON' | translate }}</button>
+            <button [routerLink]="['/admin/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
           </div>
         </td>
       </tr>
@@ -37,8 +37,8 @@
           <td class="text-right">
             <div class="btn-group">
               <button [disabled]="getStateAsString(version?.state) === 'DELETED'" (click)="showModal(app, version)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
-              <button [routerLink]="['/management/apps/view', version?.appVersionId]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
-              <button [routerLink]="['/management/apps/edit/version', version?.appVersionId]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
+              <button [routerLink]="['/admin/apps/view', version?.appVersionId]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
+              <button [routerLink]="['/admin/apps/edit/version', version?.appVersionId]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
             </div>
           </td>
         </tr>

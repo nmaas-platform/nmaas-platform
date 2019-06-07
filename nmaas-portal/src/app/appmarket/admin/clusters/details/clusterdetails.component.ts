@@ -1,10 +1,11 @@
 import {Component, Output} from "@angular/core";
 import {BaseComponent} from "../../../../shared/common/basecomponent/base.component";
 import {OnInit} from "@angular/core/public_api";
-import {Cluster} from "../../../../model/cluster";
+import {Cluster, ClusterAttachPoint} from "../../../../model/cluster";
 import {ClusterService} from "../../../../service/cluster.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ComponentMode} from "../../../../shared";
+import {isNullOrUndefined} from "util";
 
 @Component({
     selector: 'app-clusterdetails',
@@ -12,7 +13,6 @@ import {ComponentMode} from "../../../../shared";
     styleUrls: ['./clusterdetails.component.css']
 })
 export class ClusterDetailsComponent extends BaseComponent implements OnInit{
-    public clusterId: number;
     public cluster: Cluster;
 
     @Output()
@@ -23,29 +23,27 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit{
     }
 
     ngOnInit() {
-        this.clusterService.getAll().subscribe(clusters => {
-            if(clusters.length > 0){
-                this.clusterId = clusters[0].id;
-                this.clusterService.getOne(this.clusterId).subscribe(cluster => {
-                    this.cluster = cluster;
-                });
-                this.router.navigate(['/admin/clusters/',this.clusterId])
-            } else{
-                this.cluster = new Cluster();
-                this.mode = ComponentMode.CREATE;
+        this.clusterService.getCluster().subscribe(cluster => {
+            if(isNullOrUndefined(cluster.attachPoint)){
+                cluster.attachPoint = new ClusterAttachPoint();
             }
+            this.cluster = cluster;
+            this.router.navigate(['/admin/clusters/view']);
+        }, () => {
+            this.cluster = new Cluster();
+            this.mode = ComponentMode.CREATE;
         });
     }
 
     public onSave($event) {
         const upCluster: Cluster = $event;
         if (!upCluster) return;
-        if(this.clusterId) {
-            this.clusterService.update(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/']),err => this.error=err.message);
-        } else {
+        if(this.isInMode(ComponentMode.CREATE)){
             this.clusterService.add(upCluster)
-                .subscribe((e) => this.router.navigate(['/admin/clusters/', e]),err => this.error=err.message);
+                .subscribe(() => this.router.navigateByUrl('/admin/clusters'),err => this.error=err.message);
+        } else {
+            this.clusterService.update(upCluster)
+                .subscribe(() => this.router.navigateByUrl('/admin/clusters'),err => this.error=err.message);
         }
     }
 

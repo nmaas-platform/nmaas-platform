@@ -55,7 +55,7 @@ export class AppInstanceListComponent implements OnInit {
   constructor(private appInstanceService: AppInstanceService,
               private domainService: DomainService,
               private userDataService: UserDataService,
-              private authService: AuthService,
+              public authService: AuthService,
               private appConfig: AppConfigService,
               private translateService: TranslateService,
               private sessionService: SessionService,
@@ -114,10 +114,10 @@ export class AppInstanceListComponent implements OnInit {
     console.debug("Crit: ", criteria);
     switch (+this.listSelection) {
       case AppInstanceListSelection.ALL:
-        this.appInstances = this.appInstanceService.getSortedAllAppInstances(this.domainId, criteria);
+        this.appInstances = this.appInstanceService.getSortedAllAppInstances(criteria);
         break;
       case AppInstanceListSelection.MY:
-        this.appInstances = this.appInstanceService.getSortedMyAppInstances(this.domainId, criteria);
+        this.appInstances = this.appInstanceService.getSortedMyAppInstances(criteria);
         break;
       default:
         this.appInstances = of<AppInstance[]>([]);
