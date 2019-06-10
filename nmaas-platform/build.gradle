@@ -185,9 +185,6 @@ jacocoTestCoverageVerification {
 				value = 'COVEREDRATIO'
 				minimum = 0.5
 			}
-			excludes = [
-					'**/inventory/janitor/**'
-			]
 		}
 		rule {
 			element = 'PACKAGE'
@@ -196,8 +193,7 @@ jacocoTestCoverageVerification {
 			]
 			excludes = [
 			        '**.exception*',
-					'**profile**',
-					'**i18n**'
+					'**.model*'
 			]
 			limit {
 				counter = 'INSTRUCTION'
@@ -211,7 +207,8 @@ jacocoTestCoverageVerification {
 			        'net.geant.nmaas.orchestration.**'
 			]
 			excludes = [
-					'**.exception*'
+					'**.exception*',
+					'**.model*'
 			]
 			limit {
 				counter = 'INSTRUCTION'

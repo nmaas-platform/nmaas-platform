@@ -7,8 +7,10 @@ import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.InternationalizationService;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
@@ -121,7 +123,7 @@ public class InternationalizationServiceTest {
     }
 
     @Test
-    public void shouldGetLanguage(){
+    public void shouldGetLanguageContent(){
         Internationalization internationalization = new Internationalization(1L, "pl", true, "{\"test\":\"content\"");
         when(repository.findByLanguageOrderByIdDesc("pl")).thenReturn(Optional.of(internationalization));
         assertEquals(internationalization.getContent(), internationalizationService.getLanguageContent("pl"));
@@ -148,5 +150,51 @@ public class InternationalizationServiceTest {
         when(repository.findAll()).thenReturn(Collections.singletonList(new Internationalization(1L, "pl", false, "{\"test\":\"content\"")));
         List<String> result = this.internationalizationService.getEnabledLanguages();
         assertEquals(0, result.size());
+    }
+
+    @Test
+    void shouldUpdateLanguage(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new Internationalization(1L, "pl", true, "{\"test\":\"content\"}")));
+        this.internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\"}");
+        verify(repository, times(1)).save(any());
+    }
+
+    @Test
+    void shouldNotUpdateLanguageWhenLangIsEmpty(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new Internationalization(1L, "pl", true, "{\"test\":\"content\"}")));
+        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("", "{\"test\":\"new-content\"}"));
+;
+    }
+
+    @Test
+    void shouldNotUpdateLanguageWhenContentIsEmpty(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new Internationalization(1L, "pl", true, "{\"test\":\"content\"}")));
+        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("pl", ""));
+    }
+
+    @Test
+    void shouldNotUpdateLanguageWhenContentIsNotValidJson(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new Internationalization(1L, "pl", true, "{\"test\":\"content\"}")));
+        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\""));
+    }
+
+    @Test
+    void shouldNotUpdateLanguageWhenLangIsNotFound(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.updateLanguage("pl", "{\"test\":\"new-content\"}"));
+    }
+
+    @Test
+    void shouldGetLanguage(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.of(new Internationalization(1L, "pl", true, "{\"test\":\"content\"}")));
+        InternationalizationView langView = internationalizationService.getLanguage("pl");
+        assertEquals("pl", langView.getLanguage());
+        assertTrue(StringUtils.isNotEmpty(langView.getContent()));
+    }
+
+    @Test
+    void shouldNotGetLanguageWhenLangIsNotExists(){
+        when(repository.findByLanguageOrderByIdDesc(anyString())).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> this.internationalizationService.getLanguage("pl"));
     }
 }

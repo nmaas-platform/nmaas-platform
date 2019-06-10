@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Rollback
 public class UserRepositoryTest {
 
-	final static String DOMAIN = "testdom";
+	private final static String DOMAIN = "userdom";
 	
 	@Autowired
 	UserRepository userRepository;
