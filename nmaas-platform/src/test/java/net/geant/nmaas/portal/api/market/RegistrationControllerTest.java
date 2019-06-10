@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.api.market;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
