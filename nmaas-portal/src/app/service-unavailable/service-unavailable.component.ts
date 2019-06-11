@@ -33,9 +33,7 @@ export class ServiceUnavailableComponent implements OnInit, OnDestroy {
   }
 
   private async refresh(){
-    console.debug('refresh');
     await this.serviceAvailability.validateServicesAvailability();
-    console.debug("Current status: ", this.serviceAvailability.isServiceAvailable);
     if(this.serviceAvailability.isServiceAvailable) {
       this.translateLoader.getTranslation(this.getCurrent());
       document.getElementById("global-footer").style.display = "block";

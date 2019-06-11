@@ -12,7 +12,6 @@ export class TranslateLoaderImpl implements TranslateLoader{
     getTranslation(lang: string): Observable<any>{
         //console.debug(this.serviceAvailability.isServiceAvailable);
         if(!this.serviceAvailability.isServiceAvailable){
-            console.debug("local");
             return this.http.get<string>('./assets/i18n/' + lang + '.json').pipe();
         }else {
             return this.http.get<string>(this.appConfig.getApiUrl() + '/i18n/content/' + lang).pipe(
