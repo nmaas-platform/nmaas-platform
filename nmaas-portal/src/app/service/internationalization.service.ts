@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import {GenericDataService} from "./genericdata.service";
 import {HttpClient} from "@angular/common/http";
 import {AppConfigService} from "./appconfig.service";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {Language} from "../model/language";
 
 @Injectable()
 export class InternationalizationService extends GenericDataService{
 
+  private basicLangs: string[];
   private updateRequiredFlag: boolean = false;
 
   constructor(http:HttpClient, appConfig:AppConfigService) {

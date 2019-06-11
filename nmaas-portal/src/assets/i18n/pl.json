@@ -1,3 +1,7 @@
 {
-
+    "SERVICE_UNAVAILABLE": {
+        "HEADER": "503 - Usługa niedostępna",
+        "TEXT_FIRST_PART": "Serwer nie jest w stanie obsłużyć Twojego żądania z powodu tymczasowego przeciążenia lub jedna lub więcej kluczowych usług jest obecnie niedostępna.",
+        "TEXT_SECOND_PART": "Sugerujemy zrobić krótką przerwę, np. na kawę - pracujemy nad tym. Spróbuj ponownie później!"
+    }
 }
