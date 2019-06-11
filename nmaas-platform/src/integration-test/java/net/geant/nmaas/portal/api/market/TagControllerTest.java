@@ -14,7 +14,9 @@ import net.geant.nmaas.portal.api.domain.ConfigWizardTemplateView;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationRepository;
+import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,14 +34,22 @@ public class TagControllerTest extends BaseControllerTestSetup {
     private ApplicationService appService;
 
     @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
     private ApplicationRepository appRepository;
 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.appRepository.deleteAll();
         this.appService.create(getDefaultApp("disabledAPP", ApplicationState.DISABLED), "admin");
         this.appService.create(getDefaultApp("deletedAPP", ApplicationState.DELETED), "admin");
+    }
+
+    @AfterEach
+    public void teardown(){
+        this.appRepository.deleteAll();
+        this.tagRepository.deleteAll();
     }
 
     @Test
