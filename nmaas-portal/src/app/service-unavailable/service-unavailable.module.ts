@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ServiceUnavailableComponent } from './service-unavailable.component';
 import {RouterModule} from "@angular/router";
 import {ServiceUnavailableRoutes} from "./service-unavailable.routes";
+import {TranslateModule} from "@ngx-translate/core";
 
 
 @NgModule({
@@ -12,6 +13,7 @@ import {ServiceUnavailableRoutes} from "./service-unavailable.routes";
   imports: [
     CommonModule,
     RouterModule,
+    TranslateModule,
   ],
   exports: [
   ]

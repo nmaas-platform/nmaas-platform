@@ -1,9 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {TranslateService} from "@ngx-translate/core";
+import {TranslateLoader, TranslateService} from "@ngx-translate/core";
 import {MonitorService} from "../service/monitor.service";
 import {Router} from "@angular/router";
 import {validate} from "codelyzer/walkerFactory/walkerFn";
 import {interval} from "rxjs";
+import {InternationalizationService} from "../service/internationalization.service";
+import {ServiceUnavailableService} from "./service-unavailable.service";
 
 @Component({
   selector: 'app-service-unavailable',
@@ -11,57 +13,44 @@ import {interval} from "rxjs";
   styleUrls: ['./service-unavailable.component.css']
 })
 export class ServiceUnavailableComponent implements OnInit, OnDestroy {
-  private isServiceAvailable: boolean;
   private interval;
+  public languages: string[];
 
   constructor(private translateService: TranslateService, private monitorService: MonitorService,
-              private router: Router) { }
+              private router: Router, private languageService:InternationalizationService,
+              private serviceAvailability: ServiceUnavailableService, private translateLoader: TranslateLoader) { }
 
-  async validateServicesAvailability() {
-    this.isServiceAvailable = true;
-    try {
-      let services = await Promise.resolve(this.monitorService.getAllMonitorEntries().toPromise())
-        .catch(err => {
-          console.debug(err);
-          this.isServiceAvailable = false;
-        });
-      if (services) {
-        services.forEach(value => {
-          if (value.serviceName.toString() == "DATABASE") {
-            if (value.status.toString() == "FAILURE") {
-              this.isServiceAvailable = false;
-            }
-          }
-        });
-      } else {
-        this.isServiceAvailable = false;
-      }
-    } catch (err) {
-      this.isServiceAvailable = false;
-    }
+  useLanguage(language: string) {
+    this.translateService.use(language);
   }
 
+  getCurrent(){
+    return this.translateService.currentLang;
+  }
 
-  public changeLang(lang: string): void{
-    console.debug("lang_change: ", lang);
-    this.translateService.use(lang);
+  getPathToCurrent(){
+    return "assets/images/country/" + this.getCurrent() + "_circle.png";
   }
 
   private async refresh(){
-    console.debug('refresh');
-    await this.validateServicesAvailability();
-    if(this.isServiceAvailable == true) {
+    await this.serviceAvailability.validateServicesAvailability();
+    if(this.serviceAvailability.isServiceAvailable) {
+      this.translateLoader.getTranslation(this.getCurrent());
       document.getElementById("global-footer").style.display = "block";
       this.router.navigate(['welcome']);
     }else{
+
         this.router.navigate(['service-unavailable']);
       }
   }
 
   async ngOnInit() {
+    this.getSupportedLanguages();
     document.getElementById("global-footer").style.display = "none";
-    await this.validateServicesAvailability();
-    if(this.isServiceAvailable == true){
+    await this.serviceAvailability.validateServicesAvailability();
+    if(this.serviceAvailability.isServiceAvailable){
+      this.translateLoader.getTranslation(this.getCurrent());
+      document.getElementById("global-footer").style.display = "block";
       this.router.navigate(['welcome']);
   }
     this.interval = setInterval(() => {
@@ -75,4 +64,14 @@ export class ServiceUnavailableComponent implements OnInit, OnDestroy {
       }
     }
 
+  public getSupportedLanguages(){
+    this.languageService.getEnabledLanguages().subscribe(langs =>{
+      this.translateService.addLangs(langs);
+      this.languages = langs;
+    }, error => console.debug('oops', error));
+    if(!this.languages){
+      this.languages = [];
+      this.languages.push('en', 'de', 'fr', 'pl');
+    }
+  }
 }
