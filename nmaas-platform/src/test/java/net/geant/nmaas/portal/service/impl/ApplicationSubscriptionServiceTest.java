@@ -1,46 +1,60 @@
 package net.geant.nmaas.portal.service.impl;
 
+import java.util.Collections;
+import java.util.List;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.exceptions.ObjectNotFoundException;
 import net.geant.nmaas.portal.persistent.entity.Application;
+import net.geant.nmaas.portal.persistent.entity.ApplicationState;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationSubscriptionRepository;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 import net.geant.nmaas.portal.service.DomainService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ApplicationSubscriptionServiceTest {
 
-    ApplicationSubscriptionRepository appSubRepo = mock(ApplicationSubscriptionRepository.class);
+    private ApplicationSubscriptionRepository appSubRepo = mock(ApplicationSubscriptionRepository.class);
 
-    DomainService domains = mock(DomainService.class);
+    private DomainService domains = mock(DomainService.class);
 
-    ApplicationService applications = mock(ApplicationService.class);
+    private ApplicationService applications = mock(ApplicationService.class);
 
-    ApplicationSubscriptionService appSubSrv;
+    private ApplicationSubscriptionService appSubSrv;
 
-    Long applicationId = 1L;
-    String applicationName = "app1";
-    String applicationVersion = "1.0.0";
-    String applicationOwner = "owner";
-    Application app1;
+    private Long applicationId = 1L;
+    private String applicationName = "app1";
+    private String applicationVersion = "1.0.0";
+    private String applicationOwner = "owner";
+    private Application app1;
 
-    Long domainId = 1L;
-    String domainName = "DOMAIN1";
-    Domain domain1;
+    private Long domainId = 1L;
+    private String domainName = "DOMAIN1";
+    private Domain domain1;
 
     @BeforeEach
     public void setup() {
         appSubSrv = new ApplicationSubscriptionServiceImpl(appSubRepo, domains, applications);
         app1 = new Application(applicationId, applicationName, applicationVersion, applicationOwner);
+        app1.setState(ApplicationState.ACTIVE);
         domain1 = new Domain(domainId, domainName, domainName);
     }
 
@@ -122,4 +136,308 @@ public class ApplicationSubscriptionServiceTest {
                         !appSubSrv.getSubscription(app1, domain1).isPresent());
     }
 
+    @Test
+    public void shouldGetSubscriptionByDomainAndApp(){
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.of(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(domain1, app1);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldNotFoundSubscriptionByDomainAndApp(){
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.empty());
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(domain1, app1);
+        assertEquals(1, result.size());
+        assertNull(result.get(0));
+    }
+
+    @Test
+    public void shouldGetSubscriptionByDomain(){
+        when(appSubRepo.findAllByDomain((Domain) any())).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(domain1, null);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetSubscriptionByApp(){
+        when(appSubRepo.findAllByApplication((Application) any())).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(null, app1);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetAllSubscriptionWithNullsAsArguments(){
+        when(appSubRepo.findAll()).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy((Domain) null, (Application) null);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetSubscriptions(){
+        when(appSubRepo.findAll()).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = this.appSubSrv.getSubscriptions();
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetSubscriptionByDomainIdAndAppId(){
+        when(appSubRepo.findByDomainAndApplicationId(anyLong(), anyLong())).thenReturn(Optional.of(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(1L, 1L);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldNotFoundSubscriptionByDomainIdAndAppId(){
+        when(appSubRepo.findByDomainAndApplicationId(anyLong(), anyLong())).thenReturn(Optional.empty());
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(1L, 1L);
+        assertEquals(1, result.size());
+        assertNull(result.get(0));
+    }
+
+    @Test
+    public void shouldGetSubscriptionByDomainId(){
+        when(appSubRepo.findAllByDomain(anyLong())).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(1L, null);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetSubscriptionByAppId(){
+        when(appSubRepo.findAllByApplication(anyLong())).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy(null, 1L);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetAllSubscriptionWithNullIdsAsArguments(){
+        when(appSubRepo.findAll()).thenReturn(Collections.singletonList(new ApplicationSubscription(domain1, app1)));
+        List<ApplicationSubscription> result = appSubSrv.getSubscriptionsBy((Long) null, (Long) null);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldSubscribeAppFirstTime(){
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeApp(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.findById(any())).thenReturn(Optional.of(new ApplicationSubscription(domain1, app1)));
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeDeletedSubscriptionApp(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(true);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.findById(any())).thenReturn(Optional.empty());
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription result = this.appSubSrv.subscribe(appSub);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldNotSubscribeApp(){
+        assertThrows(ProcessingException.class, () -> {
+            when(appSubRepo.existsById(any())).thenReturn(false);
+            when(appSubRepo.save(any())).thenThrow(new IllegalArgumentException());
+            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+            this.appSubSrv.subscribe(appSub);
+        });
+    }
+
+    @Test
+    public void shouldNotSubscribeAppWithNullAppSub(){
+        assertThrows(IllegalArgumentException.class, () -> this.appSubSrv.subscribe(null));
+    }
+
+    @Test
+    public void shouldNotSubscribeAppWithNullAppSubId(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+            appSub.setId(null);
+            this.appSubSrv.subscribe(appSub);
+        });
+    }
+
+    @Test
+    public void shouldNotSubscribeAppWithInActiveDomain(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+            appSub.getDomain().setActive(false);
+            this.appSubSrv.subscribe(appSub);
+        });
+    }
+
+    @Test
+    public void shouldNotSubscribeAppWithDeletedApp(){
+        assertThrows(IllegalStateException.class, () ->{
+            when(appSubRepo.existsById(any())).thenReturn(false);
+            app1.setState(ApplicationState.DELETED);
+            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+            this.appSubSrv.subscribe(appSub);
+        });
+    }
+
+    @Test
+    public void shouldSubscribeByAppIdDomainIdFirstTime(){
+        when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain1));
+        when(applications.findApplication(anyLong())).thenReturn(Optional.of(app1));
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.empty());
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.findById(any())).thenReturn(Optional.of(new ApplicationSubscription(domain1, app1)));
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription result = this.appSubSrv.subscribe(1L, 1L, true);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeByAppIdDomainId(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain1));
+        when(applications.findApplication(anyLong())).thenReturn(Optional.of(app1));
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.of(appSub));
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.findById(any())).thenReturn(Optional.of(appSub));
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription result = this.appSubSrv.subscribe(1L, 1L, true);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldNotSubscribeByDomainIdNotFound(){
+        assertThrows(ObjectNotFoundException.class, () -> {
+            when(domains.findDomain(anyLong())).thenReturn(Optional.empty());
+            this.appSubSrv.subscribe(1L, 1L, true);
+        });
+    }
+
+    @Test
+    public void shouldNotSubscribeByAppIdNotFound(){
+        assertThrows(ObjectNotFoundException.class, () -> {
+            when(domains.findDomain(anyLong())).thenReturn(Optional.of(domain1));
+            when(applications.findApplication(anyLong())).thenReturn(Optional.empty());
+            this.appSubSrv.subscribe(1L, 1L, true);
+        });
+    }
+
+    @Test
+    public void shouldSubscribeByAppAndDomain(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.of(appSub));
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.findById(any())).thenReturn(Optional.of(appSub));
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription result = this.appSubSrv.subscribe(app1, domain1, true);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldSubscribeByAppAndDomainFirstTime(){
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.empty());
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        ApplicationSubscription result = this.appSubSrv.subscribe(app1, domain1, true);
+        assertTrue(result.isActive());
+        assertFalse(result.isDeleted());
+    }
+
+    @Test
+    public void shouldUnsubscribeApp(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(false);
+        when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        this.appSubSrv.unsubscribe(appSub);
+        verify(appSubRepo, times(1)).save(any());
+    }
+
+    @Test
+    public void shouldNotUnsubscribeAppWhenIsDeleted(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(false);
+        when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(true);
+        when(appSubRepo.existsById(any())).thenReturn(false);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        this.appSubSrv.unsubscribe(appSub);
+        verify(appSubRepo, times(0)).save(any());
+    }
+
+    @Test
+    public void shouldNotUnsubscribeNotExistingApp(){
+        assertThrows(ObjectNotFoundException.class, () -> {
+            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+            appSub.setDeleted(false);
+            when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+            when(appSubRepo.existsById(any())).thenReturn(false);
+            when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+            this.appSubSrv.unsubscribe(appSub);
+        });
+    }
+
+    @Test
+    public void shouldNotUnsubscribeWithSaveFailure(){
+        assertThrows(ProcessingException.class, () -> {
+            ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+            appSub.setDeleted(false);
+            when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+            when(appSubRepo.existsById(any())).thenReturn(true);
+            when(appSubRepo.save(any())).thenThrow(new IllegalStateException());
+            this.appSubSrv.unsubscribe(appSub);
+        });
+    }
+
+    @Test
+    public void shouldUnsubscribeByAppIdAndDomainId(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(false);
+        when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(appSubRepo.findByDomainAndApplicationId(any(), any())).thenReturn(Optional.of(appSub));
+        this.appSubSrv.unsubscribe(1L, 1L);
+        verify(appSubRepo, times(1)).save(any());
+    }
+
+    @Test
+    public void shouldUnsubscribeByAppAndDomain(){
+        ApplicationSubscription appSub = new ApplicationSubscription(domain1, app1);
+        appSub.setDeleted(false);
+        when(appSubRepo.isDeleted((Domain) any(), any())).thenReturn(false);
+        when(appSubRepo.existsById(any())).thenReturn(true);
+        when(appSubRepo.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(appSubRepo.findByDomainAndApplication(any(), any())).thenReturn(Optional.of(appSub));
+        this.appSubSrv.unsubscribe(app1, domain1);
+        verify(appSubRepo, times(1)).save(any());
+    }
+
+    @Test
+    public void shouldGetSubscribedApps(){
+        when(appSubRepo.findApplicationBriefAllBy()).thenReturn(Collections.singletonList(app1));
+        List<Application> result = appSubSrv.getSubscribedApplications();
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void shouldGetSubscribedAppsByDomain(){
+        when(appSubRepo.findApplicationBriefAllByDomain(anyLong())).thenReturn(Collections.singletonList(app1));
+        List<Application> result = appSubSrv.getSubscribedApplications(1L);
+        assertEquals(1, result.size());
+    }
 }
