@@ -213,11 +213,6 @@ public class ApplicationSubscriptionServiceImpl implements ApplicationSubscripti
 	public List<ApplicationBase> getSubscribedApplications(Long domainId) {
 		return (domainId != null ? appSubRepo.findApplicationBriefAllByDomain(domainId) : appSubRepo.findApplicationBriefAllBy());
 	}
-
-	protected ApplicationSubscription findApplicationSubscription(Id id) {
-		return appSubRepo.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException(APP_NOT_FOUND_ERR_MESSAGE));
-	}
 	
 	private ApplicationSubscription findApplicationSubscription(Long applicationId, Long domainId) {
 		return appSubRepo.findByDomainAndApplicationId(domainId, applicationId).orElseThrow(() ->

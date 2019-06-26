@@ -24,9 +24,6 @@ public interface ApplicationSubscriptionService {
 	List<ApplicationSubscription> getSubscriptions();
 
 	List<ApplicationSubscription> getSubscriptionsBy(Long domainId, Long applicationId);
-
-	List<ApplicationSubscription> getSubscriptionsBy(Domain domain, Application application);	
-
 	List<ApplicationSubscription> getSubscriptionsBy(Domain domain, ApplicationBase application);
 
 	ApplicationSubscription subscribe(ApplicationSubscription appSub);
