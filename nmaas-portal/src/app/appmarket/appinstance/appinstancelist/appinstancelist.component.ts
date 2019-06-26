@@ -14,6 +14,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {map} from 'rxjs/operators';
 import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
 import {SessionService} from "../../../service/session.service";
+import {TooltipComponent} from "ng2-tooltip-directive";
 
 export enum AppInstanceListSelection {
   ALL, MY,

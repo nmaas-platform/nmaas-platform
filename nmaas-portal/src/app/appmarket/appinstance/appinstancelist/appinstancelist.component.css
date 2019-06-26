@@ -1,3 +1,11 @@
 .column-sortable{
     cursor: grab;
 }
+
+.icon-black{
+    color: black;
+}
+
+.icon-bigger{
+    font-size: x-large;
+}
