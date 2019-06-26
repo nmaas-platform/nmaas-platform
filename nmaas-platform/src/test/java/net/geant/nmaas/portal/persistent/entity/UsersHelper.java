@@ -25,6 +25,7 @@ public class UsersHelper {
 	public final static User DOMAIN2_GUEST = new User(10l, "domain2_guest", true, DOMAIN2, Role.ROLE_GUEST);
 	
 	public final static User GLOBAL_GUEST = new User(11l, "unassigned_guest", true, GLOBAL, Role.ROLE_GUEST);
+	public final static User OPERATOR = new User(12L, "operator", true, GLOBAL, Role.ROLE_OPERATOR);
 
 	public final static List<User> USERS = Arrays.asList(ADMIN, TOOL_MANAGER, DOMAIN1_ADMIN, DOMAIN1_USER1, DOMAIN1_USER2, DOMAIN1_GUEST, DOMAIN2_ADMIN, DOMAIN2_USER1, DOMAIN2_USER2, DOMAIN2_GUEST, GLOBAL_GUEST);
 	public final static List<Domain> DOMAINS = Arrays.asList(GLOBAL, DOMAIN1, DOMAIN2);
