@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.api.domain;
 
 import com.google.common.collect.Sets;
+import java.net.InetAddress;
 import net.geant.nmaas.nmservice.configuration.entities.AppConfigurationSpec;
 import net.geant.nmaas.orchestration.entities.AppDeploymentSpec;
 import net.geant.nmaas.portal.ConvertersConfig;
@@ -8,12 +9,18 @@ import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.ApplicationState;
+import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.ApplicationVersion;
 import net.geant.nmaas.portal.persistent.entity.ConfigWizardTemplate;
+import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.FileInfo;
+import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.Tag;
+import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -120,6 +127,43 @@ public class ConvertersTest {
   
 	    
 	}
+
+	@Test
+    void shouldConvertAppSubscriptionToAppSubscriptionBase(){
+        Domain domain = new Domain("name", "name");
+        ApplicationBase appBase = getDefaultAppBase();
+        domain.setId(1L);
+        appBase.setId(1L);
+        ApplicationSubscription appSub = new ApplicationSubscription(domain, appBase);
+        ApplicationSubscriptionBase appSubBase = modelMapper.map(appSub, ApplicationSubscriptionBase.class);
+        assertEquals(appBase.getId(), appSubBase.applicationId);
+        assertEquals(domain.getId(), appSubBase.domainId);
+    }
+
+    @Test
+    void shouldConvertStringToInetAddress(){
+        InetAddress addr = modelMapper.map("127.0.0.1", InetAddress.class);
+        assertNotNull(addr);
+    }
+
+    @Test
+    void shouldReturnNullWhenStringIsNotCorrectInetAddress(){
+        InetAddress addr = modelMapper.map("ip.not.found", InetAddress.class);
+        assertNull(addr);
+    }
+
+    @Test
+    void shouldConvertInetAddressToString() throws Exception {
+        String addr = modelMapper.map(InetAddress.getByName("127.0.0.1"), String.class);
+        assertTrue(StringUtils.isNotEmpty(addr));
+    }
+
+    @Test
+    void shouldConvertUserRoleToRole(){
+        UserRole userRole = new UserRole(new User("admin", true), new Domain("name", "name"), Role.ROLE_SYSTEM_ADMIN);
+        Role role = modelMapper.map(userRole, Role.class);
+        assertEquals(Role.ROLE_SYSTEM_ADMIN, role);
+    }
 
 	private ApplicationView getDefaultAppView(){
         ApplicationView appView = new ApplicationView();
