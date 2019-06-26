@@ -1,6 +1,5 @@
 package net.geant.nmaas.portal.persistent.repositories;
 
-import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
