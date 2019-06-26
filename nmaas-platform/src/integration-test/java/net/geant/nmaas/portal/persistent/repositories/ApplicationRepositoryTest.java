@@ -5,6 +5,7 @@ import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Tag;
 import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,11 @@ public class ApplicationRepositoryTest {
 	
 	@Autowired
 	DomainService domains;
+
+	@BeforeEach
+	public void setup(){
+		tagRepo.deleteAll();
+	}
 
 	@Test
 	@WithMockUser(username="admin", roles={"SYSTEM_ADMIN"})

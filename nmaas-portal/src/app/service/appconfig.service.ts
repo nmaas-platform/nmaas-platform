@@ -22,9 +22,9 @@ export class AppConfigService {
 
     public getApiUrl(): string {
       if(isNullOrUndefined(this.config)){
-          return 'http://localhost/api';
+          return 'http://localhost:9000/api';
       }
-      return this.config.apiUrl || 'http://localhost/api';
+      return this.config.apiUrl || 'http://localhost:9000/api';
     }
 
     public getNmaasGlobalDomainId(): number {

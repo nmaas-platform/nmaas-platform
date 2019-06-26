@@ -19,3 +19,17 @@
     margin: 2px;
     cursor: pointer;
 }
+
+.lang-circle-icon{
+    height: 36px;
+}
+
+.dropdown-lang{
+    margin-top: 20px;
+}
+
+.pull-right-drop{
+    float: right !important;
+    right: 0;
+    left: auto;
+}

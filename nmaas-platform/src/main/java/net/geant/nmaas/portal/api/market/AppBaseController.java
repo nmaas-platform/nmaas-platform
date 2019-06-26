@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.market;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public class AppBaseController {
 
 	@Autowired

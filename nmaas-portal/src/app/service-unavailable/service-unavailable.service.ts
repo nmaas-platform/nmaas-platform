@@ -8,7 +8,9 @@ export class ServiceUnavailableService {
 
   public isServiceAvailable: boolean;
 
-  constructor(private monitorService: MonitorService) { }
+  constructor(private monitorService: MonitorService) {
+    this.isServiceAvailable = false;
+  }
 
   async validateServicesAvailability() {
     this.isServiceAvailable = true;

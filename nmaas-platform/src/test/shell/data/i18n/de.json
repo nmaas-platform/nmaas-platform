@@ -732,5 +732,10 @@
     "LANGUAGE": "Sprache",
     "RAW_MODE_ENABLED": "Der Raw-Modus ist aktiviert",
     "RAW_MODE_DISABLED": "Der Raw-Modus ist deaktiviert"
+  },
+  "SERVICE_UNAVAILABLE": {
+    "HEADER": "503 - Dienst nicht verfügbar",
+    "TEXT_FIRST_PART": "Der Server kann Ihre Anfrage derzeit aufgrund einer vorübergehenden Überlastung nicht bearbeiten, oder ein oder mehrere Schlüsseldienste sind derzeit offline.",
+    "TEXT_SECOND_PART": "Wir empfehlen eine kurze Pause, z. Auf einen Kaffee - wir sind dran. Versuchen Sie es später noch einmal!"
   }
 }

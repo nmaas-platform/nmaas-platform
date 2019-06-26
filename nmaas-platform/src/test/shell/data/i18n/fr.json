@@ -741,5 +741,10 @@
     "LANGUAGE": "Language",
     "RAW_MODE_ENABLED": "Raw mode is enabled",
     "RAW_MODE_DISABLED": "Raw mode is disabled"
+  },
+  "SERVICE_UNAVAILABLE": {
+    "HEADER": "503 - Service indisponible",
+    "TEXT_FIRST_PART": "Le serveur est actuellement incapable de traiter votre demande en raison d'une surcharge temporaire ou d'un ou plusieurs services de clé actuellement hors ligne.",
+    "TEXT_SECOND_PART": "Nous vous suggérons de faire une courte pause, par exemple pour le café - nous y sommes. Réessayez plus tard!"
   }
 }
