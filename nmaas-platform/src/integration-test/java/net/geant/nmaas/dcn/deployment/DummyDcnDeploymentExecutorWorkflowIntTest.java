@@ -6,7 +6,9 @@ import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcn
 import net.geant.nmaas.orchestration.exceptions.InvalidDomainException;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +58,13 @@ public class DummyDcnDeploymentExecutorWorkflowIntTest {
         when(dcnRepositoryManager.loadType(any())).thenReturn(DcnDeploymentType.NONE);
         eventPublisher.publishEvent(new AppRequestNewOrVerifyExistingDcnEvent(this, DEPLOYMENT_ID));
         verify(appDeploymentRepositoryManager, timeout(1000)).loadAllWaitingForDcn(DOMAIN);
+    }
+
+    @AfterEach
+    public void tearDown(){
+        domainService.getDomains().stream()
+                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+                .forEach(domain -> domainService.removeDomain(domain.getId()));
     }
 
 }

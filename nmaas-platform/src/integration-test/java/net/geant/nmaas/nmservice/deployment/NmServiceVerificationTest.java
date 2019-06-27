@@ -35,7 +35,7 @@ public class NmServiceVerificationTest {
     }
 
     @Test
-    public void shouldVerifyDeploymentSuccessRightAway() throws Exception {
+    public void shouldVerifyDeploymentSuccessRightAway() {
         doNothing().when(orchestrator).checkService(any());
         provider.verifyNmService(Identifier.newInstance("id"));
     }
