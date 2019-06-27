@@ -16,6 +16,7 @@ import net.geant.nmaas.externalservices.inventory.shibboleth.ShibbolethConfigMan
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.configuration.ConfigurationView;
 import net.geant.nmaas.portal.api.i18n.api.InternationalizationView;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
 import net.geant.nmaas.portal.service.InternationalizationService;
@@ -31,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 public class SSOAuthControllerTest extends BaseControllerTestSetup {
@@ -59,10 +61,13 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
 
     @AfterEach
     public void teardown(){
-        this.userRepo.deleteAll();
+        this.userRepo.findAll().stream()
+                .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
+                .forEach(user -> userRepo.delete(user));
     }
 
     @Test
+    @Transactional
     public void shouldRegister() throws Exception {
         MvcResult mvcResult = this.mvc.perform(post("/api/auth/sso/login")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -70,10 +75,11 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(mvcResult.getResponse().getContentAsString()));
-        assertEquals(1, this.userRepo.count());
+        assertEquals(2, this.userRepo.count());
     }
 
     @Test
+    @Transactional
     public void shouldNotLoginWhenSSOIsDisabled() throws Exception {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setSsoLoginAllowed(false);
@@ -86,6 +92,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
+    @Transactional
     public void shouldNotLoginWhenUsernameIsEmpty() throws Exception {
         String[] token = getValidToken().split("\\|");
         this.mvc.perform(post("/api/auth/sso/login")
@@ -95,6 +102,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
+    @Transactional
     public void shouldNotLoginWithInvalidSignature() throws Exception {
         String[] token = getValidToken().split("\\|");
         token[2] = "invalidSignature";
@@ -105,6 +113,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
+    @Transactional
     public void shouldNotLoginWithExpiredToken() throws Exception {
         String[] token = getValidToken().split("\\|");
         token[1] = Long.toString((new Date().getTime() /1000) - 10000);
@@ -115,6 +124,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     }
 
     @Test
+    @Transactional
     public void shouldNotLoginWithPortalMaintenance() throws Exception {
         ConfigurationView config = this.configManager.getConfiguration();
         config.setMaintenance(true);

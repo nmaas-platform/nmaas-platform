@@ -5,6 +5,7 @@ import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
@@ -51,8 +52,12 @@ public class UserRepositoryTest {
 	@BeforeEach
     @Transactional
 	public void setUp() {
-        userRepository.deleteAll();
-        domainRepository.deleteAll();
+        this.userRepository.findAll().stream()
+				.filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
+				.forEach(user -> userRepository.delete(user));
+		domainRepository.findAll().stream()
+				.filter(domain -> !domain.getCodename().equalsIgnoreCase("GLOBAL"))
+				.forEach(domain -> domainRepository.delete(domain));
 		domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
     }
 
@@ -65,7 +70,7 @@ public class UserRepositoryTest {
 		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);
-		assertEquals(2, userRepository.count());
+		assertEquals(3, userRepository.count());
 		
 		Optional<User> adminPersisted = userRepository.findByUsername("testadmin");
 		assertTrue(adminPersisted.isPresent());

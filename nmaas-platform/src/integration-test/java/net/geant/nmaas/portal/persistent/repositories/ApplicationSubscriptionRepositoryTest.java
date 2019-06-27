@@ -4,6 +4,7 @@ import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.ApplicationSubscription;
 import net.geant.nmaas.portal.persistent.entity.Domain;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,9 +28,6 @@ import static org.junit.Assert.assertTrue;
 @Transactional
 @Rollback
 public class ApplicationSubscriptionRepositoryTest {
-
-	@Autowired
-	private WebApplicationContext context;
 	
 	@Autowired
 	ApplicationRepository appRepo;
@@ -66,9 +63,11 @@ public class ApplicationSubscriptionRepositoryTest {
 	
 	@AfterEach
 	public void tearDown() {
-		app1 = app2 = app3 = null;
-		domain1 = domain2 = domain3 = null;
-		appSub1 = appSub2 = appSub3 = null;
+		appSubRepo.deleteAll();
+		appRepo.deleteAll();
+		domainRepo.findAll().stream()
+				.filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+				.forEach(domain -> domainRepo.delete(domain));
 	}
 	
 	@Test

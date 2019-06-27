@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +87,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     private Principal principal = mock(Principal.class);
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         mvc = createMVC();
         when(principal.getName()).thenReturn("admin");
 
@@ -402,6 +403,11 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
 
     @AfterEach
     public void tearUp(){
-        domains.getDomains().forEach(domain -> domains.removeDomain(domain.getId()));
+        domains.getDomains().stream()
+                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+                .forEach(domain -> domains.removeDomain(domain.getId()));
+        userRepo.findAll().stream()
+                .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
+                .forEach(user -> userRepo.delete(user));
     }
 }
