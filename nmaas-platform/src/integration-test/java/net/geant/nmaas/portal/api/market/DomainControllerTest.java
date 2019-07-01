@@ -50,7 +50,7 @@ public class DomainControllerTest extends BaseControllerTestSetup {
     public void teardown(){
         dcnInfoRepo.deleteAll();
         domainRepo.findAll().stream()
-                .filter(domain -> !domain.getCodename().equalsIgnoreCase("GLOBAL"))
+                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
                 .forEach(domain -> domainRepo.delete(domain));
     }
 

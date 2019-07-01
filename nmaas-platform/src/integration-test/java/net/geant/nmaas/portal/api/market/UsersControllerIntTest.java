@@ -18,9 +18,9 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import static org.junit.Assert.assertFalse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,36 +126,39 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
         prepareSecurity();
     }
 
-    @Disabled
     @Test
     public void testDisableUser() throws Exception {
-        MvcResult result = mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
+        mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=false")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andReturn();
+        User result = userRepo.findById(userEntity.getId()).orElseThrow(IllegalArgumentException::new);
+        assertFalse(result.isEnabled());
     }
 
-    @Disabled
     @Test
     public void testEnableUser() throws Exception {
-        MvcResult result =  mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
+        mvc.perform(put("/api/users/status/" + userEntity.getId() + "?enabled=true")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted())
-                .andReturn();
+                .andExpect(status().isAccepted());
+        User result = userRepo.findById(userEntity.getId()).orElseThrow(IllegalArgumentException::new);
+        assertTrue(result.isEnabled());
     }
 
     @Test
     public void testSetAcceptanceOfTermsOfUseAndPrivacyPolicy() throws Exception{
-        MvcResult result =  mvc.perform(post("/api/users/terms/" + user3.getUsername())
+        mvc.perform(post("/api/users/terms/" + user3.getUsername())
                 .header("Authorization", "Bearer " + tokenForUserWithNotAcceptedTermsAndPolicy)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted())
-                .andReturn();
+                .andExpect(status().isAccepted());
+        User result = userRepo.findById(user3.getId()).orElseThrow(IllegalArgumentException::new);
+        assertTrue(result.isTermsOfUseAccepted());
+        assertTrue(result.isPrivacyPolicyAccepted());
     }
 
     @Test
