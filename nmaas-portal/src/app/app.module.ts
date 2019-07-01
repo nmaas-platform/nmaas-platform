@@ -26,6 +26,7 @@ import {TranslateLoaderImpl} from "./i18n/translate-loader-impl.service";
 import {ServiceUnavailableModule} from "./service-unavailable/service-unavailable.module";
 import {RouterModule} from "@angular/router";
 import {ServiceUnavailableService} from "./service-unavailable/service-unavailable.service";
+import {MonitorService} from "./service/monitor.service";
 
 
 export function appConfigFactory( config: AppConfigService) {
@@ -34,9 +35,11 @@ export function appConfigFactory( config: AppConfigService) {
   }
 }
 
-export function serviceAvailableFactory(provider: ServiceUnavailableService){
+export function serviceAvailableFactory(config: AppConfigService, http: HttpClient, provider: ServiceUnavailableService){
   return function create() {
-    return provider.validateServicesAvailability();
+    return config.load().then( () => {
+      return provider.validateServicesAvailability();
+    });
   }
 }
 
@@ -91,7 +94,7 @@ export const jwtOptionsFactory = (appConfig: AppConfigService) => ({
     {
       provide: APP_INITIALIZER,
       useFactory: serviceAvailableFactory,
-      deps: [ServiceUnavailableService],
+      deps: [AppConfigService, HttpClient, ServiceUnavailableService],
       multi: true,
     }
   ],

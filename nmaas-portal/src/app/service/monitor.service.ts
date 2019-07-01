@@ -23,7 +23,7 @@ export class MonitorService extends GenericDataService{
   }
 
   public getAllMonitorEntries():Observable<MonitorEntry[]>{
-    return this.get(this.url + 'all');
+      return this.get(this.appConfig.getApiUrl() + '/monitor/all');
   }
 
   public getOneMonitorEntry(serviceName: string):Observable<MonitorEntry>{
