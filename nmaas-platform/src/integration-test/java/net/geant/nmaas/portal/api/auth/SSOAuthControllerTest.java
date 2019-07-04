@@ -53,10 +53,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
     public void setup(){
         this.mvc = createMVC();
         this.addLanguage();
-        ConfigurationView config = this.configManager.getConfiguration();
-        config.setSsoLoginAllowed(true);
-        config.setDefaultLanguage("en");
-        this.configManager.updateConfiguration(config.getId(), config);
+        this.changeConfigToDefault();
     }
 
     @AfterEach
@@ -64,6 +61,7 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
         this.userRepo.findAll().stream()
                 .filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
                 .forEach(user -> userRepo.delete(user));
+        this.changeConfigToDefault();
     }
 
     @Test
@@ -140,6 +138,14 @@ public class SSOAuthControllerTest extends BaseControllerTestSetup {
         if(!intService.getEnabledLanguages().contains("en")){
             intService.addNewLanguage(new InternationalizationView("en", true, "{\"content\":\"content\"}"));
         }
+    }
+
+    private void changeConfigToDefault(){
+        ConfigurationView config = this.configManager.getConfiguration();
+        config.setSsoLoginAllowed(true);
+        config.setMaintenance(false);
+        config.setDefaultLanguage("en");
+        this.configManager.updateConfiguration(config.getId(), config);
     }
 
     private String getValidToken(){
