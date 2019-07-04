@@ -18,28 +18,32 @@ export class MonitorService extends GenericDataService{
     this.url = this.appConfig.getApiUrl() + '/monitor/'
   }
 
+  private createProperUrl(): string{
+    return (this.appConfig.getApiUrl() + '/monitor/');
+  }
+
   public updateMonitorEntryAndJob(monitorEntry: MonitorEntry):Observable<any>{
-    return this.put(this.url, monitorEntry);
+    return this.put(this.createProperUrl(), monitorEntry);
   }
 
   public getAllMonitorEntries():Observable<MonitorEntry[]>{
-      return this.get(this.appConfig.getApiUrl() + '/monitor/all');
+      return this.get(this.createProperUrl() + 'all');
   }
 
   public getOneMonitorEntry(serviceName: string):Observable<MonitorEntry>{
-    return this.get(this.url + serviceName);
+    return this.get(this.createProperUrl() + serviceName);
   }
 
   public executeJob(serviceName: string):Observable<any>{
-    return this.http.post(this.url + serviceName + '/execute', null);
+    return this.http.post(this.createProperUrl() + serviceName + '/execute', null);
   }
 
   public resumeJob(serviceName: string): Observable<any>{
-    return this.http.patch(this.url + serviceName + '/resume', null);
+    return this.http.patch(this.createProperUrl() + serviceName + '/resume', null);
   }
 
   public pauseJob(serviceName: string): Observable<any> {
-    return this.http.patch(this.url + serviceName + '/pause', null);
+    return this.http.patch(this.createProperUrl() + serviceName + '/pause', null);
   }
 
 }
