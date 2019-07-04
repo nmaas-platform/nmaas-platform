@@ -13,6 +13,7 @@ import {ModalComponent} from "../../shared/modal";
 import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from 'angular-password-strength-meter';
 import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'nmaas-registration',
@@ -69,6 +70,7 @@ export class RegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.modal.setModalType("info");
     this.domains = this.registrationService.getDomains().pipe(
         map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
   }
@@ -78,7 +80,7 @@ export class RegistrationComponent implements OnInit {
   }
 
   public onSubmit(): void {
-      if(this.captchaToken.length < 1){
+      if(isNullOrUndefined(this.captchaToken) || this.captchaToken.length < 1){
           this.sending = false;
           this.sending = false;
           this.submitted = true;
@@ -137,7 +139,7 @@ export class RegistrationComponent implements OnInit {
     this.errorMessage = '';
   }
 
-  private getMessage(err: string): string {
-      return err.match('') || err.match(undefined) || err.match(null) ? err : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+  private getMessage(err: any): string {
+      return err['message'] === 'Domain not found' ? "REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE" : err['message'] === 'User already exists'? 'REGISTRATION.USER_ALREADY_EXISTS_MESSAGE' : err['status'] === 406 ? 'REGISTRATION.INVALID_INPUT_DATA' : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }

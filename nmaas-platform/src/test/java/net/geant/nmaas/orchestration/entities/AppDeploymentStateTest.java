@@ -13,6 +13,9 @@ import java.util.stream.Stream;
 
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_FAILED;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS;
+import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_REMOVED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_UPDATED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_UPDATE_FAILED;
 import static net.geant.nmaas.orchestration.entities.AppDeploymentState.APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS;
@@ -130,7 +133,11 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_UPDATED, APPLICATION_CONFIGURATION_UPDATED),
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_UPDATE_FAILED, APPLICATION_CONFIGURATION_UPDATE_FAILED),
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATED, NmServiceDeploymentState.VERIFICATION_INITIATED, APPLICATION_DEPLOYMENT_VERIFICATION_IN_PROGRESS),
-                Arguments.of(APPLICATION_CONFIGURATION_UPDATED, NmServiceDeploymentState.VERIFICATION_FAILED, APPLICATION_DEPLOYMENT_VERIFICATION_FAILED)
+                Arguments.of(APPLICATION_CONFIGURATION_UPDATED, NmServiceDeploymentState.VERIFICATION_FAILED, APPLICATION_DEPLOYMENT_VERIFICATION_FAILED),
+                Arguments.of(APPLICATION_REMOVED, NmServiceDeploymentState.CONFIGURATION_REMOVAL_INITIATED, APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS),
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_REMOVED, APPLICATION_CONFIGURATION_REMOVED),
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS, NmServiceDeploymentState.CONFIGURATION_REMOVAL_FAILED, APPLICATION_CONFIGURATION_REMOVAL_FAILED),
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVED, NmServiceDeploymentState.FAILED_APPLICATION_REMOVED, FAILED_APPLICATION_REMOVED)
         );
     }
 
@@ -167,6 +174,9 @@ public class AppDeploymentStateTest {
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS, AppLifecycleState.APPLICATION_CONFIGURATION_UPDATE_IN_PROGRESS),
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATED, AppLifecycleState.APPLICATION_CONFIGURATION_UPDATED),
                 Arguments.of(APPLICATION_CONFIGURATION_UPDATE_FAILED, AppLifecycleState.APPLICATION_CONFIGURATION_UPDATE_FAILED),
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS, AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_IN_PROGRESS),
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVED, AppLifecycleState.APPLICATION_CONFIGURATION_REMOVED),
+                Arguments.of(APPLICATION_CONFIGURATION_REMOVAL_FAILED, AppLifecycleState.APPLICATION_CONFIGURATION_REMOVAL_FAILED),
                 Arguments.of(INTERNAL_ERROR, AppLifecycleState.INTERNAL_ERROR)
         );
     }

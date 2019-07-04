@@ -15,7 +15,7 @@
         "CONTENT": "Your application ${app_name} in version ${app_version} is now available in NMaaS app market.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
@@ -26,29 +26,29 @@
         "CONTENT": "Your application ${app_name} in version ${app_version} is now available in NMaaS app market.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "de",
       "subject": "NMaaS: Your application is now active",
       "template": {
-        "HEADER": "Dear {$username},",
+        "HEADER": "Dear ${username},",
         "CONTENT": "Your application ${app_name} in version ${app_version} is now available in NMaaS app market.",
         "SENDER": "Best regards,<br />NMaaS Team",
         "NOREPLY": "This is an automatically generated message, please do not reply.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     },
     {
       "language": "pl",
       "subject": "NMaaS: Twoja aplikacja jest już aktywna",
       "template": {
-        "HEADER": "Drogi {$username},",
+        "HEADER": "Drogi ${username},",
         "CONTENT": "Twoja aplikacja ${app_name} w wersji ${app_version} jest już dostępna w systemie NMaaS.",
         "SENDER": "Z pozdrowieniami,<br />Zespół NMaaS",
         "NOREPLY": "Ta wiadomość została wygenerowana automatycznie.",
-        "SENDER_POLICY": "You're receiving this email because you opted-in to receive communication from NMaaS."
+        "SENDER_POLICY": ""
       }
     }
   ]

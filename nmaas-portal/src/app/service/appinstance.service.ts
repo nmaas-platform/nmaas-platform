@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {isUndefined} from 'util';
 
 import {AppConfigService} from '../service/appconfig.service';
 
@@ -23,12 +22,8 @@ export class AppInstanceService extends GenericDataService {
     super(http, appConfig);
   }
 
-  public getAllAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId));
-  }
-
-  public getSortedAllAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
-    return this.get<AppInstance[]>(this.getUrl(domainId)).pipe(
+  public getSortedAllAppInstances(criteria?: CustomerSearchCriteria): Observable<AppInstance[]>{
+    return this.get<AppInstance[]>(this.getUrl()).pipe(
         map(
       (data) => {
         data.sort((a, b) => {
@@ -44,12 +39,8 @@ export class AppInstanceService extends GenericDataService {
     )
   }
 
-  public getMyAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my');
-  }
-
-  public getSortedMyAppInstances(domainId?: number, criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId) + 'my').pipe(
+  public getSortedMyAppInstances(criteria?: CustomerSearchCriteria): Observable<AppInstance[]> {
+    return this.get<AppInstance[]>(this.getUrl() + 'my').pipe(
         map(
       (data) => {
         data.sort((a, b) => {
@@ -65,56 +56,48 @@ export class AppInstanceService extends GenericDataService {
     )
   }
 
-  public getUserAppInstances(username: string, domainId?: number): Observable<AppInstance[]> {
-    return this.get<AppInstance[]>(this.getUrl(domainId) + 'user/' + username);
+  public getAppInstanceState(id: number): Observable<AppInstanceStatus> {
+    return this.get<AppInstanceStatus>(this.getUrl() + id + '/state');
   }
 
-  public getAppInstanceState(id: number, domainId?: number): Observable<AppInstanceStatus> {
-    return this.get<AppInstanceStatus>(this.getUrl(domainId) + id + '/state');
-  }
-
-  public getAppInstanceHistory(id:number, domainId?: number): Observable<AppInstanceStateHistory[]>{
-    return this.get<AppInstanceStateHistory[]>(this.getUrl(domainId)+id+ '/state/history');
+  public getAppInstanceHistory(id:number): Observable<AppInstanceStateHistory[]>{
+    return this.get<AppInstanceStateHistory[]>(this.getUrl()+id+ '/state/history');
   }
 
   public createAppInstance(domainId: number, appId: number, name: string): Observable<Id> {
-    return this.post<AppInstanceRequest, Id>(this.getUrl(domainId), new AppInstanceRequest(appId, name));
+    return this.post<AppInstanceRequest, Id>(this.getUrl() + "domain/" + domainId, new AppInstanceRequest(appId, name));
   }
 
-  public removeAppInstance(appInstanceId: number, domainId?: number): Observable<any> {
-    return this.delete<any>(this.getUrl(domainId) + appInstanceId);
+  public removeAppInstance(appInstanceId: number): Observable<any> {
+    return this.delete<any>(this.getUrl() + appInstanceId);
   }
 
-  public getAppInstance(appInstanceId: number, domainId?: number): Observable<AppInstance> {
-    return this.get<AppInstance>(this.getUrl(domainId) + appInstanceId);
+  public getAppInstance(appInstanceId: number): Observable<AppInstance> {
+    return this.get<AppInstance>(this.getUrl() + appInstanceId);
   }
 
-  public applyConfiguration(appInstanceId: number, configuration: AppConfiguration, domainId?: number): Observable<void> {
-    return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure', configuration);
+  public applyConfiguration(appInstanceId: number, configuration: AppConfiguration): Observable<void> {
+    return this.post<AppConfiguration, any>(this.getUrl() + appInstanceId + '/configure', configuration);
   }
 
-  public updateConfiguration(appInstanceId: number, configuration: AppConfiguration, domainId?: number): Observable<void> {
-      return this.post<AppConfiguration, any>(this.getUrl(domainId) + appInstanceId + '/configure/update', configuration);
+  public updateConfiguration(appInstanceId: number, configuration: AppConfiguration): Observable<void> {
+      return this.post<AppConfiguration, any>(this.getUrl() + appInstanceId + '/configure/update', configuration);
   }
 
-  public redeployAppInstance(appInstanceId: number, domainId?: number): Observable<void> {
-    return this.post<number, any>(this.getUrl(domainId) + appInstanceId + '/redeploy', appInstanceId);
+  public redeployAppInstance(appInstanceId: number): Observable<void> {
+    return this.post<number, any>(this.getUrl() + appInstanceId + '/redeploy', appInstanceId);
   }
 
-  public removeFailedInstance(appInstanceId: number, domainId?: number): Observable<any> {
-    return this.delete<any>(this.getUrl(domainId) + "failed/" + appInstanceId);
+  public removeFailedInstance(appInstanceId: number): Observable<any> {
+    return this.delete<any>(this.getUrl() + "failed/" + appInstanceId);
   }
 
   public getConfiguration(appInstanceId: number): Observable<any> {
     return this.get<any>(this.getUrl() + appInstanceId + '/configuration');
   }
 
-  protected getUrl(domainId?: number): string {
-    if (isUndefined(domainId)) {
-      return this.appConfig.getApiUrl() + '/apps/instances/';
-    } else {
-      return this.appConfig.getApiUrl() + '/domains/' + domainId + '/apps/instances/';
-    }
+  protected getUrl(): string {
+    return this.appConfig.getApiUrl() + '/apps/instances/';
   }
 
   public getProgressStages(): AppInstanceProgressStage[] {
@@ -130,12 +113,12 @@ export class AppInstanceService extends GenericDataService {
     ];
   }
 
-  public restartAppInstance(appInstanceId:number, domainId?: number):Observable<any>{
-    return this.post<number,any>((this.getUrl(domainId) +  appInstanceId + '/restart'), appInstanceId);
+  public restartAppInstance(appInstanceId:number):Observable<any>{
+    return this.post<number,any>((this.getUrl() +  appInstanceId + '/restart'), appInstanceId);
   }
 
-  public getRunningAppInstances(domainId?: number): Observable<AppInstance[]> {
-    return this.get(this.getUrl(domainId) + "running");
+  public getRunningAppInstances(domainId: number): Observable<AppInstance[]> {
+    return this.get(this.getUrl() + "running/domain/" + domainId);
   }
 
 }

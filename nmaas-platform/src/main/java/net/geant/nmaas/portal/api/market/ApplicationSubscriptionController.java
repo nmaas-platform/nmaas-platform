@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import net.geant.nmaas.portal.api.domain.ApplicationBriefView;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscription;
 import net.geant.nmaas.portal.api.domain.ApplicationSubscriptionBase;
-import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.service.ApplicationSubscriptionService;
 
 @RestController
@@ -40,23 +39,14 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@Transactional
 	@ResponseStatus(HttpStatus.CREATED)
 	public void subscribe(@RequestBody ApplicationSubscriptionBase appSubscription) {
-		try {
-			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
-		}
-			
+		appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), true);
 	}
 
 	@PostMapping("/request")
 	@PreAuthorize("hasPermission(#appSubscription.domainId, 'domain', 'ANY')")
 	@Transactional
 	public void subscribeRequest(@RequestBody ApplicationSubscriptionBase appSubscription) {
-		try {
-			appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to subscribe. " + e.getMessage());
-		}		
+		appSubscriptions.subscribe(appSubscription.getApplicationId(), appSubscription.getDomainId(), false);
 	}
 	
 	
@@ -65,11 +55,7 @@ public class ApplicationSubscriptionController extends AppBaseController {
 	@Transactional
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void unsubscribe(@PathVariable Long domainId, @PathVariable Long appId) {
-		try {
-			appSubscriptions.unsubscribe(appId, domainId);
-		} catch (net.geant.nmaas.portal.exceptions.ProcessingException e) {
-			throw new ProcessingException("Unable to unsubscribe. " + e.getMessage());
-		}
+		appSubscriptions.unsubscribe(appId, domainId);
 	}
 	
 	@GetMapping("/apps/{appId}/domains/{domainId}")

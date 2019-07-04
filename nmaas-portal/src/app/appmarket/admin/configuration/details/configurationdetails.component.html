@@ -21,7 +21,7 @@
             <div class="col-sm-3">
                 <select id="defaultLang" #langSelect class="form-control" (change)="this.configuration.defaultLanguage = langSelect.value">
                     <option *ngFor="let lang of languages" [value]="lang.language"
-                            [selected]="lang.language === configuration.defaultLanguage">{{ lang.language }}</option>
+                            [selected]="lang.language === configuration.defaultLanguage">{{'LANGUAGE.' + lang.language.toUpperCase() + '_LABEL' | translate}}</option>
                 </select>
             </div>
         </div>

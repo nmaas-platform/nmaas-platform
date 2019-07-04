@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableSet;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
+import java.util.Base64;
 import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.api.auth.UserSSOLogin;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.api.exception.SignupException;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import static net.geant.nmaas.portal.persistent.entity.Role.ROLE_DOMAIN_ADMIN;
@@ -135,7 +137,7 @@ public class UserServiceImpl implements UserService {
 	public User register(Registration registration, Domain globalDomain, Domain domain){
 
 		if(userRepo.existsByUsername(registration.getUsername()) || userRepo.existsByEmail(registration.getEmail())){
-			throw new SignupException("REGISTRATION.USER_ALREADY_EXISTS_MESSAGE");
+			throw new SignupException("User already exists");
 		}
 
 		User newUser = new User(registration.getUsername(), false, passwordEncoder.encode(registration.getPassword()), globalDomain, Role.ROLE_GUEST);
@@ -158,7 +160,7 @@ public class UserServiceImpl implements UserService {
 	public User register(UserSSOLogin userSSO, Domain globalDomain){
 		byte[] array = new byte[16]; // random password
 		new SecureRandom().nextBytes(array);
-		String generatedString = new String(array, StandardCharsets.UTF_8);
+		String generatedString = Base64.getEncoder().encodeToString(array);
 		User newUser = new User("thirdparty-"+System.currentTimeMillis(), true, generatedString, globalDomain, Role.ROLE_INCOMPLETE);
 		newUser.setSamlToken(userSSO.getUsername()); //Check user ID TODO: check if it's truly unique!
 		newUser.setSelectedLanguage(this.configurationManager.getConfiguration().getDefaultLanguage());
@@ -239,18 +241,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findAllUsersWithAdminRole(){
+	public List<UserView> findAllUsersWithAdminRole(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name())))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<net.geant.nmaas.portal.api.domain.User> findUsersWithRoleSystemAdminAndOperator(){
+	public List<UserView> findUsersWithRoleSystemAdminAndOperator(){
 		return findAll().stream()
 				.filter(user -> user.getRoles().stream().anyMatch(role -> role.getRole().name().equalsIgnoreCase(Role.ROLE_SYSTEM_ADMIN.name()) || role.getRole().name().equalsIgnoreCase(Role.ROLE_OPERATOR.name()) ))
-				.map(user -> modelMapper.map(user, net.geant.nmaas.portal.api.domain.User.class))
+				.map(user -> modelMapper.map(user, UserView.class))
 				.collect(Collectors.toList());
 	}
 }

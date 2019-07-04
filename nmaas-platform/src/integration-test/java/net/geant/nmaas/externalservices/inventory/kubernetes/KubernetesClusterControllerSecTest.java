@@ -1,13 +1,11 @@
 package net.geant.nmaas.externalservices.inventory.kubernetes;
 
-import net.geant.nmaas.externalservices.inventory.kubernetes.repositories.KubernetesClusterRepository;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,9 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup {
-
-    @MockBean
-    private KubernetesClusterRepository repository;
 
     @BeforeEach
     public void setup() {
@@ -30,7 +25,7 @@ public class KubernetesClusterControllerSecTest extends BaseControllerTestSetup 
         String token = getValidUserTokenFor(Role.ROLE_SYSTEM_ADMIN);
         mvc.perform(get("/api/management/kubernetes")
                 .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test

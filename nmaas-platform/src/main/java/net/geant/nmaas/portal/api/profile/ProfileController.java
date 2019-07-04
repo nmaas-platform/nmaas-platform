@@ -1,7 +1,8 @@
 package net.geant.nmaas.portal.api.profile;
 
-import net.geant.nmaas.portal.api.domain.User;
+import net.geant.nmaas.portal.api.domain.UserView;
 import net.geant.nmaas.portal.api.exception.ProcessingException;
+import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,12 @@ public class ProfileController {
     }
 
     @GetMapping("/user")
-    public User retrieveLoggedUser(@NotNull Principal principal) {
-        net.geant.nmaas.portal.persistent.entity.User user = this.getUser(principal.getName());
-        return this.modelMapper.map(user, User.class);
+    public UserView retrieveLoggedUser(@NotNull Principal principal) {
+        User user = this.getUser(principal.getName());
+        return this.modelMapper.map(user, UserView.class);
     }
 
-    private net.geant.nmaas.portal.persistent.entity.User getUser(String username) {
+    private User getUser(String username) {
         return users.findByUsername(username).orElseThrow(() -> new ProcessingException("User not found."));
     }
 }

@@ -86,7 +86,7 @@ public class TemplateService {
     }
 
     private FileInfo getHTMLTemplateFileInfo(){
-        List<net.geant.nmaas.portal.persistent.entity.FileInfo> template = fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE);
+        List<FileInfo> template = fileStorageService.getFileInfoByContentType(MailTemplateElements.HTML_TYPE);
         if(template.size() == 1){
             return template.get(0);
         }

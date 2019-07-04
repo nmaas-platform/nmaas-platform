@@ -10,7 +10,8 @@ import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.api.domain.DomainTechDetailsView;
-import net.geant.nmaas.portal.exceptions.ProcessingException;
+import net.geant.nmaas.portal.api.domain.UserView;
+import net.geant.nmaas.portal.api.exception.ProcessingException;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
@@ -20,10 +21,11 @@ import net.geant.nmaas.portal.persistent.repositories.UserRoleRepository;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
 import net.geant.nmaas.portal.service.impl.domains.DefaultCodenameValidator;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;
@@ -34,7 +36,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -353,7 +354,7 @@ public class DomainServiceTest {
 
         List<User> users = ImmutableList.of(user1, user2);
         when(userRoleRepo.findDomainMembers(anyString())).thenReturn(users);
-        List<net.geant.nmaas.portal.api.domain.User> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
+        List<UserView> filteredUsers = domainService.findUsersWithDomainAdminRole(domain.getCodename());
         assertThat("Result mismatch", filteredUsers.size() == 2);
     }
 

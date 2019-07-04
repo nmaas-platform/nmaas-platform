@@ -39,7 +39,7 @@
         "kubernetesTemplate": {
             "chart": {
                 "name": "nmaas-grafana",
-                "version": "1.0.3-alfa"
+                "version": "1.0.0"
             }
         },
         "defaultStorageSpace": 1

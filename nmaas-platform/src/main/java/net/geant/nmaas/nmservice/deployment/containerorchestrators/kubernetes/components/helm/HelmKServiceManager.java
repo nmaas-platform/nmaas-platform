@@ -115,12 +115,18 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
 
     @Override
     @Loggable(LogLevel.DEBUG)
-    public void deleteService(Identifier deploymentId) {
+    public void deleteServiceIfExists(Identifier deploymentId) {
         try {
-            helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+            if(checkIfServiceExists(deploymentId)){
+                helmCommandExecutor.executeHelmDeleteCommand(deploymentId);
+            }
         } catch (CommandExecutionException cee) {
             throw new KServiceManipulationException(HELM_COMMAND_EXECUTION_FAILED_ERROR_MESSAGE + cee.getMessage());
         }
+    }
+
+    private boolean checkIfServiceExists(Identifier deploymentId){
+        return helmCommandExecutor.executeHelmListCommand().contains(deploymentId.value());
     }
 
     @Override

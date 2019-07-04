@@ -5,6 +5,10 @@ import {interval, Subscription} from "rxjs";
 import {AuthService} from "../../auth/auth.service";
 import {DomainService} from "../../service";
 import {InternationalizationService} from "../../service/internationalization.service";
+import {MonitorService} from "../../service/monitor.service";
+import {forEach} from "@angular/router/src/utils/collection";
+import {MonitorEntry} from "../../model/monitorentry";
+import {ContentDisplayService} from "../../service/content-display.service";
 
 @Component({
   selector: 'app-navbar',
@@ -15,6 +19,7 @@ export class NavbarComponent implements OnInit, OnChanges {
 
     public languages: string[];
     public refresh: Subscription;
+    public isServiceAvailable: boolean;
 
     constructor(private router: Router, public authService: AuthService, private translate: TranslateService,
                 private languageService:InternationalizationService, private domainService: DomainService) {

@@ -51,8 +51,8 @@
 		<label class="control-label">{{ 'REGISTRATION.AGREEMENT_MESSAGE' | translate }} <a (click)="modalInfoTerms.show()">{{ 'REGISTRATION.TERMS' | translate }}</a>*</label>
 	</div>
 
-	<div class="form-group form-group-sm">
-		<input id="privacyPolicyAccepted" type="checkbox" class="checkbox-inline" formControlName="privacyPolicyAccepted">
+	<div class="form-group form-group-sm  checkbox-inline">
+		<input id="privacyPolicyAccepted" type="checkbox" class="checkbox-inline" formControlName="privacyPolicyAccepted" required>
 		<label class="control-label">{{ 'REGISTRATION.AGREEMENT_MESSAGE' | translate }} <a (click)="modalInfoPolicy.show()">{{ 'REGISTRATION.PRIVACY_POLICY' | translate }}</a>*</label>
 	</div>
 

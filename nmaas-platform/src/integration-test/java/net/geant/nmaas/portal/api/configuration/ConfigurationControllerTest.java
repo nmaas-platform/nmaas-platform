@@ -5,7 +5,6 @@ import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
-import net.geant.nmaas.portal.service.ConfigurationManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class ConfigurationControllerTest extends BaseControllerTestSetup {
-
-    @Autowired
-    private ConfigurationManager configurationManager;
 
     @Autowired
     private ConfigurationRepository repository;

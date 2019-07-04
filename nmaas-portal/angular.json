@@ -74,6 +74,7 @@
             "main": "src/test.ts",
             "karmaConfig": "./karma.conf.js",
             "tsConfig": "src/tsconfig.json",
+            "codeCoverage": true,
             "polyfills": "src/polyfills.ts",
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",

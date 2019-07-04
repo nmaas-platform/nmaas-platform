@@ -58,19 +58,16 @@
     "DOMAIN": "Domena",
     "NOT_SELECTED": "Nie wybrano",
     "TERMS": "Warunkami Korzystania",
-    "AGREEMENT_MESSAGE": "Zgadzam się z",
+    "AGREEMENT_MESSAGE": "Zapoznałem się z",
     "PRIVACY_POLICY": "Polityką Prywatności",
     "SUBMIT": "Zatwierdź",
     "FORM_SUBMISSION": "Formularz rejestracyjny został przesłany",
     "THANK_YOU_MESSAGE": "Dziękujemy za przesłanie formularza rejestracyjnego. Twoje konto musi zostać aktywowane przez administratora systemu. To może zająć trochę czasu.",
     "DONE_MESSAGE": "Gotowe",
-    "INVALID_CREDENTIALS_MESSAGE": "Nieprawidłowe dane uwierzytelniające.",
-    "UNABLE_TO_REGISTER_MESSAGE": "Nie można zarejestrować nowego użytkownika.",
-    "TERMS_NOT_ACCEPTED_MESSAGE": "Warunki użytkowania nie zostały zaakceptowane.",
-    "PRIVACY_POLICY_NOT_ACCEPTED_MESSAGE": "Polityka prywatności nie została zaakceptowana.",
-    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje.",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona.",
-    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika.",
+    "INVALID_INPUT_MESSAGE": "Podano niewłaściwe dane",
+    "USER_ALREADY_EXISTS_MESSAGE": "Użytkownik już istnieje",
+    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie została znaleziona",
+    "UNABLE_TO_UPDATE_USER_MESSAGE": "Nie można zaktualizować nowo zarejestrowanego użytkownika",
     "UNABLE_TO_FETCH_CONTENT_MESSAGE": "Nie można pobrać treści"
   },
   "LOGIN": {
@@ -82,9 +79,7 @@
     "LOGIN_WITH": "Zaloguj się za pomocą",
     "LOGIN_FAILURE_MESSAGE": "Nieprawidłowe dane logowania",
     "APPLICATION_UNDER_MAINTENANCE_MESSAGE": "Aplikacja jest teraz w trakcie konserwacji. Spróbuj ponownie później.",
-    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Logowanie komponentu systemu nie może być wykonane",
-    "MISSING_TOKEN_MESSAGE": "Brakujący token.",
-    "UNABLE_TO_GENERATE_MESSAGE": "Nie można wygenerować nowych tokenów"
+    "LOGIN_CAN_NOT_BE_PERFORMED_MESSAGE": "Logowanie komponentu systemu nie może być wykonane"
   },
   "CLUSTERS": {
     "TITLE": "Informacje o klastrze",
@@ -238,15 +233,6 @@
     "LANGUAGE_SUPPORT": "Aktywowane języki",
     "LANGUAGE_ENABLED": "Aktywny",
     "LANGUAGE_DISABLED": "Nieaktywny"
-  },
-  "AUTH": {
-    "SSO_LOGIN_NOT_ENABLED_MESSAGE": "Metoda logowania SSO nie jest włączona",
-    "EMPTY_SSO_LOGIN_DATA_MESSAGE": "Dane logowania otrzymanego użytkownika SSO są puste",
-    "MISSING_USERNAME_MESSAGE": "Brakująca nazwa użytkownika",
-    "USER_ALREADY_EXITS_MESSAGE": "Użytkownik już istnieje",
-    "DOMAIN_NOT_FOUND_MESSAGE": "Domena nie znaleziona",
-    "INTERNAL_SERVER_ERROR_MESSAGE": "Błąd wewnętrzny serwera",
-    "APPLICATION_UNDERGOING_MAINTENANCE_MESSAGE": "Aplikacja jest aktualnie w trakcie konserwacji. Spróbuj ponownie później."
   },
   "DOMAIN_DETAILS": {
     "TITLE": "Szczegóły domeny",
@@ -448,7 +434,10 @@
       "APP_UPDATE_FAILED": "Aktualizacja aplikacji nie powiodła się",
       "UNKNOWN": "Nieznany stan",
       "ERROR": "Błąd wewnętrzny",
-      "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta"
+      "FAILED_APPLICATION_REMOVED": "Aplikacja, której instalacja się nie powiodła została usunięta",
+      "APP_CONF_REMOVE_PROGRESS": "Trwa usuwanie konfiguration aplikacji",
+      "APP_CONF_REMOVE_SUCCESS": "Konfiguracja aplikacji usunięta poprawnie",
+      "APP_CONF_REMOVE_ERROR": "Usuwanie konfiguracji aplikacji nie powiodło się"
     },
     "USER_FRIENDLY": {
       "REQUESTED": "NMaaS przetwarza Twoje żądanie",
@@ -518,7 +507,7 @@
     "UNAVAILABLE_MESSAGE": "Usługa jest niedostępna. Spróbuj ponownie później.",
     "INVALID_INPUT_MESSAGE": "Nieprawidłowe dane wejściowe",
     "NOT_ROBOT_ERROR_MESSAGE": "Musisz udowodnić, że nie jesteś robotem!",
-    "TERMS_OF_USER_MESSAGE": "Musisz zaakceptować Warunki korzystania i Politykę prywatności!"
+    "TERMS_OF_USER_MESSAGE": "Musisz potwierdzić zapozanie się z Politykę Prywatności"
   },
   "APPS_MANAGEMENT": {
     "TITLE": "Zarządzanie aplikacjami",
@@ -540,8 +529,8 @@
     "UPDATE_CONFIG_WIZARD_PREVIEW_HEADER": "Podgląd formularza do aktualizacji konfiguracji aplikacji"
   },
   "APPS_WIZARD": {
-    "FIRST_PAGE_MESSAGE": "Lorem ipsum",
-    "ACCEPT_RULES_CHECKBOX": "Zaakceptowałem/łam zasady korzystania.",
+    "FIRST_PAGE_MESSAGE": "You are about to fill in a request for adding new application to the NMaaS portfolio. You will be guided through a few step process of providing all necessary information about the application, its description, deployment and configuration details. Once the request is submitted it will be reviewed by administrator and either approved or rejected with a proper comment send via email. By checking the box below you confirm that you have the right to publish this application in NMaaS.",
+    "ACCEPT_RULES_CHECKBOX": "Zapoznałem się z instrukcją powyżej",
     "NEXT_BUTTON": "Następne",
     "SUBMIT_BUTTON": "Wyślij",
     "PREVIOUS_BUTTON": "Poprzednie",
@@ -600,9 +589,9 @@
     "BRIEF_DESCRIPTION_TOOLTIP": "Podaj krótki opis aplikacji. Tekst ten będzie widoczny na stronie marketu NMaaS.",
     "FULL_DESCRIPTION_TOOLTIP": "Podaj pełny opis aplikacji. Tekst ten będzie widoczny w widoku szczegółowym aplikacji.",
     "CHART_NAME_TOOLTIP": "Podaj nazwę chart, który będzie wykorzystywany w systemie NMaaS.",
-    "CHART_VERSION_TOOLTIP": "Podaj wersję chart, która będzie wykorzystywana w systemie NMaaS.",
+    "CHART_VERSION_TOOLTIP": "Podaj wersję Helm chart, która będzie wykorzystywana w systemie NMaaS.",
     "DEFAULT_STORAGE_SPACE_TOOLTIP": "Podaj domyślną przestrzeń dyskową (w gigabajtach).",
-    "DEPLOY_PARAMETER_TOOLTIP": "Niektóre aplikacje wykorzystują globalne ustawienia systemu NMaaS. Jeśli chcesz wykorzystać jedną z nich podaj klucz pod którym powinniśmy podać te ustawienia.",
+    "DEPLOY_PARAMETER_TOOLTIP": "Niektóre aplikacje wykorzystują globalne ustawienia systemu NMaaS. Jeśli chcesz wykorzystać jedną z nich podaj klucz, pod którym powinniśmy podać te ustawienia.",
     "REPOSITORY_REQUIRED_TOOLTIP": "NMaaS może wykorzystać GitLab aby zachować konfiguracje każdej instancji.",
     "DISABLED_NEXT_BUTTON_TOOLTIP": "Musisz wypełnić wszystkie wymagane pola!",
     "DEPLOY_PARAMETERS_DROPDOWN": "Wybierz parametry globalne",
@@ -617,15 +606,24 @@
     "OPTIONAL_LANGS_LABEL": "Wybierz język opcjonalny",
     "OPTIONAL_LANGS_TOOLTIP": "Możesz podać dodatkowe opisy aplikacji w różnych, opcjonalych językach.",
     "FIRST_PAGE_HEADER": "Informacje",
-    "BASIC_APP_INFO_STEP_INFO": "Tekst zostanie dodany wkrótce",
-    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Tekst zostanie dodany wkrótce",
-    "APP_DESCRIPTIONS_STEP_INFO": "Tekst zostanie dodany wkrótce",
-    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Tekst zostanie dodany wkrótce",
-    "CONFIG_TEMPLATES_STEP_INFO": "Tekst zostanie dodany wkrótce",
+    "BASIC_APP_INFO_STEP_INFO": "Basic set of information about the application. Application can be filtered by tag. Select an existing tag or create a new one if none is suitable.",
+    "LOGO_AND_SCREENSHOTS_STEP_INFO": "Application logo is displayed in various views in the application. A set of screenshots should give a nice overview of the application's UI.",
+    "APP_DESCRIPTIONS_STEP_INFO": "Brief and full descriptions of the application should provide a basic (limited length) and comprehensive information about the nature and purpose of the application. Descriptions should be provided in as many supported languages as possible.",
+    "APP_DEPLOYMENT_SPEC_STEP_INFO": "Applications offered through NMaaS are deployed in Kubernetes as Helm charts. Basic information about the chart is required with additional set of optional parameters to be passed during the installation process.",
+    "CONFIG_TEMPLATES_STEP_INFO": "NMaaS applications are populated with basic configuration parameters provided by users using a wizard. The list of configuration files (with parameterized content) to be used and loaded by the application at startup should be provided. Those need to be complemented with the definition of the wizard component dedicated for particular application allowing user to provide all necessary parameters used to populate configuration files. ",
     "BASIC_AUTH_LABEL": "Wymaga podstawowego uwierzytelnienia",
     "BASIC_AUTH_TOOLTIP": "Możesz dodać podstawowe uwierzytelnienie do Twojej aplikacji zaznaczając tą opcję.",
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
-    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji."
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania."
+  },
+  "APP_CHANGE_STATE_MODAL": {
+    "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
+    "CURRENT_STATE": "Obecny stan",
+    "NEW_STATE": "Nowy stan",
+    "REASON": "Powód",
+    "REASON_PLACEHOLDER": "Proszę uzasadnij swoją decyzję",
+    "CANCEL_BUTTON": "Anuluj",
+    "CHANGE_STATE_BUTTON": "Zmień stan"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",
@@ -660,7 +658,10 @@
     "FR_LABEL": "Francuski"
   },
   "FOOTER": {
-    "NOTICE": "Polityka Prywatności"
+    "NOTICE": "Polityka Prywatności",
+    "CONTACT":  "Kontakt",
+    "WEBSITE": "Wejdź na stronę GÉANT",
+    "TOP": "GÓRA"
   },
   "FILTER": {
     "TAGS": "Tagi",
@@ -680,7 +681,22 @@
     "DONE": "Zakończono",
     "FAILURE": "Błąd",
     "UNKNOWN": "Nieznany",
-    "REMOVED": "Usunięty"
+    "REMOVED": "Usunięty",
+    "STATE": {
+      "ACTIVE": "Aktywne",
+      "REJECTED": "Odrzucone",
+      "NEW": "Nowe",
+      "DISABLED": "Zdeaktywowane",
+      "DELETED": "Usunięte"
+    },
+    "USER_ROLES": {
+      "ROLE_SYSTEM_ADMIN": "Administrator systemu",
+      "ROLE_OPERATOR": "Operator",
+      "ROLE_USER": "Użytkownik",
+      "ROLE_TOOL_MANAGER": "Dostawca aplikacji",
+      "ROLE_DOMAIN_ADMIN": "Administrator domeny",
+      "ROLE_GUEST": "Gość"
+    }
   },
   "PAGINATION": {
     "PREVIOUS": "Poprzednia",
@@ -712,5 +728,10 @@
     "LANGUAGE": "Język",
     "RAW_MODE_ENABLED": "Tryb zaawansowany jest aktywny",
     "RAW_MODE_DISABLED": "Tryb zaawansowany jest nieaktywny"
+  },
+  "SERVICE_UNAVAILABLE": {
+    "HEADER": "503 - Usługa niedostępna",
+    "TEXT_FIRST_PART": "Serwer nie jest w stanie obsłużyć Twojego żądania z powodu tymczasowego przeciążenia lub jedna lub więcej kluczowych usług jest obecnie niedostępna.",
+    "TEXT_SECOND_PART": "Sugerujemy zrobić krótką przerwę, np. na kawę - pracujemy nad tym. Spróbuj ponownie później!"
   }
 }
