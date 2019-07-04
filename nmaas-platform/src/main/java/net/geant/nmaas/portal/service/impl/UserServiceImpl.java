@@ -1,7 +1,6 @@
 package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableSet;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
 import java.util.Base64;
