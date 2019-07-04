@@ -1,13 +1,16 @@
 package net.geant.nmaas.portal.persistent;
 
+import lombok.extern.log4j.Log4j2;
 import net.geant.nmaas.portal.PersistentConfig;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
 import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
 import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @EnableAutoConfiguration
 @Transactional
 @Rollback
+@Log4j2
 public class UserRepositoryTest {
 
 	private final static String DOMAIN = "userdom";
@@ -51,10 +55,22 @@ public class UserRepositoryTest {
 	@BeforeEach
     @Transactional
 	public void setUp() {
-        userRepository.deleteAll();
-        domainRepository.deleteAll();
 		domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
     }
+
+    @AfterEach
+	public void tearDown(){
+		try{
+			this.userRepository.findAll().stream()
+					.filter(user -> !user.getUsername().equalsIgnoreCase(UsersHelper.ADMIN.getUsername()))
+					.forEach(user -> userRepository.delete(user));
+			domainRepository.findAll().stream()
+					.filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+					.forEach(domain -> domainRepository.delete(domain));
+		} catch(Exception ex){
+			log.error(ex.getMessage());
+		}
+	}
 
 	@Test
 	public void shouldCreateTwoUsersOneWithRoleUserAndSecondWithRoleSystemAdminAndAddSecondUserRoleUser() {
@@ -65,7 +81,7 @@ public class UserRepositoryTest {
 		admin.getRoles().add(new UserRole(admin, domains.findDomain(DOMAIN).get(), Role.ROLE_USER));
 		userRepository.save(tester);
 		userRepository.save(admin);
-		assertEquals(2, userRepository.count());
+		assertEquals(3, userRepository.count());
 		
 		Optional<User> adminPersisted = userRepository.findByUsername("testadmin");
 		assertTrue(adminPersisted.isPresent());
@@ -89,8 +105,6 @@ public class UserRepositoryTest {
 		Optional<User> enableTestUserTrue = userRepository.findByUsername("enableTest");
 		assertNotNull(enableTestUserTrue.get());
 		assertTrue(enableTestUserTrue.get().isEnabled());
-
-		userRepository.delete(enableTestUserTrue.get());
 	}
 
 	@Test
@@ -110,7 +124,6 @@ public class UserRepositoryTest {
 		assertNotNull(termsOfUseAcceptedTestUserTrue.get());
 		assertTrue(termsOfUseAcceptedTestUserTrue.get().isTermsOfUseAccepted());
 
-		userRepository.delete(termsOfUseAcceptedTestUserTrue.get());
 	}
 
 	@Test
@@ -130,7 +143,6 @@ public class UserRepositoryTest {
 		assertNotNull(privacyPolicyAcceptedTestUserTrue.get());
 		assertTrue(privacyPolicyAcceptedTestUserTrue.get().isPrivacyPolicyAccepted());
 
-		userRepository.delete(privacyPolicyAcceptedTestUserTrue.get());
 	}
 
 	@Test

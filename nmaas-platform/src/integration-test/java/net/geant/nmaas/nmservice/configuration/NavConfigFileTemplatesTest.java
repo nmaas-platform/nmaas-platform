@@ -41,7 +41,7 @@ public class NavConfigFileTemplatesTest {
     }
 
     @Test
-    public void shouldProceedNormallyForApplicationWithoutAnyConfigurationFiles() throws Exception {
+    public void shouldProceedNormallyForApplicationWithoutAnyConfigurationFiles() {
         List<String> result = configurationsPreparer.generateAndStoreConfigFiles(
                 null,
                 Identifier.newInstance(String.valueOf(navAppId)),

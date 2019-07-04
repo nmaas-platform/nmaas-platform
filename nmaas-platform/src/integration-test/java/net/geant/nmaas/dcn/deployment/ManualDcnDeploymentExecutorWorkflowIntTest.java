@@ -6,7 +6,9 @@ import net.geant.nmaas.orchestration.Identifier;
 import net.geant.nmaas.orchestration.events.app.AppRequestNewOrVerifyExistingDcnEvent;
 import net.geant.nmaas.portal.api.domain.DomainDcnDetailsView;
 import net.geant.nmaas.portal.api.domain.DomainRequest;
+import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,4 +60,10 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
         dcnRepositoryManager.removeDcnInfo(DOMAIN);
     }
 
+    @AfterEach
+    public void tearDown(){
+        domainService.getDomains().stream()
+                .filter(domain -> !domain.getCodename().equalsIgnoreCase(UsersHelper.GLOBAL.getCodename()))
+                .forEach(domain -> domainService.removeDomain(domain.getId()));
+    }
 }

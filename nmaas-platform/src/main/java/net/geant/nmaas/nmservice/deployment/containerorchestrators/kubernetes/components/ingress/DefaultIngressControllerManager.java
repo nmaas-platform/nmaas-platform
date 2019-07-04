@@ -1,5 +1,6 @@
 package net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.components.ingress;
 
+import java.util.Arrays;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
@@ -38,7 +39,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deployIngressControllerIfMissing(String domain) {
-        if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
+        if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)){
             executeDeployIngressControllerIfMissing(domain);
         }
     }
@@ -98,7 +99,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deleteIngressController(String domain) {
-        if(!IngressControllerConfigOption.USE_EXISTING.equals(clusterIngressManager.getControllerConfigOption())) {
+        if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)){
             executeDeleteIngressController(domain);
         }
     }

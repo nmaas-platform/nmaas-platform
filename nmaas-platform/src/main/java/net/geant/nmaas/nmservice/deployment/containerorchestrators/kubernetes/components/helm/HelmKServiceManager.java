@@ -12,6 +12,7 @@ import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.en
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.entities.KubernetesTemplate;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.exceptions.KServiceManipulationException;
 import net.geant.nmaas.orchestration.Identifier;
+import net.geant.nmaas.orchestration.repositories.DomainTechDetailsRepository;
 import net.geant.nmaas.utils.logging.LogLevel;
 import net.geant.nmaas.utils.logging.Loggable;
 import net.geant.nmaas.utils.ssh.CommandExecutionException;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -39,6 +39,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     private KClusterDeploymentManager deploymentManager;
     private KClusterIngressManager ingressManager;
     private HelmCommandExecutor helmCommandExecutor;
+    private DomainTechDetailsRepository domainTechDetailsRepository;
 
     @Override
     @Loggable(LogLevel.DEBUG)
@@ -51,41 +52,49 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     private void installHelmChart(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo) {
-        KubernetesTemplate template = serviceInfo.getKubernetesTemplate();
-        String domain = serviceInfo.getDomain();
-        String serviceExternalURL = serviceInfo.getServiceExternalUrl();
+        helmCommandExecutor.executeHelmInstallCommand(
+                namespaceService.namespace(serviceInfo.getDomain()),
+                deploymentId,
+                serviceInfo.getKubernetesTemplate(),
+                createArgumentsMap(deploymentId, serviceInfo)
+        );
+    }
+
+    private Map<String, String> createArgumentsMap(Identifier deploymentId, KubernetesNmServiceInfo serviceInfo){
         Map<String, String> arguments = new HashMap<>();
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_NAME, deploymentId.value());
-        Optional<String> storageClass = deploymentManager.getStorageClass(domain);
-        storageClass.ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
+        deploymentManager.getStorageClass(serviceInfo.getDomain()).ifPresent(s -> arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_CLASS, s));
         if(deploymentManager.getForceDedicatedWorkers()){
-            arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, domain);
+            arguments.put(HELM_INSTALL_OPTION_DEDICATED_WORKERS, serviceInfo.getDomain());
         }
         arguments.put(HELM_INSTALL_OPTION_PERSISTENCE_STORAGE_SPACE, getStorageSpaceString(serviceInfo.getStorageSpace()));
-        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED,
-                String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
+        arguments.put(HELM_INSTALL_OPTION_INGRESS_ENABLED, String.valueOf(IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())));
         if (IngressResourceConfigOption.DEPLOY_FROM_CHART.equals(ingressManager.getResourceConfigOption())) {
-            arguments.putAll(HelmChartVariables.ingressVariablesMap(
-                    serviceExternalURL,
-                    ingressManager.getSupportedIngressClass(),
-                    ingressManager.getTlsSupported())
-            );
-            if(ingressManager.getTlsSupported()) {
-                arguments.putAll(HelmChartVariables.ingressVariablesAddTls(
-                        ingressManager.getIssuerOrWildcardName(),
-                        ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT)
-                ));
-            }
+            arguments.putAll(getIngressConfigOptionVariables(serviceInfo));
         }
         if(serviceInfo.getAdditionalParameters() != null && !serviceInfo.getAdditionalParameters().isEmpty()){
             serviceInfo.getAdditionalParameters().forEach(arguments::put);
         }
-        helmCommandExecutor.executeHelmInstallCommand(
-                namespaceService.namespace(domain),
-                deploymentId,
-                template,
-                arguments
-        );
+        return arguments;
+    }
+
+    private Map<String, String> getIngressConfigOptionVariables(KubernetesNmServiceInfo serviceInfo){
+        Map<String, String> ingressVariablesMap = HelmChartVariables.ingressVariablesMap(serviceInfo.getServiceExternalUrl(), getIngressClass(serviceInfo.getDomain()), ingressManager.getTlsSupported());
+        if(ingressManager.getTlsSupported()){
+            ingressVariablesMap.putAll(getIngressAddTlsVariables());
+        }
+        return ingressVariablesMap;
+    }
+
+    private String getIngressClass(String domain){
+        if(ingressManager.getIngressPerDomain()){
+            return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
+        }
+        return ingressManager.getSupportedIngressClass();
+    }
+
+    private Map<String, String> getIngressAddTlsVariables(){
+        return HelmChartVariables.ingressVariablesAddTls(ingressManager.getIssuerOrWildcardName(), ingressManager.getCertificateConfigOption().equals(IngressCertificateConfigOption.USE_LETSENCRYPT));
     }
 
     private String getStorageSpaceString(Integer storageSpace){

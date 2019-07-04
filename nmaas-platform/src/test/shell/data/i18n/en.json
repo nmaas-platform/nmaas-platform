@@ -245,6 +245,7 @@
     "KUBERNETES_NAMESPACE": "Kubernetes namespace",
     "KUBERNETES_NAMESPACE_PLACEHOLDER": "Default value: codename",
     "KUBERNETES_STORAGE_CLASS": "Kubernetes storage class",
+    "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress class",
     "DCN_STATUS": "DCN status",
     "DCN_CONFIGURED": "DCN Configured",
     "DOMAIN_USERS": "Domain users",

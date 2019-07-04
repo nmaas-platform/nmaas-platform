@@ -8,6 +8,7 @@ import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import org.apache.commons.lang.StringUtils;
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,13 +32,19 @@ public class InternationalizationControllerTest extends BaseControllerTestSetup 
     @BeforeEach
     public void setup(){
         this.mvc = createMVC();
-        this.repository.deleteAll();
         this.repository.save(Internationalization.builder().language("pl").content("{\"test\":\"test\"}").enabled(true).build());
+    }
+
+    @AfterEach
+    public void tearDown(){
+        this.repository.findAll().stream()
+                .filter(lang -> !lang.getLanguage().equalsIgnoreCase("en"))
+                .forEach(lang -> repository.delete(lang));
     }
 
     @Test
     public void shouldSaveNewLanguage() throws Exception{
-        mvc.perform(post("/api/i18n/en?enabled=true")
+        mvc.perform(post("/api/i18n/de?enabled=true")
                 .header("Authorization","Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -6,13 +6,13 @@ import net.geant.nmaas.orchestration.Identifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 
@@ -35,7 +35,7 @@ public class NmServiceVerificationTest {
     }
 
     @Test
-    public void shouldVerifyDeploymentSuccessRightAway() throws Exception {
+    public void shouldVerifyDeploymentSuccessRightAway() {
         doNothing().when(orchestrator).checkService(any());
         provider.verifyNmService(Identifier.newInstance("id"));
     }

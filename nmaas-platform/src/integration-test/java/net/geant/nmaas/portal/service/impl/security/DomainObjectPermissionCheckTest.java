@@ -32,22 +32,13 @@ import static org.mockito.Mockito.when;
 public class DomainObjectPermissionCheckTest {
 	
 	@Mock
-	UserRepository userRepository;
-	
-	@Mock
-	UserRoleRepository userRoleRepository;
-	
-	@Mock
-	UserService userService;
-	
-	@Mock
 	DomainService domains;
 
 	@InjectMocks
 	DomainObjectPermissionCheck dopch = new DomainObjectPermissionCheck();
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setUp() {
 		when(domains.getGlobalDomain()).thenReturn(Optional.of(UsersHelper.GLOBAL));
 		when(domains.findDomain(UsersHelper.GLOBAL.getId())).thenReturn(Optional.of(UsersHelper.GLOBAL));
 		when(domains.findDomain(UsersHelper.DOMAIN1.getId())).thenReturn(Optional.of(UsersHelper.DOMAIN1));
