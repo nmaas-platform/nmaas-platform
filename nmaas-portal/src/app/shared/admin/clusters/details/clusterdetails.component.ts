@@ -91,7 +91,6 @@ export class ClusterDetailsComponent extends BaseComponent implements OnInit {
         this.resourceConfigOption.set('Deploy new or update resource using Kubernetes REST API', IngressResourceConfigOption.DEPLOY_USING_API);
         this.resourceConfigOption.set('Deploy new resource from the definition in the application chart', IngressResourceConfigOption.DEPLOY_FROM_CHART);
         this.controllerConfigOption.set('Use existing',IngressControllerConfigOption.USE_EXISTING);
-        this.controllerConfigOption.set('Use existing deployed per namespace', IngressControllerConfigOption.USE_EXISTING_PER_NAMESPACE);
         this.controllerConfigOption.set('Deploy new controller from chart repository', IngressControllerConfigOption.DEPLOY_NEW_FROM_REPO);
         this.controllerConfigOption.set('Deploy new controller from local chart archive',IngressControllerConfigOption.DEPLOY_NEW_FROM_ARCHIVE);
         this.namespaceConfigOption.set('Use default namespace', NamespaceConfigOption.USE_DEFAULT_NAMESPACE);

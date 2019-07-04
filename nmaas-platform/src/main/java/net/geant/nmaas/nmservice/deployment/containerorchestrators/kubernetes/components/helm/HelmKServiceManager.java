@@ -5,7 +5,6 @@ import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterDeploymentM
 import net.geant.nmaas.externalservices.inventory.kubernetes.KClusterIngressManager;
 import net.geant.nmaas.externalservices.inventory.kubernetes.KNamespaceService;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressCertificateConfigOption;
-import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressControllerConfigOption;
 import net.geant.nmaas.externalservices.inventory.kubernetes.entities.IngressResourceConfigOption;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KServiceLifecycleManager;
 import net.geant.nmaas.nmservice.deployment.containerorchestrators.kubernetes.KubernetesRepositoryManager;
@@ -88,7 +87,7 @@ public class HelmKServiceManager implements KServiceLifecycleManager {
     }
 
     private String getIngressClass(String domain){
-        if(ingressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING_PER_NAMESPACE)){
+        if(ingressManager.getIngressPerDomain()){
             return domainTechDetailsRepository.findByDomainCodename(domain).orElseThrow(() -> new IllegalArgumentException("DomainTechDetails cannot be found for domain " + domain)).getKubernetesIngressClass();
         }
         return ingressManager.getSupportedIngressClass();

@@ -138,7 +138,7 @@ public class KubernetesManager implements ContainerOrchestrator {
             if(configFileRepositoryRequired){
                 gitLabManager.validateGitLabInstance();
             }
-            if(!Arrays.asList(IngressControllerConfigOption.USE_EXISTING, IngressControllerConfigOption.USE_EXISTING_PER_NAMESPACE).contains(clusterIngressManager.getControllerConfigOption())) {
+            if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)) {
                 String domain = repositoryManager.loadDomain(deploymentId);
                 ingressControllerManager.deployIngressControllerIfMissing(domain);
             }

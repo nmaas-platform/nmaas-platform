@@ -62,8 +62,7 @@ export class Cluster {
 export enum IngressControllerConfigOption{
     USE_EXISTING = 'USE_EXISTING',
     DEPLOY_NEW_FROM_REPO = 'DEPLOY_NEW_FROM_REPO',
-    DEPLOY_NEW_FROM_ARCHIVE = 'DEPLOY_NEW_FROM_ARCHIVE',
-    USE_EXISTING_PER_NAMESPACE = 'USE_EXISTING_PER_NAMESPACE'
+    DEPLOY_NEW_FROM_ARCHIVE = 'DEPLOY_NEW_FROM_ARCHIVE'
 }
 
 export enum IngressResourceConfigOption{

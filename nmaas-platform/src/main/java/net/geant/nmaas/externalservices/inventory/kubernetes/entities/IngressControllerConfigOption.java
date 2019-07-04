@@ -22,9 +22,6 @@ public enum IngressControllerConfigOption {
             checkArgument(ingress.getControllerChartArchive() != null && !ingress.getControllerChartArchive().isEmpty()
                     , "When deploying ingress controller from local chart file the controller archive name can't be empty.");
         }
-    }, USE_EXISTING_PER_NAMESPACE {
-        @Override
-        public void validate(KClusterIngress ingress){}
     };
 
     public abstract void validate(KClusterIngress ingress);

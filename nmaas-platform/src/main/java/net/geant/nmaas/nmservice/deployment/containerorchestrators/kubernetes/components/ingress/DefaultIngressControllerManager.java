@@ -39,7 +39,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deployIngressControllerIfMissing(String domain) {
-        if(!Arrays.asList(IngressControllerConfigOption.USE_EXISTING, IngressControllerConfigOption.USE_EXISTING_PER_NAMESPACE).contains(clusterIngressManager.getControllerConfigOption())) {
+        if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)){
             executeDeployIngressControllerIfMissing(domain);
         }
     }
@@ -99,7 +99,7 @@ public class DefaultIngressControllerManager implements IngressControllerManager
 
     @Override
     public void deleteIngressController(String domain) {
-        if(!Arrays.asList(IngressControllerConfigOption.USE_EXISTING, IngressControllerConfigOption.USE_EXISTING_PER_NAMESPACE).contains(clusterIngressManager.getControllerConfigOption())) {
+        if(!clusterIngressManager.getControllerConfigOption().equals(IngressControllerConfigOption.USE_EXISTING)){
             executeDeleteIngressController(domain);
         }
     }
