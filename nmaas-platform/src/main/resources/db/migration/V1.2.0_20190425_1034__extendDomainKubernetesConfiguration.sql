@@ -1,0 +1,1 @@
+alter table domain_tech_details add column kubernetes_ingress_class varchar(255);
