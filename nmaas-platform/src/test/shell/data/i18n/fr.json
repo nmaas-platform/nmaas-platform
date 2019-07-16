@@ -243,6 +243,7 @@
     "ID_IN_DB": "ID dans la base de données",
     "KUBERNETES_NAMESPACE": "\"Namespace\" Kubernetes",
     "KUBERNETES_STORAGE_CLASS": "\"StorageClass\" Kubernetes",
+    "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress class",
     "DCN_STATUS": "Statut du réseau de supervision",
     "DCN_CONFIGURED": "DCN configuré",
     "DOMAIN_USERS": "Utilisateurs de l'organisation",

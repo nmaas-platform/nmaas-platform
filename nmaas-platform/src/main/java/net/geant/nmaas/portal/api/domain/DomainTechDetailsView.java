@@ -20,4 +20,6 @@ public class DomainTechDetailsView {
     private String kubernetesNamespace;
 
     private String kubernetesStorageClass;
+
+    private String kubernetesIngressClass;
 }
