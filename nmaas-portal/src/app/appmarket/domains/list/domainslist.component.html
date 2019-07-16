@@ -18,10 +18,24 @@
 				<td>{{domain?.codename}}</td>
 				<td>{{domain?.name}}</td>
 				<td><span class="glyphicon glyphicon-ok" *ngIf="domain?.active"></span><span class="glyphicon glyphicon-remove" *ngIf="!(domain?.active)"></span></td>				
-				<td class="text-right">
-					<a [routerLink]="['view/', domain.id]" class="btn btn-sm btn-primary" role="button">{{ 'DOMAINS.DETAILS_BUTTON' | translate }}</a>
-					<a *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLink]="['edit/', domain.id]" class="btn btn-sm btn-success" role="button">{{ 'DOMAINS.EDIT_BUTTON' | translate }}</a>
-					<a *roles="['ROLE_SYSTEM_ADMIN']" (click)="changeState(domain)" class="btn btn-sm btn-danger" role="button">{{ getStateLabel(domain?.active) }}</a>
+				<td>
+					<span class="dropdown">
+						<a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+						   data-toggle="dropdown" href="#" role="button">
+							<i class="fas fa-cog icon-black icon-bigger"></i>
+						</a>
+						<ul class="dropdown-menu pull-right-drop">
+							<li><a [routerLink]="['view/', domain.id]" class="">
+								{{ 'DOMAINS.DETAILS_BUTTON' | translate }}</a>
+							</li>
+							<li><a *roles="['ROLE_SYSTEM_ADMIN', 'ROLE_OPERATOR']" [routerLink]="['edit/', domain.id]"
+								   class="">{{ 'DOMAINS.EDIT_BUTTON' | translate }}</a>
+							</li>
+							<li><a *roles="['ROLE_SYSTEM_ADMIN']" (click)="changeState(domain)"
+								   class="">{{ getStateLabel(domain?.active) }}</a>
+							</li>
+						</ul>
+					</span>
 				</td>
 			</tr>
 			</ng-template>
