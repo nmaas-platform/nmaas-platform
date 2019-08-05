@@ -62,7 +62,6 @@ public class AppInstanceController extends AppBaseController {
     private DomainService domains;
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_SYSTEM_ADMIN')")
     @Transactional
     public List<AppInstanceView> getAllInstances(Pageable pageable) {
         return instances.findAll(pageable).getContent().stream()
