@@ -1,0 +1,5 @@
+.no-spin, .no-spin:hover, .no-spin:focus {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance:textfield;
+}

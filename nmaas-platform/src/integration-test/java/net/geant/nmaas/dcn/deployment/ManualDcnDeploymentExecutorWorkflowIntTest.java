@@ -1,5 +1,6 @@
 package net.geant.nmaas.dcn.deployment;
 
+import java.util.Collections;
 import net.geant.nmaas.dcn.deployment.entities.DcnDeploymentState;
 import net.geant.nmaas.orchestration.DefaultAppDeploymentRepositoryManager;
 import net.geant.nmaas.orchestration.Identifier;
@@ -46,7 +47,7 @@ public class ManualDcnDeploymentExecutorWorkflowIntTest {
     @BeforeEach
     public void setup(){
         DomainRequest domainRequest = new DomainRequest(DOMAIN, DOMAIN, true);
-        domainRequest.setDomainDcnDetails(new DomainDcnDetailsView(null, DOMAIN, false, DcnDeploymentType.MANUAL));
+        domainRequest.setDomainDcnDetails(new DomainDcnDetailsView(null, DOMAIN, false, DcnDeploymentType.MANUAL, Collections.emptyList()));
         domainService.createDomain(domainRequest);
     }
 

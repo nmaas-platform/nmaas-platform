@@ -101,6 +101,27 @@
 			</div>
 		</div>
 
+		<div class="panel panel-default" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+			<div class="panel-heading">Customer networks</div>
+			<div class="panel-body">
+				<div class="form-inline">
+					<div class="form-group col-sm-12" style="padding-bottom: 5px;" *ngFor="let network of domain.domainDcnDetails.customerNetworks; let i=index">
+						<label for="network-{{i}}" class="col-sm-2 control-label">Ip address</label>
+						<input type="text" class="col-sm-5 form-control" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" [disabled]="isInMode(ComponentMode.VIEW)" id="network-{{i}}" name="network-{{i}}" [(ngModel)]="network.customerIp">
+						<label for="mask-{{i}}" class="col-sm-2 control-label">Mask length</label>
+						<input type="number" class="form-control col-sm-1 no-spin" [minNumLength]="0" [maxNumLength]="24" [disabled]="isInMode(ComponentMode.VIEW)" id="mask-{{i}}" name="mask-{{i}}" [(ngModel)]="network.maskLength">
+						<div class="col-sm-2">
+							<button type="button" class="btn btn-danger btn-sm" (click)="removeNetwork(i)" *ngIf="domain.domainDcnDetails.customerNetworks.length > 1"><span class="glyphicon glyphicon-remove"></span></button>
+						</div>
+					</div>
+				</div>
+				<br>
+				<button type="button" class="btn btn-sm btn-default" (click)="addNetwork()" *ngIf="!isInMode(ComponentMode.VIEW)"><span class="glyphicon glyphicon-plus"></span> Add</button>
+			</div>
+		</div>
+
+
+
 		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW) && !authService.hasRole('ROLE_OPERATOR')">
 			<div class="panel-heading">{{ 'DOMAIN_DETAILS.DOMAIN_USERS' | translate }}</div>
 				<div class="panel-body">
