@@ -9,12 +9,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.geant.nmaas.portal.api.domain.CustomerNetworkView;
 
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -29,12 +31,6 @@ public class CustomerNetwork implements Serializable {
 
     @Column(nullable = false)
     private int maskLength;
-
-    public CustomerNetwork(Long id, InetAddress customerIp, int maskLength){
-        this.id = id;
-        this.customerIp = customerIp;
-        this.maskLength = maskLength;
-    }
 
     public static CustomerNetwork of(CustomerNetworkView network){
         checkArgument(network.getMaskLength() >= 0 && network.getMaskLength() <= 24, "Invalid mask");
