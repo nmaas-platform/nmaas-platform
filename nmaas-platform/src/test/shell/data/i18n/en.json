@@ -274,7 +274,12 @@
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace must contain only lower case letters and - character.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximal length of namespace is 64.",
     "EXTERNAL_SERVICE_DOMAIN": "External service domain",
-    "DCN_DEPLOYMENT_TYPE": "DCN deployment type"
+    "DCN_DEPLOYMENT_TYPE": "DCN deployment type",
+    "CUSTOMER_NETWORKS": "Customer networks",
+    "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "There are no customer networks specified.",
+    "IP_ADDRESS": "IP Address",
+    "MASK_LENGTH": "Mask length",
+    "ADD": "Add"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS version information",
