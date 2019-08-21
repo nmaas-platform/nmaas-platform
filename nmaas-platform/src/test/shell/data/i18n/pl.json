@@ -272,7 +272,12 @@
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace może zawierać tylko małe litery i znak -",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maksymalna długość parametru Kubernetes namespace to 64.",
     "EXTERNAL_SERVICE_DOMAIN": "Zewnętrzna nazwa domenowa",
-    "DCN_DEPLOYMENT_TYPE": "Typ konfiguracji dcn"
+    "DCN_DEPLOYMENT_TYPE": "Typ konfiguracji dcn",
+    "CUSTOMER_NETWORKS": "Sieci klienta",
+    "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Nie wyszczególniono sieci klienta.",
+    "IP_ADDRESS": "Adres IP",
+    "MASK_LENGTH": "Długość maski",
+    "ADD": "Dodaj"
   },
   "GIT_INFO": {
     "HEADER": "Informacje o wersji NMaaS",

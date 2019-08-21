@@ -101,6 +101,30 @@
 			</div>
 		</div>
 
+		<div class="panel panel-default" *ngIf="domain.id !== domainService.getGlobalDomainId()">
+			<div class="panel-heading">{{'DOMAIN_DETAILS.CUSTOMER_NETWORKS' | translate}}</div>
+			<div class="panel-body">
+				<div class="text-center" *ngIf="isInMode(ComponentMode.VIEW) && domain.domainDcnDetails.customerNetworks.length == 0">
+					<h5>{{'DOMAIN_DETAILS.CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE' | translate}}</h5>
+				</div>
+				<div class="form-inline" *ngIf="!isInMode(ComponentMode.VIEW) || domain.domainDcnDetails.customerNetworks.length > 0">
+					<div class="form-group col-sm-12" style="padding-bottom: 5px;" *ngFor="let network of domain.domainDcnDetails.customerNetworks; let i=index">
+						<label for="network-{{i}}" class="col-sm-2 control-label">{{'DOMAIN_DETAILS.IP_ADDRESS' | translate}}</label>
+						<input type="text" class="col-sm-5 form-control" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" required [disabled]="isInMode(ComponentMode.VIEW)" id="network-{{i}}" name="network-{{i}}" [(ngModel)]="network.customerIp">
+						<label for="mask-{{i}}" class="col-sm-2 control-label">{{'DOMAIN_DETAILS.MASK_LENGTH' | translate}}</label>
+						<input type="number" class="form-control col-sm-1 no-spin" [minNumLength]="0" [maxNumLength]="24" required [disabled]="isInMode(ComponentMode.VIEW)" id="mask-{{i}}" name="mask-{{i}}" [(ngModel)]="network.maskLength">
+						<div class="col-sm-2">
+							<button type="button" class="btn btn-danger btn-sm" (click)="removeNetwork(i)" *ngIf="!isInMode(ComponentMode.VIEW)"><span class="glyphicon glyphicon-remove"></span></button>
+						</div>
+					</div>
+				</div>
+				<br>
+				<button type="button" class="btn btn-sm btn-default" (click)="addNetwork()" *ngIf="!isInMode(ComponentMode.VIEW)"><span class="glyphicon glyphicon-plus"></span> {{'DOMAIN_DETAILS.ADD' | translate}}</button>
+			</div>
+		</div>
+
+
+
 		<div class="panel panel-default" *ngIf="isInMode(ComponentMode.VIEW) && !authService.hasRole('ROLE_OPERATOR')">
 			<div class="panel-heading">{{ 'DOMAIN_DETAILS.DOMAIN_USERS' | translate }}</div>
 				<div class="panel-body">

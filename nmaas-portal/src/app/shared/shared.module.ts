@@ -1,7 +1,7 @@
 import { DefaultLogo } from '../directive/defaultlogo.directive';
 import { RolesDirective } from '../directive/roles.directive';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, MaxLengthValidator, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { CommentsComponent } from './comments/index';
@@ -42,6 +42,8 @@ import {NotificationService} from "../service/notification.service";
 import {RecaptchaModule} from "ng-recaptcha";
 import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
 import {TranslateStateModule} from "./translate-state/translate-state.module";
+import {MinLengthDirective} from "../directive/min-length.directive";
+import {MaxLengthDirective} from "../directive/max-length.directive";
 
 @NgModule({
   imports: [
@@ -71,6 +73,8 @@ import {TranslateStateModule} from "./translate-state/translate-state.module";
     NavbarComponent,
     DefaultLogo,
     RolesDirective,
+    MinLengthDirective,
+    MaxLengthDirective,
     SearchComponent,
     TagFilterComponent,
     DomainFilterComponent,
@@ -108,6 +112,8 @@ import {TranslateStateModule} from "./translate-state/translate-state.module";
     UserPrivilegesComponent,
     AppInstallModalComponent,
     RolesDirective,
+    MinLengthDirective,
+    MaxLengthDirective,
     SearchComponent,
     TagFilterComponent,
     DomainFilterComponent,
