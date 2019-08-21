@@ -452,7 +452,8 @@
       "FAILURE": "",
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
-    }
+    },
+    "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Confirmation de suppression",
@@ -613,7 +614,9 @@
     "BASIC_AUTH_LABEL": "Requires basic authorization",
     "BASIC_AUTH_TOOLTIP": "You can add basic authorization for your application simply by checking this checkbox.",
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
-    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates"
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
+    "EXPOSE_WEB_UI": "Expose web user interface",
+    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",
