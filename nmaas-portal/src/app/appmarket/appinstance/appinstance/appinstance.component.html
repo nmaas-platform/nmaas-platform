@@ -36,7 +36,7 @@
 				</div>
 				<div *ngIf="app" class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
 					<div class = "btn-group pull-right" *ngIf="appInstanceStatus?.state === AppInstanceState[AppInstanceState.RUNNING]">
-						<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
+						<a *ngIf="appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-success" role = "button" [attr.disabled]="app.appDeploymentSpec.exposesWebUI ? null : true" tooltip="'This application does not expose a web user interface.'" [display]="!app.appDeploymentSpec.exposesWebUI" [options]="defaultTooltipOptions">{{'APP_INSTANCE.GO_TO_APP_BUTTON' | translate}}</a>
 						<button class="btn btn-default" *ngIf="configurationUpdateTemplate" (click)="getConfigurationModal()">{{'APP_INSTANCE.UPDATE_CONFIG_BUTTON' | translate}}</button>
 						<button class="btn btn-primary" style="display: none" (click)="this.modal.show()" disabled>{{'APP_INSTANCE.RESTART_BUTTON' | translate}}</button>
 						<button class = "btn btn-danger" (click)="this.undeployModal.show()">{{'APP_INSTANCE.UNDEPLOY_BUTTON' | translate}}</button>
