@@ -1,5 +1,6 @@
 package net.geant.nmaas.portal.api.domain;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,6 @@ public class DomainDcnDetailsView {
     private boolean dcnConfigured;
 
     private DcnDeploymentType dcnDeploymentType;
+
+    private List<CustomerNetworkView> customerNetworks;
 }
