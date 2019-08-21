@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.geant.nmaas.portal.api.domain.CustomerNetworkView;
 
 @Entity
 @NoArgsConstructor
@@ -30,9 +31,13 @@ public class CustomerNetwork implements Serializable {
     private int maskLength;
 
     public CustomerNetwork(Long id, InetAddress customerIp, int maskLength){
-        checkArgument(maskLength < 0 || maskLength > 24, "Invalid mask");
         this.id = id;
-        this.customerIp = Objects.requireNonNull(customerIp, "IP address must be specified");
+        this.customerIp = customerIp;
         this.maskLength = maskLength;
+    }
+
+    public static CustomerNetwork of(CustomerNetworkView network){
+        checkArgument(network.getMaskLength() >= 0 && network.getMaskLength() <= 24, "Invalid mask");
+        return new CustomerNetwork(network.getId(), Objects.requireNonNull(network.getCustomerIp(), "IP address must be specified"), network.getMaskLength());
     }
 }

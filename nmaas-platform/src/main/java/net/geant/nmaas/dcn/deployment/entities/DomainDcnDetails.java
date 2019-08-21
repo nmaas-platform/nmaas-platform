@@ -1,6 +1,7 @@
 package net.geant.nmaas.dcn.deployment.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -37,6 +38,6 @@ public class DomainDcnDetails implements Serializable {
 
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
-    private List<CustomerNetwork> customerNetworks;
+    private List<CustomerNetwork> customerNetworks = new ArrayList<>();
 
 }

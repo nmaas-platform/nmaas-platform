@@ -1,7 +1,10 @@
 package net.geant.nmaas.portal.api.market;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.InetAddress;
+import java.util.Collections;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
+import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.dcn.deployment.entities.DcnInfo;
 import net.geant.nmaas.dcn.deployment.entities.DcnSpec;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -16,6 +19,7 @@ import net.geant.nmaas.portal.persistent.repositories.DomainRepository;
 import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -126,6 +130,20 @@ public class DomainControllerTest extends BaseControllerTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
         assertTrue(StringUtils.isNotEmpty(result.getResponse().getContentAsString()));
+    }
+
+    @Test
+    void shouldAddCustomerNetworks() throws Exception {
+        Domain request = domainRepo.findByName(DEF_DOM_NAME).get();
+        request.getDomainDcnDetails().setCustomerNetworks(Collections.singletonList(new CustomerNetwork(null, InetAddress.getByName("1.1.1.1"), 24)));
+        mvc.perform(put("/api/domains/" + request.getId())
+                .header("Authorization", "Bearer " + getValidTokenForUser(UsersHelper.ADMIN))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(modelMapper.map(request, DomainView.class)))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        request = domainRepo.findByName(DEF_DOM_NAME).get();
+        assertFalse(request.getDomainDcnDetails().getCustomerNetworks().isEmpty());
     }
 
     @Test

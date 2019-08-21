@@ -104,14 +104,17 @@
 		<div class="panel panel-default" *ngIf="domain.id !== domainService.getGlobalDomainId()">
 			<div class="panel-heading">Customer networks</div>
 			<div class="panel-body">
-				<div class="form-inline">
+				<div class="text-center" *ngIf="isInMode(ComponentMode.VIEW) && domain.domainDcnDetails.customerNetworks.length == 0">
+					<h5>There is no customer networks specified.</h5>
+				</div>
+				<div class="form-inline" *ngIf="!isInMode(ComponentMode.VIEW) || domain.domainDcnDetails.customerNetworks.length > 0">
 					<div class="form-group col-sm-12" style="padding-bottom: 5px;" *ngFor="let network of domain.domainDcnDetails.customerNetworks; let i=index">
 						<label for="network-{{i}}" class="col-sm-2 control-label">Ip address</label>
-						<input type="text" class="col-sm-5 form-control" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" [disabled]="isInMode(ComponentMode.VIEW)" id="network-{{i}}" name="network-{{i}}" [(ngModel)]="network.customerIp">
+						<input type="text" class="col-sm-5 form-control" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" required [disabled]="isInMode(ComponentMode.VIEW)" id="network-{{i}}" name="network-{{i}}" [(ngModel)]="network.customerIp">
 						<label for="mask-{{i}}" class="col-sm-2 control-label">Mask length</label>
-						<input type="number" class="form-control col-sm-1 no-spin" [minNumLength]="0" [maxNumLength]="24" [disabled]="isInMode(ComponentMode.VIEW)" id="mask-{{i}}" name="mask-{{i}}" [(ngModel)]="network.maskLength">
+						<input type="number" class="form-control col-sm-1 no-spin" [minNumLength]="0" [maxNumLength]="24" required [disabled]="isInMode(ComponentMode.VIEW)" id="mask-{{i}}" name="mask-{{i}}" [(ngModel)]="network.maskLength">
 						<div class="col-sm-2">
-							<button type="button" class="btn btn-danger btn-sm" (click)="removeNetwork(i)" *ngIf="domain.domainDcnDetails.customerNetworks.length > 1"><span class="glyphicon glyphicon-remove"></span></button>
+							<button type="button" class="btn btn-danger btn-sm" (click)="removeNetwork(i)" *ngIf="!isInMode(ComponentMode.VIEW)"><span class="glyphicon glyphicon-remove"></span></button>
 						</div>
 					</div>
 				</div>

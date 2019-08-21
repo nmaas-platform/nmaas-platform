@@ -4,8 +4,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Domain} from '../../../model/domain';
 import {DomainService} from '../../../service/domain.service';
 import {BaseComponent} from '../../../shared/common/basecomponent/base.component';
-import {isNullOrUndefined, isUndefined} from 'util';
-import {MinLengthValidator, NG_VALIDATORS, PatternValidator} from '@angular/forms';
+import {isUndefined} from 'util';
+import {NG_VALIDATORS, PatternValidator} from '@angular/forms';
 import {User} from "../../../model";
 import {UserService} from '../../../service';
 import {Observable, of} from "rxjs";
@@ -66,7 +66,6 @@ export class DomainComponent extends BaseComponent implements OnInit {
   }
 
   protected submit(): void {
-    this.domain.domainDcnDetails.customerNetworks = this.domain.domainDcnDetails.customerNetworks.filter(network => this.checkNetworkContent(network));
     if (!isUndefined(this.domainId)) {
       this.updateExistingDomain();
     } else {
@@ -128,10 +127,6 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
     public removeNetwork(index: number){
       this.domain.domainDcnDetails.customerNetworks.splice(index, 1);
-    }
-
-    public checkNetworkContent(network: CustomerNetwork): boolean{
-        return !isNullOrUndefined(network.customerIp) && !isNullOrUndefined(network.maskLength);
     }
 
     public addNetwork(){

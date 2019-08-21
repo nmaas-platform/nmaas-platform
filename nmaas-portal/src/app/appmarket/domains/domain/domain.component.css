@@ -3,3 +3,7 @@
     margin: 0;
     -moz-appearance:textfield;
 }
+
+input.ng-dirty.ng-invalid {
+    border: 1px solid red;
+}
