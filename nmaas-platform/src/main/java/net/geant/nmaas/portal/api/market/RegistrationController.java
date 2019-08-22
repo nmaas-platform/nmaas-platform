@@ -16,6 +16,7 @@ import net.geant.nmaas.portal.persistent.entity.Role;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.captcha.ValidateCaptcha;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,8 +49,9 @@ public class RegistrationController {
 	private ApplicationEventPublisher eventPublisher;
 	
 	@PostMapping
+	@ValidateCaptcha
     @ResponseStatus(HttpStatus.CREATED)
-	public void signup(@RequestBody final Registration registration) {
+	public void signup(@RequestBody final Registration registration, @RequestParam String token) {
 		if(registration == null
 				|| StringUtils.isEmpty(registration.getUsername())
 				|| StringUtils.isEmpty(registration.getPassword())

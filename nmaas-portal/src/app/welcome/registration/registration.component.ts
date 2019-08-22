@@ -14,6 +14,7 @@ import {PasswordStrengthMeterComponent, PasswordStrengthMeterModule} from 'angul
 import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
 import {isNullOrUndefined} from "util";
+import {OnExecuteData, ReCaptchaV3Service} from "ng-recaptcha";
 
 @Component({
   selector: 'nmaas-registration',
@@ -28,10 +29,11 @@ export class RegistrationComponent implements OnInit {
   public submitted: boolean = false;
   public success: boolean = false;
   public errorMessage: string = '';
-  public captchaToken: string;
 
   @ViewChild(PasswordStrengthMeterComponent)
   passwordMeter: PasswordStrengthMeterComponent;
+
+  private recaptchaV3Service: ReCaptchaV3Service;
 
   @ViewChild(ModalComponent)
   public readonly  modal: ModalComponent;
@@ -75,20 +77,9 @@ export class RegistrationComponent implements OnInit {
         map((domains) => domains.filter((domain) => domain.id !== this.appConfig.getNmaasGlobalDomainId())));
   }
 
-  public resolved(captchaResponse: string) {
-      this.captchaToken = captchaResponse;
-  }
-
   public onSubmit(): void {
-      if(isNullOrUndefined(this.captchaToken) || this.captchaToken.length < 1){
-          this.sending = false;
-          this.sending = false;
-          this.submitted = true;
-          this.success = false;
-          this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
-      } else {
-          if (!this.registrationForm.controls['termsOfUseAccepted'].value ||
-            !this.registrationForm.controls['privacyPolicyAccepted'].value) {
+      this.recaptchaV3Service.execute('registration').subscribe((captchaToken)=> {
+          if (!this.registrationForm.controls['termsOfUseAccepted'].value || !this.registrationForm.controls['privacyPolicyAccepted'].value) {
               this.sending = false;
               this.submitted = true;
               this.success = false;
@@ -96,7 +87,6 @@ export class RegistrationComponent implements OnInit {
           } else {
               if (this.registrationForm.valid) {
                   this.sending = true;
-
                   const registration: Registration = new Registration(
                       this.registrationForm.controls['username'].value,
                       this.registrationForm.controls['newPassword'].value,
@@ -107,7 +97,7 @@ export class RegistrationComponent implements OnInit {
                       true,
                       this.registrationForm.controls['privacyPolicyAccepted'].value,
                   );
-                  this.registrationService.register(registration).subscribe(
+                  this.registrationService.register(registration, captchaToken).subscribe(
                       (result) => {
                           this.registrationForm.reset();
                           this.sending = false;
@@ -129,7 +119,8 @@ export class RegistrationComponent implements OnInit {
 
               }
           }
-      }
+      });
+
   }
 
   public refresh(): void {
@@ -140,6 +131,6 @@ export class RegistrationComponent implements OnInit {
   }
 
   private getMessage(err: any): string {
-      return err['message'] === 'Domain not found' ? "REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE" : err['message'] === 'User already exists'? 'REGISTRATION.USER_ALREADY_EXISTS_MESSAGE' : err['status'] === 406 ? 'REGISTRATION.INVALID_INPUT_DATA' : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
+      return err['message'] === 'Domain not found' ? "REGISTRATION.DOMAIN_NOT_FOUND_MESSAGE" : err['message'] === 'Captcha validation has failed'? 'GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE' : err['message'] === 'User already exists'? 'REGISTRATION.USER_ALREADY_EXISTS_MESSAGE' : err['status'] === 406 ? 'REGISTRATION.INVALID_INPUT_DATA' : 'GENERIC_MESSAGE.UNAVAILABLE_MESSAGE';
   }
 }

@@ -18,14 +18,17 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.utils.captcha.CaptchaValidator;
 import static org.junit.Assert.assertFalse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
@@ -78,6 +81,9 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Autowired
     private JWTTokenService jwtTokenService;
 
+    @MockBean
+    private CaptchaValidator captchaValidator;
+
     private String token;
     private String tokenForUserWithNotAcceptedTermsAndPolicy;
 
@@ -90,7 +96,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     public void setUp() {
         mvc = createMVC();
         when(principal.getName()).thenReturn("admin");
-
+        when(captchaValidator.verifyToken(anyString())).thenReturn(true);
         domains.createGlobalDomain();
         domains.createDomain(new DomainRequest(DOMAIN, DOMAIN, true));
         domains.createDomain(new DomainRequest(DOMAIN2, DOMAIN2, true));
@@ -385,7 +391,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void shouldResetPassword() throws Exception {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken(user3.getEmail()), "test");
-        mvc.perform(post("/api/users/reset")
+        mvc.perform(post("/api/users/reset?token=test-token")
                 .content(new ObjectMapper().writeValueAsString(passwordReset))
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -396,7 +402,7 @@ public class UsersControllerIntTest extends BaseControllerTestSetup {
     @Test
     public void shouldNotResetPassword() throws Exception {
         PasswordReset passwordReset = new PasswordReset(jwtTokenService.getResetToken("notexistingemail@mail.com"), "test");
-        mvc.perform(post("/api/users/reset")
+        mvc.perform(post("/api/users/reset?token=test-token")
                 .content(new ObjectMapper().writeValueAsString(passwordReset))
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
