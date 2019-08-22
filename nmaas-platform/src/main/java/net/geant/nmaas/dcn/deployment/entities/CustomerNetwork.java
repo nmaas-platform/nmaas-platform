@@ -33,7 +33,7 @@ public class CustomerNetwork implements Serializable {
     private int maskLength;
 
     public static CustomerNetwork of(CustomerNetworkView network){
-        checkArgument(network.getMaskLength() >= 0 && network.getMaskLength() <= 24, "Invalid mask");
+        checkArgument(network.getMaskLength() >= 0 && network.getMaskLength() <= 32, "Invalid mask");
         return new CustomerNetwork(network.getId(), Objects.requireNonNull(network.getCustomerIp(), "IP address must be specified"), network.getMaskLength());
     }
 }
