@@ -112,7 +112,7 @@
 						<label for="network-{{i}}" class="col-sm-2 control-label">{{'DOMAIN_DETAILS.IP_ADDRESS' | translate}}</label>
 						<input type="text" class="col-sm-5 form-control" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" required [disabled]="isInMode(ComponentMode.VIEW)" id="network-{{i}}" name="network-{{i}}" [(ngModel)]="network.customerIp">
 						<label for="mask-{{i}}" class="col-sm-2 control-label">{{'DOMAIN_DETAILS.MASK_LENGTH' | translate}}</label>
-						<input type="number" class="form-control col-sm-1 no-spin" [minNumLength]="0" [maxNumLength]="24" required [disabled]="isInMode(ComponentMode.VIEW)" id="mask-{{i}}" name="mask-{{i}}" [(ngModel)]="network.maskLength">
+						<input type="number" class="form-control col-sm-1 no-spin" [minNumLength]="0" [maxNumLength]="32" required [disabled]="isInMode(ComponentMode.VIEW)" id="mask-{{i}}" name="mask-{{i}}" [(ngModel)]="network.maskLength">
 						<div class="col-sm-2">
 							<button type="button" class="btn btn-danger btn-sm" (click)="removeNetwork(i)" *ngIf="!isInMode(ComponentMode.VIEW)"><span class="glyphicon glyphicon-remove"></span></button>
 						</div>
