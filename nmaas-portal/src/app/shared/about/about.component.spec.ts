@@ -12,7 +12,7 @@ import {of} from "rxjs";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ModalComponent} from "../modal";
 import {NotificationService} from "../../service/notification.service";
-import {RecaptchaModule} from "ng-recaptcha";
+import {RECAPTCHA_V3_SITE_KEY, RecaptchaModule, ReCaptchaV3Service} from "ng-recaptcha";
 import {TooltipModule} from "ng2-tooltip-directive";
 import {Component} from "@angular/core";
 import {InternationalizationService} from "../../service/internationalization.service";
@@ -42,10 +42,23 @@ describe('AboutComponent', () => {
           RouterTestingModule,
           FormsModule,
           ReactiveFormsModule,
-          RecaptchaModule,
           TooltipModule
       ],
-      providers: [ChangelogService, AppConfigService, ContentDisplayService, NotificationService, InternationalizationService]
+      providers: [
+          ChangelogService,
+          AppConfigService,
+          ContentDisplayService,
+          NotificationService,
+          InternationalizationService,
+          ReCaptchaV3Service,
+          {
+              provide: RECAPTCHA_V3_SITE_KEY,
+              useFactory: function (appConfigService: AppConfigService) {
+                  return appConfigService.getSiteKey();
+              },
+              deps: [AppConfigService]
+          }
+      ]
     })
     .compileComponents();
   }));
