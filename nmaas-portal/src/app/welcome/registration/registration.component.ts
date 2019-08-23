@@ -33,8 +33,6 @@ export class RegistrationComponent implements OnInit {
   @ViewChild(PasswordStrengthMeterComponent)
   passwordMeter: PasswordStrengthMeterComponent;
 
-  private recaptchaV3Service: ReCaptchaV3Service;
-
   @ViewChild(ModalComponent)
   public readonly  modal: ModalComponent;
 
@@ -52,7 +50,8 @@ export class RegistrationComponent implements OnInit {
   constructor(private fb: FormBuilder,
               private registrationService: RegistrationService,
               private appConfig: AppConfigService,
-              private translate: TranslateService) {
+              private translate: TranslateService,
+              private recaptchaV3Service: ReCaptchaV3Service) {
     this.registrationForm = fb.group(
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
