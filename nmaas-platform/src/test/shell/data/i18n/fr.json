@@ -514,6 +514,7 @@
     "TITLE": "Applications management",
     "NAME": "Name",
     "STATE": "State",
+    "VERSION": "Version",
     "ADD_BUTTON": "Add",
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",

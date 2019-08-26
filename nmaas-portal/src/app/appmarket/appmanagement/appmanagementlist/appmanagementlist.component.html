@@ -7,8 +7,8 @@
     <tr>
       <th></th>
       <th>{{'APPS_MANAGEMENT.NAME' | translate}}</th>
-      <th></th>
-      <th></th>
+      <th *ngIf="isAnySubtableVisible()">{{'APPS_MANAGEMENT.VERSION' | translate}}</th>
+      <th *ngIf="isAnySubtableVisible()">{{'APPS_MANAGEMENT.STATE' | translate}}</th>
       <th></th>
     </tr>
     </thead>

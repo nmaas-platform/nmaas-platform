@@ -45,4 +45,8 @@ export class AppManagementListComponent implements OnInit {
     app.rowWithVersionVisible = !app.rowWithVersionVisible;
   }
 
+  public isAnySubtableVisible() : boolean {
+    return this.apps.filter(app => app.rowWithVersionVisible).length > 0;
+  }
+
 }

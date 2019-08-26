@@ -517,6 +517,7 @@
     "TITLE": "Anwendungsmanagement",
     "NAME": "Name",
     "STATE": "Status",
+    "VERSION": "Version",
     "ADD_BUTTON": "Hinzufügen",
     "VIEW_BUTTON": "Anzeigen",
     "EDIT_BUTTON": "Bearbeiten",
