@@ -15,13 +15,16 @@ import {AuthService} from "../../../auth/auth.service";
 import {ModalComponent} from '../../../shared/modal';
 import {map, shareReplay, take} from 'rxjs/operators';
 import {DcnDeploymentType} from "../../../model/dcndeploymenttype";
+import {CustomerNetwork} from "../../../model/customernetwork";
+import {MinLengthDirective} from "../../../directive/min-length.directive";
+import {MaxLengthDirective} from "../../../directive/max-length.directive";
 
 
 @Component({
   selector: 'app-domain',
   templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css'],
-  providers: [{provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true}]
+  providers: [{provide: NG_VALIDATORS, useExisting: PatternValidator, multi: true}, {provide: NG_VALIDATORS, useExisting: MinLengthDirective, multi: true}, {provide: NG_VALIDATORS, useExisting: MaxLengthDirective, multi: true}]
 })
 export class DomainComponent extends BaseComponent implements OnInit {
 
@@ -120,5 +123,13 @@ export class DomainComponent extends BaseComponent implements OnInit {
 
     public isManual() : boolean {
       return this.domain.domainDcnDetails.dcnDeploymentType === 'MANUAL';
+    }
+
+    public removeNetwork(index: number){
+      this.domain.domainDcnDetails.customerNetworks.splice(index, 1);
+    }
+
+    public addNetwork(){
+        this.domain.domainDcnDetails.customerNetworks.push(new CustomerNetwork());
     }
 }

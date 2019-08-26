@@ -2,6 +2,7 @@ package net.geant.nmaas.portal.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import java.util.Collections;
 import net.geant.nmaas.dcn.deployment.DcnDeploymentType;
 import net.geant.nmaas.dcn.deployment.DcnRepositoryManager;
 import net.geant.nmaas.dcn.deployment.entities.DomainDcnDetails;
@@ -132,14 +133,14 @@ public class DomainServiceTest {
         String kubernetesNamespace = "default-namespace";
         String kubernetesStorageClass = "kub-stor-class";
         Domain domain = new Domain(name, codename, false);
-        DomainTechDetails domainTechDetails = new DomainTechDetails(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
-        DomainDcnDetails domainDcnDetails = new DomainDcnDetails(null, codename, false, DcnDeploymentType.NONE);
+        DomainTechDetails domainTechDetails = new DomainTechDetails(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
+        DomainDcnDetails domainDcnDetails = new DomainDcnDetails(null, codename, false, DcnDeploymentType.NONE, Collections.emptyList());
         domain.setDomainTechDetails(domainTechDetails);
         domain.setDomainDcnDetails(domainDcnDetails);
         when(domainRepository.save(domain)).thenReturn(domain);
         DomainRequest domainRequest = new DomainRequest(name, codename, false);
-        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE);
-        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass);
+        DomainDcnDetailsView domainDcnDetailsView = new DomainDcnDetailsView(null, codename, false, DcnDeploymentType.NONE, Collections.emptyList());
+        DomainTechDetailsView domainTechDetailsView = new DomainTechDetailsView(null, codename, null, kubernetesNamespace, kubernetesStorageClass, null);
         domainRequest.setDomainDcnDetails(domainDcnDetailsView);
         domainRequest.setDomainTechDetails(domainTechDetailsView);
         Domain result = this.domainService.createDomain(domainRequest);

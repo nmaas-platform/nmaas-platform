@@ -4,7 +4,7 @@ import java.util.Optional;
 import net.geant.nmaas.portal.persistent.entity.ApplicationBase;
 import net.geant.nmaas.portal.persistent.entity.Comment;
 import net.geant.nmaas.portal.persistent.entity.Tag;
-import net.geant.nmaas.portal.service.DomainService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,13 +38,15 @@ public class ApplicationRepositoryTest {
 	
 	@Autowired
 	UserRepository userRepo;
-	
-	@Autowired
-	DomainService domains;
 
 	@BeforeEach
 	public void setup(){
 		tagRepo.deleteAll();
+	}
+
+	@AfterEach
+	public void tearDown(){
+		appRepo.deleteAll();
 	}
 
 	@Test

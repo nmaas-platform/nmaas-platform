@@ -245,6 +245,7 @@
     "KUBERNETES_NAMESPACE": "Kubernetes namespace",
     "KUBERNETES_NAMESPACE_PLACEHOLDER": "Default value: codename",
     "KUBERNETES_STORAGE_CLASS": "Kubernetes storage Klasse",
+    "KUBERNETES_INGRESS_CLASS": "Kubernetes Ingress Klasse",
     "DCN_STATUS": "DCN Status",
     "DCN_CONFIGURED": "DCN konfiguriert",
     "DOMAIN_USERS": "Domain Benutzer",
@@ -273,7 +274,12 @@
     "NAMESPACE_PATTERN_VALIDATION_MESSAGE": "Namespace darf nur kleine Buchstaben und Zeichen enthalten.",
     "NAMESPACE_MAX_LENGTH_VALIDATION_MESSAGE": "Maximale Länge von namespace ist 64.",
     "EXTERNAL_SERVICE_DOMAIN": "Externe Servicedomain",
-    "DCN_DEPLOYMENT_TYPE": "DCN Deployment Typ"
+    "DCN_DEPLOYMENT_TYPE": "DCN Deployment Typ",
+    "CUSTOMER_NETWORKS": "Kundennetzwerke",
+    "CUSTOMER_NETWORKS_EMPTY_LIST_MESSAGE": "Es sind keine Kundennetzwerke angegeben.",
+    "IP_ADDRESS": "IP Adresse",
+    "MASK_LENGTH": "Netzmaske",
+    "ADD": "Hinzufügen"
   },
   "GIT_INFO": {
     "HEADER": "NMaaS Versionsinformation",

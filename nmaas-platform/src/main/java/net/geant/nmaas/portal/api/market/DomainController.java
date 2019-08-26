@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import net.geant.nmaas.dcn.deployment.entities.CustomerNetwork;
 import net.geant.nmaas.portal.api.domain.DomainView;
 import net.geant.nmaas.portal.persistent.entity.Domain;
 import org.apache.commons.lang.StringUtils;
@@ -112,8 +113,11 @@ public class DomainController extends AppBaseController {
 		domain.setName(domainUpdate.getName());
 		domain.setActive(domainUpdate.isActive());
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesIngressClass(domainUpdate.getDomainTechDetails().getKubernetesIngressClass());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
 		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
+		domain.getDomainDcnDetails().getCustomerNetworks().clear();
+		domainUpdate.getDomainDcnDetails().getCustomerNetworks().stream().map(CustomerNetwork::of).forEach(net -> domain.getDomainDcnDetails().getCustomerNetworks().add(net));
 		if(StringUtils.isEmpty(domainUpdate.getDomainTechDetails().getExternalServiceDomain())){
 			domain.getDomainTechDetails().setExternalServiceDomain(domainUpdate.getDomainTechDetails().getExternalServiceDomain());
 		} else if(!domainUpdate.getDomainTechDetails().getExternalServiceDomain().equalsIgnoreCase(domain.getDomainTechDetails().getExternalServiceDomain())){
@@ -135,6 +139,7 @@ public class DomainController extends AppBaseController {
 		}
 		Domain domain = domainService.findDomain(domainId).orElseThrow(() -> new MissingElementException(DOMAIN_NOT_FOUND));
 		domain.getDomainTechDetails().setKubernetesNamespace(domainUpdate.getDomainTechDetails().getKubernetesNamespace());
+		domain.getDomainTechDetails().setKubernetesIngressClass(domainUpdate.getDomainTechDetails().getKubernetesIngressClass());
 		domain.getDomainTechDetails().setKubernetesStorageClass(domainUpdate.getDomainTechDetails().getKubernetesStorageClass());
 		domain.getDomainDcnDetails().setDcnDeploymentType(domainUpdate.getDomainDcnDetails().getDcnDeploymentType());
 

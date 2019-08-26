@@ -139,6 +139,9 @@ public class DomainServiceImpl implements DomainService {
 		if(!namespaceValidator.valid(request.getDomainTechDetails().getKubernetesNamespace())){
 			throw new ProcessingException("Kubernetes namespace is not valid");
 		}
+		if(StringUtils.isEmpty(request.getDomainTechDetails().getKubernetesIngressClass())){
+			request.getDomainTechDetails().setKubernetesIngressClass(request.getCodename());
+		}
 		if(StringUtils.isNotEmpty(request.getDomainTechDetails().getExternalServiceDomain())){
 			checkArgument(!domainTechDetailsRepo.existsByExternalServiceDomain(request.getDomainTechDetails().getExternalServiceDomain()), "External service domain is not unique");
 		}

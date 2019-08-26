@@ -2,10 +2,13 @@ package net.geant.nmaas.portal.api.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.geant.nmaas.portal.api.BaseControllerTestSetup;
+import net.geant.nmaas.portal.persistent.entity.Internationalization;
 import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.ConfigurationRepository;
+import net.geant.nmaas.portal.persistent.repositories.InternationalizationRepository;
 import net.geant.nmaas.portal.service.ConfigurationManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,10 +30,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Autowired
-    private ConfigurationManager configurationManager;
+    private ConfigurationRepository repository;
 
     @Autowired
-    private ConfigurationRepository repository;
+    private ConfigurationManager configManager;
+
+    @Autowired
+    private InternationalizationRepository intRepo;
 
     private User user;
 
@@ -40,11 +46,23 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
     public void init(){
         mvc = createMVC();
         user = UsersHelper.ADMIN;
-        repository.deleteAll();
+        if(intRepo.findAll().stream().noneMatch(lang -> lang.getLanguage().equalsIgnoreCase("en"))){
+            intRepo.save(Internationalization.builder().enabled(true).language("en").content("{\"content\":\"content\"}").build());
+        }
+    }
+
+    @AfterEach
+    public void tearDown(){
+        ConfigurationView config = this.configManager.getConfiguration();
+        config.setSsoLoginAllowed(false);
+        config.setMaintenance(false);
+        config.setDefaultLanguage("en");
+        this.configManager.updateConfiguration(config.getId(), config);
     }
 
     @Test
     public void shouldAddNewConfiguration() throws Exception {
+        repository.deleteAll();
         ConfigurationView configuration = new ConfigurationView(true, false, "en");
         mvc.perform(post(URL_PREFIX)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -60,18 +78,7 @@ public class ConfigurationControllerTest extends BaseControllerTestSetup {
 
     @Test
     public void shouldUpdateConfiguration() throws Exception {
-        mvc.perform(post("/api/i18n/en?enabled=true")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user))
-                .content("[]"));
-        MvcResult mvcPostResult = mvc.perform(post(URL_PREFIX)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + getValidTokenForUser(user))
-                .content(new ObjectMapper().writeValueAsString(new ConfigurationView(false, false, "en")))
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andReturn();
-        Long id = Long.parseLong(mvcPostResult.getResponse().getContentAsString());
+        Long id = repository.findAll().get(0).getId();
         ConfigurationView configuration = new ConfigurationView(true, false, "en");
         configuration.setId(id);
         mvc.perform(put(URL_PREFIX+"/{id}",id)

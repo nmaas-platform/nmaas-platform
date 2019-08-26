@@ -65,7 +65,7 @@ public class LibreNmsConfigFileTemplateTest {
     }
 
     @Test
-    public void shouldBuildConfigFromTemplateAndUserProvidedInput() throws Exception {
+    public void shouldBuildConfigFromTemplateAndUserProvidedInput() {
         List<ConfigFileTemplate> configFileTemplates = configFileTemplatesRepository.getAllByApplicationId(librenmsAppId);
         Template template = configurationsPreparer.convertToTemplate(configFileTemplates.get(0));
         NmServiceConfiguration nmServiceConfiguration =
