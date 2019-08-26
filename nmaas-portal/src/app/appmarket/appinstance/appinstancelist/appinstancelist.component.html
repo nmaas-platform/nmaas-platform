@@ -51,10 +51,20 @@
 								  <td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
 								  <td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 								  <td class="col-lg-3 col-md-3 text-center">
-									<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
-										{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
-									</a>
-									<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">{{ 'APP_INSTANCES.GO_TO_APP_BUTTON' | translate }}</a>
+									  <a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" role = "button">
+										  <i class="far fa-eye icon-black icon-bigger"></i>
+									  </a>
+
+									  <span class="dropdown" *ngIf="checkPrivileges(appInstance)">
+										  <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+											 data-toggle="dropdown" href="#" role="button">
+											  <i class="fas fa-cog icon-black icon-bigger"></i>
+										  </a>
+										  <ul class="dropdown-menu pull-right-drop">
+											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
+										  </ul>
+									  </span>
+
 								</td>
 							  </tr>
 							  </ng-template>
@@ -91,10 +101,19 @@
 									<td class="col-lg-1 col-md-1 text-center">{{appInstance?.applicationName}}</td>
 									<td class="col-lg-3 col-md-3 text-center">{{ translateState.translateState(appInstance?.state) }}</td>
 									<td class="col-lg-3 col-md-3 text-center">
-										<a [routerLink]="[appInstance.id]" class = "btn btn-sm btn-primary" role = "button" *ngIf="checkPrivileges(appInstance)">
-											{{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}
+										<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" role = "button">
+											<i class="far fa-eye icon-black icon-bigger"></i>
 										</a>
-										<a *ngIf="appInstance?.state == AppInstanceState[AppInstanceState.RUNNING] && appInstance?.url" href="{{appInstance?.url}}" class = "btn btn-sm btn-success" role = "button">{{ 'APP_INSTANCES.GO_TO_APP_BUTTON' | translate }}</a>
+
+										<span class="dropdown" *ngIf="checkPrivileges(appInstance)">
+										  <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true"
+											 data-toggle="dropdown" href="#" role="button">
+											  <i class="fas fa-cog icon-black icon-bigger"></i>
+										  </a>
+										  <ul class="dropdown-menu pull-right-drop">
+											<li><a [routerLink]="[appInstance.id]"> {{ 'APP_INSTANCES.DETAILS_BUTTON' | translate }}</a></li>
+										  </ul>
+									  </span>
 									</td>
 								</tr>
 							</ng-template>

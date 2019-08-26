@@ -14,6 +14,7 @@ import {TranslateService} from "@ngx-translate/core";
 import {map} from 'rxjs/operators';
 import {TranslateStateModule} from "../../../shared/translate-state/translate-state.module";
 import {SessionService} from "../../../service/session.service";
+import {TooltipComponent} from "ng2-tooltip-directive";
 
 export enum AppInstanceListSelection {
   ALL, MY,
@@ -125,10 +126,16 @@ export class AppInstanceListComponent implements OnInit {
     }
     this.appDeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => (app.userFriendlyState != "Removed" && app.userFriendlyState !== 'Failed application removed'))));
+      app => (AppInstanceState[app.state] !== AppInstanceState.REMOVED.toString()
+      && AppInstanceState[app.state] != AppInstanceState.DONE.toString()
+      && AppInstanceState[app.state] != AppInstanceState.UNDEPLOYING.toString()
+      ))));
     this.appUndeployedInstances = this.appInstances.pipe(
         map(AppInstances => AppInstances.filter(
-      app => (app.userFriendlyState == "Removed" || app.userFriendlyState == 'Failed application removed'))));
+      app => (AppInstanceState[app.state] == AppInstanceState.REMOVED.toString()
+        || AppInstanceState[app.state] == AppInstanceState.DONE.toString()
+        || AppInstanceState[app.state] == AppInstanceState.UNDEPLOYING.toString()
+        ))));
   }
 
 
