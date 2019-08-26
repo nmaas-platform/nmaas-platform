@@ -4,9 +4,8 @@ import {GitInfo} from "../../model/gitinfo";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {NotificationService} from "../../service/notification.service";
 import {Mail} from "../../model/mail";
-import {TranslateService} from "@ngx-translate/core";
 import {ModalComponent} from "../modal";
-import {RecaptchaComponent} from "ng-recaptcha";
+import {ReCaptchaV3Service} from "ng-recaptcha";
 
 @Component({
   selector: 'app-about',
@@ -23,16 +22,11 @@ export class AboutComponent implements OnInit {
 
   public errorMessage: any;
 
-  @ViewChild(RecaptchaComponent)
-  public captcha: RecaptchaComponent;
-
-  public captchaToken:string = "";
-
   @ViewChild(ModalComponent)
   public readonly modal: ModalComponent;
 
-  constructor(private changelogService:ChangelogService, private appConfigService:AppConfigService,
-              private notificationService: NotificationService, private fb: FormBuilder, private translate: TranslateService) {
+  constructor(private changelogService:ChangelogService, private appConfigService:AppConfigService, private recaptchaV3Service: ReCaptchaV3Service,
+              private notificationService: NotificationService, private fb: FormBuilder) {
     this.mail = new Mail();
     this.mailForm = this.fb.group({
       email: ['',[Validators.required, Validators.email]],
@@ -48,27 +42,19 @@ export class AboutComponent implements OnInit {
     }
   }
 
-  public resolved(captchaResponse: string) {
-    this.captchaToken = captchaResponse;
-  }
-
-  public sendMail(){
-    if(this.captchaToken.length < 1){
-      this.errorMessage = this.translate.instant('GENERIC_MESSAGE.NOT_ROBOT_ERROR_MESSAGE');
-    } else{
-      if(this.mailForm.valid){
+  public sendMail() {
+    if(this.mailForm.valid){
+      this.recaptchaV3Service.execute('contactForm').subscribe((token)=> {
         this.mail.otherAttributes = this.mailForm.getRawValue();
         this.mail.mailType = "CONTACT_FORM";
-        this.notificationService.sendMail(this.mail).subscribe(()=> {
+        this.notificationService.sendMail(this.mail, token).subscribe(()=> {
           this.errorMessage=undefined;
           this.mailForm.reset();
-          this.captcha.reset();
           this.modal.show();
         }, error=>{
           this.errorMessage = error.message;
-          this.captcha.reset();
         });
-      }
+      });
     }
   }
 }
