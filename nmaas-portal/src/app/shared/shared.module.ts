@@ -39,11 +39,12 @@ import { PasswordStrengthMeterModule } from "angular-password-strength-meter";
 import { AboutComponent } from './about/about.component';
 import {ChangelogComponent} from "./changelog/changelog.component";
 import {NotificationService} from "../service/notification.service";
-import {RecaptchaModule} from "ng-recaptcha";
+import {RECAPTCHA_LANGUAGE, RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from "ng-recaptcha";
 import { SingleCommentComponent } from './comments/single-comment/single-comment.component';
 import {TranslateStateModule} from "./translate-state/translate-state.module";
 import {MinLengthDirective} from "../directive/min-length.directive";
 import {MaxLengthDirective} from "../directive/max-length.directive";
+import {AppConfigService} from "../service";
 
 @NgModule({
   imports: [
@@ -53,7 +54,7 @@ import {MaxLengthDirective} from "../directive/max-length.directive";
     ServicesModule,
     RouterModule,
     ReactiveFormsModule,
-    RecaptchaModule,
+    RecaptchaV3Module,
     PasswordStrengthMeterModule,
     TranslateModule.forChild(),
     TooltipModule
@@ -96,7 +97,15 @@ import {MaxLengthDirective} from "../directive/max-length.directive";
   providers: [
     PasswordValidator,
     UserDataService,
-    NotificationService
+    NotificationService,
+    AppConfigService,
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: function (appConfigService: AppConfigService) {
+          return appConfigService.getSiteKey();
+      },
+      deps: [AppConfigService]
+    }
   ],
   exports: [
     RateComponent,

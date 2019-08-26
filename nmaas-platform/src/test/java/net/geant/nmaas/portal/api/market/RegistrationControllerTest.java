@@ -56,7 +56,7 @@ public class RegistrationControllerTest {
 
     @Test
     public void shouldSignupWithoutAnyDomainSelected(){
-        this.registrationController.signup(registration);
+        this.registrationController.signup(registration, "token");
         verify(userService, times(1)).register(any(), any(), any());
         verify(eventPublisher, times(1)).publishEvent(any());
     }
@@ -64,7 +64,7 @@ public class RegistrationControllerTest {
     @Test
     public void shouldSignupWithSelectedDomain(){
         registration.setDomainId(DOMAIN.getId());
-        this.registrationController.signup(registration);
+        this.registrationController.signup(registration, "token");
         verify(userService, times(1)).register(any(), any(), any());
         verify(eventPublisher, times(1)).publishEvent(any());
         verify(domainService, times(1)).addMemberRole(any(), any(), any());
@@ -73,7 +73,7 @@ public class RegistrationControllerTest {
     @Test
     public void shouldNotSignupWhenRegistrationIsNull(){
         assertThrows(SignupException.class, () -> {
-            registrationController.signup(null);
+            registrationController.signup(null, "token");
         });
     }
 
@@ -81,7 +81,7 @@ public class RegistrationControllerTest {
     public void shouldNotSignupWhenUserHasEmptyUsername(){
         assertThrows(SignupException.class, () -> {
             registration.setUsername("");
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
@@ -89,7 +89,7 @@ public class RegistrationControllerTest {
     public void shouldNotSignupWhenUserHasEmptyPassword(){
         assertThrows(SignupException.class, () -> {
             registration.setPassword(null);
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
@@ -97,7 +97,7 @@ public class RegistrationControllerTest {
     public void shouldNotSignupWhenUserHasEmptyMail(){
         assertThrows(SignupException.class, () -> {
             registration.setEmail(null);
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
@@ -105,7 +105,7 @@ public class RegistrationControllerTest {
     public void shouldNotSignupWhenUserNotAcceptTermsOfUse(){
         assertThrows(SignupException.class, () -> {
             registration.setTermsOfUseAccepted(false);
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
@@ -113,7 +113,7 @@ public class RegistrationControllerTest {
     public void shouldNotSignupWhenUserNotAcceptPrivacyPolicy(){
         assertThrows(SignupException.class, () -> {
             registration.setPrivacyPolicyAccepted(false);
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
@@ -122,7 +122,7 @@ public class RegistrationControllerTest {
         assertThrows(SignupException.class, () -> {
             registration.setDomainId(9L);
             when(domainService.findDomain(registration.getDomainId())).thenReturn(Optional.empty());
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
@@ -130,7 +130,7 @@ public class RegistrationControllerTest {
     public void shouldNotSignupWithoutGlobalDomain(){
         assertThrows(MissingElementException.class, () -> {
             when(domainService.getGlobalDomain()).thenReturn(Optional.empty());
-            registrationController.signup(registration);
+            registrationController.signup(registration, "token");
         });
     }
 
