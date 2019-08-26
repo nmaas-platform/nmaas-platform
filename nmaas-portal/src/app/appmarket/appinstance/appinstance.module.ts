@@ -18,6 +18,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {NgxPaginationModule} from "ngx-pagination";
 import {FormioAppConfig, FormioModule} from "angular-formio";
 import {AppConfig} from "../../../formio-config";
+import {TooltipModule} from "ng2-tooltip-directive";
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {AppConfig} from "../../../formio-config";
     AppInstanceProgressModule,
     PipesModule,
     NgxPaginationModule,
-    TranslateModule.forChild()
+    TranslateModule.forChild(),
+    TooltipModule
   ],
   exports: [
     AppInstanceComponent,
