@@ -5,14 +5,18 @@ import net.geant.nmaas.portal.api.BaseControllerTestSetup;
 import net.geant.nmaas.portal.api.auth.Registration;
 import net.geant.nmaas.portal.persistent.entity.UsersHelper;
 import net.geant.nmaas.portal.persistent.repositories.UserRepository;
+import net.geant.nmaas.utils.captcha.CaptchaValidator;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -27,12 +31,16 @@ public class RegistrationControllerIntTest extends BaseControllerTestSetup {
     @Autowired
     private UserRepository userRepository;
 
+    @MockBean
+    private CaptchaValidator captchaValidator;
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() {
         mvc = createMVC();
         objectMapper = new ObjectMapper();
+        when(captchaValidator.verifyToken(anyString())).thenReturn(true);
     }
 
     @AfterEach
@@ -45,7 +53,7 @@ public class RegistrationControllerIntTest extends BaseControllerTestSetup {
     @Test
     @Transactional
     public void testSuccessfulRegistration() throws Exception {
-    	mvc.perform(post("/api/auth/basic/registration")
+    	mvc.perform(post("/api/auth/basic/registration?token=test-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(getDefaultRegistration()))
                     .accept(MediaType.APPLICATION_JSON))

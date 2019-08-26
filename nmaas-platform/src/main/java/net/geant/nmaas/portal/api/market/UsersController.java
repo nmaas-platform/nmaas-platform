@@ -22,6 +22,7 @@ import net.geant.nmaas.portal.persistent.entity.User;
 import net.geant.nmaas.portal.persistent.entity.UserRole;
 import net.geant.nmaas.portal.service.DomainService;
 import net.geant.nmaas.portal.service.UserService;
+import net.geant.nmaas.utils.captcha.ValidateCaptcha;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -291,8 +292,9 @@ public class UsersController {
 	}
 
 	@PostMapping("/users/reset")
+	@ValidateCaptcha
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void resetPassword(@RequestBody PasswordReset passwordReset){
+	public void resetPassword(@RequestBody PasswordReset passwordReset, @RequestParam String token){
 		try {
 			Claims claims = jwtTokenService.getResetClaims(passwordReset.getToken());
 			User user = userService.findByEmail(claims.getSubject());

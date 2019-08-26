@@ -56,10 +56,6 @@
 		<label class="control-label">{{ 'REGISTRATION.AGREEMENT_MESSAGE' | translate }} <a (click)="modalInfoPolicy.show()">{{ 'REGISTRATION.PRIVACY_POLICY' | translate }}</a>*</label>
 	</div>
 
-	<div class="form-group-sm form-group">
-		<re-captcha class="e2e-iframe-trusted-src" (resolved)="resolved($event)"></re-captcha>
-	</div>
-
 	<div class="form-group form-group-sm">
 		<button class="btn btn-primary btn-block" [disabled]="!registrationForm.valid" type="submit" validate>
 			{{ 'REGISTRATION.SUBMIT' | translate }}

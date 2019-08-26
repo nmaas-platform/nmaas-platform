@@ -72,8 +72,8 @@ export class UserService extends GenericDataService {
     return this.post<string, User>(this.getUsersUrl() + "reset/validate", token);
   }
 
-  public resetPassword(passwordReset:PasswordReset): Observable<any> {
-    return this.post<PasswordReset, any>(this.getUsersUrl() + "reset", passwordReset);
+  public resetPassword(passwordReset:PasswordReset, token: string): Observable<any> {
+    return this.post<PasswordReset, any>(this.getUsersUrl() + "reset?token="+token, passwordReset);
   }
 
   public resetPasswordNotification(email:string): Observable<any> {

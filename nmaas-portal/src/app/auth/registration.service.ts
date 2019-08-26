@@ -14,8 +14,8 @@ export class RegistrationService {
   
   constructor(private http: HttpClient, private appConfig: AppConfigService) {}
   
-  public register(registration: Registration): Observable<any> {
-    return this.http.post(this.getUrl(), registration, {headers: RegistrationService.headers}).pipe(
+  public register(registration: Registration, captchaToken: string): Observable<any> {
+    return this.http.post(this.getUrl()+'?token='+captchaToken, registration, {headers: RegistrationService.headers}).pipe(
         debounceTime(this.appConfig.getHttpTimeout()), catchError(this.handleError));
   }
 
