@@ -22,10 +22,17 @@
         <td></td>
         <td></td>
         <td class="text-right">
-          <div class="btn-group">
-            <button [routerLink]="['/admin/apps/create/version', app?.name]" class="btn btn-sm btn-success">{{ 'APPS_MANAGEMENT.ADD_NEW_VERSION_BUTTON' | translate }}</button>
-            <button [routerLink]="['/admin/apps/edit', app?.id]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-          </div>
+          <span class="dropdown">
+            <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" href="#" role="button">
+              <i class="fas fa-cog icon-black icon-bigger"></i>
+            </a>
+            <ul class="dropdown-menu pull-right-drop">
+              <li>
+                <a [routerLink]="['/admin/apps/create/version', app?.name]">{{ 'APPS_MANAGEMENT.ADD_NEW_VERSION_BUTTON' | translate }}</a>
+                <a [routerLink]="['/admin/apps/edit', app?.id]">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</a>
+              </li>
+            </ul>
+          </span>
         </td>
       </tr>
       <ng-template ngFor let-version [ngForOf]="app.appVersions">
@@ -35,11 +42,20 @@
           <td>{{version.version}}</td>
           <td>{{"ENUM.STATE." + getStateAsString(version.state).toUpperCase() | translate }}</td>
           <td class="text-right">
-            <div class="btn-group">
-              <button [disabled]="getStateAsString(version?.state) === 'DELETED'" (click)="showModal(app, version)" class="btn btn-sm btn-danger">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</button>
-              <button [routerLink]="['/admin/apps/view', version?.appVersionId]" class="btn btn-sm btn-primary">{{ 'APPS_MANAGEMENT.VIEW_BUTTON' | translate }}</button>
-              <button [routerLink]="['/admin/apps/edit/version', version?.appVersionId]" class="btn btn-sm btn-warning">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</button>
-            </div>
+            <a [routerLink]="['/admin/apps/view', version?.appVersionId]">
+              <i class="far fa-eye icon-black icon-bigger"></i>
+            </a>
+            <span class="dropdown">
+            <a style="display: inline-block" class="dropdown-toggle " aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" href="#" role="button">
+              <i class="fas fa-cog icon-black icon-bigger"></i>
+            </a>
+            <ul class="dropdown-menu pull-right-drop">
+              <li>
+                <a (click)="showModal(app, version)" *ngIf="getStateAsString(version?.state) !== 'DELETED'">{{ 'APPS_MANAGEMENT.CHANGE_STATE_BUTTON' | translate }}</a>
+                <a [routerLink]="['/admin/apps/edit/version', version?.appVersionId]">{{ 'APPS_MANAGEMENT.EDIT_BUTTON' | translate }}</a>
+              </li>
+            </ul>
+          </span>
           </td>
         </tr>
       </ng-template>
