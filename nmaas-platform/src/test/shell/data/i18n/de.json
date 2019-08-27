@@ -628,7 +628,9 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Konfigurationsupdates aktiviert",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Überprüfen Sie ob Ihre Anwendung Konfigurationsupdates unterstützt",
     "EXPOSE_WEB_UI": "Legen Sie die Webbenutzeroberfläche offen",
-    "EXPOSE_WEB_UI_TOOLTIP": "Überprüfen Sie, ob die Anwendung die Webbenutzeroberfläche verfügbar macht"
+    "EXPOSE_WEB_UI_TOOLTIP": "Überprüfen Sie, ob die Anwendung die Webbenutzeroberfläche verfügbar macht",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",
