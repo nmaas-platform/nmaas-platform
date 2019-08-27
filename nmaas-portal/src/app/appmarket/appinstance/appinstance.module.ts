@@ -26,18 +26,18 @@ import {TooltipModule} from "ng2-tooltip-directive";
     AppInstanceListComponent,
       AppRestartModalComponent
   ],
-  imports: [
-    FormioModule,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    SharedModule,
-    AuthModule,
-    AppInstanceProgressModule,
-    PipesModule,
-    NgxPaginationModule,
-    TranslateModule.forChild(),
+    imports: [
+        FormioModule,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
+        SharedModule,
+        AuthModule,
+        AppInstanceProgressModule,
+        PipesModule,
+        NgxPaginationModule,
+        TranslateModule.forChild(),
     TooltipModule
   ],
   exports: [
