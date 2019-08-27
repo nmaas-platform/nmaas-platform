@@ -19,6 +19,8 @@ public class AppDeploymentSpec {
 
     private Integer defaultStorageSpace;
 
+    private boolean exposesWebUI;
+
     private Map<ParameterType, String> deployParameters;
 
 }

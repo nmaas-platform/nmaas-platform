@@ -39,7 +39,8 @@
 				"version": "0.0.2-alfa"
 			}
 		},
-		"defaultStorageSpace":20
+		"defaultStorageSpace":20,
+		"exposesWebUI": true
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired":true,

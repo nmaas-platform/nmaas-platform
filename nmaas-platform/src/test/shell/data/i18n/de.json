@@ -459,7 +459,8 @@
       "FAILURE": "",
       "UNKNOWN": "Unbekannter Anwendungszustand - Kontakt mit dem NMaaS-Team über das Kontaktformular auf der Unterseite \" Über \"",
       "REMOVED": "Anwendung nach Fehler erfolgreich aufgehoben"
-    }
+    },
+    "GO_TO_APP_TOOLTIP": "Diese Anwendung stellt keine Webbenutzeroberfläche zur Verfügung"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Bestätigung der Deinstallation",
@@ -620,7 +621,9 @@
     "CONFIG_TEMPLATES_STEP_INFO": "NMaaS applications are populated with basic configuration parameters provided by users using a wizard. The list of configuration files (with parameterized content) to be used and loaded by the application at startup should be provided. Those need to be complemented with the definition of the wizard component dedicated for particular application allowing user to provide all necessary parameters used to populate configuration files. ",    "BASIC_AUTH_LABEL": "Benötigt Grundberechtigung",
     "BASIC_AUTH_TOOLTIP": "Sie können eine Grundberechtigung für Ihre Anwendung hinzufügen, indem Sie einfach dieses Kontrollkästchen markieren.",
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Konfigurationsupdates aktiviert",
-    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Überprüfen Sie ob Ihre Anwendung Konfigurationsupdates unterstützt"
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Überprüfen Sie ob Ihre Anwendung Konfigurationsupdates unterstützt",
+    "EXPOSE_WEB_UI": "Legen Sie die Webbenutzeroberfläche offen",
+    "EXPOSE_WEB_UI_TOOLTIP": "Überprüfen Sie, ob die Anwendung die Webbenutzeroberfläche verfügbar macht"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",

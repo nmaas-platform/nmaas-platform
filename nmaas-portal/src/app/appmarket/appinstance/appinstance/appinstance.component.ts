@@ -42,6 +42,12 @@ import {ApplicationState} from "../../../model/applicationstate";
 })
 export class AppInstanceComponent implements OnInit, OnDestroy, AfterViewChecked {
 
+  public defaultTooltipOptions = {
+    'placement': 'bottom',
+    'show-delay': "50",
+    'theme': 'dark'
+  };
+
   public AppInstanceState = AppInstanceState;
 
   @ViewChild(AppInstanceProgressComponent)
