@@ -36,7 +36,7 @@
     "jasmine": "^2.99.0",
     "jquery": "^3.4.0",
     "lodash": "^4.17.11",
-    "ng-recaptcha": "^4.2.1",
+    "ng-recaptcha": "^4.3.0",
     "ng2-tooltip-directive": "^2.1.9",
     "ngx-pagination": "^3.2.1",
     "ngx-webstorage-service": "^3.1.3",

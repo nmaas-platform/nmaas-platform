@@ -77,6 +77,7 @@ jwt.signingKey=${API_KEY}
 jwt.resetSigningKey=testResetKey
 jwt.resetTokenValidFor=1800000
 management.info.git.mode=full
+captcha.secret=${CAPTCHA_SECRET}
 
 # ------------------------ #
 # SAML proxy configuration #

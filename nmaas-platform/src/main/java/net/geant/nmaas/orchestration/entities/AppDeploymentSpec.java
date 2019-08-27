@@ -48,6 +48,8 @@ public class AppDeploymentSpec implements Serializable {
     @Column(nullable = false)
     private Integer defaultStorageSpace;
 
+    private boolean exposesWebUI;
+
     @ElementCollection
     @Fetch(FetchMode.SELECT)
     private Map<ParameterType, String> deployParameters;

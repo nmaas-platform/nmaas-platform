@@ -54,4 +54,11 @@ export class AppConfigService {
       }
       return this.config.showChangelog || false;
     }
+
+    public getSiteKey(): string {
+        if(isNullOrUndefined(this.config)){
+            return '';
+        }
+        return this.config.captchaKey || '';
+    }
 }

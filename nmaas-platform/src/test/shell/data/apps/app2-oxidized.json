@@ -40,7 +40,8 @@
 			},
 			"archive": "nmaas-oxidized-1.0.0-alfa.tgz"
 		},
-		"defaultStorageSpace":20
+		"defaultStorageSpace":20,
+		"exposesWebUI": true
 	},
 	"appConfigurationSpec": {
 		"configFileRepositoryRequired":true,

@@ -460,7 +460,8 @@
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem NMaaS za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"
     },
-    "SHOW_VERSIONS_LABEL": "Pokaż dostępne wersje"
+    "SHOW_VERSIONS_LABEL": "Pokaż dostępne wersje",
+    "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika"
   },
   "UNDEPLOY_MODAL": {
     "HEADER": "Potwierdzenie zatrzymania",
@@ -624,7 +625,9 @@
     "BASIC_AUTH_LABEL": "Wymaga podstawowego uwierzytelnienia",
     "BASIC_AUTH_TOOLTIP": "Możesz dodać podstawowe uwierzytelnienie do Twojej aplikacji zaznaczając tą opcję.",
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
-    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania."
+    "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania.",
+    "EXPOSE_WEB_UI": "Udostępnij graficzny interface użytkownika",
+    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interface użytkownika"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
@@ -636,15 +639,6 @@
     "CHANGE_STATE_BUTTON": "Zmień stan",
     "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
     "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}"
-  },
-  "APP_CHANGE_STATE_MODAL": {
-    "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",
-    "CURRENT_STATE": "Obecny stan",
-    "NEW_STATE": "Nowy stan",
-    "REASON": "Powód",
-    "REASON_PLACEHOLDER": "Proszę uzasadnij swoją decyzję",
-    "CANCEL_BUTTON": "Anuluj",
-    "CHANGE_STATE_BUTTON": "Zmień stan"
   },
   "ABOUT": {
     "CONTACT_TITLE": "Skontaktuj się z nami",

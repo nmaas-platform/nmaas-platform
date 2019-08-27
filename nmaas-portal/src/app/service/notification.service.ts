@@ -15,8 +15,8 @@ export class NotificationService extends GenericDataService{
     this.url = appConfig.getApiUrl() + "/mail";
   }
 
-  public sendMail(mail:Mail): Observable<any>{
-    return this.post(this.url, mail);
+  public sendMail(mail:Mail, token: string): Observable<any>{
+    return this.post(this.url + "?token=" + token, mail);
   }
 
 }
