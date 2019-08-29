@@ -1,6 +1,7 @@
 package net.geant.nmaas.portal.persistent.entity;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,20 +16,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 @Entity
@@ -49,34 +42,12 @@ public class Application implements Serializable {
 	
 	private String name;
 	private String version;
-	private String license;
-	private String licenseUrl;
-
-	private String wwwUrl;
-	private String sourceUrl;
-	private String issuesUrl;
-	
-	@OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-	private FileInfo logo;
-	
-	@OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-	private List<FileInfo> screenshots = new ArrayList<>();
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<AppDescription> descriptions;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private ConfigWizardTemplate configWizardTemplate;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private ConfigWizardTemplate configUpdateWizardTemplate;
-
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "application_tag", joinColumns = @JoinColumn(name = "application_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-	private Set<Tag> tags = new HashSet<>();
-	
-	@OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "application")
-	private List<Comment> comments = new ArrayList<>();
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private AppDeploymentSpec appDeploymentSpec;
@@ -91,11 +62,15 @@ public class Application implements Serializable {
 	@Column(nullable = false)
 	private String owner;
 
+	@Column(nullable = false)
+	private LocalDateTime creationDate;
+
 	public Application(String name, String version, String owner) {
 		this.name = name;
 		this.version = version;
 		this.owner = owner;
 		this.state = ApplicationState.NEW;
+		this.creationDate = LocalDateTime.now();
 	}
 
 	public Application(Long id, String name, String version, String owner) {
@@ -110,7 +85,6 @@ public class Application implements Serializable {
 		checkArgument(appDeploymentSpec != null, "Application deployment specification cannot be null");
 		checkArgument(appConfigurationSpec != null, "Application configuration specification cannot be null");
 		checkArgument(configWizardTemplate != null && StringUtils.isNotEmpty(configWizardTemplate.getTemplate()), "Configuration template cannot be null");
-		checkArgument(descriptions != null && !descriptions.isEmpty(), "Descriptions cannot be null or empty");
 	}
 
 }

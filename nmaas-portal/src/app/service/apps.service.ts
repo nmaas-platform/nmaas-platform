@@ -33,6 +33,10 @@ export class AppsService extends GenericDataService {
         return this.get<Application>(this.appConfig.getApiUrl() + '/apps/' + id);
     }
 
+    public getBaseApp(id: number): Observable<Application> {
+        return this.get<Application>(this.appConfig.getApiUrl() + '/apps/base/' + id);
+    }
+
     public getAppRateByUrl(urlPath: string): Observable<Rate> {
         if(!isNullOrUndefined(urlPath) && urlPath != "") {
             return this.getByUrl(urlPath);
@@ -79,6 +83,14 @@ export class AppsService extends GenericDataService {
 
     public updateApp(app:Application) : Observable<any> {
         return this.patch(this.appConfig.getApiUrl() + '/apps', app);
+    }
+
+    public updateBaseApp(app:Application) : Observable<any> {
+        return this.patch(this.appConfig.getApiUrl() + '/apps/base', app);
+    }
+
+    public getLatestVersion(appName: string) : Observable<any> {
+        return this.get(this.appConfig.getApiUrl() + '/apps/' + appName + '/latest');
     }
 
     public uploadAppLogo(id: number, file: any): Observable<FileInfo> {

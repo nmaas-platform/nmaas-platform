@@ -1,7 +1,7 @@
 	<div class="row">
 		<div class="col-xs-4 col-sm-3 col-md-3 col-lg-2">
 			<div class="thumbnail" *ngIf="app">
-				<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(app?.id) | secure) || 'assets/images/app-logo-example.png'"/>
+				<img alt="App logo" [src]="(appImagesService.getAppLogoUrl(appId) | secure) || 'assets/images/app-logo-example.png'"/>
 			</div>
 			<div class="thumbnail" *ngIf="!app">
 				<img alt="App logo" src="assets/images/app-logo-example.png"/>
@@ -9,11 +9,11 @@
 		</div>
 		<div class="col-xs-8 col-sm-9 col-md-9 col-lg-10">
 			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app">
 					<h2 style="margin-bottom: 4px;">{{app?.name}}</h2>
 					<rate [showVotes]="true" [short]="true" [pathUrl]="getPathUrl(appId)"></rate>
 					<div class="text-muted" style="font-size: small;">
-						v.{{app?.version}} | <a [href]="getValidLink(app?.licenseUrl)" target="_blank">{{app?.license}}</a>
+						<a style="cursor: pointer;" (click)="showVersions()">{{'APP_INSTANCE.SHOW_VERSIONS_LABEL' | translate }}</a> | <a [href]="getValidLink(app?.licenseUrl)" target="_blank">{{app?.license}}</a>
 						| <a [href]="getValidLink(app?.wwwUrl)">WWW</a>
 						| <a [href]="getValidLink(app?.sourceUrl)" target="_blank">{{'APP_INSTANCE.SOURCE' | translate}}</a>
 						| <a [href]="getValidLink(app?.sourceUrl)" target="_blank">{{'APP_INSTANCE.ISSUES' | translate}}</a>
@@ -25,17 +25,24 @@
 					</div>
 				</div>
 			</div>
+			<div class="row" *ngIf="versionVisible">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.appVersions">
+					<a *ngFor="let version of app.appVersions" class="tag-button">
+						v.{{version.version}}
+					</a>
+				</div>
+			</div>
 			<hr>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
-					<a type="button" *ngFor="let tag of app.tags" class="btn tag-button">
+					<a *ngFor="let tag of app.tags" class="tag-button">
 						{{tag | titlecase}}
 					</a>
 				</div>
 			</div>
 			<div class="row">
-				<div *ngIf="!subscribed && isSubscriptionAllowed() && (isActive(app?.state) || isDisabled(app?.state))" class="btn-group pull-right">
-					<button class="btn btn-primary" [disabled]="isDisabled(app?.state)" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
+				<div *ngIf="!subscribed && isSubscriptionAllowed()" class="btn-group pull-right">
+					<button class="btn btn-primary" [disabled]="!active" (click)="subscribe()">{{'APPLICATIONS.SUBSCRIBE_BUTTON' | translate}}</button>
 				</div>
 				<div *ngIf="subscribed" class="btn-group pull-right">
 					<button *ngIf="isDeploymentAllowed()" class="btn btn-primary" (click)="appInstallModal.show()">{{'APPLICATIONS.DEPLOY_BUTTON' | translate}}</button>
@@ -71,5 +78,5 @@
 	<comments [pathUrl]="'/apps/' + appId + '/comments'"></comments>
 
 
-	<nmaas-modal-app-install [app]="app">
+	<nmaas-modal-app-install *ngIf="app" [app]="app">
 	</nmaas-modal-app-install>

@@ -2,8 +2,8 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@an
 import {ModalComponent} from "../../../shared/modal";
 import {ApplicationState} from "../../../model/applicationstate";
 import {AppsService} from "../../../service";
-import {Application} from "../../../model";
 import {AppStateChange} from "../../../model/appstatechange";
+import {ApplicationVersion} from "../../../model/applicationversion";
 
 @Component({
   selector: 'app-appchangestatemodal',
@@ -16,7 +16,10 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
   public readonly modal: ModalComponent;
 
   @Input()
-  public app: Application;
+  public appName: string;
+
+  @Input()
+  public app: ApplicationVersion;
 
   public stateChange: AppStateChange = new AppStateChange();
 
@@ -61,7 +64,7 @@ export class AppChangeStateModalComponent implements OnInit, OnChanges {
   }
 
   public submit(): void {
-    this.appsService.changeApplicationState(this.app.id, this.stateChange).subscribe(()=>{
+    this.appsService.changeApplicationState(this.app.appVersionId, this.stateChange).subscribe(()=>{
       console.debug("Application state changed");
       this.errorMessage = undefined;
       this.app.state = this.stateChange.state;

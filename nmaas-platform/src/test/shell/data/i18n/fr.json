@@ -361,7 +361,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Le nom de l'instance name est requis.",
     "DOMAIN": "Organisation",
     "CLOSE_BUTTON": "Fermer",
-    "DEPLOY_BUTTON": "Déployer"
+    "DEPLOY_BUTTON": "Déployer",
+    "USE_DEFAULT_VERSION": "Utiliser la version par défaut",
+    "SELECT_VERSION": "Sélectionnez la version"
   },
   "APP_INSTANCE": {
     "SOURCE": "Source",
@@ -458,6 +460,7 @@
       "UNKNOWN": "Etat inconnu de l'application - Contact avec l'équipe NMaaS à l'aide du formulaire de contact disponible sur la sous-page \" A propos \"",
       "REMOVED": "Application non déployée avec succès"
     },
+    "SHOW_VERSIONS_LABEL": "Show available versions",
     "GO_TO_APP_TOOLTIP": "Cette application n'expose pas une interface utilisateur Web"
   },
   "UNDEPLOY_MODAL": {
@@ -518,6 +521,7 @@
     "TITLE": "Applications management",
     "NAME": "Name",
     "STATE": "State",
+    "VERSION": "Version",
     "ADD_BUTTON": "Add",
     "VIEW_BUTTON": "View",
     "EDIT_BUTTON": "Edit",
@@ -526,7 +530,8 @@
     "REJECTED_TAB": "Rejected",
     "NEW_TAB": "New",
     "NO_REJECTED_APPS_MESSAGE": "There are no rejected applications",
-    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications"
+    "NO_NEW_APPS_MESSAGE": "There are no unapproved applications",
+    "ADD_NEW_VERSION_BUTTON": "Add new version"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "This page is only a preview of the application data to be submitted. Please double check the content and confirm the request.",
@@ -621,7 +626,9 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Configuration updates enabled",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Check if your application supports configuration updates",
     "EXPOSE_WEB_UI": "Expose web user interface",
-    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface"
+    "EXPOSE_WEB_UI_TOOLTIP": "Check if application is exposing web user interface",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Adding new version of {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Editing {{app_version}} version of {{app_name}}"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Change state of {{app_name}} in {{app_version}} version",
