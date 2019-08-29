@@ -14,7 +14,6 @@ import {AppInstallModalComponent} from '../../shared/modal/appinstall/appinstall
 import {Observable} from 'rxjs';
 import {isNullOrUndefined, isUndefined} from 'util';
 import {AppSubscription} from "../../model";
-import {isEmpty} from 'rxjs/operators';
 import {AppDescription} from "../../model/appdescription";
 import {TranslateService} from "@ngx-translate/core";
 import {ApplicationState} from "../../model/applicationstate";
@@ -44,6 +43,8 @@ export class AppDetailsComponent implements OnInit {
   public app: Application;
   public subscribed: boolean;
   public domainId: number;
+  public active: boolean = false;
+  public versionVisible: boolean = false;
 
   constructor(private appsService: AppsService,
     private appSubsService: AppSubscriptionsService,
@@ -57,10 +58,12 @@ export class AppDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-       
     this.route.params.subscribe(params => {
       this.appId = +params['id'];
-      this.appsService.getApp(this.appId).subscribe(application => this.app = application);
+      this.appsService.getBaseApp(this.appId).subscribe(application => {
+        this.app = application;
+        this.active = application.appVersions.some(version => this.getStateAsString(version.state) === 'ACTIVE');
+      });
       this.userDataService.selectedDomainId.subscribe((domainId) => this.updateDomainSelection(domainId));
     });
   }
@@ -147,14 +150,6 @@ export class AppDetailsComponent implements OnInit {
     }
   }
 
-  public isActive(state: any): boolean {
-    return this.getStateAsString(state) === ApplicationState[ApplicationState.ACTIVE];
-  }
-
-  public isDisabled(state: any): boolean {
-    return this.getStateAsString(state) === ApplicationState[ApplicationState.DISABLED];
-  }
-
   public getStateAsString(state: any): string {
     return typeof state === "string" && isNaN(Number(state.toString())) ? state: ApplicationState[state];
   }
@@ -167,6 +162,10 @@ export class AppDetailsComponent implements OnInit {
       return '//' + url;
     }
     return url;
+  }
+
+  public showVersions(){
+    this.versionVisible = !this.versionVisible;
   }
 
 }

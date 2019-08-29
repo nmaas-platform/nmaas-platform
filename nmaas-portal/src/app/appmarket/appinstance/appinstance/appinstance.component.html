@@ -30,7 +30,7 @@
 			<hr>
 			<div class="row">
 				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" *ngIf="app?.tags">
-					<a type="button" *ngFor="let tag of app.tags" class="btn tag-button">
+					<a *ngFor="let tag of app.tags" class="tag-button">
 						{{tag | titlecase}}
 					</a>
 				</div>

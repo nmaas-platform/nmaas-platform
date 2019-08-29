@@ -361,7 +361,9 @@
     "INSTANCE_NAME_REQUIRED_ERROR": "Nazwa instancji jest wymagana.",
     "DOMAIN": "Domena",
     "CLOSE_BUTTON": "Zamknij",
-    "DEPLOY_BUTTON": "Uruchom"
+    "DEPLOY_BUTTON": "Uruchom",
+    "USE_DEFAULT_VERSION": "Użyj domyślnej wersji",
+    "SELECT_VERSION": "Wybierz wersje"
   },
   "APP_INSTANCE": {
     "SOURCE": "Źródło",
@@ -458,6 +460,7 @@
       "UNKNOWN": "Nieznany stan aplikacji - skontaktuj się z zespołem NMaaS za pomocą formularza kontaktowego dostępnego na podstronie \"O nas\"",
       "REMOVED": "Aplikacja została pomyślnie usunięta"
     },
+    "SHOW_VERSIONS_LABEL": "Pokaż dostępne wersje",
     "GO_TO_APP_TOOLTIP": "Ta aplikacja nie udostępnia interfejsu użytkownika"
   },
   "UNDEPLOY_MODAL": {
@@ -519,6 +522,7 @@
     "TITLE": "Zarządzanie aplikacjami",
     "NAME": "Nazwa",
     "STATE": "Stan",
+    "VERSION": "Wersja",
     "ADD_BUTTON": "Dodaj",
     "VIEW_BUTTON": "Pokaż",
     "EDIT_BUTTON": "Edytuj",
@@ -527,7 +531,8 @@
     "REJECTED_TAB": "Odrzucone",
     "NEW_TAB": "Nowe",
     "NO_REJECTED_APPS_MESSAGE": "Nie ma odrzuconych aplikacji",
-    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji"
+    "NO_NEW_APPS_MESSAGE": "Nie ma nowych aplikacji",
+    "ADD_NEW_VERSION_BUTTON": "Dodaj nową wersje"
   },
   "APPS_PREVIEW": {
     "PREVIEW_MESSAGE": "To jest jedynie podgląd widoku aplikacji",
@@ -622,7 +627,9 @@
     "ADD_CONFIG_UPDATE_TEMPLATE_LABEL": "Wsparcie dla aktualizacji konfiguracji",
     "ADD_CONFIG_UPDATE_TEMPLATE_TOOLTIP": "Zaznacz tą opcję jeśli Twoja aplikacja wspiera aktualizacje konfiguracji w trakcie jej działania.",
     "EXPOSE_WEB_UI": "Udostępnij graficzny interface użytkownika",
-    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interface użytkownika"
+    "EXPOSE_WEB_UI_TOOLTIP": "Zaznacz jeśli aplikacja udostępnia graficzny interface użytkownika",
+    "NEW_APP_VERSION_WIZARD_HEADER": "Dodawanie nowej wersji aplikacji {{app_name}}",
+    "EDIT_APP_VERSION_WIZARD_HEADER": "Edytowanie wersji {{app_version}} aplikacji {{app_name}}"
   },
   "APP_CHANGE_STATE_MODAL": {
     "HEADER": "Zmiana stanu aplikacji {{app_name}} w wersji {{app_version}}",

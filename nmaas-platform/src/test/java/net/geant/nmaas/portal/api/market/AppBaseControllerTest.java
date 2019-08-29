@@ -4,6 +4,7 @@ import java.util.Optional;
 import net.geant.nmaas.portal.api.exception.MissingElementException;
 import net.geant.nmaas.portal.persistent.entity.Application;
 import net.geant.nmaas.portal.persistent.entity.User;
+import net.geant.nmaas.portal.service.ApplicationBaseService;
 import net.geant.nmaas.portal.service.ApplicationService;
 import net.geant.nmaas.portal.service.UserService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +25,8 @@ public class AppBaseControllerTest {
 
     private UserService userService = mock(UserService.class);
 
+    private ApplicationBaseService appBaseService = mock(ApplicationBaseService.class);
+
     private AppBaseController appBaseController;
 
     private Application app = new Application(1L, "defaultApp", "1.1", "admin");
@@ -32,7 +35,7 @@ public class AppBaseControllerTest {
 
     @BeforeEach
     void setup(){
-        this.appBaseController = new AppBaseController(modelMapper, appService, userService);
+        this.appBaseController = new AppBaseController(modelMapper, appService, appBaseService, userService);
     }
 
     @Test

@@ -1,12 +1,17 @@
 package net.geant.nmaas.portal;
 
+import net.geant.nmaas.portal.api.domain.converters.ApplicationBaseToAppBriefViewConverter;
 import net.geant.nmaas.portal.api.domain.converters.ApplicationSubscriptionConverter;
+import net.geant.nmaas.portal.api.domain.converters.ApplicationToApplicationViewConverter;
+import net.geant.nmaas.portal.api.domain.converters.ApplicationViewToApplicationBaseConverter;
+import net.geant.nmaas.portal.api.domain.converters.ApplicationViewToApplicationConverter;
 import net.geant.nmaas.portal.api.domain.converters.InetAddressConverter;
 import net.geant.nmaas.portal.api.domain.converters.InetAddressInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.RoleInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.TagConverter;
 import net.geant.nmaas.portal.api.domain.converters.TagInverseConverter;
 import net.geant.nmaas.portal.api.domain.converters.UserConverter;
+import net.geant.nmaas.portal.persistent.repositories.ApplicationBaseRepository;
 import net.geant.nmaas.portal.persistent.repositories.TagRepository;
 
 import org.modelmapper.Conditions;
@@ -18,11 +23,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConvertersConfig {
 	
-	TagRepository tagRepo;
+	private TagRepository tagRepo;
+
+	private ApplicationBaseRepository appBaseRepository;
 
 	@Autowired
-	public ConvertersConfig(TagRepository tagRepo){
+	public ConvertersConfig(TagRepository tagRepo, ApplicationBaseRepository appBaseRepository){
 		this.tagRepo = tagRepo;
+		this.appBaseRepository = appBaseRepository;
 	}
 	
 	@Bean
@@ -36,6 +44,10 @@ public class ConvertersConfig {
 	    modelMapper.addConverter(new InetAddressInverseConverter());
 	    modelMapper.addConverter(new ApplicationSubscriptionConverter());
 	    modelMapper.addConverter(new UserConverter());
+	    modelMapper.addConverter(new ApplicationBaseToAppBriefViewConverter());
+	    modelMapper.addConverter(new ApplicationToApplicationViewConverter(appBaseRepository));
+	    modelMapper.addConverter(new ApplicationViewToApplicationBaseConverter(tagRepo));
+	    modelMapper.addConverter(new ApplicationViewToApplicationConverter());
 	    return modelMapper;
 	}
 	
