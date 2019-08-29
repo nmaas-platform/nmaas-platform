@@ -80,8 +80,9 @@ alter table application_base_screenshots add constraint FK47oo2gel2am5rb7gteahqq
 alter table application_base_versions add constraint FKg1skowbclv6id34rdcsffbp5r foreign key (versions_id) references application_version;
 alter table application_base_versions add constraint FKqetk98q77hml9tenqtyygtra3 foreign key (application_base_id) references application_base;
 alter table comment drop constraint if exists FKl1ijg86at535f02qrnag2884f;
-alter table comment add constraint FKemn5p9e8r6aeywsuvfyx18v8p foreign key (id) references application_base;
+alter table comment add constraint FKemn5p9e8r6aeywsuvfyx18v8p foreign key (application_id) references application_base;
 alter table application_subscription drop constraint if exists application_subscription_pkey;
+alter table application_subscription drop constraint if exists FKNP15LBUG6JTXWYL46QTKAMBD4;
 drop index if exists PRIMARY_KEY_3;
 alter table application_subscription add primary key (domain_id, application_id);
 alter table application_subscription add constraint FK68lfog47c3c2nel7cfahifsth foreign key (application_id) references application_base;
