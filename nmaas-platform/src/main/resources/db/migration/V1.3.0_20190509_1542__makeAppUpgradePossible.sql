@@ -82,5 +82,6 @@ alter table application_base_versions add constraint FKqetk98q77hml9tenqtyygtra3
 alter table comment drop constraint if exists FKl1ijg86at535f02qrnag2884f;
 alter table comment add constraint FKemn5p9e8r6aeywsuvfyx18v8p foreign key (id) references application_base;
 alter table application_subscription drop constraint if exists application_subscription_pkey;
+drop index if exists PRIMARY_KEY_3;
 alter table application_subscription add primary key (domain_id, application_id);
 alter table application_subscription add constraint FK68lfog47c3c2nel7cfahifsth foreign key (application_id) references application_base;
