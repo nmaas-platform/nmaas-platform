@@ -1,17 +1,6 @@
-drop table application_tag;
-drop table application_descriptions;
-drop table application_screenshots;
-alter table application drop column license;
-alter table application drop column license_url;
-alter table application drop column issues_url;
-alter table application drop column source_url;
-alter table application drop column www_url;
-alter table application drop column logo_id;
-alter table comment drop column application_application_id;
-alter table comment add column application_id bigint not null default 0;
-alter table application_subscription drop primary key;
-alter table application_subscription drop column application_application_id;
-alter table application_subscription add column application_id bigint not null default 0;
+alter table app_deployment_spec alter column exposes_webui set default true;
+alter table comment rename column application_application_id to application_id;
+alter table application_subscription rename column application_application_id to application_id;
 alter table application add column creation_date timestamp not null default now();
 
 create table application_base_tag (
@@ -55,6 +44,23 @@ create table application_version (
     primary key (id)
 );
 
+insert into application_version (app_version_id, state, version) select application_id, state, version from application;
+insert into application_base_versions (application_base_id, versions_id) select app_version_id, id from application_version;
+insert into application_base (id, issues_url, license, license_url, name, source_url, www_url, logo_id) select application_id, issues_url, license, license_url, name, source_url, www_url, logo_id from application;
+alter table application drop column license;
+alter table application drop column license_url;
+alter table application drop column issues_url;
+alter table application drop column source_url;
+alter table application drop column www_url;
+alter table application drop column logo_id;
+
+insert into application_base_tag (application_base_id, tag_id) select * from application_tag;
+drop table application_tag;
+insert into application_base_descriptions(application_base_id, descriptions_id) select * from application_descriptions;
+drop table application_descriptions;
+insert into application_base_screenshots(application_base_id, screenshots_id) select * from application_screenshots;
+drop table application_screenshots;
+
 alter table application_base drop constraint if exists UK_ie1rr7i5f4h9fickct1ddmgif;
 alter table application_base add constraint UK_ie1rr7i5f4h9fickct1ddmgif unique (name);
 alter table application_base_descriptions drop constraint if exists UK_rf479b9it3plt2alopcs48oy1;
@@ -74,7 +80,7 @@ alter table application_base_screenshots add constraint FK47oo2gel2am5rb7gteahqq
 alter table application_base_versions add constraint FKg1skowbclv6id34rdcsffbp5r foreign key (versions_id) references application_version;
 alter table application_base_versions add constraint FKqetk98q77hml9tenqtyygtra3 foreign key (application_base_id) references application_base;
 alter table comment drop constraint if exists FKl1ijg86at535f02qrnag2884f;
-alter table comment add constraint FKemn5p9e8r6aeywsuvfyx18v8p foreign key (application_id) references application_base;
-alter table application_subscription drop constraint if exists FKnp15lbug6jtxwyl46qtkambd4;
-alter table application_subscription add primary key (application_id, domain_id);
+alter table comment add constraint FKemn5p9e8r6aeywsuvfyx18v8p foreign key (id) references application_base;
+alter table application_subscription drop constraint if exists application_subscription_pkey;
+alter table application_subscription add primary key (domain_id, application_id);
 alter table application_subscription add constraint FK68lfog47c3c2nel7cfahifsth foreign key (application_id) references application_base;
