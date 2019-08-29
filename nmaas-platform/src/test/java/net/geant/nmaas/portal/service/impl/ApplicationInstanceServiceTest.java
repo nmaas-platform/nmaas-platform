@@ -149,7 +149,7 @@ public class ApplicationInstanceServiceTest {
             when(validator.valid(anyString())).thenReturn(true);
             List<AppInstance> appInstances = new ArrayList<>();
             when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
-            when(applicationSubscriptions.isActive(isA(Application.class), isA(Domain.class))).thenReturn(false);
+            when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(false);
             applicationInstanceService.create(domain, application, "test");
         });
     }
@@ -161,7 +161,7 @@ public class ApplicationInstanceServiceTest {
         when(validator.valid(anyString())).thenReturn(true);
         List<AppInstance> appInstances = new ArrayList<>();
         when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
-        when(applicationSubscriptions.isActive(isA(Application.class), isA(Domain.class))).thenReturn(true);
+        when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test");
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
         AppInstance appInstanceResult = applicationInstanceService.create(domain, application, "test");
@@ -177,7 +177,7 @@ public class ApplicationInstanceServiceTest {
         when(validator.valid(anyString())).thenReturn(true);
         List<AppInstance> appInstances = new ArrayList<>();
         when(appInstanceRepo.findAllByDomain(isA(Domain.class))).thenReturn(appInstances);
-        when(applicationSubscriptions.isActive(isA(Application.class), isA(Domain.class))).thenReturn(true);
+        when(applicationSubscriptions.isActive(anyString(), isA(Domain.class))).thenReturn(true);
         AppInstance appInstance = new AppInstance(application, domain, "test");
         when(appInstanceRepo.save(isA(AppInstance.class))).thenReturn(appInstance);
         AppInstance appInstanceResult = applicationInstanceService.create((long)0, (long)0, "test");

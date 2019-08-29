@@ -9,11 +9,7 @@
     font-size: 12px;
     margin: 8px 2px;
     border-radius: 12px;
-}
-
-.tag-button:hover{
-    background-color: rgb(51, 122, 183);
-    color: white;
+    cursor: default;
 }
 
 .block-light-gray{

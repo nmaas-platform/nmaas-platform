@@ -23,6 +23,7 @@ public class MailAttributes implements Serializable {
 
     private MailType mailType;
 
+    @Builder.Default
     private Map<String, String> otherAttributes = new HashMap<>();
 
     @Builder
